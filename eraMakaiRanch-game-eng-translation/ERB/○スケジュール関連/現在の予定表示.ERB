@@ -1,0 +1,100 @@
+﻿
+;スケジュール予定の表示
+;ARGS→予定スケジュール
+;ARG→自動スケジュールと異なる場合に緑色にする
+@SCHEDULE_PLAN_PRINT(ARGS,ARG)
+#DIM TRAIN_TARGET
+#DIMS SCHEDULESTRING_EN
+
+SIF ARG
+	CALL SCHEDULE_PLAN_PRINT_COLOR
+SELECTCASE ARGS
+CASE "休憩","待機","搾乳","抽出","行動済み","自由時間","自由","図書館"
+	PRINTFORM %SCHEDULE_ENG(ARGS),14,LEFT%
+CASE "酪農"
+	SCHEDULESTRING_EN '= @"Dairy：Lv{ABL:酪農,2}"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+CASE "調教"
+	FINDCHARA CFLAG:ID,CFLAG:調教対象ID
+	SIF RESULT <= 0
+		RETURN
+	TRAIN_TARGET = RESULT
+	IF CSTR:状態／あなたの子 == "成長中"
+		PRINTFORM Breast-feeding from %CALLNAME:TRAIN_TARGET%
+	ELSE
+		PRINTFORM Training %CALLNAME:TRAIN_TARGET%：TechLv{ABL:技巧,2}
+		SIF !TALENT:オトコ
+			PRINTFORM  LesbianLv{ABL:レズっ気,2}
+	ENDIF
+CASE "事務"
+	SCHEDULESTRING_EN '= @"Clerk：Lv{ABL:事務,2}"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+CASE "調剤"
+	SCHEDULESTRING_EN '= @"Pharm：Lv{ABL:薬学,2}"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+CASE "大浴場掃除"
+	SCHEDULESTRING_EN '= @"Clean：Lv{ABL:掃除,2}"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+CASE "訓練"
+	SCHEDULESTRING_EN '= @"Combat Drills： Fitness{BASE:戦闘適性,3}\%"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+CASE "調教対象"
+	SCHEDULESTRING_EN '= @"Training"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+CASE "体内凌辱"
+	SCHEDULESTRING_EN '= @"Internal Violation"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+CASE "解放準備"
+	SCHEDULESTRING_EN '= @"Tentacle Release"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+CASE "体内凌辱準備"
+	SCHEDULESTRING_EN '= @"Tentacle Swallowing"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+	PRINT 
+CASE "触手責め搾乳"
+	SCHEDULESTRING_EN '= @"触搾"
+	PRINTFORM %SCHEDULESTRING_EN,14,LEFT%
+
+CASEELSE
+	;牛舎にいる場合
+	IF CFLAG:牛舎番号
+		;昼かつスケジュールが0の場合だけ休憩
+		;FLAG:第1牛舎スケジュール→501
+		IF !FLAG:(491 +(CFLAG:牛舎番号) *10) && TIME == 1
+			PRINT Rest ＜Cowshed＞
+		ELSE
+			PRINT Milking ＜Cowshed＞
+		ENDIF
+	ELSE
+		PRINT 【It's probably a bug】
+	ENDIF
+ENDSELECT
+PRINT 　
+RESETCOLOR
+
+
+
+;スケジュール予定の色表示
+;　事務or大浴場掃除→酪農の場合は無効
+	;黄色にしようかと思ったけどなんか見づらかった
+@SCHEDULE_PLAN_PRINT_COLOR
+
+;予定と同じなら帰る
+SIF CSTR:スケジュール == CSTR:スケジュール／予定
+	RETURN
+
+;調教予定の場合も帰る　誰かは見なくていい気がする
+SIF CSTR:スケジュール == "調教" && GROUPMATCH(CSTR:スケジュール,"調教／対象Ａ","調教／対象Ｂ","調教／対象Ｃ")
+	RETURN
+
+;スケジュール予定と今の予定が異なるなら色付け
+SETCOLOR 0x70FF00
+
+
+
+
+;違うけど酪農指定中+自動スケジュール予定が事務or大浴場掃除なら帰る
+;SIF ARGS == "酪農" && GROUPMATCH(AUTO_PLAN,"事務","大浴場掃除")
+;	RETURN
+
+

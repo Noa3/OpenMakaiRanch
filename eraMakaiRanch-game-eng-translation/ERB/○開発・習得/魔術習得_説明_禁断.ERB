@@ -1,0 +1,132 @@
+﻿
+;魔術説明
+;ARG→SELECT_ITEM
+@ITEM_DETAIL_FORBIDDEN_MAGIC(ARG)
+
+IF ARG < ITEM_ID_MIN || ARG >= ITEM_ID_MAX || ITEMNAME:ARG == ""
+	PRINTL  　《 Magic Description Displayed Here 》
+	RETURN
+ENDIF
+CALL ITEM_GET_ONCE_CHECK(ARG)
+IF FLAG:１コ限定アイテム
+	PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:ARG)% 》%VALUE_DIGIT(ITEMPRICE:ARG)%AP
+ELSE
+	PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:ARG)% 》%VALUE_DIGIT(ITEMPRICE:ARG)%AP（Base Value）:Currently Lv{ITEM:ARG}
+ENDIF
+SELECTCASE ITEMNAME:ARG
+CASE "時間圧縮"
+	PRINTL ＜アンロック＞
+	PRINTFORML 調教中：特殊魔術→コマンド【時間圧縮】（1ターンにつき使用ターン数×%VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP必要）
+	PRINTL
+	PRINTL 空間内部の時間の流れを変化させ、内部にいる者だけが世界の時間の流れを無視できる、
+	PRINTL 未だに原理がきちんと解明されていない大魔術。
+	PRINTFORML %CALLNAME:0%が使う場合、調教部屋の時間の流れを変化させて長い時間調教ができるようにする。
+	PRINTL
+	PRINTL 効果が有効な間、常に大量の魔力を使用する上に有効時間が長くなるほど維持する魔力も増大するのでほどほどに。
+	
+CASE "霊力注入"
+	PRINTL ＜アンロック＞
+	PRINTL 調教中：挿入派生コマンド【霊力注入】
+	PRINTL
+	PRINTFORML %CALLNAME:0%の%SAVESTR:表記／ペニス%から、力の源である霊力を精液に変えて奴隷に注入する。
+	PRINTL 射精される快楽効果はもちろん、奴隷の霊力が減っているならば注ぎ込んだ分霊力が回復し、
+	PRINTL 力の源を直接注ぎ込まれることで体力も回復する。
+	PRINTL
+	PRINTL さらに、奴隷の元々の霊力を搾り尽くしたことがあり、【隷属】状態であれば
+	PRINTFORML %CALLNAME:0%の最大霊力を上限に最大霊力量が増加するほか、最大体力も増加する。
+	PRINTL
+	PRINTL 少しずつ回復するとはいえ自分の力の源を他者に注ぎ込む、なんて普通はしようと思わない。
+	PRINTL そういう意味では一際異常な魔術である。
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL たっぷり霊力を注ぎ込んだ隷属奴隷を戦闘にけしかける、なんて使い方もできる。
+	ENDIF
+
+CASE "洗脳"
+	PRINTL ＜アンロック＞
+	PRINTFORML 調教中：特殊魔術→コマンド【洗脳】使用可能（1回%VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP必要）
+	PRINTL
+	PRINTL 奴隷の頭を専用の触手で覆い、脳に魔力を注ぎ込み強制的に服従させる。
+	PRINTL 従順な状態ではない場合、拘束するかHP0の状態にすることが必要。
+	PRINTL
+	PRINTL 洗脳された奴隷は完全服従状態となり、
+	PRINTL 陥落した奴隷と同様に従業員として作業させることができたり、奉仕なども一切反抗せず行えるが、
+	PRINTL 洗脳中は精神パラメータの変動が無効化されるため服従が進まない、好感度が上がらないため注意。
+	PRINTL
+	PRINTL 【洗脳】状態でもう1度使用すると解除されます。
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL 洗脳状態の維持に毎時間MPを消費するようになる可能性があります。
+	ENDIF
+	
+CASE "体内凌辱"
+	PRINTL ＜アンロック＞
+	PRINTL スケジュール：【体内凌辱】
+	PRINTL
+	PRINTFORML 奴隷を%CALLNAME:0%が魔力で作り出した体内空間に幽閉し、空間内に無数の触手を召喚して凌辱し続ける。
+	PRINTFORML 搾られた%SAVESTR:表記／母乳%も、含まれる霊力や魔力も全て%CALLNAME:0%のものになる。
+	PRINTFORML 体内に囚われた奴隷に与えられる休息は、%CALLNAME:0%の就寝中だけである。
+	PRINTL
+	PRINTL 特殊な状態になり、他のスケジュールや＜会いに行く＞が実行できなくなります。
+	PRINTL 体内凌辱状態になった後【解放】スケジュールを選ぶと解除されます。
+	PRINTL また想像を絶する快楽責めにより、スケジュール実行後にHP0の状態だと【虚脱】状態になります。
+	PRINTL 十分に休ませ、HPが全回復しないと奉仕や作業ができなくなるため注意。
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL 体内空間は多分4次元か何かなんだと思う。
+		PRINTL 一番激しくえっちだけど一番謎の原理の魔術。いいじゃんえっちなら。
+	ENDIF
+	
+CASE "体内容量増加"
+	PRINTL ＜Unlock＞
+	PRINTL スケジュール：【体内凌辱】の同時実行可能人数を増加
+	PRINTL
+	PRINTFORML ＜体内容量増加＞のLv+1匹の奴隷を%CALLNAME:0%の体内に幽閉できる。
+	PRINTL
+	PRINTFORML %SAVESTR:表記／魔力母乳%がいくらでも溢れ出る奴隷を何匹も体内で「飼う」ことで、
+	PRINTFORML 行動のたびに%CALLNAME:0%の魔力をたっぷりと回復する魔力バッテリーのように使うこともできる。
+	
+CASE "時間圧縮永続化"
+	PRINTL ＜Unlock＞
+	PRINTL コマンド【時間圧縮】の時間制限をなくす
+	PRINTL
+	PRINTL 読んで字の如く、時間圧縮が解除されるまで永遠に続く。
+	PRINTL 世界の時間を支配するに等しい禁断魔術のはずなのだけど、あなたが習得しても調教以外に使いそうもない。
+	
+CASE "魔王級戦闘技能"
+	PRINTL ＜アンロック＞
+	PRINTL 戦闘中：魔王級戦闘技能
+	PRINTL
+	PRINTL ＜ドラゴンインストール＞＜あくうせつだん＞＜『深海の蒸発』＞など、
+	PRINTL 物語の主人公かラスボスくらいにしか許されない程強力無比な戦闘技能の詰め合わせ。
+	PRINTL 詰め合わせのため、これを習得できる時点でニンゲンがイメージする「魔王」と呼んでも過言ではない。
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL このあたりからもう戦闘バランスを取る気がないんだなということを察してもらえると助かります。
+	ENDIF
+	
+CASE "厄災級戦闘魔法"
+	PRINTL ＜アンロック＞
+	PRINTL 戦闘中：厄災級戦闘魔法
+	PRINTL
+	PRINTL ＜ビッグバーン＞＜グランドクロス＞など、
+	PRINTL 気軽に使うような代物ではない程強力無比な「魔法」の詰め合わせ。
+	PRINTL こんなものをニンゲンを捕らえるために使うと役場にだいぶ怒られそうではある。
+	PRINTL
+	PRINTL どう扱おうかなと考えた結果ある程度の菌糸類リスペクトとして「魔術」と「魔法」を使い分けているため、
+	PRINTL 「魔法」と呼ぶ場合その魔法以外では到底不可能な事象を引き起こすタイプの技だったり
+	PRINTL あなたという1つの存在が引き起こしていい規模ではなかったりします。
+	PRINTL （作者は4次と5次のほんへ見たくらいの知識量なので間違ってる可能性もあります）
+	
+CASE "世壊級魔法"
+	PRINTL ＜アンロック＞
+	PRINTL 戦闘中：世壊級魔法
+	PRINTL
+	PRINTL 世界がヤバい戦闘用「魔法」を習得する。
+	PRINTL
+	PRINTL 某ロン毛のメテオを想像してください。ヤバいですね。そんなもん使うな。
+ENDSELECT
+
+
+
+

@@ -1,0 +1,138 @@
+﻿
+;名前による毛並みと性別補正
+@NAMING_PET_NAME_FIX
+
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	CALL NAMING_PET_NAME_FIX_HORSE
+CASE "オルトロス"
+	CALL NAMING_PET_NAME_FIX_DOG
+CASE "魔界ハムスター"
+	CALL NAMING_PET_NAME_FIX_HAMSTER
+ENDSELECT
+
+
+
+;ｳﾏﾁｬﾝ
+;候補に上がってるやつ以外はキリがないのでやめ
+@NAMING_PET_NAME_FIX_HORSE
+
+SELECTCASE PET_NAME
+CASE "シュナイダー","健太"
+	PET_GENDER = 1
+CASE "赤兎馬"
+	PET_COAT = 赤毛
+CASE "松風"
+	PET_COAT = 鹿毛
+CASE "グルファクシ"
+	PET_COAT = 金色
+CASE "牧場王"
+	PET_COAT = 白馬
+	PET_GENDER = 1
+CASE "マカマカ"
+	PET_COAT = 黒鹿毛
+	PET_GENDER = 0
+CASE "オダシ"
+	PET_COAT = 白馬
+	PET_GENDER = 0
+CASE "黒王号","カスタード"
+	PET_COAT = 黒毛
+	PET_GENDER = 1
+CASE "スイーツコウジョウ"
+	PET_COAT = 鹿毛
+	PET_GENDER = 0
+CASE "エポナ"
+	PET_COAT = 尾花栗毛
+	PET_GENDER = 0
+ENDSELECT
+
+
+
+;ｲﾇﾁｬﾝ
+@NAMING_PET_NAME_FIX_DOG
+
+SELECTCASE PET_NAME
+CASE "太郎","次郎"
+	PET_GENDER = 1
+CASE "銀牙"
+	PET_COAT = シルバー
+	PET_GENDER = 1
+CASE "ヘムヘム"
+	PET_COAT = クリーム
+	PET_GENDER = 1
+CASE "定春"
+	PET_COAT = ホワイト
+	PET_GENDER = 1
+CASE "ラッシュ"
+	PET_COAT = レッド
+	PET_GENDER = 1
+CASE "ゴスペル"
+	PET_COAT = パープル
+	PET_GENDER = 1
+CASE "ラテ","ムーンブルク"
+	PET_COAT = クリーム
+	PET_GENDER = 0
+CASE "パムパム"
+	PET_COAT = ブラウン
+	PET_GENDER = 0
+CASE "虎狼丸"
+	PET_COAT = グレー
+	PET_GENDER = 1
+CASE "インターセプター"
+	PET_COAT = ブラック
+	PET_GENDER = 1
+CASE "アンジェロ"
+	PET_COAT = ブラウン
+	PET_GENDER = 1
+CASE "ミルヒオーレ"
+	PET_COAT = ピンク
+	PET_GENDER = 0
+CASE "椛"
+	PET_COAT = ホワイト
+	PET_GENDER = 0
+ENDSELECT
+
+
+
+;ﾊﾑﾁｬﾝ
+@NAMING_PET_NAME_FIX_HAMSTER
+
+SELECTCASE PET_NAME
+CASE "アルジャーノン"
+	PET_COAT = ホワイト
+CASE "マカチュウ"
+	PET_COAT = イエロー
+CASE "公太郎","リック","ジェリー","ポテト"
+	PET_COAT = ノーマル
+	PET_GENDER = 1
+CASE "ハムスケ"
+	PET_COAT = ノーマル
+	PET_GENDER = 0
+CASE "ハム子"
+	PET_COAT = レッド
+	PET_GENDER = 0
+CASE "ねず子"
+	PET_COAT = ブラック
+	PET_GENDER = 0
+CASE "ナズーリン"
+	PET_COAT = グレー
+	PET_GENDER = 0
+CASE "ビカラ"
+	PET_COAT = ホワイト
+	PET_GENDER = 0
+CASE "ぽろり","チュウ兵衛"
+	PET_COAT = グレー
+	PET_GENDER = 1
+CASE "シロモ"
+	PET_COAT = ホワイト
+	PET_GENDER = 1
+CASE "アビー"
+	PET_COAT = クリーム
+	PET_GENDER = 1
+ENDSELECT
+
+
+
+
+
+

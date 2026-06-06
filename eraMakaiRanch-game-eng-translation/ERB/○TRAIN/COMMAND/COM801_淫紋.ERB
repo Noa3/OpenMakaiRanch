@@ -1,0 +1,69 @@
+﻿
+;淫紋付与
+@COM801
+
+PRINTFORML %CALLNAME:0%'s Mana：%VALUE_DIGIT(BASE:0:魔力)%MP 
+COST = MAGIC_USE_MP:GETNUM(ITEM,"淫紋付与")
+IF MARK:淫紋
+	CALL PRINTL_WORD_COLOR("【Lewd Crest】engraved","桃")
+
+;たぶん来ないはずではある
+ELSEIF !ITEM:淫紋付与
+	CALL PRINTL_WORD_COLOR("【Lewd Crest】","灰")
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP for【Lewd Crest】（%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSE
+	PRINTFORML [ 0] Carve 【Lewd Crest】：%VALUE_DIGIT(COST)%MP
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"絶頂体力回復淫紋")
+IF MARK:絶頂体力回復淫紋
+	CALL PRINTL_WORD_COLOR("【Health Recovering Climax Crest】engraved","桃")
+ELSEIF !ITEM:絶頂体力回復淫紋
+	CALL PRINTL_WORD_COLOR("【Health Recovering Climax Crest】","灰")
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP for【Health Recovering Climax Crest】（%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSEIF !MARK:淫紋
+	CALL PRINTL_WORD_COLOR("【Health Recovering Climax Crest】：【Lewd Crest】required","灰")
+ELSE
+	PRINTFORML [ 1] Carve【Health Recovering Climax Crest】：%VALUE_DIGIT(COST)%MP
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"絶頂魔力回復淫紋")
+IF MARK:絶頂魔力回復淫紋
+	CALL PRINTL_WORD_COLOR("【Mana Recovering Climax Crest】engraved","桃")
+ELSEIF !ITEM:絶頂魔力回復淫紋
+	CALL PRINTL_WORD_COLOR("【Mana Recovering Climax Crest】","灰")
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP for【Mana Recovering Climax Crest】（%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSEIF !MARK:魔力母乳体質
+	CALL PRINTL_WORD_COLOR("【Mana Recovering Climax Crest】：【Mana-Infused Milk】required","灰")
+ELSEIF !MARK:淫紋
+	CALL PRINTL_WORD_COLOR("【Mana Recovering Climax Crest】：【Lewd Crest】required","灰")
+ELSE
+	PRINTFORML [ 2] Carve【Mana Recovering Climax Crest】：%VALUE_DIGIT(COST)%MP
+ENDIF
+PRINTL
+PRINTL [99] Cancel
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	CALL COM502
+CASE 1
+	CALL COM581
+CASE 2
+	CALL COM582
+CASE 99
+	RETURN
+ENDSELECT
+RETURN 1
+
+
+
+
+
+
+
+
+

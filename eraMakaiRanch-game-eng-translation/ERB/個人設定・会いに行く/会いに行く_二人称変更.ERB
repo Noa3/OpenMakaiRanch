@@ -1,0 +1,11 @@
+﻿
+;二人称の変更
+@VISIT_CHANGE_MASTER_CALL
+
+CALL CHANGE_PERSONAL_CALL("陥落後のあなた呼び方")
+
+;RETURN99でキャンセル
+SIF RESULT == 99
+	RETURN
+CALL KOJO_PRINT("訪問","あなた呼び方変更")
+PRINTW

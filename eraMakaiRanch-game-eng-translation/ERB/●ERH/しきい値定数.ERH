@@ -1,0 +1,42 @@
+﻿
+;身長・バストサイズ・外見年齢のしきい値を定義しているファイルです。
+;調整したい場合、それぞれの=以降の数値をいい感じに変更してください。
+;高低の関係から外れた値にすると多分バグります。それを報告されても困る
+;セーブデータ作成後に変更すると多分バグります。当たり前だよなあ？
+
+;身長,単位mm
+#DIM CONST HEIGHT_MAX_妖精体型 = 499
+#DIM CONST HEIGHT_MAX_幼児体型 = 999
+#DIM CONST HEIGHT_MAX_子供体型 = 1299
+#DIM CONST HEIGHT_MAX_小柄 = 1399
+#DIM CONST HEIGHT_MAX_低身長 = 1499
+#DIM CONST HEIGHT_MAX_標準 = 1649
+#DIM CONST HEIGHT_MAX_高身長 = 1799
+#DIM CONST HEIGHT_MAX_大柄 = 1999
+
+;オトコ用
+#DIM CONST MALE_HEIGHT_MAX_低身長 = 1599
+#DIM CONST MALE_HEIGHT_MAX_標準 = 1749
+#DIM CONST MALE_HEIGHT_MAX_高身長 = 1999
+#DIM CONST MALE_HEIGHT_MAX_大柄 = 2299
+	;これ以上→巨躯
+
+;バストサイズ,AA(0)～Z(26)～ZZ(52)
+#DIM CONST BUSTSIZE_絶壁 = 0,		;変更しないこと
+#DIM CONST BUSTSIZE_貧乳 = 1
+#DIM CONST BUSTSIZE_並乳 = 3
+#DIM CONST BUSTSIZE_巨乳 = 5
+#DIM CONST BUSTSIZE_豊乳 = 8
+#DIM CONST BUSTSIZE_爆乳 = 12
+#DIM CONST BUSTSIZE_神乳 = 17
+#DIM CONST BUSTSIZE_魔乳 = 22
+#DIM CONST BUSTSIZE_超乳 = 27
+#DIM CONST BUSTSIZE_MAX = 52,		;変更しないこと
+
+;外見年齢,歳
+#DIM CONST VISUAL_AGE_MIN = 10,				;子供扱い時の下限
+#DIM CONST VISUAL_AGE_CHILD_MAX = 13,		;子供扱い時の上限
+#DIM CONST VISUAL_AGE_ADULT_MAX = 25,		;大人扱い時の上限
+
+
+

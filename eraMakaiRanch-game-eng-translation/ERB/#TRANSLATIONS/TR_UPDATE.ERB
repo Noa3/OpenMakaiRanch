@@ -1,0 +1,57 @@
+﻿
+; When adding a new EN_VERSION check, increase the assignment to EN_VERSION in EVENTFIRST as well
+@TR_UPDATE
+#DIM CHARACTER_ID
+
+IF EN_VERSION < 104
+	PRINTFORML This save was created before the merge for the JP Version 1.0.
+	EN_VERSION = 104
+	PRINTL [ 0] OK
+	INPUT
+ENDIF
+
+IF EN_VERSION < 105
+	; fix incorrect breast firmness
+	FOR CHARACTER_ID, 0, CHARANUM
+		SIF CSTR:(CHARACTER_ID):乳弾力 == "乳弾力"
+			CSTR:(CHARACTER_ID):乳弾力 = ぷにぷに
+		CONTINUE
+	NEXT
+	EN_VERSION = 105
+ENDIF
+
+IF EN_VERSION < 106
+	FOR CHARACTER_ID, 0, CHARANUM
+		IF GROUPMATCH(CSTR:(CHARACTER_ID):一人称,"my","私","俺", "僕", "ぼく", "わたし", "わたくし", "我", "われ")
+			CSTR:(CHARACTER_ID):一人称 = I
+		ELSEIF CSTR:(CHARACTER_ID):一人称 == @"%CALLNAME:CHARACTER_ID%ちゃん"
+			CSTR:(CHARACTER_ID):一人称 '= @"%CALLNAME:CHARACTER_ID%-chan"
+		ENDIF
+		
+		IF GROUPMATCH(CSTR:(CHARACTER_ID):一人称／蕩け,"my","私","俺", "僕", "ぼく", "わたし", "わたくし", "我", "われ")
+			CSTR:(CHARACTER_ID):一人称／蕩け = I
+		ELSEIF CSTR:(CHARACTER_ID):一人称／蕩け == @"%CALLNAME:CHARACTER_ID%ちゃん"
+			CSTR:(CHARACTER_ID):一人称／蕩け '= @"%CALLNAME:CHARACTER_ID%-chan"
+		ENDIF
+	NEXT
+	EN_VERSION = 106
+ENDIF
+
+
+
+
+IF EN_VERSION < 107
+	FOR CHARACTER_ID, 0, CHARANUM
+		CSTR:(CHARACTER_ID):あなた呼び方／陥落後 '= @"%MASTER_ENG(CSTR:(CHARACTER_ID):あなた呼び方／陥落後)%"
+		CSTR:(CHARACTER_ID):あなた呼び方／陥落後／蕩け '= @"%MASTER_ENG(CSTR:(CHARACTER_ID):あなた呼び方／陥落後／蕩け)%"
+		CSTR:(CHARACTER_ID):あなた呼び方／陥落前 '= @"%MASTER_ENG(CSTR:(CHARACTER_ID):あなた呼び方／陥落前)%"
+		CSTR:(CHARACTER_ID):あなた呼び方／陥落前／蕩け '= @"%MASTER_ENG(CSTR:(CHARACTER_ID):あなた呼び方／陥落前／蕩け)%"
+		CSTR:(CHARACTER_ID):あなた呼び方／甘え '= @"%MASTER_ENG(CSTR:(CHARACTER_ID):あなた呼び方／甘え)%"
+	NEXT
+
+	PRINTL Genital term translation updated. Characters created before this update might use different terms than characters created afterwards.
+	EN_VERSION = 107
+	PRINTL [ 0] OK
+	INPUT
+ENDIF
+

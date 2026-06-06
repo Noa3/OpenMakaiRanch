@@ -1,0 +1,154 @@
+﻿
+;CSVから読み込んだらすること
+;ARG→デフォルトキャラなどの場合に名前被りチェックスキップ
+@CSV_CHARA_ADD_FIX(ARG)
+
+;体力入れ忘れ対策
+IF BASE:体力 < 100
+	BASE:体力 = 1000
+	MAXBASE:体力 = 1000
+ENDIF
+
+;感度入れ忘れ対策
+FOR LOCAL,10,15
+	SIF ABL:LOCAL < 10
+		ABL:LOCAL = 100
+NEXT
+
+;母乳容量補正入れ忘れ対策
+SIF CFLAG:母乳容量補正値 < 10
+	CFLAG:母乳容量補正値 = 100
+
+;おっぱい
+CALL CSV_CHARA_BUST_FIX
+
+;身長
+CALL CSV_CHARA_HEIGHT_FIX
+
+;性経験が入っていればそれに合わせる
+CALL CSV_CHARA_VARGIN_FIX
+
+;性経験ありで経験人数0とかの辻褄が合わない部分がないように
+CALL CSV_CHARA_SEX_FIX
+
+;装備がある部分のIDを入れる
+CALL CHARA_EQUIP_REGISTER
+
+;このへん確実なのでいちいち書かなくてもいいように
+SIF TALENT:処女結界
+	CALL VARGIN_BARRIER
+SIF TALENT:先天的母乳体質
+	MARK:母乳体質 = 1
+SIF EXP:出産
+	MARK:母乳体質 = 1
+
+;戦闘力をわざわざ書かなくていいように毎回計算
+CALL CSV_CHARA_FIX_BATTLE
+
+;Ｎ感度はＢ感度以上
+CALL NIPPLE_SENSITIVE_FIX
+
+;カラーコードが入ってなければ自動セット
+SIF !CFLAG:カラーコード／髪
+	CALL AUTOSET_HAIR_COLOR_CODE
+SIF !CFLAG:カラーコード／右目
+	CALL AUTOSET_EYE_COLOR_CODE
+SIF !CFLAG:カラーコード／乳首
+	CALL AUTOSET_NIPPLE_COLOR_CODE
+SIF !CFLAG:カラーコード／口上
+	CALL KOJO_COLOR_SET_HAIR_COLOR_AUTO
+
+;イージーモードに合わせるか確認
+CALL CSV_CHARA_ADD_EASYMODE_FIX
+
+;蕩けなど必要
+;今回だけもう蕩け版設定されてたら上書きしない設定
+CALL SWEET_PERSON_CALL_ALL(1)
+CALL SWEET_GENITAL_CALL_ALL(1)
+
+;上書きしないカテゴリ処理
+CALL CHOICE_CATEGORY(1)
+CFLAG:追跡対象 = 1
+
+;被りチェック
+SIF !ARG
+	CALL CSV_COVERAGE_CHECK
+
+;初期装備色柄の部分は消去
+;CSTR:初期装備色柄／衣服→221
+VARSET CSTR,"",220,240
+
+
+
+;別関数にすると再計算しやすくて便利
+@CSV_CHARA_FIX_BATTLE
+
+;ランクを計算してあげる
+CFLAG:ランク = MAXBASE:レベル /10
+
+;体力・気力・霊力は0の場合計算してあげる
+;CSV読み込みは固定フラグがあるとスルー
+SIF !BASE:体力
+	CALL SLAVE_HP_CALC
+SIF !BASE:霊力 || !CFLAG:霊力固定
+	CALL CSV_SLAVE_EP_CALC
+SIF !BASE:気力 || !CFLAG:気力固定
+	CALL SLAVE_SP_CALC
+
+;魔力は0の場合あり
+SIF !CFLAG:魔力固定
+	CALL SLAVE_MP_CALC
+CALL SLAVE_BATTLE_POWER_CALC
+
+;回復回数も大技回数も0なら計算
+SIF !BASE:回復回数 && !BASE:大技回数
+	CALL SLAVE_BATTLE_SPECIAL_CALC
+
+
+
+;レベル固定で霊力計算
+@CSV_SLAVE_EP_CALC
+
+IF CFLAG:非戦闘職
+	MAXBASE:レベル = 1
+	BASE:レベル = 1
+	STATUS = 100
+ELSE
+	CALL LEVEL_EP_CALC
+ENDIF
+MAXBASE:霊力 = STATUS
+BASE:霊力 = MAXBASE:霊力
+
+
+
+;被りチェック
+@CSV_COVERAGE_CHECK
+#DIM CHECK_TARGET
+
+FOR CHECK_TARGET,0,CHARANUM -1
+	;出典作品名が異なる場合無視
+	SIF CSTR:出典作品名 != CSTR:CHECK_TARGET:出典作品名
+		CONTINUE
+	
+	;名前が異なる場合無視
+	SIF CALLNAME != CALLNAME:CHECK_TARGET
+		CONTINUE
+	CALL PRINTW_WORD_COLOR,@"！「%CALLNAME%」は既に存在しているため、名前・出典作品名をリセットした状態で読み込みます。","黄"
+	CALL CSV_TITLE_SOURCE_RESET
+	BREAK
+NEXT
+
+
+
+;キャラ出典のリセット
+@CSV_TITLE_SOURCE_RESET
+
+;出典・識別名など→CSTR:200～219
+VARSET CSTR,"",200,220
+CFLAG:専用設定／口上 = 0
+CFLAG:専用設定／イベント = 0
+CFLAG:専用設定／顔グラ表示関数 = 0
+CALLNAME =
+NAME =
+
+

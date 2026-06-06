@@ -1,0 +1,95 @@
+﻿
+;仕事能力増加
+@SELECT_WISH_WORK_ABL
+
+;ABL:酪農→20
+ABL_REF = 20
+ABL_MAX = 10
+PRINTFORML 増加させたい%CALLNAME%の仕事能力を選択してください。
+FOR LOCAL,ABL_REF,ABL_REF +ABL_MAX
+	ABL_NAME = %ABLNAME:LOCAL%
+	SIF ABL_NAME == ""
+		CONTINUE
+	IF ABL:LOCAL >= 99
+		CALL PRINTL_WORD_COLOR,@"【%ABL_NAME%】は最大です","水色"
+		CONTINUE
+	ENDIF
+	PRINTFORM [{LOCAL -ABL_REF,2}] 【%ABL_NAME%】：Lv{ABL:LOCAL}
+	SELECTCASE ABL_NAME
+	CASE "料理"
+		SIF TALENT:料理下手
+			CALL PRINT_WORD_COLOR("【料理下手】","黄")
+	CASE "掃除"
+		SIF TALENT:掃除下手
+			CALL PRINT_WORD_COLOR("【掃除下手】","黄")
+	CASE "接客"
+		SIF TALENT:接客下手
+			CALL PRINT_WORD_COLOR("【接客下手】","黄")
+	ENDSELECT
+	PRINTL
+NEXT
+PRINTL
+PRINTL [99] Cancel
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0 TO 9
+	ABL_NUM = ABL_REF +RESULT
+	ABL_NAME = %ABLNAME:ABL_NUM%
+	IF ABL:ABL_NUM < 10
+		PRINTFORML %CALLNAME%の【%ABL_NAME%】をLv10まで増加させますか？
+		
+		;下手素質がある場合消去できる
+		SELECTCASE ABL_NAME
+		CASE "料理"
+			SIF TALENT:料理下手
+				CALL PRINTL_WORD_COLOR("同時に素質【料理下手】が消去されます。","黄")
+		CASE "掃除"
+			SIF TALENT:掃除下手
+				CALL PRINTL_WORD_COLOR("同時に素質【掃除下手】が消去されます。","黄")
+		CASE "接客"
+			SIF TALENT:接客下手
+				CALL PRINTL_WORD_COLOR("同時に素質【接客下手】が消去されます。","黄")
+		ENDSELECT
+	ELSE
+		PRINTFORML %CALLNAME%の【%ABL_NAME%】のLvを3増加させますか？
+	ENDIF
+	CALL ASK_YN
+	SIF RESULT
+		RETURN
+	IF ABL:ABL_NUM < 10
+		ABL:ABL_NUM = 10
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME%の【%ABL_NAME%】がLv{ABL:ABL_NUM}になった！","黄"
+		
+		;EXPの番号も同じ
+		EXP:ABL_NUM = 100000
+		SELECTCASE ABL_NAME
+		CASE "料理"
+			IF TALENT:料理下手
+				TALENT:料理下手 = 0
+				CALL PRINTL_WORD_COLOR("素質【料理下手】がなくなった！","黄")
+			ENDIF
+		CASE "掃除"
+			IF TALENT:掃除下手
+				TALENT:掃除下手 = 0
+				CALL PRINTL_WORD_COLOR("素質【掃除下手】がなくなった！","黄")
+			ENDIF
+		CASE "接客"
+			IF TALENT:接客下手
+				TALENT:接客下手 = 0
+				CALL PRINTL_WORD_COLOR("素質【接客下手】がなくなった！","黄")
+			ENDIF
+		ENDSELECT
+	ELSE
+		ABL:ABL_NUM = LIMIT(ABL:ABL_NUM +3,0,99)
+		EXP:ABL_NUM = LIMIT(EXP:ABL_NUM +30000,0,990000)
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME%の【%ABL_NAME%】がLv{ABL:ABL_NUM}になった！","黄"
+	ENDIF
+	PRINTW
+	ITEM:龍のタマ = 0
+ENDSELECT
+
+
+
+
+

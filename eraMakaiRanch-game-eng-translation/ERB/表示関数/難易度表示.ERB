@@ -1,0 +1,54 @@
+﻿
+;難易度表示
+@PRINT_DIFFICULTY
+
+CALL PRINT_DIFFICULTY_CALC
+PRINT Current Difficulty：
+CALL PRINTL_WORD_COLOR,@"%SAVESTR:難易度%","黄"
+
+
+
+;セーブデータに表示する難易度を判定
+@PRINT_DIFFICULTY_CALC
+#DIM HARD_NUM
+
+SAVESTR:難易度 = [
+
+;EXモードのときEX
+SIF FLAG:EXモード
+	SAVESTR:難易度 += "EX_"
+
+;開発者モードの場合
+IF FLAG:開発者モード
+	SAVESTR:難易度 += "DEVELOP"
+
+;カスタマイズ設定がある
+;FLAG:カスタマイズ／母乳出荷価格→3500
+ELSEIF SUMARRAY(FLAG,3500,3600)
+	SAVESTR:難易度 += "CUSTOM"
+
+;イージーモード設定が1つでもある
+;FLAG:奴隷候補全員先天的母乳体質→3600
+ELSEIF SUMARRAY(FLAG,3600,3700)
+	SAVESTR:難易度 += "EASY"
+
+;ハードモード設定の対応数で変化予定
+;ハードモード設定が1つでもある
+;FLAG:ランダムキャラのみ許可→3700
+ELSEIF SUMARRAY(FLAG,3700,3800)
+	SAVESTR:難易度 += "HARD"
+
+;どれにも当てはまらないならノーマル
+ELSE
+	SAVESTR:難易度 += "NORMAL"
+ENDIF
+
+;周回数が2以上の場合周回数表示
+IF FLAG:周回数 >= 2
+	SAVESTR:難易度 += "_"
+	SAVESTR:難易度 += TOSTR(FLAG:周回数)
+ENDIF
+SAVESTR:難易度 += "]"
+
+
+

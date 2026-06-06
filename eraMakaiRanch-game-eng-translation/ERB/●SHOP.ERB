@@ -1,0 +1,353 @@
+﻿
+;メイン画面
+@SHOW_SHOP
+
+; just in case it ever gets stuck on 1 after training (should never happen)
+SKIP_COM_ABLE = 0
+
+;部屋数とか計算
+CALL CALC_PEOPLE_FLAG
+
+;居場所を確認
+CALL CHARA_WHEREABOUTS_ALL
+
+;ここでだけスケジュールの可不可判定すればOK
+CALL SCHEDULE_POSSIBLE
+
+;淫乳の人数をカウント　同じくここでだけでOK
+FLAG:淫乳奴隷存在 = CMATCH(MARK:淫乳,1)
+TARGET = -1
+
+;夜のデータをロードした場合
+IF TIME >= 3
+	CALL MANYL(5)
+	PRINTL Specify Night Action
+	PRINTL [ 0] OK
+	RETURN
+ENDIF
+
+;スケジュールを実行可能かここで見る
+CALL SCHEDULE_JUDGE
+CALL MANYL(5)
+
+;多少の自動ヒントを出しとく
+CALL TUTORIAL_TIPS_SHOP
+
+;簡易牧場情報
+CALL SHOW_RESOURCE_MAIN
+
+;全員のスケジュール
+CALL ALL_SCHEDULE_PRINT
+
+;ボタン表示
+;スケジュール→実行不可なら！
+SETCOLOR FLAG:カラーコード／メイン画面強調選択肢
+IF !JUDGE_NG
+	PRINTLC [  0] Execute Schedule
+ELSE
+	PRINTLC [  0] ！Execute Schedule
+ENDIF
+RESETCOLOR
+IF CSTR:0:スケジュール != "行動済み"
+	PRINTLC [  1] Training Target
+ELSE
+	CALL PRINTLC_WORD_COLOR("　　　Training Target","灰")
+ENDIF
+PRINTLC [  2] Batch Schedule Change
+PRINTL
+PRINTLC 　
+
+;マイルストーン1つ達成が必要
+CALL MILESTONE_UNLOCK_CHECK("街へ移動","LC")
+
+;RETURN1したら表示、ロック表示は内部でやってる
+IF RESULT
+	IF TIME > 0 && FLAG:事務作業量 < 20
+		PRINTLC [  3] Visit City
+	ELSE
+		CALL PRINTLC_WORD_COLOR("　Visit City","灰")
+	ENDIF
+ENDIF
+PRINTLC [  4] Development and Acquisition
+PRINTLC [  5] Display Settings
+PRINTLC [  6] Management
+PRINTLC [  7] Tips
+
+;拡張メニュー表示がONなら追加
+SIF FLAG:メイン／拡張メニュー表示
+	CALL PRINT_MORE_MENU
+PRINTL
+DRAWLINE
+PRINTLC [ 90] Save／Load
+PRINTLC [ 91] Options
+PRINTFORMLC [ 92] Extended Menu\@ FLAG:メイン／拡張メニュー表示 ? ▲ # ▼ \@
+PRINTL
+
+
+
+;拡張メニュー
+@PRINT_MORE_MENU
+
+PRINTL
+CALL HALFLINE
+PRINTFORMLC [ 50] Status Display（{FLAG:一覧ステータス切り替え +1}／{TABLE_STATUS_PAGE}）
+CALL MILESTONE_UNLOCK_CHECK("奴隷捕獲","LC")
+IF RESULT
+	IF !TIME
+		CALL PRINTLC_WORD_COLOR("Ningen in Makai","灰")
+	ELSE
+		PRINTLC [ 51] Ningen in Makai
+	ENDIF
+ENDIF
+PRINTLC [ 52] Ranch Information
+PRINTL
+
+CALL MILESTONE_UNLOCK_CHECK("料理当番","LC")
+SIF RESULT
+	PRINTLC [ 53] Cooking Duty
+CALL MILESTONE_UNLOCK_CHECK("部屋割り","LC")
+IF RESULT
+	IF FLAG:時刻制限／部屋割り変更
+		CALL PRINTLC_WORD_COLOR("　Room Assignment","灰")
+	ELSE
+		PRINTLC [ 54] Room Assignment
+	ENDIF
+ENDIF
+CALL MILESTONE_UNLOCK_CHECK("掃除当番","LC")
+SIF RESULT
+	PRINTLC [ 55] Cleaning Duty
+PRINTL
+
+CALL MILESTONE_UNLOCK_CHECK("事業提携","LC")
+IF RESULT
+	IF TIME
+		PRINTLC [ 56] Visit Business Partner
+	ELSE
+		CALL PRINTLC_WORD_COLOR("　Visit Business Partner","灰")
+	ENDIF
+ENDIF
+PRINTLC [ 57] Milestones
+PRINTL
+PRINTLC [ 80] Slave Search
+PRINTLC [ 81] Slave List
+PRINTFORMLC [ 82] Slave Hidden Setting：\@ FLAG:メイン／奴隷非表示 ? ON # OFF \@
+
+
+
+@USERSHOP
+;SHOW_SHOP呼び出し後0～99が入力されると購入処理、それ以外が入力されると@USERSHOPを呼び出す
+;この範囲は_replace.csvによって変更可能である
+;各種メニューから戻ってきたときに画面クリアしようかな？
+
+PRINTL
+IF TIME == 3
+	CALL NIGHT_PHASE
+	RETURN
+ENDIF
+SELECTCASE RESULT
+CASE 0
+	CALL MAIN_PHASE
+CASE 1
+	SAVE_TARGET = 0
+	SIF CSTR:0:スケジュール != "行動済み"
+		CALL TRAIN_SLAVE_SELECT
+
+CASE 2
+	CALL BULK_SCHEDULE
+CASE 3
+	CALL SHOPPING_MOVE_SELECT
+	
+	;街へ行ける状態ならFLAG:外出済みが1以上
+	SIF FLAG:外出済み
+		CALL TOWN
+CASE 4
+	CALL UPGRADE_INDEX
+CASE 5
+	CALL CHANGE_TABLE_STATUS
+CASE 6
+	CALL SELECT_INFORMATION
+CASE 7
+	CALL BROWSE_HINT("メインメニュー")
+CASE 20 TO 29
+	CALL COWSHED_MANAGE_ENTRANCE(RESULT -19)
+CASE 30 TO 39
+	INVERTBIT FLAG:メイン／折りたたみBIT,(RESULT -30)
+CASE 50
+	FLAG:一覧ステータス切り替え ++
+	SIF FLAG:一覧ステータス切り替え >= TABLE_STATUS_PAGE
+		FLAG:一覧ステータス切り替え = 0
+CASE 51
+	CALL MILESTONE_UNLOCK_CHECK("奴隷捕獲","")
+	SIF RESULT && TIME
+		CALL PRINT_SLAVE_CANDIDATE
+	
+CASE 52
+	CALL RANCH_STATUS
+CASE 53
+	SIF ITEM:システムキッチン
+		CALL DINNER_DUTY_LIST
+CASE 54
+	CALL MILESTONE_UNLOCK_CHECK("部屋割り","")
+	SIF RESULT && !FLAG:時刻制限／部屋割り変更
+		CALL ROOM_ALLOCATION
+CASE 55
+	CALL MILESTONE_UNLOCK_CHECK("掃除当番","")
+	SIF RESULT
+		CALL CLEANING_DUTY_LIST
+CASE 56
+	CALL MILESTONE_UNLOCK_CHECK("事業提携","")
+	SIF RESULT && TIME
+		CALL BUISINESS_PARTNER
+CASE 57
+	CALL MILESTONE_TABLE
+CASE 80
+	CALL SLAVE_SEARCH(1)
+CASE 81
+	CALL SLAVE_SORT
+CASE 82
+	INVERTBIT FLAG:メイン／奴隷非表示,0
+CASE 90
+	CALL SAVE_MENU
+CASE 91
+	CALL OPTION
+CASE 92
+	INVERTBIT FLAG:メイン／拡張メニュー表示,0
+ENDSELECT
+IF RESULT >= 100 && RESULT < 100 +CHARANUM
+	TARGET = RESULT -100
+	CALL SCHEDULE_PLAN("メインメニュー")
+	TARGET = -1
+ENDIF
+
+
+
+;各種情報・設定
+@SELECT_INFORMATION
+
+CALL MANYL(5)
+CALL HALFLINE
+PRINT [ 0] Automatic selection when drinking stored milk.　　Now：
+SELECTCASE FLAG:自動選択／保管ミルク
+CASE 0
+	PRINT Ask
+CASE -1
+	PRINT Random
+CASE -2
+	PRINT Never
+CASEELSE
+	FINDCHARA CFLAG:ID,FLAG:自動選択／保管ミルク,1
+	PRINTFORM Always drink %CALLNAME:RESULT%'s %SAVESTR:表記／母乳%
+ENDSELECT
+PRINTL
+
+;牧場情報から移動
+CALL MILESTONE_UNLOCK_CHECK("バッテリー経費削減","L")
+IF RESULT
+	PRINTFORM [ 1] Use Mana Batteries To Reduce Costs
+	CALL PRINT_ONOFF(FLAG:魔力バッテリー経費使用,1)
+ENDIF
+CALL MILESTONE_UNLOCK_CHECK("調合","L")
+IF RESULT
+	IF FLAG:調合中薬品ID
+		PRINTL [ 2] Cancel Drug Mixing
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"　No Drug Mixing Orders","灰"
+	ENDIF
+ENDIF
+CALL RANCH_STATUS_MPCHARGER
+CALL CONFIRM_SHOPPING_MOVE
+
+PRINTL
+CALL MILESTONE_UNLOCK_CHECK("奴隷捕獲","L")
+IF RESULT
+	IF !TIME
+		CALL PRINTL_WORD_COLOR("Ningen in Makai","灰")
+	ELSE
+		PRINTL [51] Ningen in Makai
+	ENDIF
+ENDIF
+PRINTL [52] Ranch Information
+CALL MILESTONE_UNLOCK_CHECK("料理当番","L")
+SIF RESULT
+	PRINTL [53] Cooking Duty
+CALL MILESTONE_UNLOCK_CHECK("部屋割り","L")
+IF RESULT
+	IF FLAG:時刻制限／部屋割り変更
+		CALL PRINTL_WORD_COLOR("　部屋割り変更：時間を進めると再度変更可能","灰")
+	ELSE
+		PRINTL [54] Room Assignment
+	ENDIF
+ENDIF
+CALL MILESTONE_UNLOCK_CHECK("掃除当番","L")
+SIF RESULT
+	PRINTL [55] Cleaning Duty
+CALL MILESTONE_UNLOCK_CHECK("事業提携","L")
+IF RESULT
+	IF TIME
+		PRINTL [56] Visit Business Partner
+	ELSE
+		CALL PRINTL_WORD_COLOR("　Visit Business Partner only possible during Midday and Evening","灰")
+	ENDIF
+ENDIF
+PRINTL [57] Milestones
+PRINTL
+PRINTL [80] Slave Search
+PRINTL [81] Slave List
+PRINTFORML [82] Slave Hidden Setting：\@ FLAG:メイン／奴隷非表示 ? ON # OFF \@
+
+CALL HALFLINE
+PRINTL [99] Cancel
+BINPUT
+SELECTCASE RESULT
+CASE 0 TO 4
+	CALL RANCH_SETTING(RESULT)
+CASE 51
+	CALL PRINT_SLAVE_CANDIDATE
+CASE 52
+	CALL RANCH_STATUS
+CASE 53
+	CALL DINNER_DUTY_LIST
+CASE 54
+	CALL ROOM_ALLOCATION
+CASE 55
+	CALL CLEANING_DUTY_LIST
+CASE 56
+	CALL BUISINESS_PARTNER
+CASE 57
+	CALL MILESTONE_TABLE
+CASE 80
+	CALL SLAVE_SEARCH(1)
+CASE 81
+	CALL SLAVE_SORT
+CASE 82
+	INVERTBIT FLAG:メイン／奴隷非表示,0
+	IF FLAG:メイン／奴隷非表示
+		PRINTW Applied Hide Slave Settings
+	ELSE
+		PRINTW Disabled Hide Slave Settings
+	ENDIF
+ENDSELECT
+
+
+
+;セーブ画面
+@SAVE_MENU
+
+CALL MANYL(5)
+PRINTLC [ 0] Save
+PRINTLC [ 1] Load
+PRINTL [ 2] Edit Saved Data Display
+DRAWLINE
+PRINTL [99] Done
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL SAVEGAME_EX
+CASE 1
+	CALL LOADGAME_EX
+CASE 2
+	CALL PRINT_SAVEDATA_ITEM_CONFIG
+ENDSELECT
+
+
+

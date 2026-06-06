@@ -1,0 +1,68 @@
+﻿
+;部屋割り変更
+@ROOM_ALLOCATION
+#DIM DYNAMIC PAGE
+
+PAGE_MAX = (CHARANUM -2)/20 +1
+SIF PAGE < 1
+	PAGE = 1
+CLEARLINE LINECOUNT
+PRINTL Please select the slave to assign to your personal or dorm room. Assigning a room will make them a 【staff member】.
+PRINTL (Enables work scheduling, increases recovery during breaks, and slightly raises living expenses)
+PRINTL
+
+;人数数えて牧場情報と共通部分
+CALL CALC_PEOPLE_FLAG
+CALL PRINT_ROOM_ALLOCATION
+DRAWLINE
+FOR TARGET_COUNT,1,21
+	SIF TARGET_COUNT +(PAGE -1)*20 >= CHARANUM
+		BREAK
+	TARGET = TARGET_COUNT +(PAGE -1)*20
+	IF CFLAG:追跡対象
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME_DIGIT(4)%：Uncaptured","灰"
+	ELSEIF CSTR:居場所 == "体内"
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME_DIGIT(4)%：Inside your body","灰"
+	ELSEIF CSTR:状態／あなたの子 == "成長中"
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME_DIGIT(4)%：Growing daughters cannot change rooms","灰"
+	ELSE
+		PRINTFORM [{TARGET +100}] %CALLNAME_DIGIT()%
+		CALL PRINT_POST_C
+		CALL TABLE_STATUS("部屋割り変更")
+		SIF !LINEISEMPTY()
+			PRINTL
+	ENDIF
+NEXT
+CALL PRINTL_ALIGN(-5)
+CALL PRINT_NOW_PAGE(PAGE,1)
+PRINTFORMLC [  8] Change Display Stats
+PRINTLC 　
+PRINTL [ 99] Done
+BINPUT
+SELECTCASE RESULT
+CASE 8
+	CALL CHANGE_TABLE_STATUS
+CASE 80
+	PAGE --
+	SIF PAGE < 1
+		PAGE = PAGE_MAX
+CASE 81
+	PAGE ++
+	SIF PAGE > PAGE_MAX
+		PAGE = 1
+CASE 99
+	RETURN
+
+CASEELSE
+	TARGET = RESULT -100
+	CALL VISIT_ALLOCATION_ROOM
+ENDSELECT
+RESTART
+
+
+
+
+
+
+
+

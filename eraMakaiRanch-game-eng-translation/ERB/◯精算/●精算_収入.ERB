@@ -1,0 +1,21 @@
+﻿
+;収入計算
+@INCOME_CALC
+
+PRINTL 　　　《 Income 》
+PRINTFORML Makaian Cattle Milk：%VALUE_DIGIT(MONEY:魔界乳牛ミルク出荷予定金額)%G
+MONEY_SELL:1 += MONEY:魔界乳牛ミルク出荷予定金額
+MONEY:魔界乳牛ミルク出荷予定金額 = 0
+
+;奴隷のミルク価格は別関数にする
+CALL MILK_PRICE_CALC
+
+;事業提携先からの報酬
+CALL PARTNER_REWORD_CALC
+
+;合計
+MONEY_SELL:0 = SUMARRAY(MONEY_SELL)
+PRINTFORML ＜Total Income：%VALUE_DIGIT(MONEY_SELL:0)%G ＞
+PRINTL
+
+

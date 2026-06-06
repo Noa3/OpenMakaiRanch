@@ -1,0 +1,38 @@
+﻿
+;体内凌辱から調教に移ったとき
+@VORE_SEX_DIRECT_TRAIN
+
+PALAM:Ｖ潤滑 += 50000
+PALAM:Ａ潤滑 += 50000
+
+;全身に粘液
+FOR LOCAL,0,12
+	SETBIT STAIN:LOCAL,5
+NEXT
+IF BASE:母乳生産力
+	SETBIT STAIN:乳房,0
+	SETBIT STAIN:乳首,0
+ENDIF
+
+PRINTFORML %CALLNAME%, covered in slime, was pulled out from %CALLNAME:0%'s body...
+CALL KOJO_PRINT("スケジュール","調教","体内凌辱から出す")
+IF CFLAG:崩壊
+    PRINTFORML %CALLNAME%'s eyes are lifeless, and her reactions are dull, but she can still enjoy it...
+ELSEIF ＃陥落状態／隷属＃
+    PRINTFORML Seeing 『%CSTR:あなた呼び方／陥落後%』 has only made %CALLNAME% even more aroused...
+ELSEIF CFLAG:乳牛
+    PRINTFORML %CALLNAME% seemed confused when the exquisite milking pleasure stopped, 
+    PRINTFORML but when she realized %CALLNAME:0% would personally provide it, she began to leak fluids again...
+ELSEIF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+    PRINTFORML %CALLNAME% felt relieved just by seeing %CALLNAME:0%'s presence...
+ELSEIF ＃陥落状態／拒絶以上＃
+    PRINTFORML Desperately clinging to %CALLNAME:0%, she's crying, begging not to be sent back there...
+ELSE
+    PRINTFORML %CALLNAME% understands that her fate, whether to return to that hell of pleasure or not, lies in %CALLNAME:0%'s hands, and her spirit is on the verge of breaking...
+ENDIF
+CALL KOJO_PRINT("スケジュール","調教","体内凌辱から調教開始")
+PRINTW
+
+
+
+

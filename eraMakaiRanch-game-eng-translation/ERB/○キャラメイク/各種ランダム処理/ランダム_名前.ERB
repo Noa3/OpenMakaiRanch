@@ -1,0 +1,57 @@
+﻿
+;奴隷候補の名前
+@RANDOM_SLAVE_NAME
+
+STR_MAX = 999
+
+;どの国っぽい名前を使うか
+FIX = RAND:7
+
+;ランダムネーム優先設定があれば上書き
+;0は優先なしに使用してるので-1するよ
+SIF FLAG:ランダムネーム優先設定
+	FIX = FLAG:ランダムネーム優先設定 -1
+
+;日本っぽいジョブで日本名優先設定してれば上書き
+IF GROUPMATCH(CSTR:ジョブ,"巫女","退魔巫女","くのいち","サムライ","武将","陰陽師")
+	SIF RAND:100 < FLAG:日本っぽいジョブの日本名率
+		FIX = 0
+ENDIF
+STR_REF = 10000 +FIX *1000
+CALL STR_REF_SHUFFLE(STR_REF)
+
+; Custom random name override
+CALL CREATE_NAME_LIST
+IF FIX == 0
+	CALL GENERATE_NAME_JF
+	CALLNAME = %RESULTS%
+ELSE
+	SELECTCASE RAND:4 ; make the naming more random (50% JP at this rate)
+	CASE 0,1
+		CALL GENERATE_NAME_JF
+		CALLNAME = %RESULTS%
+	CASE 2
+		CALL GENERATE_NAME_KF
+		CALLNAME = %RESULTS%
+	CASE 3
+		CALL GENERATE_NAME_CF
+		CALLNAME = %RESULTS%
+	ENDSELECT
+ENDIF
+
+
+;名前が重複していないかチェック
+;CHARANUM-1にすれば現在のキャラとの比較になる
+;優先設定つけたので無限ループの可能性考慮して5回まで
+FOR TARGET_COUNT,0,CHARANUM -1
+	IF  SHUFFLE_COUNT < 5 && RESULTS == CALLNAME:TARGET_COUNT
+		SHUFFLE_COUNT ++
+		RESTART
+	ENDIF
+NEXT
+SHUFFLE_COUNT = 0
+CALLNAME = %RESULTS%
+
+
+
+

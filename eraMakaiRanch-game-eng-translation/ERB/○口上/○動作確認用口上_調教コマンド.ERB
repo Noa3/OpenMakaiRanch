@@ -1,0 +1,712 @@
+﻿
+;動作確認用口上
+;ほんとに動作確認用なのでえっちも何もあったもんじゃない
+;この口上だけ「候補全部表示する」処理をするよ
+; ======================================
+
+;動作確認用口上
+;口上識別名：動作確認用口上
+;口上作者：polt
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：
+;↑加筆も何もない
+; ======================================
+
+;ARGS:0　シチュ指定　ARGS:1～　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_動作確認用口上_TRAIN(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+;ここに来てる場合ARGS:0は"調教コマンド"固定
+;調教コマンドごとにシチュ指定で振り分けするよ　名称はTRAIN.csv参照
+;現状の仕様は@COMに書かれた地の文→口上になる
+
+SELECTCASE ARGS:1
+CASE "実行後"
+	IF SOURCE:処女喪失
+		CALL MESSAGE_BOX,@"「test_今回のコマンドで処女喪失していると表示されます」"
+		RETURN
+	ELSEIF SOURCE:Ａ処女喪失
+		CALL MESSAGE_BOX,@"「test_今回のコマンドでＡ処女喪失していると表示されます」"
+		RETURN
+	ELSEIF SOURCE:Ｍ処女喪失
+		CALL MESSAGE_BOX,@"「test_今回のコマンドでＭ処女喪失していると表示されます」"
+		RETURN
+	ELSEIF SOURCE:初パイズリ
+		CALL MESSAGE_BOX,@"「test_今回のコマンドで初めてパイズリしていると表示されます」"
+		RETURN
+	ELSEIF SOURCE:初キス
+		CALL MESSAGE_BOX,@"「test_今回のコマンドで初めてキスしていると表示されます」"
+		RETURN
+	ENDIF
+	CALL MESSAGE_BOX,@"「test_時間経過する調教コマンドを実行した時にコマンドに関わらず表示判定の入る口上です」"
+
+CASE "乳揉み","育乳マッサージ","濃厚母乳マッサージ","ミルクタンクマッサージ"
+	;ここからバリエーションでの振り分けをするよ　振り分けが多いほどたのしいけど大変だよ
+	;振り分け方はそれぞれだけど好感度状態などから振り分けるのが楽かなあ
+	
+	;まず『初回処理』かどうかを見てみよう　EXP:(SELECTCOM +1000) ++　という命令を口上表示『後』にしてます
+	;よってこの値が0なら『このキャラはこのコマンドを使ったことがない』ってことだね
+	;細かいことはさておき下のIF文で初回処理ができます
+	;隷属乳牛になるまで乳揉みしたことないことは…搾ってばかりならありそう
+	;\nを書くとそこで改行されるよ　プログラムの仕様上Enter改行はNGよ
+	;CALLを2回すると『どちらかしか表示されない』ので改行目的だとこれもNGよ
+	
+	;初回処理
+	IF !EXP:(SELECTCOM+1000)
+		CALL MESSAGE_BOX,@"「test_調教コマンド【乳揉み】を初めて行った時の口上です」"
+	ELSE
+		CALL MESSAGE_BOX,@"「test_調教コマンド【乳揉み】の2回目以降の口上です」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「test_バストサイズが【豊乳】以上の場合候補に入ります」"
+		SIF ABL:バストサイズ < BUSTSIZE_並乳
+			CALL MESSAGE_BOX,@"「test_バストサイズが【貧乳】以下の場合候補に入ります」"
+		SIF EX:Ｂ絶頂 >= 100
+			CALL MESSAGE_BOX,@"「test_この調教中にＢ絶頂を100回以上している場合候補に入ります」"
+		SIF !TFLAG:Ｎ露出
+			CALL MESSAGE_BOX,@"「test_【胸露出】ではない場合候補に入ります」"
+		
+		;調教中は汚れがあるか参照できる　GETBIT(STAIN:乳房,4)で「おっぱいにローションが付着してるか」を判定
+		;詳しくはStain.csv見てもらえれば
+		SIF GETBIT(STAIN:乳房,4)
+			CALL MESSAGE_BOX,@"「test_ローションを乳房に塗っている場合候補に入ります」"
+	ENDIF
+	
+CASE "乳搾り"
+	IF MARK:母乳体質
+		CALL MESSAGE_BOX,@"「test_調教コマンド【乳搾り】を【母乳体質】で行った場合の口上です」"
+		SIF ABL:搾乳中毒 >= 10
+			CALL MESSAGE_BOX,@"「test_調教コマンド【乳搾り】を【母乳体質】で行った場合、【搾乳中毒】がLv10以上の時候補に入ります」"
+	ELSE
+		CALL MESSAGE_BOX,@"「test_調教コマンド【乳搾り】を【母乳体質】ではない時に行った場合の口上です」"
+	ENDIF
+
+CASE "乳首つまみ"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【乳首つまみ】の口上です」"
+
+CASE "Ｃ愛撫"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【Ｃ愛撫】の口上です」"
+	SIF ABL:Ｃ感度 >= 200 || ABL:Ｃ感覚 >= 10
+		CALL MESSAGE_BOX,@"「test_調教コマンド【Ｃ愛撫】実行時Ｃ感度200\%以上、またはＣ感覚がLv10以上で候補に入ります」"
+
+CASE "Ｖ指挿れ"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【Ｖ指挿れ】の口上です」"
+
+CASE "Ａ指挿れ"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【Ａ指挿れ】の口上です」"
+	IF PALAM:Ａ潤滑 >= 5000
+		CALL MESSAGE_BOX,@"「test_調教コマンド【Ａ指挿れ】実行時、Ａ潤滑が5000以上で候補に入ります」"
+	ELSE
+		CALL MESSAGE_BOX,@"「test_調教コマンド【Ａ指挿れ】実行時、Ａ潤滑が5000未満で候補に入ります」"
+	ENDIF
+
+CASE "尻撫で"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【尻撫で】の口上です」"
+	
+CASE "乳撫で"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【乳撫で】の口上です」"
+	
+CASE "くすぐり"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【くすぐり】の口上です」"
+	
+;似たコマンドで共通の口上でOKの場合コンマ区切りでいい　初回判定はそれぞれで出ちゃうけども
+CASE "乳吸い","母乳吸い尽くし"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【乳吸い】【母乳吸い尽くし】の口上です」"
+	
+	;搾乳処理の前に調教口上表示が来るので現在母乳量を見ることが可能
+	IF BASE:母乳容量
+		CALL MESSAGE_BOX,@"「test_調教コマンド【乳吸い】【母乳吸い尽くし】実行時、母乳容量が0ではない場合候補に入ります」"
+	ELSE
+		CALL MESSAGE_BOX,@"「test_調教コマンド【乳吸い】【母乳吸い尽くし】実行時、母乳容量が0の場合候補に入ります」"
+	ENDIF
+	
+CASE "乳首しゃぶり","乳揉み吸い","直飲み触手複合搾乳"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【乳首しゃぶり】【乳揉み吸い】【直飲み触手複合搾乳】の口上です」"
+	CALL MESSAGE_BOX,@"「test_カンマで区切ると似たコマンドで同じ口上を使えますが、\n　1000番台EXPの記述を使うとそれぞれに対し初回判定が入るのでご了承ください」"
+	
+CASE "キス"
+	SIF TALENT:キス未経験
+		RETURN
+	CALL MESSAGE_BOX,@"「test_調教コマンド【キス】の口上です」"
+	CALL MESSAGE_BOX,@"「test_ファーストキスの口上は【イベント】で呼び出すため、【キス未経験】の場合何もせずRETURNしてください」"
+	
+CASE "Ｃ舐め"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【Ｃ舐め】の口上です」"
+	
+CASE "Ｖ舐め"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【Ｖ舐め】の口上です」"
+	
+CASE "Ａ舐め"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【Ａ舐め】の口上です」"
+	
+CASE "乳舐め"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【乳舐め】の口上です」"
+	
+CASE "耳舐め"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【耳舐め】の口上です」"
+	
+CASE "腋舐め"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【腋舐め】の口上です」"
+	
+CASE "頬舐め"
+	CALL MESSAGE_BOX,@"「test_調教コマンド【頬舐め】の口上です」"
+	
+
+CASE "正常位","後背位","対面座位","背面座位","騎乗位","対面立位","背面立位","強制騎乗位"
+		;CALL MESSAGE_BOX,@"「test_↓を使い、Ｖセックスの共通口上を呼び出しています」"
+		;CALL MESSAGE_BOX,@"「test_実際には↓のみ使用し、この3行は使用しないほうが処女喪失時の口上への対応などが楽です」"
+		;CALL MESSAGE_BOX,@"「test_体位で別々の口上を用意したい場合はCASEを分割、↓を使わないまたは追加記述してください」"
+		;分割すると処女喪失時の例外処理をするために逐一書く必要があるよ
+		;↓を使うことで楽できるのと処女喪失時に実行口上を飛ばす処理ができるよ
+	CALL KOJO_GENERAL_動作確認用口上_TRAIN_INSIDE("Ｖセックス",ARGS:2)
+
+CASE "Ａ正常位","Ａ後背位","Ａ対面座位","Ａ背面座位","Ａ騎乗位","Ａ対面立位","Ａ背面立位","強制Ａ騎乗位"
+		;CALL MESSAGE_BOX,@"「test_↓を使い、Ａセックスの共通口上を呼び出しています」"
+	CALL KOJO_GENERAL_動作確認用口上_TRAIN_INSIDE("Ａセックス",ARGS:2)
+	
+CASE "素股"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【素股】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【素股】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "フェラチオ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		;初めての実行時は[イベント]のほうに口上があるのでそっちだけ表示する
+		SIF SOURCE:Ｍ処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_調教コマンド【フェラチオ】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【フェラチオ】を継続している時の口上です」"
+		CALL MESSAGE_BOX,@"「test_Ｍ装備の判定が出ていますが、例外処理により表示されます」"
+	ENDSELECT
+
+CASE "イラマチオ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:Ｍ処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_調教コマンド【イラマチオ】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【イラマチオ】を継続している時の口上です」"
+		CALL MESSAGE_BOX,@"「test_Ｍ装備の判定が出ていますが、例外処理により表示されます」"
+	ENDSELECT
+
+CASE "パイズリ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:初パイズリ
+			RETURN
+		CALL MESSAGE_BOX,@"「test_調教コマンド【パイズリ】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【パイズリ】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "強制パイズリ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:初パイズリ
+			RETURN
+		CALL MESSAGE_BOX,@"「test_調教コマンド【強制パイズリ】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【強制パイズリ】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "縦パイズリ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:初パイズリ
+			RETURN
+		CALL MESSAGE_BOX,@"「test_調教コマンド【縦パイズリ】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【縦パイズリ】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "強制縦パイズリ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:初パイズリ
+			RETURN
+		CALL MESSAGE_BOX,@"「test_調教コマンド【強制縦パイズリ】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【強制縦パイズリ】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "手コキ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【手コキ】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【手コキ】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "授乳手コキ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【授乳手コキ】実行直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_調教コマンド【授乳手コキ】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "家畜用搾乳器","魔動快楽搾乳器","触手快楽搾乳器","小型霊力抽出装置"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_【家畜用搾乳器】などの装着時の口上です」"
+		SIF !EXP:搾乳器
+			CALL MESSAGE_BOX,@"「test_各種搾乳器で母乳を搾られたことがない場合候補に入ります」"
+		SIF TEQUIP:触手快楽搾乳器
+			CALL MESSAGE_BOX,@"「test_搾乳器が【触手快楽搾乳器】の場合候補に入ります」"
+		SIF NOWEX:Ｎ絶頂
+			CALL MESSAGE_BOX,@"「test_『今の責めでＮ絶頂した場合』の口上候補ですが、\n　絶頂判定の前に実行口上の判定が来るためここは表示されないはずです」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【家畜用搾乳器】などで搾乳中の口上です」"
+		SIF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%にＶ挿入されながら搾乳器で搾乳されている場合候補に入ります」"
+		SIF NOWEX:Ｎ絶頂
+			CALL MESSAGE_BOX,@"「test_『今の責めでＮ絶頂した場合』の口上候補ですが、\n　絶頂判定の前に実行口上の判定が来るためここは表示されないはずです」"
+	
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_搾乳器を取り外した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、『搾乳器取り外し』を呼ぶためここは表示されないはずです」"
+	ENDSELECT
+
+CASE "触手乳揉み"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_【触手乳揉み】開始直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手乳揉み】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "触手乳搾り"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_【触手乳搾り】開始直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手乳搾り】を継続している時の口上です」"
+	ENDSELECT
+
+CASE "乳包み花弁搾乳触手","透明カップ搾乳触手","搾乳ワーム触手"
+	SELECTCASE ARGS:2
+	CASE "焦らし"
+		IF !TFLAG:目隠し
+			CALL MESSAGE_BOX,@"「test_【目隠し】をしていない状態で各種【搾乳触手】を実行し、おっぱいの前で焦らされている時の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_【目隠し】をした状態で各種【搾乳触手】を実行し、おっぱいの前で焦らされている時の口上です」"
+		ENDIF
+	
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_各種【搾乳触手】での搾乳開始直後の口上です」"
+	
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_各種【搾乳触手】で搾乳を継続されている時の口上です」"
+		SIF TEQUIP:乳包み花弁搾乳触手
+			CALL MESSAGE_BOX,@"「test_＜乳包み花弁搾乳触手＞で搾乳を継続されている時候補に入ります」"
+		SIF TEQUIP:搾乳ワーム触手
+			CALL MESSAGE_BOX,@"「test_＜搾乳ワーム触手＞で搾乳を継続されている時候補に入ります」"
+		IF TEQUIP:透明カップ搾乳触手 && !TFLAG:目隠し
+			CALL MESSAGE_BOX,@"「test_【目隠し】をしていない状態で＜透明カップ搾乳触手＞で搾乳を継続されている時候補に入ります」"
+			CALL MESSAGE_BOX,@"「test_＜透明カップ搾乳触手＞は視覚的な要因が強いため、目隠しを条件に入れるとよいでしょう」"
+		ENDIF
+	
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_搾乳触手を取り外した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、『搾乳触手取り外し』を呼ぶためここは表示されないはずです」"
+	ENDSELECT
+
+CASE "触手Ｖ挿入"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		;処女喪失の場合は[イベント]のほうに口上があるのでそっちだけ表示する
+		SIF SOURCE:処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_【触手Ｖ挿入】実行直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【触手Ｖ挿入】を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手Ｖ挿入】継続中の口上です」"
+	ENDSELECT
+
+CASE "触手Ａ挿入"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:Ａ処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_【触手Ａ挿入】実行直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【触手Ａ挿入】を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手Ａ挿入】継続中の口上です」"
+	ENDSELECT
+
+CASE "触手強制パイズリ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:初パイズリ
+			RETURN
+		CALL MESSAGE_BOX,@"「test_【触手強制パイズリ】実行直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【触手強制パイズリ】を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手強制パイズリ】継続中の口上です」"
+	ENDSELECT
+
+CASE "触手フェラチオ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:Ｍ処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_【触手フェラチオ】実行直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【触手フェラチオ】を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手フェラチオ】継続中の口上です」"
+		CALL MESSAGE_BOX,@"「test_Ｍ装備の判定が出ていますが、例外処理により表示されます」"
+	ENDSELECT
+
+CASE "触手イラマチオ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:Ｍ処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_【触手イラマチオ】実行直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【触手イラマチオ】を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手イラマチオ】継続中の口上です」"
+		CALL MESSAGE_BOX,@"「test_Ｍ装備の判定が出ていますが、例外処理により表示されます」"
+	ENDSELECT
+
+CASE "ブラシ触手"
+	;複雑だったのでわかりやすめにした
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_【ブラシ触手】実行直後の口上です」"
+		CALL MESSAGE_BOX,@"「test_責め具が入っていない部位全てに装着されるため汎用的なものがいいでしょう」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【ブラシ触手】を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【ブラシ触手】継続中の口上です」"
+		CALL MESSAGE_BOX,@"「test_部位毎に別な口上を呼び出したい場合、SIF以降を記入してください」"
+		
+		SIF TEQUIP:ブラシ触手Ａ
+			CALL MESSAGE_BOX,@"「test_【ブラシ触手Ａ】継続中の場合候補に入ります」"
+		SIF TEQUIP:ブラシ触手Ｂ
+			CALL MESSAGE_BOX,@"「test_【ブラシ触手Ｂ】継続中の場合候補に入ります」"
+		SIF TEQUIP:ブラシ触手Ｃ
+			CALL MESSAGE_BOX,@"「test_【ブラシ触手Ｃ】継続中の場合候補に入ります」"
+		SIF TEQUIP:ブラシ触手Ｖ
+			CALL MESSAGE_BOX,@"「test_【ブラシ触手Ｖ】継続中の場合候補に入ります」"
+		SIF TEQUIP:ブラシ触手Ｎ
+			CALL MESSAGE_BOX,@"「test_【ブラシ触手Ｎ】継続中の場合候補に入ります」"
+	ENDSELECT
+
+CASE "触手目隠し"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_【触手目隠し】実行直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【触手目隠し】を取り外した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、『目隠し取り外し』を呼ぶためここは表示されないはずです」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手目隠し】継続中の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、目隠しフラグによって他の口上に分岐をつけるほうが自然かと思います」"
+	ENDSELECT
+
+CASE "触手クリ吸い"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_【触手クリ吸い】実行直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【触手クリ吸い】を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手クリ吸い】継続中の口上です」"
+	ENDSELECT
+
+CASE "触手耳姦"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_【触手耳姦】実行直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_【触手耳姦】を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_【触手耳姦】継続中の口上です」"
+	ENDSELECT
+
+CASE "バイブ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_＜バイブ＞使用直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_＜バイブ＞を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_＜バイブ＞継続中の口上です」"
+	ENDSELECT
+
+CASE "アナルバイブ"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:Ａ処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_＜アナルバイブ＞使用直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_＜アナルバイブ＞を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_＜アナルバイブ＞継続中の口上です」"
+	ENDSELECT
+
+CASE "乳首ローター"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_＜乳首ローター＞使用直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_＜乳首ローター＞を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_＜乳首ローター＞継続中の口上です」"
+	ENDSELECT
+
+CASE "クリローター"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_＜クリローター＞使用直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_＜クリローター＞を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_＜クリローター＞継続中の口上です」"
+	ENDSELECT
+
+CASE "乳首吸引器"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_＜乳首吸引器＞使用直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_＜乳首吸引器＞を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_＜乳首吸引器＞継続中の口上です」"
+	ENDSELECT
+
+CASE "クリ吸引器"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_＜クリ吸引器＞使用直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_＜クリ吸引器＞を取り外した時の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_＜クリ吸引器＞継続中の口上です」"
+	ENDSELECT
+
+CASE "アイマスク"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_＜アイマスク＞使用直後の口上です」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_＜アイマスク＞を取り外した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、『目隠し取り外し』を呼ぶためここは表示されないはずです」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_＜アイマスク＞継続中の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、目隠しフラグによって他の口上に分岐をつけるほうが自然かと思います」"
+	ENDSELECT
+
+;読めばわかるけどここまるっと消して大丈夫
+CASE "口枷","ボールギャグ","強制開口器"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		CALL MESSAGE_BOX,@"「test_＜口枷＞など使用直後の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、【Ｍ装備】フラグの例外処理を行っていないためここは表示されないはずです」"
+	CASE "取り外し"
+		CALL MESSAGE_BOX,@"「test_＜口枷＞などを取り外した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、『口枷取り外し』を呼ぶためここは表示されないはずです」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_＜口枷＞など継続中の口上です」"
+		CALL MESSAGE_BOX,@"「test_が、【Ｍ装備】フラグの例外処理を行っていないためここは表示されないはずです」"
+	ENDSELECT
+
+CASE "時間圧縮"
+	CALL MESSAGE_BOX,@"「test_【時間圧縮】を使用した時の口上です」"
+	SIF MAXBASE:魔力 >= 500000
+		CALL MESSAGE_BOX,@"「test_この分岐のように魔力が豊富な場合、反応するようにするとよいでしょう」"
+
+CASE "洗脳触手"
+	SELECTCASE ARGS:2
+	CASE "洗脳中"
+		CALL MESSAGE_BOX,@"「test_【洗脳触手】で洗脳を実行中の口上です」"
+	CASE "洗脳完了"
+		CALL MESSAGE_BOX,@"「test_【洗脳触手】での洗脳が完了した時の口上です」"
+	CASE "洗脳解除"
+		CALL MESSAGE_BOX,@"「test_【洗脳触手】での洗脳を解除した時の口上です」"
+	ENDSELECT
+
+CASE "淫紋付与"
+	SELECTCASE ARGS:2
+	CASE "付与中"
+		CALL MESSAGE_BOX,@"「test_【淫紋付与】実行中の口上です」"
+	CASE "完了"
+		CALL MESSAGE_BOX,@"「test_【淫紋付与】が完了した時の口上です」"
+	ENDSELECT
+
+CASE "絶頂魔力回復淫紋付与"
+	SELECTCASE ARGS:2
+	CASE "付与中"
+		CALL MESSAGE_BOX,@"「test_【絶頂魔力回復淫紋付与】実行中の口上です」"
+	CASE "完了"
+		CALL MESSAGE_BOX,@"「test_【絶頂魔力回復淫紋付与】が完了した時の口上です」"
+	ENDSELECT
+
+CASE "ローション"
+	CALL MESSAGE_BOX,@"「test_ローション使用時の口上です」"
+	CALL MESSAGE_BOX,@"「test_が、部位ごとに呼び出すためここは表示されないはずです」"
+
+CASE "Ｖローション"
+	CALL MESSAGE_BOX,@"「test_ローションを膣に使用した時の口上です」"
+
+CASE "Ａローション"
+	CALL MESSAGE_BOX,@"「test_ローションをアナルに使用した時の口上です」"
+
+CASE "Ｂローション"
+	CALL MESSAGE_BOX,@"「test_ローションを乳房に使用した時の口上です」"
+
+CASE "媚薬"
+	CALL MESSAGE_BOX,@"「test_【媚薬】を使用した時の口上です」"
+
+CASE "媚薬粘液"
+	CALL MESSAGE_BOX,@"「test_【媚薬粘液】を使用した時の口上です」"
+
+CASE "感度上昇粘液"
+	;ここを新規作成
+	CALL MESSAGE_BOX,@"「test_各種【感度上昇粘液】実行時の口上です」"
+	CALL MESSAGE_BOX,@"「test_部位毎に別な口上を呼び出したい場合、SELECTCASE内を記入してください」"
+	
+	SELECTCASE ARGS:2
+	CASE "Ａ"
+		CALL MESSAGE_BOX,@"「test_【感度上昇粘液Ａ】実行時の口上です」"
+	CASE "Ｂ"
+		CALL MESSAGE_BOX,@"「test_【感度上昇粘液Ｂ】実行時の口上です」"
+	CASE "Ｃ"
+		CALL MESSAGE_BOX,@"「test_【感度上昇粘液Ｃ】実行時の口上です」"
+	CASE "Ｖ"
+		CALL MESSAGE_BOX,@"「test_【感度上昇粘液Ｖ】実行時の口上です」"
+	CASE "Ｎ"
+		CALL MESSAGE_BOX,@"「test_【感度上昇粘液Ｎ】実行時の口上です」"
+	ENDSELECT
+
+CASE "注射"
+	;構造変更
+	CALL MESSAGE_BOX,@"「test_各種薬品を注射した時の口上です」"
+	CALL MESSAGE_BOX,@"「test_部位毎に別な口上を呼び出したい場合、SELECTCASE内を記入してください」"
+	
+	SELECTCASE ARGS:2
+	CASE "Ａ"
+		CALL MESSAGE_BOX,@"「test_Ａ注射時の口上です」"
+	CASE "Ｂ"
+		CALL MESSAGE_BOX,@"「test_Ｂ注射時の口上です」"
+	CASE "Ｃ"
+		CALL MESSAGE_BOX,@"「test_Ｃ注射時の口上です」"
+	CASE "Ｖ"
+		CALL MESSAGE_BOX,@"「test_Ｖ注射時の口上です」"
+	CASE "Ｎ"
+		CALL MESSAGE_BOX,@"「test_Ｎ注射時の口上です」"
+	CASE "首筋"
+		CALL MESSAGE_BOX,@"「test_首筋に注射時の口上です」"
+	ENDSELECT
+	
+CASE "拘束"
+	CALL MESSAGE_BOX,@"「test_各種拘束した時の口上です」"
+	CALL MESSAGE_BOX,@"「test_種類毎に別な口上を呼び出したい場合、SELECTCASE内を記入してください」"
+	CALL MESSAGE_BOX,@"「test_拘束継続中毎回はちょっとくどくなるので表示されないようにしています」"
+	SELECTCASE ARGS:2
+	CASE "晒し台"
+		CALL MESSAGE_BOX,@"「test_＜晒し台拘束＞時の口上です」"
+	CASE "吊るし"
+		CALL MESSAGE_BOX,@"「test_＜吊るし拘束＞時の口上です」"
+	CASE "まんぐり"
+		CALL MESSAGE_BOX,@"「test_＜まんぐり拘束＞時の口上です」"
+	CASE "触手拘束"
+		CALL MESSAGE_BOX,@"「test_＜触手拘束＞時の口上です」"
+	CASE "荒縄拘束"
+		CALL MESSAGE_BOX,@"「test_＜荒縄拘束＞時の口上です」"
+	ENDSELECT
+
+CASE "脱衣"
+	SELECTCASE ARGS:2
+	CASE "あなた"
+		IF !EXP:乳首見られ
+			CALL MESSAGE_BOX,@"「test_服を脱がされたり破かれ、%CALLNAME:0%に初めて乳首を見られた時の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_服を脱がされたり破かれた時の口上です」"
+		ENDIF
+	ENDSELECT
+
+CASE "目隠し取り外し"
+	CALL MESSAGE_BOX,@"「test_＜アイマスク＞などを取り外した時の口上です」"
+
+CASE "口枷取り外し"
+	CALL MESSAGE_BOX,@"「test_＜口枷＞などを取り外した時の口上です」"
+
+CASE "拘束解除"
+	CALL MESSAGE_BOX,@"「test_各種拘束を解除した時の口上です」"
+
+CASE "Ｖペニス引き抜き"
+	CALL MESSAGE_BOX,@"「test_膣からペニスを引き抜いた時の口上です」"
+	SIF TFLAG:膣内精液
+		CALL MESSAGE_BOX,@"「test_膣内射精して膣に精液があった場合候補に入ります」"
+
+CASE "Ａペニス引き抜き"
+	CALL MESSAGE_BOX,@"「test_アナルからペニスを引き抜いた時の口上です」"
+	SIF TFLAG:尻穴精液
+		CALL MESSAGE_BOX,@"「test_尻穴射精してアナルに精液があった場合候補に入ります」"
+
+CASE "Ｂペニス引き抜き"
+	CALL MESSAGE_BOX,@"「test_パイズリからペニスを引き抜いた時の口上です」"
+	SIF TFLAG:乳内精液
+		CALL MESSAGE_BOX,@"「test_乳内射精して胸の谷間に精液があった場合候補に入ります」"
+
+CASE "Ｍペニス引き抜き"
+	CALL MESSAGE_BOX,@"「test_口からペニスを引き抜いた時の口上です」"
+	SIF TFLAG:口内精液
+		CALL MESSAGE_BOX,@"「test_口内射精して口に精液があった場合候補に入ります」"
+
+CASE "搾乳器取り外し"
+	CALL MESSAGE_BOX,@"「test_各種＜搾乳器＞を取り外した時の口上です」"
+
+CASE "搾乳触手取り外し"
+	CALL MESSAGE_BOX,@"「test_各種＜搾乳触手＞を取り外した時の口上です」"
+
+CASE "胸汚れ拭き取り"
+	CALL MESSAGE_BOX,@"「test_胸の汚れを拭き取った時の口上です」"
+ENDSELECT
+
+
+
+;口上内で汎用的に呼び出すための部分　処理はCALL MESSAGE_BOX関数だけ呼ぶと便利だよ
+;↓の[動作確認用口上]の部分も性格別に変更しないとダメなので気をつけて
+@KOJO_GENERAL_動作確認用口上_TRAIN_INSIDE(ARGS:1,ARGS:2)
+
+SELECTCASE ARGS:1
+CASE "Ｖセックス"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		;処女喪失の場合は[イベント]のほうに口上があるのでそっちだけ表示する
+		SIF SOURCE:処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_膣にペニスを挿入した直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_膣にペニス挿入中の口上です」"
+	ENDSELECT
+	
+CASE "Ａセックス"
+	SELECTCASE ARGS:2
+	CASE "実行"
+		SIF SOURCE:Ａ処女喪失
+			RETURN
+		CALL MESSAGE_BOX,@"「test_アナルにペニスを挿入した直後の口上です」"
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「test_アナルにペニス挿入中の口上です」"
+	ENDSELECT
+ENDSELECT
+
+

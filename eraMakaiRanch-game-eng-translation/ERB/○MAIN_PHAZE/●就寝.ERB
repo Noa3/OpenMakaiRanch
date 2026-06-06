@@ -1,0 +1,132 @@
+﻿
+;自室で就寝
+@SLEEP_ROOM
+
+;人数
+EXIST = CMATCH(CSTR:スケジュール,"自室就寝")
+SIF !EXIST
+	RETURN
+TARGET = 0
+
+;あなたが寝るコマンド選ぶ場合は別メッセージ
+HEAL_PRINT_DONE = 0
+IF CSTR:スケジュール == "自室就寝"
+	PRINTFORML %CALLNAME% decides to go to bed early...
+	CALL SLEEP_HEAL
+	EXIST --
+	IF !EXIST
+		PRINTW
+		DRAWLINE
+		RETURN
+	ENDIF
+	PRINTL
+	DRAWLINE
+ENDIF
+
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "自室就寝"
+		CONTINUE
+	
+	;一番目に当たったキャラの名前
+	;「は」と「も」で変えようとしてたけど分岐増えてきたし廃止
+	PRINTFORM %CALLNAME% 
+	SIF EXIST > 1
+		PRINT and the others 
+	BREAK
+NEXT
+PRINTL went to bed as well...
+
+;回復処理とメッセージ
+HEAL_PRINT_DONE = 0
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "自室就寝"
+		CONTINUE
+	CALL SLEEP_HEAL
+NEXT
+PRINTW
+DRAWLINE
+
+
+
+;家畜小屋で就寝
+@SLEEP_CAGE
+
+EXIST = CMATCH(CSTR:スケジュール,"小屋就寝")
+SIF !EXIST
+	RETURN
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "小屋就寝"
+		CONTINUE
+	PRINTFORM %CALLNAME% 
+	IF EXIST > 1
+		PRINT and the others fall asleep in their enclosures...
+	ELSE
+		PRINT falls asleep in her enclosure...
+	ENDIF
+	BREAK
+NEXT
+PRINTL 
+HEAL_PRINT_DONE = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "小屋就寝"
+		CONTINUE
+	CALL SLEEP_HEAL
+NEXT
+PRINTW
+DRAWLINE
+
+;牛舎の家畜もここで回復する　非表示でOK
+;全員詳細表示なら出す
+SIF FLAG:休憩時回復表示形式 == 3 && CMATCH(CSTR:居場所,"牛舎")
+	PRINTL The dairy cows in the cowshed have also fallen asleep...
+HEAL_PRINT_DONE = 1
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "牛舎"
+		CONTINUE
+	CALL SLEEP_HEAL(1)
+NEXT
+IF FLAG:休憩時回復表示形式 == 3 && CMATCH(CSTR:居場所,"牛舎")
+	PRINTW
+	DRAWLINE
+ENDIF
+
+
+
+;体内の奴隷も休ませる
+@SLEEP_NIKUKABE
+
+EXIST = CMATCH(CSTR:スケジュール,"体内凌辱")
+SIF !EXIST
+	RETURN
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "体内凌辱"
+		CONTINUE
+	PRINTFORM While %CALLNAME:0% sleeps, %CALLNAME% 
+	IF EXIST > 1
+		PRINT and the others are given a brief respite.
+	ELSE
+		PRINT is given a brief respite.
+	ENDIF
+	BREAK
+NEXT
+HEAL_PRINT_DONE = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "体内凌辱"
+		CONTINUE
+	CALL VORE_SLEEP_HEAL
+NEXT
+PRINTW
+DRAWLINE
+
+
+
+
+
+

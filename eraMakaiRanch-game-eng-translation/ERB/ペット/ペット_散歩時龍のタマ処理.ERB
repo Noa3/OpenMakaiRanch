@@ -1,0 +1,26 @@
+﻿
+;龍のタマを見つける
+@PET_COMMU_WALKING_DRAGON_BALL
+
+;7コあるなら無効・基礎30%で発見　発見率補正を追加
+SIF ITEM:龍のタマ >= 7 || RAND:100 >= FIND_DRAGON_BALL +FLAG:龍のタマ発見率補正
+	RETURN
+ITEM:龍のタマ ++
+PRINTFORML …散歩中に%PET_NAME%が何か見つけたようだ。
+CALL PRINT_WORD_COLOR,@"＜龍のタマ＞を手に入れた！","黄"
+PRINTFORML 　→ Owned {ITEM:龍のタマ}
+
+
+
+;帰宅時に1/5の確率
+@GOING_HOME_DRAGON_BALL
+
+SIF ITEM:龍のタマ >= 7 || RAND:100 >= (FIND_DRAGON_BALL +FLAG:龍のタマ発見率補正) /5
+	RETURN
+ITEM:龍のタマ ++
+PRINTFORML …帰宅中、%PET_NAME%が何か気になるものがあるようでこちらを伺っている。
+PRINTFORML 行ってみようと指示を出し、脇道に入ると草むらで%PET_NAME%が何か見つけたようだ。
+CALL PRINT_WORD_COLOR,@"＜龍のタマ＞を手に入れた！","黄"
+PRINTFORML 　→ Owned {ITEM:龍のタマ}
+
+

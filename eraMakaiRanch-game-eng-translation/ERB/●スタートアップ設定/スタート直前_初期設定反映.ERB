@@ -1,0 +1,196 @@
+﻿
+;初期設定の反映
+@SET_START_FLAG
+
+;1日目の昼から
+DAY = 1
+TIME = 1
+
+;週など計算
+CALL DATE_CALC
+
+;どんより
+SAVESTR:天気／今日 = どんより
+SAVESTR:天気／明日 = どんより
+
+MONEY = 100000
+FLAG:触手肉体改造可能回数 ++
+	;ITEM:霊力抽出装置 ++
+	;ITEM:小型霊力抽出装置 ++
+ITEM:魔力母乳分泌促進薬 = 5
+ITEM:魔力枷 ++
+ITEM:家畜用搾乳器 ++
+FLAG:個室数／合計 = 4
+FLAG:乳牛健康度 = 60
+FLAG:セーブデータ表示情報BIT = 0b111010111
+FLAG:事務作業量MAX = 20
+FLAG:表示調教コマンドBIT = 0b1001010001111
+
+;FLAG:メイン／拡張メニュー表示 = 1
+FLAG:アビリティ有効BIT = 65535
+
+;納税割合
+FLAG:納税割合／軍事予算 = 10
+FLAG:納税割合／科学技術予算 = 10
+FLAG:納税割合／自治体予算 = 10
+FLAG:納税割合／酪農業予算 = 10
+
+;掃除当番
+;FLAG:掃除当番基準／月→340
+;FLAG:掃除当番ID・ABL／月→350
+;あなたとスレイちゃん交互、月曜はなし
+FLAG_REF = 340
+FLAG_REF:1 = 350
+VARSET FLAG,3,FLAG_REF,FLAG_REF +7
+FOR LOCAL,0,7
+	FLAG:(FLAG_REF:1 +LOCAL) = LOCAL %2
+NEXT
+FLAG:FLAG_REF = 0
+
+;第n牛舎の名称もう入れとく
+FOR LOCAL,1,11
+	FLAG_NAME = 第%TOSTR(LOCAL)%牛舎
+	COWSHED_NAME:LOCAL = %FLAG_NAME%
+NEXT
+
+;補正を見つけた直後にしてスタート
+FLAG:龍のタマ発見率補正 = DRAGON_BALL_CT
+
+PRINTL Received: ＜Magic Lactation Enhancement Medicine＞ ×5
+PRINTFORML Received: 「%CALLNAME:2%」
+PRINTL 　　Acquired: ＜Milking Machine for Livestock＞
+
+;強くてニューゲームの引き継ぎ
+CALL NEWGAMEPLUS_BONUS
+
+;今何周目か
+FLAG:周回数 = 1 +GLOBAL:引き継ぎ前周回数
+
+;引き継いだらGLOBALの該当箇所を消してしまう
+VARSET GLOBAL,0,100,200
+SAVEGLOBAL
+
+;難易度表示再計算
+CALL PRINT_DIFFICULTY_CALC
+
+;楽々スタートキットのチェック
+CALL GIFTSET_CONFIG_CHECK
+CALL MANYL(5)
+
+;あなた、スレイ、巫女／シスターの初期設定
+CALL START_CHARA_CALC
+
+;スケジュールリセット
+CALL SCHEDULE_RESET
+
+;強制アンロック設定
+PRINTW
+CALL MANYL(3)
+CALL HALFLINE
+CALL ASK_ALL_UNLOCK
+
+;女あなたでのふたなりちんぽ取得設定
+CALL ASK_FUTANARI_UNLOCK
+
+
+
+;あなた、スレイ、巫女／シスターの初期設定
+@START_CHARA_CALC
+
+;ペット名持ってくる
+CALL GET_PET_FLAG_REF
+FOR LOCAL,0,10
+	ANIMAL = %ITEMNAME:(ITEM_REF +LOCAL)%
+	SIF ANIMAL == "" || !ITEM:ANIMAL
+		CONTINUE
+	BREAK
+NEXT
+FLAG_NAME = なつき度／%ANIMAL%
+
+FOR TARGET_COUNT,0,2
+	TARGET = TARGET_COUNT
+	CALL CHARA_MAKE_END_CALC
+	CSTR:スケジュール = 酪農
+	EQUIP:個室 = 1
+	EQUIP:自室 = 1
+	CFLAG:追跡対象 = 0
+	
+	;CSTR:自動スケジュール／月→350
+	VARSET CSTR,"酪農／終日",350,357
+	
+	;初期ペットのあなたとスレイちゃんへのなつき度は90%に上げる
+	BASE:FLAG_NAME = 9000
+	MAXBASE:FLAG_NAME = 10000
+	
+	;個人BITを入れないと
+	CFLAG:アビリティ有効個人BIT = FLAG:加入奴隷デフォルト／アビリティ有効個人BIT
+NEXT
+
+;スレイちゃんの補正
+TARGET = 1
+BASE:抵抗心 = 0
+BASE:尊厳 = 1000
+BASE:嫌悪感 = 0
+	;BASE:順応 = MAXBASE:順応
+BASE:好感度 = MAXBASE:好感度
+CFLAG:追跡対象 = 0
+CSTR:陥落状態 = 陥落
+CFLAG:捕獲日 = -1
+CFLAG:陥落日 = -1
+CFLAG:無抵抗 = 1
+TARGET = -1
+
+;連れてきた奴隷用
+TARGET = 2
+CALL CHARA_MAKE_END_CALC
+CFLAG:捕獲日 = DAY
+EQUIP:魔力枷 = 1
+CFLAG:アビリティ有効個人BIT = FLAG:加入奴隷デフォルト／アビリティ有効個人BIT
+CALL TARGET_FLAG_RESET
+CALL INVASION_TARGET_CHARA
+CALL KOJO_PRINT("イベント","奴隷引き取り")
+CALL SLAVE_RECEIVE_MESSAGE
+
+
+
+;強制アンロック設定
+@ASK_ALL_UNLOCK
+
+PRINTL Would you like to unlock all elements that become available through milestone progression?
+PRINTL ・Many items that may not be very meaningful at the current progress level will also be displayed, so this feature is aimed at experienced farm owners.
+PRINTL ・You can also enable this option later from the [Options] menu.
+PRINTL
+CALL ASK_YN
+SIF RESULT
+	RETURN
+FLAG:アンロック要素強制オープン = 1
+CALL PRINTW_WORD_COLOR("強制アンロックを有効にしました。","黄色")
+
+
+
+;女あなたでのふたなりちんぽ取得設定
+@ASK_FUTANARI_UNLOCK
+
+;オトコなら帰る
+SIF TALENT:0:オトコ
+	RETURN
+CALL MANYL(3)
+
+PRINTL Would you like to obtain the magic ＜Futanari Penis＞ and start with it?
+PRINTL ・You can also acquire it later from [Development/Acquisition], but the conditions are quite strict.
+PRINTL ・There are no specific additional benefits or drawbacks to this choice (since it's in EX mode).
+PRINTL
+CALL ASK_YN
+SIF RESULT
+	RETURN
+ITEM:ふたなりちんぽ = 1
+CALL PRINTW_WORD_COLOR("You have obtained ＜Futanari Penis＞.","黄色")
+
+;ふたなりにしたらペニスサイズ計算
+ABL:0:ペニスサイズ = CFLAG:0:身長 / 50 + RAND:6 + 15
+ABL:0:初期値／ペニスサイズ = ABL:0:ペニスサイズ
+
+
+
+
+

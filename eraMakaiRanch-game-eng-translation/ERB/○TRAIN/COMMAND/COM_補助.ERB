@@ -1,0 +1,167 @@
+﻿
+;挿入維持の快楽追加
+@PISTON_SOURCE
+
+;挿入中
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	SOURCE:調教者体力消費 += 50
+	LOSEBASE:体力 += 50
+	LOSEBASE:気力 += 50
+	SOURCE:Ｖ快楽／あなた責め = 3000
+	SOURCE:恥辱 = 3000
+	SOURCE:情愛 = 5000
+	SOURCE:屈辱 = 5000
+	SOURCE:不潔 = 1000
+	SOURCE:支配 = 3000
+	SOURCE:調教者習得 = 500
+	SOURCE:経過時間 = 1
+	
+ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	SOURCE:調教者体力消費 += 50
+	LOSEBASE:体力 += 80
+	LOSEBASE:気力 += 50
+	SOURCE:Ａ快楽／あなた責め = 3000
+	SOURCE:恥辱 = 3000
+	SOURCE:情愛 = 2000
+	SOURCE:屈辱 = 6000
+	SOURCE:不潔 = 3000
+	SOURCE:支配 = 3000
+	SOURCE:調教者習得 = 500
+	SOURCE:経過時間 = 1
+
+ELSEIF GETBIT(＃Ｐ使用／パイズリ＃)
+	SOURCE:調教者体力消費 += 50
+	LOSEBASE:体力 += 50
+	LOSEBASE:気力 += 50
+	SOURCE:Ｂ快楽／あなた責め = 1000
+	SOURCE:恥辱 = 3000
+	SOURCE:情愛 = 4000
+	SOURCE:屈辱 = 5000
+	SOURCE:不潔 = 2000
+	SOURCE:支配 = 3000
+	SOURCE:経過時間 = 1
+
+ELSEIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	SOURCE:調教者体力消費 += 50
+	LOSEBASE:体力 += 30
+	LOSEBASE:気力 += 50
+	SOURCE:恥辱 = 2000
+	SOURCE:情愛 = 2000
+	SOURCE:屈辱 = 5000
+	SOURCE:不潔 = 5000
+	SOURCE:支配 = 3000
+	SOURCE:経過時間 = 1
+
+ELSEIF TEQUIP:素股
+	SOURCE:調教者体力消費 += 50
+	LOSEBASE:体力 += 30
+	LOSEBASE:気力 += 20
+	SOURCE:Ｖ快楽／あなた責め = 2000
+	SOURCE:恥辱 = 3000
+	SOURCE:情愛 = 2000
+	SOURCE:屈辱 = 5000
+	SOURCE:不潔 = 1000
+	SOURCE:支配 = 3000
+	SOURCE:経過時間 = 1
+ENDIF
+SOURCE:選択コマンド口上非表示 = 1
+
+
+
+;感度上昇エキス共通計算
+;ARG→部位
+@SENSITIVE_UP_TENTACLE(ARG)
+#DIM SENSITIVE_PLUS
+
+;SOURCE:Ａ快楽／触手→130
+;COM番号→820+ARG
+SELECTCOM = ARG +820
+LOSEBASE:体力 += 50
+LOSEBASE:気力 += 100
+SOURCE:(ARG +130) = 4000
+SOURCE:恥辱 = 4000
+SOURCE:屈辱 = 4000
+SOURCE:支配 = 3000
+SOURCE:経過時間 = 1
+SOURCE:選択コマンド口上非表示 = 1
+COST = MAGIC_USE_MP:GETNUM(ITEM,"感度上昇粘液")
+CFLAG:当日制限／肉体改造エキス ++
+EXP:肉体改造 ++
+
+;感度が低いほど効果が高い
+;ABL:Ａ感度→10
+FIX = (1100 -ABL:(ARG +10)) /10
+FIX -= (FIX %10)
+
+;Ｎ、Ｃに使う場合は増加幅倍増
+SIF ARG == 2 || ARG == 4
+	FIX *= 2
+
+;1回の上昇量MAX100
+FIX = LIMIT(FIX,10,100)
+
+;990越えないように
+SENSITIVE_PLUS = SENSITIVE_MAX -ABL:(ARG +10)
+SENSITIVE_PLUS = LIMIT(SENSITIVE_PLUS,10,FIX)
+ABL:(ARG +10) += SENSITIVE_PLUS
+
+
+
+;浸透媚薬共通計算
+;ARG→部位
+@SENSITIVE_UP_INJECTION(ARG)
+#DIM SENSITIVE_PLUS
+
+;SOURCE:Ａ痛み→190
+;COM番号→810+ARG
+SELECTCOM = ARG +810
+LOSEBASE:体力 += 100
+SOURCE:(ARG +190) = 1000
+SOURCE:恥辱 = 5000
+SOURCE:屈辱 = 3000
+SOURCE:支配 = 3000
+SOURCE:経過時間 = 1
+SOURCE:選択コマンド口上非表示 = 1
+
+;ABL:Ａ感度→10
+ITEM:浸透媚薬 --
+EXP:肉体改造 ++
+CFLAG:当日制限／肉体改造薬 = 1
+IF ABL:(ARG +10) < 200
+	FIX = 30
+ELSEIF ABL:(ARG +10) < 500
+	FIX = 20
+ELSE
+	FIX = 10
+ENDIF
+
+;Ｎ、Ｃに使う場合は増加幅倍増
+SIF ARG == 2 || ARG == 4
+	FIX *= 2
+
+;990越えないように
+SENSITIVE_PLUS = SENSITIVE_MAX -ABL:(ARG +10)
+SENSITIVE_PLUS = LIMIT(SENSITIVE_PLUS,10,FIX)
+ABL:(ARG +10) += SENSITIVE_PLUS
+
+
+
+;あなたの手の拭き取り
+@HAND_WASH
+
+SIF !STAIN:0:手
+	RETURN
+STAIN:0:手 = 0
+PRINTFORML %CALLNAME:0% wippes the filth off his hands with a towel...
+
+;経過時間なしの場合止め
+SIF !SOURCE:経過時間
+	PRINTW
+
+
+
+
+
+
+
+

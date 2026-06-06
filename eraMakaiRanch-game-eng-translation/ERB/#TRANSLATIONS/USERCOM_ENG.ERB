@@ -1,0 +1,32 @@
+﻿
+; disable all COM_ABLE functions, to skip build-in command printing, we print commands in our own function
+@DISABLE_COM_ABLE
+    SKIP_COM_ABLE = 1
+
+
+
+; re-enable COM_ABLE and call our own function for printing commands
+@SHOW_USERCOM_ENG
+
+SKIP_COM_ABLE = 0
+
+FOR LOCAL, 0, VARSIZE("TRAINNAME") - 1
+	SIF TRAINNAME:LOCAL == ""
+		CONTINUE
+    
+    TRYCALLFORM COM_ABLE{LOCAL}
+    SIF RESULT
+        PRINTFORMC %TRAIN_ENG(TRAINNAME:LOCAL)%[{LOCAL,3}]
+NEXT
+
+PRINTL
+
+
+@USERCOM_ENG(ARG)
+    SIF ( ARG < 0 || ARG >= VARSIZE("TRAINNAME") || TRAINNAME:ARG == "" )
+        RETURN 0
+    TRYCALLFORM COM_ABLE{ARG}
+    SIF RESULT
+        DOTRAIN ARG
+
+    RETURN 0

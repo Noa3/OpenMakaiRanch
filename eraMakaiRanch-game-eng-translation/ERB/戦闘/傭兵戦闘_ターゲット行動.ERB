@@ -1,0 +1,114 @@
+﻿
+;戦闘ターゲット行動
+@TARGET_ACTION_COMMON
+
+;仲間がいれば逃げ判断が可能　魔物のほうが強く仲間が壊滅寸前
+IF BASE:仲間戦闘力1 > 0 && MAXBASE:仲間戦闘力1 < TFLAG:バイト戦闘力／最大値 && BASE:仲間戦闘力1 < MAXBASE:仲間戦闘力1 *20 /100
+	CALL UNIT_ESCAPE_BATTLE
+	RETURN
+ENDIF
+
+;そのうちジョブごとに作りたい
+;非戦闘職だとプライド高い場合へなちょこ攻撃、仲間いるので逃げない場合応援
+IF CFLAG:非戦闘職
+	CALL TARGET_NODAMAGE_ACTION
+	RETURN
+ENDIF
+
+;回数残ってる+5ターン目以降またはHP20%以下で大技
+IF BASE:大技回数 && (TURN > 4 || BASE:戦闘力 < MAXBASE:戦闘力 *20 /100)
+	CALL TARGET_SPECIAL_ATTACK
+	RETURN
+ENDIF
+
+;回数残ってる+HP40%以下か仲間HP40%以下で回復
+IF BASE:回復回数
+	IF BASE:戦闘力 < MAXBASE:戦闘力 *40 /100
+		CALL TARGET_SPECIAL_HEAL_SELF
+		RETURN
+	ELSEIF BASE:仲間戦闘力1 < MAXBASE:仲間戦闘力1 *40 /100 && BASE:仲間戦闘力1 > 0
+		CALL TARGET_SPECIAL_HEAL_GROUP
+		RETURN
+	ENDIF
+ENDIF
+
+;全部なければ通常攻撃
+CALL TARGET_ATTACK
+
+
+
+;ダメージなし行動
+@TARGET_NODAMAGE_ACTION
+
+IF TALENT:プライド高い || TALENT:高慢
+	CALL KOJO_PRINT("戦闘","非戦闘職攻撃")
+	PRINTFORML %CALLNAME% Attacks! 
+	IF BATTLE_CHARA >= 0
+		PRINTFORML …腰の抜けた攻撃で、%CALLNAME:BATTLE_CHARA%は全くダメージを受けていない。
+	ELSE
+		PRINTL …腰の抜けた攻撃で、%PRINT_MONSTER()%は全くダメージを受けていない。
+	ENDIF
+
+;応援しようとしたけど全滅してる
+ELSEIF CFLAG:仲間規模 && !BASE:仲間戦闘力1
+	CALL KOJO_PRINT("戦闘","仲間全滅")
+	PRINTFORML 仲間が全滅してしまい、%CALLNAME%を守るニンゲンはもういない…
+
+ELSE
+	CALL KOJO_PRINT("戦闘","応援")
+	PRINTFORML %CALLNAME%は後ろで仲間を応援している。
+ENDIF
+
+
+
+;ターゲット通常攻撃
+@TARGET_ATTACK
+
+;攻撃ダメージ計算
+CALL TARGET_ATTACK_DAMAGE_CALC
+
+;本人ランクからクリティカル判定計算
+CALL CRITICAL_CALC_TARGET
+CALL KOJO_PRINT("戦闘","攻撃")
+PRINTFORM %CALLNAME% Attacks! 
+
+;ATTACK_RATEからクリティカル判定
+CALL CRITICAL_CHECK_ATTACK
+PRINTFORML %PRINT_MONSTER()% takes %VALUE_DIGIT(DAMAGE)% Damage! 
+TFLAG:バイト戦闘力 = LIMIT(TFLAG:バイト戦闘力 -DAMAGE,0,TFLAG:バイト戦闘力／最大値)
+
+;攻撃判定で色変えしてるのでリセット
+RESETCOLOR
+
+
+
+;仲間攻撃
+@TARGET_GROUP_ATTACK
+
+;仲間の規模=攻撃回数　2回以上は0.8倍補正
+PRINTFORM The Companions Attack! 
+FOR LOCAL,0,CFLAG:仲間規模
+	;ダメージ計算
+	CALL GROUP_ATTACK_DAMAGE_CALC
+	
+	;2回目以降追撃
+	SIF LOCAL
+		PRINT CHASE! 
+	
+	;仲間のクリティカル判定計算
+	CALL CRITICAL_CALC_GROUP
+	
+	;ATTACK_RATEからクリティカル判定
+	CALL CRITICAL_CHECK_ATTACK
+	PRINTFORML %PRINT_MONSTER()% takes %VALUE_DIGIT(DAMAGE)% Damage! 
+	TFLAG:バイト戦闘力 = LIMIT(TFLAG:バイト戦闘力 -DAMAGE,0,TFLAG:バイト戦闘力／最大値)
+	RESETCOLOR
+	
+	;倒したらループ終了
+	SIF !TFLAG:バイト戦闘力
+		RETURN
+NEXT
+PRINTW
+
+
+

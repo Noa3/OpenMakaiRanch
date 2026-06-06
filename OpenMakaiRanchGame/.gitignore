@@ -1,0 +1,14 @@
+# Godot and .NET generated files
+.godot/
+.mono/
+bin/
+obj/
+.vs/
+*.user
+*.tmp
+*.log
+mono_crash.*
+
+# Local exports and archives
+exports/
+export_presets.cfg.bak

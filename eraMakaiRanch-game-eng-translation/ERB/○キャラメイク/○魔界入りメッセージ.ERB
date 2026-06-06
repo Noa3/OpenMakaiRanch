@@ -1,0 +1,210 @@
+﻿
+;魔界入りした時か処分寸前、オークション会場入りのメッセージ
+;水晶・植物・名声・奪還・事故・侵略・結界付き・競売所・上位種族・天界種族
+;0～3はPT可能性あり、4ぼっち、5は精鋭以上、6～ぼっち
+@INVASION_TARGET_CHARA
+
+SELECTCASE CFLAG:魔界入りの目的
+CASE 0
+	CALL KOJO_PRINT("魔界入り","魔界水晶1")
+	PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()% came to Makai to bring back 【Makai Crystals】 to the surface.
+	IF GROUPMATCH(CSTR:身分,"貴族","王族")
+		PRINTFORML It's not that she is particularly short on money, but she needs an achievement to be recognized as a %JOB_ENG(CSTR:ジョブ)% in her household.
+	ELSE
+		IF GROUPMATCH(CSTR:ジョブ,"盗賊","剣闘士")
+			PRINTFORML After all, she works as a %JOB_ENG(CSTR:ジョブ)% to earn money. So when she heard about the chance to make a fortune, she immediately jumped at it.
+		ELSE
+			PRINTFORML To be a %JOB_ENG(CSTR:ジョブ)% she needs a lot of things, but she has no money. So she came up with a high-risk, high-return way to make money.
+		ENDIF
+	ENDIF
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","魔界水晶2")
+	PRINTFORML However, near the bi-directional gate, most resources have already been depleted by humans, making it nearly empty.
+	PRINTFORML Since she can see what looks like mountains in the distance, perhaps she could find something there.
+	PRINTFORML With that thought, %CALLNAME%%PRINT_EXIST_GROUP()% continued on, staying alert to their surroundings...
+	PRINTW
+	;目的の変更
+	CALL PURPOSE_CHANGE("魔界水晶")
+
+CASE 1
+	CALL KOJO_PRINT("魔界入り","魔界植物1")
+	PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()%が魔界に来たのは、【魔界植物】を地上に持ち帰るためである。
+	PRINTFORML %CSTR:ジョブ%としてさらに大成するには、魔界の植物を研究することが必要だと考えたのだ。
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","魔界植物2")
+	PRINTFORML ただ、他の冒険者に頼もうにも「魔界入り」なんて依頼、受けてくれないか法外な報酬を請求される。
+	PRINTFORML 仕方がないので%CALLNAME%自ら魔界に向かうことにしたのだが…
+	PRINTFORML 双方向ゲートの付近はニンゲンがあらかた資源を奪い尽くしてしまっているため何もないに等しい。
+	PRINTFORML 遠くに山らしき地形が見えるため、そこに行けば見つかるだろうか。
+	PRINTFORML そう考えた%CALLNAME%%PRINT_EXIST_GROUP()%は、さらに遠くに見える巨大な生物を警戒しながら歩みを進めた…
+	PRINTW
+	CALL PURPOSE_CHANGE("魔界植物")
+
+CASE 2
+	CALL KOJO_PRINT("魔界入り","名声1")
+	PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()%が魔界に来たのは、魔族を討伐して【手柄を立てる】ためである。
+	PRINTFORML 自分の力を過信している%CALLNAME%%PRINT_EXIST_GROUP()%は、駆け出し扱いに納得がいっていなかった。
+	PRINTFORML そこで、魔界に攻め入り魔族の数体でも討伐してくれば周りも自分の力を認めるだろうと考えたのだ。
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","名声2")
+	PRINTFORML 周囲には無茶だと言われたが、%CALLNAME%%PRINT_EXIST_GROUP()%は聞く耳を持たなかった。
+	PRINTFORML 弱い者いじめをしても格好がつかない。好戦的な魔族がいるなら遠くに見える巨大な城だろう。
+	PRINTFORML そう考えた%CALLNAME%%PRINT_EXIST_GROUP()%は、さらに遠くに見える巨大な生物はどう考えても無理だと悟り警戒しながら歩みを進めた…
+	PRINTW
+	CALL PURPOSE_CHANGE("名声")
+
+CASE 3
+	CALL KOJO_PRINT("魔界入り","奪還1")
+	PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()%が魔界に来たのは、帰ってこない仲間を【奪還】するためである。
+	PRINTFORML 魔族を討伐する、と言い魔界に突入した仲間が、もう1月以上帰って来ないのだ。
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","奪還2")
+	PRINTFORML 自分でも正直なところ、無事である可能性は限りなく低いと考えている。
+	IF BASE:仲間戦闘力1
+		PRINTFORML 「君らまで死にに行くつもりか、やめておけ」とも言われた。
+		PRINTFORML しかし、いなくなって気付いた。自分の命と同じくらい大事な仲間なのだ。
+		PRINTFORML %CALLNAME%1人でも行くつもりだったが、同士が集まり奪還パーティーを結成することができた。
+	ELSE
+		PRINTFORML 「君まで死にに行くつもりか、やめておけ」とも言われた。
+		PRINTFORML しかし、いなくなって気付いた。自分の命と同じくらい大事な仲間なのだ。
+		PRINTFORML 元々%CALLNAME%1人でも、希望がどれほど薄くても行くつもりだったのだ。孤独は苦ではなかった。
+	ENDIF
+	PRINTFORML 仮に捕らえられているとしたら、遠くに見える巨大な城だろうか…
+	PRINTFORML そう考えた%CALLNAME%%PRINT_EXIST_GROUP()%は、さらに遠くに見える巨大な生物を警戒しながら歩みを進めた…
+	PRINTW
+	CALL PURPOSE_CHANGE("奪還")
+
+CASE 4
+	CALL KOJO_PRINT("魔界入り","ゲート事故1")
+	PRINTFORML %CALLNAME%が魔界に来てしまったのは、【ゲート事故】が発生したのが原因である。
+	SELECTCASE CSTR:ジョブ
+	CASE "メイド"
+		PRINTFORML 主が持ってきた魔術道具の起動に付き合っていた際、
+		PRINTFORML 誤作動か「そういう道具」なのか…　魔界へのゲートが開いてしまったのだ。
+		PRINTFORML 彼女が意識を取り戻した時には見知らぬ土地にいた上に、主どころか他のニンゲンの姿も一切見当たらなかった。
+	
+	CASE "シスター","巫女"
+		PRINTFORML 魔族と戦う力を持つ%CSTR:ジョブ%の支援も彼女の仕事のうちなのだが、
+		PRINTFORML 道具の手入れの際、何か良くないものが残っていたのか…　魔界へのゲートが開いてしまった。
+		PRINTFORML 彼女が意識を取り戻した時には見知らぬ土地に、武器もなくたった1人で放り出されていた。
+	
+	CASEELSE
+		PRINTFORML 知的好奇心から曰く付きの魔術道具を購入し、起動実験をしていたところ
+		PRINTFORML 誤作動か「そういう道具」なのか…　魔界へのゲートが開いてしまったのだ。
+		PRINTFORML 彼女が意識を取り戻した時には見知らぬ土地に、武器もなくたった1人で放り出されていた。
+	
+	ENDSELECT
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","ゲート事故2")
+	PRINTFORML 「双方向ゲートを使えば帰ることができる」と聞いたことはあったものの…
+	PRINTFORML 全く土地勘のないこんな場所ではそれがどの方角にあるのかすらさっぱりである。
+	PRINTFORML 幸いにもここは山で食料にはありつけそうであり、降りていけば街に辿り着けそうだ。
+	CALL KOJO_PRINT("魔界入り","ゲート事故3")
+	PRINTFORML …魔界の住民が自分をどのように扱うかという最大の問題があるが、それ以外に手段がなさそうなため
+	PRINTFORML %CALLNAME%は一か八か魔界の住民が住んでいるであろう街に向かうことにした…
+	PRINTW
+	CALL PURPOSE_CHANGE("帰還")
+
+CASE 5
+	CALL KOJO_PRINT("魔界入り","討伐1")
+	PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()%が魔界に来たのは、【魔族討伐】のためである。
+	PRINTFORML ニンゲンと魔族の長きにわたる戦いを、なんとしても自分の代で、ニンゲンの勝利で終わらせようという志を持つ者%PRINT_EXIST_GROUP()%。
+	SELECTCASE CFLAG:仲間規模
+	CASE 0
+		PRINTFORML たとえ%CALLNAME%1人だろうと、その力は一騎当千と言って差し支えない。
+	CASE 1,2
+		PRINTFORML 人数こそ小規模だが、%CALLNAME%を中心とする精鋭部隊だ。
+	CASE 3
+		PRINTFORML %CALLNAME%を中心として大規模な部隊で魔界に攻め入ってきたのだ。
+	ENDSELECT
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","討伐2")
+	PRINTFORML なんとしても自分%PRINT_EXIST_GROUP()%の手で魔王を討ち倒す。
+	PRINTFORML そう考える%CALLNAME%%PRINT_EXIST_GROUP()%の目的地は、最初から1つ、遠くに見える巨大な城しかない。
+	PRINTFORML そこまでの消耗はなるべく避けていきたいため、さらに遠くに見える巨大な生物を警戒しながら歩みを進めた…
+	PRINTW
+	CALL PURPOSE_CHANGE("討伐")
+
+CASE 6
+	CALL PURPOSE_CHANGE("逃走")
+	CALL KOJO_PRINT("魔界入り","処分寸前1")
+	PRINTFORML %CALLNAME%が魔界に来たのは、帰ってこない仲間を奪還するため…だったのだが。
+	PRINTFORML 奮闘虚しく魔族に敗北し、捕らえられていた。
+	PRINTFORML 胎生のオス魔族と戦闘になり敗北したメスは、通常肉便器として使い捨てられる運命なのだが、
+	PRINTFORML %CALLNAME%は【処女結界】を持っていたため体は無事で済んでいた。
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","処分寸前2")
+	PRINTFORML ただ、そうなるとせっかくの美人なのに正直使い道に困る。
+	PRINTFORML 彼女を打ち負かした魔族はもったいないが諦め、街の牢屋に保管していた。
+	PRINTFORML このまま引き取り手が出なければ%CALLNAME%は魔獣の餌になる運命だったのだが…
+	PRINTW
+
+CASE 7
+	CALL PURPOSE_CHANGE("逃走")
+	CALL KOJO_PRINT("魔界入り","競売1")
+	PRINTFORML 先日魔界で捕らえられたニンゲンの集団の中に%CALLNAME%がいた。
+	IF CSTR:身分 == "王族"
+		PRINTFORML 周囲のニンゲンの反応からすると王族らしく、それならばいくらでも使い道があるというもの。
+	ELSE
+		PRINTFORML 地上に攻め込んでも、魔界で防衛してもそうそう見かけない珍しい種族のニンゲンだ。
+	ENDIF
+	PRINTFORML 捕らえた魔族は%CALLNAME%をどう使うか悩み、競売にかけて好き者に売ることにしたのだった。
+	PRINTW
+
+CASE 8,9
+	CALL KOJO_PRINT("魔界入り","特殊種族1")
+	PRINTFORML %CALLNAME%が魔界に来たのは、【魔族討伐】のためである。
+	PRINTFORML …と言っても、別に%CALLNAME%が軍隊にいるとかそういう話ではない。
+	IF TALENT:天界種族
+		IF GROUPMATCH(CSTR:性格,"強気","生意気")
+			PRINTFORML 地上のニンゲンが魔族と戦っているのを手助けしてやろう、と天から目線の考えでわざわざ魔界に降り立ったのである。
+		ELSE
+			PRINTFORML 地上のニンゲンに肩入れしすぎて、自分が魔族を倒してあげようと思い立ったのである。
+		ENDIF
+	ELSE
+		IF GROUPMATCH(CSTR:性格,"強気","生意気","高潔")
+			PRINTFORML 地上のどの種族より優れた自分が、魔族との戦争を終わらせてやろうと考えたのである。
+		ELSE
+			PRINTFORML 他のニンゲンより強い種族の自分なら、魔界に攻め込んでも戦えると考えたのである。
+		ENDIF
+	ENDIF
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","特殊種族2")
+	PRINTFORML そうなると、目指すべきは遠くに見える巨大な城だろう。
+	PRINTFORML そこまでの消耗はなるべく避けていきたいため、さらに遠くに見える巨大な生物を警戒しながら歩みを進めた…
+	PRINTW
+	IF TALENT:天界種族
+		CALL PURPOSE_CHANGE("討伐手伝い")
+	ELSE
+		CALL PURPOSE_CHANGE("討伐")
+	ENDIF
+
+CASE 10
+	;異世界転移はいろいろあると思うのでここでは汎用の文章を書くよ
+	CALL KOJO_PRINT("魔界入り","異世界転移1")
+	PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()%が魔界に来てしまったのは、【異世界転移】の発生である。
+	IF CFLAG:非戦闘職
+		PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()%はそもそも全く違う世界で暮らしていたのだが、
+		PRINTFORML 自室にいつの間にか置かれていた見知らぬ道具を手に取った途端、それが光を放ち…
+		PRINTFORML 彼女が意識を取り戻した時には見知らぬ土地…創作作品で【魔界】と呼ばれていそうな、そんな場所にいた。
+	ELSE
+		PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()%はそもそも全く違う世界で全く違う敵と戦っていたのだが、
+		PRINTFORML 戦場に突如現れた見知らぬ道具が光を放ち…
+		PRINTFORML 彼女が意識を取り戻した時には見知らぬ土地…いわゆる【魔界】と呼ばれていそうな、そんな場所にいた。
+	ENDIF
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","異世界転移2")
+	PRINTFORML この世界のニンゲンであれば「双方向ゲートを使えば帰ることができる」と聞いたことがあるだろう。
+	PRINTFORML だが、別の世界から来た%CALLNAME%%PRINT_EXIST_GROUP()%にはそんなこと知る由もない。
+	PRINTFORML 果たしてこれからどうすればいいのか…
+	PRINTW
+	CALL KOJO_PRINT("魔界入り","異世界転移3")
+	PRINTFORML しばらく考えたのち、%CALLNAME%%PRINT_EXIST_GROUP()%は遠くに見える街を訪ねてみることにした。
+	PRINTFORML この世界が想像通りなら、あの街に住んでいるのはおそらく自分とは違う種族だろう。
+	PRINTFORML 言葉が通じるか、どんな扱いをされるかもわからないが、この場に留まり続けるよりは
+	PRINTFORML 元の世界に帰る手がかりが掴めるだろうと信じることにした…
+	CALL PURPOSE_CHANGE("異世界転移")
+	
+ENDSELECT
+
+

@@ -1,0 +1,531 @@
+﻿
+;ABL見て刻印つける
+@MARK_GET
+
+SIF !LINEISEMPTY()
+	PRINTL 
+SETCOLOR 0xFF70FF
+ALIGNMENT CENTER
+;淫乳
+;Ｂ感覚+Ｎ感覚20以上で100回絶頂
+IF ABL:Ｂ感覚 +ABL:Ｎ感覚 >= 20 && EX:Ｂ絶頂 +EX:Ｎ絶頂 >= 100 && !MARK:淫乳
+	MARK:淫乳 = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of having her breasts toyed with...
+	CALL MARK_GET_HEAT("淫乳")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;淫核
+;Ｃ感覚10以上で100回絶頂
+IF ABL:Ｃ感覚 >= 10 && EX:Ｃ絶頂 >= 100 && !MARK:淫核
+	MARK:淫核 = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of having her clit toyed with...
+	CALL MARK_GET_HEAT("淫核")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;淫壺
+;挿入してないのに上がらないよう一応書く
+IF ABL:Ｖ感覚 >= 10 && EX:Ｖ絶頂 >= 100 && !MARK:淫壺 && GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	MARK:淫壺 = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of her pussy toyed with...
+	CALL MARK_GET_HEAT("淫壺")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;淫尻
+IF ABL:Ａ感覚 >= 10 && EX:Ａ絶頂 >= 100 && !MARK:淫尻 && GETBIT(＃Ｐ使用／Ａ挿入＃)
+	MARK:淫尻 = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of having her anus toyed with...
+	CALL MARK_GET_HEAT("淫尻")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;濃厚母乳
+;単にABL見ればOKじゃないかな
+;下位の刻印消すので一工夫
+IF ABL:母乳濃度 == 1 && !MARK:濃厚母乳
+	VARSET MARK,0,10,15
+	MARK:濃厚母乳 = 1
+	PRINTFORML You can now squeeze more nutritious %SAVESTR:表記／母乳% from %CALLNAME%...
+	CALL MARK_GET_MILK("濃厚母乳")
+	RESTART
+ENDIF
+
+IF ABL:母乳濃度 == 2 && !MARK:上質母乳
+	VARSET MARK,0,10,15
+	MARK:上質母乳 = 1
+	PRINTFORML The %SAVESTR:表記／母乳% you're squeezing from %CALLNAME% now contains even more nutrients...
+	CALL MARK_GET_MILK("上質母乳")
+	RESTART
+ENDIF
+
+IF ABL:母乳濃度 == 3 && !MARK:豊潤母乳
+	VARSET MARK,0,10,15
+	MARK:豊潤母乳 = 1
+	PRINTFORML %CALLNAME% now produces even richer %SAVESTR:表記／母乳%...
+	CALL MARK_GET_MILK("豊潤母乳")
+	RESTART
+ENDIF
+
+IF ABL:母乳濃度 == 4 && !MARK:特濃母乳
+	VARSET MARK,0,10,15
+	MARK:特濃母乳 = 1
+	PRINTFORML The %SAVESTR:表記／母乳% you're squeezing out of %CALLNAME% becomes even more nutritious...
+	CALL MARK_GET_MILK("特濃母乳")
+	RESTART
+ENDIF
+
+IF ABL:母乳濃度 == 5 && !MARK:極上母乳
+	VARSET MARK,0,10,15
+	MARK:極上母乳 = 1
+	PRINTFORML You can now squeeze %SAVESTR:表記／母乳% of the best taste and highest nutrition from %CALLNAME%...
+	CALL MARK_GET_MILK("極上母乳")
+	RESTART
+ENDIF
+
+;母乳生産力がしきい値で刻印追加、巨乳以上の必要あり　永久母乳ならサイズに関わらず
+IF ABL:母乳生産力 >= 5 && !MARK:ミルクタンク && (ABL:バストサイズ >= BUSTSIZE_巨乳 || MARK:絶頂魔力回復淫紋)
+	MARK:ミルクタンク = 1
+	PRINTFORML Through repeated milking sessions, %CALLNAME%'s %PRINT_BUST()% have been conditioned to produce plenty of milk...
+	CALL MARK_GET_HEAT("ミルクタンク")
+	CALL MARK_GET_PRIDE_BREAK_COW(2000)
+	
+	;計算のほうでWAIT判断するよ
+	CALL MILKTANK_CALC
+	RESTART
+ENDIF
+
+IF ABL:母乳生産力 >= 10 && !MARK:ホルスタイン && (ABL:バストサイズ >= BUSTSIZE_豊乳 || MARK:絶頂魔力回復淫紋)
+	MARK:ホルスタイン = 1
+	PRINTFORML Through repeated milking sessions, %CALLNAME%'s body has been conditioned to that of a diary cow, regardless of her will...
+	CALL MARK_GET_HEAT("ホルスタイン")
+	CALL MARK_GET_PRIDE_BREAK_COW(2000)
+	CALL MILKTANK_CALC
+	RESTART
+ENDIF
+
+IF ABL:母乳生産力 >= 20 && !MARK:ミルクサーバー && (ABL:バストサイズ >= BUSTSIZE_爆乳 || MARK:絶頂魔力回復淫紋)
+	MARK:ミルクサーバー = 1
+	PRINTFORML Having been subject to milking sessions exceeding mortal limits, 
+	PRINTFORML %CALLNAME%'s body has been transformed into one made to be milked...
+	CALL MARK_GET_HEAT("ミルクサーバー")
+	CALL MARK_GET_PRIDE_BREAK_COW(4000)
+	CALL MILKTANK_CALC
+	RESTART
+ENDIF
+
+;搾乳中毒
+IF ABL:搾乳中毒 >= 10 && !MARK:搾乳中毒
+	MARK:搾乳中毒 = 1
+	PRINTFORML %CALLNAME% has started to feel pleasure from being milked...
+	CALL MARK_GET_HEAT("搾乳中毒")
+	CALL MARK_GET_PRIDE_BREAK_COW(2000)
+	RESTART
+ENDIF
+
+;搾乳奴隷
+IF ABL:搾乳中毒 >= 15 && !MARK:搾乳奴隷
+	MARK:搾乳奴隷 = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of being milked...
+	CALL MARK_GET_HEAT("搾乳奴隷")
+	CALL MARK_GET_PRIDE_BREAK_COW(2000)
+	CALL PURPOSE_CHANGE_CALC("搾乳奴隷")
+	RESTART
+ENDIF
+
+;搾乳家畜
+IF ABL:搾乳中毒 >= 20 && !MARK:搾乳家畜
+	MARK:搾乳家畜 = 1
+	PRINTFORML %CALLNAME% has completely fallen for the pleasure of being milked,
+	PRINTFORML with her dignity as a civilized being nowhere to be seen on her debauched face...
+	CALL MARK_GET_HEAT("搾乳家畜")
+	CALL MARK_GET_PRIDE_BREAK_COW(4000)
+	CALL PURPOSE_CHANGE_CALC("搾乳家畜")
+	RESTART
+ENDIF
+
+;テクニシャン
+IF ABL:技巧 >= 10 && !MARK:テクニシャン
+	MARK:テクニシャン = 1
+	PRINTFORML %CALLNAME% is becoming used to sexual activities...
+	CALL MARK_GET_HEAT("テクニシャン")
+	RESTART
+ENDIF
+
+;床上手
+IF ABL:技巧 >= 20 && !MARK:床上手
+	MARK:床上手 = 1
+	PRINTFORML %CALLNAME% has refined her sexual skills, acquiring instant climax techniques...
+	CALL MARK_GET_HEAT("床上手")
+	RESTART
+ENDIF
+
+;匠の技
+IF ABL:技巧 >= 30 && !MARK:匠の技
+	MARK:匠の技 = 1
+	PRINTFORML %CALLNAME% has refined her sexual skills to a level envied by even succubi...
+	CALL MARK_GET_HEAT("匠の技")
+	RESTART
+ENDIF
+
+;母性的
+IF ABL:母性 >= 10 && !MARK:母性的
+	MARK:母性的 = 1
+	PRINTFORML Due to having her breasts sucked numerous times, %CALLNAME%'s maternal instincts have been stimulated...
+	CALL MARK_GET_HEAT("母性的")
+	CALL MARK_GET_PRIDE_BREAK_COW(1000)
+	RESTART
+ENDIF
+
+;母性本能開花
+IF ABL:母性 >= 20 && !MARK:母性本能開花
+	MARK:母性本能開花 = 1
+	PRINTFORML Due to having her breasts sucked numerous times, %CALLNAME%'s maternal instincts have fully awakened...
+	CALL MARK_GET_HEAT("母性本能開花")
+	CALL MARK_GET_PRIDE_BREAK_COW(1000)
+	RESTART
+ENDIF
+
+;みんなのママ
+IF ABL:母性 >= 30 && !MARK:みんなのママ
+	MARK:みんなのママ = 1
+	PRINTFORML %CALLNAME%'s maternal instincts have gone into overdrive, and she is always looking for someone to pamper...
+	CALL MARK_GET_HEAT("みんなのママ")
+	CALL MARK_GET_PRIDE_BREAK_COW(1000)
+	RESTART
+ENDIF
+
+;奉仕中毒
+IF ABL:奉仕精神 >= 10 && !MARK:奉仕中毒
+	MARK:奉仕中毒 = 1
+	PRINTFORML %CALLNAME% has begun to find pleasure from servicing...
+	CALL MARK_GET_HEAT("奉仕中毒")
+	CALL MARK_GET_PRIDE_BREAK(1500)
+	RESTART
+ENDIF
+
+;ご奉仕上手
+IF ABL:奉仕精神 >= 20 && !MARK:ご奉仕上手
+	MARK:ご奉仕上手 = 1
+	PRINTFORML %CALLNAME% has developed a strong sense of pleasure from servicing...
+	CALL MARK_GET_HEAT("ご奉仕上手")
+	CALL MARK_GET_PRIDE_BREAK(1500)
+	RESTART
+ENDIF
+
+;ご奉仕雌奴隷
+IF ABL:奉仕精神 >= 30 && !MARK:ご奉仕雌奴隷
+	MARK:ご奉仕雌奴隷 = 1
+	PRINTFORML %CALLNAME% now believes serving her master is her sole purpose in life, and constantly thinks about servicing him...
+	CALL MARK_GET_HEAT("ご奉仕雌奴隷")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;膣内射精中毒
+IF ABL:膣内射精中毒 >= 5 && !MARK:膣内射精中毒
+	MARK:膣内射精中毒 = 1
+	PRINTFORML %CALLNAME%'s pussy has learned the pleasure of being cummed inside.
+	CALL MARK_GET_HEAT("膣内射精中毒")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;搾精おまんこ
+IF ABL:膣内射精中毒 >= 10 && !MARK:搾精おまんこ
+	MARK:搾精おまんこ = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of vaginal creampies...
+	CALL MARK_GET_HEAT("搾精おまんこ")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;精液便女
+IF ABL:膣内射精中毒 >= 20 && !MARK:精液便女
+	MARK:精液便女 = 1
+	PRINTFORML %CALLNAME% has completely fallen for the pleasure of being vaginally creampied,
+	PRINTFORML with her dignity as a civilized being nowhere to be seen on her debauched face...
+	CALL MARK_GET_HEAT("精液便女")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;尻穴射精中毒
+IF ABL:尻穴射精中毒 >= 5 && !MARK:尻穴射精中毒
+	MARK:尻穴射精中毒 = 1
+	PRINTFORML %CALLNAME%'s anus has learned the pleasure of being cummed inside.
+	CALL MARK_GET_HEAT("尻穴射精中毒")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;おしりまんこ
+IF ABL:尻穴射精中毒 >= 10 && !MARK:おしりまんこ
+	MARK:おしりまんこ = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of anal creampies...
+	CALL MARK_GET_HEAT("おしりまんこ")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;尻穴便器
+IF ABL:尻穴射精中毒 >= 20 && !MARK:尻穴便器
+	MARK:尻穴便器 = 1
+	PRINTFORML %CALLNAME% has completely fallen for the pleasure of being anally creampied,
+	PRINTFORML with her dignity as a civilized being nowhere to be seen on her debauched face...
+	CALL MARK_GET_HEAT("尻穴便器")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;乳内射精中毒
+IF ABL:乳内射精中毒 >= 5 && !MARK:乳内射精中毒
+	MARK:乳内射精中毒 = 1
+	PRINTFORML %CALLNAME%'s breasts has learned the pleasure of being cummed in-between.
+	CALL MARK_GET_HEAT("乳内射精中毒")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;おっぱいまんこ
+IF ABL:乳内射精中毒 >= 10 && !MARK:おっぱいまんこ
+	MARK:おっぱいまんこ = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of breast creampies...
+	CALL MARK_GET_HEAT("おっぱいまんこ")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;パイズリオナホ
+IF ABL:乳内射精中毒 >= 20 && !MARK:パイズリオナホ
+	MARK:パイズリオナホ = 1
+	PRINTFORML %CALLNAME% has completely fallen for the pleasure of having her breasts creampied,
+	PRINTFORML with her dignity as a civilized being nowhere to be seen on her debauched face...
+	CALL MARK_GET_HEAT("パイズリオナホ")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+
+
+
+;触手中毒
+IF ABL:触手中毒 >= 5 && !MARK:触手中毒
+	MARK:触手中毒 = 1
+	PRINTFORML %CALLNAME%'s body has learned the pleasure of being toyed with by tentacles...
+	CALL MARK_GET_HEAT("触手中毒")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;触手の虜
+IF ABL:触手中毒 >= 10 && !MARK:触手の虜
+	MARK:触手の虜 = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of tentacles...
+	CALL MARK_GET_HEAT("触手の虜")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;触手の苗床
+IF ABL:触手中毒 >= 20 && !MARK:触手の苗床
+	MARK:触手の苗床 = 1
+	PRINTFORML %CALLNAME%'s body can no longer live without tentacles...
+	CALL MARK_GET_HEAT("触手の苗床")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;精液中毒
+IF ABL:精液中毒 >= 5 && !MARK:精液中毒
+	MARK:精液中毒 = 1
+	PRINTFORML %CALLNAME%'s body is now aroused by the scent of semen...
+	CALL MARK_GET_HEAT("精液中毒")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;精液依存
+IF ABL:精液中毒 >= 10 && !MARK:精液依存
+	MARK:精液依存 = 1
+	PRINTFORML %CALLNAME%'s body now feels restless without the scent of semen...
+	CALL MARK_GET_HEAT("精液依存")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;精液崇拝
+IF ABL:精液中毒 >= 20 && !MARK:精液崇拝
+	MARK:精液崇拝 = 1
+	PRINTFORML %CALLNAME% now loves semen so much that she'll seduce any males in sight...
+	CALL MARK_GET_HEAT("精液崇拝")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;精飲中毒
+IF ABL:精飲中毒 >= 5 && !MARK:精飲中毒
+	MARK:精飲中毒 = 1
+	PRINTFORML %CALLNAME% is no longer resistant towards drinking semen...
+	CALL MARK_GET_HEAT("精飲中毒")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;精飲味覚
+IF ABL:精飲中毒 >= 10 && !MARK:精飲味覚
+	MARK:精飲味覚 = 1
+	PRINTFORML %CALLNAME% has come to find the taste of semen to be delicious...
+	CALL MARK_GET_HEAT("精飲味覚")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;精飲渇望
+IF ABL:精飲中毒 >= 20 && !MARK:精飲渇望
+	MARK:精飲渇望 = 1
+	PRINTFORML %CALLNAME% has fallen to the point that she begs for semen to drink...
+	CALL MARK_GET_HEAT("精飲渇望")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;輪姦中毒
+IF ABL:輪姦中毒 >= 5 && !MARK:輪姦中毒
+	MARK:輪姦中毒 = 1
+	PRINTFORML %CALLNAME% is starting to feel more pleasure from being gangbanged...
+	CALL MARK_GET_HEAT("輪姦中毒")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;肉便器
+IF ABL:輪姦中毒 >= 10 && !MARK:肉便器
+	MARK:肉便器 = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of being gangbanged...
+	CALL MARK_GET_HEAT("肉便器")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+
+
+;被虐中毒
+IF ABL:マゾっ気 >= 5 && !MARK:被虐中毒
+	MARK:被虐中毒 = 1
+	PRINTFORML %CALLNAME% has started to derive pleasure from pain...
+	CALL MARK_GET_HEAT("被虐中毒")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;ドＭ
+IF ABL:マゾっ気 >= 10 && !MARK:ドＭ
+	MARK:ドＭ = 1
+	PRINTFORML %CALLNAME% has become enraptured by the pleasure of being abused...
+	CALL MARK_GET_HEAT("ドＭ")
+	CALL MARK_GET_PRIDE_BREAK(2000)
+	RESTART
+ENDIF
+
+;雌豚
+IF ABL:マゾっ気 >= 20 && !MARK:雌豚
+	MARK:雌豚 = 1
+	PRINTFORML %CALLNAME% has completely fallen for the pleasure of being abused,
+	PRINTFORML with her dignity as a civilized being nowhere to be seen on her debauched face...
+	CALL MARK_GET_HEAT("雌豚")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+
+;レズ中毒
+IF ABL:レズっ気 >= 5 && !MARK:レズ中毒
+	MARK:レズ中毒 = 1
+	PRINTFORML %CALLNAME% has started to derive greater pleasure from training other females, 
+	PRINTFORML as well as being trained by another female...
+	CALL MARK_GET_HEAT("レズ中毒")
+	CALL MARK_GET_PRIDE_BREAK(1500)
+	RESTART
+ENDIF
+
+;レズ依存
+IF ABL:レズっ気 >= 10 && !MARK:レズ依存
+	MARK:レズ依存 = 1
+	PRINTFORML %CALLNAME% has become completely addicted to lesbian training...
+	CALL MARK_GET_HEAT("レズ依存")
+	CALL MARK_GET_PRIDE_BREAK(1500)
+	RESTART
+ENDIF
+
+;百合姫
+IF ABL:レズっ気 >= 20 && !MARK:百合姫
+	MARK:百合姫 = 1
+	PRINTFORML %CALLNAME% now knowns everything about making females feel good, and can easily bring one to climax...
+	PRINTFORML She has also found utmost pleasure in being subjected to lesbian training herself as well...
+	CALL MARK_GET_HEAT("百合姫")
+	CALL MARK_GET_PRIDE_BREAK(5000)
+	RESTART
+ENDIF
+RESETCOLOR
+ALIGNMENT LEFT
+
+
+
+;特定刻印入手時の抵抗心崩壊
+@MARK_GET_PRIDE_BREAK(ARG)
+
+;キャラメイク直後に来てる場合はスキップ
+SIF FLAG:キャラメイク中
+	RETURN
+DAMAGE = ARG
+CALL MIND_BASE_DIRECT_MINUS("抵抗心",DAMAGE)
+CALL MIND_BASE_DIRECT_MINUS("尊厳",DAMAGE)
+CALL MIND_BASE_DIRECT_MINUS("理性",DAMAGE)
+CALL MIND_PALAM_AFTER_PRINT(1)
+
+
+
+;乳牛化
+@MARK_GET_PRIDE_BREAK_COW(ARG)
+
+SIF FLAG:キャラメイク中
+	RETURN
+DAMAGE = ARG
+LOVE = ARG /2
+CALL MIND_BASE_DIRECT_MINUS("抵抗心",DAMAGE)
+CALL MIND_BASE_DIRECT_MINUS("尊厳",DAMAGE)
+CALL MIND_BASE_DIRECT_MINUS("理性",DAMAGE)
+CALL MIND_BASE_DIRECT_PLUS("乳牛堕ち",LOVE)
+CALL MIND_PALAM_AFTER_PRINT(1)
+
+
+
+;刻印のハート囲み　ARGS:刻印名
+@MARK_GET_HEAT(ARGS)
+
+CALL HEARTCB(0xD02830)
+PRINTFORM %CALLNAME% acquired【%MARK_ENG(ARGS)%】
+CALL HEARTCB(0xD02830)
+PRINTL
+ALIGNMENT LEFT
+
+;刻印入手フラグでWAIT挟むか決める
+TFLAG:刻印入手 = 1
+
+
+
+;刻印のハート囲み母乳濃度版　ARGS:刻印名
+@MARK_GET_MILK(ARGS)
+
+CALL HEARTCB(0xD02830)
+PRINTFORM %CALLNAME% now produces【%MARK_ENG(ARGS)%】
+CALL HEARTCB(0xD02830)
+PRINTL
+ALIGNMENT LEFT
+TFLAG:刻印入手 = 1
+

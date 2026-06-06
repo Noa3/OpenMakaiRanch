@@ -1,0 +1,365 @@
+﻿
+;動作確認用口上
+;ほんとに動作確認用なのでえっちも何もあったもんじゃない
+;この口上だけ「候補全部表示する」処理をするよ
+;全部埋めるのは大変だと思うのでないと寂しいポイントをつけとく
+;なきゃなくても大丈夫なとこもまあまああるよ　趣味だね
+
+;基本的に1キャラにつき1回しか表示するタイミングがないものがこのへん
+
+; ======================================
+
+;動作確認用口上
+;口上識別名：動作確認用口上
+;↑口上を作ったら[Str.csv]の6100～に口上識別名を書いてね
+;口上作者：polt
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：
+;↑加筆も何もない
+; ======================================
+
+;ARGS:0　シチュ指定　ARGS:1,2　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_動作確認用口上_EVENT(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+;この関数の場合はARGS:0の判定が必要になるよ
+SELECTCASE ARGS:0
+
+;キャラメイク完了して魔界入りしたときの口上
+;1キャラ1回いずれかのパターンのみなので重要度低でもいいかも
+CASE "魔界入り"
+	SELECTCASE ARGS:1
+	CASE "魔界水晶1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[魔界水晶]1」"
+	CASE "魔界水晶2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[魔界水晶]2」"
+		
+	CASE "魔界植物1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[魔界植物]1」"
+	CASE "魔界植物2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[魔界植物]2」"
+	
+	CASE "奪還1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[奪還]1」"
+	CASE "奪還2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[奪還]2」"
+		
+	CASE "名声1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[名声]1」"
+	CASE "名声2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[名声]2」"
+	
+	CASE "ゲート事故1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[ゲート事故]1」"
+	CASE "ゲート事故2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[ゲート事故]2」"
+	CASE "ゲート事故3"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[ゲート事故]3」"
+	
+	CASE "討伐1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[討伐]1」"
+	CASE "討伐2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[討伐]2」"
+	
+	CASE "特殊種族1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_【特殊種族】の場合1」"
+	CASE "特殊種族2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_【特殊種族】の場合2」"
+	
+	CASE "処分寸前1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[処分寸前]1」"
+	CASE "処分寸前2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[処分寸前]2」"
+	
+	CASE "競売1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[競売]1」"
+	
+	CASE "異世界転移1"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[異世界転移]1」"
+	CASE "異世界転移2"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[異世界転移]2」"
+	CASE "異世界転移3"
+		CALL MESSAGE_BOX,@"「test_奴隷候補決定後の口上です_[異世界転移]3」"
+	ENDSELECT
+
+;基本的に1人1回のイベントで使う
+;口上なくても通るように作ってはいるので重要度中
+;でも処女喪失とかはある方が興奮する、しない？
+CASE "イベント"
+	;Ｍ装備が有効な時にイベントを呼び出した場合は専用分岐に移行するといいかもしれない
+	IF TFLAG:Ｍ装備
+		CALL KOJO_PRINT("Ｍ装備中イベント",ARGS:1,ARGS:2,ARGS:3)
+		
+		;CALLの関係でＭ装備中イベント呼び出した場合ここでリセットが必要
+		MESSAGE_COUNT = 0
+		RETURN
+	ENDIF
+	
+	SELECTCASE ARGS:1
+	CASE "奴隷引き取り"
+		CALL MESSAGE_BOX,@"「test_捕まえた奴隷を引き取った時の口上です」"
+	CASE "母乳体質化"
+		CALL MESSAGE_BOX,@"「test_【母乳体質】になった時の口上です」"
+	CASE "魔力母乳体質化"
+		CALL MESSAGE_BOX,@"「test_【魔力母乳体質】になった時の口上です」"
+	CASE "超乳化"
+		CALL MESSAGE_BOX,@"「test_膨乳により【超乳】になった時の口上です」"
+	CASE "崩壊"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中に精神力が0になり【崩壊】した時の口上です」"
+		CASEELSE
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中以外で精神力が0になり【崩壊】した時の口上です」"
+		ENDSELECT
+	CASE "反抗削除"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中に反抗心が0になり【反抗】が削除された時の口上です」"
+		CASEELSE
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中以外で反抗心が0になり【反抗】が削除された時の口上です」"
+		ENDSELECT
+	
+	CASE "屈服"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中に精神力が10\%以下になり【屈服】した時の口上です」"
+		CASEELSE
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中以外で精神力が10\%以下になり【屈服】した時の口上です」"
+		ENDSELECT
+	
+	CASE "陥落"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中に好感度が50\%以上になり【陥落】した時の口上です」"
+		CASEELSE
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中以外で好感度が50\%以上になり【陥落】した時の口上です」"
+		ENDSELECT
+	
+	CASE "恋慕告白"
+		SELECTCASE ARGS:2
+		CASE "前"
+			;もう乳牛堕ちしてるのにしおらしいのも変かな？の分岐
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「test_調教終了後、【乳牛堕ち】していて好感度が100\%で【恋慕】化した時の前口上です」"
+			ELSE
+				CALL MESSAGE_BOX,@"「test_調教終了後、【乳牛堕ち】しておらず好感度が100\%で【恋慕】化した時の前口上です」"
+			ENDIF
+		CASE "後"
+			CALL MESSAGE_BOX,@"「test_調教終了後、好感度が100\%で【恋慕】化した時の後口上です」"
+		ENDSELECT
+	
+	CASE "隷属告白"
+		SELECTCASE ARGS:2
+		CASE "前"
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「test_調教終了後、【乳牛堕ち】していて好感度が200\%で【隷属】化した時の前口上です」"
+			ELSE
+				CALL MESSAGE_BOX,@"「test_調教終了後、【乳牛堕ち】しておらず好感度が200\%で【隷属】化した時の前口上です」"
+			ENDIF
+		CASE "後"
+			CALL MESSAGE_BOX,@"「test_調教終了後、好感度が200\%で【隷属】化した時の後口上です」"
+		ENDSELECT
+	
+	CASE "乳牛堕ち"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中に[乳牛堕ち]が100\%になり【乳牛堕ち】した時の口上です」"
+		CASEELSE
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]中以外で[乳牛堕ち]が100\%になり【乳牛堕ち】した時の口上です」"
+		ENDSELECT
+	
+	CASE "処女結界破壊"
+		;この直後に処女喪失の口上も表示されるよ
+		CALL MESSAGE_BOX,@"「test_【処女結界】が破壊される直前の口上です」"
+		CALL MESSAGE_BOX,@"「test_この直後に処女喪失の口上も表示されます」"
+	
+	CASE "処女喪失直前"
+		;あなたちんぽの場合
+		IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%のペニスでの処女喪失直前の口上です」"
+			CALL MESSAGE_BOX,@"「%PENIS_CALL()%←でペニスの呼び方、%VAGINA_CALL()%←で奴隷ごとの膣の呼び方を呼び出します」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%のペニス以外での処女喪失直前の口上です」"
+		ENDIF
+	
+	CASE "処女喪失直後"
+		IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%のペニスでの処女喪失直後の口上です」"
+		ELSEIF V_PENIS == "ゴブリン"
+			CALL MESSAGE_BOX,@"「test_%V_PENIS%によって処女喪失した直後の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%のペニス以外での処女喪失直後の口上です」"
+		ENDIF
+	
+	CASE "Ａ処女喪失直前"
+		IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%のペニスでのＡ処女喪失直前の口上です」"
+			CALL MESSAGE_BOX,@"「%PENIS_CALL()%←でペニスの呼び方、%ANAL_CALL()%←で奴隷ごとのアナルの呼び方を呼び出します」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%のペニス以外でのＡ処女喪失直前の口上です」"
+		ENDIF
+	
+	CASE "Ａ処女喪失直後"
+		IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%のペニスでのＡ処女喪失直後の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%のペニス以外でのＡ処女喪失直後の口上です」"
+		ENDIF
+	
+	CASE "初キス"
+		IF KISS_PLAYER == CALLNAME:0
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%にファーストキスをさせられた時の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%KISS_PLAYER%にファーストキスをさせられた時の口上です」"
+		ENDIF
+	
+	CASE "初パイズリ"
+		IF PAIZURI_PENIS == CALLNAME:0
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%によって初めてパイズリをさせられた時の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%PAIZURI_PENIS%によって初めてパイズリをさせられた時の口上です」"
+		ENDIF
+	
+	CASE "初Ｍセックス"
+		;口が塞がっているのでここに来ない
+	
+	CASE "あなた童貞卒業"
+		IF SOURCE:処女喪失
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%が童貞卒業した時、%CALLNAME%の処女喪失と同時だった場合の口上です」"
+		ELSEIF TALENT:貞操観念
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%が童貞卒業した時、%CALLNAME%が素質【貞操観念】の場合の口上です」"
+		ELSEIF TALENT:貞操無頓着
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%が童貞卒業した時、%CALLNAME%が素質【貞操無頓着】の場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%が童貞卒業した時、%CALLNAME%は非処女だった場合の口上です」"
+		ENDIF
+	
+	CASE "あなた初キス"
+		IF SOURCE:初キス
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%がファーストキスした時、%CALLNAME%のファーストキスと同時だった場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%がファーストキスした時、%CALLNAME%はキス経験済みだった場合の口上です」"
+		ENDIF
+	
+	CASE "あなた初パイズリ"
+		IF SOURCE:初パイズリ
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%が初めてパイズリした時、%CALLNAME%の初パイズリと同時だった場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%が初めてパイズリした時、%CALLNAME%はパイズリ経験済みだった場合の口上です」"
+		ENDIF
+	
+	CASE "あなた初授乳"
+		CALL MESSAGE_BOX,@"「test_%CALLNAME:0%が初めてニンゲンの母乳を飲んだ時の口上です」"
+	
+	CASE "あなた初Ｍセックス"
+		;あなたがペニス突っ込んでるのでここいらない気がする
+	
+	CASE "枷外し"
+		SELECTCASE ARGS:2
+		CASE "超乳"
+			CALL MESSAGE_BOX,@"「test_【超乳】のため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "超乳隷属"
+			CALL MESSAGE_BOX,@"「test_【超乳】かつ【隷属】または【乳牛堕ち】のため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "完堕ち"
+			CALL MESSAGE_BOX,@"「test_【隷属】【恋慕】【乳牛堕ち】のため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "崩壊"
+			;現状の分岐だと来ない
+		CASE "陥落"
+			CALL MESSAGE_BOX,@"「test_【陥落】のため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "屈服"
+			CALL MESSAGE_BOX,@"「test_【屈服】のため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "非戦闘職"
+			CALL MESSAGE_BOX,@"「test_【非戦闘職】のため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "霊力0"
+			CALL MESSAGE_BOX,@"「test_霊力を吸い尽くしたため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "処女結界破壊"
+			CALL MESSAGE_BOX,@"「test_【処女結界】を破壊し、【上位種族】ではなく力を失ったため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "魔力母乳体質"
+			CALL MESSAGE_BOX,@"「test_【魔力母乳体質】となり、魔力を使えないと戦えないため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		CASE "反抗削除"
+			CALL MESSAGE_BOX,@"「test_【反抗】を削除し【拒絶】となったため%CALLNAME%の＜魔力枷＞を外した時の口上です」"
+		ENDSELECT
+	
+	CASE "処女結界解除"
+		SELECTCASE ARGS:2
+		CASE "前"
+			CALL MESSAGE_BOX,@"「test_【処女結界】のまま【隷属】になり、処女結界を自らの意思で解除した時の前口上です」"
+		CASE "後"
+			CALL MESSAGE_BOX,@"「test_【処女結界】のまま【隷属】になり、処女結界を自らの意思で解除した時の後口上です」"
+		ENDSELECT
+	ENDSELECT
+
+;口が塞がっている場合にイベント踏んだ場合の再分岐
+;ここにある分岐以外はそもそもＭ装備で来ることないはず
+CASE "Ｍ装備中イベント"
+	SELECTCASE ARGS:1
+	CASE "母乳体質化"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で【母乳体質】になった時の口上です）"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている場合の口上は「んーんー」のようにくぐもった声以外はこのように心の声のようにするのがいいでしょう）"
+	CASE "魔力母乳体質化"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で【魔力母乳体質】になった時の口上です）"
+	CASE "超乳化"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で膨乳により【超乳】になった時の口上です）"
+	CASE "崩壊"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で[体内凌辱]中に精神力が0になり【崩壊】した時の口上です）"
+		CASEELSE
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で[体内凌辱]中以外で精神力が0になり【崩壊】した時の口上です）"
+		ENDSELECT
+	
+	CASE "処女結界破壊"
+		;この直後に処女喪失の口上も表示されるよ
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で【処女結界】が破壊される直前の口上です）"
+		CALL MESSAGE_BOX,@"（test_この直後に処女喪失の口上も表示されます）"
+	
+	CASE "処女喪失直前"
+		;あなたちんぽの場合
+		IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%のペニスでの処女喪失直前の口上です）"
+			CALL MESSAGE_BOX,@"（%PENIS_CALL()%←でペニスの呼び方、%VAGINA_CALL()%←で奴隷ごとの膣の呼び方を呼び出します）"
+		ELSE
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%のペニス以外での処女喪失直前の口上です）"
+		ENDIF
+	
+	CASE "処女喪失直後"
+		IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%のペニスでの処女喪失直後の口上です）"
+		ELSEIF V_PENIS == "ゴブリン"
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%V_PENIS%によって処女喪失した直後の口上です）"
+		ELSE
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%のペニス以外での処女喪失直後の口上です）"
+		ENDIF
+	
+	CASE "Ａ処女喪失直前"
+		IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%のペニスでのＡ処女喪失直前の口上です）"
+			CALL MESSAGE_BOX,@"（%PENIS_CALL()%←でペニスの呼び方、%ANAL_CALL()%←で奴隷ごとのアナルの呼び方を呼び出します）"
+		ELSE
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%のペニス以外でのＡ処女喪失直前の口上です）"
+		ENDIF
+	
+	CASE "Ａ処女喪失直後"
+		IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%のペニスでのＡ処女喪失直後の口上です）"
+		ELSE
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%のペニス以外でのＡ処女喪失直後の口上です）"
+		ENDIF
+	
+	CASE "初パイズリ"
+		IF PAIZURI_PENIS == CALLNAME:0
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%によって初めてパイズリをさせられた時の口上です）"
+		ELSE
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%PAIZURI_PENIS%によって初めてパイズリをさせられた時の口上です）"
+		ENDIF
+	
+	CASE "初Ｍセックス"
+		IF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME:0%によって初めてペニスを咥えさせられた時の口上です）"
+		ELSE
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%M_PENIS%によって初めてペニスを咥えさせられた時の口上です）"
+		ENDIF
+	ENDSELECT
+ENDSELECT
+

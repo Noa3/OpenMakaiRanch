@@ -1,0 +1,46 @@
+﻿
+;増加量計算
+;ARG→増加するキャラ,PLAYERかASSI
+@PLAYER_TECHNIQUE_EXP_UP_CALC(ARG)
+
+;調教者習得SOURCEのみかかってくる
+;調教中あまりにも多いので調教中は1/3する
+SIF TFLAG:調教中
+	SOURCE:調教者習得 /= 3
+CALL RANDOM_FIX(SOURCE:調教者習得,5,"調教者習得")
+SOURCE:調教者習得 += FIX
+
+;TARGETをイかせたら倍で上がる　回数は見ない
+;表示される元を倍にする
+SIF NOWEX:総絶頂
+	SOURCE:調教者習得 *= 2
+IF ABL:ARG:技巧 < 5
+	EXPUP = SOURCE:調教者習得 *(100 -20 *ABL:ARG:技巧)
+	EXPUP /= 100
+ELSE
+	EXPUP = SOURCE:調教者習得 /ABL:ARG:技巧
+	SIF ABL:ARG:技巧 >= 10
+		EXPUP /= 2
+ENDIF
+SIF TALENT:ARG:習得早い
+	TIMES EXPUP,1.20
+SIF TALENT:ARG:習得遅い
+	TIMES EXPUP,0.80
+CALL DIFFICULTY_CONFIG_APPLY("性EXP獲得量")
+
+
+
+;ASSIがいる場合の技巧EXP処理
+;今たぶん使ってない
+@ASSI_TECHNIQUE_EXP_UP
+
+SIF !SOURCE:調教者習得 || ASSI < 0
+	RETURN
+	;CALL PLAYER_TECHNIQUE_EXP_UP_CALC(ASSI)
+	;EXP:ASSI:習得 = LIMIT(EXP:ASSI:習得 +EXPUP,0,EXP_MAX)
+	;SIF EXP:ASSI:習得 < EXP_MAX || GETBIT(＃上限到達後表示／性経験値＃)
+	;	CALL PRINT_PLAYER_TECHNIQUE_EXP_UP(ASSI)
+	;CALL PLAYER_TECHNIQUE_ABL_UP(ASSI)
+
+
+

@@ -1,0 +1,50 @@
+﻿
+;アダルトショップPAGE1
+@ITEM_SHOP_ADULT_DETAIL_DISPOSABLE
+
+;アイテム名・価格・所持数
+PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:SELECT_ITEM)% 》%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%G Owned {ITEM:SELECT_ITEM,2} 
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "ローション"
+	PRINTL ＜Consumable＞
+	PRINTL During training: Tool command【Lotion】
+	PRINTL 
+	PRINTFORML Mainly used to apply to %SAVESTR:表記／膣% and %SAVESTR:表記／アナル% to improve sliding and reduce insertion pain.
+	PRINTFORML Dropping it on the %SAVESTR:表記／乳房% and using it for slippery titfucking will also enhance pleasure.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTFORML It can also be used when you want to grope the shiny, slippery %SAVESTR:表記／乳房% covered in lotion.
+	ENDIF
+	
+CASE "媚薬"
+	PRINTL ＜Consumable＞
+	PRINTL During training: Physical modification → Command【Aphrodisiac】
+	PRINTL 
+	PRINTL An aphrodisiac with arousal effects. During training, it increases sensitivity across the body by 50%.
+	PRINTL However, since it forces arousal, resentment also increases by 2x.
+	PRINTFORML Additionally, to prevent contamination, the use of aphrodisiacs prevents the milking of %SAVESTR:表記／母乳% for shipment purposes.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL There may be an option to choose whether to use the aphrodisiac at the beginning of training.
+	ENDIF
+	
+CASE "コンドーム"
+	PRINTL ＜Consumable＞
+	PRINTL During training: Tool command【Condom】
+	PRINTL 
+	PRINTFORML A high-performance, ultra-thin condom with five pieces per box. It is a contraceptive worn on %SAVESTR:表記／ペニス%.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL Its high performance makes it feel no different from not wearing one, and its durability is also top-notch.
+		PRINTFORML However, it is quite difficult for you to impregnate a ningen from the surface of the Earth,
+		PRINTL so in that sense, it's not a problem even if it's not necessary.
+	ENDIF
+	
+CASE "精力剤"
+	PRINTL ＜Consumable＞
+	PRINTL During training: Items & Magic →【Vigor Tonic】
+	PRINTL 
+	PRINTL A special aphrodisiac made by succubi. It completely restores vigor.
+ENDSELECT
+
+

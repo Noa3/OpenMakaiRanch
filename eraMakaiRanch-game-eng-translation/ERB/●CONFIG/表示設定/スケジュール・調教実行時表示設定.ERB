@@ -1,0 +1,169 @@
+﻿
+;スケジュール・調教実行時表示設定
+@SCHEDULE_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Set the display settings for schedule and training executions.
+DRAWLINE
+FLAG_REF = 2060
+
+PRINTLC [ 0] Battery Consumption Display
+CALL PRINT_ONOFF(FLAG:消費バッテリー表示,1)
+PRINTLC [ 1] Detailed Schedule Display
+CALL PRINT_ONOFF(FLAG:スケジュール全員詳細表示,1)
+PRINTLC [ 2] Schedule Milking Line Break
+CALL PRINT_ONOFF(FLAG:スケジュール搾乳改行,1)
+PRINTLC [ 3] Schedule Recovery Display Format
+SELECTCASE FLAG:休憩時回復表示形式
+CASE 0
+	PRINTL : Always hidden
+CASE 1
+	PRINTL : Display the first person if there are multiple
+CASE 2
+	PRINTL : Display all
+CASE 3
+	PRINTL : Detailed display of all (even in schedules where normally hidden)
+ENDSELECT
+PRINTLC [ 4] Display when state of mind changes
+CALL PRINT_ONOFF(FLAG:心境変更時表示,1)
+PRINTLC [ 5] Milking Tentacles Messages
+CALL PRINT_ONOFF(FLAG:搾乳触手焦らし,1)
+
+PRINTL
+PRINTL 　《 Display of parameter influence factors 》
+PRINTLC [10] Display of influence factors / Work experience points
+CALL PRINT_ONOFF(GETBIT(＃影響要素表示／業務経験値＃),1)
+PRINTLC [11] Display of influence factors / Sexual experience points
+CALL PRINT_ONOFF(GETBIT(＃影響要素表示／性経験値＃),1)
+PRINTLC [12] Display of influence factors / Recovery amount
+CALL PRINT_ONOFF(GETBIT(＃影響要素表示／回復量＃),1)
+PRINTLC [13] Display of influence factors / Affection level
+CALL PRINT_ONOFF(GETBIT(＃影響要素表示／なつき度＃),1)
+
+PRINTL
+PRINTL 　《 Display experience gain after reaching maximum 》
+PRINTLC [20] Work Experience
+CALL PRINT_ONOFF(GETBIT(＃上限到達後表示／業務経験値＃),1)
+PRINTLC [21] Sexual Experience
+CALL PRINT_ONOFF(GETBIT(＃上限到達後表示／性経験値＃),1)
+PRINTLC [22] Favorability
+CALL PRINT_ONOFF(GETBIT(＃上限到達後表示／好感度＃),1)
+PRINTLC [23] Fall to Dairy Cow
+CALL PRINT_ONOFF(GETBIT(＃上限到達後表示／乳牛堕ち＃),1)
+
+CALL PRINTL_ALIGN(-5)
+CALL ON_OFF_BUTTON_FOOTER
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 82
+	PRINTL For all toggable options, no explaination for [ON] will be given.
+	CALL ASK_ONOFF
+	FLAG:ON／OFF項目の詳細を飛ばして反転 = RESULT
+CASE 98
+	PRINTL Do you want to reset the display settings for schedules and training executions to the default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SCHEDULE_CONFIG
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_SCHEDULE_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_SCHEDULE_CONFIG(ARG)
+
+IF ARG < 10
+	CALL CHANGE_SCHEDULE_CONFIG_NAME(ARG)
+ELSE
+	CALL CHANGE_SCHEDULE_CONFIG_NUM(ARG)
+ENDIF
+
+
+;FLAG_NAMEでの変更
+@CHANGE_SCHEDULE_CONFIG_NAME(ARG)
+
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+CALL CHANGE_CONFIG_INVERTBIT
+SIF RESULT
+	RETURN
+SELECTCASE FLAG_NAME
+CASE "消費バッテリー表示"
+	PRINTL Display mana consumption of tentacles and battery consumption of
+	PRINTL magical training equipment at the end of the action?
+	PRINTL
+	PRINTL [ 0] Don't Display
+	PRINTL [ 1] Display (Default)
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+	
+CASE "スケジュール全員詳細表示"
+	;ここはほんとにテンポがものすごい差があるので飛ばさない
+	PRINTL When executing the schedule, display all details for all slaves or just one representing each job.
+	PRINTL No effect on cowshed.
+	CALL PRINTL_WORD_COLOR("Having it ON with numerous slaves may slow down the game's tempo...","黄")
+	PRINTL
+	PRINTL [ 0] Pickup Display (Default)
+	PRINTL [ 1] Display All
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+	
+CASE "スケジュール搾乳改行"
+	PRINTFORML Set whether to insert a line break for each character when performing collective milking on the schedule.
+	PRINTL
+	PRINTL [ 0] Do not insert line breaks
+	PRINTL [ 1] Insert line breaks (Default)
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+	
+CASE "休憩時回復表示形式"
+	PRINTL Set whether to display the amount of recovery for stamina, magic, and mental strength when it occurs during schedules, etc.
+	PRINTL
+	PRINTL [ 0] Always hidden
+	PRINTL [ 1] Display the first person if there are multiple (Default)
+	PRINTL [ 2] Display everyone
+	PRINTL [ 3] Detailed display for everyone (shown even in schedules where it is usually hidden)
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+	
+CASE "心境変更時表示"
+	PRINTFORML Set whether to display changes in the slaves' emotional state.
+	PRINTL
+	PRINTL [ 0] Do not display (Default)
+	PRINTL [ 1] Display
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+	
+CASE "搾乳触手焦らし"
+	PRINTL When using [Milking Tentacles], add a message pause when caressing?
+	PRINTL
+	PRINTL [ 0] Batch Display (Default)
+	PRINTL [ 1] Pause
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+ENDSELECT
+
+
+
+;番号変更
+@CHANGE_SCHEDULE_CONFIG_NUM(ARG)
+
+;10～19or20～29
+SELECTCASE ARG
+CASE 10 TO 19
+	INVERTBIT FLAG:パラメータ影響要素表示BIT,ARG -10
+CASE 20 TO 29
+	INVERTBIT FLAG:パラメータ上限到達後表示BIT,ARG -20
+ENDSELECT
+
+
+
+
+
+

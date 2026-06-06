@@ -1,0 +1,169 @@
+﻿
+;作る様子地の文
+@DINNER_COOKING_BEFORE_MESSAGE
+
+;あなた
+IF !TARGET
+	PRINTFORML You decided to prepare dinner for yourself and the slaves.
+	RETURN
+ENDIF
+
+;初回か違うか
+IF !EXP:実行回数／料理
+	PRINTFORML You ordered %CALLNAME% to prepare dinner for you and the slaves.
+ELSE
+	PRINTFORML %CALLNAME% stood in the kitchen to prepare dinner for you and the slaves.
+ENDIF
+PRINTL
+
+
+
+;搾乳前地の文
+@DINNER_LACTATION_BEFORE_MESSAGE
+
+PRINTFORML You command %CALLNAME% to cook using her own %SAVESTR:表記／母乳%...
+IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+	;ピンクは発情色
+	SETCOLOR 0xFF70FF
+	
+	;回数による
+	IF EXP:母乳料理 >= 10
+		PRINTFORM %CALLNAME% seems to instinctively sense your desires, and, as if it were only natural for her to, she 
+	ELSEIF EXP:母乳料理
+		PRINTFORM %CALLNAME% makes a expression filled with desire as she 
+	ELSE
+		PRINTFORM %CALLNAME% initially showed a hint of surprise, but her expression quickly shifted to one of pure desire as she 
+	ENDIF
+	
+ELSEIF ＃陥落状態／恋慕以上＃
+	IF EXP:母乳料理 >= 10
+		PRINTFORM %CALLNAME% seems to instinctively sense your desires, and, as if it were only natural for her to, she 
+	ELSEIF EXP:母乳料理
+		PRINTFORM %CALLNAME% smiles warmly as she 
+	ELSE
+		PRINTFORM %CALLNAME% looks surprised, but despite her confusion she 
+	ENDIF
+
+ELSEIF ＃陥落状態／陥落以上＃
+	IF EXP:母乳料理 >= 10
+		PRINTFORM %CALLNAME% sighs, then skillfully 
+	ELSEIF EXP:母乳料理
+		PRINTFORM %CALLNAME% sighs deeply, then reluctantly 
+	ELSE
+		PRINTFORML ...%CALLNAME% pauses, taking a moment to understand you, before she  
+		PRINT hesitantly 
+	ENDIF
+
+;最低限屈服のはず
+ELSE
+	IF EXP:母乳料理 >= 10
+		PRINTFORM %CALLNAME% lets out a sigh, then with familiarity 
+	ELSEIF EXP:母乳料理
+		PRINTFORM %CALLNAME% gives you a disdainful look, then reluctantly 
+	ELSE
+		PRINTFORML ...%CALLNAME% pauses, taking a moment to understand you, before she, 
+		PRINT with a look of humiliation on her face, 
+	ENDIF
+ENDIF
+PRINTFORM exposes her %SLANG_B()% in the bowl...
+CALL HEARTCB(0xD02830)
+PRINTL
+RESETCOLOR
+
+
+
+;搾乳開始地の文
+@DINNER_LACTATION_BEGIN_MESSAGE
+
+IF LACTATION_ASSIST
+	PRINTFORML To help %CALLNAME%'s %SLANG_MILK()% flow better, you knead her %SLANG_B()% while massaging it,
+	PRINTFORML gripping her %SLANG_N()% tightly and extracting %SAVESTR:表記／母乳% into the bowl...
+ELSE
+	PRINTFORML %CALLNAME% kneads her own %SLANG_B()%, playfully toying with her %SLANG_N()%, 
+	PRINTFORML as she extracts %SLANG_MILK()% into the bowl...
+ENDIF
+PRINTL
+
+
+
+;搾乳後地の文
+@DINNER_LACTATION_AFTER_MESSAGE
+
+;絶頂回数を持ってこれるはず
+IF EX:総絶頂 >= 30
+	PRINTFORML After experiencing countless climaxes from milking, %CALLNAME% is left weak... It takes some time to stand up.
+
+;あなたに搾乳された
+ELSEIF !PLAYER
+	PRINTFORM Having milked %SAVESTR:表記／母乳% from %CALLNAME%, she is 
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃ || MARK:搾乳奴隷
+		PRINTL showing a look of ecstasy...
+	ELSEIF TALENT:臆病 || TALENT:悲観的
+		PRINTL on the verge of tears from embarrassment...
+	ELSE
+		PRINTL wearing a humiliating expression...
+	ENDIF
+ELSE
+	PRINTFORM After finishing milking her own %SAVESTR:表記／母乳%, %CALLNAME%
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃ || MARK:搾乳奴隷
+		PRINTFORML  suppreses her desire to milk more %SAVESTR:表記／乳房%, and begins to cook...
+	ELSEIF TALENT:臆病 || TALENT:悲観的
+		PRINTL , with tears in her eyes from embarrassment, starts to cook...
+	ELSE
+		PRINTL , while wearing a humiliating expression, begins to cook…
+	ENDIF
+ENDIF
+PRINTW
+
+
+
+;料理の様子地の文
+@DINNER_COOKING_ACTION_MESSAGE
+
+;あなたは表示しない
+SIF !TARGET
+	RETURN
+
+;初回かどうか、母乳料理か、愛情度
+PRINTL
+IF MILK_DINNER
+	;愛情度
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+	PRINTFORML %CALLNAME% imagines feeding you a dish made with her own %SAVESTR:表記／母乳%, 
+		
+		;上手さ
+		IF ABL:料理 >= 8
+			PRINTL she takes extra care and pours her love into the cooking...
+		ELSEIF ABL:料理 >= 4
+			PRINTFORML she cooks with all her love, hoping to bring joy to you...
+		ELSE
+			PRINTL she continues cooking, but it looks quite precarious...
+		ENDIF
+	ELSE
+		PRINTFORML %CALLNAME% faces the reality of feeding you a dish made with her own %SAVESTR:表記／母乳%, 
+		IF ABL:料理 >= 8
+			PRINTL though she seems unenthusiastic, her cooking skills are reliable, and a good aroma fills the air.
+		ELSEIF ABL:料理 >= 4
+			PRINTL she progresses with cooking, but with a rather reluctant expression.
+		ELSE
+			PRINTL she reluctantly continues cooking, but it looks quite precarious...
+		ENDIF
+	ENDIF
+ELSEIF !EXP:実行回数／料理
+	IF ABL:料理 >= 8
+		PRINTL she seems to have cooking experience on the surface, moving her hands smoothly.
+	ELSEIF ABL:料理 >= 4
+		PRINTL she seems to have some cooking experience.
+	ELSE
+		PRINTL ...It looks like she isn't making much progress.
+	ENDIF
+ELSE
+	IF ABL:料理 >= 8
+		PRINTL she moves her hands briskly, and before long, the dish is completed.
+	ELSEIF ABL:料理 >= 4
+		PRINTL she seems to be getting the hang of it.
+	ELSE
+		PRINTL ...it looks quite precarious to watch...
+	ENDIF
+ENDIF
+

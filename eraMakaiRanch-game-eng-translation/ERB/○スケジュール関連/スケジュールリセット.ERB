@@ -1,0 +1,128 @@
+﻿
+;スケジュールのリセット
+@SCHEDULE_RESET
+
+;スケジュール可不可を再計算
+CALL SCHEDULE_POSSIBLE
+
+;一旦調教対象はリセット
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	CFLAG:調教対象ID = -1
+	SIF CSTR:スケジュール == "調教対象" || CSTR:スケジュール == "調教"
+		CSTR:スケジュール =
+NEXT
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	CALL SCHEDULE_RESET_TARGET
+NEXT
+
+
+
+;個人のリセット　TARGET指定状態
+@SCHEDULE_RESET_TARGET
+
+;とりあえず全員調教対象は外す　このあと調教選択するので必要になった
+CFLAG:調教対象ID = -1
+
+;外出済みでスケジュールも行動済みなら飛ばす　外出済みフラグを判定しないと上手くいかない
+;外出済みフラグは時間経過でここ来る場合消してからくること
+SIF FLAG:外出済み && CSTR:スケジュール == "行動済み"
+	RETURN
+	
+;標的中、調教対象なら飛ばす
+SIF CFLAG:追跡対象 || GROUPMATCH(CSTR:スケジュール,"調教対象")
+	RETURN
+
+;自動スケジュールから予定スケジュールをセット
+CALL AUTO_SCHEDULE_CONFORM
+
+;スケジュールもそれにセット→状況に応じて補正していく
+CSTR:スケジュール = %CSTR:スケジュール／予定%
+CALL AUTO_SCHEDULE_FIX
+
+;調教対象をセット
+CALL SCHEDULE_RESET_TRAIN_TARGET
+
+
+
+
+
+;スケジュールの補正
+@AUTO_SCHEDULE_FIX
+
+;大浴場掃除が完了してるなら大浴場掃除を家畜の世話に変更
+SIF (FLAG:大浴場掃除完了度 >= 100 || !ITEM:大浴場) && CSTR:スケジュール == "大浴場掃除"
+	CSTR:スケジュール = 酪農
+	
+;体力が基準以下、虚脱、崩壊で仕事を休憩に変更
+{
+SIF (BASE:体力 < FLAG:仕事休憩体力 || CFLAG:虚脱 || CFLAG:崩壊) && 
+GROUPMATCH(CSTR:スケジュール,"酪農","調教","事務","調剤","訓練","大浴場掃除")
+}
+	CSTR:スケジュール = 自由
+	
+;母乳量が基準以下で搾乳、抽出を休憩に変更
+SIF BASE:母乳容量 < FLAG:搾乳休憩母乳量 && GROUPMATCH(CSTR:スケジュール,"搾乳","抽出")
+	CSTR:スケジュール = 自由
+
+
+
+;自動調教対象設定
+@SCHEDULE_RESET_TRAIN_TARGET
+#DIM WEEK
+#DIM TRAIN_SLAVE_ID
+#DIM TRAIN_SLAVE_NUM
+#DIM TRAIN_MASTER_BEFORE
+
+;自動スケジュールが調教でないならおわり
+SIF !GROUPMATCH(CSTR:スケジュール,"調教／対象Ａ","調教／対象Ｂ","調教／対象Ｃ")
+	RETURN
+
+;調教対象IDを持ってくる
+SELECTCASE CSTR:スケジュール
+CASE "調教／対象Ａ"
+	TRAIN_SLAVE_ID = CFLAG:自動スケジュール／調教対象ID／Ａ
+CASE "調教／対象Ｂ"
+	TRAIN_SLAVE_ID = CFLAG:自動スケジュール／調教対象ID／Ｂ
+CASE "調教／対象Ｃ"
+	TRAIN_SLAVE_ID = CFLAG:自動スケジュール／調教対象ID／Ｃ
+ENDSELECT
+
+;一旦予定を調教・スケジュールを自由に
+CSTR:スケジュール／予定 = 調教
+CSTR:スケジュール = 自由
+
+;調教可能か確認
+SAVE_TARGET = TARGET
+FINDCHARA CFLAG:ID,TRAIN_SLAVE_ID
+SIF RESULT <= 0
+	RETURN
+TARGET = SAVE_TARGET
+
+;ID→TARGET番号に変換
+TRAIN_SLAVE_NUM = RESULT
+{
+SIF TRAIN_SLAVE_NUM <= 0 || TRAIN_SLAVE_NUM == TARGET 
+|| !CFLAG:TRAIN_SLAVE_NUM:調教可能 || CFLAG:TRAIN_SLAVE_NUM:牛舎番号
+}
+	RETURN
+
+;既に調教が組まれてる場合はダメ　牛舎にいてもダメ
+;既に調教対象になっている場合、現在調教者になっているキャラを待機にして継続(新たに指定されたキャラが奪い取る形)
+;<-事前にチェックが入って奪い取れないこともあるが、まあいいか)
+IF CSTR:TRAIN_SLAVE_NUM:スケジュール == "調教対象"
+	TRAIN_MASTER_BEFORE = CMATCH(CFLAG:調教対象ID,TRAIN_SLAVE_ID)
+	CFLAG:TRAIN_MASTER_BEFORE:調教対象ID = -1
+	CSTR:TRAIN_MASTER_BEFORE:スケジュール = 自由
+ENDIF
+
+;別のキャラを調教対象に選択した場合はスケジュール整理側でクリアする
+;(この時点でクリアしにいこうとすると意外とめんどい)
+CFLAG:調教対象ID = TRAIN_SLAVE_ID
+CSTR:スケジュール = 調教
+CSTR:TRAIN_SLAVE_NUM:スケジュール = 調教対象
+
+
+
+

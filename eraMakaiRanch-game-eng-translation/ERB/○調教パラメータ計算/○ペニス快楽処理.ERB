@@ -1,0 +1,297 @@
+﻿
+;ペニス快楽処理
+@PENIS_SENSITIVE_CALC
+
+;とりあえずPLAYERがオトコじゃないなら帰る　のでふたなりに対応してねえんだよな
+;女あなたに対応のためPLAYER=0なら通す
+SIF PLAYER < 0
+	RETURN
+SIF !TALENT:PLAYER:オトコ && PLAYER
+	RETURN
+SIF !BASE:PLAYER:精力
+	RETURN
+
+;時間経過なくても帰る
+SIF !SOURCE:経過時間 && TFLAG:調教中
+	RETURN
+
+;挿入状態、奉仕系SOURCEのある場合計算
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	CALL PENIS_SENSITIVE_CALC_V
+ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	CALL PENIS_SENSITIVE_CALC_A
+ELSEIF GETBIT(＃Ｐ使用／パイズリ＃)
+	CALL PENIS_SENSITIVE_CALC_B
+ELSEIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	CALL PENIS_SENSITIVE_CALC_M
+ELSEIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	CALL PENIS_SENSITIVE_CALC_HAND
+ELSEIF TEQUIP:素股
+	;intercrural sexらしいけど長いし…
+	CALL PENIS_SENSITIVE_CALC_CROTCH
+ENDIF
+
+;0なら帰る
+SIF !SOURCE:射精増加
+	RETURN
+
+;淫欲
+IF PALAM:淫欲 >= 30000
+	TIMES SOURCE:射精増加,1.50
+ELSEIF PALAM:淫欲 >= 10000
+	TIMES SOURCE:射精増加,1.20
+ENDIF
+
+;技巧補正+メッセージ
+CALL PENIS_SENSITIVE_TECHNIQUE_FIX
+
+;この調教中の射精回数による補正
+CALL EJACULATION_NUM_FIX
+
+;ランダム5%
+CALL RANDOM_FIX(SOURCE:射精増加,5,"射精増加")
+SOURCE:射精増加 += FIX
+
+;射精メッセージだけはここに入る　射精によりSOURCEが増加するため
+IF SOURCE:射精増加 && PLAYER >= 0
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME:PLAYER% penis pleasure +{SOURCE:射精増加} ","桃"
+	PRINTL
+ENDIF
+
+;PLAYERの射精ゲージ増加、MAXを超えたら射精　基本そのまま、ゴムなし
+BASE:PLAYER:射精 += SOURCE:射精増加
+
+;射精値が最大値を上回ったら射精
+;注ぎ込み霊力or魔力がある場合も射精処理
+SIF BASE:PLAYER:射精 >= MAXBASE:PLAYER:射精 || SOURCE:注ぎ込み霊力量 || SOURCE:注ぎ込み魔力量
+	CALL PENIS_EJACULATION
+
+
+
+;Ｖ挿入射精増加計算
+@PENIS_SENSITIVE_CALC_V
+
+;ここで汚れ移動処理もしてしまう
+CALL SWAP_STAIN("膣","ペニス")
+
+;中毒値により情愛追加
+SOURCE:情愛 += (ABL:膣内射精中毒 *500)
+
+;基準300
+SOURCE:射精増加 = 300
+
+;潤滑を見る
+IF PALAM:Ｖ潤滑 < 5000
+	TIMES SOURCE:射精増加,0.50
+ELSEIF PALAM:Ｖ潤滑 < 10000
+	TIMES SOURCE:射精増加,0.80
+ENDIF
+
+;膣内射精中毒により増加
+FIX:2 = LIMIT(ABL:膣内射精中毒,0,10)
+FIX:1 = FIX:2 *5 +ABL:膣内射精中毒 *3
+
+;Ｖ感覚が少ないと増加
+SIF ABL:Ｖ感覚 < 4
+	FIX:1 += 10
+	
+;刻印による増加
+SIF MARK:膣内射精中毒
+	FIX:1 += 20
+SIF MARK:搾精おまんこ
+	FIX:1 += 20
+SIF MARK:精液便女
+	FIX:1 += 20
+SIF MARK:淫壺
+	FIX:1 += 30
+SIF MARK:肉便器
+	FIX:1 += 30
+FIX = 100 +FIX:1
+SOURCE:射精増加 *= FIX
+SOURCE:射精増加 /= 100
+IF TALENT:名器
+	TIMES SOURCE:射精増加,2.00
+	CALL SEX_GOOD_VAGINA_MESSAGE
+ENDIF
+SOURCE:射精増加 = SOURCE:射精増加 * (1000 + TFLAG:ペニスサイズ差補正) / 1000
+
+
+;Ａ挿入射精増加計算
+@PENIS_SENSITIVE_CALC_A
+
+CALL SWAP_STAIN("アナル","ペニス")
+SOURCE:情愛 += (ABL:尻穴射精中毒 *500)
+SOURCE:射精増加 = 300
+IF PALAM:Ａ潤滑 < 5000
+	TIMES SOURCE:射精増加,0.50
+ELSEIF PALAM:Ａ潤滑 < 10000
+	TIMES SOURCE:射精増加,0.80
+ENDIF
+
+;尻穴射精中毒により増加
+FIX:2 = LIMIT(ABL:尻穴射精中毒,0,10)
+FIX:1 = FIX:2 *5 +ABL:尻穴射精中毒 *3
+
+;Ａ感覚が少ないと増加
+SIF ABL:Ａ感覚 < 4
+	FIX:1 += 10
+SIF MARK:尻穴射精中毒
+	FIX:1 += 20
+SIF MARK:おしりまんこ
+	FIX:1 += 20
+SIF MARK:尻穴便器
+	FIX:1 += 20
+SIF MARK:肉便器
+	FIX:1 += 30
+SIF MARK:淫尻
+	FIX:1 += 30
+
+FIX = 100 +FIX:1
+SOURCE:射精増加 *= FIX
+SOURCE:射精増加 /= 100
+IF TALENT:Ａ名器
+	TIMES SOURCE:射精増加,2.00
+	CALL SEX_GOOD_ANAL_MESSAGE
+ENDIF
+SOURCE:射精増加 = SOURCE:射精増加 * (1000 + TFLAG:ペニスサイズ差補正) / 1000
+
+
+
+;パイズリ射精増加計算
+@PENIS_SENSITIVE_CALC_B
+
+CALL SWAP_STAIN("乳房","ペニス")
+SOURCE:情愛 += (ABL:乳内射精中毒 *500)
+SOURCE:射精増加 = 200
+
+;バストサイズにより増加
+FIX:2 = LIMIT(ABL:バストサイズ,0,10)
+FIX:1 = FIX:2 *5 +ABL:バストサイズ *2
+
+;乳内射精中毒により増加
+IF BASE:体力
+	FIX:2 += LIMIT(ABL:乳内射精中毒,0,10)
+	FIX:1 += (FIX:2 *5 +ABL:乳内射精中毒 *2)
+ENDIF
+
+;巨乳以上、爆乳以上で追加ボーナス
+SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+	FIX:1 += 20
+SIF ABL:バストサイズ >= BUSTSIZE_爆乳
+	FIX:1 += 20
+SIF MARK:淫乳
+	FIX:1 += 30
+
+FIX = 100 +FIX:1
+SOURCE:射精増加 *= FIX
+SOURCE:射精増加 /= 100
+IF TALENT:極上乳圧 && ABL:バストサイズ >= BUSTSIZE_巨乳
+	TIMES SOURCE:射精増加,2.00
+	CALL SEX_GOOD_PAIZURI_MESSAGE
+ENDIF
+
+;ぬるぬる状態だと増加
+IF GETBIT(STAIN:乳房,0)
+	IF TFLAG:Ｂローション
+		TIMES SOURCE:射精増加,1.30
+	ELSE
+		TIMES SOURCE:射精増加,1.20
+	ENDIF
+	CALL MILK_PAIZURI_MESSAGE
+ELSEIF TFLAG:Ｂローション
+	TIMES SOURCE:射精増加,1.20
+	CALL LOTION_PAIZURI_MESSAGE
+ENDIF
+
+
+
+;フェラ・イラマ射精増加計算
+@PENIS_SENSITIVE_CALC_M
+
+CALL SWAP_STAIN("口","ペニス")
+SOURCE:情愛 += (ABL:精飲中毒 *500)
+SOURCE:射精増加 = 200
+FIX:1 = 0
+
+;精飲中毒により増加
+IF BASE:体力
+	FIX:2 = LIMIT(ABL:精飲中毒,0,10)
+	FIX:1 = (FIX:2 *5 +ABL:精飲中毒 *3)
+ENDIF
+
+;フェラチオは奉仕精神+技巧で増加
+IF TEQUIP:フェラチオ
+	FIX:2 = LIMIT(ABL:奉仕精神 +ABL:技巧,0,15)
+	FIX:1 += (FIX:2 *5 +(ABL:奉仕精神 +ABL:技巧) *3)
+ENDIF
+FIX = 100 +FIX:1
+SOURCE:射精増加 *= FIX
+SOURCE:射精増加 /= 100
+IF TALENT:おくちまんこ
+	TIMES SOURCE:射精増加,2.00
+	CALL SEX_GOOD_MOUSE_MESSAGE
+ENDIF
+
+
+
+;手コキ射精増加計算
+@PENIS_SENSITIVE_CALC_HAND
+
+CALL SWAP_STAIN("手","ペニス")
+SOURCE:射精増加 = 200
+
+;奉仕精神+技巧で増加
+FIX:2 = LIMIT(ABL:奉仕精神 +ABL:技巧,0,15)
+FIX:1 += (FIX:2 *5 +(ABL:奉仕精神 +ABL:技巧) *3)
+FIX = 100 +FIX:1
+SOURCE:射精増加 *= FIX
+SOURCE:射精増加 /= 100
+
+
+
+;素股射精増加計算
+@PENIS_SENSITIVE_CALC_CROTCH
+
+CALL SWAP_STAIN("膣","ペニス")
+SOURCE:射精増加 = 200
+
+;奉仕精神+技巧で増加
+FIX:2 = LIMIT(ABL:奉仕精神 +ABL:技巧,0,15)
+FIX:1 += (FIX:2 *5 +(ABL:奉仕精神 +ABL:技巧) *3)
+FIX = 100 +FIX:1
+SOURCE:射精増加 *= FIX
+SOURCE:射精増加 /= 100
+
+
+
+;技巧補正判定
+@PENIS_SENSITIVE_TECHNIQUE_FIX
+
+;体力0、拘束中、技巧2以下なら帰る
+SIF !BASE:体力 || TFLAG:拘束BIT || ABL:技巧 <= 2
+	RETURN
+CALL SEX_TECHNIQUE_MESSAGE
+
+;淫欲50000以上/恋慕/洗脳/奉仕精神のいずれかでRETURN1→技巧補正発生
+SIF !RESULT
+	RETURN
+
+;既に技巧補正してるので少しだけ
+FIX = 100 +ABL:技巧 *3
+SOURCE:射精増加 *= FIX
+SOURCE:射精増加 /= 100
+
+
+
+;この調教中の射精回数による補正
+@EJACULATION_NUM_FIX
+
+;絶倫なら無効
+SIF ITEM:絶倫 && GETBIT(＃有効／絶倫＃)
+	RETURN
+IF TFLAG:射精回数
+	;そのうちABL:0:連続射精力　で判定する
+	TIMES SOURCE:射精増加,0.60
+ENDIF
+
+

@@ -1,0 +1,69 @@
+﻿
+;**********************************************************
+;Clitoris(クリトリス)の淫語
+;**********************************************************
+@SLANG_C(ARG)
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+SLANGWORD =
+
+SIF GETBIT(FLAG:スラング接頭語／クリトリス,1) && CFLAG:身長 < FLAG:スラング／子供扱い上限身長数値 && RAND:100 < 20
+	SLANGWORD += "young "
+SIF GETBIT(FLAG:スラング接頭語／クリトリス,0) && MARK:淫核 && RAND:100 < 80
+	SLANGWORD += "lewd "
+
+IF GETBIT(FLAG:スラング置換／クリトリス,9)
+	EXIST ++
+	SIF RAND:100 < 50
+		RETURNF SAVESTR:表記／陰核
+ENDIF
+IF GETBIT(FLAG:スラング置換／クリトリス,1) && MARK:淫核
+	EXIST ++
+	IF RAND:100 < 20
+		SLANGWORD = "clitoris"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+SIF GETBIT(FLAG:スラング置換／クリトリス,0) && EXIST
+	RESTART
+
+IF GETBIT(FLAG:スラング表示／クリトリス,0) && RAND:100 < 50
+	SLANGWORD += "clitoris"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／クリトリス,1) && RAND:100 < 30
+	SLANGWORD += "nymph"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／クリトリス,2) && RAND:100 < 30
+	SLANGWORD += "nipple"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／クリトリス,3) && RAND:100 < 30
+	SLANGWORD += "pearl"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／クリトリス,4) && RAND:100 < 30
+	SLANGWORD += "bud"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／クリトリス,5) && RAND:100 < 30
+	SLANGWORD += "clit"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／クリトリス,6) && RAND:100 < 30
+	SLANGWORD += "sweet spot"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／クリトリス,7)
+	SLANGWORD += "girl's bud"
+	RETURNF SLANGWORD
+ENDIF
+RESTART
+
+
+;*************【淫語覚書（未登録）】***********************
+;
+;肉豆
+;肉芽
+;陰核
+;
+;*************【淫語覚書（未登録）】***********************
+
+
+

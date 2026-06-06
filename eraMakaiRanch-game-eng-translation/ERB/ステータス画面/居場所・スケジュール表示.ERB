@@ -1,0 +1,55 @@
+﻿
+;現在の居場所とスケジュール
+;ARG→2回改行
+@PRINT_NOW_PLACE_PLAN(ARG)
+
+;分割する　分けた先では改行挟まない
+CALL PRINT_NOW_PLACE
+CALL PRINT_NOW_PLAN
+PRINTL
+
+;ARG入ってたらここで改行
+SIF ARG
+	PRINTL
+
+
+
+;居場所
+;ARG→改行
+;ARG:1→表示簡易化
+@PRINT_NOW_PLACE(ARG,ARG:1)
+
+SIF !ARG:1
+	PRINT 　Location：
+SELECTCASE CSTR:居場所
+CASE "奴隷寮"
+	CALL PRINT_DORMITORY_NUM
+CASE "体内"
+	PRINTFORM Inside %CALLNAME:0%
+CASE "牛舎"
+	PRINTFORM %ITEMS_ENG(COWSHED_NAME:(CFLAG:牛舎番号))%
+CASEELSE
+	PRINTFORM %LOCATIONS_ENG(CSTR:居場所)%
+ENDSELECT
+SIF ARG
+	PRINTL
+
+
+
+;スケジュール
+;ARG→改行
+@PRINT_NOW_PLAN(ARG)
+
+;未捕獲なら飛ばす
+SIF CSTR:居場所 == "牧場外"
+	RETURN
+PRINT 　Next Action→
+CALL SCHEDULE_PLAN_PRINT(CSTR:スケジュール)
+SIF CFLAG:抽出継続
+	PRINT 《 Extraction in Progress 》
+SIF ARG
+	PRINTL
+
+
+
+

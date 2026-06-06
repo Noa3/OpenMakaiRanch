@@ -1,0 +1,391 @@
+﻿
+;処女表示詳細
+;ARG→1なら改行
+@PRINT_VIRGIN_DETAIL(ARG)
+
+SIF !FLAG:キャラメイク中
+	PRINT Earthly 
+PRINTFORML Sexual Experience：【%SEXP_ENG(CSTR:性経験)%】
+CALL PRINT_VIRGIN_DETAIL_V
+CALL PRINT_VIRGIN_DETAIL_A
+CALL PRINT_VIRGIN_DETAIL_M
+CALL PRINT_VIRGIN_DETAIL_PAIZURI
+CALL PRINT_VIRGIN_DETAIL_KISS
+CALL PRINT_VIRGIN_DETAIL_MILK
+CALL PRINT_VIRGIN_DETAIL_BIRTH
+RESETCOLOR
+SIF ARG
+	PRINTL
+
+
+
+;Ｖ
+@PRINT_VIRGIN_DETAIL_V
+
+SIF !GETBIT(＃経験表示／Ｖセックス＃)
+	RETURN
+IF TALENT:処女結界
+	CALL PRINTL_WORD_COLOR("【Virginity Barrier】","水色")
+	RETURN
+ENDIF
+IF TALENT:処女
+	CALL PRINT_WORD_COLOR("【Virgin】","水色")
+ELSE
+	CALL PRINT_WORD_COLOR("【Experienced】　","桃")
+	PRINT        First Time：
+	VARGIN_PERSON = %CSTR:初経験／Ｖ%
+	SIF CSTR:初経験／Ｖ == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	
+	;経験人数を追加
+	IF !EXP:地上経験人数／ニンゲン／Ｖセックス && !EXP:地上経験人数／魔族／Ｖセックス && EXP:経験回数／あなた／Ｖセックス && !EXP:経験回数／異形／Ｖセックス
+		PRINTFORM Experienced：With %CALLNAME:0%・{EXP:経験回数／あなた／Ｖセックス}x
+	ELSE
+		PRINTFORM Experienced：On Earth {EXP:地上経験人数／ニンゲン／Ｖセックス} People
+		SIF EXP:地上経験人数／魔族／Ｖセックス
+			PRINTFORM +In Makai {EXP:地上経験人数／魔族／Ｖセックス} People
+		SIF EXP:経験回数／あなた／Ｖセックス
+			PRINTFORM +%CALLNAME:0% {EXP:経験回数／あなた／Ｖセックス}x
+		SIF EXP:経験回数／異形／Ｖセックス
+			PRINTFORM +Abnormal {EXP:経験回数／異形／Ｖセックス}x
+	ENDIF
+ENDIF
+PRINTL
+
+
+
+;Ａ
+@PRINT_VIRGIN_DETAIL_A
+
+SIF !GETBIT(＃経験表示／Ａセックス＃)
+	RETURN
+IF TALENT:Ａ処女
+	CALL PRINT_WORD_COLOR("【ＡVirgin】","水色")
+ELSE
+	CALL PRINT_WORD_COLOR("【ＡExperienced】","桃")
+	PRINT        First Time：
+	VARGIN_PERSON = %CSTR:初経験／Ａ%
+	SIF CSTR:初経験／Ａ == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	IF !EXP:地上経験人数／ニンゲン／Ａセックス && !EXP:地上経験人数／魔族／Ａセックス && EXP:経験回数／あなた／Ａセックス && !EXP:経験回数／異形／Ａセックス
+		PRINTFORM Experienced：With %CALLNAME:0%・{EXP:経験回数／あなた／Ａセックス}x
+	ELSE
+		PRINTFORM Experienced：On Earth {EXP:地上経験人数／ニンゲン／Ａセックス} People
+		SIF EXP:地上経験人数／魔族／Ａセックス
+			PRINTFORM +In Makai {EXP:地上経験人数／魔族／Ａセックス} People
+		SIF EXP:経験回数／あなた／Ａセックス
+			PRINTFORM +%CALLNAME:0% {EXP:経験回数／あなた／Ａセックス}x
+		SIF EXP:経験回数／異形／Ａセックス
+			PRINTFORM +Abnormal {EXP:経験回数／異形／Ａセックス}x
+	ENDIF
+ENDIF
+PRINTL
+
+
+
+;Ｍ
+@PRINT_VIRGIN_DETAIL_M
+
+SIF !GETBIT(＃経験表示／Ｍセックス＃)
+	RETURN
+IF TALENT:Ｍ処女
+	CALL PRINT_WORD_COLOR("【ＭVirgin】","水色")
+ELSE
+	PRINT 　　           　
+	PRINT       First ＭSex：
+	VARGIN_PERSON = %CSTR:初経験／Ｍセックス%
+	SIF CSTR:初経験／Ｍセックス == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	IF !EXP:地上経験人数／ニンゲン／Ｍセックス && !EXP:地上経験人数／魔族／Ｍセックス && EXP:経験回数／あなた／Ｍセックス && !EXP:経験回数／異形／Ｍセックス
+		PRINTFORM Experienced：With %CALLNAME:0%・{EXP:経験回数／あなた／Ｍセックス}x
+	ELSE
+		PRINTFORM Experienced：On Earth {EXP:地上経験人数／ニンゲン／Ｍセックス} People
+		SIF EXP:地上経験人数／魔族／Ｍセックス
+			PRINTFORM +In Makai {EXP:地上経験人数／魔族／Ｍセックス} People
+		SIF EXP:経験回数／あなた／Ｍセックス
+			PRINTFORM +%CALLNAME:0% {EXP:経験回数／あなた／Ｍセックス}x
+		SIF EXP:経験回数／異形／Ｍセックス
+			PRINTFORM +Abnormal {EXP:経験回数／異形／Ｍセックス}x
+	ENDIF
+ENDIF
+PRINTL
+
+
+
+;パイズリ
+@PRINT_VIRGIN_DETAIL_PAIZURI
+
+SIF !GETBIT(＃経験表示／パイズリ＃)
+	RETURN
+IF TALENT:パイズリ未経験
+	CALL PRINT_WORD_COLOR("【Paizuri Virgin】","水色")
+ELSE
+	PRINT 　　           　
+	PRINT     First Paizuri：
+	VARGIN_PERSON = %CSTR:初経験／パイズリ%
+	SIF CSTR:初経験／パイズリ == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	IF !EXP:地上経験人数／ニンゲン／パイズリ && !EXP:地上経験人数／魔族／パイズリ && EXP:経験回数／あなた／パイズリ && !EXP:経験回数／異形／パイズリ
+		PRINTFORM Experienced：With %CALLNAME:0%・{EXP:経験回数／あなた／パイズリ}x
+	ELSE
+		PRINTFORM Experienced：On Earth {EXP:地上経験人数／ニンゲン／パイズリ} People
+		SIF EXP:地上経験人数／魔族／パイズリ
+			PRINTFORM +In Makai {EXP:地上経験人数／魔族／パイズリ} People
+		SIF EXP:経験回数／あなた／パイズリ
+			PRINTFORM +%CALLNAME:0% {EXP:経験回数／あなた／パイズリ}x
+		SIF EXP:経験回数／異形／パイズリ
+			PRINTFORM +Abnormal {EXP:経験回数／異形／パイズリ}x
+	ENDIF
+ENDIF
+PRINTL
+
+
+
+;キス
+@PRINT_VIRGIN_DETAIL_KISS
+
+SIF !GETBIT(＃経験表示／キス＃)
+	RETURN
+IF TALENT:キス未経験
+	CALL PRINT_WORD_COLOR("【Never Kisssed】","水色")
+ELSE
+	PRINT 　　           　
+	PRINT        First Kiss：
+	VARGIN_PERSON = %CSTR:初経験／キス%
+	SIF CSTR:初経験／キス == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	IF !EXP:地上経験人数／ニンゲン／キス && !EXP:地上経験人数／魔族／キス && EXP:経験回数／あなた／キス && !EXP:経験回数／異形／キス
+		PRINTFORM Experienced：With %CALLNAME:0%・{EXP:経験回数／あなた／キス}x
+	ELSE
+		PRINTFORM Experienced：On Earth {EXP:地上経験人数／ニンゲン／キス} People
+		SIF EXP:地上経験人数／魔族／キス
+			PRINTFORM +In Makai {EXP:地上経験人数／魔族／キス} People
+		SIF EXP:経験回数／あなた／キス
+			PRINTFORM +%CALLNAME:0% { EXP:経験回数／あなた／キス}x
+		SIF EXP:経験回数／異形／キス
+			PRINTFORM +Abnormal {EXP:経験回数／異形／キス}x
+	ENDIF
+ENDIF
+PRINTL
+
+
+
+;授乳
+@PRINT_VIRGIN_DETAIL_MILK
+
+SIF !GETBIT(＃経験表示／授乳＃)
+	RETURN
+SIF !MARK:母乳体質
+	RETURN
+CALL PRINT_WORD_COLOR("【Lactating】　","桃")
+IF TALENT:授乳未経験
+	CALL PRINT_WORD_COLOR("【Never Breastfed】","水色")
+ELSE
+	PRINT First Breastfeeding：
+	VARGIN_PERSON = %CSTR:初経験／授乳%
+	SIF CSTR:初経験／授乳 == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	IF !EXP:地上経験人数／ニンゲン／授乳 && !EXP:地上経験人数／魔族／授乳 && EXP:経験回数／あなた／授乳 && !EXP:経験回数／異形／授乳
+		PRINTFORM Experienced：With %CALLNAME:0%・{EXP:経験回数／あなた／授乳}x
+	ELSE
+		PRINTFORM Experienced：On Earth {EXP:地上経験人数／ニンゲン／授乳} People
+		SIF EXP:地上経験人数／魔族／授乳
+			PRINTFORM +In Makai{EXP:地上経験人数／魔族／授乳} People
+		SIF EXP:経験回数／あなた／授乳
+			PRINTFORM +%CALLNAME:0% {EXP:経験回数／あなた／授乳}x
+		SIF EXP:経験回数／異形／授乳
+			PRINTFORM +Abnormal {EXP:経験回数／異形／授乳}x
+	ENDIF
+ENDIF
+PRINTL
+
+
+;出産
+@PRINT_VIRGIN_DETAIL_BIRTH
+
+SIF !GETBIT(＃経験表示／出産＃)
+	RETURN
+SIF !EXP:出産
+	RETURN
+
+;デフォでEXP:出産がある場合用の処理
+SIF EXP:出産 && 0 == EXP:地上経験回数／ニンゲン／出産 + EXP:地上経験回数／魔族／出産 + EXP:経験回数／あなた／出産 + EXP:経験回数／異形／出産
+	EXP:地上経験回数／ニンゲン／出産 = EXP:出産
+
+PRINT 　　           　
+PRINT       First Birth：
+VARGIN_PERSON = %CSTR:初経験／出産%'s child
+SIF CSTR:初経験／出産 == ""
+	VARGIN_PERSON = 不明
+PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+IF !EXP:地上経験回数／ニンゲン／出産 && !EXP:地上経験回数／魔族／出産 && EXP:経験回数／あなた／出産 && !EXP:経験回数／異形／出産
+	PRINTFORM Number of Births: Only %CALLNAME:0%'s Offspring・{EXP:経験回数／あなた／出産}Times
+ELSE
+	;他のに合わせて地上経験人数／ニンゲンand魔族としたかったけど出産した子の親(の人数)とかだと表現しづらかったので変更
+	PRINTFORM Birth Count：On the Surface{EXP:地上経験回数／ニンゲン／出産} Times
+	SIF EXP:地上経験回数／魔族／出産
+		PRINTFORM +In Makai{EXP:地上経験回数／魔族／出産} Times
+	SIF EXP:経験回数／あなた／出産
+		PRINTFORM +%CALLNAME:0%'s Offspring{EXP:経験回数／あなた／出産} Times
+	SIF EXP:経験回数／異形／出産
+		PRINTFORM +Abnormal Offspring{EXP:経験回数／異形／出産} Times
+ENDIF
+PRINTL
+
+
+
+;簡易表示
+@PRINT_VIRGIN_SIMPLE(ARG)
+
+SETCOLOR 0x00FFFF
+IF TALENT:処女結界
+	PRINT 【Virginity Barrier】
+ELSEIF TALENT:処女
+	PRINT 【Virgin】
+ENDIF
+SIF TALENT:Ａ処女 && GETBIT(＃経験表示／Ａセックス＃)
+	PRINT 【ＡVirgin】
+RESETCOLOR
+SIF !ARG
+	PRINTL
+
+
+
+;あなた用
+@PRINT_VIRGIN_PLAYER
+
+CALL PRINT_VIRGIN_PLAYER_V
+CALL PRINT_VIRGIN_PLAYER_A
+CALL PRINT_VIRGIN_PLAYER_M
+CALL PRINT_VIRGIN_PLAYER_PAIZURI
+CALL PRINT_VIRGIN_PLAYER_KISS
+CALL PRINT_VIRGIN_PLAYER_MILK
+PRINTL
+
+
+
+;前
+@PRINT_VIRGIN_PLAYER_V
+
+SIF !GETBIT(＃経験表示／Ｖセックス＃)
+	RETURN
+IF TALENT:童貞
+	CALL PRINT_WORD_COLOR("【Virgin】","水色")
+ELSE
+	CALL PRINT_WORD_COLOR("【Experienced】　","桃")
+	PRINT        First Time：
+	VARGIN_PERSON = %CSTR:初経験／Ｖ%
+	SIF CSTR:初経験／Ｖ == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	PRINTFORM Experienced：{FLAG:あなた経験人数／Ｖ} People
+ENDIF
+PRINTL
+
+
+
+;後ろ
+@PRINT_VIRGIN_PLAYER_A
+
+SIF !GETBIT(＃経験表示／Ａセックス＃)
+	RETURN
+IF TALENT:Ａ童貞
+	CALL PRINT_WORD_COLOR("【ＡVirgin】","水色")
+ELSE
+	CALL PRINT_WORD_COLOR("【ＡExperienced】","桃")
+	PRINT        First Time：
+	VARGIN_PERSON = %CSTR:初経験／Ａ%
+	SIF CSTR:初経験／Ａ == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	PRINTFORM Experienced：{FLAG:あなた経験人数／Ａ} People
+ENDIF
+PRINTL
+
+
+
+;Ｍ
+@PRINT_VIRGIN_PLAYER_M
+
+SIF !GETBIT(＃経験表示／Ｍセックス＃)
+	RETURN
+IF TALENT:Ｍ童貞
+	CALL PRINT_WORD_COLOR("【No ＭSex Experience】","水色")
+ELSE
+	PRINT 　　           　
+	PRINT       First ＭSex：
+	VARGIN_PERSON = %CSTR:初経験／Ｍセックス%
+	SIF CSTR:初経験／Ｍセックス == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	PRINTFORM Experienced：{FLAG:あなた経験人数／Ｍ} People
+ENDIF
+PRINTL
+
+
+
+;パイズリ
+@PRINT_VIRGIN_PLAYER_PAIZURI
+
+SIF !GETBIT(＃経験表示／パイズリ＃)
+	RETURN
+IF TALENT:パイズリ未経験
+	CALL PRINT_WORD_COLOR("【No Paizuri Experience】","水色")
+ELSE
+	PRINT 　　           　
+	PRINT     First Paizuri：
+	VARGIN_PERSON = %CSTR:初経験／パイズリ%
+	SIF CSTR:初経験／パイズリ == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	PRINTFORM Experienced：{FLAG:あなた経験人数／パイズリ} People
+ENDIF
+PRINTL
+
+
+
+;キス
+@PRINT_VIRGIN_PLAYER_KISS
+
+SIF !GETBIT(＃経験表示／キス＃)
+	RETURN
+IF TALENT:キス未経験
+	CALL PRINT_WORD_COLOR("【Never Kissed】","水色")
+ELSE
+	PRINT 　　           　
+	PRINT        First Kiss：
+	VARGIN_PERSON = %CSTR:初経験／キス%
+	SIF CSTR:初経験／キス == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	PRINTFORM Experienced：{FLAG:あなた経験人数／キス} People
+ENDIF
+PRINTL
+
+
+
+;授乳
+@PRINT_VIRGIN_PLAYER_MILK
+
+SIF !GETBIT(＃経験表示／授乳＃)
+	RETURN
+IF TALENT:授乳未経験
+	CALL PRINT_WORD_COLOR("【No Ningen Breast Sucking Experience】","水色")
+ELSE
+	PRINT 　　         　
+	PRINT First Breastfeeding：
+	VARGIN_PERSON = %CSTR:初経験／授乳%
+	SIF CSTR:初経験／授乳 == ""
+		VARGIN_PERSON = 不明
+	PRINTFORM %SEX_PARTNER_ENG(VARGIN_PERSON),16,LEFT%　
+	PRINTFORM Experienced：{FLAG:あなた経験人数／授乳} People
+ENDIF
+PRINTL
+
+

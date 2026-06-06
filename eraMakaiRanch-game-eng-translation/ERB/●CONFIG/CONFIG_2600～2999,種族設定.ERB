@@ -1,0 +1,34 @@
+﻿
+;種族設定一覧
+@LIST_CONFIG_TRIBE
+
+PRINTL --- 《 Race Settings 》 ---
+ALIGNMENT LEFT
+DRAWLINE
+CALL PRINTL_WORD_COLOR("This setting can only be changed by ・Game Initialization・Developer Mode・＜Slave Candidate Change Ticket＞.","黄")
+CALL CONFIG_CHANGE_FLAG_CHECK(1)
+
+;もろもろ不要
+PRINTL [70] Appearance Rates／Common Races
+PRINTL [71] Appearance Rates／Higher Races
+PRINTL [72] Appearance Rates／Heaven Races
+PRINTL [73] Racial Feature
+
+
+
+;ARG→INPUT
+@CHANGE_CONFIG_TRIBE(ARG)
+
+SELECTCASE ARG
+CASE 70	;出現割合／一般種族
+	CALL NORMAL_TRIBE_CONFIG
+CASE 71	;出現割合／上位種族
+	CALL SPECIAL_TRIBE_CONFIG
+CASE 72	;出現割合／天界種族
+	CALL HEAVEN_TRIBE_CONFIG
+CASE 73	;種族特徴
+	CALL TRIBE_FEATURE_CONFIG
+ENDSELECT
+
+
+

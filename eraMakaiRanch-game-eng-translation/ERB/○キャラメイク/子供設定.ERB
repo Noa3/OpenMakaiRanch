@@ -1,0 +1,768 @@
+﻿
+@CHARA_MAKE_CHILD
+
+FLAG:再シャッフルBIT = 0
+FLAG:キャラメイク中 = 1
+
+;タゲ保存(母親)
+SAVE_TARGET = TARGET
+ADDVOIDCHARA
+TARGET = CHARANUM -1
+
+CSTR:種族 = %CSTR:SAVE_TARGET:カテゴリ／種族%
+CSTR:カテゴリ／種族 = %CSTR:種族%
+CSTR:ジョブ = %CALLNAME:SAVE_TARGET%と%CALLNAME:0%の子
+CFLAG:母親ID = CFLAG:SAVE_TARGET:ID
+
+ABL:バストサイズ = LIMIT(ABL:SAVE_TARGET:初期値／バストサイズ - 4 + RAND:9,0,26)
+CFLAG:身長 = CFLAG:SAVE_TARGET:身長 - 200 + RAND:401
+SIF CFLAG:身長 <= HEIGHT_MAX_妖精体型 && CSTR:SAVE_TARGET:身長 != "妖精体型"
+	CFLAG:身長 = HEIGHT_MAX_妖精体型 +1
+CALL CSV_CHARA_HEIGHT_FIX
+
+;CALL RANDOM_SLAVE_VISUAL_AGE
+CFLAG:外見年齢 = VISUAL_AGE_MIN +RAND:(VISUAL_AGE_CHILD_MAX -VISUAL_AGE_MIN +1)
+
+CFLAG:ランク = RAND:2
+CFLAG:魔力量 = CFLAG:SAVE_TARGET:魔力量
+SIF TALENT:SAVE_TARGET:神格
+	TALENT:神格 = 1
+SIF CFLAG:SAVE_TARGET:上位種族
+	CFLAG:上位種族 = 1
+
+;種族・ジョブが半角だったら全角に戻す
+CALL FONT_FULL
+
+CALL CSV_CHARA_BUST_FIX
+CALL RANDOM_SLAVE_BUST_FEELING
+CALL RANDOM_SLAVE_HAIR
+
+;8割で遺伝
+IF RAND:5 < 4
+	CSTR:髪色 = %CSTR:SAVE_TARGET:初期値／髪色%
+	CSTR:カテゴリ／髪色 = %CSTR:SAVE_TARGET:初期値／カテゴリ／髪色%
+	CFLAG:カラーコード／髪 = CFLAG:SAVE_TARGET:初期値／カラーコード／髪
+	
+	;髪色の中に口上が指定されてなければ口上色セットする処理つける
+	CALL KOJO_COLOR_SET_HAIR_COLOR_AUTO
+ENDIF
+CALL RANDOM_SLAVE_EYE
+
+;8割で遺伝
+IF RAND:5 < 4
+	;親がオッドアイの場合はもう80%を通ると子もオッドアイ
+	IF RAND:5 < 4 && CSTR:SAVE_TARGET:初期値／左目の色 != ""
+		CSTR:右目の色 = %CSTR:SAVE_TARGET:初期値／右目の色%
+		CSTR:カテゴリ／右目の色 = %CSTR:SAVE_TARGET:初期値／カテゴリ／右目の色%
+		CFLAG:カラーコード／右目 = CFLAG:SAVE_TARGET:初期値／カラーコード／右目
+		CSTR:左目の色 = %CSTR:SAVE_TARGET:初期値／左目の色%
+		CSTR:カテゴリ／左目の色 = %CSTR:SAVE_TARGET:初期値／カテゴリ／左目の色%
+		CFLAG:カラーコード／左目 = CFLAG:SAVE_TARGET:初期値／カラーコード／左目
+	ELSEIF CSTR:左目の色 != "" && CSTR:SAVE_TARGET:初期値／左目の色 != "" && RAND:2
+		CSTR:左目の色 = %CSTR:SAVE_TARGET:初期値／左目の色%
+		CSTR:カテゴリ／左目の色 = %CSTR:SAVE_TARGET:初期値／カテゴリ／左目の色%
+		CFLAG:カラーコード／左目 = CFLAG:SAVE_TARGET:初期値／カラーコード／左目
+	ELSEIF CSTR:SAVE_TARGET:初期値／左目の色 != "" && RAND:2
+		CSTR:右目の色 = %CSTR:SAVE_TARGET:初期値／左目の色%
+		CSTR:カテゴリ／右目の色 = %CSTR:SAVE_TARGET:初期値／カテゴリ／左目の色%
+		CFLAG:カラーコード／右目 = CFLAG:SAVE_TARGET:初期値／カラーコード／左目
+	ELSE
+		CSTR:右目の色 = %CSTR:SAVE_TARGET:初期値／右目の色%
+		CSTR:カテゴリ／右目の色 = %CSTR:SAVE_TARGET:初期値／カテゴリ／右目の色%
+		CFLAG:カラーコード／右目 = CFLAG:SAVE_TARGET:初期値／カラーコード／右目
+	ENDIF
+ENDIF
+IF CSTR:右目の色 == CSTR:左目の色 && CSTR:カテゴリ／右目の色 == CSTR:カテゴリ／左目の色
+	CSTR:左目の色 = 
+	CSTR:カテゴリ／左目の色 = 
+	CFLAG:カラーコード／左目 = 0
+ENDIF
+SIF RAND:5 < 4
+	CSTR:瞳の形 = %CSTR:SAVE_TARGET:初期値／瞳の形%
+
+;肌色は遺伝
+CSTR:肌の色 = %CSTR:SAVE_TARGET:肌の色%
+CSTR:カテゴリ／肌の色 = %CSTR:SAVE_TARGET:カテゴリ／肌の色%
+CALL RANDOM_SLAVE_NIPPLE_COLOR
+CALL RANDOM_SLAVE_SHAPE
+CALL RANDOM_SLAVE_SENSITIVE
+
+;多少遺伝
+;ABL:Ａ感度→10
+FOR LOCAL,10,15
+	SIF ABL:SAVE_TARGET:LOCAL > 100
+		ABL:LOCAL += 10
+	SIF ABL:SAVE_TARGET:LOCAL > 130
+		ABL:LOCAL += 10
+	SIF ABL:SAVE_TARGET:LOCAL > 200
+		ABL:LOCAL += 10
+NEXT
+CALLNAME = 
+
+;性経験
+CSTR:性経験 = 生娘
+TALENT:処女 = 1
+TALENT:Ａ処女 = 1
+TALENT:キス未経験 = 1
+TALENT:パイズリ未経験 = 1
+TALENT:Ｍ処女 = 1
+TALENT:授乳未経験 = 1
+
+;性格
+CALL RANDOM_SLAVE_PERSONALITY
+
+TALENT:名器 = 0
+TALENT:Ａ名器 = 0
+MARK:母乳体質 = 0
+TALENT:先天的母乳体質 = 0
+TALENT:おくちまんこ = 0
+TALENT:極上乳圧 = 0
+EXP:出産 = 0
+
+;性体質基本30%、親が持ってたら80%
+;TALENT:名器→30
+FOR LOCAL,30,35
+	SIF RAND:100 < 30 +TALENT:SAVE_TARGET:LOCAL *50
+		TALENT:LOCAL = 1
+NEXT
+SIF TALENT:先天的母乳体質
+	MARK:母乳体質 = 1
+
+;性格・性知識決定後
+CALL RANDOM_SLAVE_CLOTHE
+CALL RANDOM_SLAVE_TALENT
+CALL RANDOM_SLAVE_TALENT_C
+CALL RANDOM_SLAVE_BATTLE_STATUS_C
+CALL RANDOM_SLAVE_CALLPERSON
+
+;TALENT決定後
+CALL RANDOM_SLAVE_WORK_ABL
+CALL RANDOM_SLAVE_NASTY_ABL
+
+;肩書き記入
+CALL CHARA_SECOND_NAME_SETTING
+
+;ここは必要っぽい
+CALL SWEET_PERSON_CALL_ALL
+CALL SWEET_GENITAL_CALL_ALL
+
+;先に入れないと0%扱いになってる
+CALL MILK_CAPACITY_FIX_CALC
+CALL MILK_PRICE_FIX_CALC
+
+;終了前に排他素質消去
+CALL EXCLUSIVE_TALENT
+
+IF CFLAG:一人称が名前 && !RAND:3
+	LOCALS = %CALLNAME%
+	LOCALS += "-chan"
+	CSTR:一人称 = %LOCALS%
+	CSTR:一人称／蕩け = %LOCALS%
+ENDIF
+CALL CHARA_MAKE_END_CALC
+
+CFLAG:追跡対象 = 0
+CSTR:状態／あなたの子 = 成長中
+TALENT:魔界種族 = 1
+TALENT:魔界適応 = 0
+TALENT:魔族好き = LIMIT(TALENT:魔族好き,0,1)
+CSTR:居場所 = 自室
+EQUIP:個室 = 1
+EQUIP:自室 = 1
+CALL AUTO_SCHEDULE_FREE
+CALL SLAVE_RECEIVE_FLAG_SET
+CALL CHANGE_PERSONAL_C_CALL("あなた呼び方／陥落後",1)
+CSTR:心境 = 子供
+CFLAG:捕獲日 = DAY - 1
+CFLAG:無抵抗 = 1
+CSTR:陥落状態 = 陥落
+BASE:抵抗心 = 0
+
+;尊厳と嫌悪感はMAX値に保存
+;尊厳はそのままでよさそう
+;MAXBASE:尊厳 = BASE:尊厳
+;BASE:尊厳 = 0
+MAXBASE:嫌悪感 = BASE:嫌悪感
+BASE:嫌悪感 = 0
+BASE:好感度 = 5000
+
+;種族特徴はCSTR:種族で見てるので終わってから設定
+CSTR:種族 = %CSTR:SAVE_TARGET:種族%
+IF CSTR:種族 != CSTR:0:種族
+	LOCALS:0 = と%CSTR:0:種族%のハーフ
+	LOCALS:1 = と%CSTR:0:種族%の混血
+	IF STRCOUNT(CSTR:種族,LOCALS:0)
+		STRFIND CSTR:種族, "のハーフ"
+		SUBSTRING CSTR:種族,0,RESULT - 1
+		CSTR:種族 = %RESULTS%の混血
+	ELSEIF !STRCOUNT(CSTR:種族,LOCALS:1)
+		CSTR:種族 += LOCALS:0
+	ENDIF
+ENDIF
+
+;CALL CHARA_MAKE_END_FLAGSET
+CALL SELF_C_MAKE_PROFILE
+
+;タゲ戻す
+TARGET = SAVE_TARGET
+
+
+
+
+
+;体質素質遺伝
+@RANDOM_SLAVE_TALENT_C
+
+IF TALENT:SAVE_TARGET:痛みに弱い
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:痛みに強い
+			TALENT:痛みに強い = 0
+		ELSE
+			TALENT:痛みに弱い = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:痛みに強い
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:痛みに弱い
+			TALENT:痛みに弱い = 0
+		ELSE
+			TALENT:痛みに強い = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+
+IF TALENT:SAVE_TARGET:濡れやすい
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:濡れにくい
+			TALENT:濡れにくい = 0
+		ELSE
+			TALENT:濡れやすい = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:濡れにくい
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:濡れやすい
+			TALENT:濡れやすい = 0
+		ELSE
+			TALENT:濡れにくい = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+
+IF TALENT:SAVE_TARGET:回復早い
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:回復遅い
+			TALENT:回復遅い = 0
+		ELSE
+			TALENT:回復早い = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:回復遅い
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:回復早い
+			TALENT:回復早い = 0
+		ELSE
+			TALENT:回復遅い = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+
+IF TALENT:SAVE_TARGET:習得早い
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:習得遅い
+			TALENT:習得遅い = 0
+		ELSE
+			TALENT:習得早い = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:習得遅い
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:習得早い
+			TALENT:習得早い = 0
+		ELSE
+			TALENT:習得遅い = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+
+SIF TALENT:SAVE_TARGET:一線越えない && RAND:100 < 80
+	TALENT:一線越えない = 1
+
+SIF TALENT:SAVE_TARGET:自慰しやすい && RAND:100 < 80
+	TALENT:自慰しやすい = 1
+
+IF TALENT:SAVE_TARGET:貞操観念
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:貞操無頓着
+			TALENT:貞操無頓着 = 0
+		ELSE
+			TALENT:貞操観念 = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:貞操無頓着
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:貞操観念
+			TALENT:貞操観念 = 0
+		ELSE
+			TALENT:貞操無頓着 = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+
+IF TALENT:SAVE_TARGET:恥じらい
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:恥薄い
+			TALENT:恥薄い = 0
+		ELSE
+			TALENT:恥じらい = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:恥薄い
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:恥じらい
+			TALENT:恥じらい = 0
+		ELSE
+			TALENT:恥薄い = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+
+IF TALENT:SAVE_TARGET:汚臭鈍感
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:汚臭敏感
+			TALENT:汚臭敏感 = 0
+		ELSE
+			TALENT:汚臭鈍感 = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:汚臭敏感
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:汚臭鈍感
+			TALENT:汚臭鈍感 = 0
+		ELSE
+			TALENT:汚臭敏感 = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+
+IF TALENT:SAVE_TARGET:快感に素直
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:快感の否定
+			TALENT:快感の否定 = 0
+		ELSE
+			TALENT:快感に素直 = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:快感の否定
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:快感に素直
+			TALENT:快感に素直 = 0
+		ELSE
+			TALENT:快感の否定 = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+
+IF TALENT:SAVE_TARGET:中毒しやすい
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:中毒しにくい
+			TALENT:中毒しにくい = 0
+		ELSE
+			TALENT:中毒しやすい = 1
+		ENDIF
+	ENDSELECT
+ELSEIF TALENT:SAVE_TARGET:中毒しにくい
+	SELECTCASE RAND:100
+	CASE 0 TO 79
+		IF TALENT:中毒しやすい
+			TALENT:中毒しやすい = 0
+		ELSE
+			TALENT:中毒しにくい = 1
+		ENDIF
+	ENDSELECT
+ENDIF
+;排他素質の消去
+CALL EXCLUSIVE_TALENT
+
+
+
+;戦闘力、遺伝あり
+@RANDOM_SLAVE_BATTLE_STATUS_C
+
+CALL SLAVE_HP_CALC
+LOCAL = MAXBASE:SAVE_TARGET:体力 * (RAND:11 + 10) / 100
+MAXBASE:体力 += LOCAL - (LOCAL % 50)
+BASE:体力 = MAXBASE:体力
+
+CALL SLAVE_LEVEL_CALC
+CALL SLAVE_EP_CALC
+;CALL SLAVE_MP_CALC
+LOCAL = MAXBASE:SAVE_TARGET:魔力 * (RAND:51 + 80) / 100
+MAXBASE:魔力 = LOCAL - (LOCAL % 50)
+BASE:魔力 = MAXBASE:魔力
+
+CALL SLAVE_BATTLE_POWER_CALC(1)
+CALL SLAVE_BATTLE_SPECIAL_CALC
+
+
+;名前など設定
+@SELF_C_MAKE_PROFILE
+
+CLEARLINE LINECOUNT
+PRINTL Please decide on the name of the born child.
+PRINTL
+CALL PRINT_PORTRAIT
+PRINTLC 　《 Name / Dialogue / Pronoun 》
+PRINTFORML Personality: 【%CSTR:性格%】
+CALL HALFLINE
+PRINTLC [ 0] Name
+PRINTFORML ：%CALLNAME%
+;PRINTLC [ 1] Full Name
+;PRINTFORML ：%NAME%
+CALL HALFLINE
+
+PRINTLC [ 1] Dialogue Settings
+CALL PRINTL_WORD_COLOR,@"System Global Flag：\@ FLAG:口上表示 ? ON 　 # OFF　 \@","黄"
+IF CFLAG:口上表示
+	PRINTFORML Used Dialogue：%CSTR:使用口上%
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　Dialogue Not Set","灰"
+ENDIF
+PRINTL
+PRINTLC [ 2] Race Settings
+PRINTFORML ：%CSTR:種族%
+PRINTFORML  　　※For when the expression is strange
+PRINTL
+PRINTLC [ 7] First Person
+IF CSTR:一人称 == ""
+	PRINTL ：(自分の名前)
+ELSEIF CSTR:一人称 == "-chan"
+	PRINTL ：(自分の名前)ちゃん
+ELSE
+	PRINTFORML ：%CSTR:一人称%
+ENDIF
+PRINTLC [ 8] How She Address You
+PRINTFORML ：%CSTR:あなた呼び方／陥落後%
+CALL HALFLINE
+PRINTL [99] End
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	SIF CFLAG:一人称が名前
+		PRINTW The character refers to herself by name, so if you change the name, please make sure to update the first-person pronoun as well.
+	CALL CHARA_CHILD_NAME
+CASE 1
+	CALL KOJO_SETTING
+
+CASE 2
+	STR_REF = 1000
+	PRINTL Select a race.
+	FOR LOCAL,STR_REF,STR_REF+300
+		SIF STR:LOCAL == ""
+			CONTINUE
+		PRINTFORMLC [{LOCAL-STR_REF,3}] %RACE_ENG(STR:LOCAL)%
+	NEXT
+	CALL INPUTBUTTON
+	BINPUT
+	IF RESULT >= 0 && RESULT < 300 && STR:(RESULT +STR_REF) != ""
+		CSTR:種族 = %STR:(RESULT +STR_REF)%
+	ELSEIF RESULT == 901
+		PRINTL Enter the name of a race.
+		INPUTS
+		SIF RESULTS != ""
+			CSTR:種族 = %RESULTS%
+	ENDIF
+
+CASE 7
+	CLEARLINE LINECOUNT
+	CALL PRINT_PORTRAIT
+	CALL CHANGE_PERSONAL_CALL("一人称")
+CASE 8
+	CALL CHANGE_PERSONAL_C_CALL("あなた呼び方／陥落後")
+CASE 99
+	IF CALLNAME != ""
+		PRINTL
+		PRINTFORMW You've decided to turn an available room into %CALLNAME%'s nursery and raise them.
+		RETURN
+	ELSE
+		PRINTFORMW Please name the newborn.
+	ENDIF
+ENDSELECT
+RESTART
+
+
+
+
+;名前変更
+@CHARA_CHILD_NAME
+
+CLEARLINE LINECOUNT
+CALL PRINT_PORTRAIT
+PRINTL Please name the newborn.
+PRINTL
+PRINTFORML Name：%CALLNAME%
+CALL NAME_DUPLICATE_CHECK
+IF NAME == ""
+	PRINTFORML Full Name: (Not Set)
+ELSE
+	PRINTFORML Full Name：%NAME%
+ENDIF
+CALL HALFLINE
+; Custom random name override
+CALL CREATE_NAME_LIST
+PRINTL 《 Random Name Selection 》
+PRINTL [ 0] Japanese
+PRINTL [ 1] English
+PRINTL [ 2] Chinese
+;PRINTL [ 2] French
+;PRINTL [ 3] German
+;PRINTL [ 4] Italian
+;PRINTL [ 5] Russian
+;PRINTL [ 6] Fantasy
+CALL PRINTL_ALIGN
+DRAWLINE
+PRINTLC [ 7] Manual Input
+PRINTLC [ 8] Set Full Name (Manually)
+PRINTL [ 9] Complete
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	NAME =
+	CALL GENERATE_NAME_JF
+	CALLNAME = %RESULTS%
+	IF CFLAG:一人称が名前
+		SIF STRCOUNT(CSTR:一人称,"-chan")
+			RESULTS += "-chan"
+		CSTR:一人称 = %RESULTS%
+		CSTR:一人称／蕩け = %RESULTS%
+	ENDIF
+CASE 1
+	NAME =
+	CALL GENERATE_NAME_KF
+	CALLNAME = %RESULTS%
+	IF CFLAG:一人称が名前
+		SIF STRCOUNT(CSTR:一人称,"-chan")
+			RESULTS += "-chan"
+		CSTR:一人称 = %RESULTS%
+		CSTR:一人称／蕩け = %RESULTS%
+	ENDIF
+CASE 2
+	NAME =
+	CALL GENERATE_NAME_CF
+	CALLNAME = %RESULTS%
+	IF CFLAG:一人称が名前
+		SIF STRCOUNT(CSTR:一人称,"-chan")
+			RESULTS += "-chan"
+		CSTR:一人称 = %RESULTS%
+		CSTR:一人称／蕩け = %RESULTS%
+	ENDIF
+;CASE 0 TO 6
+;	;ランダムに来たらフルネームは消す
+;	NAME =
+;	FIX = RESULT
+;	STR_MAX = 999
+;	STR_REF = 10000 +FIX *1000
+;	CALL STR_REF_SHUFFLE(STR_REF)
+;	CALLNAME = %RESULTS%
+;	IF CFLAG:一人称が名前
+;		SIF STRCOUNT(CSTR:一人称,"-chan")
+;			RESULTS += "-chan"
+;		CSTR:一人称 = %RESULTS%
+;		CSTR:一人称／蕩け = %RESULTS%
+;	ENDIF
+CASE 7
+	PRINTL Enter a name（leave empty to cancel）
+	INPUTS
+	IF RESULTS != ""
+		CALLNAME = %RESULTS%
+		IF CFLAG:一人称が名前
+			SIF STRCOUNT(CSTR:一人称,"-chan")
+				RESULTS += "-chan"
+			CSTR:一人称 = %RESULTS%
+			CSTR:一人称／蕩け = %RESULTS%
+		ENDIF
+	ENDIF
+CASE 8
+	PRINTL Enter a full name（not set if empty）
+	INPUTS
+	NAME = %RESULTS%
+CASE 9
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+
+
+;ARG=1だと初期設定用のランダム
+@CHANGE_PERSONAL_C_CALL(ARGS,ARG)
+
+SELF_INPUT = 0
+IF !ARG
+	CLEARLINE LINECOUNT
+	CALL PRINT_PORTRAIT
+	CALL MANYL(2)
+ENDIF
+IF !ARG
+	PRINTFORML Please choose how you'd like her to address you. (Current: %CSTR:あなた呼び方／陥落後%)
+	PRINTFORMLC [ 0] dad
+	PRINTFORMLC [ 1] father
+	PRINTFORMLC [ 2] otōsama
+	PRINTFORMLC [ 3] chichisama
+	PRINTFORMLC [ 4] daddy
+	PRINTFORMLC [ 5] papa
+	PRINTFORMLC [ 6] old man
+	PRINTFORMLC [ 7] patriarch
+	CALL INPUTBUTTON
+	BINPUT
+ELSE
+	RESULT = RAND:8
+ENDIF
+SELECTCASE RESULT
+CASE 0
+	CSTR:あなた呼び方／陥落後 = dad
+CASE 1
+	CSTR:あなた呼び方／陥落後 = father
+CASE 2
+	CSTR:あなた呼び方／陥落後 = otōsama
+CASE 3
+	CSTR:あなた呼び方／陥落後 = chichisama
+CASE 4
+	CSTR:あなた呼び方／陥落後 = daddy
+CASE 5
+	CSTR:あなた呼び方／陥落後 = papa
+CASE 6
+	CSTR:あなた呼び方／陥落後 = old Man
+CASE 7
+	CSTR:あなた呼び方／陥落後 = patriarch
+CASE 900
+	RETURN
+CASE 901
+	CALL INPUTS_NOT_EMPTY("あなた呼び方／陥落後")
+	CSTR:あなた呼び方／陥落後 = %RESULTS%
+	SELF_INPUT = 1
+ENDSELECT
+
+SELECTCASE CSTR:あなた呼び方／陥落後
+CASE "お父さん","おとうさん"
+	CSTR:あなた呼び方／陥落後／蕩け = おとうさん
+	CSTR:あなた呼び方／甘え = おとぉさん
+CASE "父さん","とうさん"
+	CSTR:あなた呼び方／陥落後／蕩け = とうさん
+	CSTR:あなた呼び方／甘え = とぉさん
+CASE "お父様","おとうさま"
+	CSTR:あなた呼び方／陥落後／蕩け = おとうさま
+	CSTR:あなた呼び方／甘え = おとぉさま
+CASE "父様","とうさま"
+	CSTR:あなた呼び方／陥落後／蕩け = とうさま
+	CSTR:あなた呼び方／甘え = とぉさま
+CASE "父ちゃん","とうちゃん"
+	CSTR:あなた呼び方／陥落後／蕩け = とうちゃん
+	CSTR:あなた呼び方／甘え = とぉちゃん
+CASE "パパ"
+	CSTR:あなた呼び方／陥落後／蕩け = ぱぱ
+	CSTR:あなた呼び方／甘え = ぱぱ
+CASE "親父","おやじ","オヤジ"
+	CSTR:あなた呼び方／陥落後／蕩け = おやじ
+	CSTR:あなた呼び方／甘え = おやじ
+CASE "父上","ちちうえ"
+	CSTR:あなた呼び方／陥落後／蕩け = ちちうえ
+	CSTR:あなた呼び方／甘え = ちちうえ
+CASEELSE
+	CSTR:あなた呼び方／陥落後／蕩け = %CSTR:あなた呼び方／陥落後%
+	CSTR:あなた呼び方／甘え = %CSTR:あなた呼び方／陥落後／蕩け%
+ENDSELECT
+CSTR:あなた呼び方／陥落前 = %CSTR:あなた呼び方／陥落後%
+CSTR:あなた呼び方／陥落前／蕩け = %CSTR:あなた呼び方／陥落後／蕩け%
+
+IF !ARG
+	CALL CHANGE_PERSONAL_CALL_FIX_AFTER(SELF_INPUT,ARGS)
+	IF RESULT
+		CALL INPUTS_NOT_EMPTY("How She Addresses You After Exceeding a Certain Number of Climaxes")
+		CSTR:あなた呼び方／陥落後／蕩け = %RESULTS%
+		CALL INPUTS_NOT_EMPTY("How She Addresses You in a Cutesy Voice")
+		CSTR:あなた呼び方／甘え = %RESULTS%
+	ENDIF
+ENDIF
+
+
+
+;成長期終わり判定
+@GROWTH_CHECK
+
+LOCAL = 0
+FOR TARGET,1,CHARANUM
+	IF CSTR:状態／あなたの子 == "成長中" && 14 + CFLAG:捕獲日 - DAY < 0
+		CSTR:状態／あなたの子 = 成長後
+		PRINTFORML %CALLNAME% has completed their growth period and has become independent. From now on, you will be able to assign them tasks.
+		VARSET CSTR,"休日",350,357
+		VARSET CSTR,"自由",360,369
+		LOCAL ++
+	ENDIF
+NEXT
+IF LOCAL
+	PRINTW
+	CALL HALFLINE
+ENDIF
+
+
+;娘に手を出す
+@CHILD_REBELLION(ARG)
+
+IF !ARG
+	PRINTL 
+	PRINTFORML %CALLNAME% is your biological daughter. Are you really going to proceed?
+
+	CALL ASK_YN
+	SIF RESULT
+		RETURN 1
+ENDIF
+PRINTL 
+PRINTFORML %CALLNAME% is stunned by her father's violent actions...
+PRINTFORML %CALLNAME% has entered a state of [Rejection].
+PRINTW
+CSTR:状態／あなたの子 = 調教後
+CFLAG:無抵抗 = 0
+CSTR:陥落状態 = 拒絶
+CSTR:心境 = 子供調教後
+;BASE:尊厳 = MAXBASE:尊厳
+;MAXBASE:尊厳 = 10000
+BASE:嫌悪感 = LIMIT(MAXBASE:嫌悪感 + 5000 - BASE:好感度,0,10000)
+MAXBASE:嫌悪感 = 10000
+BASE:好感度 = LIMIT(BASE:好感度 - 5000,0,MAXBASE:好感度)
+VARSET CSTR,"休日",350,357
+VARSET CSTR,"自由",360,369
+CSTR:スケジュール = 自由
+
+
+
+;成長後＆未反発(手を出してない)時の恋慕化
+@CHILD_LOVE
+
+SIF CSTR:状態／あなたの子 != "成長後" || BASE:好感度 < BASE_FIRST_MAX -1
+	RETURN
+CALL CAPITULATION_LOVE
+CSTR:状態／あなたの子 = 調教後
+
+
+
+

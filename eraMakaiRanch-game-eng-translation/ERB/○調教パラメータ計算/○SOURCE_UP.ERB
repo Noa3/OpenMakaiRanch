@@ -1,0 +1,205 @@
+﻿
+;ソース処理
+@SOURCE_UP
+
+;Ｖ潤滑の増加
+CALL WET_PLUS
+
+;だいたいに5%のランダム補正
+;@SENSITIVE_SUM_CALC内で既に補正かけてるので快楽(0～9)は除外
+FOR LOCAL,10,100
+	CALL RANDOM_FIX(SOURCE:LOCAL,5,SOURCENAME:LOCAL)
+	SOURCE:LOCAL += FIX
+NEXT
+SOURCE:コマンド前気力 = BASE:気力
+
+;体力・気力計算前に精神パラメータ計算へ
+CALL MIND_SOURCE_UP
+
+;LOSEは計算してやる必要ある
+;霊力注ぎ込みの回復量を入れる・気力回復量あればそれも
+BASE:体力 += SOURCE:調教対象体力回復
+BASE:気力 += SOURCE:調教対象気力回復
+
+;元々0ならLOSEBASEを0にして表示省略
+SIF !BASE:体力
+	LOSEBASE:体力 = 0
+SIF !BASE:気力
+	LOSEBASE:気力 = 0
+
+;片方が0のときもう片方の減少量50%増加
+SIF !BASE:体力
+	TIMES LOSEBASE:気力,1.50
+SIF !BASE:気力
+	TIMES LOSEBASE:体力,1.50
+BASE:体力 = LIMIT(BASE:体力 -LOSEBASE:体力,0,MAXBASE:体力)
+BASE:気力 = LIMIT(BASE:気力 -LOSEBASE:気力,0,MAXBASE:気力)
+
+;そのままPALAMに加算
+FOR LOCAL,0,30
+	SIF SOURCE:LOCAL >= 0
+		PALAM:LOCAL += SOURCE:LOCAL
+NEXT
+
+;現在ABLでの補正後にPALAM、EXPに加算
+;表示が「+SOURCE（+PALAM）」になる
+;ABLが10未満なら(10-現在ABL)割　10以上なら(1/現在ABL)する
+FOR LOCAL,40,100
+	;一旦0に
+	PALAM:LOCAL = 0
+	SIF SOURCE:LOCAL <= 0
+		CONTINUE
+	
+	;体内凌辱だとあんまり多すぎるので半減しとく
+	SIF TFLAG:体内凌辱中
+		SOURCE:LOCAL /= 2
+	PALAM:LOCAL = SOURCE:LOCAL
+	
+	;濃度は別個計算
+	IF PALAMNAME:LOCAL == "母乳濃度増加"
+		;Lv1増加ごとに半減
+		FIX = POWER(2,ABL:LOCAL)
+		PALAM:LOCAL /= FIX
+		
+		;もう最大なら0
+		SIF ABL:LOCAL >= 5
+			PALAM:LOCAL = 0
+		
+	ELSEIF PALAMNAME:LOCAL == "豊穣増加"
+		;そのまま入れる、豊穣上限なら0にしてる
+	
+	ELSE
+		;LV5までは(100 -20*現在ABL)%のEXP・5以降は(1/現在ABL)のEXP・10以降はさらに1/2
+		IF ABL:LOCAL < 5
+			PALAM:LOCAL *= (100 -20 *ABL:LOCAL)
+			PALAM:LOCAL /= 100
+		ELSE
+			PALAM:LOCAL /= ABL:LOCAL
+			SIF ABL:LOCAL >= 10
+				PALAM:LOCAL /= 2
+		ENDIF
+	ENDIF
+	
+	;EXP増減コンフィグあればここで計算
+	CALL DIFFICULTY_CONFIG_APPLY("性EXP獲得量_PALAM",LOCAL)
+	
+	;EXPもここで入れてしまう
+	EXP:LOCAL = LIMIT(EXP:LOCAL +PALAM:LOCAL,0,EXP_MAX)
+NEXT
+PALAM:Ｖ潤滑 += SOURCE:愛液
+
+;絶頂回数
+;SOURCE:Ａ快楽／触手→130
+FOR LOCAL,0,5
+	SIF !NOWEX:LOCAL
+		CONTINUE
+	
+	;絶頂回数により快楽を持ち越し、上限9999
+	PALAM:LOCAL = PALAM:LOCAL %10000
+	PALAM:LOCAL = LIMIT(PALAM:LOCAL +NOWEX:LOCAL *100,0,9999)
+	EX:LOCAL += NOWEX:LOCAL
+	EXP:LOCAL = LIMIT(EXP:LOCAL +NOWEX:LOCAL,0,PALAM_MAX)
+	
+	;触手責めしていれば触手絶頂回数増加
+	SIF SOURCE:(LOCAL +130)
+		EXP:触手絶頂回数 += NOWEX:LOCAL
+NEXT
+IF NOWEX:総絶頂
+	EX:総絶頂 += NOWEX:総絶頂
+	EXP:総絶頂回数 = LIMIT(EXP:総絶頂回数 +NOWEX:総絶頂,0,ECSTASY_MAX)
+ENDIF
+CFLAG:総搾乳量 += NOWEX:噴乳
+EX:噴乳 += NOWEX:噴乳
+IF NOWEX:噴乳 +NOWEX:不足ミルク > 0
+	EXP:搾乳絶頂回数 += NOWEX:Ｎ絶頂
+	EXP:搾乳絶頂回数 += NOWEX:Ｂ絶頂
+ENDIF
+
+;潤滑上限は99999
+PALAM:Ｖ潤滑 = LIMIT(PALAM:Ｖ潤滑,0,99999)
+PALAM:Ａ潤滑 = LIMIT(PALAM:Ａ潤滑,0,99999)
+
+;継続時費用計算
+SOURCE:魔力消費量 += SOURCE:触手魔力消費量
+IF SOURCE:魔力消費量
+	;消費量増加コンフィグがあれば増加
+	CALL DIFFICULTY_CONFIG_APPLY("魔力消費量")
+	FLAG:区間魔力消費量 += SOURCE:魔力消費量
+ENDIF
+IF SOURCE:バッテリー消費量
+	CALL DIFFICULTY_CONFIG_APPLY("バッテリー消費量")
+	FLAG:区間バッテリー消費量 += SOURCE:バッテリー消費量
+ENDIF
+
+;一応上限
+EXP:触手絶頂回数 = LIMIT(EXP:触手絶頂回数,0,ECSTASY_MAX)
+EXP:搾乳絶頂回数 = LIMIT(EXP:搾乳絶頂回数,0,ECSTASY_MAX)
+CFLAG:総搾乳量 = LIMIT(CFLAG:総搾乳量,0,ECSTASY_MAX)
+
+;PLAYERのSOURCE処理
+CALL SOURCE_UP_PLAYER
+
+
+
+;PLAYERのSOURCE処理
+@SOURCE_UP_PLAYER
+
+	;IF ((SOURCE:経過時間 && TFLAG:調教中) || TFLAG:スケジュール外Ｈ) && PLAYER >= 0
+SIF PLAYER < 0
+	RETURN
+
+;調教者の体力消費/回復
+HEAL = SOURCE:調教者体力回復
+DAMAGE = SOURCE:調教者体力消費
+
+;スキルポイント蓄積値増加
+SIF !PLAYER
+	MONEY:魔術AP蓄積値 += SOURCE:プレイヤー増加魔力量／減衰前
+
+;調教者習得から変換
+CALL PLAYER_TECHNIQUE_EXP_UP_CALC(PLAYER)
+SAVE_TARGET = TARGET
+TARGET = PLAYER
+
+;PLAYERも5%ランダム補正
+FOR LOCAL,0,100
+	CALL RANDOM_FIX(SOURCE:LOCAL,5,SOURCENAME:LOCAL)
+	SOURCE:LOCAL += FIX
+NEXT
+
+;精力消費
+;絶倫ならスキップ
+SIF ITEM:絶倫 && GETBIT(＃有効／絶倫＃)
+	SOURCE:SAVE_TARGET:調教者精力消費量 = 0
+;ペニスサイズ差補正がプラスなら軽減
+SIF TFLAG:ペニスサイズ差補正 > 0
+	SOURCE:SAVE_TARGET:調教者精力消費量 = SOURCE:SAVE_TARGET:調教者精力消費量 * 1000 / (1000 + TFLAG:ペニスサイズ差補正)
+BASE:精力 = LIMIT(BASE:精力 -SOURCE:SAVE_TARGET:調教者精力消費量,0,BASE:精力)
+
+;ここでリセット後に上書きがあるので調教者のリセットはしなくても大丈夫
+SOURCE:習得 = EXPUP
+BASE:体力 = LIMIT(BASE:体力 -DAMAGE +HEAL,0,MAXBASE:体力)
+FOR LOCAL,41,100
+	PALAM:LOCAL = 0
+	SIF SOURCE:LOCAL <= 0
+		CONTINUE
+	PALAM:LOCAL = SOURCE:LOCAL
+	
+	;濃度は来ないはず
+	IF ABL:LOCAL < 5
+		PALAM:LOCAL *= (100 -20 *ABL:LOCAL)
+		PALAM:LOCAL /= 100
+	ELSE
+		PALAM:LOCAL /= ABL:LOCAL
+		SIF ABL:LOCAL >= 10
+			PALAM:LOCAL /= 2
+	ENDIF
+	CALL DIFFICULTY_CONFIG_APPLY("性EXP獲得量_PALAM",LOCAL)
+	EXP:LOCAL = LIMIT(EXP:LOCAL +PALAM:LOCAL,0,EXP_MAX)
+NEXT
+TARGET = SAVE_TARGET
+
+
+
+
+

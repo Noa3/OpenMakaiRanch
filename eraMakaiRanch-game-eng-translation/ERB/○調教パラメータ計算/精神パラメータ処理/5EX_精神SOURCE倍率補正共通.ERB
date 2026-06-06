@@ -1,0 +1,91 @@
+﻿
+;補正をキャラの性癖により共通+-
+;マイナス感情でそのまま使う
+@MIND_CALC_MULTIPLY_COMMONFIX
+
+;ちんぽ使われてるとき
+SIF (TALENT:名器 || MARK:淫壺) && GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	FIX -= 20
+SIF (TALENT:Ａ名器 || MARK:淫尻) && GETBIT(＃Ｐ使用／Ａ挿入＃)
+	FIX -= 20
+SIF (TALENT:極上乳圧 || MARK:淫乳) && GETBIT(＃Ｐ使用／パイズリ＃)
+	FIX -= 20
+SIF TALENT:おくちまんこ && GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	FIX -= 20
+
+;不潔が入っているとき
+SIF TALENT:汚臭敏感 && SOURCE:不潔
+	FIX -= 10
+
+;おっぱい責めされているとき
+IF SOURCE:Ｂ快楽 || SOURCE:Ｎ快楽
+	SIF TALENT:乳責め嫌悪
+		FIX += 20
+	SIF MARK:乳房劣等感解消
+		FIX -= 10
+	SIF MARK:乳責め嫌悪解消
+		FIX -= 30
+ENDIF
+
+;中毒Lvのある責めをされたとき対応ABLで減少
+SIF SOURCE:授乳愛情経験
+	FIX -= ABL:母性
+SIF SOURCE:奉仕経験
+	FIX -= ABL:奉仕精神
+
+;SOURCE:膣内射精経験→50
+FOR LOCAL,50,70
+	SIF SOURCE:LOCAL
+		FIX -= ABL:LOCAL
+NEXT
+
+;大量射精のとき精液中毒でさらに減少
+SIF SOURCE:射精回数 > 1
+	FIX -= (ABL:精液中毒 *SOURCE:射精回数)
+SIF PLAYER >= 0
+	CALL MIND_CALC_MULTIPLY_PLAYER_FIX
+
+
+
+;PLAYERと好き嫌いによる補正
+@MIND_CALC_MULTIPLY_PLAYER_FIX
+
+SIF TALENT:男好き > 0 && TALENT:PLAYER:オトコ
+	FIX -= 20
+SIF TALENT:男好き < 0 && TALENT:PLAYER:オトコ
+	FIX += 30
+SIF TALENT:女好き > 0 && !TALENT:PLAYER:オトコ
+	FIX -= 20
+SIF TALENT:女好き < 0 && !TALENT:PLAYER:オトコ
+	FIX += 30
+SIF TALENT:子供好き > 0 && CFLAG:PLAYER:身長 <= HEIGHT_MAX_小柄 && CFLAG:PLAYER:外見年齢 <= VISUAL_AGE_CHILD_MAX
+	FIX -= 20
+
+;嫌いの判定には外見年齢を気にさせない。嫌がるときに厳密な見た目なんて気にしないだろうという発想。
+SIF TALENT:子供好き < 0 && CFLAG:PLAYER:身長 <= HEIGHT_MAX_小柄
+	FIX += 30
+SIF TALENT:魔族好き > 0 && TALENT:PLAYER:魔界種族
+	FIX -= 20
+SIF TALENT:魔族好き < 0 && TALENT:PLAYER:魔界種族
+	FIX += 30
+SIF TALENT:天界族好き > 0 && TALENT:PLAYER:天界種族
+	FIX -= 20
+SIF TALENT:天界族好き < 0 && TALENT:PLAYER:天界種族
+	FIX += 30
+SIF TALENT:同族好き > 0 && CSTR:初期値／種族 == CSTR:PLAYER:初期値／種族
+	FIX -= 20
+SIF TALENT:同族好き < 0 && CSTR:初期値／種族 == CSTR:PLAYER:初期値／種族
+	FIX += 30
+SIF TALENT:王族好き > 0 && CSTR:PLAYER:初期値／身分 == "王族"
+	FIX -= 20
+SIF TALENT:王族好き < 0 && CSTR:PLAYER:初期値／身分 == "王族"
+	FIX += 30
+SIF TALENT:貴族好き > 0 && CSTR:PLAYER:初期値／身分 == "貴族"
+	FIX -= 20
+SIF TALENT:貴族好き < 0 && CSTR:PLAYER:初期値／身分 == "貴族"
+	FIX += 30
+
+
+
+
+

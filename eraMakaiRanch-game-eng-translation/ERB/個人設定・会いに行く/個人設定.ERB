@@ -1,0 +1,85 @@
+﻿
+;奴隷個人設定
+@SLAVE_CONFIG
+
+CLEARLINE LINECOUNT
+CALL SHOW_SLAVE_STATE
+IF MARK:母乳体質
+	IF CSTR:フレーバーミルク != ""
+		CALL PRINTL_WORD_COLOR("　The Product Name Of Flavored Milk Can Not Be Changed","灰")
+	ELSE
+		PRINTL [ 1] Breast Milk Product Name Change
+	ENDIF
+ELSE
+	CALL PRINTL_WORD_COLOR("　Not【Lactating】","灰")
+ENDIF
+PRINTL
+PRINT [ 2] Dialogue・Display Settings　
+CALL PRINTL_WORD_COLOR,@"Global Setting：Dialogue\@ FLAG:口上表示 ? ON 　 # OFF　 \@","黄"
+IF CFLAG:口上表示
+	PRINTFORML 　　Dialogue Set：%DIALOGUE_ENG(CSTR:使用口上)%
+ELSE
+	CALL PRINTL_WORD_COLOR("　　No Dialogue Set","灰")
+ENDIF
+PRINTL
+PRINTLC [ 4] Hide On Main Screen
+CALL PRINT_ONOFF(CFLAG:表示OFF／メイン画面)
+CALL PRINTL_WORD_COLOR,@"　Global Setting：\@ FLAG:メイン／奴隷非表示 ? Hide if OFF　 # Display All 　 \@","黄"
+PRINTLC [ 5] Bathing Allowed Even When Not Submissive
+CALL PRINT_ONOFF(CFLAG:入浴許可,1)
+PRINTLC [ 6] Set As Favorite
+CALL PRINT_ONOFF(CFLAG:お気に入り,1)
+PRINTL
+
+;STR:アビリティ有効個人BIT→22020
+STR_REF = 22020
+PRINTL 《 Ability Activation Settings 》
+FOR LOCAL,0,10
+	SIF STR:(STR_REF +LOCAL) == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL +10}] %ABILITIES_ACTIVE_ENG(STR:(STR_REF +LOCAL))%
+	CALL PRINT_ONOFF(GETBIT(CFLAG:アビリティ有効個人BIT,LOCAL),1)
+NEXT
+PRINTL
+PRINTL [30] Character Display
+PRINTL [31] Cooking / Dinner
+PRINTL [32] Automatic Choices For Training
+CALL PRINTL_ALIGN
+DRAWLINE
+PRINTL [99] Done
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 1
+	CALL MILK_PRODUCT_NAME_CHANGE
+CASE 2
+	CALL KOJO_SETTING
+CASE 4
+	PRINTFORML Hide %CALLNAME% on the main ranch screen?（Scheduling, etc will still work）
+	PRINTL Recommended to use this when the same job is being automatic for a long period of time.
+	CALL PRINTL_WORD_COLOR("Recommened if you have multiple people doing the same job, since it won't display when taking breaks","黄")
+	PRINTL
+	PRINTLC [ 0] Display
+	PRINTL [ 1] Set To Hidden
+	INPUT
+	SIF RESULT == 0 || RESULT == 1
+		CFLAG:表示OFF／メイン画面 = RESULT
+CASE 5
+	INVERTBIT CFLAG:入浴許可,0
+CASE 6
+	INVERTBIT CFLAG:お気に入り,0
+CASE 10 TO 19
+	INVERTBIT CFLAG:アビリティ有効個人BIT,RESULT -10
+CASE 30
+	CALL SLAVE_CONFIG_PORTRAIT
+CASE 31
+	CALL SLAVE_CONFIG_COOKING
+CASE 32
+	CALL SLAVE_CONFIG_TRAIN_AUTO
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+

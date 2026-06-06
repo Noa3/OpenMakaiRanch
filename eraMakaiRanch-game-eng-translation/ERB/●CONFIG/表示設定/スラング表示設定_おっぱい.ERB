@@ -1,0 +1,107 @@
+﻿
+;おっぱいスラング設定
+@SLANG_CONFIG_BUST
+
+CLEARLINE LINECOUNT
+PRINTL Select slang options for breasts.
+DRAWLINE
+PRINTLC [ 0] 「boobs」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／乳房,0),1)
+PRINTLC [ 1] 「breasts」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／乳房,1),1)
+PRINTLC [ 2] 「breast flesh」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／乳房,2),1)
+PRINTLC [ 3] 「bust」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／乳房,3),1)
+PRINTLC [ 4] 「chest」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／乳房,4),1)
+PRINTLC [ 5] 「soft curves」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／乳房,5),0)
+PRINTL 　（Small Breasts→「petite peaks」、Flat→「Chest」）
+PRINTLC [ 6] 《Breast Size》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／乳房,6),0)
+PRINTL 　（small,flat→「Breasts」）
+PRINTL
+PRINTL 　《 Prefix Setting 》
+PRINTLC [10] [Breast Firmness]
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／乳房,0),1)
+PRINTLC [11] 「bountiful」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／乳房,1),0)
+PRINTL 　（With Large Breasts or more）
+PRINTLC [12] 「bursting」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／乳房,2),0)
+PRINTL 　（With Gigantic Breasts or more）
+PRINTLC [13] 「lewd」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／乳房,3),0)
+PRINTL 　（With Lewd Breasts）
+PRINTLC [14] 「obscene」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／乳房,4),0)
+PRINTL 　（With Lewd Breasts）
+PRINTL
+PRINTL 　《 Special Substitutions 》
+PRINTLC [20] Priority for Special Substitutions
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,0),0)
+PRINTL 　give Priority to cases that meet the conditions for special substitution 
+PRINTLC [21] 「tiny boobs」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,1),0)
+PRINTL 　（With Small Breasts or less）
+PRINTLC [22] 「big boobs」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,2),0)
+PRINTL 　（With Large Breasts or more）
+PRINTLC [23] 「giant tits」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,3),0)
+PRINTL 　（With Supreme Breasts）
+PRINTLC [24] 「extremely large breasts」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,4),0)
+PRINTL 　（With Supreme Breasts）
+PRINTLC [25] 「milk tanks」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,5),0)
+PRINTL 　（With Milk Tank Mark）
+PRINTLC [26] 「lewd breasts」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,6),0)
+PRINTL 　（With Lewd Breasts）
+PRINTLC [27] 「perverted tits」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,7),0)
+PRINTL 　（With Lewd Breasts）
+PRINTLC [28] 「loli《Breast Size》」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,8),0)
+PRINTL 　（When Child Sized、Large Breasts or more）
+PRINTLC [29] 《 Custom Replacement 》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／乳房,9),0)
+PRINTFORML 　（Current Setting: %SAVESTR:表記／乳房%）
+CALL SLANG_CONFIG_FOOTER
+INPUT
+SELECTCASE RESULT
+CASE 0 TO 6
+	INVERTBIT FLAG:スラング表示／乳房,RESULT
+CASE 10 TO 14
+	INVERTBIT FLAG:スラング接頭語／乳房,(RESULT -10)
+CASE 20 TO 29
+	INVERTBIT FLAG:スラング置換／乳房,(RESULT -20)
+CASE 80
+	FLAG:スラング表示／乳房 = 65535
+CASE 81
+	FLAG:スラング接頭語／乳房 = 65535
+CASE 82
+	FLAG:スラング置換／乳房 = 65535
+CASE 90
+	FLAG:スラング表示／乳房 = 0
+CASE 91
+	FLAG:スラング接頭語／乳房 = 0
+CASE 92
+	FLAG:スラング置換／乳房 = 0
+CASE 98
+	PRINTL Reset slang options for breasts to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG_BUST
+CASE 99
+	IF !FLAG:スラング表示／乳房
+		PRINTW At least one slang option must be selected.
+	ELSE
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+

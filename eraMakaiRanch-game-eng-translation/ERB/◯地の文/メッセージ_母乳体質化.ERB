@@ -1,0 +1,46 @@
+﻿
+;母乳分泌促進薬・魔力母乳分泌促進薬
+@MILK_PROMOTION_MESSAGE
+
+PRINTFORML %CALLNAME% feels something rising up as she climax from her %SLANG_B()%
+
+
+
+;母乳体質化メッセージ
+@MAKEUP_MILK_MESSAGE_1
+
+CALL PRINT_WORD_COLOR,@"%SAVESTR:表記／母乳% starts seeping from %CALLNAME%'s %SLANG_N()%!","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+@MAKEUP_MILK_MESSAGE_END
+
+CALL PRINT_WORD_COLOR,@"%CALLNAME% is now【Lactating】!","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;魔力母乳体質化
+@MAKEUP_MAGIC_MILK_MESSAGE_1
+
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s Mana is lost along with the %SAVESTR:表記／母乳% seeping from her！","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+@MAKEUP_MAGIC_MILK_MESSAGE_2
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s Mana is lost along with her %SAVESTR:表記／母乳%！","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+@MAKEUP_MAGIC_MILK_MESSAGE_END
+
+CALL PRINT_WORD_COLOR,@"%CALLNAME% gains【Mana-Infused Milk】!","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+

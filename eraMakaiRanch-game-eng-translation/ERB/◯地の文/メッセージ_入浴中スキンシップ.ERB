@@ -1,0 +1,137 @@
+﻿
+;地の文まとめ
+;風呂場で乳揉み
+@BATHLOOM_BUST_MASSAGE_MESSAGE
+
+CALL BATHLOOM_BUST_BUTHTUB_MESSAGE
+CALL TRAIN_BUST_LUB_MESSAGE
+CALL ONOMATOPOEIA("乳揉み")
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+
+
+
+;風呂場で乳吸い
+@BATHLOOM_BUST_SUCK_MESSAGE
+
+CALL BATHLOOM_BUST_BUTHTUB_MESSAGE
+PRINTFORML you %BUST_LUB()% %CALLNAME%'s %SLANG_B()%, 
+CALL TRAIN_MILK_SUCK_MESSAGE
+CALL ONOMATOPOEIA("乳吸い")
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+
+
+
+;浴槽内にいるかどうかでおっぱい地の文変更
+@BATHLOOM_BUST_BUTHTUB_MESSAGE
+
+;浴槽内か分岐
+IF TFLAG:浴槽内
+	IF ABL:バストサイズ >= BUSTSIZE_爆乳 && RAND:100 < 50
+		PRINT The water in the bathtub spills as 
+	ELSEIF ABL:バストサイズ >= BUSTSIZE_巨乳 && RAND:100 < 80
+		PRINT While sitting in the bathtub, 
+	ELSE
+		PRINT Flushed in the bathtub, 
+	ENDIF
+ENDIF
+
+
+
+;おまんこをペニスで洗う？
+@BATHLOOM_SLAVE_WASHING_V_IN_PENIS_MESSAGE
+
+PRINTFORML You apply soap onto your %SLANG_PENIS()% and insert it into %CALLNAME%'s aroused %SLANG_V()%,
+PRINTFORML giving the insides of her %SLANG_V()% a thorough cleaning...
+
+
+
+;アナルをペニスで洗う　ほんとか？
+@BATHLOOM_SLAVE_WASHING_A_IN_PENIS_MESSAGE
+
+PRINTFORML You apply soap onto your %SLANG_PENIS()% and insert it into %CALLNAME%'s aroused %SLANG_A()%,
+PRINTFORML giving the insides of her %SLANG_A()% a thorough cleaning...
+
+
+
+;全身洗い
+@BATHLOOM_SLAVE_WASHING_BODY_MESSAGE
+
+PRINTFORML You wash %CALLNAME%'s body
+
+
+
+;おっぱい洗い
+@BATHLOOM_SLAVE_WASHING_BUST_MESSAGE
+
+PRINTFORML While washing %CALLNAME%'s body, you give her %SLANG_B()% a careful and thorough cleaning...
+
+
+
+;乳首洗い
+@BATHLOOM_SLAVE_WASHING_NIPPLE_MESSAGE
+
+PRINTFORML While washing %CALLNAME%'s body, you give her %SLANG_N()% a careful and thorough cleaning...
+
+
+
+;クリ洗い
+@BATHLOOM_SLAVE_WASHING_CLITORIS_MESSAGE
+
+PRINTFORML While washing %CALLNAME%'s body, you give her %SLANG_C()% a careful and thorough cleaning...
+
+
+
+;おまんこ洗い
+@BATHLOOM_SLAVE_WASHING_VAGINA_MESSAGE
+
+PRINTFORML While washing %CALLNAME%'s body, you give her %SLANG_V()% a careful and thorough cleaning...
+
+
+
+;アナル洗い
+@BATHLOOM_SLAVE_WASHING_ANAL_MESSAGE
+
+PRINTFORML While washing %CALLNAME%'s body, you give her %SLANG_A()% a careful and thorough cleaning...
+
+
+
+
+
+;普通に洗ってもらう
+@BATHLOOM_PLAYER_WASHING_BODY_MESSAGE
+
+PRINTFORML %CALLNAME% washes your body.
+
+
+
+;おっぱいで洗わせる
+@BATHLOOM_PLAYER_WASHING_USE_BUST_MESSAGE
+
+PRINTFORML You tell %CALLNAME% to wash your body with her soapy %SLANG_B()%...
+SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+	PRINTFORML You enjoy the sensation of her %SLANG_B()% rubbing against your body...
+
+
+
+;ちんぽ洗ってもらう
+@BATHLOOM_PLAYER_WASHING_PENIS_MESSAGE
+
+PRINTFORML %CALLNAME% gently handles %CALLNAME:0%'s soapy %SLANG_PENIS()%...
+
+
+
+;パイズリ洗い
+@BATHLOOM_PLAYER_WASHING_PAIZURI_MESSAGE
+
+PRINTFORML Enveloped by her %SLANG_B()%, your %SLANG_PENIS()% becomes a soapy mess...
+
+
+
+;騎乗位ちんぽ洗い
+@BATHLOOM_PLAYER_WASHING_USE_VAGINA_MESSAGE
+
+PRINTFORML As %CALLNAME% moves her hips, soap mixes with love nectar inside her %SLANG_V()%...
+
+
+
+

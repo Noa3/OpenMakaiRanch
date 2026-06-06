@@ -1,0 +1,39 @@
+﻿
+;乳責め触手をリセットする
+@BUST_TENTACLE_RESET
+
+SIF !TFLAG:Ｂ装備
+	RETURN
+
+;爆乳以上だと継続になる
+IF ABL:バストサイズ < BUSTSIZE_爆乳
+	TEQUIP:触手乳揉み = 0
+	TEQUIP:触手乳搾り = 0
+	TEQUIP:ブラシ触手Ｂ = 0
+ENDIF
+
+;乳搾りと乳揉みはどっちか
+SIF TEQUIP:触手乳搾り
+	TEQUIP:触手乳揉み = 0
+
+;あまり大きくない場合パイズリ触手もリセット
+SIF ABL:バストサイズ < BUSTSIZE_巨乳
+	TEQUIP:触手強制パイズリ = 0
+
+
+
+;ちんぽ挿入部位をリセットする
+@PENIS_RESET
+
+;ペニスを挿入している場合は引き抜く　バイブとか挿れてる場合はそのまま
+SIF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	TFLAG:Ｖ装備 = 0
+SIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	TFLAG:Ａ装備 = 0
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	TFLAG:Ｍ装備 = 0
+VARSET TEQUIP,0,30,60
+VARSET TFLAG,0,50,60
+
+
+

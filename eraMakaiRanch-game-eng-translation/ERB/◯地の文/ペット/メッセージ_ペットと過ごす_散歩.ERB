@@ -1,0 +1,69 @@
+﻿
+;ペットと散歩：地の文
+;TARGET,ANIMAL,PET_NAME指定済み
+;TARGETの体力消費量も入れておく
+;地の文部分に入っちゃうのでどうにかしたいけどここに入れないと地の文との齟齬がね…
+@PET_COMMU_MESSAGE_WALKING
+
+;【動物に好かれる／嫌われる】となつき度で変化
+FLAG_NAME = なつき度／%ANIMAL%
+IF TALENT:動物に好かれる || BASE:FLAG_NAME >= 8000
+	CALL PET_COMMU_MESSAGE_WALKING_LOVE
+	DAMAGE = 50
+ELSEIF !TALENT:動物に嫌われる || BASE:FLAG_NAME >= 5000
+	CALL PET_COMMU_MESSAGE_WALKING_LOW
+	DAMAGE = 100
+ELSE
+	CALL PET_COMMU_MESSAGE_WALKING_HATE
+	DAMAGE = 200
+ENDIF
+
+
+
+;【動物に好かれる】orなつき時
+@PET_COMMU_MESSAGE_WALKING_LOVE
+
+;尻尾とかなつき度とかで変えたい
+PRINTFORML %CALLNAME%は%PET_NAME%と牧場の周りを散歩することにした。
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	PRINTFORML %PET_NAME%は胴体を下げ、背中に乗るように促している。
+	PRINTFORML %CALLNAME%が乗ると、翼を広げて軽快にスキップし始めた。
+
+CASEELSE
+	PRINTFORML %PET_NAME%は%CALLNAME%の前を歩いたり、先に走って行ったかと思うと戻ってきて
+	PRINTFORML %CALLNAME%の周りをぐるぐると回ったりと楽しそうだ。
+ENDSELECT
+PRINTL ………
+PRINTFORML しばらく周辺を走り回り、%PET_NAME%は満足したようだ。
+
+
+
+;【動物に嫌われる】ではないor嫌われるけどなつき程々
+@PET_COMMU_MESSAGE_WALKING_LOW
+
+PRINTFORML %CALLNAME%は%PET_NAME%と牧場の周りを散歩することにした。
+PRINTFORML %PET_NAME%は最初こそ%CALLNAME%の速度に合わせていたが、気になるものがあったのかすっ飛んでいってしまった…
+PRINTFORML %CALLNAME%が追いついて、しばらく一緒に散歩するがまた先に走って行きを繰り返した…
+PRINTL ………
+PRINTFORML しばらく周辺を走り回り、%PET_NAME%は満足したようだ。
+
+
+
+;【動物に嫌われる】
+@PET_COMMU_MESSAGE_WALKING_HATE
+
+PRINTFORML %CALLNAME%は%PET_NAME%と牧場の周りを散歩しようと試みた…
+SELECTCASE RAND:2
+CASE 0
+	PRINTFORML 手の届かないところまで逃げられ、%CALLNAME%が慌てて追いかけ、
+	PRINTL また逃げられを繰り返し結果的に運動にはなった…
+CASEELSE
+	PRINTL 散歩はしたかったようで外に出るまではよかったが、
+	PRINTFORML 一切ペースを合わせようとせず%CALLNAME%は引きずられ続けた…
+ENDSELECT
+
+
+
+
+

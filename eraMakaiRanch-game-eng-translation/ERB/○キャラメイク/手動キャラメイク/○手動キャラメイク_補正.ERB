@@ -1,0 +1,60 @@
+﻿
+;手動キャラメイクの身分からの母乳価格ボーナス
+@SELF_CHARA_MAKE_MILK_PRICE
+
+SIF TALENT:神格
+	CFLAG:母乳価格ボーナス = 50
+SIF CSTR:身分 == "王族"
+	CFLAG:母乳価格ボーナス = 100
+
+
+
+;処女リセットまとめ
+@SELECT_VIRGIN_RESET
+
+SIF TALENT:処女結界
+	TALENT:処女 = 1
+
+;未経験のとき空欄・0を入れる
+IF TALENT:処女
+	CSTR:初経験／Ｖ =
+	EXP:地上経験人数／ニンゲン／Ｖセックス = 0
+
+;経験ありで来てて0なら1にする
+ELSEIF !EXP:地上経験人数／ニンゲン／Ｖセックス
+	EXP:地上経験人数／ニンゲン／Ｖセックス = 1
+ENDIF
+IF TALENT:Ａ処女
+	CSTR:初経験／Ａ =
+	EXP:地上経験人数／ニンゲン／Ａセックス = 0
+ELSEIF !EXP:地上経験人数／ニンゲン／Ａセックス
+	EXP:地上経験人数／ニンゲン／Ａセックス = 1
+ENDIF
+IF TALENT:Ｍ処女
+	CSTR:初経験／Ｍセックス =
+	EXP:地上経験人数／ニンゲン／Ｍセックス = 0
+ELSEIF !EXP:地上経験人数／ニンゲン／Ｍセックス
+	EXP:地上経験人数／ニンゲン／Ｍセックス = 1
+ENDIF
+IF TALENT:パイズリ未経験
+	CSTR:初経験／パイズリ =
+	EXP:地上経験人数／ニンゲン／パイズリ = 0
+ELSEIF !EXP:地上経験人数／ニンゲン／パイズリ
+	EXP:地上経験人数／ニンゲン／パイズリ = 1
+ENDIF
+IF TALENT:キス未経験
+	CSTR:初経験／キス =
+	EXP:地上経験人数／ニンゲン／キス = 0
+ELSEIF !EXP:地上経験人数／ニンゲン／キス
+	EXP:地上経験人数／ニンゲン／キス = 1
+ENDIF
+IF TALENT:授乳未経験
+	CSTR:初経験／授乳 =
+	EXP:地上経験人数／ニンゲン／授乳 = 0
+ELSEIF !EXP:地上経験人数／ニンゲン／授乳
+	EXP:地上経験人数／ニンゲン／授乳 = 1
+ENDIF
+
+
+
+

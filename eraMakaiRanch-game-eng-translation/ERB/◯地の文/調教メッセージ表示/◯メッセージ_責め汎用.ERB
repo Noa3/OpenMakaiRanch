@@ -1,0 +1,174 @@
+﻿
+;母乳吸い
+@TRAIN_MILK_SUCK_MESSAGE
+
+IF MARK:母乳体質
+	IF BASE:母乳容量 > 2000
+		PRINTFORM You drink the %SLANG_MILK()% overflowing from her %SLANG_N()% in large gulps...
+	ELSEIF BASE:母乳容量
+		PRINTFORM You attached your mouth to her %SLANG_N()% and suckled her %SLANG_MILK()% eagerly...
+	ELSE
+		PRINTFORM You sought out her %SLANG_MILK()% by sucking all over her %SLANG_N()%...
+	ENDIF
+ELSE
+	PRINTFORM You sought her %SAVESTR:表記／母乳% by sucking all over her %SLANG_N()%...
+ENDIF
+PRINTL
+
+
+
+;乳揉み
+@TRAIN_BUST_LUB_MESSAGE
+
+;揉むほどある？
+IF ABL:バストサイズ >= BUSTSIZE_並乳
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTFORM you massage %CALLNAME%'s %SLANG_B()%...
+	CASE 1
+		PRINTFORM you rub %CALLNAME%'s %SLANG_B()%...
+	CASE 2
+		PRINTFORM you knead %CALLNAME%'s %SLANG_B()%...
+	ENDSELECT
+ELSE
+	PRINTFORM you fondle %CALLNAME%'s %SLANG_B()%...
+ENDIF
+PRINTL
+
+
+
+;おっぱいを揉み／撫でながら
+;ARG→「ながら」追加
+@TRAIN_BUST_LUB_WHILE_MESSAGE(ARG)
+
+IF ARG
+	PRINT While you 
+ELSE
+	PRINT you 
+ENDIF
+PRINTFORM %BUST_LUB()% %CALLNAME%'s %BUST_CLOTHES()% %SLANG_STAIN("Ｂ")% %SLANG_B()%, 
+
+
+;触手おっぱい侵入
+@TRAIN_BUST_TENTACLE_MESSAGE
+
+CALL TRAIN_TENTACLE_APPEAR_MESSAGE
+
+;横乳露出のとき服の下から侵入する
+IF TFLAG:横乳露出
+	IF ＃着用衣服／谷間露出＃
+		PRINT Invading through the cleavage of her clothes, 
+	ELSE
+		PRINT Assaulting her through the side of her clothes, 
+	ENDIF
+;ELSE
+;	PRINTFORM , %BUST_CLOTHES()%
+ENDIF
+
+
+
+;触手出現
+;ARGS→触手種類
+@TRAIN_TENTACLE_APPEAR_MESSAGE(ARGS)
+#DIMS EN_TENTACLE_STRING
+;触手種類
+SELECTCASE ARGS
+CASE "ペニス触手"
+	EN_TENTACLE_STRING '= @"A %SAVESTR:表記／ペニス触手%"
+CASE "ブラシ触手"
+	EN_TENTACLE_STRING '= "Brush-shaped tentacles"
+CASEELSE
+	EN_TENTACLE_STRING '= "Tentacles"
+ENDSELECT
+
+
+SELECTCASE RAND:3
+CASE 0
+	PRINTFORML %EN_TENTACLE_STRING% slither out from your body. 
+CASE 1
+	PRINTFORML Part of your body transforms into %EN_TENTACLE_STRING%. 
+CASE 2
+	PRINTFORML %EN_TENTACLE_STRING% grow from your body. 
+ENDSELECT
+
+
+
+
+;向きを返す
+@DIRECTION(ARG)
+#FUNCTIONS
+
+SIF TFLAG:背後
+	RETURNF " from behind"
+
+
+
+;おっぱい着衣状態を返す
+@BUST_CLOTHES(ARG)
+#FUNCTIONS
+
+IF TFLAG:Ｂ露出
+	RETURNF "exposed"
+ELSE
+	RETURNF "clothed"
+ENDIF
+
+
+
+;揉むほどあるか返す
+@BUST_LUB(ARG)
+#FUNCTIONS
+
+IF ABL:バストサイズ >= BUSTSIZE_並乳
+	RETURNF "massage"
+ELSE
+	RETURNF "stroke"
+ENDIF
+
+
+
+;挿入したままか返す（CALL型）
+@TRAIN_INSERT_MESSAGE
+
+SIF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	PRINTFORML With your %SLANG_PENIS()% in her %SLANG_V()%,
+SIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	PRINTFORML With your %SLANG_PENIS()% in her %SLANG_A()%,
+
+
+
+;奉仕するか返す
+@TRAIN_SERVICE(ARG)
+#FUNCTIONS
+
+IF CFLAG:洗脳
+	RETURNF "with a blank expression"
+ELSEIF ＃陥落状態／恋慕以上＃ || ABL:奉仕精神 >= 10
+	RETURNF "affectionately"
+ELSEIF PALAM:淫欲 >= 20000 || MARK:淫紋
+	RETURNF "with an aroused expression"
+ELSEIF CFLAG:無抵抗
+	RETURNF "obediently"
+ELSE
+	RETURNF "with a look of disgust"
+ENDIF
+
+
+
+;射精先メッセージ
+@TRAIN_EJACULATION_FINISH_MESSAGE
+
+;膣内・尻穴・口内でメッセージ変更
+PRINTFORM %SLANG_SEMEN()%
+IF SOURCE:膣内射精経験 || SOURCE:尻穴射精経験 || SOURCE:精飲経験
+	PRINT  is poured into 
+ELSE
+	PRINT  is ejaculated 
+ENDIF
+
+
+
+
+
+
+

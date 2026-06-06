@@ -1,0 +1,96 @@
+﻿
+;専用口上サンプル　本当にただのサンプルなのでスカスカ
+;この形式を使うことで「汎用口上を流用しつつ専用で出したい部分だけこちらで指定する」ことができるよ
+;こっちに書かれてMESSAGE_BOXに入っていると汎用口上は無視されて表示処理に移行します
+
+; ======================================
+;口上はいろんな人が作ってくれるとうれしいななので口上作者欄やライセンス欄も置いておくね
+
+;専用口上書き方サンプル
+;対応識別名_出典作品名：スレイ_era魔界牧場
+;口上作者：polt
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：
+;↑加筆したら書いてね
+; ======================================
+
+;例として識別名：[スレイ]、出典作品名：[era魔界牧場]の場合はこう
+;そのうち無口口上を作ってまあまあ埋めるつもりはある　先にやっちゃってもいいのよ
+
+;口上ファイル内には表示する口上だけ書いてね（専用イベントのほうに変数処理とか書いてね）
+
+;ARGS:0　シチュ指定　ARGS:1,2　さらに細かく振り分けたい場合に使用
+@EX_KOJO_スレイ_era魔界牧場(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+SELECTCASE ARGS:0
+CASE "例文"
+	CALL MESSAGE_BOX,@"「[スレイ_era魔界牧場]専用の口上が設定されてるよ、%MASTER_CALL()%」\n「ベースは、[汎用無口口上1]を想定してるみたい」"
+	
+CASE "調教コマンド"
+	SELECTCASE ARGS:1
+	CASE "乳揉み","育乳マッサージ","濃厚母乳マッサージ","ミルクタンクマッサージ"
+		IF !EXP:(SELECTCOM+1000)
+			CALL MESSAGE_BOX,@"「あっ… %MASTER_CALL()%…♥ %SELF_CALL()%のおっぱい、触るの…？♥」"
+		ELSE
+			IF ABL:バストサイズ >= BUSTSIZE_豊乳
+				CALL MESSAGE_BOX,@"「えへへ… %MASTER_CALL()%のせいで、こんなにおっきくなっちゃった…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%、もっとおおきいほうがすきなんじゃないの…？」\n「ううん、%MASTER_CALL()%が%SELF_CALL()%のおっぱい気に入ってくれるなら、それでいい…♥」"
+			ENDIF
+		ENDIF
+		
+		;たとえばこうすると　調教コマンド→乳揉み　の場合だけ専用口上が反映される
+		;元関数に戻ったとき『メッセージ候補にメッセージが入っているか』を見て汎用口上を呼び出すか決める
+		;メッセージが入っている場合はここで設定したメッセージ候補のみから使われるよ
+		;汎用口上で使われている文面をこちらにも書かない限り使われないので注意してね
+	ENDSELECT
+
+CASE "訪問"
+	SELECTCASE ARGS:1
+	CASE "入口"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%、新しいおしごと？」"
+		CALL MESSAGE_BOX,@"「なんでも言ってね、%MASTER_CALL()%」"
+	
+ENDSELECT
+
+;EXってつければああここ専用処理から来るんだなってわかりやすいかも
+;ここが一番専用口上だなってわかりやすいね
+CASE "恋慕化EX"
+	;EXってつけた分岐は専用イベントからしか来ないことにするので番号とかなんなら自分だけわかる方法でもOK
+	SELECTCASE ARGS:1
+	CASE "1"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%…　その、聞いてもらってもいい…？」"
+	CASE "2"
+		CALL MESSAGE_BOX,@"「ずっと…勇気が出なかったけど…　大人っぽくて、きれいなヒトが牧場に来て…」"
+	CASE "3"
+		IF ABL:2:バストサイズ >= BUSTSIZE_巨乳 && ABL:1:バストサイズ < BUSTSIZE_巨乳
+			CALL MESSAGE_BOX,@"「おっぱいもおおきいし…このヒトに…%MASTER_CALL()%、取られちゃうかも、って…　勇気、出さなきゃ、って」"
+		ELSE
+			CALL MESSAGE_BOX,@"「このヒトに…%MASTER_CALL()%、取られちゃうかも、って…　勇気、出さなきゃ、って」"
+		ENDIF
+	CASE "4"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%…　%SELF_CALL()%、%MASTER_CALL()%のことが好き」"
+	CASE "5"
+		CALL MESSAGE_BOX,@"「こっちの世界に来ちゃって…牧場で働くことになったとき、すごくびっくりしたけど…」"
+	CASE "6"
+		CALL MESSAGE_BOX,@"「行く宛のない%SELF_CALL()%を、%MASTER_CALL()%が助けてくれたんだ、って」"
+	CASE "7"
+		CALL MESSAGE_BOX,@"「すっごく、感謝してる。ありがとう…%MASTER_CALL()%」"
+	CASE "8"
+		CALL MESSAGE_BOX,@"「%SELF_CALL()%、%MASTER_CALL()%のことが好き。うん、『男のヒト』として…好きです」"
+	CASE "キス1"
+		CALL MESSAGE_BOX,@"「…ありがと、%MASTER_CALL()%…♥」"
+	CASE "頭撫で1"
+		CALL MESSAGE_BOX,@"「んっ…　んぅ…♥」"
+	CASE "頭撫で2"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%に撫でてもらうの…すき…♥」"
+	CASE "頭撫で3"
+		CALL MESSAGE_BOX,@"「えっと…でも、いやじゃないけど…その…」"
+	CASE "9"
+		CALL MESSAGE_BOX,@"「%SELF_CALL()%に…男のヒトと女のヒトがすること…いっぱい教えてほしい…♥」"
+	ENDSELECT
+ENDSELECT
+
+

@@ -1,0 +1,228 @@
+﻿;**********************************************************
+;eraGVTのものを参考にさせていただきました。
+
+;基本ルール
+;加筆修正は、自由に行ってください
+;ただし、前の方が書いた文章は出来る限り消さないでください
+;
+;書き込む順番は、クドくなり過ぎないように3要素と部位で表現します
+;【実況】汁に濡れている、寄生されている、触手拘束具などを装着など
+;【形状】大きさ、深さなど、
+;【動作】開閉している、うごめいているなど、動きを表現
+;【部位呼称】淫乱や発情や性格で下品な書き方に
+;
+;Nipple(乳首)は別に表現する物があります
+;乳輪や乳首は成るべく表現しないで、地の文で補ってください
+;
+;増やして欲しい隠語は、アウトプットしてリクエストなりしましょう
+;未登録の中に放り込むなり、掲示板にアップするなりすれば、
+;実装される可能性があります
+;
+;by 雑魚の人 2018/02/11
+;**********************************************************
+;Bust(バスト)の淫語
+;**********************************************************
+@SLANG_B(ARG)
+#DIM WORD_LIMIT
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+WORD_LIMIT = 0
+SLANGWORD =
+
+;スラング表示設定を入れたのでフラグ判定が入るよ
+;最初に接頭語をつけるか判定
+
+IF GETBIT(FLAG:スラング接頭語／乳房,1) && ABL:バストサイズ >= BUSTSIZE_巨乳 && RAND:100 < 15
+	;くどすぎないようにEXISTで次を止める
+	SLANGWORD += "bountiful "
+	EXIST ++
+ENDIF
+SIF GETBIT(FLAG:スラング接頭語／乳房,2) && ABL:バストサイズ >= BUSTSIZE_神乳 && RAND:100 < 10 && !EXIST
+	SLANGWORD += "bursting "
+EXIST = 0
+
+;乳弾力で装飾が終わる場合場合「胸」、「膨らみ」は外すのでフラグ
+IF GETBIT(FLAG:スラング接頭語／乳房,0) && RAND:100 < 15
+	SLANGWORD += @"%BREAST_FIRMNESS_ENG(CSTR:乳弾力)% "
+	WORD_LIMIT ++
+ENDIF
+
+;淫乱系でも外すかな
+IF GETBIT(FLAG:スラング接頭語／乳房,4) && MARK:淫乳 && RAND:100 < 20
+	SLANGWORD += "obscene "
+	WORD_LIMIT ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／乳房,3) && MARK:淫乳 && RAND:100 < 80
+	SLANGWORD += "lewd "
+	WORD_LIMIT ++
+ENDIF
+
+;特殊置換するか判定
+;追加→地の文設定での置換がONなら50%で置換する
+;自由記述のため組み合わせずそのまま
+IF GETBIT(FLAG:スラング置換／乳房,9)
+	EXIST ++
+	SIF RAND:100 < 50
+		RETURNF SAVESTR:表記／乳房
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳房,8) && CFLAG:身長 < FLAG:スラング／子供扱い上限身長数値 && ABL:バストサイズ >= BUSTSIZE_巨乳
+	;特殊置換優先の判定のためEXISTを+1
+	EXIST ++
+	IF RAND:100 < 40
+		SLANGWORD += "loli "
+		IF TALENT:超乳
+			SLANGWORD += BUST_ENG("超乳")
+		ELSEIF TALENT:魔乳
+			SLANGWORD += BUST_ENG("魔乳")
+		ELSEIF TALENT:神乳
+			SLANGWORD += BUST_ENG("神乳")
+		ELSEIF TALENT:爆乳
+			SLANGWORD += BUST_ENG("爆乳")
+		ELSEIF TALENT:豊乳
+			SLANGWORD += BUST_ENG("豊乳")
+		ELSEIF TALENT:巨乳
+			SLANGWORD += BUST_ENG("巨乳")
+		ENDIF
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳房,7) && MARK:淫乳
+	EXIST ++
+	IF RAND:100 < 10
+		SLANGWORD += "perverted tits"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳房,6) && MARK:淫乳
+	EXIST ++
+	IF RAND:100 < 20
+		;「淫乳」が選ばれた場合はワードをリセットして仕切り直す　ちょっと接頭語確率上げる
+		SLANGWORD =
+		SIF GETBIT(FLAG:スラング接頭語／乳房,1) && ABL:バストサイズ >= BUSTSIZE_巨乳 && RAND:100 < 15
+			SLANGWORD += "bountiful "
+		SIF GETBIT(FLAG:スラング接頭語／乳房,2) && ABL:バストサイズ >= BUSTSIZE_神乳 && RAND:100 < 15
+			SLANGWORD += "bursting "
+		SIF GETBIT(FLAG:スラング接頭語／乳房,0) && RAND:100 < 20
+			SLANGWORD += @"%BREAST_FIRMNESS_ENG(CSTR:乳弾力)%"
+		SLANGWORD += "lewd breasts"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳房,5) && MARK:ミルクタンク
+	EXIST ++
+	IF RAND:100 < 50
+		SLANGWORD += "milk tanks"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳房,4) && TALENT:超乳
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD += "extremely large breasts"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳房,3) && TALENT:超乳
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD += "giant tits"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳房,2) && ABL:バストサイズ >= BUSTSIZE_巨乳
+	EXIST ++
+	IF RAND:100 < 50
+		SLANGWORD += "big boobs"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳房,1) && ABL:バストサイズ < BUSTSIZE_並乳
+	EXIST ++
+	IF RAND:100 < 80
+		SLANGWORD += "tiny boobs"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+
+;特殊置換条件を満たして抽選で外れた＋優先設定していればここでRESTART
+;RESTARTできるっけ？→できるっぽい
+SIF GETBIT(FLAG:スラング置換／乳房,0) && EXIST
+	RESTART
+
+;ここから通常表示の判定
+;RANDの次が何%で出るか　「おっぱい」有効なら50%で出る
+;このへんの確率変えたい人は自己責任で数値とか順番とか変えちゃってね
+;確率変更をゲーム内でやるにはちと使うフラグが多すぎるので
+
+IF GETBIT(FLAG:スラング表示／乳房,0) && RAND:100 < 50
+	SLANGWORD += "boobs"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳房,6) && RAND:100 < 50
+	IF TALENT:超乳
+		SLANGWORD += BUST_ENG("超乳")
+	ELSEIF TALENT:魔乳
+		SLANGWORD += BUST_ENG("魔乳")
+	ELSEIF TALENT:神乳
+		SLANGWORD += BUST_ENG("神乳")
+	ELSEIF TALENT:爆乳
+		SLANGWORD += BUST_ENG("爆乳")
+	ELSEIF TALENT:豊乳
+		SLANGWORD += BUST_ENG("豊乳")
+	ELSEIF TALENT:巨乳
+		SLANGWORD += BUST_ENG("巨乳")
+	ELSEIF TALENT:並乳
+		SLANGWORD += BUST_ENG("並乳")
+	ELSE
+		SLANGWORD += REFPARTS_ENG("乳房")
+	ENDIF
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳房,1) && RAND:100 < 30
+	SLANGWORD += "breasts"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳房,2) && RAND:100 < 30
+	SLANGWORD += "breast flesh"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳房,3) && RAND:100 < 30
+	SLANGWORD += "bust"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳房,4) && RAND:100 < 30
+	;一部装飾で終わりの場合「胸」、「膨らみ」は外す
+	;もしくは全部リセットしてから入れる
+	IF !WORD_LIMIT
+		SLANGWORD += "chest"
+		RETURNF SLANGWORD
+	ELSEIF RAND:100 < 50
+		SLANGWORD =
+		SLANGWORD += "chest"
+		RETURNF SLANGWORD
+	ENDIF
+ELSEIF GETBIT(FLAG:スラング表示／乳房,5)
+	IF !WORD_LIMIT
+		;バストサイズで変更
+		IF TALENT:絶壁
+			SLANGWORD += "chest"
+		ELSEIF TALENT:貧乳
+			SLANGWORD += "petite peaks"
+		ELSE
+			SLANGWORD += "soft curves"
+		ENDIF
+		RETURNF SLANGWORD
+	ELSEIF RAND:100 < 50
+		SLANGWORD =
+		IF TALENT:絶壁
+			SLANGWORD += "chest"
+		ELSEIF TALENT:貧乳
+			SLANGWORD += "petite peaks"
+		ELSE
+			SLANGWORD += "soft curves"
+		ENDIF
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+
+;ここまでRETURNFできてない場合RESTART
+RESTART
+
+

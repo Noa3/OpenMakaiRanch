@@ -1,0 +1,84 @@
+﻿
+;竜人
+@TRIBE_FEATURE_CONFIG_DRAGON
+
+CLEARLINE LINECOUNT
+PRINTL Modifying【Dragonkin】
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL Fixed：【Horns】・【Tail】
+PRINTLC [ 0] Height Tends Towards【Tall】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,0),1)
+PRINTLC [ 1] 【High Pain Tolerance】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,1),1)
+PRINTLC [ 2] 【Fast Recovery】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,2),1)
+PRINTLC [ 3] 【Sharp Teeth】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,3),1)
+PRINTLC [ 4] 【Drug Resistant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,4),1)
+PRINTLC [ 5] Physical Strength＋1000
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,5),1)
+PRINTL
+PRINTLC [10] 【Glutton】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,10),1)
+PRINTLC [11] 【Defiant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,11),1)
+PRINTLC [12] 【Prideful】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,12),1)
+PRINTLC [13] 【Crude】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,13),1)
+PRINTLC [14] 【Zero SexKnow】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,14),1)
+PRINTLC [15] 【Vain】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／竜人,15),1)
+CALL PRINTL_ALIGN
+CALL PRINT_SLAVE_CONFIG_FOOTER(14)
+SELECTCASE INPUT_NUM
+CASE 0
+	PRINTL IF【Average】・【Short】・【Petite】, replaced with【Tall】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 1
+	PRINTL Add the【High Pain Tolerance】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 2
+	PRINTL Add the【Fast Recovery】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 3
+	PRINTL Add the【Sharp Teeth】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 4
+	PRINTL Add the【Drug Resistant】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 5
+	PRINTL Strength is increased by 1000 after base calculations
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 10
+	PRINTL Add the【Glutton】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 11
+	PRINTL Add the【Defiant】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 12
+	PRINTL Add the【Prideful】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 13
+	PRINTL Add the【Crude】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 14
+	PRINTL Add the【Zero SexKnow】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 15
+	PRINTL Add the【Vain】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／竜人"),INPUT_NUM)
+CASE 98
+	PRINTL Restore【Dragonkin】Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRIBE_FEATURE_CONFIG_DRAGON
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

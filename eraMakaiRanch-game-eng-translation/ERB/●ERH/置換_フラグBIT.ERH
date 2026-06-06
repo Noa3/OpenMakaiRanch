@@ -1,0 +1,337 @@
+﻿
+;再シャッフルBIT
+#DEFINE ＃再シャッフル／バストサイズ＃	FLAG:再シャッフルBIT,0
+#DEFINE ＃再シャッフル／おっぱい＃		FLAG:再シャッフルBIT,1
+#DEFINE ＃再シャッフル／身体特徴＃		FLAG:再シャッフルBIT,2
+#DEFINE ＃再シャッフル／ヘアスタイル＃	FLAG:再シャッフルBIT,3
+#DEFINE ＃再シャッフル／目特徴＃		FLAG:再シャッフルBIT,4
+#DEFINE ＃再シャッフル／性格素質＃		FLAG:再シャッフルBIT,5
+#DEFINE ＃再シャッフル／性ABL＃			FLAG:再シャッフルBIT,6
+#DEFINE ＃再シャッフル／性経験＃		FLAG:再シャッフルBIT,7
+#DEFINE ＃再シャッフル／感度＃			FLAG:再シャッフルBIT,8
+#DEFINE ＃再シャッフル／性体質＃		FLAG:再シャッフルBIT,9
+#DEFINE ＃再シャッフル／服装＃			FLAG:再シャッフルBIT,10
+
+
+;性経験表示BIT
+#DEFINE ＃経験表示／Ｖセックス＃	FLAG:性経験表示BIT,0
+#DEFINE ＃経験表示／Ａセックス＃	FLAG:性経験表示BIT,1
+#DEFINE ＃経験表示／Ｍセックス＃	FLAG:性経験表示BIT,2
+#DEFINE ＃経験表示／キス＃			FLAG:性経験表示BIT,3
+#DEFINE ＃経験表示／パイズリ＃		FLAG:性経験表示BIT,4
+#DEFINE ＃経験表示／授乳＃			FLAG:性経験表示BIT,5
+#DEFINE ＃経験表示／出産＃			FLAG:性経験表示BIT,6
+
+
+;パラメータ上限到達後表示BIT
+#DEFINE ＃上限到達後表示／業務経験値＃	FLAG:パラメータ上限到達後表示BIT,0
+#DEFINE ＃上限到達後表示／性経験値＃	FLAG:パラメータ上限到達後表示BIT,1
+#DEFINE ＃上限到達後表示／好感度＃		FLAG:パラメータ上限到達後表示BIT,2
+#DEFINE ＃上限到達後表示／乳牛堕ち＃	FLAG:パラメータ上限到達後表示BIT,3
+
+
+;パラメータ影響要素表示BIT
+#DEFINE ＃影響要素表示／業務経験値＃	FLAG:パラメータ影響要素表示BIT,0
+#DEFINE ＃影響要素表示／性経験値＃		FLAG:パラメータ影響要素表示BIT,1
+#DEFINE ＃影響要素表示／回復量＃		FLAG:パラメータ影響要素表示BIT,2
+#DEFINE ＃影響要素表示／なつき度＃		FLAG:パラメータ影響要素表示BIT,3
+
+
+;ランダムキャラステータス隠蔽BIT
+#DEFINE ＃ステータス隠蔽／業務ABL＃			FLAG:ランダムキャラステータス隠蔽BIT,0
+#DEFINE ＃ステータス隠蔽／性ABL＃			FLAG:ランダムキャラステータス隠蔽BIT,1
+#DEFINE ＃ステータス隠蔽／素質＃			FLAG:ランダムキャラステータス隠蔽BIT,2
+#DEFINE ＃ステータス隠蔽／感度＃			FLAG:ランダムキャラステータス隠蔽BIT,3
+#DEFINE ＃ステータス隠蔽／性体質＃			FLAG:ランダムキャラステータス隠蔽BIT,4
+#DEFINE ＃ステータス隠蔽／おっぱい詳細＃	FLAG:ランダムキャラステータス隠蔽BIT,5
+#DEFINE ＃ステータス隠蔽／陰毛＃			FLAG:ランダムキャラステータス隠蔽BIT,6
+
+
+;ランダムキャラ共通弱点部位BIT
+#DEFINE ＃全員Ａ弱点＃			FLAG:ランダムキャラ共通弱点部位BIT,0
+#DEFINE ＃全員Ｂ弱点＃			FLAG:ランダムキャラ共通弱点部位BIT,1
+#DEFINE ＃全員Ｃ弱点＃			FLAG:ランダムキャラ共通弱点部位BIT,2
+#DEFINE ＃全員Ｖ弱点＃			FLAG:ランダムキャラ共通弱点部位BIT,3
+#DEFINE ＃全員Ｎ弱点＃			FLAG:ランダムキャラ共通弱点部位BIT,4
+
+
+;回数制限撤廃BIT
+#DEFINE ＃制限撤廃／調教時間＃			FLAG:回数制限撤廃BIT,0
+#DEFINE ＃制限撤廃／時間圧縮＃			FLAG:回数制限撤廃BIT,1
+#DEFINE ＃制限撤廃／家族風呂＃			FLAG:回数制限撤廃BIT,2
+#DEFINE ＃制限撤廃／訪問回数＃			FLAG:回数制限撤廃BIT,3
+#DEFINE ＃制限撤廃／アイテム使用＃		FLAG:回数制限撤廃BIT,4
+#DEFINE ＃制限撤廃／スキンシップ＃		FLAG:回数制限撤廃BIT,5
+#DEFINE ＃制限撤廃／肉体改造＃			FLAG:回数制限撤廃BIT,6
+
+
+;楽々スタートキットBIT
+#DEFINE ＃スタートキット／衣服＃			FLAG:楽々スタートキットBIT,0
+#DEFINE ＃スタートキット／消耗品＃			FLAG:楽々スタートキットBIT,1
+#DEFINE ＃スタートキット／薬品＃			FLAG:楽々スタートキットBIT,2
+#DEFINE ＃スタートキット／搾乳器＃			FLAG:楽々スタートキットBIT,3
+#DEFINE ＃スタートキット／龍タマ＃			FLAG:楽々スタートキットBIT,4
+
+;消耗品と買い切り品で分けてる
+#DEFINE ＃スタートキット／魔力貯蔵器＃		FLAG:楽々スタートキットBIT,10
+#DEFINE ＃スタートキット／不動産＃			FLAG:楽々スタートキットBIT,11
+#DEFINE ＃スタートキット／調教・拘束＃		FLAG:楽々スタートキットBIT,12
+#DEFINE ＃スタートキット／魔術＃			FLAG:楽々スタートキットBIT,13
+#DEFINE ＃スタートキット／アビリティ＃		FLAG:楽々スタートキットBIT,14
+
+
+
+
+;調教後衣服没収BIT
+#DEFINE ＃衣服没収／抵抗＃			FLAG:調教後衣服没収BIT,0
+#DEFINE ＃下着没収／抵抗＃			FLAG:調教後衣服没収BIT,1
+#DEFINE ＃アクセ没収／抵抗＃		FLAG:調教後衣服没収BIT,2
+#DEFINE ＃衣服没収／無抵抗＃		FLAG:調教後衣服没収BIT,3
+#DEFINE ＃下着没収／無抵抗＃		FLAG:調教後衣服没収BIT,4
+#DEFINE ＃アクセ没収／無抵抗＃		FLAG:調教後衣服没収BIT,5
+
+
+;挿入確認BIT
+#DEFINE ＃Ｖ処女確認＃			FLAG:挿入確認BIT,0
+#DEFINE ＃Ａ処女確認＃			FLAG:挿入確認BIT,1
+#DEFINE ＃Ｖ潤滑確認＃			FLAG:挿入確認BIT,2
+#DEFINE ＃Ａ潤滑確認＃			FLAG:挿入確認BIT,3
+#DEFINE ＃異種族孕ませ確認＃	FLAG:挿入確認BIT,4
+#DEFINE ＃Ｖサイズ確認＃		FLAG:挿入確認BIT,5
+#DEFINE ＃Ａサイズ確認＃		FLAG:挿入確認BIT,6
+
+
+;アナルフィルタBIT
+#DEFINE ＃各種Ａ挿入無効＃		FLAG:アナルフィルタBIT,0
+#DEFINE ＃Ａ指挿れ無効＃		FLAG:アナルフィルタBIT,1
+#DEFINE ＃Ａ舐め無効＃			FLAG:アナルフィルタBIT,2
+#DEFINE ＃触手Ａ挿入無効＃		FLAG:アナルフィルタBIT,3
+
+
+;捕獲時選択肢BIT
+#DEFINE ＃捕獲時投薬＃			FLAG:捕獲時選択肢BIT,0
+#DEFINE ＃捕獲時設定画面＃		FLAG:捕獲時選択肢BIT,1
+#DEFINE ＃搾乳器自動購入＃		FLAG:捕獲時選択肢BIT,2
+
+
+;子供扱い時割合適用項目BIT
+#DEFINE ＃有効／子供バストサイズ使用＃		FLAG:子供扱い時割合適用項目BIT,0
+#DEFINE ＃有効／子供体型使用＃				FLAG:子供扱い時割合適用項目BIT,1
+#DEFINE ＃有効／子供性経験使用＃			FLAG:子供扱い時割合適用項目BIT,2
+#DEFINE ＃有効／子供陰毛使用＃				FLAG:子供扱い時割合適用項目BIT,3
+
+
+;身長でのプレイ制限BIT
+#DEFINE ＃身長差制限／挿入乳吸い＃		FLAG:身長でのプレイ制限BIT,0
+#DEFINE ＃身長差制限／挿入キス＃		FLAG:身長でのプレイ制限BIT,1
+#DEFINE ＃身長差制限／立ちパイズリ＃	FLAG:身長でのプレイ制限BIT,2
+
+
+;セーブデータ表示情報BIT
+#DEFINE ＃セーブデータ／メモ＃				FLAG:セーブデータ表示情報BIT,0
+#DEFINE ＃セーブデータ／牧場名＃			FLAG:セーブデータ表示情報BIT,1
+#DEFINE ＃セーブデータ／難易度＃			FLAG:セーブデータ表示情報BIT,2
+#DEFINE ＃セーブデータ／レベル＃			FLAG:セーブデータ表示情報BIT,3
+#DEFINE ＃セーブデータ／奴隷人数＃			FLAG:セーブデータ表示情報BIT,4
+#DEFINE ＃セーブデータ／経過日数＃			FLAG:セーブデータ表示情報BIT,5
+#DEFINE ＃セーブデータ／日付＃				FLAG:セーブデータ表示情報BIT,6
+#DEFINE ＃セーブデータ／プレイ時間＃		FLAG:セーブデータ表示情報BIT,7
+#DEFINE ＃セーブデータ／バージョン＃		FLAG:セーブデータ表示情報BIT,8
+
+
+;魔界住民面識BIT
+#DEFINE ＃面識／ユジン＃		FLAG:魔界住民面識BIT,0
+#DEFINE ＃面識／マノ＃			FLAG:魔界住民面識BIT,1
+#DEFINE ＃面識／フドウ＃		FLAG:魔界住民面識BIT,2
+#DEFINE ＃面識／ケンチ＃		FLAG:魔界住民面識BIT,3
+#DEFINE ＃面識／タルト＃		FLAG:魔界住民面識BIT,4
+#DEFINE ＃面識／あらし＃		FLAG:魔界住民面識BIT,5
+#DEFINE ＃面識／シンミ＃		FLAG:魔界住民面識BIT,6
+#DEFINE ＃面識／カグヤ＃		FLAG:魔界住民面識BIT,7
+#DEFINE ＃面識／テラ＃			FLAG:魔界住民面識BIT,8
+#DEFINE ＃面識／ゴロー＃		FLAG:魔界住民面識BIT,9
+#DEFINE ＃面識／ショウ＃		FLAG:魔界住民面識BIT,10
+#DEFINE ＃面識／シンシア＃		FLAG:魔界住民面識BIT,11
+#DEFINE ＃面識／ぷにえ＃		FLAG:魔界住民面識BIT,12
+#DEFINE ＃面識／ゴーズ＃		FLAG:魔界住民面識BIT,13
+#DEFINE ＃面識／ウキョウ＃		FLAG:魔界住民面識BIT,14
+#DEFINE ＃面識／ノノミ＃		FLAG:魔界住民面識BIT,15
+#DEFINE ＃面識／キュレタ＃		FLAG:魔界住民面識BIT,16
+#DEFINE ＃面識／ヒナ＃			FLAG:魔界住民面識BIT,17
+
+
+;アビリティ有効BIT
+#DEFINE ＃有効／搾乳エナジードレイン＃			FLAG:アビリティ有効BIT,0
+#DEFINE ＃有効／エナジードレイン効率＃			FLAG:アビリティ有効BIT,1
+#DEFINE ＃有効／魔力吸収効率＃					FLAG:アビリティ有効BIT,2
+#DEFINE ＃有効／濃厚ミルクドレイン＃			FLAG:アビリティ有効BIT,3
+#DEFINE ＃有効／異種族孕ませ＃					FLAG:アビリティ有効BIT,4
+#DEFINE ＃有効／豊穣＃							FLAG:アビリティ有効BIT,5
+#DEFINE ＃有効／濃厚母乳マッサージ＃			FLAG:アビリティ有効BIT,6
+#DEFINE ＃有効／ミルクタンクマッサージ＃		FLAG:アビリティ有効BIT,7
+	;#DEFINE ＃有効／百合手折り＃					FLAG:アビリティ有効BIT,8
+	;#DEFINE ＃有効／獣欲＃							FLAG:アビリティ有効BIT,9
+#DEFINE ＃有効／触手射精＃						FLAG:アビリティ有効BIT,10
+#DEFINE ＃有効／触手受胎＃						FLAG:アビリティ有効BIT,11
+	;#DEFINE ＃有効／危険日感知＃					FLAG:アビリティ有効BIT,12
+#DEFINE ＃有効／絶倫＃							FLAG:アビリティ有効BIT,13
+#DEFINE ＃有効／ふたなりちんぽ＃				FLAG:アビリティ有効BIT,14
+#DEFINE ＃有効／触手分泌液増量＃				FLAG:アビリティ有効BIT,15
+	;#DEFINE ＃有効／簡易催眠＃						FLAG:アビリティ有効BIT,9
+
+;部屋割り自動変更BIT
+#DEFINE ＃自動部屋割り／牛舎＃				FLAG:部屋割り自動変更BIT,0
+#DEFINE ＃自動部屋割り／体内凌辱＃			FLAG:部屋割り自動変更BIT,1
+
+
+
+;マイルストーン達成フラグBIT
+#DEFINE ＃マイルストーン達成／濃厚母乳出荷＃		FLAG:マイルストーン達成BIT,0
+#DEFINE ＃マイルストーン達成／奴隷捕獲＃			FLAG:マイルストーン達成BIT,1
+#DEFINE ＃マイルストーン達成／納税＃				FLAG:マイルストーン達成BIT,2
+
+
+
+
+;CFLAG
+;アビリティ有効個人BIT
+#DEFINE ＃個人有効／搾乳エナジードレイン＃		CFLAG:アビリティ有効個人BIT,0
+#DEFINE ＃個人有効／エナジードレイン効率＃		CFLAG:アビリティ有効個人BIT,1
+#DEFINE ＃個人有効／魔力吸収効率＃				CFLAG:アビリティ有効個人BIT,2
+#DEFINE ＃個人有効／濃厚ミルクドレイン＃		CFLAG:アビリティ有効個人BIT,3
+#DEFINE ＃個人有効／異種族孕ませ＃				CFLAG:アビリティ有効個人BIT,4
+#DEFINE ＃個人有効／豊穣＃						CFLAG:アビリティ有効個人BIT,5
+#DEFINE ＃個人有効／濃厚母乳マッサージ＃		CFLAG:アビリティ有効個人BIT,6
+#DEFINE ＃個人有効／ミルクタンクマッサージ＃	CFLAG:アビリティ有効個人BIT,7
+#DEFINE ＃個人有効／触手受胎＃					CFLAG:アビリティ有効個人BIT,8
+	;#DEFINE ＃個人有効／百合手折り＃				CFLAG:アビリティ有効個人BIT,8
+	;#DEFINE ＃個人有効／獣欲＃						CFLAG:アビリティ有効個人BIT,9
+
+
+;スケジュール／搾乳優先BIT
+#DEFINE ＃搾乳優先／朝＃		CFLAG:スケジュール／搾乳優先BIT,0
+#DEFINE ＃搾乳優先／昼＃		CFLAG:スケジュール／搾乳優先BIT,1
+#DEFINE ＃搾乳優先／夕＃		CFLAG:スケジュール／搾乳優先BIT,2
+
+
+
+
+;TFLAG
+;拘束状態BIT
+#DEFINE ＃拘束／立ち柱＃			TFLAG:拘束BIT,0
+#DEFINE ＃拘束／座り柱＃			TFLAG:拘束BIT,1
+#DEFINE ＃拘束／まんぐり＃			TFLAG:拘束BIT,2
+#DEFINE ＃拘束／搾乳台＃			TFLAG:拘束BIT,3
+#DEFINE ＃拘束／吊るし＃			TFLAG:拘束BIT,4
+#DEFINE ＃拘束／十字架＃			TFLAG:拘束BIT,5
+#DEFINE ＃拘束／Ｘ字＃				TFLAG:拘束BIT,6
+#DEFINE ＃拘束／手枷屈脚＃			TFLAG:拘束BIT,7
+#DEFINE ＃拘束／ハーネス＃			TFLAG:拘束BIT,8
+#DEFINE ＃拘束／ベッド仰向け＃		TFLAG:拘束BIT,9
+#DEFINE ＃拘束／ベッドうつ伏せ＃	TFLAG:拘束BIT,10
+#DEFINE ＃拘束／荒縄＃				TFLAG:拘束BIT,11
+#DEFINE ＃拘束／亀甲縛り＃			TFLAG:拘束BIT,12
+#DEFINE ＃拘束／触手＃				TFLAG:拘束BIT,13
+#DEFINE ＃拘束／下半身埋め壁乳＃	TFLAG:拘束BIT,14
+#DEFINE ＃拘束／三角木馬＃			TFLAG:拘束BIT,15
+
+
+;体位制限BIT
+#DEFINE ＃体位制限／正常位＃		TFLAG:体位制限BIT,0
+#DEFINE ＃体位制限／後背位＃		TFLAG:体位制限BIT,1
+#DEFINE ＃体位制限／対面座位＃		TFLAG:体位制限BIT,2
+#DEFINE ＃体位制限／背面座位＃		TFLAG:体位制限BIT,3
+#DEFINE ＃体位制限／対面立位＃		TFLAG:体位制限BIT,4
+#DEFINE ＃体位制限／背面立位＃		TFLAG:体位制限BIT,5
+#DEFINE ＃体位制限／アナル＃		TFLAG:体位制限BIT,6
+#DEFINE ＃体位制限／キス＃			TFLAG:体位制限BIT,7
+#DEFINE ＃体位制限／パイズリ＃		TFLAG:体位制限BIT,8
+#DEFINE ＃体位制限／素股＃			TFLAG:体位制限BIT,9
+#DEFINE ＃体位制限／Ｍ挿入＃		TFLAG:体位制限BIT,10
+#DEFINE ＃体位制限／乳吸い＃		TFLAG:体位制限BIT,11
+
+
+;有効薬品BIT
+#DEFINE ＃有効薬品／母乳分泌促進薬＃		TFLAG:有効薬品BIT,0
+#DEFINE ＃有効薬品／魔力母乳分泌促進薬＃	TFLAG:有効薬品BIT,1
+#DEFINE ＃有効薬品／育乳促進薬＃			TFLAG:有効薬品BIT,2
+#DEFINE ＃有効薬品／濃厚母乳促進薬＃		TFLAG:有効薬品BIT,3
+#DEFINE ＃有効薬品／ミルクタンク促進薬＃	TFLAG:有効薬品BIT,4
+
+
+;調教中初経験BIT
+#DEFINE ＃調教中初経験／セックス＃		TFLAG:調教中初経験BIT,0
+#DEFINE ＃調教中初経験／Ａセックス＃	TFLAG:調教中初経験BIT,1
+#DEFINE ＃調教中初経験／Ｍセックス＃	TFLAG:調教中初経験BIT,2
+#DEFINE ＃調教中初経験／キス＃			TFLAG:調教中初経験BIT,3
+#DEFINE ＃調教中初経験／パイズリ＃		TFLAG:調教中初経験BIT,4
+#DEFINE ＃調教中初経験／授乳＃			TFLAG:調教中初経験BIT,5
+
+
+;Ｐ使用BIT
+#DEFINE ＃Ｐ使用／Ｖ挿入＃			TFLAG:Ｐ使用BIT,0
+#DEFINE ＃Ｐ使用／Ａ挿入＃			TFLAG:Ｐ使用BIT,1
+#DEFINE ＃Ｐ使用／Ｍ挿入＃			TFLAG:Ｐ使用BIT,2
+#DEFINE ＃Ｐ使用／パイズリ＃		TFLAG:Ｐ使用BIT,3
+#DEFINE ＃Ｐ使用／素股＃			TFLAG:Ｐ使用BIT,4
+#DEFINE ＃Ｐ使用／手コキ＃			TFLAG:Ｐ使用BIT,5
+
+
+;Ｐ解除BIT
+#DEFINE ＃Ｐ解除／Ｖ挿入＃			TFLAG:Ｐ解除BIT,0
+#DEFINE ＃Ｐ解除／Ａ挿入＃			TFLAG:Ｐ解除BIT,1
+#DEFINE ＃Ｐ解除／Ｍ挿入＃			TFLAG:Ｐ解除BIT,2
+#DEFINE ＃Ｐ解除／パイズリ＃		TFLAG:Ｐ解除BIT,3
+#DEFINE ＃Ｐ解除／素股＃			TFLAG:Ｐ解除BIT,4
+#DEFINE ＃Ｐ解除／手コキ＃			TFLAG:Ｐ解除BIT,5
+
+
+;半脱ぎBIT
+#DEFINE ＃半脱ぎ／衣服上＃			TFLAG:半脱ぎBIT,0
+#DEFINE ＃半脱ぎ／衣服下＃			TFLAG:半脱ぎBIT,1
+#DEFINE ＃半脱ぎ／下着上＃			TFLAG:半脱ぎBIT,2
+#DEFINE ＃半脱ぎ／下着下＃			TFLAG:半脱ぎBIT,3
+#DEFINE ＃半脱ぎ／上着＃			TFLAG:半脱ぎBIT,4
+
+
+;表示調教コマンドBIT
+#DEFINE ＃表示コマンド／Ｂ責め＃			FLAG:表示調教コマンドBIT,0
+#DEFINE ＃表示コマンド／Ｎ責め＃			FLAG:表示調教コマンドBIT,1
+#DEFINE ＃表示コマンド／Ｃ責め＃			FLAG:表示調教コマンドBIT,2
+#DEFINE ＃表示コマンド／Ｖ責め＃			FLAG:表示調教コマンドBIT,3
+#DEFINE ＃表示コマンド／Ａ責め＃			FLAG:表示調教コマンドBIT,4
+#DEFINE ＃表示コマンド／Ｍ責め＃			FLAG:表示調教コマンドBIT,5
+#DEFINE ＃表示コマンド／その他＃			FLAG:表示調教コマンドBIT,6
+#DEFINE ＃表示コマンド／ペニス＃			FLAG:表示調教コマンドBIT,7
+#DEFINE ＃表示コマンド／奉仕＃				FLAG:表示調教コマンドBIT,8
+#DEFINE ＃表示コマンド／道具＃				FLAG:表示調教コマンドBIT,9
+#DEFINE ＃表示コマンド／触手＃				FLAG:表示調教コマンドBIT,10
+#DEFINE ＃表示コマンド／苦痛＃				FLAG:表示調教コマンドBIT,11
+#DEFINE ＃表示コマンド／特殊＃				FLAG:表示調教コマンドBIT,12
+
+
+;コマンド有効BIT
+#DEFINE ＃コマンド有効／乳揉み＃			TFLAG:コマンド有効BIT,0
+#DEFINE ＃コマンド有効／乳吸い＃			TFLAG:コマンド有効BIT,1
+#DEFINE ＃コマンド有効／乳吸い派生＃		TFLAG:コマンド有効BIT,2
+#DEFINE ＃コマンド有効／乳首責め＃			TFLAG:コマンド有効BIT,3
+#DEFINE ＃コマンド有効／下半身責め＃		TFLAG:コマンド有効BIT,4
+#DEFINE ＃コマンド有効／口使用＃			TFLAG:コマンド有効BIT,5
+#DEFINE ＃コマンド有効／Ｖ責め＃			TFLAG:コマンド有効BIT,6
+#DEFINE ＃コマンド有効／Ａ責め＃			TFLAG:コマンド有効BIT,7
+#DEFINE ＃コマンド有効／Ｖセックス＃		TFLAG:コマンド有効BIT,8
+#DEFINE ＃コマンド有効／Ａセックス＃		TFLAG:コマンド有効BIT,9
+#DEFINE ＃コマンド有効／Ｍセックス＃		TFLAG:コマンド有効BIT,10
+#DEFINE ＃コマンド有効／パイズリ＃			TFLAG:コマンド有効BIT,11
+#DEFINE ＃コマンド有効／縦パイズリ＃		TFLAG:コマンド有効BIT,12
+#DEFINE ＃コマンド有効／奉仕＃				TFLAG:コマンド有効BIT,13
+#DEFINE ＃コマンド有効／おっぱいマッサージ＃	TFLAG:コマンド有効BIT,14
+#DEFINE ＃コマンド有効／搾乳器＃		TFLAG:コマンド有効BIT,15
+#DEFINE ＃コマンド有効／触手＃			TFLAG:コマンド有効BIT,16
+#DEFINE ＃コマンド有効／ペニス触手＃	TFLAG:コマンド有効BIT,17
+#DEFINE ＃コマンド有効／搾乳触手＃		TFLAG:コマンド有効BIT,18
+#DEFINE ＃コマンド有効／道具＃			TFLAG:コマンド有効BIT,19
+#DEFINE ＃コマンド有効／特殊＃			TFLAG:コマンド有効BIT,20
+
+
+

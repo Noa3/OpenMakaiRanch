@@ -1,0 +1,97 @@
+﻿;**********************************************************
+;Anal(アナル)の淫語
+;**********************************************************
+@SLANG_A(ARG)
+#DIM WORD_LIMIT
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+WORD_LIMIT = 0
+SLANGWORD =
+
+SIF GETBIT(FLAG:スラング接頭語／アナル,2) && CFLAG:身長 < FLAG:スラング／子供扱い上限身長数値  && RAND:100 < 30
+	SLANGWORD += "immature "
+IF GETBIT(FLAG:スラング接頭語／アナル,1) && RAND:100 < 20
+SLANGWORD += "worthless "
+WORD_LIMIT ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／アナル,0) && MARK:淫尻 && RAND:100 < 80
+SLANGWORD += "promiscuous "
+WORD_LIMIT ++
+ENDIF
+
+IF GETBIT(FLAG:スラング置換／アナル,9)
+	EXIST ++
+	SIF RAND:100 < 50
+		RETURNF SAVESTR:表記／アナル
+	ENDIF
+IF GETBIT(FLAG:スラング置換／アナル,3) && MARK:淫尻
+	EXIST ++
+	IF RAND:100 < 30
+		;接頭語との相性がいまいちな感じなのでそのまま
+		SLANGWORD = "lewd hole"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／アナル,2) && TALENT:Ａ名器
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD =
+		SIF GETBIT(FLAG:スラング接頭語／アナル,0) && MARK:淫尻
+			SLANGWORD += "promiscuous "
+		SLANGWORD += "milking organ"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／アナル,1) && TALENT:Ａ名器
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD =
+		SIF GETBIT(FLAG:スラング接頭語／アナル,0) && MARK:淫尻
+			SLANGWORD += "promiscuous "
+		SLANGWORD += "pseudo-genitalia"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+SIF GETBIT(FLAG:スラング置換／アナル,0) && EXIST
+	RESTART
+
+IF GETBIT(FLAG:スラング表示／アナル,0) && RAND:100 < 50
+SLANGWORD += "butthole"
+RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／アナル,2) && RAND:100 < 50
+SLANGWORD += "Backdoor"
+RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／アナル,1) && RAND:100 < 30
+SLANGWORD += "anus"
+RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／アナル,3) && RAND:100 < 30
+SLANGWORD += "rectum"
+RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／アナル,4) && RAND:100 < 30
+SLANGWORD += "asshole"
+RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／アナル,5) && RAND:100 < 30
+IF !WORD_LIMIT
+	SLANGWORD += "back hole"
+	RETURNF SLANGWORD
+ELSEIF RAND:100 < 50
+	SLANGWORD =
+	SLANGWORD += "back hole"
+	RETURNF SLANGWORD
+ENDIF
+ELSEIF GETBIT(FLAG:スラング表示／アナル,6)
+IF !WORD_LIMIT
+	SLANGWORD += "impure hole"
+	RETURNF SLANGWORD
+ELSEIF RAND:100 < 50
+	SLANGWORD =
+	SLANGWORD += "impure hole"
+	RETURNF SLANGWORD
+	ENDIF
+ENDIF
+RESTART
+
+
+

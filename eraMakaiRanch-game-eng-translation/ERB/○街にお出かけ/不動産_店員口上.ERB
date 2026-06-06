@@ -1,0 +1,85 @@
+﻿
+;選択肢番号→建築物名の参照
+;ARG→INPUT
+@TOWN_ESTATE_BUILDING_REF(ARG)
+
+SELECTCASE ARG
+CASE 10
+	RESULTS = 牛舎建築
+CASE 12
+	RESULTS = 事務所増築
+CASE 13
+	RESULTS = 家族風呂
+CASE 14
+	RESULTS = 大浴場
+CASE 15
+	RESULTS = ペット小屋
+CASE 16
+	RESULTS = 奴隷寮
+CASE 17
+	RESULTS = 奴隷寮増築
+CASE 18
+	RESULTS = システムキッチン
+ENDSELECT
+
+
+
+;店員口上
+;ARG→INPUT
+;ARGS→選択建築物
+@TOWN_ESTATE_BUY_MESSAGE(ARG,ARGS)
+
+;INPUT_NUMを持ってきて疑似定数を使うことで日数表記を楽にした
+SELECTCASE ARGS
+CASE "牛舎建築"
+	PRINTFORML Fudou　「If you want to build a new cowshed, it'll cost you %VALUE_DIGIT(ITEMPRICE:牛舎)%G in total.」
+		;PRINTFORML 「It'll take【 {ESTATE_DAY:ARG} Days】to construct you know?」
+	PRINTL 「Is that all right?」
+	
+CASE "牛舎増築"
+	PRINTL Fudou　「Which cowshed do you want to expand? Each expansion allows you to keep another 10 cows you know.」
+		;PRINTFORML 「It'll take【{ESTATE_DAY:ARG} Days】to build」
+	PRINTFORML 「It'll also cost %VALUE_DIGIT(ESTATE_COWSHED_EXTENSION)%G, is that fine?」
+	
+CASE "事務所増築"
+	PRINTFORML Fudou　「Building a new annex will take %VALUE_DIGIT(ITEMPRICE:事務所増築)%G in total.」
+		;PRINTFORML 「Construction will take 【{ESTATE_DAY:ARG} Days】as well.」
+	PRINTL 「Expanding should add 4 new rooms for your working slaves.」
+	PRINTL 「Do you still want to construct it?」
+	
+CASE "家族風呂"
+	PRINTL Fudou　「Eh, you want a bigger bath? Relax, we can handle it～」
+		;PRINTFORML 「It'll take 【{ESTATE_DAY:ARG} Days】to renovate given this floor plan.」
+	PRINTFORML 「It'll cost %VALUE_DIGIT(ITEMPRICE:家族風呂)%G though, is that fine?」
+	
+CASE "大浴場"
+	PRINTL Fudou　「Eeh～ A bathhouse for slaves! Talk about benefits～」
+		;PRINTFORML 「新しくここに建てるとなると…【{ESTATE_DAY:ARG}日】必要かな」
+	PRINTFORML 「It'll cost you %VALUE_DIGIT(ITEMPRICE:大浴場)%G, but why not splurge a little?」
+	
+CASE "奴隷寮"
+	PRINTL Fudou　「A dormitory for slaves, huh~? It's definitely more convenient to have one as the numbers increase~」
+		;PRINTFORML 「If we're talking about construction... it'll probably take 【{ESTATE_DAY:ARG} days】」
+	PRINTFORML 「The cost seems to be around %VALUE_DIGIT(ITEMPRICE:奴隷寮)%G」
+
+CASE "奴隷寮増築"
+	PRINTL Fudou　「Oh, seems like we ran out of room in the dorm?」
+	;	PRINTFORML 「For an expansion, it looks like it'll take 【{ESTATE_DAY:ARG} days】」
+	PRINTFORML 「The cost seems a bit more modest, around %VALUE_DIGIT(ITEMPRICE:奴隷寮増築)%G」
+
+CASE "システムキッチン"
+	PRINTL Fudou　「Expanding the kitchen, huh? We're getting quite a large group, so we might need it.」
+	PRINTL 「The documents should be around here... Ah, recently they call it a 'System Kitchen' to sound stylish.」
+		;PRINTFORML "It looks like the renovation will take 【{ESTATE_DAY:ARG} days】」
+	PRINTFORML 「The renovation cost is %VALUE_DIGIT(ITEMPRICE:システムキッチン)%G. Should we place the order for the renovation?」
+
+CASE "ペット小屋"
+	PRINTL Fudou　「You want to add a pet house? Looks like you want to get something new.」
+		;PRINTFORML 「It seems like we could make it in about 【{ESTATE_DAY:ARG} days】」
+	PRINTFORML 「The cost seems to be %VALUE_DIGIT(ITEMPRICE:ペット小屋)%G」
+ENDSELECT
+
+;イベント時日数増加フラグがあれば所要日数を出す
+;PRINTFORML 所要日数： {ESTATE_DAY:ARG}日
+
+

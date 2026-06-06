@@ -1,0 +1,90 @@
+﻿
+;キャラメイク中の仕事ABL表示
+@ABL_WORK_LIST_CHARA_MAKE
+
+IF GETBIT(＃ステータス隠蔽／業務ABL＃) && !GETBIT(＃再シャッフル／性格素質＃) && FLAG:キャラメイク隠蔽有効
+	CALL PRINTL_WORD_COLOR("Business ABL unknown","灰")
+	RETURN
+ENDIF
+PRINTFORM DairyLv{ABL:酪農,2}　
+PRINTFORM ClerkLv{ABL:事務,2}　
+PRINTFORM CleaningLv{ABL:掃除,2}　
+PRINTFORM CookingLv{ABL:料理,2}　
+PRINTFORM PharmacyLv{ABL:薬学,2}　
+PRINTFORM ReceptionLv{ABL:接客,2}　
+PRINTL
+
+
+
+;キャラメイク中の性ABL表示
+@ABL_NASTY_LIST_CHARA_MAKE
+
+IF GETBIT(＃ステータス隠蔽／性ABL＃) && !GETBIT(＃再シャッフル／性ABL＃) && FLAG:キャラメイク隠蔽有効
+	CALL PRINTL_WORD_COLOR("Sexual ABL unknown","灰")
+	RETURN
+ENDIF
+PRINTFORM ServiceLv{ABL:奉仕精神,2}　
+PRINTFORM TechLv{ABL:技巧,2}　
+PRINTFORM MotherLv{ABL:母性,2}　
+PRINTFORM MasoLv{ABL:マゾっ気,2}　
+PRINTFORM LesbianLv{ABL:レズっ気,2}　
+PRINTL
+
+
+
+;感度表示
+@SENSITIVE_LIST_CHARA_MAKE
+#DIMS KANDO
+
+IF GETBIT(＃ステータス隠蔽／感度＃) && !GETBIT(＃再シャッフル／感度＃) && FLAG:キャラメイク隠蔽有効
+	CALL PRINTL_WORD_COLOR("Sensitivity still unknown","灰")
+	RETURN
+ENDIF
+
+;STR:Ｂ→3950
+STR_REF = 3950
+FOR LOCAL,STR_REF,STR_REF +10
+	RESETCOLOR
+	SIF STR:LOCAL == ""
+		BREAK
+	KANDO = %STR:LOCAL%感度
+	
+	;感度120%でピンク
+	IF ABL:KANDO >= 120
+		SETCOLOR 0xFF70FF
+	
+	;感度80%以下は水色
+	ELSEIF ABL:KANDO <= 80
+		SETCOLOR 0x50C0FF
+	ENDIF
+	
+	;感度200%だとハート追加
+	SIF ABL:KANDO >= 200
+		CALL HEARTCB(0xD02830)
+	PRINTFORM %ABL_ENG(KANDO)%<{ABL:KANDO,3}\%> 
+	RESETCOLOR
+NEXT
+PRINTL
+
+
+
+;性体質表示
+@TALENT_NASTY_CHARA_MAKE
+
+IF GETBIT(＃ステータス隠蔽／性体質＃) && !GETBIT(＃再シャッフル／性体質＃) && FLAG:キャラメイク隠蔽有効
+	CALL PRINTL_WORD_COLOR("Sexual Traits unknown","灰")
+	RETURN
+ENDIF
+PRINT Sexual Traits：
+IF !MAXARRAY(TALENT,30,50)
+	CALL PRINTL_WORD_COLOR("None","灰")
+	RETURN
+ENDIF
+SETCOLOR 0xFF70FF
+FOR LOCAL,30,50
+	SIF TALENT:LOCAL
+		PRINTFORM ❤%TALENTS_ENG(TALENTNAME:LOCAL)%❤ 
+NEXT
+RESETCOLOR
+PRINTL
+

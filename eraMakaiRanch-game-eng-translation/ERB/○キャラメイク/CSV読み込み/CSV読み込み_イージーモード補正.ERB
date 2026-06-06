@@ -1,0 +1,47 @@
+﻿
+;配布奴隷のイージーモード合わせ
+@CSV_CHARA_ADD_EASYMODE_FIX
+
+CALL CSV_CHARA_ADD_EASYMODE_FIX_WEEK
+CALL CSV_CHARA_ADD_EASYMODE_FIX_MILK
+
+
+
+;感度増加
+@CSV_CHARA_ADD_EASYMODE_FIX_WEEK
+
+SIF !FLAG:ランダムキャラ共通弱点部位BIT
+	RETURN
+PRINTFORML 【Sensitivity Increasing Settings】enabled. Increase %CALLNAME%'s sensitivities as well?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+SIF GETBIT(＃全員Ｂ弱点＃)
+	ABL:Ｂ感度 = 200
+SIF GETBIT(＃全員Ｎ弱点＃)
+	ABL:Ｎ感度 = 200
+SIF GETBIT(＃全員Ｖ弱点＃)
+	ABL:Ｖ感度 = 200
+SIF GETBIT(＃全員Ｃ弱点＃)
+	ABL:Ｃ感度 = 200
+SIF GETBIT(＃全員Ａ弱点＃)
+	ABL:Ａ感度 = 200
+CALL NIPPLE_SENSITIVE_FIX
+
+
+
+;母乳体質化
+@CSV_CHARA_ADD_EASYMODE_FIX_MILK
+
+SIF !FLAG:奴隷候補全員先天的母乳体質
+	RETURN
+PRINTFORML Innate Lactation Setting】enabled. Apply to %CALLNAME% as well?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+TALENT:先天的母乳体質 = 1
+EXP:出産 = 0
+MARK:母乳体質 = 1
+
+
+

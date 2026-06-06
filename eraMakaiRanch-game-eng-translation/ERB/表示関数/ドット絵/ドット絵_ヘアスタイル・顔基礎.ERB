@@ -1,0 +1,85 @@
+﻿
+;ヘアスタイル
+@PRINT_PORTRAIT_HAIR
+#DIMS HEAR_PATTERN_F
+#DIMS HEAR_PATTERN_B
+
+;前髪→貫通対策追加
+HEAR_PATTERN_F = %CSTR:カテゴリ／髪特徴%
+HEAR_PATTERN_B = %CSTR:カテゴリ／髪型%
+IF !TFLAG:一時的脱衣／頭 && ITEMNAME:(EQUIP:装備中ID／頭) == "シスターヴェール"
+	SELECTCASE CSTR:カテゴリ／髪特徴
+	CASE "横ハネ"
+		HEAR_PATTERN_F = 通常
+	ENDSELECT
+	SELECTCASE CSTR:カテゴリ／髪型
+	CASE "ポニーテール","ツインテール","サイドテール","ツーサイドアップ","ハーフアップ","ベリーロング","縦ロール","バックシニヨン","サイドシニヨン","ツインリング","ポンパドール","ワンサイドアップ","クラウンブレイド","トライテール"
+		HEAR_PATTERN_B = セミロング
+	ENDSELECT
+ENDIF
+SPRITECREATED @"%CSTR:カテゴリ／髪色%_%HEAR_PATTERN_F%"
+IF RESULT
+	PRT:2 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／髪色%_%HEAR_PATTERN_F%' height='%PY_3_2%' ypos = '%PY_FIX%'></nonbutton>
+ELSE
+	PRT:2 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／髪色%_通常' height='%PY_3_2%' ypos = '%PY_FIX%'></nonbutton>
+ENDIF
+
+;後髪
+SPRITECREATED @"%CSTR:カテゴリ／髪色%_%HEAR_PATTERN_F%%HEAR_PATTERN_B%"
+IF RESULT
+	PRT:3 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／髪色%_%HEAR_PATTERN_F%%HEAR_PATTERN_B%' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+ELSE
+	PRT:3 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／髪色%_%HEAR_PATTERN_B%' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+ENDIF
+
+
+
+;顔　目の特徴を追加、パターンを上書き
+@PRINT_PORTRAIT_FACE
+#DIMS EYE_PATTERN
+
+EYE_PATTERN =
+IF CSTR:目の特徴 != ""
+	IF CSTR:目の特徴 == "タレ目"
+		EYE_PATTERN = 弱気
+	ELSEIF CSTR:目の特徴 == "ツリ目"
+		EYE_PATTERN = 強気
+	ELSEIF CSTR:目の特徴 == "ジト目"
+		EYE_PATTERN = 無口
+	ELSEIF CSTR:目の特徴 == "糸目"
+		EYE_PATTERN = 能天気
+		;EYE_PATTERN = 糸目
+	ENDIF
+ENDIF
+IF EYE_PATTERN == ""
+	IF GROUPMATCH(CSTR:カテゴリ／性格,"強気","弱気","生意気","生真面目","大人しい","能天気","世間知らず","高潔","清楚","好色","温厚","無口")
+		EYE_PATTERN = %CSTR:カテゴリ／性格%
+	ELSE
+		EYE_PATTERN = 生真面目
+	ENDIF
+ENDIF
+
+IF CSTR:カテゴリ／左目の色 == "" 
+	PRT:4 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／右目の色%_%EYE_PATTERN%_右' height='%PY_3_3%' ypos = '%PY_FIX%'><img src='%CSTR:カテゴリ／右目の色%_%EYE_PATTERN%_左' height='%PY_3_3%' ypos = '%PY_FIX%'></nonbutton>
+ELSE
+	PRT:4 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／右目の色%_%EYE_PATTERN%_右' height='%PY_3_3%' ypos = '%PY_FIX%'><img src='%CSTR:カテゴリ／左目の色%_%EYE_PATTERN%_左' height='%PY_3_3%' ypos = '%PY_FIX%'></nonbutton>
+ENDIF
+
+;口
+IF GROUPMATCH(CSTR:カテゴリ／性格,"強気","弱気","生真面目","大人しい","高潔","清楚","温厚","無口")
+	SPRITECREATED @"口_閉じ"
+	SIF RESULT
+		PRT:9 = <nonbutton pos='%PY_2%'><img src='口_閉じ' height='%PY_3_3%' ypos = '%PY_FIX%'></nonbutton>
+ELSE
+	SPRITECREATED @"口_開き"
+	SIF RESULT
+		PRT:9 = <nonbutton pos='%PY_2%'><img src='口_開き' height='%PY_3_3%' ypos = '%PY_FIX%'></nonbutton>
+ENDIF
+
+
+
+
+
+
+
+

@@ -1,0 +1,1505 @@
+﻿
+;ぞろぞろ並べる
+;なんも書かないとRETURN0で不可能やねんな
+;--------------------------------------------------,
+;乳揉み
+@COM_ABLE10
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+;共通判定にまとめた
+SIF !GETBIT(＃コマンド有効／乳揉み＃)
+	RETURN 0
+RETURN 1
+
+
+
+;乳搾り
+@COM_ABLE11
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳揉み＃)
+	RETURN 0
+
+;巨乳以上ないと搾れない
+SIF ABL:バストサイズ < BUSTSIZE_巨乳
+	RETURN 0
+
+;乳首露出の時だけ
+SIF TFLAG:Ｎ露出
+	RETURN 1
+
+
+
+;乳首つまみ
+@COM_ABLE12
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳首責め＃)
+	RETURN 0
+
+;乳首になにかついてると乳首責め不可
+SIF TFLAG:Ｎ装備
+	RETURN 0
+SIF TFLAG:Ｎ露出
+	RETURN 1
+
+;横乳露出かＢ露出かつ、Ｎ露出できる場合でも横から手を入れて乳首責めできるようにする
+{
+SIF (TFLAG:横乳露出 || TFLAG:Ｂ露出) && (!EQUIP:装備中ID／下着上 || GETBIT(＃半脱ぎ／下着上＃) ||
+TFLAG:一時的脱衣／下着上 || ＃着用下着上／名称＃ == "乳首露出ブラ" || ＃着用下着上／名称＃ == "授乳スリットブラ")
+}
+	RETURN 1
+
+;授乳スリット状態でもできる分岐
+;ブラ判定まで来ないとフラグが立たないので服の上ということはないはず
+;次服の上から可能なようにしようかな？
+SIF TFLAG:授乳スリット
+	RETURN 1
+
+
+
+;Ｃ愛撫
+@COM_ABLE13
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／下半身責め＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／Ｃ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+
+;そのうちローターあたりなら装備状態でもやってよさそうだけどまあ今はOFFで
+SIF TFLAG:Ｃ装備
+	RETURN 0
+
+;陰部露出の時だけ
+SIF TFLAG:Ｃ露出
+	RETURN 1
+
+
+
+;Ｖ指挿れ
+@COM_ABLE14
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／下半身責め＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／Ｖ責め＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／Ｖ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+
+;挿入しないＶ責めは処女結界を破れない
+SIF TALENT:処女結界
+	RETURN 0
+RETURN 1
+
+
+
+;Ａ指挿れ
+@COM_ABLE15
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／下半身責め＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／Ａ責め＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／Ａ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+
+;汚れ無視がLv1以上
+SIF !ITEM:汚れ無視
+	RETURN 0
+SIF GETBIT(＃Ａ指挿れ無効＃)
+	RETURN 0
+RETURN 1
+
+
+
+;尻撫で　追加
+@COM_ABLE16
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／下半身責め＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／その他＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+RETURN 1
+
+
+
+;乳撫で　追加
+@COM_ABLE17
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳揉み＃)
+	RETURN 0
+SIF TEQUIP:手コキ
+	RETURN 0
+RETURN 1
+
+
+
+;くすぐり　追加
+@COM_ABLE18
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃表示コマンド／その他＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／手・口＃
+	RETURN 0
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃) || GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN 0
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN 0
+RETURN 1
+
+
+;お腹撫で　追加
+@COM_ABLE19
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃表示コマンド／その他＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／手・口＃
+	RETURN 0
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃) || GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN 0
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN 0
+SIF GETBIT(＃拘束／ベッドうつ伏せ＃) || GETBIT(＃拘束／下半身埋め壁乳＃)
+	RETURN 0
+RETURN 1
+
+;--------------------------------------------------,
+;乳吸い
+@COM_ABLE20
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳吸い＃)
+	RETURN 0
+RETURN 1
+
+
+
+;乳首しゃぶり
+@COM_ABLE21
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳吸い＃)
+	RETURN 0
+RETURN 1
+
+
+
+;キス
+@COM_ABLE22
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／口使用＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／Ｍ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF TFLAG:Ｍ装備
+	RETURN 0
+
+;汚れ無視判定
+CALL COMMAND_STAIN_JUDGE("口")
+SIF !RESULT
+	RETURN 0
+
+;体位制限フラグを追加→これでコマンド判定
+SIF GETBIT(＃体位制限／キス＃)
+	RETURN 0
+
+;挿入中キスの身長判定
+CALL KISS_HEIGHT_CONFIG_JUDGE
+SIF RESULT
+	RETURN 0
+RETURN 1
+
+
+
+;Ｃ舐め
+@COM_ABLE23
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+
+;旧コマンド切り替え入ってる
+SIF !GETBIT(＃コマンド有効／口使用＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／Ｃ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+
+;挿入中はダメ
+SIF TFLAG:Ｐ使用BIT
+	RETURN 0
+CALL COMMAND_STAIN_JUDGE("陰核")
+SIF !RESULT
+	RETURN 0
+
+;舐めるのはローターとかあると無理
+SIF TFLAG:Ｃ装備
+	RETURN 0
+SIF TFLAG:Ｃ露出
+	RETURN 1
+
+
+
+;Ｖ舐め
+@COM_ABLE24
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／口使用＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／Ｖ責め＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／Ｖ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF TFLAG:Ｐ使用BIT
+	RETURN 0
+CALL COMMAND_STAIN_JUDGE("膣")
+SIF !RESULT
+	RETURN 0
+SIF TALENT:処女結界
+	RETURN 0
+RETURN 1
+
+
+
+;Ａ舐め
+@COM_ABLE25
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／口使用＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／Ａ責め＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／Ａ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF TFLAG:Ｐ使用BIT
+	RETURN 0
+SIF GETBIT(＃Ａ舐め無効＃)
+	RETURN 0
+
+;汚れ無視Lv2が必要
+SIF ITEM:汚れ無視 < 2
+	RETURN 0
+RETURN 1
+
+
+
+;乳舐め　追加
+@COM_ABLE26
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／口使用＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／Ｂ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+CALL COMMAND_STAIN_JUDGE("乳房")
+SIF !RESULT
+	RETURN 0
+SIF TFLAG:背後
+	RETURN 0
+SIF GETBIT(＃体位制限／乳吸い＃)
+	RETURN 0
+SIF TFLAG:Ｂ露出 || TFLAG:横乳露出 || TFLAG:谷間露出
+	RETURN 1
+
+
+
+;耳舐め　追加
+@COM_ABLE27
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／口使用＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／その他＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+CALL COMMAND_STAIN_JUDGE("耳")
+SIF !RESULT
+	RETURN 0
+SIF TFLAG:Ｅ装備
+	RETURN 0
+RETURN 1
+
+
+
+;腋舐め　追加
+@COM_ABLE28
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／口使用＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／その他＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+CALL COMMAND_STAIN_JUDGE("腋")
+SIF !RESULT
+	RETURN 0
+
+;とりあえず胸露出以上ならOKやろ
+SIF TFLAG:Ｂ露出
+	RETURN 1
+
+;横乳露出でもいけると思う
+SIF TFLAG:横乳露出
+	RETURN 1
+
+
+
+;頬舐め　追加
+@COM_ABLE29
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／口使用＃)
+	RETURN 0
+SIF !GETBIT(＃表示コマンド／その他＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+CALL COMMAND_STAIN_JUDGE("顔")
+SIF !RESULT
+	RETURN 0
+RETURN 1
+
+
+
+;--------------------------------------------------,
+;正常位
+@COM_ABLE30
+SIF SKIP_COM_ABLE
+	RETURN 0
+;全部まとめたのでこっちで試す
+CALL SEX_COMMAND_JUDGE("正常位")
+RETURN RESULT
+
+;後背位
+@COM_ABLE31
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("後背位")
+RETURN RESULT
+
+;対面座位
+@COM_ABLE32
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("対面座位")
+RETURN RESULT
+
+;背面座位
+@COM_ABLE33
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("背面座位")
+RETURN RESULT
+
+;騎乗位
+@COM_ABLE34
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("騎乗位")
+RETURN RESULT
+
+;対面立位
+@COM_ABLE35
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("対面立位")
+RETURN RESULT
+
+;背面立位
+@COM_ABLE36
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("背面立位")
+RETURN RESULT
+
+;強制騎乗位　追加コマンド、触手拘束のみなのでこっちに書く
+@COM_ABLE37
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("強制騎乗位")
+RETURN RESULT
+
+
+
+;--------------------------------------------------,
+;Ａ正常位
+@COM_ABLE40
+SIF SKIP_COM_ABLE
+	RETURN 0
+;Ａもだいたいまとめられる
+CALL SEX_COMMAND_JUDGE("正常位",1)
+RETURN RESULT
+
+;Ａ後背位
+@COM_ABLE41
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("後背位",1)
+RETURN RESULT
+
+;Ａ対面座位
+@COM_ABLE42
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("対面座位",1)
+RETURN RESULT
+
+;Ａ背面座位
+@COM_ABLE43
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("背面座位",1)
+RETURN RESULT
+
+;Ａ騎乗位
+@COM_ABLE44
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("騎乗位",1)
+RETURN RESULT
+
+;Ａ対面立位
+@COM_ABLE45
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("対面立位",1)
+RETURN RESULT
+
+;Ａ背面立位
+@COM_ABLE46
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("背面立位",1)
+RETURN RESULT
+
+;強制Ａ騎乗位
+@COM_ABLE47
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL SEX_COMMAND_JUDGE("強制騎乗位",1)
+RETURN RESULT
+
+
+
+;--------------------------------------------------,
+;素股
+@COM_ABLE50
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+;入らないけど挿入に含んだ
+CALL SEX_COMMAND_JUDGE("素股")
+SIF !RESULT
+	RETURN 0
+
+;判断微妙なんだけどＡでも挿さってたらできないかと
+SIF TFLAG:Ａ装備
+	RETURN 0
+RETURN 1
+
+
+
+;フェラチオ
+@COM_ABLE51
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／奉仕＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／Ｍセックス＃)
+	RETURN 0
+
+;口に入ってるとダメ
+SIF TFLAG:Ｍ装備
+	RETURN 0
+RETURN 1
+
+
+
+;イラマチオ
+@COM_ABLE52
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／Ｍセックス＃)
+	RETURN 0
+
+;Ｍ装備はダメだけど強制開口器の場合だけOK
+SIF TEQUIP:強制開口器
+	RETURN 1
+SIF TFLAG:Ｍ装備
+	RETURN 0
+RETURN 1
+
+
+
+;パイズリ
+@COM_ABLE53
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／奉仕＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／パイズリ＃)
+	RETURN 0
+RETURN 1
+
+
+;強制パイズリ
+@COM_ABLE54
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／パイズリ＃)
+	RETURN 0
+RETURN 1
+
+
+;縦パイズリ
+@COM_ABLE55
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／奉仕＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／縦パイズリ＃)
+	RETURN 0
+RETURN 1
+
+
+;強制縦パイズリ
+@COM_ABLE56
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／縦パイズリ＃)
+	RETURN 0
+RETURN 1
+
+
+;手コキ
+@COM_ABLE57
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／奉仕＃)
+	RETURN 0
+RETURN 1
+
+
+;授乳手コキ
+@COM_ABLE58
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／奉仕＃)
+	RETURN 0
+SIF TFLAG:Ｎ装備
+	RETURN 0
+CALL COMMAND_STAIN_JUDGE("乳首")
+SIF !RESULT
+	RETURN 0
+SIF TFLAG:Ｎ露出 || TFLAG:授乳スリット
+	RETURN 1
+
+
+
+;--------------------------------------------------,
+;家畜用搾乳器
+@COM_ABLE60
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL LACTATION_MACHINE_COMMAND_JUDGE("家畜用搾乳器")
+RETURN RESULT
+
+;魔動快楽搾乳器
+@COM_ABLE61
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL LACTATION_MACHINE_COMMAND_JUDGE("魔動快楽搾乳器")
+RETURN RESULT
+
+;触手快楽搾乳器
+@COM_ABLE62
+SIF SKIP_COM_ABLE
+	RETURN 0
+CALL LACTATION_MACHINE_COMMAND_JUDGE("触手快楽搾乳器")
+RETURN RESULT
+
+;小型霊力抽出装置
+@COM_ABLE63
+SIF SKIP_COM_ABLE
+	RETURN 0
+;共通判定前に霊力も魔力もない場合使えない
+SIF !BASE:霊力 && !BASE:魔力
+	RETURN 0
+CALL LACTATION_MACHINE_COMMAND_JUDGE("小型霊力抽出装置")
+RETURN RESULT
+
+
+
+;--------------------------------------------------,
+;スパンキング
+@COM_ABLE70
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／その他＃) || !GETBIT(＃表示コマンド／苦痛＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／苦痛＃
+	RETURN 0
+SIF GETBIT(＃体位制限／アナル＃) || GETBIT(＃拘束／ベッド仰向け＃)
+	RETURN 0
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃) || GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN 0
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN 0
+;後背位、背面立位以外のＶＡ挿入中はダメ
+{
+SIF TEQUIP:正常位 || TEQUIP:対面座位 || TEQUIP:背面座位 || TEQUIP:騎乗位 || TEQUIP:対面立位 ||TEQUIP:強制騎乗位 || 
+TEQUIP:Ａ正常位 || TEQUIP:Ａ対面座位 || TEQUIP:Ａ背面座位 || TEQUIP:Ａ騎乗位 || TEQUIP:Ａ対面立位 || TEQUIP:Ａ強制騎乗位
+}
+	RETURN 0
+;衣服の上からだとダメ
+SIF TFLAG:一時的脱衣／衣服 || !EQUIP:装備中ID／衣服 || ＃着用衣服／股間破け＃ || GETBIT(＃半脱ぎ／衣服下＃) || ＃着用衣服／股間出し＃
+	RETURN 1
+
+
+
+;--------------------------------------------------,
+;触手は触手化を会得してないとダメ
+;触手乳揉み
+@COM_ABLE100
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／触手＃)
+	RETURN 0
+
+;触手コマンドONにできるなら触手変化も持ってる
+;→対応触手の習得を必要にした
+SIF ITEM:揉み触手
+	RETURN 1
+
+
+
+;触手乳搾り
+@COM_ABLE101
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／触手＃)
+	RETURN 0
+SIF ABL:バストサイズ < BUSTSIZE_巨乳
+	RETURN 0
+
+;服の下からでもできるので服制限はない
+SIF ITEM:揉み触手
+	RETURN 1
+
+
+
+;乳包み花弁搾乳触手
+@COM_ABLE102
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+CALL LACTATION_TENTACLE_COMMAND_JUDGE("乳包み花弁搾乳触手")
+RETURN RESULT
+
+
+;透明カップ搾乳触手
+@COM_ABLE103
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+CALL LACTATION_TENTACLE_COMMAND_JUDGE("透明カップ搾乳触手")
+RETURN RESULT
+
+
+;搾乳ワーム触手
+@COM_ABLE104
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+CALL LACTATION_TENTACLE_COMMAND_JUDGE("搾乳ワーム触手")
+RETURN RESULT
+
+
+
+;触手Ｖ挿入
+@COM_ABLE105
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／ペニス触手＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／Ｖ責め＃)
+	RETURN 0
+RETURN 1
+
+
+
+;触手Ａ挿入
+@COM_ABLE106
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／ペニス触手＃)
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／Ａ責め＃)
+	RETURN 0
+RETURN 1
+
+
+
+;触手強制パイズリ
+@COM_ABLE107
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／ペニス触手＃)
+	RETURN 0
+SIF TEQUIP:触手強制パイズリ
+	RETURN 1
+
+;パイズリ中はダメ
+SIF GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN 0
+SIF TFLAG:Ｎ装備 && ABL:バストサイズ < BUSTSIZE_豊乳
+	RETURN 0
+SIF TFLAG:Ｂ装備 && ABL:バストサイズ < BUSTSIZE_豊乳
+	RETURN 0
+SIF TFLAG:Ｂ露出
+	RETURN 1
+
+
+
+;触手フェラチオ
+@COM_ABLE108
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／ペニス触手＃)
+	RETURN 0
+SIF TEQUIP:触手フェラチオ
+	RETURN 1
+SIF TFLAG:Ｍ装備
+	RETURN 0
+SIF !BASE:体力
+	RETURN 0
+SIF CFLAG:虚脱
+	RETURN 0
+RETURN 1
+
+
+
+;触手イラマチオ
+@COM_ABLE109
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／ペニス触手＃)
+	RETURN 0
+SIF TEQUIP:触手イラマチオ
+	RETURN 1
+SIF TEQUIP:強制開口器
+	RETURN 1
+SIF TFLAG:Ｍ装備
+	RETURN 0
+RETURN 1
+
+
+
+;ブラシ触手　開いてる部分全て
+@COM_ABLE110
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／触手＃)
+	RETURN 0
+
+;触手服を着ている場合ダメ
+SIF ＃着用下着下／名称＃ == "触手服" && !TFLAG:一時的脱衣／下着下
+	RETURN 0
+
+;どこかにブラシ触手装備中ならOK
+SIF TEQUIP:ブラシ触手
+	RETURN 1
+
+;全部位に装備してる場合ダメ
+SIF TFLAG:Ａ装備 && TFLAG:Ｂ装備 && TFLAG:Ｃ装備 && TFLAG:Ｖ装備 && TFLAG:Ｎ装備
+	RETURN 0
+SIF !ITEM:ブラシ触手
+	RETURN 0
+
+;どこか露出していればOK
+SIF SUMARRAY(TFLAG,140,145)
+	RETURN 1
+
+;授乳スリットでも一応OK
+SIF TFLAG:授乳スリット
+	RETURN 1
+
+
+
+;触手目隠し
+@COM_ABLE112
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／触手＃)
+	RETURN 0
+SIF TEQUIP:触手目隠し
+	RETURN 1
+
+;アイマスクと共通フラグ
+SIF TFLAG:目隠し
+	RETURN 0
+RETURN 1
+
+
+
+;触手クリ吸い
+@COM_ABLE113
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／触手＃)
+	RETURN 0
+SIF !ITEM:吸引触手
+	RETURN 0
+SIF TEQUIP:触手クリ吸い
+	RETURN 1
+SIF TFLAG:Ｃ装備
+	RETURN 0
+SIF TFLAG:Ｃ露出
+	RETURN 1
+
+
+
+;触手耳姦
+@COM_ABLE114
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／触手＃)
+	RETURN 0
+SIF TEQUIP:触手耳姦
+	RETURN 1
+SIF TFLAG:Ｅ装備
+	RETURN 0
+SIF !ITEM:耳姦触手
+	RETURN 0
+RETURN 1
+
+
+;触手強制手コキ
+@COM_ABLE115
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／ペニス触手＃)
+	RETURN 0
+SIF TEQUIP:触手強制手コキ
+	RETURN 1
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN 0
+RETURN 1
+
+
+
+;追加
+;吸引搾乳触手
+@COM_ABLE116
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+
+;あとで
+RETURN 0
+SIF !ITEM:吸引搾乳触手
+	RETURN 0
+CALL LACTATION_TENTACLE_COMMAND_JUDGE
+RETURN RESULT
+
+
+;乳腺侵入触手
+@COM_ABLE117
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+
+;あとで
+RETURN 0
+SIF !ITEM:乳腺侵入触手 || !TFLAG:搾乳触手
+	RETURN 0
+RETURN 1
+
+
+
+;--------------------------------------------------,
+;マッサージ系追加
+;育乳マッサージ
+@COM_ABLE150
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／おっぱいマッサージ＃)
+	RETURN 0
+
+;上限ならやめとく
+SIF ITEM:豊穣 && GETBIT(＃個人有効／豊穣＃) && GETBIT(＃有効／豊穣＃) && ABL:バストサイズ < FLAG:豊穣上限バストサイズ
+	RETURN 1
+
+
+;濃厚母乳マッサージ
+@COM_ABLE151
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／おっぱいマッサージ＃)
+	RETURN 0
+SIF ITEM:濃厚母乳マッサージ && GETBIT(＃個人有効／濃厚母乳マッサージ＃) && GETBIT(＃有効／濃厚母乳マッサージ＃) && ABL:母乳濃度 < 5
+	RETURN 1
+
+
+;ミルクタンクマッサージ
+@COM_ABLE152
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／おっぱいマッサージ＃)
+	RETURN 0
+SIF ITEM:ミルクタンクマッサージ && GETBIT(＃個人有効／ミルクタンクマッサージ＃) && GETBIT(＃有効／ミルクタンクマッサージ＃)
+	RETURN 1
+
+
+;--------------------------------------------------,
+;道具は対応を持ってる必要がある
+;バイブ
+@COM_ABLE201
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ｖ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／道具＃)
+	RETURN 0
+SIF TEQUIP:バイブ
+	RETURN 1
+SIF !GETBIT(＃コマンド有効／Ｖ責め＃)
+	RETURN 0
+SIF !ITEM:バイブ
+	RETURN 0
+RETURN 1
+
+
+
+;アナルバイブ
+@COM_ABLE202
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ａ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／道具＃)
+	RETURN 0
+SIF TEQUIP:アナルバイブ
+	RETURN 1
+SIF !GETBIT(＃コマンド有効／Ａ責め＃)
+	RETURN 0
+SIF !ITEM:アナルバイブ
+	RETURN 0
+RETURN 1
+
+
+
+;乳首ローター
+@COM_ABLE203
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ｎ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+
+;パイズリしながら責められるように共通から抜き出し
+SIF ＃旧コマンド切替／無効／道具・魔術＃
+	RETURN 0
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	RETURN 0
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN 0
+SIF TEQUIP:乳首ローター
+	RETURN 1
+SIF !ITEM:乳首ローター
+	RETURN 0
+SIF TFLAG:Ｎ装備
+	RETURN 0
+SIF TFLAG:Ｎ露出 || TFLAG:授乳スリット
+	RETURN 1
+
+
+
+;クリローター
+@COM_ABLE204
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ｃ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／道具＃)
+	RETURN 0
+SIF TEQUIP:クリローター
+	RETURN 1
+SIF !ITEM:クリローター
+	RETURN 0
+SIF TFLAG:Ｃ装備
+	RETURN 0
+SIF TFLAG:Ｃ露出
+	RETURN 1
+
+
+
+;乳首吸引器
+@COM_ABLE205
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ｎ責め＃) || !GETBIT(＃表示コマンド／苦痛＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／道具・魔術＃
+	RETURN 0
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	RETURN 0
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN 0
+SIF TEQUIP:乳首吸引器
+	RETURN 1
+SIF !ITEM:乳首吸引器
+	RETURN 0
+SIF TFLAG:Ｎ装備
+	RETURN 0
+SIF TFLAG:Ｎ露出 || TFLAG:授乳スリット
+	RETURN 1
+
+
+
+;クリ吸引器
+@COM_ABLE206
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ｃ責め＃) || !GETBIT(＃表示コマンド／苦痛＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF TFLAG:Ｐ使用BIT
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／道具＃)
+	RETURN 0
+SIF TEQUIP:クリ吸引器
+	RETURN 1
+SIF !ITEM:クリ吸引器
+	RETURN 0
+SIF TFLAG:Ｃ装備
+	RETURN 0
+SIF TFLAG:Ｃ露出
+	RETURN 1
+
+
+
+;アイマスク
+@COM_ABLE207
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／その他＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／道具＃)
+	RETURN 0
+SIF TEQUIP:アイマスク
+	RETURN 1
+SIF !ITEM:アイマスク
+	RETURN 0
+SIF TFLAG:目隠し
+	RETURN 0
+RETURN 1
+
+
+
+;口枷
+@COM_ABLE208
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ｍ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／道具＃)
+	RETURN 0
+SIF TEQUIP:口枷
+	RETURN 1
+SIF !ITEM:口枷
+	RETURN 0
+SIF TFLAG:Ｍ装備
+	RETURN 0
+RETURN 1
+
+
+
+;ボールギャグ
+@COM_ABLE209
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ｍ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／道具＃)
+	RETURN 0
+SIF TEQUIP:ボールギャグ
+	RETURN 1
+SIF !ITEM:ボールギャグ
+	RETURN 0
+SIF TFLAG:Ｍ装備
+	RETURN 0
+RETURN 1
+
+
+
+;強制開口器
+@COM_ABLE212
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF (!GETBIT(＃表示コマンド／道具＃) || !GETBIT(＃表示コマンド／Ｍ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF !GETBIT(＃コマンド有効／道具＃)
+	RETURN 0
+SIF TEQUIP:強制開口器
+	RETURN 1
+SIF !ITEM:強制開口器
+	RETURN 0
+SIF TFLAG:Ｍ装備
+	RETURN 0
+RETURN 1
+
+
+
+;--------------------------------------------------,
+;肉体改造
+@COM_ABLE800
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+;特殊or道具・魔術
+SIF !GETBIT(＃コマンド有効／特殊＃)
+	RETURN 0
+RETURN 1
+
+
+
+;淫紋付与
+@COM_ABLE801
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／特殊＃)
+	RETURN 0
+SIF !ITEM:淫紋付与
+	RETURN 0
+RETURN 1
+
+
+
+;--------------------------------------------------,
+;ペニス引き抜き
+@COM_ABLE890
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+;取り外し系は使ってるなら表示されるように変更
+SIF TFLAG:Ｐ使用BIT
+	RETURN 1
+
+
+
+;搾乳器取り外し
+@COM_ABLE891
+SIF SKIP_COM_ABLE
+	RETURN 0
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	RETURN 0
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN 0
+SIF TFLAG:搾乳器
+	RETURN 1
+SIF TEQUIP:小型霊力抽出装置
+	RETURN 1
+
+
+
+;搾乳触手外し
+@COM_ABLE892
+SIF SKIP_COM_ABLE
+	RETURN 0
+SIF TFLAG:搾乳触手
+	RETURN 1
+
+
+
+;胸汚れ拭き取り
+@COM_ABLE893
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+;ＢＮどっちでも出したい
+SIF !(GETBIT(＃表示コマンド／Ｂ責め＃) || GETBIT(＃表示コマンド／Ｎ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／手・口＃
+	RETURN 0
+
+;挿れたままはダメ、ＢＮ装備あってもダメ
+SIF TFLAG:Ｐ使用BIT
+	RETURN 0
+SIF TFLAG:Ｂ装備 || TFLAG:Ｎ装備
+	RETURN 0
+SIF (STAIN:乳房 != 0 && STAIN:乳房 != 1) || (STAIN:乳首 != 0 && STAIN:乳首 != 1)
+	RETURN 1
+RETURN 0
+
+
+
+;ピストン
+@COM_ABLE900
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+;ピストンも常に表示
+;手コキ、授乳手コキは対象外
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN 0
+
+;挿入している場合使用可能
+SIF TFLAG:Ｐ使用BIT
+	RETURN 1
+
+
+
+;乳揉み吸い
+@COM_ABLE901
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳吸い派生＃)
+	RETURN 0
+RETURN 1
+
+
+
+;母乳吸い尽くし
+@COM_ABLE902
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳吸い派生＃)
+	RETURN 0
+RETURN 1
+
+
+
+;直飲み触手複合搾乳
+@COM_ABLE903
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳吸い派生＃)
+	RETURN 0
+
+;吸引搾乳触手が必要
+SIF !ITEM:吸引搾乳触手
+	RETURN 0
+
+;巨乳以上
+SIF ABL:バストサイズ < BUSTSIZE_巨乳
+	RETURN 0
+RETURN 1
+
+
+
+;ペニス躾（呼び方変更）
+@COM_ABLE904
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃表示コマンド／ペニス＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN 0
+
+;恋慕以上　または乳牛
+SIF !(＃陥落状態／恋慕以上＃ || CFLAG:乳牛)
+	RETURN 0
+
+;そもそも口上表示ないなら呼ぶ必要ある？　→一応置いておく
+;Ｖ・Ａに挿入している場合使用可能
+SIF GETBIT(＃Ｐ使用／Ｖ挿入＃) || GETBIT(＃Ｐ使用／Ａ挿入＃)
+	RETURN 1
+
+
+
+;霊力注入
+@COM_ABLE905
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃表示コマンド／ペニス＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN 0
+SIF TEQUIP:0:コンドーム
+	RETURN 0
+SIF !ITEM:霊力注入
+	RETURN 0
+
+;あなた霊力が10000ないとダメ
+SIF BASE:0:霊力 < 10000
+	RETURN 0
+SIF GETBIT(＃Ｐ使用／Ｖ挿入＃) || GETBIT(＃Ｐ使用／Ａ挿入＃)
+	RETURN 1
+
+
+
+;魔力注入
+@COM_ABLE906
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃表示コマンド／ペニス＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN 0
+SIF TEQUIP:0:コンドーム
+	RETURN 0
+SIF !ITEM:魔力注入
+	RETURN 0
+
+;あなた魔力が10000ないとダメ
+SIF BASE:0:魔力 < 10000
+	RETURN 0
+SIF GETBIT(＃Ｐ使用／Ｖ挿入＃) || GETBIT(＃Ｐ使用／Ａ挿入＃)
+	RETURN 1
+
+
+
+;奉仕させる
+@COM_ABLE907
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃表示コマンド／奉仕＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN 0
+SIF !BASE:体力
+	RETURN 0
+SIF CFLAG:虚脱
+	RETURN 0
+
+;フェラチオ以外の場合拘束してるとダメ
+SIF TFLAG:拘束BIT && !TEQUIP:フェラチオ
+	RETURN 0
+
+;ペニス使用中
+SIF TFLAG:Ｐ使用BIT
+	RETURN 1
+
+
+
+;魔力吸い尽くし
+@COM_ABLE910
+SIF SKIP_COM_ABLE
+	RETURN 0
+
+SIF !GETBIT(＃コマンド有効／乳吸い派生＃)
+	RETURN 0
+
+;魔力母乳体質+魔力0+魔力定着してない
+SIF MARK:魔力母乳体質 && !BASE:魔力 && !CFLAG:魔力定着
+	RETURN 1
+
+
+
+
+
+;直接指定しないもろもろ　TRAINに書かないと口上表示で困る→ここに書かないと表示されて困る
+;TRAINNAME:SELECTCOMで指定してるのでTRAINがコメントアウトしてると困るんだった
+;ローション
+@COM_ABLE250
+
+;媚薬
+@COM_ABLE251
+
+;コンドーム
+@COM_ABLE252
+
+;精力剤
+@COM_ABLE253
+
+;Ｖローション
+@COM_ABLE290
+
+;Ａローション
+@COM_ABLE291
+
+;Ｂローション
+@COM_ABLE292
+
+;淫紋付与
+@COM_ABLE502
+
+;苦痛快楽変換
+@COM_ABLE503
+
+;ペニス変化
+@COM_ABLE504
+
+;時間圧縮
+@COM_ABLE505
+
+;媚薬粘液
+@COM_ABLE550
+
+;洗脳触手
+@COM_ABLE580
+
+;絶頂体力回復淫紋付与
+@COM_ABLE581
+
+;絶頂魔力回復淫紋付与
+@COM_ABLE582
+
+;コンドーム外し
+@COM_ABLE895
+
+
+
+

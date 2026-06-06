@@ -1,0 +1,118 @@
+﻿
+;マイルストーンでアンロックされているか判定する
+;ARGS→参照フラグ
+;ARGS:1→NGのときPRINTL,PRINTLC,ロック表示しない
+@MILESTONE_UNLOCK_CHECK(ARGS,ARGS:1)
+
+;全部強制オープンなら即RETURN1
+SIF FLAG:アンロック要素強制オープン
+	RETURN 1
+
+;入れ子
+CALL MILESTONE_UNLOCK_CHECK_PART(ARGS)
+
+;RETURN1ならここも
+SIF RESULT
+	RETURN 1
+
+;RETURN0ならここからロック表示
+SELECTCASE ARGS:1
+CASE "L"
+	CALL PRINTL_WORD_COLOR("　Needs Unlock","灰")
+CASE "LC"
+	CALL PRINTLC_WORD_COLOR("　Needs Unlock","灰")
+ENDSELECT
+
+
+
+@MILESTONE_UNLOCK_CHECK_PART(ARGS)
+
+;なるたけ「できるようになること」で呼ぼう
+SELECTCASE ARGS
+CASE "街へ移動"
+	SIF FLAG:ニンゲンのミルクを出荷
+		RETURN 1
+CASE "奴隷捕獲"
+	SIF FLAG:傭兵アルバイトに奴隷を捕まえてきてもらう
+		RETURN 1
+CASE "料理当番"
+	SIF FLAG:＜システムキッチン＞の購入
+		RETURN 1
+CASE "部屋割り"
+	SIF FLAG:スレイ以外の奴隷を【屈服】状態にする
+		RETURN 1
+CASE "掃除当番"
+	SIF FLAG:掃除Lv5以上の奴隷を屈服
+		RETURN 1
+CASE "大浴場掃除"
+	SIF FLAG:＜大浴場＞の購入
+		RETURN 1
+CASE "事業提携"
+	SIF FLAG:酪農業Lv5＋魔術＜個人用転移門＞
+		RETURN 1
+CASE "バッテリー経費削減"
+	SIF FLAG:＜小型霊力抽出装置＞で霊力を貯蔵する
+		RETURN 1
+CASE "調合"
+	SIF FLAG:【調合知識】所持した奴隷を屈服
+		RETURN 1
+CASE "禁断魔術"
+	SIF FLAG:軍事Lv5＋あなたの魔力100万以上＋魔術＜個人用転移門＞＋資金50000（旅費）
+		RETURN 1
+CASE "自分で戦う"
+	SIF FLAG:魔術＜テレポート＞習得
+		RETURN 1
+CASE "魔王軍研究所"
+	SIF FLAG:霊力を5万貯蔵する
+		RETURN 1
+CASE "不動産"
+	SIF FLAG:あなた・スレイの他に5匹の奴隷を牧場に迎える
+		RETURN 1
+CASE "納税"
+	SIF FLAG:１日の収入を納税対象以上にする
+		RETURN 1
+	
+CASE "アダルトショップ"
+	SIF FLAG:オカチ街Lv1
+		RETURN 1
+CASE "家具屋"
+	SIF FLAG:オカチ街Lv3
+		RETURN 1
+CASE "衣服拡張"
+	SIF FLAG:オカチ街Lv2
+		RETURN 1
+CASE "衣服レプリカ","アクセサリー"
+	SIF FLAG:オカチ街Lv4
+		RETURN 1
+CASE "アダルト衣装"
+	SIF FLAG:オカチ街Lv6
+		RETURN 1
+CASE "異世界衣服","再現困難衣服"
+	SIF FLAG:オカチ街Lv8
+		RETURN 1
+CASE "乳牛セット衣装"
+	SIF FLAG:酪農業Lv2
+		RETURN 1
+	
+CASE "魔界乳牛用設備"
+	SIF FLAG:酪農業Lv1
+		RETURN 1
+ENDSELECT
+
+
+
+;買い物用の一時関数込み
+@MILESTONE_UNLOCK_CHECK_CLOTHE_BUY(ARGS)
+
+CLOTHE_BUY_LIMIT = 0
+CALL MILESTONE_UNLOCK_CHECK(ARGS)
+SIF !RESULT
+	CLOTHE_BUY_LIMIT = 1
+
+
+
+
+
+
+
+

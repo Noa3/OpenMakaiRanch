@@ -1,0 +1,182 @@
+﻿;スケジュール一括変更
+@BULK_SCHEDULE
+#DIM GROUP
+#DIMS PLAN
+
+CALL MANYL(3)
+
+;一括変更先
+CALL SELECT_BULK_SCHEDULE_GROUP
+INPUT
+GROUP = RESULT
+SIF GROUP < 0 || GROUP >= 5
+	RETURN
+CALL MANYL(3)
+
+;ここから変更スケジュール選択
+CALL SELECT_BULK_SCHEDULE_PLAN(GROUP)
+INPUT
+
+;スケジュール入れ
+PLAN = %SET_SCHEDULE_PLAN(RESULT)%
+
+;空ならキャンセル
+SIF PLAN == ""
+	RETURN
+
+;GROUPに一致するキャラのスケジュール変更
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	CALL BULK_SCHEDULE_SET(GROUP,PLAN)
+NEXT
+CALL SCHEDULE_ADJUST
+
+
+
+;一括変更先
+@SELECT_BULK_SCHEDULE_GROUP
+
+PRINTL Mass change scheduling?
+PRINTL Please make individual adjustments afterwards to ensure the ranch remains operational)
+CALL HALFLINE
+PRINTL ＜Select Target＞
+PRINTLC [ 0] Everyone
+PRINTLC [ 1] Private Rooms and Dorms
+PRINTLC [ 2] Private Rooms
+PRINTLC [ 3] Dorms
+PRINTLC [ 4] Barn
+CALL MANYL(2)
+PRINTL [99] Cancel
+
+
+
+;スケジュールの選択
+;ARG→GROUP
+@SELECT_BULK_SCHEDULE_PLAN(ARG)
+
+PRINTFORML ＜Schedule＞ Subject to change：%BULK_GROUP(ARG)%
+PRINTLC [ 0] Free Time / Standby
+
+;仕事可能を選んだ場合
+IF ARG < 4 && ARG
+	PRINTLC [ 1] Handle Cattle
+	IF !FLAG:事務作業量
+		CALL PRINTLC_WORD_COLOR,@"　CLerical Work","灰"
+	ELSE
+		PRINTLC [ 2] Clerical Work
+	ENDIF
+	CALL MILESTONE_UNLOCK_CHECK("調合","LC")
+	SIF RESULT
+		PRINTLC [ 3] Mix Drugs
+	CALL MILESTONE_UNLOCK_CHECK("大浴場掃除","LC")
+	IF RESULT
+		IF FLAG:大浴場掃除完了度 >= 100
+			CALL PRINTLC_WORD_COLOR,@"　Large Bathhouse Cleaning","灰"
+		ELSE
+			PRINTLC [ 4] Clean Bath
+		ENDIF
+	ENDIF
+ENDIF
+PRINTLC [ 5] Milking（【Lactating】Slaves）
+PRINTL
+PRINTL [90] Reset All Back To Auto-Schedule
+PRINTL
+PRINTL [99] Cancel
+
+
+
+;変更グループ表示
+;ARG→GROUP
+@BULK_GROUP(ARG)
+#FUNCTIONS
+
+SELECTCASE ARG
+CASE 0
+	RETURNF "Everyone"
+CASE 1
+	RETURNF "Private Rooms and Dorms"
+CASE 2
+	RETURNF "Private Rooms"
+CASE 3
+	RETURNF "Dorms"
+CASE 4
+	RETURNF "Barn"
+ENDSELECT
+
+
+;変更スケジュール入れ
+;ARG→INPUT
+@SET_SCHEDULE_PLAN(ARG)
+#FUNCTIONS
+
+;ここで変更スケジュールを設定しておく
+SELECTCASE ARG
+CASE 0
+	RETURNF "自由"
+	;どうせ補正かけるのでこれでOK
+CASE 1
+	RETURNF "酪農"
+CASE 2
+	SIF !FLAG:事務作業量
+		RETURNF
+	RETURNF "事務"
+CASE 3
+	RETURNF "調剤"
+CASE 4
+	SIF FLAG:大浴場掃除完了度 >= 100
+		RETURNF
+	RETURNF "大浴場掃除"
+CASE 5
+	RETURNF "搾乳"
+
+;自動はあとで変更
+CASE 90
+	RETURNF "自動"
+CASEELSE
+	RETURNF
+ENDSELECT
+
+
+
+;選択スケジュールのセット
+;ARG→GROUP　ARGS→PLAN
+@BULK_SCHEDULE_SET(ARG,ARGS)
+
+{
+SIF GROUPMATCH(CSTR:スケジュール,"体内凌辱","解放準備","行動済み")
+|| CFLAG:追跡対象 || CFLAG:牛舎番号
+}
+	RETURN
+
+;条件に一致しない場合キャンセル
+SELECTCASE ARG
+CASE 0	;全員
+CASE 1
+	;個室あり＋入寮中従業員
+	SIF !EQUIP:自室
+		RETURN
+CASE 2
+	;個室あり従業員
+	SIF !EQUIP:個室
+		RETURN
+CASE 3
+	;入寮中従業員
+	SIF !CFLAG:寮番号
+		RETURN
+CASE 4
+	;家畜小屋の奴隷
+	SIF EQUIP:自室
+		RETURN
+ENDSELECT
+
+;搾乳の場合母乳体質でないなら飛ばす
+SIF ARGS == "搾乳" && !MARK:母乳体質
+	RETURN
+SIF CSTR:状態／あなたの子 == "成長中" && !GROUPMATCH(ARGS,"自由","自動")
+	RETURN
+CSTR:スケジュール = %ARGS%
+
+;自動の場合リセットする
+SIF CSTR:スケジュール == "自動"
+	CALL SCHEDULE_RESET_TARGET
+

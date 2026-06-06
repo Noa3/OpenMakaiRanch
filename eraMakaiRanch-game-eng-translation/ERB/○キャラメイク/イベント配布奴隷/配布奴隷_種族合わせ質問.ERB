@@ -1,0 +1,62 @@
+﻿
+;配布奴隷の種族合わせ
+@CHARA_MAKE_FIXED_SLAVE_TRIBE_QUESTION
+#DIM TRIBE_RATIO
+#DIM TRIBE_NUM
+
+TRIBE_RATIO = 0
+TRIBE_NUM = 0
+PRINTFORML %CALLNAME%の種族【%CSTR:種族%】はゲーム設定では出現割合0になっています。
+
+;それぞれの割合を比べて一番高い種族
+;同じだった場合は番号若いほう
+;FLAG:候補割合／一般種族／人間→2600
+FLAG_REF = 2600
+FOR LOCAL,2600,2620
+	IF TRIBE_RATIO < FLAG:LOCAL
+		TRIBE_NUM = LOCAL
+		TRIBE_RATIO = FLAG:LOCAL
+	ENDIF
+NEXT
+
+;STR:人間→6510
+TRIBE_NUM -= FLAG_REF
+TRIBE_NUM += 6510
+PRINTL
+PRINTFORML %CALLNAME%の種族を最も出現割合の高い【%STR:TRIBE_NUM%】に変更しますか？
+PRINTFORMLC [ 0] 【%CSTR:種族%】のまま
+PRINTFORML [ 1] 【%STR:TRIBE_NUM%】にする
+INPUT
+IF RESULT
+	CSTR:種族 = %STR:TRIBE_NUM%
+	CALL CHARA_MAKE_FIXED_SLAVE_TRIBE_TALENT
+ENDIF
+
+
+
+;種族での素質合わせ
+@CHARA_MAKE_FIXED_SLAVE_TRIBE_TALENT
+
+;この部分だけは全部合わせる
+TALENT:動物耳 = 0
+TALENT:尻尾 = 0
+TALENT:二本角 = 0
+SELECTCASE CSTR:種族
+CASE "犬耳族","猫耳族","兎耳族","狐耳族","狸耳族","妖狐"
+	TALENT:動物耳 = 1
+	TALENT:尻尾 = 1
+
+CASE "牛角族","羊角族"
+	TALENT:動物耳 = 1
+	TALENT:尻尾 = 1
+	TALENT:二本角 = 1
+
+CASE "竜人"
+	TALENT:尻尾 = 1
+	TALENT:二本角 = 1
+ENDSELECT
+PRINTW 【動物耳】【尻尾】【二本角】素質を変更後の種族に合わせました。
+
+
+
+

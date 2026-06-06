@@ -1,0 +1,149 @@
+﻿
+;基礎・プロフィールの変更手動入力
+;ARGS→CHANGE_STATE
+@SELF_CHARA_MAKE_PROFILE_INPUT_MANUAL(ARGS)
+
+SELECTCASE ARGS
+CASE "名前"
+	CALL CHARA_MAKE_SLAVE_SHUFFLE_NAME(1)
+	
+CASE "種族"
+	STR_REF = 1000
+	STR_MAX = 300
+	
+	;共通化
+	CALL CHANGE_STR_LINEUP("種族")
+	
+	;RESULTSが空欄以外で入力
+	;ドット絵などカテゴリ指定するものはキャンセル時RETURNが必要
+	SIF RESULTS == ""
+		RETURN
+	CSTR:種族 = %RESULTS%
+	CALL CATEGORY_TRIVE
+	
+CASE "上位種族"
+	INVERTBIT CFLAG:上位種族,0
+	
+CASE "ジョブ"
+	;長いので別関数
+	CALL SELF_CHARA_MAKE_JOB
+	
+CASE "身分"
+	STR_REF = 3200
+	STR_MAX = 50
+	CALL CHANGE_STR_LINEUP("身分",1)
+	
+	;空欄有効→キャンセルならそのまま
+	SIF !RESULT
+		CSTR:身分 = %RESULTS%
+	
+	;身分からの母乳価格補正確認
+	CALL SELF_CHARA_MAKE_MILK_PRICE
+	
+CASE "所属"
+	PRINTL Enter an affiliation.（○○ Knight Order, etc）
+	INPUTS
+	CSTR:所属 = %RESULTS%
+	
+CASE "服装"
+	CALL SELF_CHARA_MAKE_CLOTHE
+	
+CASE "魔界入りの目的"
+	PRINTL Select a purpose for entering Makai
+	PRINTLC [ 0] Searching for Makai Crystals
+	PRINTLC [ 1] Searching for Makai Plants
+	PRINTLC [ 2] For Fame
+	PRINTLC [ 3] To rescure someone
+	PRINTLC [ 4] Caught in a gate accident
+	PRINTLC [ 5] Makai subjugation
+	PRINTLC [ 6] Captured and close to disposal
+	PRINTLC [ 7] Captured and auctioned off
+	PRINTLC [ 8] Higher Race
+	PRINTLC [ 9] Celestial Race
+	PRINTLC [10] Transmigrated from another world
+	PRINTLC [99] （Cancel）
+	BINPUT
+	SIF RESULT == 99
+		RETURN
+	CFLAG:魔界入りの目的 = RESULT
+	
+CASE "身長"
+	PRINTL Enter a numerical value for height.（Units：mm）
+	INPUT
+	IF RESULT >= 0
+		CFLAG:身長 = RESULT
+		CALL HEIGHT_CSTR_CALC(1)
+	ENDIF
+	
+CASE "体型"
+	STR_REF = 50
+	STR_MAX = 50
+	CALL CHANGE_STR_LINEUP("体型")
+	SIF RESULTS != ""
+		CSTR:体型 = %RESULTS%
+	
+CASE "肌の色"
+	STR_REF = 100
+	STR_MAX = 50
+	CALL CHANGE_STR_LINEUP("肌の色")
+	SIF RESULTS != ""
+		CSTR:肌の色 = %RESULTS%
+	CALL CATEGORY_SKIN_COLOR
+	
+CASE "バストサイズ"
+	CALL INPUT_BUST
+	IF RESULT >= 0
+		ABL:バストサイズ = RESULT
+		CALL BUSTSIZE_TALENT_SET
+		SIF ABL:バストサイズ < BUSTSIZE_巨乳
+			TALENT:極上乳圧 = 0
+	ENDIF
+	
+CASE "性経験"
+	;自動調整の関係で共通化できなさそう
+	STR_REF = 6590
+	STR_MAX = 10
+	PRINTL Select a level of sexual experience.
+	PRINTL 手動入力・キャンセル以外の場合、選択した性経験に合わせて処女、経験人数などが調整されます。
+	FOR LOCAL,0,STR_MAX
+		SIF STR:(STR_REF +LOCAL) != ""
+			PRINTFORMLC [{LOCAL,3}] %SEXP_ENG(STR:(STR_REF +LOCAL))%
+	NEXT
+	CALL INPUTBUTTON
+	BINPUT
+	SELECTCASE RESULT
+	CASE 901
+		PRINTL Enter a sexual experience level.（処女などの調整は入りません）
+		INPUTS
+		SIF RESULTS != ""
+			CSTR:性経験 = %RESULTS%
+	CASE 999
+	CASEELSE
+		CSTR:性経験 = %STR:(STR_REF +RESULT)%
+		
+		;性経験リセット+再設定
+		CALL SLAVE_VARGIN_RESETTING
+	ENDSELECT
+
+
+;2ページ目→途中で終わってるのでここに来ない
+
+;3ページ目
+CASE "性格"
+	STR_REF = 3000
+	STR_MAX = 100
+	CALL CHANGE_STR_LINEUP("性格")
+	SIF RESULTS != ""
+		CSTR:性格 = %RESULTS%
+	CALL CATEGORY_PERSONALITY
+
+CASE "口上"
+	CALL KOJO_SETTING
+	
+;変更用関数に飛ばすようにした
+CASE "一人称","陥落前のあなた呼び方","陥落後のあなた呼び方","ペニス呼び方","膣呼び方","アナル呼び方"
+	CALL CHANGE_PERSONAL_CALL(ARGS)
+ENDSELECT
+
+
+

@@ -1,0 +1,125 @@
+﻿
+;ペットショップPAGE1
+@ITEM_SHOP_PET_DETAIL_DISPOSABLE
+
+;アイテム名・価格・所持数
+PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:SELECT_ITEM)% 》%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%G Owned {ITEM:SELECT_ITEM,2} 
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "謎肉ジャーキー"
+	PRINTL ＜Consumable＞＜Snack＞
+	PRINTFORML Favorite food for %ITEMS_ENG("オルトロス")%
+	PRINTL Increases familiarity and health. Also increases weight slightly.
+	PRINTL
+	PRINTL A food made from smoked meat whose manufacturing method is a corporate secret.
+	PRINTL It is guaranteed through audits that no ethically questionable materials are used, and it is safe for any race to consume.
+	PRINTL A favorite food of both large and small demon dogs in the Demon Realm, perfect for rewards or snacks.
+	PRINTL Be careful not to overfeed as it is highly nutritious and can cause slight weight gain.
+
+CASE "ちゅる～ん"
+	PRINTL ＜Consumable＞＜Snack＞
+	PRINTL Favorite food: Koyaneko
+	PRINTL Increases familiarity and health. Also increases weight considerably.
+	PRINTL
+	PRINTL A jelly-like snack. It seems to be made with various fruits and herbs.
+	PRINTL A favorite food of both large and small demon cats in the Demon Realm, perfect for rewards or snacks.
+	PRINTL For some cats, it might be so beloved that they might pounce on it if they see it.
+	PRINTL Be careful not to overfeed as it is highly nutritious and can cause rapid weight gain.
+
+CASE "煎り魔界ひまわりの種"
+	PRINTL ＜Consumable＞＜Snack＞
+	PRINTFORML Favorite food for %ITEMS_ENG("魔界ハムスター")%
+	PRINTL Increases familiarity and health. Also increases weight considerably.
+	PRINTL
+	PRINTL Roasted seeds from a flower that grows to about 30 meters tall when fully grown.
+	PRINTL Since the seeds are as large as the flowers, only a few races can consume them, and they are cultivated in the Demon Realm to be pressed into oil.
+	PRINTL A favorite food of the Demon Realm hamsters, perfect for rewards or snacks.
+	PRINTL Be careful not to overfeed as it is highly nutritious and can cause rapid weight gain.
+
+CASE "ガッツニンジン"
+	PRINTL ＜Consumable＞＜Snack＞
+	PRINTFORML Favorite food for %ITEMS_ENG("堕天馬")%
+	PRINTL Increases familiarity and health. Also increases weight slightly.
+	PRINTL
+	PRINTL A carrot that is said to increase stamina when cooked and eaten.
+	PRINTL However, it is very tough due to its high amount of guts, and the people of the Demon Realm rarely cook it.
+	PRINTL A favorite food of the Demon Realm horses, perfect for rewards or snacks.
+	PRINTL Be careful not to overfeed as it is highly nutritious and can cause some weight gain.
+
+CASE "魔界芋"
+	PRINTL ＜Consumable＞＜Snack＞
+	PRINTL Favorite food: Demon Realm Sheep
+	PRINTL Increases familiarity and health. Also increases weight slightly.
+	PRINTL
+	PRINTL A type of yam that has grown naturally in the Demon Realm for centuries.
+	PRINTL Because it has not been genetically modified, it is not considered very tasty by most races, but
+	PRINTL it is a favorite food of the Demon Realm sheep, perfect for rewards or snacks.
+	PRINTL Be careful not to overfeed as it is highly nutritious and can cause slight weight gain.
+
+CASE "いい感じの棒"
+	PRINTL ＜Pet Toy＞＜Breaks When Used＞
+	PRINTFORML Toy for %ITEMS_ENG("オルトロス")%
+	PRINTL
+	PRINTL A wooden stick with an indescribably good shape. To be honest, it's just scrap wood.
+	PRINTL It's perfect as a toy for the demon dog.
+	PRINTL It will definitely break after playing with it.
+
+CASE "猫じゃらし"
+	PRINTL ＜Pet Toy＞＜Sometimes Breaks When Used＞
+	PRINTL Plaything: Koyaneko
+	PRINTL
+	PRINTL A toy with a fluffy item attached to the end of a stick.
+	PRINTL As the name suggests, it is very effective at catching the attention of cats.
+	PRINTFORML After playing, it has a {ANIMAL_GOODS_BREAK}\% chance of breaking.
+
+CASE "フリスビー"
+	PRINTL ＜Pet Toy＞＜Sometimes Breaks When Used＞
+	PRINTL Toy for all pets (except small cats)
+	PRINTL
+	PRINTL A flat, disc-shaped object. Mainly used to throw and have pets fetch it.
+	PRINTL It flies far with a light throw, so even large pets are satisfied with it.
+	PRINTFORML After playing, it has a {ANIMAL_GOODS_BREAK}\% chance of breaking.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL Most pets love it, but small cats apparently aren't very interested.
+		PRINTL The prevailing theory is that it's simply too much effort for them to fetch it.
+	ENDIF
+
+
+
+;拡張予定→買える（飼える）ようになったら分ける
+CASE "フェンポメ"
+	PRINTL ＜Pet＞
+	PRINTL
+	PRINTL A small wolf with short legs that is a common pet in the  Realm. Essentially a dog.
+	PRINTL Its formal name is “Fenrir Pomeranian.” It is almost never called by this name.
+	PRINTL Makai Realm dogs, like earth dogs, are very affectionate towards their owners and very friendly.
+	PRINTL Unlike large dogs, they remain small even when they grow, so they are easy to keep even in homes without much space.
+	PRINTL
+	PRINTL The “Fenrir” is a very strong wolf breed, comparable to magical beasts, but in years where they couldn't catch prey,
+	PRINTL a few individuals shrank in size to conserve energy, and through eating their prey in their shrunken form,
+	PRINTL they realized they could satisfy their hunger more efficiently.
+	PRINTL Over time, they forgot how to return to their original size.
+	PRINTL
+	PRINTL However, they became so popular as pets due to their cute appearance,
+	PRINTL That the Makai Realm inhabitants didn't mind their size anymore.
+	PRINTL Nowadays, the Fenpom have completely forgotten that their ancestors were once as strong as magical beasts.
+	PRINTL
+	PRINTL They are small, but they are far from calm. When they find their owner, they charge at them happily with considerable force,
+	PRINTL and they run around at nearly the same speed as large dogs, so they require a lot of energy from their owners.
+	PRINTL
+	PRINTL No need for an empty pet house.
+
+CASE "魔界猫"
+	PRINTL ＜Pet＞
+	PRINTL
+	PRINTL A common pet cat in the Demon Realm.
+	PRINTL Demon cats, like earth cats, tend to prioritize themselves over their owners.
+	PRINTL
+	PRINTL When you hold them in your hands or pet their bellies, they stretch out a lot.
+	PRINTL Due to this habit, there's a “Cat Stretching Tournament” in some circles, but
+	PRINTL whether or not the cat stretches during the event depends entirely on the cat's mood, so in 9 out of 10 cases, it turns into just an event where the cat is cute.
+	PRINTL
+	PRINTL No need for an empty pet house.
+	
+ENDSELECT
+

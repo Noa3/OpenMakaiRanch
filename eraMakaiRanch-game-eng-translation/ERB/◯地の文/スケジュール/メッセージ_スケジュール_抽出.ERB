@@ -1,0 +1,54 @@
+﻿
+;抽出待機の地の文
+@STANDBY_SLAVE_DRAIN_MESSAGE
+
+;基本あなたが動かしに来るよ
+;乳首を見られたことがないなら口上
+SIF !EXP:乳首見られ
+	CALL KOJO_PRINT("調教コマンド","脱衣","あなた")
+CALL KOJO_PRINT("スケジュール","抽出","実行前",KOJO_TYPE)
+
+;抽出継続の場合→だいぶあっさりでいいか
+IF CFLAG:抽出継続
+	PRINTFORML %CALLNAME% restarts the spirit extraction device to which they are bound...
+	RETURN
+ENDIF
+
+IF CFLAG:崩壊
+	PRINTFORML %CALLNAME%, who is exhausted and immobile, is being bound to the spirit extraction device...
+ELSEIF CFLAG:乳牛
+	PRINTFORML Even while being bound to the spirit extraction device, %CALLNAME% cannot suppress their arousal.
+	PRINTFORML It seems that even the absorption of power has become a source of pleasure for %CALLNAME%...
+ELSEIF CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+	PRINTFORML %CALLNAME% is happily being bound to the spirit extraction device...
+ELSEIF ＃陥落状態／拒絶以上＃
+	PRINTFORML %CALLNAME% is quietly being bound to the spirit extraction device...
+ELSE
+	PRINTFORML %CALLNAME% is resisting, but restraints from the spirit extraction device are used to immobilize them...
+ENDIF
+
+
+
+;抽出開始
+;ARGS→LACTATION_TOOL
+@SLAVE_DRAIN_RUN_MESSAGE(ARGS)
+
+SIF CFLAG:抽出継続
+	RETURN
+PRINTFORML When the device is activated, it scans the immobile body of %CALLNAME%.
+PRINTFORML As the color of the lamp changes, several mechanical arms wriggle out and extend,
+PRINTFORML grasping and securing %CALLNAME%'s %SLANG_B()%, with a milking machine attaching to the tip...
+PRINTFORM From the %SLANG_B()% being kneaded by the arms, %SLANG_MILK()% flows out...
+
+;読みにくかった
+IF BASE:霊力 && (BASE:魔力 && MARK:魔力母乳体質)
+	PRINT Spirit and Magic
+ELSEIF BASE:霊力
+	PRINT Spirit
+ELSEIF BASE:魔力 && MARK:魔力母乳体質
+	PRINT Magic
+ENDIF
+PRINTL is being extracted...
+PRINTW
+
+

@@ -1,0 +1,22 @@
+﻿
+;衣服変更実行
+@SELF_CHARA_MAKE_CHANGE_CLOTHE_ENTER
+
+;持っている衣服、プレゼントで装備適用の共通関数へ
+;とりあえず色柄変更処理に飛ばす
+CALL EQUIP_DETAIL_CHANGE
+
+;RETURN 1してきたらキャンセル
+SIF RESULT
+	RETURN
+
+;キャラ所持数を追加
+SETBIT EQUIP:SELECT_ITEM,0
+
+;キャラメイクでは干渉装備は聞かない
+CALL WEAR_CHARA_CLOTHE
+
+;着せた衣服名は出さない
+
+
+

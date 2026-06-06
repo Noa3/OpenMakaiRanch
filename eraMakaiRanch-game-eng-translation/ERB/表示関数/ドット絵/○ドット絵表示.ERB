@@ -1,0 +1,81 @@
+﻿
+;ドット絵表示用
+;TARGET指定で来てね
+;なんかよくわからんけど{}の1行判定うまくDIMSに入ってくれなくて行が長い
+;ARG→1だと着替え画面用調整
+@PRINT_PORTRAIT(ARG)
+
+;入れ子する
+CALL PRINT_PORTRAIT_COMMON(ARG)
+
+;表示されたら改行しない
+SIF !EXIST_IMAGE
+	PRINTL
+
+
+
+;ARG→1だと着替え画面用調整
+@PRINT_PORTRAIT_COMMON(ARG)
+#DIMS PRT_SUM
+
+EXIST_IMAGE = 0
+
+;個別非表示も可能　野郎はいらない
+SIF !FLAG:ドット絵／表示 || CFLAG:表示OFF／ドット絵 || TALENT:オトコ
+	RETURN
+
+;ここでPRTを全部一旦リセットしてるので空文字列なら上書きする必要ないよ
+;広域変数に移してファイル分けた
+VARSET PRT
+
+;サイズ調整
+CALL PRINT_PORTRAIT_SIZE(ARG)
+
+;子供／大人の位置調整
+CALL PRINT_PORTRAIT_HEIGHT_FIX
+
+;それぞれ反映ドット絵
+CALL PRINT_PORTRAIT_BUSTSIZE
+CALL PRINT_PORTRAIT_HAIR
+CALL PRINT_PORTRAIT_FACE
+CALL PRINT_PORTRAIT_TRIBE
+CALL PRINT_PORTRAIT_CLOTHE
+CALL PRINT_PORTRAIT_LINGERIE_BRA
+CALL PRINT_PORTRAIT_LINGERIE_SHORTS
+CALL PRINT_PORTRAIT_ACCESSORY
+
+;背景
+;背景OFFフラグがあれば飛ばす
+SIF !CFLAG:ドット絵設定／背景OFF
+	PRT:7 = <nonbutton pos='%PY_2_2%'><img src='背景' height='%PY_3%' ypos = '%PY_1_2%'></nonbutton>
+
+;最終表示部分
+;上半脱ぎ表示形式フラグで変更
+SELECTCASE FLAG:ドット絵／上半脱ぎ表示形式
+CASE 0
+	;衣服あれば着衣
+	PRT_SUM = <nobr>%PRT:7%%PRT:5%%PRT:3%%PRT:0%%PRT:1%%PRT:4%%PRT:2%%PRT:6%%PRT:8%%PRT:9%%PRT:16%%PRT:17%%PRT:13%%PRT:14%%PRT:10%%PRT:11%%PRT:12%%PRT:18%%PRT:15%
+CASE 1
+	;上半脱ぎ・胸破けなら脱衣
+	IF GETBIT(＃半脱ぎ／衣服上＃) || ＃着用衣服／胸破け＃
+		PRT_SUM = <nobr>%PRT:7%%PRT:5%%PRT:3%%PRT:0%%PRT:1%%PRT:4%%PRT:2%%PRT:6%%PRT:8%%PRT:9%%PRT:16%%PRT:17%%PRT:13%%PRT:14%%PRT:11%%PRT:12%%PRT:18%%PRT:15%
+	ELSE
+		PRT_SUM = <nobr>%PRT:7%%PRT:5%%PRT:3%%PRT:0%%PRT:1%%PRT:4%%PRT:2%%PRT:6%%PRT:8%%PRT:9%%PRT:16%%PRT:17%%PRT:13%%PRT:14%%PRT:10%%PRT:11%%PRT:12%%PRT:18%%PRT:15%
+	ENDIF
+CASE 2
+	;上半脱ぎならおっぱいレイヤーを服の上に表示
+	;14→10→1→13
+	IF GETBIT(＃半脱ぎ／衣服上＃) || ＃着用衣服／胸破け＃
+		PRT_SUM = <nobr>%PRT:7%%PRT:5%%PRT:3%%PRT:0%%PRT:4%%PRT:2%%PRT:6%%PRT:8%%PRT:9%%PRT:16%%PRT:17%%PRT:14%%PRT:10%%PRT:1%%PRT:13%%PRT:11%%PRT:12%%PRT:18%%PRT:15%
+	ELSE
+		PRT_SUM = <nobr>%PRT:7%%PRT:5%%PRT:3%%PRT:0%%PRT:1%%PRT:4%%PRT:2%%PRT:6%%PRT:8%%PRT:9%%PRT:16%%PRT:17%%PRT:13%%PRT:14%%PRT:10%%PRT:11%%PRT:12%%PRT:18%%PRT:15%
+	ENDIF
+ENDSELECT
+HTML_PRINT PRT_SUM
+
+;画像を表示したら画像表示済みフラグを1
+EXIST_IMAGE = 1
+
+
+
+

@@ -1,0 +1,45 @@
+﻿
+;愛液の増加
+@WET_PLUS
+#DIM WET,10
+
+;淫乱部位なら倍
+WET:0 = SOURCE:Ａ快楽 *(MARK:淫尻 +1)
+WET:0 /= 20
+;絶頂回数
+WET:1 = NOWEX:Ａ絶頂 *800 *(MARK:淫尻 +1)
+
+WET:2 = SOURCE:Ｂ快楽 *(MARK:淫乳 +1)
+WET:2 /= 20
+WET:3 = NOWEX:Ｂ絶頂 *800 *(MARK:淫乳 +1)
+
+WET:4 = SOURCE:Ｎ快楽 *(MARK:淫乳 +1)
+WET:4 /= 20
+WET:5 = NOWEX:Ｎ絶頂 *800 *(MARK:淫乳 +1)
+
+WET:6 = SOURCE:Ｃ快楽 *(MARK:淫核 +1)
+WET:6 /= 20
+WET:7 = NOWEX:Ｃ絶頂 *800 *(MARK:淫核 +1)
+
+;Ｖは多い
+WET:8 = SOURCE:Ｖ快楽 *(MARK:淫壺 +1)
+WET:8 /= 10
+WET:9 = NOWEX:Ｖ絶頂 *800 *(MARK:淫壺 +1)
+
+FOR LOCAL,0,10
+	SOURCE:愛液 += WET:LOCAL
+NEXT
+
+;5000以上なら超えた分を1/5
+IF SOURCE:愛液 > 5000
+	FIX = (SOURCE:愛液 -5000) /5
+	SOURCE:愛液 = 5000 +FIX
+ENDIF
+
+;TALENT処理
+IF TALENT:濡れやすい
+	TIMES SOURCE:愛液,1.50
+ELSEIF TALENT:濡れにくい
+	TIMES SOURCE:愛液,0.50
+ENDIF
+

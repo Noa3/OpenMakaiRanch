@@ -1,0 +1,183 @@
+﻿
+;あなたとニンゲンの戦闘
+@MASTER_BATTLE_CONFIRM
+#DIM CHR
+
+;テレポートを使える、行動済みでない、追跡者がいない
+SIF !ITEM:テレポート || BASE:0:魔力 < MAGIC_USE_MP:GETNUM(ITEM,"テレポート") || CSTR:0:スケジュール == "行動済み" || CFLAG:追跡者
+	RETURN
+SAVE_TARGET = TARGET
+CALL SELECT_BATTLE_CHARACTER
+
+;キャンセルを選択
+SIF RESULT == -1
+	RETURN
+TARGET = RESULT
+CHR = RESULT
+
+CALL MANYL(5)
+PRINTFORML %CALLNAME%が直接戦闘に向かいますか？
+PRINTL
+PRINTFORML %CALLNAME%　Lv{MAXBASE:レベル}
+PRINTFORML 　霊力：%VALUE_DIGIT(BASE:霊力)%EP　魔力：%VALUE_DIGIT(BASE:魔力)%MP　戦闘適性：{BASE:戦闘適性}\%
+
+;戦闘可能キャラは@SELECT_BATTLE_CHARACTERで戦闘力・戦闘適性を計算している
+PRINTFORM 　戦闘力：%VALUE_DIGIT(BASE:戦闘力)%
+SIF TARGET != 0
+	PRINTFORM ／%VALUE_DIGIT(MAXBASE:戦闘力)%
+PRINTL 
+
+;戦闘適性によっては警告出す
+IF !TARGET
+	IF !EXP:実行回数／戦闘訓練
+		CALL PRINTL_WORD_COLOR("　…特に戦闘訓練をしていないので、上手く力を発揮できません。","黄")
+		PRINTL 
+	ELSEIF EXP:実行回数／戦闘訓練 < 6
+		CALL PRINTL_WORD_COLOR("　…あまり戦闘訓練をしていないので、上手く力を発揮できません。","黄")
+		PRINTL 
+	ELSEIF BASE:戦闘適性 < 30
+		CALL PRINTL_WORD_COLOR("　…戦闘訓練をサボり気味なので、上手く力を発揮できません。","黄")
+		PRINTL 
+	ENDIF
+ENDIF
+PRINTL 
+TARGET = SAVE_TARGET
+PRINTFORML %CALLNAME%
+CALL PRINT_TARGET_BATTLE_STATUS
+DRAWLINE
+PRINTLC [ 0] 戦闘に向かう
+PRINTLC [ 1] Cancel
+INPUT
+SIF !RESULT
+	CALL MASTER_BATTLE_MAIN_BEFORE(CHR)
+
+
+
+;戦闘可能な味方キャラを抽出・選択する
+@SELECT_BATTLE_CHARACTER
+#DIMS BP
+#DIMS BPMAX
+
+CLEARLINE LINECOUNT
+PRINTFORML 捕獲へ向かうキャラを選択してください。
+
+;あなたを選択可にする、あなたを常に表示
+DRAWLINE
+TARGET = 0
+CALL CALC_BATTLE_POWER
+BP = %VALUE_DIGIT(BASE:戦闘力)%
+BPMAX = %VALUE_DIGIT(MAXBASE:戦闘力)%
+
+;あなたが戦闘できない状態のとき
+IF !BASE:戦闘力
+	SETCOLORBYNAME GRAY
+	PRINTFORM %CALLNAME_DIGIT(6)%　　　　
+	PRINTFORML HP:{BASE:体力,4}/{MAXBASE:体力,4}　戦闘力:%BP,10%/%BPMAX,10%　戦闘適性:{BASE:戦闘適性,3}\%　(戦闘不能)
+	RESETCOLOR
+ELSE
+	PRINTFORM [{TARGET +100}] %CALLNAME_DIGIT()%　　　　
+	PRINTFORML HP:{BASE:体力,4}/{MAXBASE:体力,4}　戦闘力:%BP,10%/%BPMAX,10%　戦闘適性:{BASE:戦闘適性,3}\%
+ENDIF
+PRINTL
+
+;魔力不足の場合は奴隷を送れない
+IF BASE:0:魔力 < MAGIC_USE_MP:GETNUM(ITEM,"テレポート") *2
+	CALL PRINTL_WORD_COLOR("　奴隷を転送する魔力不足","灰")
+ELSE
+	FOR TARGET_COUNT,1,CHARANUM
+		TARGET = TARGET_COUNT
+		CALL BATTLE_CHARACTER_CHECK
+	NEXT
+ENDIF
+DRAWLINE
+PRINTLC [ 98] ヒント
+PRINTLC 　
+PRINTL [ 99] Cancel
+INPUT
+SELECTCASE RESULT
+CASE 98
+	CALL BROWSE_HINT("プレイヤー戦闘")
+CASE 99
+	RETURN -1
+CASEELSE
+	SIF RESULT < 100 || RESULT > 100 +CHARANUM
+		RESTART
+	TARGET = RESULT -100
+	{
+	SIF CFLAG:追跡対象 || TARGET == SAVE_TARGET || CFLAG:牛舎番号 
+	|| CSTR:居場所 == "体内" || !BASE:戦闘力 || !BASE:戦闘適性
+	}
+		RESTART
+	BP_BEFORE = BASE:戦闘力
+	RETURN TARGET
+ENDSELECT
+RESTART
+
+
+
+;戦闘可能チェック
+@BATTLE_CHARACTER_CHECK
+#DIMS BP
+#DIMS BPMAX
+
+;隷属していない場合はダメ判定にした
+SIF !＃陥落状態／隷属＃
+	RETURN
+
+;戦闘力と戦闘適性を計算して更新
+CALL CALC_BATTLE_POWER
+BP = %VALUE_DIGIT(BASE:戦闘力)%
+BPMAX = %VALUE_DIGIT(MAXBASE:戦闘力)%
+
+;出撃不可の条件があるとグレー
+{
+IF CFLAG:牛舎番号 || CSTR:居場所 == "体内" || 
+!CFLAG:調教可能 || !BASE:戦闘力 || CFLAG:家畜 || CFLAG:虚脱
+}
+	SETCOLORBYNAME GRAY
+	PRINTFORM %CALLNAME_DIGIT(6)%
+ELSE
+	PRINTFORM [{TARGET +100}] %CALLNAME_DIGIT()%
+ENDIF
+CALL PRINT_POST_C
+PRINTFORM HP:{BASE:体力,4}/{MAXBASE:体力,4}　戦闘力:%BP,10%/%BPMAX,10%　戦闘適性:{BASE:戦闘適性,3}\%
+
+;出撃不可なら理由
+IF CFLAG:家畜
+	PRINT [家畜]
+ELSEIF CSTR:居場所 == "体内"
+	PRINTFORM [%CALLNAME:0%の体内]
+ELSEIF CFLAG:牛舎番号
+	PRINT [牛舎内]
+ELSEIF CFLAG:虚脱 || !CFLAG:調教可能 || !BASE:戦闘力
+	PRINT [戦闘不可]
+ENDIF
+PRINTL
+RESETCOLOR
+
+
+
+;戦闘力計算
+@CALC_BATTLE_POWER
+#DIM BP_CALC
+
+;MAXは100%計算
+MAXBASE:戦闘力 = MAXBASE:霊力 +MAXBASE:魔力
+
+IF CFLAG:非戦闘職
+	SIF !BASE:戦闘適性
+		BASE:戦闘適性 = 1
+ELSEIF BASE:戦闘適性 < 80 && TARGET
+	BASE:戦闘適性 = 80
+ENDIF
+
+;現在戦闘力。膨大魔力の条件満たすと魔力1/10で計算(ドレインや注ぎ込みなどで変動するので現在値で判断)
+IF BASE:霊力 * 10 <= BASE:魔力 && BASE:レベル < 30
+	BASE:戦闘力 = (BASE:霊力 + BASE:魔力 / 10)
+ELSE
+	BASE:戦闘力 = (BASE:霊力 + BASE:魔力)
+ENDIF
+BP_CALC = BASE:体力 * 100 / MAXBASE:体力
+BASE:戦闘力 = BASE:戦闘力 * BP_CALC / 100
+BASE:戦闘力 = BASE:戦闘力 * BASE:戦闘適性 / 100
+

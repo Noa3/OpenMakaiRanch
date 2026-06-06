@@ -1,0 +1,202 @@
+﻿
+;傭兵を雇う
+@EMPLOYMENT_MERCENARY
+
+SIF CFLAG:追跡者
+	RETURN
+CALL ITEM_SHOP_BUDGET_MONEY_JUDGE
+CLEARLINE LINECOUNT
+PRINTFORML Select a mercenaries to hire.
+CALL SHOW_MONEY
+CALL SHOW_BUDGET(1)
+DRAWLINE
+
+;FLAG:傭兵バイト標的ID／ゴブリン→440
+;STR:ゴブリン軍団→3820
+FLAG_REF = 440 -1
+STR_REF = 3820 -1
+FOR LOCAL,1,5
+	SIF FLAGNAME:(FLAG_REF +LOCAL) == ""
+		BREAK
+	IF !FLAG:(FLAG_REF +LOCAL)
+		;ゴブリンと他で変化
+		IF LOCAL == 1
+			PRINTFORML [{LOCAL,2}] %MERCS_EN(STR:(STR_REF +LOCAL)),19%：%VALUE_DIGIT(MERCENARY_REWORD:LOCAL)%G／Troop
+		ELSE
+			PRINTFORML [{LOCAL,2}] %MERCS_EN(STR:(STR_REF +LOCAL)),19%：%VALUE_DIGIT(MERCENARY_REWORD:LOCAL)%G／Merc
+		ENDIF
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"%MERCS_EN(STR:(STR_REF +LOCAL)),12% are pursuing another target","灰"
+	ENDIF
+NEXT
+CALL PRINTL_ALIGN(-5)
+PRINTFORML [9] Reset button for when you can't select due to a bug
+DRAWLINE
+CALL RIGHT_RETURN_BUTTON(1)
+BINPUT
+INPUT_NUM = RESULT
+PRINTL
+SELECTCASE INPUT_NUM
+CASE 0 TO 4
+	COST = MERCENARY_REWORD:INPUT_NUM
+	CALL MERCENARY_TRIBE(INPUT_NUM)
+	CALL MERCENARY_BATTLE_DATA(INPUT_NUM)
+	
+	;ここだけGOTO必要
+	$RETURN_BUDGET
+	CALL MERCENARY_COST(INPUT_NUM)
+	BINPUT
+	PRINTL
+	IF RESULT >= 1 && RESULT <= 3
+		IF FLAG:買い物／経費計上
+			MONEY:経費計上 += (COST *RESULT)
+		ELSE
+			MONEY -= (COST *RESULT)
+		ENDIF
+		CFLAG:追跡者 = INPUT_NUM
+		CFLAG:追跡人数 = RESULT
+		FLAG:(FLAG_REF +INPUT_NUM) = CFLAG:ID
+		PRINTFORMW You spend %VALUE_DIGIT(COST *RESULT)%G, hiring {RESULT} %MERCS_EN(STR:(STR_REF +INPUT_NUM))% %GROUP_CALL%\@ RESULT == 1 ?  # s \@.
+	ELSEIF RESULT == 90
+		FLAG:買い物／経費計上 = 0
+		GOTO RETURN_BUDGET
+	ENDIF
+CASE 9
+	PRINTL 
+	PRINTL 依頼状況を全てリセットします
+	PRINTL 正常に動いている追跡中や輸送中の傭兵がいる場合はその依頼が終わってから実行してください
+	PRINTL 
+	CALL ASK_YN
+	IF !RESULT
+		FLAG_REF = 440
+		FLAG_MAX = 4
+		FOR LOCAL,FLAG_REF,FLAG_REF +FLAG_MAX
+			FINDCHARA CFLAG:ID,FLAG:LOCAL
+			IF RESULT > 0
+				FLAG:LOCAL = 0
+				CFLAG:RESULT:追跡者 = 0
+				CFLAG:RESULT:追跡人数 = 0
+			ENDIF
+		NEXT
+		PRINTW 依頼状況を全てリセットしました
+	ENDIF
+CASE 98
+	CALL BROWSE_HINT("傭兵アルバイト雇用")
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;戦闘能力
+;ARG→INPUT
+@MERCENARY_BATTLE_DATA(ARG)
+
+;TFLAGを持ってくる
+;追跡者→ARG,人数は1でOK
+CALL CHASE_SLAVE_MONSTER_PALAM_SET(ARG,1)
+
+;ゴブリンと他で部隊／匹
+IF ARG == 1
+	GROUP_CALL = Troop
+ELSE
+	GROUP_CALL = Merc
+ENDIF
+PRINTL
+PRINTFORML Contract Fee per %GROUP_CALL%：%VALUE_DIGIT(COST)%G
+{
+PRINTFORML Combat Strength：%VALUE_DIGIT(TFLAG:バイト戦闘力／最大値)%（Base %VALUE_DIGIT(MERCENARY_POWER:ARG)%
++ Makai Level Bonus %VALUE_DIGIT(MERCENARY_POWER_LVFIX:ARG *FLAG:魔界レベル／軍事)%）
+}
+{
+PRINTFORML Offense：%VALUE_DIGIT(TFLAG:バイト攻撃力)%（Base %VALUE_DIGIT(MERCENARY_ATTACK:ARG)%
++ Makai Level Bonus %VALUE_DIGIT(MERCENARY_ATTACK_LVFIX:ARG *FLAG:魔界レベル／軍事)%）　　Attack Count：{MERCENARY_ATTACK_NUM:ARG}
+}
+
+SELECTCASE ARG
+CASE 1
+	;ゴブリンくんたちは多いので部隊数で索敵能力低下（不意打ち確率低下）
+	PRINTFORML Tracking：{MERCENARY_SEARCH:ARG}-5× number of troops
+CASE 2
+	;ルーキーくんたちはLv6ごとに攻撃回数+1入れる・Lvごとに索敵値+10
+	PRINTFORML Tracking：{MERCENARY_SEARCH:ARG}　（Rookies only）Attack Count +1 for every {MERCENARY_ATTACK_NUM_PLUS} Military Level・Tracking increased by {MERCENARY_SEARCH_FIX} for every Military Level
+CASEELSE
+	PRINTFORML Tracking：{MERCENARY_SEARCH:ARG}
+ENDSELECT
+PRINTL
+
+
+
+;雇用費用
+;ARG→INPUT
+@MERCENARY_COST(ARG)
+#DIM BUDGET_OVER
+
+IF FLAG:買い物／経費計上
+	PRINT ＜Expenses＞
+	CALL SHOW_BUDGET(1)
+ELSE
+	PRINT ＜Funds＞
+	CALL SHOW_MONEY(1)
+ENDIF
+BUDGET_OVER = 0
+FOR LOCAL,1,4
+	;経費計上の時超過しない
+	IF FLAG:買い物／経費計上 && COST *LOCAL > USE_MONEY
+		CALL PRINTL_WORD_COLOR("Can not exceed Expense limit when hiring.","灰")
+		BUDGET_OVER ++
+		BREAK
+	ELSEIF !FLAG:買い物／経費計上 && COST *LOCAL > MONEY
+		CALL PRINTL_WORD_COLOR("Not enough funds","灰")
+		BREAK
+	ENDIF
+	PRINTFORML [{LOCAL,2}] Hire {LOCAL}%GROUP_CALL%\@ LOCAL == 1 ?  # s \@：%VALUE_DIGIT(COST *LOCAL)%G
+NEXT
+PRINTL
+
+;経費超過していたら所持金支払い選択肢を出す
+SIF BUDGET_OVER
+	PRINTL [90] Use Funds for payment
+PRINTL [99] Cancel
+
+
+
+;バイト説明
+;ARG→INPUT
+@MERCENARY_TRIBE(ARG)
+
+SELECTCASE ARG
+CASE 1
+	PRINTL An army of low-grade demons (goblins) under the command of Goblin Lord Goro.
+	PRINTL Characterized by their numbers advantage, high search ability, and high attack frequency.
+	PRINTL The goblins were thrilled to hear that the job is to catch females, 
+	PRINTL and promised that the contract price would be low.
+	CALL PRINT_WORD_COLOR("However, they will rape any females they capture.","黄")
+	PRINTL Even Lord Goro can't stop them.
+	PRINTL お金が入って装備を整えるという考えを持つゴブリンがあまりいないためか、軍事Lvが上がってもさほど強さが上がりません。
+	
+CASE 2
+	PRINTL The rookie mercenary bird demon Kiel-kun and his friends.
+	PRINTL Their contracts are a bargain since they can't find work at the same price as veteran mercenaries.
+	PRINT While their skills are half baked, 
+	CALL PRINTL_WORD_COLOR("they can occasionally use their intution to fly away, avoiding signature moves.","黄")
+	PRINTL やる気は人一倍あり、軍事Lvによる戦闘力増加が非常に大きい期待の新人です。
+	
+CASE 3
+	PRINTL Tera and his friends, fire-breathing lizard demons who are seasoned mercenaries.
+	PRINTL As veterans, all their abilities are of a high standard, especially so for their searching ability.
+	PRINTL However, due to their fierce fighting style, they may not be as effective at 
+	PRINTL simply grinding down the combat strength of the target.
+	PRINTL 既に戦士として完成に近いため、軍事Lvが上がっても強化割合は控えめです。
+	
+CASE 4
+	PRINTL Gozu and his friends, mercenaries hailing from the race with the strongest physique in the Makai.
+	PRINTL They possess not only overwhelming strength and attack power, 
+	PRINTL but a frightening attack speed that allows them to attack twice.
+	PRINT However, due to the carefree nature of their race, 
+	CALL PRINTL_WORD_COLOR(" their tracking ability is somewhat lacking.","黄")
+	PRINTL Their contract fee is also extrmely high due to their propensity to drink copious amounts of liquor.
+	PRINTL 元々が非常に強いため、軍事Lvが上がっても強化割合は控えめです。
+ENDSELECT
+

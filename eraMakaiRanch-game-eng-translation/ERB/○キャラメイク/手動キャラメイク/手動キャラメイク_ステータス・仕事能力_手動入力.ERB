@@ -1,0 +1,264 @@
+﻿
+;ステータス・仕事能力の変更手動入力
+;ARGS→CHANGE_STATE
+@SELF_CHARA_MAKE_STATUS_INPUT_MANUAL(ARGS)
+
+SELECTCASE ARGS
+CASE "レベル"
+	PRINTL Enter a level（1～999）
+	PRINTL （※Normal random general caps at around Lv200）
+	INPUT
+	SIF RESULT <= 0 || RESULT >= 1000
+		RETURN
+	MAXBASE:レベル = RESULT
+	BASE:レベル = MAXBASE:レベル
+	CFLAG:ランク = MAXBASE:レベル /10
+	SIF !CFLAG:霊力固定
+		CALL SLAVE_EP_CALC
+	SIF !CFLAG:魔力固定
+		CALL SLAVE_MP_CALC
+	CALL SLAVE_BATTLE_POWER_CALC(1)
+	
+CASE "非戦闘職"
+	PRINTL If [Non-Combatant], level is fixed to 1 and they are ineffective in combat
+	PRINTL （Inputed Spirit Energy・Mana will be reset）
+	PRINTLC [ 0] 【非戦闘職】OFF
+	PRINTLC [ 1] 【非戦闘職】ON
+	INPUT
+	IF RESULT
+		CFLAG:非戦闘職 = 1
+		MAXBASE:レベル = 1
+		BASE:レベル = MAXBASE:レベル
+		CFLAG:ランク = 0
+		BASE:回復回数 = 0
+		BASE:大技回数 = 0
+		CFLAG:霊力固定 = 0
+		CFLAG:魔力固定 = 0
+		CALL SLAVE_EP_CALC
+		CALL SLAVE_MP_CALC
+		CALL SLAVE_BATTLE_POWER_CALC(1)
+	ELSE
+		CFLAG:非戦闘職 = 0
+	ENDIF
+	
+CASE "体力"
+	PRINTFORML Enter a strength（HP）value（100～{HP_MAX}, rounded to 50）
+	PRINTL （※低すぎると働かせる場合に支障をきたします）
+	INPUT
+	SIF RESULT < 100 || RESULT >= 10000
+		RETURN
+	MAXBASE:体力 = RESULT
+	MAXBASE:体力 -= (MAXBASE:体力 %50)
+	BASE:体力 = MAXBASE:体力
+	
+CASE "気力"
+	PRINTFORML 気力（SP）を入力してください。（100～{HP_MAX}、50単位に丸められます）
+	PRINTL （※低すぎると働かせる場合に支障をきたします）
+	INPUT
+	SIF RESULT < 100 || RESULT >= 10000
+		RETURN
+	MAXBASE:気力 = RESULT
+	MAXBASE:気力 -= (MAXBASE:気力 %50)
+	BASE:気力 = MAXBASE:気力
+
+CASE "霊力再計算"
+	IF CFLAG:霊力固定
+		PRINTL Turn [Input Spirit Energy] OFF and recalculate?
+		CALL ASK_YN
+		SIF RESULT
+			RETURN
+	ENDIF
+	CFLAG:霊力固定 = 0
+	CALL SLAVE_EP_CALC
+
+CASE "霊力固定"
+	IF CFLAG:霊力固定
+		PRINTL Turn [Input Spirit Energy] OFF and recalculate?
+		CALL ASK_YN
+		SIF RESULT
+			RETURN
+		CFLAG:霊力固定 = 0
+		CALL SLAVE_EP_CALC
+		CALL SLAVE_BATTLE_POWER_CALC(1)
+	ELSE
+		PRINTL Turn [Input Spirit Energy] ON and manually input?
+		CALL ASK_YN
+		SIF RESULT
+			RETURN
+		CALL MANYL(3)
+		PRINTL Enter the Spirit Energy（EP）value. (Minimum 100)
+		INPUT
+		SIF RESULT < 100
+			RETURN
+		CFLAG:霊力固定 = 1
+		MAXBASE:霊力 = RESULT
+		BASE:霊力 = MAXBASE:霊力
+		CALL SLAVE_BATTLE_POWER_CALC(1)
+	ENDIF
+	
+CASE "魔力量"
+	PRINTL Enter the ratio of the Mana to Spirit Energy.（0～99）
+	PRINTL For [Non-Combatants] or Rank 2s and below, a ratio of above 10
+	PRINTL grants an enormous Mana capacity while barely enhancing combat strength.
+	INPUT
+	SIF RESULT < 0 || RESULT >= 100
+		RETURN
+	CFLAG:魔力量 = RESULT
+	CALL SLAVE_MP_CALC
+	CALL SLAVE_BATTLE_POWER_CALC(1)
+
+CASE "魔力再計算"
+	IF CFLAG:魔力固定
+		PRINTL Turn [Input Mana] OFF and recalculate?
+		CALL ASK_YN
+		SIF RESULT
+			RETURN
+	ENDIF
+	CFLAG:魔力固定 = 0
+	CALL SLAVE_MP_CALC
+
+CASE "魔力固定"
+	IF CFLAG:魔力固定
+		PRINTL Turn [Input Mana] OFF and recalculate?
+		CALL ASK_YN
+		SIF RESULT
+			RETURN
+		CFLAG:魔力固定 = 0
+		CALL SLAVE_MP_CALC
+		CALL SLAVE_BATTLE_POWER_CALC(1)
+	ELSE
+		PRINTL Turn [Input Mana] ON and manually input?
+		CALL ASK_YN
+		SIF RESULT
+			RETURN
+		CALL MANYL(3)
+		PRINTL Enter the Mana（MP）value. (Minimum 0)
+		INPUT
+		SIF RESULT < 0
+			RETURN
+		CFLAG:魔力固定 = 1
+		MAXBASE:魔力 = RESULT
+		BASE:魔力 = MAXBASE:魔力
+		CALL SLAVE_BATTLE_POWER_CALC(1)
+	ENDIF
+
+CASE "魔力回復割合"
+	PRINTL 就寝時に回復する魔力の最大値に対する割合を入力してください。（0～100）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 100
+		MAXBASE:魔力回復割合 = RESULT
+		BASE:魔力回復割合 = MAXBASE:魔力回復割合
+
+CASE "戦闘力再計算"
+	CALL SLAVE_BATTLE_POWER_CALC(1)
+
+
+;2ページ目
+CASE "回復回数"
+	PRINTL Enter the number of times Recover can be used（0～10）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 10
+		BASE:回復回数 = RESULT
+	
+CASE "大技回数"
+	PRINTL Enter the number of times Signature Move can be used（0～10）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 10
+		BASE:大技回数 = RESULT
+	
+CASE "同行仲間"
+	PRINTL Select how many companions
+	PRINTL [ 0] None
+	PRINTL [ 1] Party
+	PRINTL [ 2] Elite Force
+	PRINTL [ 3] Army
+	BINPUT
+	CFLAG:仲間規模 = RESULT
+	CFLAG:仲間ランク = CFLAG:ランク
+	CALL GROUP_BATTLE_POWER_CALC
+	
+CASE "仲間ランク"
+	PRINTL Enter the rank of the companions.（0～99）
+	INPUT
+	SIF RESULT < 0 || RESULT >= 100
+		RETURN
+	CFLAG:仲間ランク = RESULT
+	CALL GROUP_BATTLE_POWER_CALC
+
+CASE "仲間戦闘力再計算"
+	CALL GROUP_BATTLE_POWER_CALC
+
+
+;3ページ目
+CASE "酪農ABL"
+	PRINTL Enter Dairy Level.（0～30）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 30
+		ABL:酪農 = RESULT
+		
+CASE "事務ABL"
+	PRINTL Enter Clerk Level.（0～30）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 30
+		ABL:事務 = RESULT
+		
+CASE "掃除ABL"
+	IF TALENT:掃除下手
+		PRINTW If【Terrible Cleaner】, Cleaning fixed to Lv0
+		RETURN
+	ENDIF
+	PRINTL Enter Cleaning Level.（0～30）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 30
+		ABL:掃除 = RESULT
+	
+CASE "料理ABL"
+	IF TALENT:料理下手
+		PRINTW If【Terrible Cook】, Cooking fixed to Lv0
+		RETURN
+	ENDIF
+	PRINTL Enter Cooking Level.（0～30）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 30
+		ABL:料理 = RESULT
+		
+CASE "薬学ABL"
+	PRINTL Enter Pharmacy Level.（0～30）
+	PRINTL (【Mixing Knowledge】can be unlocked at Lv 5 or higher.)
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 30
+		ABL:薬学 = RESULT
+	SIF ABL:薬学 < 5
+		TALENT:調合知識 = 0
+		
+CASE "接客ABL"
+	IF TALENT:接客下手
+		PRINTW If【Poor Receptionist】, Reception fixed to Lv0
+		RETURN
+	ENDIF
+	PRINTL Enter Reception Level.（0～30）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 30
+		ABL:接客 = RESULT
+
+CASE "掃除下手"
+	INVERTBIT TALENT:掃除下手,0
+	
+	;ONにするにせよOFFにせよLv0
+	ABL:掃除 = 0
+	
+CASE "料理下手"
+	INVERTBIT TALENT:料理下手,0
+	ABL:料理 = 0
+	
+CASE "接客下手"
+	INVERTBIT TALENT:接客下手,0
+	ABL:接客 = 0
+	
+CASE "調合知識"
+	INVERTBIT TALENT:調合知識,0
+ENDSELECT
+
+
+
+

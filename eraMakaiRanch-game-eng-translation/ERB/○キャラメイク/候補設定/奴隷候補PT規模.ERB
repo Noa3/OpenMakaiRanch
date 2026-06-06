@@ -1,0 +1,40 @@
+﻿
+;PT規模の決定
+@RANDOM_LIST_GROUP(ARG)
+
+;結界付き・競売所・上位種族・天界種族はソロ確定
+SIF LIST_PURPOSE:ARG >= 6
+	RETURN
+
+;カチコミかけてくるのは精鋭以上
+SIF LIST_PURPOSE:ARG == 5
+	LIST_GROUP:ARG = 2
+
+;ジョブ判定
+SELECTCASE LIST_JOB:ARG
+
+;ソロで来るとは到底思えないので確定PT
+CASE "プリースト","砲術士","薬師","白魔術士"
+	LIST_GROUP:ARG = 1
+	
+;PT組む確率が高い
+CASE "黒魔術士","弓士","錬金術師","聖騎士","冒険者","狙撃手","重装兵"
+	SIF RAND:100 < 70
+		LIST_GROUP:ARG = 1
+
+;軍隊動かしてくる可能性あり
+CASE "賢者","パラディン","ブラックナイト","大魔導師"
+	SIF RAND:100 < 30
+		LIST_GROUP:ARG = 3
+
+;確定で軍隊
+CASE "軍師","聖女","武将"
+	LIST_GROUP:ARG = 3
+
+;その他でもPT組んでくることはある
+CASEELSE
+	;目的が0～3のみ
+	SIF LIST_PURPOSE:ARG < 4 && RAND:100 < 15
+		LIST_GROUP:ARG = 1
+ENDSELECT
+

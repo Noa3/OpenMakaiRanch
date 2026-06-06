@@ -1,0 +1,255 @@
+﻿
+;画像表示HTML
+;ARGS→表示したい画像
+@PRINT_IMAGE(ARGS)
+
+;入れ子する
+CALL PRINT_IMAGE_COMMON(ARGS)
+
+;表示されたら改行しない
+IF !EXIST_IMAGE
+	PRINTL
+
+;調教実行・パイズリ・奉仕の場合改行入れて文章と重ならないように
+ELSEIF GROUPMATCH(ARGS,"調教実行","パイズリ","奉仕")
+	CALL MANYL(FLAG:顔グラ／コマンド時改行数)
+ENDIF
+
+
+
+;ARGS→表示したい画像
+@PRINT_IMAGE_COMMON(ARGS)
+#DIM TAG_FIX
+
+EXIST_IMAGE = 0
+
+;とりあえず識別名ないなら帰る
+SIF CSTR:識別名 == ""
+	RETURN
+;画像表示フラグがOFFなら帰る　個別でOFFでも帰る
+SIF !FLAG:顔グラ／表示 || CFLAG:表示OFF／顔グラ
+	RETURN
+
+;[専用顔グラフィック表示使用]フラグがONならそっちを探す
+IF CFLAG:専用設定／顔グラ表示関数
+	TRYCCALLFORM EX_PRINT_IMAGE_%CSTR:識別名%_%CSTR:出典作品名%(ARGS)
+		;見つかってRETURN 0 していたら終了
+		SIF !RESULT
+			RETURN
+	CATCH
+		;見つからなかったかRETURN 1 していたら改めてこっちを使う
+		;なので当てはまらなかった場合に来る最後にはRETURN 1 しておこうね
+	ENDCATCH
+ENDIF
+
+;共通化して行数削減した
+SELECTCASE ARGS
+CASE "ステータス"
+	TAG_FIX = 0
+CASE "調教待機"
+	TAG_FIX = 1
+CASE "調教実行","パイズリ","奉仕"
+	TAG_FIX = 2
+ENDSELECT
+
+;PLAYER,TARGET,ASSIでグラフィックIDを変更しておく　そのうち同時に使うかもしれないので
+IF TARGET == PLAYER
+	IMAGE_ID = 10 +TAG_FIX
+ELSEIF TARGET == ASSI
+	IMAGE_ID = 20 +TAG_FIX
+ELSE
+	IMAGE_ID = TAG_FIX
+ENDIF
+GDISPOSE IMAGE_ID
+CALL PRINT_IMAGE_SEARCH(ARGS)
+
+
+
+;共通化
+;ARGS→表示したい画像
+@PRINT_IMAGE_SEARCH(ARGS)
+#DIM DYNAMIC SEARCH
+#DIMS IMAGE_TAG
+
+;優先度の高い顔グラからループ回数に応じて検索
+;[超乳かつ乳牛堕ち]→[隷属or乳牛]→[崩壊]→[恋慕]→[反抗]→[通常]　で優先度高
+;空欄だとダメな挙動するかも
+IMAGE_TAG = 無効
+SELECTCASE SEARCH
+CASE 0
+	SIF CFLAG:家畜 && CFLAG:乳牛
+		IMAGE_TAG = 家畜
+CASE 1
+	SIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		IMAGE_TAG = 完堕ち
+CASE 2
+	SIF CFLAG:崩壊
+		IMAGE_TAG = 崩壊
+CASE 3
+	SIF ＃陥落状態／恋慕以上＃
+		IMAGE_TAG = 恋慕
+CASE 4
+		;CFLAG:追跡対象が1の時のみ通常を出す+陥落なら例外？
+		;SIF CFLAG:追跡対象 != 1 && !＃陥落状態／陥落以上＃
+	;GROUPMATCHのほうがいい感じする
+	;敗北時点で反抗つけてるのでこれでOK
+	SIF GROUPMATCH(CSTR:陥落状態,"反抗","拒絶","屈服")
+		IMAGE_TAG = 反抗
+CASE 5
+	IMAGE_TAG = 通常
+CASE 6
+	;置換ONならそれぞれ置換後を探す
+	SELECTCASE ARGS
+	CASE "調教待機"
+		SIF FLAG:顔グラ／調教時画像置換
+			CALL PRINT_IMAGE("ステータス")
+	CASE "パイズリ","奉仕"
+		SIF FLAG:顔グラ／調教時画像置換
+			CALL PRINT_IMAGE("調教実行")
+	ENDSELECT
+	EXIST_IMAGE = 0
+	RETURN
+ENDSELECT
+CALL PRINT_IMAGE_RUN(ARGS,IMAGE_TAG)
+
+;画像があった場合RETURN
+SIF RESULT
+	RETURN
+
+;SEARCHを+1してRESTART
+SEARCH ++
+RESTART
+
+
+
+;サンプル
+@SAMPLE_PRINT_IMAGE
+
+SIF !FLAG:顔グラ／表示
+	RETURN
+PRINT_TAG = <shape type='space' param= '{FLAG:顔グラ／横軸調整}'>
+PRINT_TAG += @"<img src='SAMPLE_IMAGE' width='{FLAG:顔グラ／サイズ}' height= '{FLAG:顔グラ／サイズ}' ypos= '0'>"
+HTML_PRINT PRINT_TAG
+
+
+
+;ARGS→表示したい画像
+;ARGS:1→IMAGE_TAG
+@PRINT_IMAGE_RUN(ARGS,ARGS:1)
+#DIM Y_FIX
+
+;最初に[出典作品名]のフォルダを検索
+;見つからなかったらresources直下を探す
+SIF !GCREATEFROMFILE(IMAGE_ID,@"%CSTR:出典作品名%\\%CSTR:識別名%_%ARGS%_%ARGS:1%.png")
+	GCREATEFROMFILE IMAGE_ID,@"%CSTR:識別名%_%ARGS%_%ARGS:1%.png"
+SPRITECREATE @"%CSTR:識別名%_%ARGS%_%ARGS:1%",IMAGE_ID
+SIF !SPRITECREATED(@"%CSTR:識別名%_%ARGS%_%ARGS:1%")
+	RETURN
+
+;調教実行+左寄せコンフィグなら左へ
+IF FLAG:顔グラ／コマンド時左寄せ && GROUPMATCH(ARGS,"調教実行","パイズリ","奉仕")
+	PRINT_TAG = <shape type='space' param= '{0}'>
+ELSE
+	PRINT_TAG = <shape type='space' param= '{FLAG:顔グラ／横軸調整}'>
+ENDIF
+
+;ARGSによりY座標操作
+SELECTCASE ARGS
+CASE "ステータス"
+	;調教中ならypos=0
+	IF TFLAG:調教中
+		Y_FIX = 0
+	ELSE
+		Y_FIX = 200
+	ENDIF
+CASE "調教待機"
+	Y_FIX = 0
+CASE "調教実行","パイズリ","奉仕"
+	Y_FIX = -500
+ENDSELECT
+PRINT_TAG += @"<img src='%CSTR:識別名%_%ARGS%_%ARGS:1%' width='{FLAG:顔グラ／サイズ}' height= '{FLAG:顔グラ／サイズ}' ypos= '{Y_FIX}'>"
+
+;調教実行なら顔グラ表示前に改行
+SIF GROUPMATCH(ARGS,"調教実行","パイズリ","奉仕")
+	CALL MANYL(FLAG:顔グラ／コマンド時改行数)
+HTML_PRINT PRINT_TAG
+
+;画像を表示したら画像表示済みフラグを1にしてRETURN 1
+EXIST_IMAGE = 1
+RETURN 1
+
+
+
+;テスト画像表示
+@PRINT_IMAGE_TEST
+
+;意味がわかった　既にHTML_PRINTした画像も上書きされるんだ
+;特殊処理　通常があるかどうかだけ見るよ
+;IDの0～4を使う
+GDISPOSE 0
+GDISPOSE 1
+GDISPOSE 2
+GDISPOSE 3
+GDISPOSE 4
+SIF !GCREATEFROMFILE(0,@"%CSTR:出典作品名%\\%CSTR:識別名%_ステータス_通常.png")
+	GCREATEFROMFILE 0,@"%CSTR:識別名%_ステータス_通常.png"
+SPRITECREATE @"%CSTR:識別名%_ステータス_通常",0
+IF SPRITECREATED(@"%CSTR:識別名%_ステータス_通常")
+	PRINT_TAG = <shape type='space' param= '1500'>
+	PRINT_TAG += @"<img src='%CSTR:識別名%_ステータス_通常' width='400' height= '400' ypos= '0'>"
+	HTML_PRINT PRINT_TAG
+ENDIF
+SIF !GCREATEFROMFILE(1,@"%CSTR:出典作品名%\\%CSTR:識別名%_調教待機_通常.png")
+	GCREATEFROMFILE 1,@"%CSTR:識別名%_調教待機_通常.png"
+SPRITECREATE @"%CSTR:識別名%_調教待機_通常",1
+IF SPRITECREATED(@"%CSTR:識別名%_調教待機_通常")
+	PRINT_TAG = <shape type='space' param= '{2000}'>
+	PRINT_TAG += @"<img src='%CSTR:識別名%_調教待機_通常' width='{400}' height= '{400}' ypos= '-100'>"
+	HTML_PRINT PRINT_TAG
+ENDIF
+SIF !GCREATEFROMFILE(2,@"%CSTR:出典作品名%\\%CSTR:識別名%_調教実行_通常.png")
+	GCREATEFROMFILE 2,@"%CSTR:識別名%_調教実行_通常.png"
+SPRITECREATE @"%CSTR:識別名%_調教実行_通常",2
+IF SPRITECREATED(@"%CSTR:識別名%_調教実行_通常")
+	PRINT_TAG = <shape type='space' param= '{2500}'>
+	PRINT_TAG += @"<img src='%CSTR:識別名%_調教実行_通常' width='{400}' height= '{400}' ypos= '-200'>"
+	HTML_PRINT PRINT_TAG
+ENDIF
+SIF !GCREATEFROMFILE(3,@"%CSTR:出典作品名%\\%CSTR:識別名%_パイズリ_通常.png")
+	GCREATEFROMFILE 3,@"%CSTR:識別名%_パイズリ_通常.png"
+SPRITECREATE @"%CSTR:識別名%_パイズリ_通常",3
+IF SPRITECREATED(@"%CSTR:識別名%_パイズリ_通常")
+	PRINT_TAG = <shape type='space' param= '{3000}'>
+	PRINT_TAG += @"<img src='%CSTR:識別名%_パイズリ_通常' width='{400}' height= '{400}' ypos= '-300'>"
+	HTML_PRINT PRINT_TAG
+ENDIF
+SIF !GCREATEFROMFILE(4,@"%CSTR:出典作品名%\\%CSTR:識別名%_奉仕_通常.png")
+	GCREATEFROMFILE 4,@"%CSTR:識別名%_奉仕_通常.png"
+SPRITECREATE @"%CSTR:識別名%_奉仕_通常",4
+IF SPRITECREATED(@"%CSTR:識別名%_奉仕_通常")
+	PRINT_TAG = <shape type='space' param= '{3500}'>
+	PRINT_TAG += @"<img src='%CSTR:識別名%_奉仕_通常' width='{400}' height= '{400}' ypos= '-400'>"
+	HTML_PRINT PRINT_TAG
+ENDIF
+
+SIF !SPRITECREATED(@"%CSTR:識別名%_ステータス_通常")
+	PRINTL 　ステータス画面画像：なし
+SIF !SPRITECREATED(@"%CSTR:識別名%_調教待機_通常")
+	PRINTL 　　調教待機画面画像：なし
+SIF !SPRITECREATED(@"%CSTR:識別名%_調教実行_通常")
+	PRINTL 　　調教実行画面画像：なし
+SIF !SPRITECREATED(@"%CSTR:識別名%_パイズリ_通常")
+	PRINTL パイズリ実行画面画像：なし
+SIF !SPRITECREATED(@"%CSTR:識別名%_奉仕_通常")
+	PRINTL 　　奉仕実行画面画像：なし
+PRINTL
+
+
+
+;こいつなら背景として表示できたりする
+;覚書として残しておこう
+;CBGSETSPRITE CSTR:識別名,{FLAG:顔グラ／サイズ},-600,1
+;消さないとずっと残ってるよ
+;CBGCLEAR
+
+

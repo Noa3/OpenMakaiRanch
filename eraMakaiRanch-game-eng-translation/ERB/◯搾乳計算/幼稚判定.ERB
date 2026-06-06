@@ -1,0 +1,37 @@
+﻿
+;幼稚乳吸いの母性処理
+@CHILDISH_FIX_CHECK
+
+;幼稚補正が入ってる、PLAYERが-1、乳吸いではない→おわり
+SIF TFLAG:幼稚母性補正 || PLAYER < 0 || !TFLAG:乳吸い
+	RETURN
+
+TFLAG:幼稚母性補正 = 0
+
+;低身長以下かつ10cm以上低い、または【幼稚】で補正発生
+;幼稚関係ないけど実の娘なら補正あり
+IF CFLAG:PLAYER:母親ID == CFLAG:ID && CFLAG:PLAYER:母親ID != 0
+	CALL PRINT_WORD_COLOR,@"実の娘である%CALLNAME:PLAYER%に%SAVESTR:表記／乳房%を吸われ、%CALLNAME%の母性が刺激されてしまう…","桃"
+	SETBIT TFLAG:幼稚母性補正,2
+ENDIF
+
+;身長差による判定へ、外見年齢が14以下(ショタあなた判定)であることを追加。
+IF CFLAG:PLAYER:身長 <= HEIGHT_MAX_小柄 && CFLAG:PLAYER:身長 < (CFLAG:身長 -100) && CFLAG:PLAYER:外見年齢 <= VISUAL_AGE_CHILD_MAX
+	SIF !TFLAG:幼稚母性補正
+		CALL PRINT_WORD_COLOR,@"小さな%CALLNAME:PLAYER%に%SAVESTR:表記／乳房%を吸われ、%CALLNAME%の母性が刺激されてしまう…","桃"
+	SETBIT TFLAG:幼稚母性補正,0
+ENDIF
+
+;幼稚なら判定あり
+IF TALENT:PLAYER:幼稚
+	SIF !TFLAG:幼稚母性補正
+		CALL PRINT_WORD_COLOR,@"幼い%CALLNAME:PLAYER%に%SAVESTR:表記／乳房%を吸われ、%CALLNAME%の母性が刺激されてしまう…","桃"
+	SETBIT TFLAG:幼稚母性補正,1
+ENDIF
+IF !TFLAG:幼稚母性補正
+	;二回目以降スルーする用に
+	TFLAG:幼稚母性補正 = -1
+	RETURN
+ENDIF
+CALL HEARTCB(0xD02830)
+PRINTL

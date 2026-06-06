@@ -1,0 +1,245 @@
+﻿
+@EQUIP_100_CONTINUE
+;触手乳揉み
+
+LOSEBASE:気力 += 20
+SOURCE:Ｂ快楽／触手 += 2000
+SOURCE:恥辱 += 1000
+SOURCE:屈辱 += 1000
+SOURCE:支配 += 500
+SOURCE:不潔 += 1000
+SOURCE:異形恐怖 += 500
+SOURCE:触手魔力消費量 += 30
+CALL SET_STAIN_TARGET("乳房","触手粘液")
+
+
+
+@EQUIP_101_CONTINUE
+;触手乳搾り
+
+LOSEBASE:体力 += 30
+LOSEBASE:気力 += 40
+SOURCE:Ｂ快楽／触手 += 3000
+SIF !TFLAG:Ｎ装備
+	SOURCE:Ｎ快楽／触手 += 1000
+SOURCE:恥辱 += 2000
+SOURCE:屈辱 += 4000
+SOURCE:支配 += 1000
+SOURCE:不潔 += 1000
+SOURCE:異形恐怖 += 1000
+SOURCE:触手魔力消費量 += 40
+TFLAG:搾乳責め = 1
+CALL SET_STAIN_TARGET("乳房","触手粘液")
+SIF !TFLAG:Ｎ装備
+	CALL SET_STAIN_TARGET("乳首","触手粘液")
+
+
+
+@EQUIP_105_CONTINUE
+;触手Ｖ挿入
+
+LOSEBASE:体力 += 30
+LOSEBASE:気力 += 50
+SOURCE:Ｖ快楽／触手 += 3000
+SOURCE:恥辱 += 1000
+SOURCE:屈辱 += 3000
+SOURCE:不潔 += 500
+SOURCE:支配 += 1500
+SOURCE:異形恐怖 += 2000
+
+;粘液による固定追加
+SOURCE:Ｖ潤滑追加 += 1000
+SOURCE:触手魔力消費量 += 30
+CALL SET_STAIN_TARGET("膣","触手粘液")
+
+
+
+@EQUIP_106_CONTINUE
+;触手Ａ挿入
+
+LOSEBASE:体力 += 30
+LOSEBASE:気力 += 60
+SOURCE:Ａ快楽／触手 += 3000
+SOURCE:恥辱 += 1000
+SOURCE:屈辱 += 4000
+SOURCE:不潔 += 2500
+SOURCE:支配 += 2500
+SOURCE:異形恐怖 += 3000
+SOURCE:Ａ潤滑追加 += 1000
+SOURCE:触手魔力消費量 += 30
+CALL SET_STAIN_TARGET("アナル","触手粘液")
+
+
+
+@EQUIP_107_CONTINUE
+;触手強制パイズリ
+
+LOSEBASE:体力 += 10
+LOSEBASE:気力 += 30
+SOURCE:Ｂ快楽／触手 += 1000
+SOURCE:恥辱 += 2000
+SOURCE:屈辱 += 4000
+SOURCE:不潔 += 1000
+SOURCE:支配 += 2000
+SOURCE:異形恐怖 += 3000
+SOURCE:触手魔力消費量 += 40
+CALL SET_STAIN_TARGET("乳房","触手粘液")
+
+
+
+@EQUIP_108_CONTINUE
+;触手フェラチオ
+
+;HP0だとしゃぶる余裕がなくなる
+IF !BASE:体力
+	TEQUIP:触手フェラチオ = 0
+	TFLAG:Ｍ装備 = 0
+	PRINTFORML %CALLNAME%は体力の限界で口に入った%SAVESTR:表記／ペニス触手%に奉仕できない… 
+	RETURN
+ENDIF
+LOSEBASE:体力 += 10
+LOSEBASE:気力 += 30
+SOURCE:習得 += 2000
+SOURCE:恥辱 += 2000
+SOURCE:屈辱 += 4000
+SOURCE:情愛 += 3000
+SOURCE:不潔 += 2000
+SOURCE:支配 += 2000
+SOURCE:異形恐怖 += 3000
+SOURCE:触手魔力消費量 += 20
+CALL SET_STAIN_TARGET("口","触手粘液")
+
+
+
+@EQUIP_109_CONTINUE
+;触手イラマチオ
+
+LOSEBASE:体力 += 40
+LOSEBASE:気力 += 40
+SOURCE:恥辱 += 2000
+SOURCE:屈辱 += 5000
+SOURCE:不潔 += 3000
+SOURCE:支配 += 3000
+SOURCE:異形恐怖 += 4000
+SOURCE:触手魔力消費量 += 40
+CALL SET_STAIN_TARGET("口","触手粘液")
+
+
+
+@EQUIP_112_CONTINUE
+;触手目隠し
+
+LOSEBASE:気力 += 15
+SOURCE:視覚恐怖 += 2000
+SOURCE:異形恐怖 += 900
+SOURCE:マゾヒズム += 200
+SOURCE:屈辱 += 400
+SOURCE:支配 += 400
+SOURCE:触手魔力消費量 += 30
+CALL SET_STAIN_TARGET("顔","触手粘液")
+
+
+
+@EQUIP_113_CONTINUE
+;クリ吸い触手
+
+LOSEBASE:体力 += 10
+LOSEBASE:気力 += 30
+SOURCE:Ｃ快楽／触手 += 3000
+SOURCE:恥辱 += 3000
+SOURCE:屈辱 += 2000
+SOURCE:不潔 += 1000
+SOURCE:支配 += 2000
+SOURCE:異形恐怖 += 3000
+SOURCE:触手魔力消費量 += 30
+CALL SET_STAIN_TARGET("陰核","触手粘液")
+
+
+
+@EQUIP_114_CONTINUE
+;耳姦触手
+
+LOSEBASE:気力 += 50
+SOURCE:恥辱 += 1500
+SOURCE:屈辱 += 1000
+SOURCE:不潔 += 500
+SOURCE:支配 += 2000
+SOURCE:異形恐怖 += 2000
+SOURCE:触手魔力消費量 += 30
+CALL SET_STAIN_TARGET("耳","触手粘液")
+
+
+@EQUIP_115_CONTINUE
+;触手強制手コキ
+
+LOSEBASE:体力 += 10
+LOSEBASE:気力 += 30
+SOURCE:恥辱 += 1000
+SOURCE:屈辱 += 2000
+SOURCE:不潔 += 1000
+SOURCE:支配 += 2000
+SOURCE:異形恐怖 += 2000
+SOURCE:触手魔力消費量 += 30
+CALL SET_STAIN_TARGET("手","触手粘液")
+
+
+@EQUIP_155_CONTINUE
+;ブラシ触手
+
+IF TEQUIP:ブラシ触手Ｂ
+	LOSEBASE:体力 += 5
+	LOSEBASE:気力 += 15
+	SOURCE:Ｂ快楽／触手 += 2000
+	SOURCE:恥辱 += 800
+	SOURCE:屈辱 += 300
+	SOURCE:異形恐怖 += 300
+	SOURCE:触手魔力消費量 += 20
+	CALL SET_STAIN_TARGET("乳房","触手粘液")
+ENDIF
+IF TEQUIP:ブラシ触手Ｎ
+	LOSEBASE:体力 += 5
+	LOSEBASE:気力 += 15
+	SOURCE:Ｎ快楽／触手 += 2000
+	SOURCE:恥辱 += 900
+	SOURCE:屈辱 += 400
+	SOURCE:異形恐怖 += 400
+	SOURCE:触手魔力消費量 += 20
+	CALL SET_STAIN_TARGET("乳首","触手粘液")
+ENDIF
+IF TEQUIP:ブラシ触手Ｃ
+	LOSEBASE:体力 += 5
+	LOSEBASE:気力 += 15
+	SOURCE:Ｃ快楽／触手 += 2000
+	SOURCE:恥辱 += 1000
+	SOURCE:屈辱 += 500
+	SOURCE:異形恐怖 += 500
+	SOURCE:触手魔力消費量 += 20
+	CALL SET_STAIN_TARGET("陰核","触手粘液")
+ENDIF
+IF TEQUIP:ブラシ触手Ｖ
+	LOSEBASE:体力 += 5
+	LOSEBASE:気力 += 15
+	SOURCE:Ｖ快楽／触手 += 2000
+	SOURCE:恥辱 += 1000
+	SOURCE:屈辱 += 300
+	SOURCE:不潔 += 500
+	SOURCE:異形恐怖 += 500
+	SOURCE:Ｖ潤滑追加 += 1500
+	SOURCE:触手魔力消費量 += 20
+	CALL SET_STAIN_TARGET("膣","触手粘液")
+ENDIF
+IF TEQUIP:ブラシ触手Ａ
+	LOSEBASE:体力 += 5
+	LOSEBASE:気力 += 15
+	SOURCE:Ａ快楽／触手 += 2000
+	SOURCE:恥辱 += 1000
+	SOURCE:屈辱 += 500
+	SOURCE:不潔 += 1000
+	SOURCE:異形恐怖 += 300
+	SOURCE:Ａ潤滑追加 += 1500
+	SOURCE:触手魔力消費量 += 20
+	CALL SET_STAIN_TARGET("アナル","触手粘液")
+ENDIF
+
+
+

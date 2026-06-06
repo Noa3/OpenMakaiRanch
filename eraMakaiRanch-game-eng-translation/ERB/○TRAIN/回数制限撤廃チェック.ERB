@@ -1,0 +1,28 @@
+﻿
+;回数制限撤廃チェック
+@CHECK_LIMIT_BREAK_CONFIG
+
+IF GETBIT(＃制限撤廃／アイテム使用＃)
+	CFLAG:時刻制限／ハーブティー = 0
+	CFLAG:当日制限／栄養ドリンク = 0
+	CFLAG:当日制限／ハーブティー = 0
+ENDIF
+
+IF GETBIT(＃制限撤廃／スキンシップ＃)
+	CFLAG:時刻制限／頭撫で = 0
+	CFLAG:時刻制限／キス = 0
+	CFLAG:時刻制限／授乳 = 0
+	CFLAG:時刻制限／Ｈ = 0
+	CFLAG:時刻制限／霊力注入 = 0
+ENDIF
+
+IF GETBIT(＃制限撤廃／肉体改造＃)
+	CFLAG:時刻制限／投薬 = 0
+	CFLAG:当日制限／肉体改造薬 = 0
+	CFLAG:当日制限／肉体改造エキス = 0
+ENDIF
+
+
+
+
+

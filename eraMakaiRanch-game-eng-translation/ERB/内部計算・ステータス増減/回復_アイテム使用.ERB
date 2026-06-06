@@ -1,0 +1,23 @@
+﻿
+;アイテム使用時回復
+;拡張考えて作っておく
+;ARG→HP固定回復量
+@ITEM_USE_HEAL(ARG)
+
+PRINTFORM %CALLNAME_DIGIT()% 
+SIF ARG
+	CALL ITEM_HP_HEAL_CONST(ARG)
+PRINTL
+
+
+
+;アイテムなどでの体力固定値回復→常時表示
+;ARG→回復量
+@ITEM_HP_HEAL_CONST(ARG)
+
+HEAL = ARG
+BASE:体力 = LIMIT(BASE:体力 +HEAL,0,MAXBASE:体力)
+PRINTFORM HP+{HEAL,4} → {BASE:体力,4} 
+
+
+

@@ -1,0 +1,69 @@
+﻿
+;倍率カスタマイズ
+@CUSTOM_MODE_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Setting up <Custom Mode>.
+CALL HALFLINE
+CALL PRINTL_WORD_COLOR("《 Custom Mode 》can only be changed before the game starts or in Developer Mode.","黄")
+PRINTL If any setting is ON and not [DEVELOP], the difficulty display will be [CUSTOM].
+PRINTL
+CALL PRINTL_WORD_COLOR("If the value is set too high, an error may occur due to overflow in the calculation.","黄")
+CALL PRINTL_WORD_COLOR("If the value is set too low, the game may become unplayable.","黄")
+PRINTL Please handle the items on this page at your own risk.
+CALL PRINT_DIFFICULTY
+DRAWLINE
+
+;STR:母乳出荷価格→3840
+STR_REF = 3840
+FLAG_REF = 3500
+FOR LOCAL,0,70
+	SIF FLAGNAME:(LOCAL +FLAG_REF) == ""
+		CONTINUE
+	PRINTFORM [{LOCAL,2}] %CONFIG_FLAGS_ENG(STR:(STR_REF +LOCAL)),32%：
+	IF !FLAG:(FLAG_REF +LOCAL)
+		CALL PRINTL_WORD_COLOR,@"Default","灰"
+	ELSE
+		PRINTFORML {FLAG:(FLAG_REF +LOCAL)}\% 
+	ENDIF
+NEXT
+CALL PRINTL_ALIGN
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 98
+	;日付が1日目以降かつ開発者モード以外の場合RETURN
+	SIF !FLAG:開発者モード && DAY
+		RETURN
+	PRINTL Do you want to reset all multiplier customization settings to OFF?
+	CALL ASK_YN
+	SIF !RESULT
+		VARSET FLAG,0,3500,3600
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_CUSTOM_MODE_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+
+;ARG→INPUT
+@CHANGE_CUSTOM_MODE_CONFIG(ARG)
+
+SIF !FLAG:開発者モード && DAY
+	RETURN
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+PRINTL Please specify the multiplier for the selected item as a percentage.
+PRINTL
+PRINTL [ 0] Restore to Defaults
+PRINTL Or enter the value directly.
+INPUT
+SIF RESULT >= 0
+	FLAG:FLAG_NUM = RESULT
+
+
+

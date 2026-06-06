@@ -1,0 +1,38 @@
+﻿
+;調合内容地の文
+@WORK_PHARMACY_BEGIN_MESSAGE
+
+SIF !EXP:実行回数／調剤 && TARGET
+	PRINTFORML You tell %CALLNAME% to work on producing %ITEMS_ENG(ITEMNAME:(FLAG:調合中薬品ID))%...
+PRINTFORM %CALLNAME%%PRINT_WORK_GROUP()%
+
+SIF CSTR:0:スケジュール == "調剤" && TARGET > 0
+	PRINTFORM , together with you,
+PRINTFORML  work on producing %ITEMS_ENG(ITEMNAME:(FLAG:調合中薬品ID))%.
+CALL KOJO_PRINT("スケジュール","調剤",KOJO_TYPE)
+
+
+
+;調合上手さ表示
+@WORK_PHARMACY_ABL_MESSAGE
+
+SIF !TARGET
+	RETURN
+IF !EXP:実行回数／調剤
+	IF ABL:薬学 >= 8
+		PRINTL It seems she's highly experienced at this job.
+	ELSEIF ABL:薬学 >= 4
+		PRINTL She picks up the task readily.
+	ELSE
+		PRINTL ... She doesn't really understand the task.
+	ENDIF
+ELSE
+	IF ABL:薬学 >= 8
+		PRINTL She performs the task professionally.
+	ELSEIF ABL:薬学 >= 4
+		PRINTL She does her work adeptly.
+	ELSE
+		PRINTL ... She doesn't really understand the task.
+	ENDIF
+ENDIF
+

@@ -1,0 +1,77 @@
+﻿
+;スケジュール実行後の時間経過処理
+@MAIN_TURNEND
+
+;時間+1
+TIME ++
+
+;昼になったタイミングで掃除→出荷処理→奴隷引き取り→奴隷シャッフル→表示→マイルストーン
+SIF TIME == 1
+	CALL MORNING_END_PROCESS_INDEX
+
+;夕方はスキップ状態ならFORCEWAIT（夕方だけはスキップだと吹っ飛んでしまう状態なので）
+SIF MESSKIP() && TIME == 2
+	FORCEWAIT
+
+;時間帯に1回系フラグをリセット
+CALL RESET_TIME_FLAG
+
+;一応のオーバーフロー防止
+CALL RESOURCE_LIMIT
+
+;夜の行動終了時は追加でフラグ処理をする
+SIF TIME >= 4
+	CALL ONE_DAY_END
+
+;夜になったタイミングで夕食・風呂
+IF TIME == 3
+	;メシ先か風呂先か
+	IF FLAG:夕食入浴順
+		CALL MAIN_BATHING
+		CALL MAIN_DINNER
+	ELSE
+		CALL MAIN_DINNER
+		CALL MAIN_BATHING
+	ENDIF
+	
+	;風呂のあと行動済みフラグなど入ってたりするのでもう1度リセット
+	CALL RESET_TIME_FLAG
+ENDIF
+
+;スケジュールリセット、整理
+CALL SCHEDULE_RESET
+CALL SCHEDULE_ADJUST
+TARGET = -1
+PLAYER = -1
+ASSI = -1
+
+;ここでオートセーブ
+CALL AUTO_SAVE
+
+;夜になったら夜行動指定の関数へ
+;SHOP内でどうにかと思ったけど上手くいかなかった
+IF TIME == 3
+	CALL NIGHT_PHASE
+ELSE
+	BEGIN SHOP
+ENDIF
+
+
+
+;昼になったときの処理まとめて
+@MORNING_END_PROCESS_INDEX
+
+CALL MAIN_CLEANING
+CALL SETTLEMENT
+CALL SLAVE_RECEIVE_RANCH
+CALL TRAVELLER_SHUFFLE
+CALL WISH_GIVE_LINGERIE_AFTER
+CALL MILESTONE_CHECK_ALL
+
+;マイルストーンの後
+CALL MILESTONE_UNLOCK_CHECK("奴隷捕獲","")
+SIF RESULT
+	CALL PRINT_SLAVE_CANDIDATE
+
+
+

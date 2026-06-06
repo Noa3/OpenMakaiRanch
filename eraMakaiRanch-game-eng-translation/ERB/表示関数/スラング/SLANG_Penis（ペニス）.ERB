@@ -1,0 +1,59 @@
+﻿;**********************************************************
+;Penis(ちんぽ)の淫語
+;**********************************************************
+@SLANG_PENIS(ARG)
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+SLANGWORD =
+
+SIF GETBIT(FLAG:スラング接頭語／ペニス,3) && RAND:100 < 10
+	SLANGWORD += "throbbing "
+SIF GETBIT(FLAG:スラング接頭語／ペニス,0) && RAND:100 < 10
+	SLANGWORD += "erect "
+SIF GETBIT(FLAG:スラング接頭語／ペニス,2) && RAND:100 < 10
+	SLANGWORD += "rock-hard "
+SIF GETBIT(FLAG:スラング接頭語／ペニス,1) && RAND:100 < 10
+	SLANGWORD += "heated "
+
+IF GETBIT(FLAG:スラング置換／ペニス,9)
+	EXIST ++
+	SIF RAND:100 < 50
+		RETURNF SAVESTR:表記／ペニス
+ENDIF
+SIF GETBIT(FLAG:スラング置換／ペニス,0) && EXIST
+	RESTART
+
+IF GETBIT(FLAG:スラング表示／ペニス,0) && RAND:100 < 50
+	SLANGWORD += "penis"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／ペニス,1) && RAND:100 < 30
+	SLANGWORD += "cock"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／ペニス,2) && RAND:100 < 30
+	SLANGWORD += "phallus"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／ペニス,3) && RAND:100 < 30
+	SLANGWORD += "shaft"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／ペニス,4) && RAND:100 < 30
+	SLANGWORD += "manhood"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／ペニス,5) && RAND:100 < 30
+	SLANGWORD += "little buddy"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／ペニス,6) && RAND:100 < 30
+	SLANGWORD += "dick"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／ペニス,7) && RAND:100 < 30
+	SLANGWORD += "hard cock"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／ペニス,8)
+	SLANGWORD += "meat stick"
+	RETURNF SLANGWORD
+ENDIF
+RESTART
+
+
+

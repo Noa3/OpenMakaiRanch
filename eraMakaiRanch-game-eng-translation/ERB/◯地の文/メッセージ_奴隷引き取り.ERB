@@ -1,0 +1,19 @@
+﻿
+;奴隷受け取り地の文
+@SLAVE_RECEIVE_MESSAGE
+
+IF CFLAG:輪姦回数
+	PRINTFORML Though %CALLNAME% is relieved to finally be freed from the assault, she realizes she isn't truly safe and start trembling in fear...
+ELSEIF TALENT:無関心 || TALENT:感情乏しい
+	PRINTFORML %CALLNAME% is staring back with an expressionless face...
+ELSEIF TALENT:臆病 || TALENT:悲観的
+	PRINTFORML %CALLNAME% is trembling in fear, wondering what will happen next...
+ELSEIF TALENT:高慢 || TALENT:プライド高い
+	PRINTFORML %CALLNAME% is screaming to be released immediately...
+ELSE
+	PRINTFORML When %CALLNAME% realizes %CALLNAME:0% is the ringleader, she glare back defiantly...
+ENDIF
+
+
+
+

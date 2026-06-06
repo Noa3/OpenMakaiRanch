@@ -1,0 +1,94 @@
+﻿
+;日付を表示
+;ARG→1なら合計日数も表示
+@SHOW_DATE(ARG)
+
+;季節・曜日もFUCTIONでまとめた
+PRINTFORM %SAVESTR:牧場名% Year {DAY:年数}【%SHOW_DATE_SEASON()% Day {DAY:日付,2}／%SHOW_DATE_WEEK()%】
+
+;27,28日は月末表記
+SIF DAY:日付 >= 27
+	CALL PRINT_WORD_COLOR("<月末> ","黄")
+PRINTFORM %PRINT_TIME_NOW(TIME)%
+
+;合計日数
+SIF ARG
+	PRINTFORML (Total {DAY} Days)
+
+
+
+;日付もろもろの計算
+@DATE_CALC
+#DIM DAY_CALC
+
+;1週間＝7日、1季節＝4週間＝28日、1年＝4季節＝16週間＝112日
+;経過日数-1/112+1で年数計算
+DAY:年数 = (DAY -1)/112 +1
+
+;経過日数から28ずつ引いた回数を記録、4で割った余りが季節
+DAY:季節 = 0
+DAY_CALC = DAY
+WHILE 1
+	SIF DAY_CALC <= 28
+		BREAK
+	DAY:季節 ++
+	DAY_CALC -= 28
+WEND
+DAY:季節 = DAY:季節 %4
+
+;経過日数/7の余りが曜日
+;1日目→月曜日・フラグの最初→月曜日にするため-1で補正
+DAY:曜日 = (DAY -1) %7
+
+;経過日数/28の余りが季節内の日付
+;0だと28
+DAY:日付 = DAY %28
+SIF !DAY:日付
+	DAY:日付 = 28
+
+
+
+;季節の表示関数
+@SHOW_DATE_SEASON()
+#FUNCTIONS
+
+SELECTCASE DAY:季節
+CASE 0
+	RETURNF "Spring"
+CASE 1
+	RETURNF "Summer"
+CASE 2
+	RETURNF "Autumn"
+CASE 3
+	RETURNF "Winter"
+ENDSELECT
+
+
+
+;曜日表示
+@SHOW_DATE_WEEK()
+#FUNCTIONS
+
+SELECTCASE DAY:曜日
+CASE 0
+	RETURNF "Mon"
+CASE 1
+	RETURNF "Tue"
+CASE 2
+	RETURNF "Wed"
+CASE 3
+	RETURNF "Thu"
+CASE 4
+	RETURNF "Fri"
+CASE 5
+	RETURNF "Sat"
+CASE 6
+	RETURNF "Sun"
+ENDSELECT
+
+
+
+
+
+
+

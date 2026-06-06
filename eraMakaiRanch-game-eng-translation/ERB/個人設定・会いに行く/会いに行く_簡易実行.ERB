@@ -1,0 +1,71 @@
+﻿
+;衣服の修理
+@VISIT_REPAIR_CLOTHE
+
+PRINTFORML Repair %CALLNAME%'s torn %＃着用衣服／名称＃%?（Consumes 1 Mending Cloth）
+CALL ASK_YN
+SIF RESULT
+	RETURN
+ITEM:衣服補修布 --
+CLEARBIT EQUIP:(EQUIP:装備中ID／衣服),1
+CLEARBIT EQUIP:(EQUIP:装備中ID／衣服),2
+PRINTFORML You fix the torn %＃着用衣服／名称＃%.
+CALL KOJO_PRINT("訪問","衣服修理")
+PRINTW
+
+
+
+;栄養ドリンク
+@VISIT_TAKE_ENERGY_DRINK
+
+;最大体力の20%か400の多いほうが回復量になる
+HEAL = MAX(400,MAXBASE:体力 *20 /100)
+PRINTFORML You give %CALLNAME% an ＜Energy Drink＞.
+PRINTFORML %CALLNAME% recovered some strength!
+
+;アイテム使用時回復関数
+CALL ITEM_USE_HEAL(HEAL)
+CFLAG:当日制限／栄養ドリンク ++
+ITEM:栄養ドリンク --
+PRINTW
+
+
+
+;ハーブティー
+@VISIT_DRINK_HERBAL_TEA
+
+;精神力、理性を10%回復＆乳牛堕ちを20%減少
+;1日1回は通常、それ以降は1/5にする
+PRINTFORML You give %CALLNAME% some ＜Herbal Tea＞。
+PRINTFORML %CALLNAME% seems to calm down a bit.
+
+;理性・精神力回復
+;MAXなら回復処理しないようになる処理が共通関数内にある
+;【崩壊】【洗脳】だと回復しなくなった
+HEAL = 1000
+SIF CFLAG:当日制限／ハーブティー
+	HEAL /= 5
+SIF BASE:理性
+	CALL MIND_BASE_DIRECT_PLUS("理性",HEAL)
+CALL MIND_BASE_DIRECT_PLUS("精神力",HEAL)
+
+;乳牛堕ち減少
+HEAL = 2000
+SIF CFLAG:当日制限／ハーブティー
+	HEAL /= 5
+SIF !CFLAG:乳牛
+	CALL MIND_BASE_DIRECT_MINUS("乳牛堕ち",HEAL)
+CFLAG:時刻制限／ハーブティー ++
+CFLAG:当日制限／ハーブティー ++
+ITEM:ハーブティー --
+PRINTW >
+SOURCE:精神パラメータ増減済み = 0
+
+
+
+
+
+
+
+
+

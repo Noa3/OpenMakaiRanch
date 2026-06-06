@@ -1,0 +1,68 @@
+﻿
+;基礎・プロフィールの変更シャッフル
+;ARGS→CHANGE_STATE
+@SELF_CHARA_MAKE_PROFILE_INPUT_SHUFFLE(ARGS)
+#DIM SHUFFLE_REF
+
+SELECTCASE ARGS
+CASE "名前"
+	;名前用画面に飛ばす
+	CALL CHARA_MAKE_SLAVE_SHUFFLE_NAME(1)
+	
+CASE "種族"
+	;一般種族から
+	CALL RANDOM_LIST_TRIBE_NORMAL(10)
+	CSTR:種族 = %LIST_TRIBE:10%
+	CALL CATEGORY_TRIVE
+	
+CASE "上位種族"
+	INVERTBIT CFLAG:上位種族,0
+	
+CASE "ジョブ"
+	;7000～7350までのランダム　王族は出ない
+	;STR:手動入力ジョブ→7000
+	SHUFFLE_REF = RAND:7
+	STR_REF = 7000 +SHUFFLE_REF *50
+	STR_MAX = 50
+	CALL STR_REF_SHUFFLE(STR_REF)
+	CSTR:ジョブ = %RESULTS%
+	
+	;特徴反映設定→の前に何になったか出す
+	PRINTFORML ジョブシャッフル→【%CSTR:ジョブ%】
+	CALL SELF_CHARA_MAKE_JOB_FEATURE(SHUFFLE_REF)
+	
+CASE "身分"
+	;やめとく
+	
+CASE "所属"
+CASE "服装"
+	CALL RANDOM_SLAVE_CLOTHE
+	
+CASE "魔界入りの目的"
+	;0～5のランダム
+	CFLAG:魔界入りの目的 = RAND:6
+	
+CASE "身長"
+	CALL RANDOM_SLAVE_HEIGHT
+CASE "体型"
+	CALL RANDOM_SLAVE_SHAPE
+CASE "肌の色"
+	CALL RANDOM_SLAVE_SKIN_COLOR
+CASE "バストサイズ"
+	CALL RANDOM_SLAVE_BUST
+CASE "性経験"
+	CALL RANDOM_SLAVE_VARGIN
+
+;2ページ目→途中で終わってるのでここに来ない
+
+;3ページ目
+CASE "性格"
+	CALL RANDOM_SLAVE_PERSONALITY
+CASE "口上"
+	CALL KOJO_SETTING
+CASE "一人称","陥落前のあなた呼び方","陥落後のあなた呼び方","ペニス呼び方","膣呼び方","アナル呼び方"
+	;なし
+ENDSELECT
+
+
+

@@ -1,0 +1,86 @@
+﻿
+;触手射精メッセージ
+@PRINT_T_EJACULATION_MESSAGE
+#DIM SEX_PART
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+SIF !TFLAG:触手射精回数
+	RETURN
+MESSAGE_EXIST ++
+SIF !LINEISEMPTY()
+	PRINTL
+
+;スケジュール外なら射精メッセージ前に止める
+IF TFLAG:スケジュール外Ｈ
+	PRINTW
+ELSE
+	PRINTL
+ENDIF
+
+SEX_PART = TEQUIP:触手Ｖ挿入 +TEQUIP:触手Ａ挿入 +TEQUIP:触手強制パイズリ +TEQUIP:触手フェラチオ +TEQUIP:触手イラマチオ +TEQUIP:触手強制手コキ
+PRINTFORM The tentacles are on %CALLNAME%'s 
+REPEAT 5
+	IF TEQUIP:触手Ｖ挿入 && COUNT == 0
+		PRINTFORM %SLANG_V()%
+	ELSEIF TEQUIP:触手Ａ挿入 && COUNT == 1
+		PRINTFORM %SLANG_A()%
+	ELSEIF TEQUIP:触手強制パイズリ && COUNT == 2
+		PRINTFORM %SLANG_B()% cleavage
+	ELSEIF (TEQUIP:触手フェラチオ || TEQUIP:触手イラマチオ) && COUNT == 3
+		PRINTFORM mouth insides
+	ELSEIF TEQUIP:触手強制手コキ && COUNT == 4
+		PRINTFORM hand
+	ELSE
+		CONTINUE
+	ENDIF
+	SEX_PART -= 1
+	IF SEX_PART
+		PRINT 、
+	ELSE
+		BREAK
+	ENDIF
+REND
+
+PRINT , on which 
+SIF TFLAG:触手射精回数 > 1
+	PRINT tons of 
+CALL TRAIN_EJACULATION_FINISH_MESSAGE
+CALL ONOMATOPOEIA("射精")
+;CALL KOJO_PRINT("射精")
+
+
+
+;精液ボテメッセージ
+@PRINT_B_EJACULATION_MESSAGE
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+IF 30 < TFLAG:子宮内精液量 +TFLAG:腸内精液量 +TFLAG:嚥下精液量
+	IF GETBIT(＃拘束／下半身埋め壁乳＃) || (CFLAG:妊娠日数 > 9 && CFLAG:妊娠日数 < 16) || CFLAG:妊娠日数 > 92
+		PRINTFORM It seems that no more can fit, as the %SLANG_SEMEN()% overflows from the gaps...
+		;今のところは減らさなくても問題なさそうだけど一応減らす処理も
+		IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+			TFLAG:子宮内精液量 = LIMIT(TFLAG:子宮内精液量 -TFLAG:射精回数,1,30)
+		ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+			TFLAG:腸内精液量 = LIMIT(TFLAG:腸内精液量 -TFLAG:射精回数,1,30)
+		ELSEIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+			TFLAG:嚥下精液量 = LIMIT(TFLAG:嚥下精液量 -TFLAG:射精回数,1,30)
+		ENDIF
+		SIF TEQUIP:触手Ｖ挿入
+			TFLAG:子宮内精液量 = LIMIT(TFLAG:子宮内精液量 -TFLAG:触手射精回数,1,30)
+		SIF TEQUIP:触手Ａ挿入
+			TFLAG:腸内精液量 = LIMIT(TFLAG:腸内精液量 -TFLAG:触手射精回数,1,30)
+		SIF TEQUIP:触手フェラチオ || TEQUIP:触手イラマチオ
+			TFLAG:嚥下精液量 = LIMIT(TFLAG:嚥下精液量 -TFLAG:触手射精回数,1,30)
+	ELSE
+		PRINTFORM After being filled with a large amount of your %SLANG_SEMEN()%, %CALLNAME%'s stomach is 
+		IF 60 < TFLAG:子宮内精液量 +TFLAG:腸内精液量 +TFLAG:嚥下精液量
+			PRINTL swollen as large as a pregnant woman's...
+		ELSE
+			PRINTL slightly bulging...
+		ENDIF
+	ENDIF
+ENDIF
+
+

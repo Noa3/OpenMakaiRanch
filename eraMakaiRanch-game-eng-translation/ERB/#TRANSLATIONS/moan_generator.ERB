@@ -1,0 +1,206 @@
+﻿;--------------------------------------------------------
+;Retarded hentai moan generator
+;ARGS will determine how retarded we'll go, Light, Mild or Heavy (Random too)
+;shortened versions can be used: l, m, h, r
+;Capitalized by default, ARG = 1 to remove it, ARG = 2 to make everything BIG, ARG = 3 - capitalize (default), ARG = 4 - random capitalization, ARG = 5 capitalize every word
+;ARG:1 is to set how many time to repeat it, only same mode is supported
+;Default is Light
+;--------------------------------------------------------
+@MOAN(ARGS = "l", ARG = 3, ARG:1 = 0, ARGS:1 = "")
+#FUNCTIONS
+#DIMS DYNAMIC strMode
+#DIMS DYNAMIC strOut
+
+#DIM DYNAMIC nNameCount
+#DIM DYNAMIC nHeartCount
+#DIM DYNAMIC nInitCount
+
+#DIMS DYNAMIC strFlag
+
+VARSET LOCAL
+
+SIF SPLIT_CHECK(ARGS:1, "name")
+	nNameCount = RAND(1, 4)
+SIF SPLIT_CHECK(ARGS:1, "heart")
+	nHeartCount = RAND(1, 4)
+nInitCount = nNameCount + nHeartCount
+
+DO
+	strMode '= SPLIT_G(ARGS:0)
+	DO
+		strFlag '= SPLIT_G(MATCH_SPLIT(ARGS:1, "charname_"), "_")
+	LOOP strFlag == "charname"
+	SIF SPLIT_CHECK(ARGS:1, "const")
+		strFlag += ":const"
+
+	IF strMode == "rand" || strMode == "r"
+		IF RAND:10 >= 4
+			strMode = l
+		ELSEIF RAND:10 >= 6
+			strMode = m
+		ELSE
+			strMode = h
+		ENDIF
+	ENDIF
+
+	SELECTCASE strMode
+		CASE "light", "l", ""
+			LOCALS = %SPLIT_G("Hn:Hn:Hn:Ahn:Ha:Ha:Ha:Hah:Ah:Ah:Ah:Ah:Auu:Hii:Fuah:Ngh:Mm:Haa:Aah:Nn:Ahn:Hya:Aha:Ooh:Eep:Ahm:Yah:Nho")%
+		CASE "mild", "m"
+			LOCALS = %SPLIT_G("Hngh:Auhn:Hnah:Hnnn:Hnng:Aahn:Mmmm:Haaa:Haah:Aaah:Aah:Ahaan:Nnnn:Mmm:Hyah:Ngah:Hahii:Hahee:Ahi:Niyahn:Fwah:Hyan:Angh:Hnya:Yaahh:Nghhooo")%
+		CASE "heavy", "h"
+			SELECTCASE RAND:13
+				CASE 0
+					;aunh
+					LOCALS = %"A"+"a"*RAND(1,5)+"u"*RAND:3+"n"*RAND:4+"h"*RAND(1,5)%
+				CASE 1
+					;oohn
+					LOCALS = %"O"+"o"*RAND(1,5)+"h"*RAND(1,4)+"n"*RAND:4%
+				CASE 2
+					;uuongh
+					LOCALS = %"U"+"u"*RAND(1,5)+"o"*RAND:3+"n"*RAND:4+"g"*RAND:2+"h"*RAND(1,4)%
+				CASE 3
+					;hnah/hnya
+					LOCALS = %"H"+"n"*RAND:5+SPLIT_G("a"*RAND(3,7)+"h"*RAND:3 + ":" + "y"*RAND(1,4)+"a"*RAND(3,7) )%
+				CASE 4
+					;nngah
+					LOCALS = %"N"+"n"*RAND(2,6)+"g"*RAND:3+"a"*RAND:3+"h"*RAND(1,3)%
+				CASE 5
+					;(n) + hyah/hiyahn/hahn
+					LOCALS = %SPLIT_G("Nh:H") + SPLIT_G("iy:y:") + "a"*RAND(3,7)+"h"*RAND(1,6) + "n"*RAND:4%
+				CASE 6
+					;mmnh
+					LOCALS = %"M"+"m"*RAND(2,6)+"n"*RAND:4+"h"*RAND:3%
+				CASE 7
+					;aahn
+					LOCALS = %"A"+"a"*RAND(2,5)+"h"*RAND:4+"n"*RAND:3%
+				CASE 8
+					;mmph
+					LOCALS = %"M"+"m"*RAND(2,6)+"p"*RAND:3+"h"*RAND(1,5)%
+				CASE 9
+					;hngh(i/u)
+					LOCALS = %"H"+"n"*RAND:5+"g"*RAND(1,3)+"h"*RAND:4 + SPLIT_G("u:i")*RAND(1,6)%
+				CASE 10
+					;h/ah(ii/ee)
+					LOCALS = %SPLIT_G("Ha:A") + "a"*RAND:4+"h"*RAND(1,3) + SPLIT_G("e:i") *RAND(2,4)%
+				CASE 11
+					;niyahn/eyahn
+					LOCALS = %SPLIT_G("Niy:Ey") + "a"*RAND(2,8)+"h"*RAND(1,3) + "n"*RAND(1,4)%
+				CASE 12
+					;ahyaa/ahyiii
+					LOCALS = %SPLIT_G("Ahy") + SPLIT_G("a:i")*RAND(3,7)%
+			ENDSELECT
+	CASEELSE
+		RETURNF "Error at MOAN function! Report this!"
+	ENDSELECT
+	IF nNameCount || nHeartCount
+		strOut += LOCALS + (--ARG:1 > 0 ? RANDLIPS_NAMEHEART_INSERT(nNameCount, nHeartCount, strFlag) + " " # "")
+		LOCAL = nInitCount
+	ELSE
+		IF SPLIT_CHECK(ARGS:1, "dot")
+			LOCALS:1 '=  "... "
+			LOCAL:1 = 1
+		ELSEIF SPLIT_CHECK(ARGS:1, "!")
+			LOCALS:1 '=  "!!! "
+			LOCAL:1 = 1
+		ELSEIF SPLIT_CHECK(ARGS:1, "dot!")
+			LOCALS:1 '=  "...! "
+			LOCAL:1 = 1
+		ELSEIF SPLIT_CHECK(ARGS:1, "rand")
+			IF RAND:2
+				LOCALS:1 '= SPLIT_G("...:!!!:...!") + " "
+				LOCAL:1 = 1
+			ELSE
+				LOCALS:1 '= ", "
+			ENDIF
+		ELSE
+			LOCALS:1 '= ", "
+		ENDIF
+		strOut += (nInitCount || LOCAL:1 ? LOCALS # TOLOWER(LOCALS)) + (--ARG:1 > 0 ? LOCALS:1 # "")
+		IF nInitCount
+			LOCAL = nInitCount
+			nInitCount = 0
+		ENDIF
+	ENDIF
+LOOP ARG:1 > 0
+
+SIF (LOCAL || LOCAL:1) && ARG == 1 ;ignore low capitalization rule
+	RETURNF UNCAPITALIZE(strOut)
+RETURNF CAP_PROCESS(strOut, ARG)
+
+;--------------------------------------------------------
+;modified the function in STR_BODY to be less restrictive (string:string:string, matching string, matching string, etc)
+;works similarly to GROUPMATCH, but with : split strings
+;--------------------------------------------------------
+@SPLIT_CHECK(ARGS:0, ARGS:1 = "NULL", ARGS:2 = "NULL", ARGS:3 = "NULL", ARGS:4 = "NULL", ARGS:5 = "NULL", ARGS:6 = "NULL", ARGS:7 = "NULL", ARGS:8 = "NULL", ARGS:9 = "NULL")
+#FUNCTION
+
+RETURNF STRCOUNT(ARGS:0, "(^|:)(" + ARGS:1 + "|" + ARGS:2 + "|" + ARGS:3 + "|" + ARGS:4 + "|" + ARGS:5 + "|" + ARGS:6 + "|" + ARGS:7 + "|" + ARGS:8 + "|" + ARGS:9 + ")($|:)")
+
+@SPLIT_G(ARGS, ARGS:1 = ":")
+#FUNCTIONS
+
+VARSET LOCALS
+
+SPLIT ARGS, ARGS:1, LOCALS
+
+RETURNF LOCALS:(RAND:RESULT)
+
+;--------------------------------------------------------
+;searches and returns a specified part of a split string if any part matches (greedy)
+;--------------------------------------------------------
+@MATCH_SPLIT(ARGS:0, ARGS:1, ARGS:2 = ":")
+#FUNCTIONS
+#DIMS DYNAMIC strSplit, 30
+
+SPLIT ARGS:0, ARGS:2, strSplit
+
+FOR LOCAL, 0, RESULT
+	SIF STRCOUNT(strSplit:(LOCAL), ARGS:1)
+		RETURNF strSplit:(LOCAL)
+NEXT
+
+;sent flags - first split (charname_): name, second split (const) - output name/hearts continuously
+@RANDLIPS_NAMEHEART_INSERT(nNameCount, nHeartCount, strFlag)
+#FUNCTIONS
+#DIM REF nNameCount
+#DIM REF nHeartCount
+#DIMS DYNAMIC strFlag
+#DIMS strCharName
+
+#DIMS DYNAMIC strOut
+
+strCharName '= CAPITALIZE(SPLIT_SINGLE(strFlag))
+SIF !STRLENS(strCharName)
+	strCharName '= CALLNAME:MASTER
+
+;show always as long as there's name/heart counts or skip at random or when there's nothing
+SIF !(SPLIT_CHECK(strFlag, "const") && (nNameCount + nHeartCount)) && (!PERCENT(30) || (nNameCount + nHeartCount) == 0)
+	strOut '= "..."
+IF RAND:2 && nNameCount > 0
+	nNameCount --
+	;do not append punctuation if it's already included in the incoming string
+	LOCALS = !
+	SIF STRING_ENDS_IN(strCharName, "\\!", "\\?")
+		LOCALS =
+	strOut '= "... " + strCharName + LOCALS
+ELSEIF nHeartCount > 0
+	nHeartCount --
+	strOut '= RAND: 2 ? "...♥" # "♥..."
+ENDIF
+;failsafe
+SIF !STRLENS(strOut)
+	strOut '= "..."
+RETURNF strOut
+
+
+;--------------------------------------------------------
+;simply continue last letter of the word
+;use ARG to set the size, 0 - random, -1 - disable slur
+;--------------------------------------------------------
+@SLUR(ARGS, ARG)
+#FUNCTIONS
+SIF ARG < 0
+	RETURNF ARGS
+RETURNF ARGS + @"～%SUBSTRING(ARGS, STRLENS(ARGS)-1, -1)%" * ( ARG > 0 ? ARG # RAND(RAND(1,3),RAND(4,6)) )
+

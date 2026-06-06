@@ -1,0 +1,129 @@
+﻿
+;③振り分け前のSOURCEに倍率かける
+@MIND_SOURCE_MULTIPLY
+
+;主にTALENTで補正
+;授乳愛情経験
+CALL MATERNAL_EXP
+
+;不潔
+SIF TALENT:汚臭鈍感
+	TIMES SOURCE:不潔,0.50
+SIF TALENT:汚臭敏感
+	TIMES SOURCE:不潔,1.50
+SIF TALENT:清楚
+	TIMES SOURCE:不潔,1.20
+SIF TALENT:気品
+	TIMES SOURCE:不潔,1.20
+SIF TALENT:乙女心
+	TIMES SOURCE:不潔,1.20
+
+;恥辱
+IF TALENT:恥じらい
+	TIMES SOURCE:恥辱,1.50
+ELSEIF TALENT:恥薄い
+	TIMES SOURCE:恥辱,0.50
+ENDIF
+SIF TALENT:乳責め嫌悪 && (SOURCE:Ｂ快楽 || SOURCE:Ｎ快楽)
+	TIMES SOURCE:恥辱,1.50
+
+;屈辱
+IF TALENT:プライド高い
+	TIMES SOURCE:屈辱,1.30
+ELSEIF TALENT:高慢
+	TIMES SOURCE:屈辱,1.60
+ELSEIF TALENT:プライド低い
+	TIMES SOURCE:屈辱,0.80
+ELSEIF TALENT:卑屈
+	TIMES SOURCE:屈辱,0.50
+ENDIF
+
+;支配
+IF TALENT:プライド高い
+	TIMES SOURCE:支配,1.30
+ELSEIF TALENT:高慢
+	TIMES SOURCE:支配,1.60
+ELSEIF TALENT:プライド低い
+	TIMES SOURCE:支配,0.90
+ELSEIF TALENT:卑屈
+	TIMES SOURCE:支配,0.80
+ENDIF
+
+
+
+;授乳愛情経験倍率
+@MATERNAL_EXP
+
+;噴乳なしならおわり
+SIF !NOWEX:噴乳
+	RETURN
+
+;バストサイズ補正*相手の体型補正*ABL補正*刻印補正
+FIX = 100 +(ABL:バストサイズ *2)
+
+;ABLによる増加
+FIX += (ABL:母乳生産力 *2)
+FIX += (ABL:母乳濃度 *5)
+FIX += (ABL:奉仕精神 *2)
+
+;噴乳量によりさらに増加
+SIF NOWEX:噴乳 >= 2000
+	FIX += 10
+SIF NOWEX:噴乳 >= 1000
+	FIX += 10
+
+;刻印による増加
+SIF MARK:ミルクタンク
+	FIX += 10
+SIF MARK:ホルスタイン
+	FIX += 10
+SIF MARK:ミルクサーバー
+	FIX += 10
+SIF MARK:搾乳奴隷
+	FIX += 10
+SIF MARK:搾乳家畜
+	FIX += 10
+	;SIF MARK:ご奉仕雌奴隷
+		;FIX += 100
+	
+;精神的なところが大きいので感情処理みたいに素質も見る
+SIF TALENT:献身的
+	FIX += 30
+SIF TALENT:母性本能
+	FIX += 50
+SIF TALENT:幼稚
+	FIX -= 30
+IF !＃陥落状態／陥落以上＃
+	SIF TALENT:自制心
+		FIX -= 10
+	SIF TALENT:一線越えない
+		FIX -= 10
+	SIF TALENT:貞操観念
+		FIX -= 20
+ENDIF
+
+;出産していれば増加
+SIF EXP:出産
+	FIX += 50
+
+;幼稚母性補正フラグで見る
+;-のとき飛ばさないと変になる
+IF TFLAG:幼稚母性補正 > 0
+	IF GETBIT(TFLAG:幼稚母性補正,0) && GETBIT(TFLAG:幼稚母性補正,1)
+		TIMES FIX,3.00
+	ELSEIF GETBIT(TFLAG:幼稚母性補正,0) || GETBIT(TFLAG:幼稚母性補正,1)
+		TIMES FIX,2.00
+	ENDIF
+ENDIF
+
+;実の娘なら最大値も合わせて補正
+IF TFLAG:幼稚母性補正 > 0 && GETBIT(TFLAG:幼稚母性補正,2)
+	TIMES FIX,4.00
+	FIX = LIMIT(FIX,1,1000)
+ELSE
+	FIX = LIMIT(FIX,1,500)
+ENDIF
+SOURCE:授乳愛情経験 *= FIX
+SOURCE:授乳愛情経験 /= 100
+
+

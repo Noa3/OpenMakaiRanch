@@ -1,0 +1,10 @@
+# Local archives and generated build outputs
+.archive/
+**/.godot/
+**/.mono/
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+**/*.log
+**/mono_crash.*

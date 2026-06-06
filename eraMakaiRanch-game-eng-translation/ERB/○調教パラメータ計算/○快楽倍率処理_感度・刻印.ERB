@@ -1,0 +1,142 @@
+﻿
+;感度に上乗せする補正
+@SENSITIVE_FIX_CALC_KANDO
+
+;ABL:Ａ感度→10
+;SENSITIVE_FIX:0→Ａ　以下ＢＣＶＮ
+FIX = 0
+
+;淫紋付与で+50%補正
+SIF MARK:淫紋
+	FIX += 50
+
+;媚薬なら+50%補正、媚薬粘液は+100%補正
+IF TFLAG:媚薬粘液使用中
+	FIX += 100
+ELSEIF TFLAG:媚薬使用中
+	FIX += 50
+ENDIF
+
+;拘束中で目隠しされているとマゾっ気により増加
+SIF TFLAG:目隠し && TFLAG:拘束BIT
+	FIX += (ABL:マゾっ気 *2)
+VARSET SENSITIVE_FIX,FIX
+
+
+;責め方法と中毒による感度倍率上乗せ
+;Ｃ→元々敏感部位ということで条件なし+50%
+SENSITIVE_FIX:2 += 50
+
+;Ｎ→クリほどでないけど敏感部位ということで条件なし+20%
+SENSITIVE_FIX:4 += 20
+
+;Ｂ、Ｎ→搾乳中なら母乳体質、搾乳中毒、母乳濃度で増加
+IF TFLAG:搾乳責め
+	;搾乳中毒が上がりやすいので5ずつ→3ずつ→1ずつの弱めにする
+	FIX = ABL:搾乳中毒 *1
+	FIX += (LIMIT(ABL:搾乳中毒,0,20) *2)
+	FIX += (LIMIT(ABL:搾乳中毒,0,10) *2)
+	FIX += (MARK:母乳体質 *10)
+	FIX += (MARK:魔力母乳体質 *5)
+	FIX += (ABL:母乳濃度 *5)
+	SENSITIVE_FIX:1 += FIX
+	SENSITIVE_FIX:4 += FIX
+ENDIF
+
+
+
+;ここから先PLAYER=あなたの場合のみ
+SIF PLAYER
+	RETURN
+
+;Ａ→Ａ挿入時に尻穴射精中毒、Ａ名器で増加
+;恋慕以上ならあなたとＡセックスした回数で増加
+IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	SENSITIVE_FIX:0 += (ABL:尻穴射精中毒 *2)
+	SENSITIVE_FIX:0 += (TALENT:Ａ名器 *10)
+	SIF ＃陥落状態／恋慕以上＃
+		SENSITIVE_FIX:0 += LIMIT(EXP:経験回数／あなた／Ａセックス /5,0,100)
+ENDIF
+
+;Ｂ→パイズリ中なら乳内射精中毒で増加
+;恋慕以上であなたペニスならあなたにパイズリした回数で増加
+IF GETBIT(＃Ｐ使用／パイズリ＃) || TEQUIP:触手強制パイズリ
+	SENSITIVE_FIX:1 += (ABL:乳内射精中毒 *2)
+	SIF ＃陥落状態／恋慕以上＃ && GETBIT(＃Ｐ使用／パイズリ＃)
+		SENSITIVE_FIX:1 += LIMIT(EXP:経験回数／あなた／パイズリ /5,0,100)
+ENDIF
+
+;Ｖ→Ｖ挿入時に膣内射精中毒、名器で増加
+;恋慕以上ならあなたとセックスした回数で増加
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	SENSITIVE_FIX:3 += (ABL:膣内射精中毒 *2)
+	SENSITIVE_FIX:3 += (TALENT:名器 *10)
+	SIF ＃陥落状態／恋慕以上＃
+		SENSITIVE_FIX:3 += LIMIT(EXP:経験回数／あなた／Ｖセックス /5,0,100)
+ENDIF
+
+;Ｎ→恋慕以上であなたに吸われている場合吸われた回数で増加
+SIF !PLAYER && TFLAG:乳吸い && ＃陥落状態／恋慕以上＃
+	SENSITIVE_FIX:4 += LIMIT(EXP:経験回数／あなた／授乳 /5,0,100)
+
+
+
+;刻印補正
+@SENSITIVE_FIX_CALC_MARK
+
+VARSET MARK_FIX,100
+
+;Ａ
+SIF MARK:淫尻
+	MARK_FIX:0 += 50
+SIF MARK:肉便器
+	MARK_FIX:0 += 20
+IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	SIF MARK:尻穴便器
+		MARK_FIX:0 += 30
+	SIF MARK:おしりまんこ
+		MARK_FIX:0 += 20
+	SIF MARK:尻穴射精中毒
+		MARK_FIX:0 += 10
+ENDIF
+
+;Ｂ
+SIF MARK:淫乳
+	MARK_FIX:1 += 50
+IF TFLAG:搾乳責め
+	SIF MARK:搾乳家畜
+		MARK_FIX:1 += 30
+	SIF MARK:搾乳奴隷
+		MARK_FIX:1 += 20
+	SIF MARK:搾乳中毒
+		MARK_FIX:1 += 10
+	SIF MARK:ミルクサーバー
+		MARK_FIX:1 += 10
+	SIF MARK:ホルスタイン
+		MARK_FIX:1 += 5
+	SIF MARK:ミルクタンク
+		MARK_FIX:1 += 5
+ENDIF
+
+;Ｃ
+SIF MARK:淫核
+	MARK_FIX:2 += 50
+
+;Ｖ
+SIF MARK:淫壺
+	MARK_FIX:3 += 50
+SIF MARK:肉便器
+	MARK_FIX:3 += 20
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	SIF MARK:精液便女
+		MARK_FIX:3 += 30
+	SIF MARK:搾精おまんこ
+		MARK_FIX:3 += 20
+	SIF MARK:膣内射精中毒
+		MARK_FIX:3 += 10
+ENDIF
+
+;乳房と乳首はここまで倍率補正同じ
+MARK_FIX:4 = MARK_FIX:1
+
+

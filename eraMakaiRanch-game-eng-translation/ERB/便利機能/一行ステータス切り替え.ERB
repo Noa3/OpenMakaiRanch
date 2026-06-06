@@ -1,0 +1,28 @@
+﻿
+;1行表示のステータスを切り替える
+@CHANGE_TABLE_STATUS
+
+CALL MANYL(5)
+PRINTL Change which stats are displayed?
+PRINTL ・Name, Condition, and Breast Size are always displayed
+CALL HALFLINE
+PRINTL [ 0] HP+Screen Options
+PRINTL 　　（Schedule or Milk Richness+Milk Production+Lesb）
+PRINTL [ 1] HP+Milk Richness+Milk Production
+PRINTL [ 2] Spirit Energy Status
+PRINTL [ 3] Mana Status
+PRINTL [ 4] 身長+種族+ヘアスタイル
+PRINTL [ 5] Race+Status or Title
+PRINTL [ 6] Job Ability
+PRINTL [ 7] 母乳濃度+母乳生産力+陥落状態詳細
+PRINTL [ 8] 予定スケジュール+スケジュール（メイン画面のみ、調教対象選択などではHP+母乳）
+PRINTL
+PRINTL [99] Cancel
+INPUT
+SIF RESULT >= 0 && RESULT < TABLE_STATUS_PAGE
+	FLAG:一覧ステータス切り替え = RESULT
+
+
+
+
+

@@ -1,0 +1,149 @@
+﻿
+;基礎・プロフィールの変更手動入力
+;ARGS→CHANGE_STATE
+@SELF_CHARA_MAKE_SENSITIVE_INPUT_MANUAL(ARGS)
+
+SELECTCASE ARGS
+CASE "Ａ感度","Ｂ感度","Ｃ感度","Ｖ感度","Ｎ感度"
+	PRINTFORML Enter %ABL_ENG(ARGS)% （10～{SENSITIVE_MAX}, rounded to 10）
+	SIF GROUPMATCH(ARGS,"Ｂ感度","Ｎ感度")
+		PRINTL If ＮSens is less than ＢSens, will be increased to ＢSens
+	INPUT
+	IF RESULT >= 10 && RESULT < 1000
+		ABL:ARGS = RESULT
+		ABL:ARGS -= (ABL:ARGS %10)
+		CALL NIPPLE_SENSITIVE_FIX
+	ENDIF
+		
+CASE "母性","技巧","奉仕精神","マゾっ気","レズっ気"
+	PRINTFORML Enter %ABL_ENG(ARGS)% Level.（0～30）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 30
+		ABL:ARGS = RESULT
+
+
+;2ページ目
+CASE "母性本能","隷属願望","サド","幼稚","猫舌","ギザ歯","名器","Ａ名器","おくちまんこ","極上乳圧"
+	INVERTBIT TALENT:ARGS,0
+
+CASE "性知識乏しい"
+	INVERTBIT TALENT:性知識乏しい,0
+	SIF TALENT:性知識乏しい
+		TALENT:性知識豊富 = 0
+
+;3ページ目
+CASE "性経験"
+	;基礎の性経験をそのまま呼ぶ
+	CALL SELF_CHARA_MAKE_PROFILE_INPUT_MANUAL("性経験")
+	
+CASE "処女結界","処女","Ａ処女","Ｍ処女","パイズリ未経験","キス未経験","授乳未経験"
+	INVERTBIT TALENT:ARGS,0
+	
+	;処女リセットまとめる関数
+	CALL SELECT_VIRGIN_RESET
+
+
+;4ページ目
+CASE "初経験／Ｖ"
+	PRINTL Enter name of the first Ｖ sex partner.
+	INPUTS
+	CSTR:初経験／Ｖ = %RESULTS%
+	
+CASE "初経験／Ａ"
+	PRINTL Enter name of the first Ａ sex partner.
+	INPUTS
+	CSTR:初経験／Ａ = %RESULTS%
+	
+CASE "初経験／Ｍセックス"
+	PRINTL Enter name of the first Ｍ sex partner.
+	INPUTS
+	CSTR:初経験／Ｍセックス = %RESULTS%
+	
+CASE "初経験／パイズリ"
+	PRINTL Enter name of the first paizuri partner.
+	INPUTS
+	CSTR:初経験／パイズリ = %RESULTS%
+	
+CASE "初経験／キス"
+	PRINTL Enter name of the first kiss partner.
+	INPUTS
+	CSTR:初経験／キス = %RESULTS%
+	
+CASE "初経験／授乳"
+	PRINTL Enter name of the first breastfeeding partner. （other than a baby）
+	INPUTS
+	CSTR:初経験／授乳 = %RESULTS%
+
+CASE "初経験／一括"
+	PRINTL Enter name of the first partner. This will be applied to all possible firsts.
+	INPUTS
+	SIF !TALENT:処女
+		CSTR:初経験／Ｖ = %RESULTS%
+	SIF !TALENT:Ａ処女
+		CSTR:初経験／Ａ = %RESULTS%
+	SIF !TALENT:Ｍ処女
+		CSTR:初経験／Ｍセックス = %RESULTS%
+	SIF !TALENT:パイズリ未経験
+		CSTR:初経験／パイズリ = %RESULTS%
+	SIF !TALENT:キス未経験
+		CSTR:初経験／キス = %RESULTS%
+	SIF !TALENT:授乳未経験
+		CSTR:初経験／授乳 = %RESULTS%
+
+CASE "地上経験人数／Ｖ"
+	PRINTL Enter number of Ｖ sex partners.（1～99999）
+	INPUT
+	SIF RESULT > 0 && RESULT < 100000
+		EXP:地上経験人数／ニンゲン／Ｖセックス = RESULT
+	
+CASE "地上経験人数／Ａ"
+	PRINTL Enter number of Ａ sex partners.（1～99999）
+	INPUT
+	SIF RESULT > 0 && RESULT < 100000
+		EXP:地上経験人数／ニンゲン／Ａセックス = RESULT
+	
+CASE "地上経験人数／Ｍセックス"
+	PRINTL Enter number of Ｍ sex partners.（1～99999）
+	INPUT
+	SIF RESULT > 0 && RESULT < 100000
+		EXP:地上経験人数／ニンゲン／Ｍセックス = RESULT
+	
+CASE "地上経験人数／パイズリ"
+	PRINTL Enter the number of paizuri partners.（1～99999）
+	INPUT
+	SIF RESULT > 0 && RESULT < 100000
+		EXP:地上経験人数／ニンゲン／パイズリ = RESULT
+	
+CASE "地上経験人数／キス"
+	PRINTL Enter the number of people kissed.（1～99999）
+	INPUT
+	SIF RESULT > 0 && RESULT < 100000
+		EXP:地上経験人数／ニンゲン／キス = RESULT
+	
+CASE "地上経験人数／授乳"
+	PRINTL Enter the number of people breastfed, other than babies.（1～99999）
+	INPUT
+	SIF RESULT > 0 && RESULT < 100000
+		EXP:地上経験人数／ニンゲン／授乳 = RESULT
+
+CASE "地上経験人数／一括"
+	PRINTL Enter the number of people experienced.（1～99999）This will be applied to all possible fields.
+	INPUT
+	SIF RESULT <= 0 || RESULT >= 100000
+		RETURN
+	SIF !TALENT:処女
+		EXP:地上経験人数／ニンゲン／Ｖセックス = RESULT
+	SIF !TALENT:Ａ処女
+		EXP:地上経験人数／ニンゲン／Ａセックス = RESULT
+	SIF !TALENT:Ｍ処女
+		EXP:地上経験人数／ニンゲン／Ｍセックス = RESULT
+	SIF !TALENT:パイズリ未経験
+		EXP:地上経験人数／ニンゲン／パイズリ = RESULT
+	SIF !TALENT:キス未経験
+		EXP:地上経験人数／ニンゲン／キス = RESULT
+	SIF !TALENT:授乳未経験
+		EXP:地上経験人数／ニンゲン／授乳 = RESULT
+
+ENDSELECT
+
+

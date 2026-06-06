@@ -1,0 +1,123 @@
+﻿
+;システム・設定一覧
+@LIST_CONFIG_SYSTEM
+
+PRINTL --- 《 System Settings 》 ---
+ALIGNMENT LEFT
+DRAWLINE
+FLAG_REF = 2500
+FOR LOCAL,0,70
+	SIF FLAGNAME:(LOCAL +FLAG_REF) == ""
+		CONTINUE
+	CALL PRINT_CONFIG_SYSTEM(LOCAL)
+NEXT
+PRINTL
+PRINTL [70] Random character status concealment
+PRINTL [71] Sex restrictions based on height
+
+
+
+;ARG→LOCAL　FLAG_REFを足すことでフラグ番号
+@PRINT_CONFIG_SYSTEM(ARG)
+
+FLAG_NAME = %FLAGNAME:(ARG +FLAG_REF)%
+SELECTCASE FLAG_NAME
+CASE "膨乳一時停止バストサイズ","豊穣上限バストサイズ"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),37%：%PRINT_BUSTSIZE(FLAG:FLAG_NAME)%({FLAG:FLAG_NAME})
+
+CASE "夕食入浴順"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),37%：\@ (FLAG:FLAG_NAME) ? Bath→Dinner # Dinner→Bath \@
+
+CASEELSE
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),37%
+	CALL PRINT_ONOFF(FLAG:FLAG_NAME)
+ENDSELECT
+PRINTL
+
+
+
+;ARG→INPUT
+@CHANGE_CONFIG_SYSTEM(ARG)
+
+SELECTCASE ARG
+CASE 70	;ランダムキャラのステータス隠蔽設定
+	CALL HIDE_RANDOM_STATUS_CONFIG
+CASE 71	;身長によるプレイ制限設定
+	CALL HEIGHT_PLAY_LIMIT_CONFIG
+CASEELSE
+	CALL CHANGE_CONFIG_SYSTEM_NAME(ARG)
+ENDSELECT
+
+
+
+@CHANGE_CONFIG_SYSTEM_NAME(ARG)
+
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+CALL CHANGE_CONFIG_INVERTBIT
+SIF RESULT
+	RETURN
+SELECTCASE FLAG_NAME
+CASE "膨乳一時停止バストサイズ"
+	PRINTL Set which size to pause at for breast expansion purposes
+	PRINTL （Ignored if manually increasing or if schedule is continued）
+	PRINTL
+	PRINTL [16] 【P】 (Default)
+	CALL INPUT_BUST(1)
+	SIF RESULT > 0
+		FLAG:FLAG_NUM = RESULT
+
+CASE "豊穣上限バストサイズ"
+	PRINTL Set the maximum increase to bust size by ＜Abundance Increase＞ skill.
+	PRINTL
+	PRINTL [26] 【Z】 (Default)
+	CALL INPUT_BUST(1)
+	SIF RESULT > 0
+		FLAG:FLAG_NUM = RESULT
+		
+CASE "イベントによる日付の経過"
+	PRINTL When making construction requests or progressing milestones, you can choose to either increase the elapsed days to match the world setting or
+	PRINTL keep the elapsed days as they are based on the period the player has progressed.
+	PRINTL
+	PRINTLC [ 0] Do not increase (Default)
+	PRINTLC [ 1] Increase
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+		
+CASE "あなたの触手もあなた扱い"
+	PRINTL When using 【Tentacle Magic】during insertion・milking・etc
+	PRINTL Describe the scene as being performed by「Tentacle」or「You」
+	PRINTL
+	PRINTLC [ 0] Label as「Tentacle」
+	PRINTLC [ 1] Label as「You」 (Default)
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "体内凌辱で経験回数を増加"
+	PRINTL Increase the training count【Internal Violation】gives
+	PRINTL （Default：ON）
+	PRINTL
+	CALL ASK_ONOFF
+	FLAG:FLAG_NUM = RESULT
+
+CASE "半減／母乳濃度EXP増加値"
+	PRINTL Halves EXP gain for【Milk Richness】.
+	PRINTL （Default：OFF）
+	PRINTL
+	CALL ASK_ONOFF
+	FLAG:FLAG_NUM = RESULT
+
+CASE "ON／OFF項目の詳細を飛ばして反転"
+	PRINTL For all toggable options, no explaination for【ON】will be given.
+	CALL ASK_ONOFF
+	FLAG:ON／OFF項目の詳細を飛ばして反転 = RESULT
+
+CASE "夕食入浴順"
+	PRINTL Dinner and bathing order during evening will be scheduled as follows:
+	PRINTL
+	PRINTL [ 0] Dinner→Bath (Default)
+	PRINTL [ 1] Bath→Dinner
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+ENDSELECT
+

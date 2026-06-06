@@ -1,0 +1,99 @@
+﻿
+;アイテム説明と購入数
+@ITEM_DETAIL_DRUG
+
+;対応IDでないなら汎用出して帰る
+IF SELECT_ITEM < ITEM_ID_MIN || SELECT_ITEM >= ITEM_ID_MAX || ITEMNAME:SELECT_ITEM == ""
+	PRINTL  《 Item Descriptions Shown Here 》
+	RETURN
+	
+;とりあえずアイテム名、価格、所持数を出す
+ELSE
+	PRINTFORML %ITEMS_ENG(ITEMNAME:SELECT_ITEM)%：%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%EP  {ITEM:SELECT_ITEM,3} owned
+ENDIF
+PRINTL
+
+;天界種族用の共通表示・参照アイテム名ずらし
+IF STRCOUNT(ITEMNAME:SELECT_ITEM,"天界")
+	CALL PRINTL_WORD_COLOR,@"For use with【Celestial Races】 *Note: Currently inactive due to being on planned/testing stage","黄色"
+	ITEM_NAME = %ITEMNAME:(SELECT_ITEM -20)%
+ELSE
+	ITEM_NAME = %ITEMNAME:SELECT_ITEM%
+ENDIF
+SELECTCASE ITEM_NAME
+
+CASE "母乳分泌促進薬"
+	PRINTFORML A drug that induces lactation even if the target isn't pregnant by causing an orgasm at the %SAVESTR:表記／乳房% or nipples.
+	PRINTFORML The effect will cause milk to be produced even without pregnancy.
+	PRINTL
+	PRINTL Since it degrades over time, make sure to induce orgasms during training while the drug is in effect.
+
+CASE "魔力母乳分泌促進薬"
+	PRINTFORML After use, inducing an orgasm at the %SAVESTR:表記／乳房% or nipples will
+	PRINTFORML convert mana into %SAVESTR:表記／母乳% and cause lactation.
+	PRINTFORML The body will prioritize storing %SAVESTR:表記／母乳% over using mana,
+	PRINTL resulting in an inability to use mana effectively in combat.
+	PRINTL
+	PRINTL Since it breaks down over time, make sure to induce an orgasm during the training when used.
+
+CASE "育乳促進薬"
+	PRINTFORML A drug that makes the %SAVESTR:表記／乳房% more likely to grow when stimulated for a period after use.
+	PRINTL Growth occurs during sleep.
+	PRINTL
+	PRINTL ※ Currently ineffective due to being in the experimental stage.
+
+CASE "濃厚母乳促進薬"
+	PRINTFORML A drug that gradually increases the richness of %SAVESTR:表記／母乳% when milked over a period of time.
+	PRINTL
+	PRINTL ※ Currently ineffective due to being in the experimental stage.
+
+CASE "ミルクタンク促進薬"
+	PRINTFORML A drug that gradually increases the milk production capacity of %SAVESTR:表記／母乳% when milked over a period of time.
+	PRINTL
+	PRINTL ※ Currently ineffective due to being in the experimental stage.
+
+CASE "母乳生成促進薬"
+	PRINTFORML A drug that promotes the production of %SAVESTR:表記／母乳% and restores [Breast milk capacity] and [Breast milk production] during use.
+	PRINTL It places a significant burden on the female body, so avoid overuse.
+	PRINTL
+	PRINTL ※ Currently ineffective due to being in the experimental stage.
+
+
+;即効性
+CASE "母乳体質化薬"
+	PRINTFORML A drug that induces lactation even if the target isn't pregnant. Works immediately.
+	
+CASE "魔力母乳体質化薬"
+	PRINTL A drug that induces【Mana-Infused Milk】. Works immediately.
+	
+CASE "膨乳薬"
+	PRINTL A drug that enlarges breasts by one size.
+	PRINTL 【Divine Breasts】 is the maximum size reachable through this drug.
+	
+CASE "母乳濃厚化薬"
+	PRINTL A drug that increases the richness of breast milk.
+	PRINTL Greater richness requires multiple dosages.
+	
+CASE "浸透媚薬"
+	PRINTFORML A drug that increases the sensitivity of any body part. (Max {SENSITIVE_MAX}\%)
+	PRINTFORML Effect is doubled when used on Nipples, Clit
+
+CASE "超乳薬"
+	PRINTL A drug that enlarges breasts by several sizes.
+	PRINTL Is effective even beyond the limits of the ＜Breast Expansion Drug＞, but will be less effective. 
+	PRINTL However, it is very taxing on the female and greatly depletes her strength.
+
+CASE "受容器鋭敏化薬"
+	PRINTFORML  A drug that increases sensitivity of the whole body by making brain more receptive to pleasure. (Max {SENSITIVE_MAX}\%)
+
+CASE "多臓器活性薬"
+	PRINTL A chemical that activates the internal organs of the body, especially the liver, 
+	PRINTL making the Mana and Spiritual Power in a female's body rapidly circulate, such that
+	PRINTFORML milk will contain 3x more Mana and Spirit Energy while the effect is active.
+	PRINTL However, the effect rapidly decays and will only last one training session.
+	PRINTFORML Due to Makai safety regulations, milk produced while under the effects of this drug cannot be sold.
+
+;天界種族用→アイテム名ずらしで対応
+ENDSELECT
+
+

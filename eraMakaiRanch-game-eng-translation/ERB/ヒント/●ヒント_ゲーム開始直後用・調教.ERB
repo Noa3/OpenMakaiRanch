@@ -1,0 +1,31 @@
+﻿
+;チュートリアル用
+@TUTORIAL_TIPS_TRAIN
+
+;まだ【母乳体質】がいないなら方法誘導
+IF !CMATCH(MARK:母乳体質,1)
+	IF !GETBIT(＃有効薬品／魔力母乳分泌促進薬＃)
+		CALL PRINTL_WORD_COLOR("To make a slave 【Lactating】, restrain them if rebellious, remove their clothes, and expose their nipples.","水色")
+		CALL PRINTL_WORD_COLOR("With【Special】ON →【Body Modification】→＜Mana-Infused Breast Milk Stimulant＞.","水色")
+		RETURN
+	
+	;イかせればOK
+	ELSE
+		CALL PRINTL_WORD_COLOR("Make her cum from her breasts （Ｂ or Ｎ climax）while ＜Mana-Infused Breast Milk Stimulant＞ is active","水色")
+		CALL PRINTL_WORD_COLOR("and she will gain【Mana-Infused Milk】.","水色")
+		RETURN
+	ENDIF
+
+;まだ出荷してないなら搾り方
+ELSEIF !FLAG:母乳合計出荷量 && !CFLAG:出荷予定母乳量
+	CALL PRINTL_WORD_COLOR,@"With【Nipples】and【Tools】ON → Select【Livestock Milker】to get %SAVESTR:表記／母乳% from your slave.","水色"
+	CALL PRINTL_WORD_COLOR,@"If there is something other than %SAVESTR:表記／母乳% on the slave's nipples, with【Nipples】ON→ select【Clean Chest Stains】first.","水色"
+	RETURN
+ENDIF
+
+
+
+
+
+
+

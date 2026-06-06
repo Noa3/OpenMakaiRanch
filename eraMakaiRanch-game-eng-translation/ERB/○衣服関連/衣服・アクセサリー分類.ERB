@@ -1,0 +1,92 @@
+﻿
+;着替え時などに衣服・アクセサリーの種類を確認するための関数
+;ARGS→選択アイテム
+@CLOTHE_CATEGORY_CHECK(ARGS)
+
+;一旦消去
+RESULTS =
+SELECTCASE ARGS
+CASE "レオタード","紐","ビキニ","牛柄ビキニ","スリングショット","スクール水着","牛柄穴空きビキニ","触手服","牛柄スリングショット"
+	RESULTS = 下着上下
+CASE "マイクロビキニ","牛柄マイクロビキニ"
+	RESULTS = 下着上下／極小
+
+{
+CASE "ブラ","さらし","授乳スリットブラ","ビスチェ","乳首露出ブラ","スポーツブラ",
+"ねこブラ","ひもブラ","フロントホックブラ","眼帯ブラ"
+}
+	RESULTS = 下着上
+CASE "眼帯ブラ"
+	RESULTS = 下着上／極小
+CASE "ニップレス","乳首札"
+	RESULTS = 下着上／シール
+
+CASE "ショーツ","局部露出ショーツ","縞パン","ドロワーズ","ひもパン","トランクス"
+	RESULTS = 下着下
+CASE "Ｔバック"
+	RESULTS = 下着下／極小
+CASE "前貼り","Ｃストリング","股間札"
+	RESULTS = 下着下／シール
+
+CASE "メガネ","伊達メガネ","眼帯"
+	RESULTS = 眼
+
+{
+CASE "カチューシャ","シスターヴェール","乳牛つけみみ","リボン","ティアラ","メイドブリム",
+"乳牛メイドカチューシャ","魔術師帽","麦わら帽子","月桂冠","バニーつけみみ","猫耳カチューシャ"
+}
+	RESULTS = 頭
+
+CASE "グローブ","ロンググローブ","牛柄ロンググローブ"
+	RESULTS = 腕
+
+CASE "ソックス","ハイソックス","ニーハイソックス","サイハイソックス","ガーターベルト","牛柄ニーハイソックス","網タイツ"
+	RESULTS = 脚
+
+CASE "チョーカー","カウベル"
+	RESULTS = 首
+
+CASE "マント","ケープ","コート","エプロン","オーバーオール","ギャルソンエプロン","パーカー","カーディガン"
+	RESULTS = 上着
+ENDSELECT
+SIF RESULTS != ""
+	RETURN
+
+;後にループさせたほうが処理が重くなくてよさそう+そもそも例外処理を外せる
+;該当なしの場合FORループして名前一致したら鎧とか衣服とか
+;ITEM:作業着セット→1000
+FOR LOCAL,1000,1050
+	SIF ARGS != ITEMNAME:LOCAL
+		CONTINUE
+	RESULTS = 衣服一式
+	RETURN
+NEXT
+
+;ITEM:革の鎧→1050
+FOR LOCAL,1050,1100
+	SIF ARGS != ITEMNAME:LOCAL
+		CONTINUE
+	RESULTS = 鎧
+	RETURN
+NEXT
+
+;その他
+FOR LOCAL,1000,2000
+	SIF ARGS != ITEMNAME:LOCAL
+		CONTINUE
+	RESULTS = 衣服
+NEXT
+
+
+
+;着用下着が紐ほどきタイプか
+;ARGS→選択アイテム
+@LINGERIE_STRING_CHECK(ARGS)
+
+SELECTCASE ARGS
+CASE "マイクロビキニ","ビキニ","牛柄ビキニ","牛柄マイクロビキニ","牛柄穴空きビキニ","眼帯ブラ","ひもブラ","ひもパン"
+	RETURN 1
+ENDSELECT
+
+
+

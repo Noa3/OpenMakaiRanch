@@ -1,0 +1,25 @@
+﻿
+;アイテム説明と購入数
+@ITEM_DETAIL_LACTATION_MACHINE
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "魔動快楽搾乳器"
+	;ここではアイテム毎に価格など出すことにする
+	PRINTFORML %ITEMS_ENG(ITEMNAME:SELECT_ITEM)%：%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%G Owned{ITEM:SELECT_ITEM,3}x 
+	PRINTL
+	PRINTL Convert a dairy cow milking machine for human usage.
+	PRINTL In addition to the pleasuring the nipple by increasing and decreasing the sucking force,
+	PRINTL an apparatus inside the suction cup also moves irregularly to stimulate the nipples to give out more milk.
+	
+CASE "触手快楽搾乳器"
+	PRINTFORML %ITEMS_ENG(ITEMNAME:SELECT_ITEM)%：%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%MP Owned{ITEM:SELECT_ITEM,3}x 
+	PRINTL
+	PRINTFORML Convert a dairy cow milking machine for human usage using %CALLNAME:0%'s Mana.
+	PRINTL Tentacles will entwine around the female's breasts, performing intense milking torture, 
+	PRINTL using thin tentacles to toy with her nipples and a vacuum to squeeze out milk.
+	
+CASEELSE
+	PRINTL  --- Device Descriptions Shown Here --- 
+ENDSELECT
+
+

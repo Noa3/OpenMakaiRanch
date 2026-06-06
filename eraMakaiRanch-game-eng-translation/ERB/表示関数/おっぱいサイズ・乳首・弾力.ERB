@@ -1,0 +1,210 @@
+﻿
+;おっぱい関連まとめて表示
+@PRINT_BUST_DETAIL(ARG)
+
+;元々表示を広域変数制御
+IF !ORIGINAL_STATUS
+	PRINTFORM Breast Size：%PRINT_BUSTSIZE(ABL:バストサイズ)%
+	CALL PRINT_BUST_C(1,1,1)
+	CALL PRINT_NIPPLE_COLOR
+ELSE
+	CALL PRINT_ORIGINAL_BUST
+ENDIF
+SIF ARG
+	PRINTL
+
+
+
+;おっぱいサイズをランダム要素なしで表示
+;FUNCTION型
+@PRINT_BUST
+#FUNCTIONS
+#DIMS BUSTSIZE
+
+BUSTSIZE =
+SIF MARK:淫乳
+	BUSTSIZE += "Lewd Breasts"
+IF TALENT:超乳
+	BUSTSIZE += "Supreme Breasts"
+ELSEIF TALENT:魔乳
+	BUSTSIZE += "Magical Breasts"
+ELSEIF TALENT:神乳
+	BUSTSIZE += "Divine Breasts"
+ELSEIF TALENT:爆乳
+	BUSTSIZE += "Enormous Breasts"
+ELSEIF TALENT:豊乳
+	BUSTSIZE += "Huge Breasts"
+ELSEIF TALENT:巨乳
+	BUSTSIZE += "Large Breasts"
+ELSEIF TALENT:並乳
+	BUSTSIZE += "Average Breasts"
+ELSEIF TALENT:貧乳
+	BUSTSIZE += "Small Breasts"
+ELSEIF TALENT:絶壁
+	BUSTSIZE += "Flat Chest"
+ELSE
+	BUSTSIZE += "Soft Breasts"
+ENDIF
+RETURNF BUSTSIZE
+
+
+
+;おっぱいサイズTALENT表示
+;FUNCTION型
+@PRINT_BUSTSIZE_TALENT
+#FUNCTIONS
+
+IF TALENT:超乳
+	RETURNF "Supreme Breasts"
+ELSEIF TALENT:魔乳
+	RETURNF "Magical Breasts"
+ELSEIF TALENT:神乳
+	RETURNF "Divine Breasts"
+ELSEIF TALENT:爆乳
+	RETURNF "Enormous Breasts"
+ELSEIF TALENT:豊乳
+	RETURNF "Huge Breasts"
+ELSEIF TALENT:巨乳
+	RETURNF "Large Breasts"
+ELSEIF TALENT:並乳
+	RETURNF "Average Breasts"
+ELSEIF TALENT:貧乳
+	RETURNF "Small Breasts"
+ELSEIF TALENT:絶壁
+	RETURNF "Flat Chest"
+ELSE
+	RETURNF "Soft Breasts"
+ENDIF
+
+
+
+;CALL型
+;ARG→ピンク色
+;ARG:1→【】囲み
+;ARG:2→弾力表示
+;ARG:3 Centering
+@PRINT_BUST_C(ARG,ARG:1,ARG:2=0,ARG:3=0)
+#DIMS BUSTSIZE
+#DIMS BUSTSIZE_S
+#DIMS BUSTSIZE_E
+BUSTSIZE_S =
+BUSTSIZE =
+BUSTSIZE_E =
+
+SIF ARG:1
+	BUSTSIZE_S = 【
+
+;ランダムキャラメイク中に来た時隠蔽
+IF GETBIT(＃ステータス隠蔽／おっぱい詳細＃) && !GETBIT(＃再シャッフル／おっぱい＃) && FLAG:キャラメイク隠蔽有効
+ELSE
+	SIF ARG:2
+		BUSTSIZE += BREAST_FIRMNESS_ENG(CSTR:乳弾力)
+		SIF CSTR:乳弾力 != ""
+			BUSTSIZE += " "
+ENDIF
+SIF MARK:淫乳
+	BUSTSIZE += "Lewd "
+
+IF TALENT:超乳
+	BUSTSIZE += "Supreme Breasts"
+ELSEIF TALENT:魔乳
+	BUSTSIZE += "Magical Breasts"
+ELSEIF TALENT:神乳
+	BUSTSIZE += "Divine Breasts"
+ELSEIF TALENT:爆乳
+	BUSTSIZE += "Enormous Breasts"
+ELSEIF TALENT:豊乳
+	BUSTSIZE += "Huge Breasts"
+ELSEIF TALENT:巨乳
+	BUSTSIZE += "Large Breasts"
+ELSEIF TALENT:並乳
+	IF MARK:淫乳
+		BUSTSIZE += "Breasts"
+	ELSE
+		BUSTSIZE += "Average Breasts"
+	ENDIF
+ELSEIF TALENT:貧乳
+	BUSTSIZE += "Small Breasts"
+ELSEIF TALENT:絶壁
+	IF MARK:淫乳
+		BUSTSIZE += "Chest"
+	ELSE
+		BUSTSIZE += "Flat Chest"
+	ENDIF
+ELSE
+	BUSTSIZE += "Soft Breasts"
+ENDIF
+SIF ARG:1
+	BUSTSIZE_E =  】
+SIF ARG
+	SETCOLOR 0xFF70FF
+SIF ARG:3
+	BUSTSIZE = %CENTER(BUSTSIZE, 24)%
+PRINTFORM %BUSTSIZE_S%%BUSTSIZE%%BUSTSIZE_E%
+RESETCOLOR
+
+
+
+;CALL型：バストサイズを指定
+;ARG→0:通常色　1:ピンク色
+;ARG:1→0:【】なし　1:【】あり
+;ARG:2→指定バストサイズ
+@PRINT_BUSTSIZE_SPECIFY(ARG,ARG:1,ARG:2)
+#DIMS BUSTSIZE
+
+BUSTSIZE =
+SIF ARG:1
+	BUSTSIZE += "【"
+
+;元々表示のとき弾力も
+SIF ORIGINAL_STATUS
+	BUSTSIZE += BREAST_FIRMNESS_ENG(CSTR:初期値／乳弾力)
+SELECTCASE ARG:2
+CASE IS >= BUSTSIZE_超乳
+	BUSTSIZE += BUST_ENG_SHORT("超乳")
+CASE IS >= BUSTSIZE_魔乳
+	BUSTSIZE += BUST_ENG_SHORT("魔乳")
+CASE IS >= BUSTSIZE_神乳
+	BUSTSIZE += BUST_ENG_SHORT("神乳")
+CASE IS >= BUSTSIZE_爆乳
+	BUSTSIZE += BUST_ENG_SHORT("爆乳")
+CASE IS >= BUSTSIZE_豊乳
+	BUSTSIZE += BUST_ENG_SHORT("豊乳")
+CASE IS >= BUSTSIZE_巨乳
+	BUSTSIZE += BUST_ENG_SHORT("巨乳")
+CASE IS >= BUSTSIZE_並乳
+	BUSTSIZE += BUST_ENG_SHORT("並乳")
+CASE IS >= BUSTSIZE_貧乳
+	BUSTSIZE += BUST_ENG_SHORT("貧乳")
+CASE BUSTSIZE_絶壁
+	BUSTSIZE += BUST_ENG_SHORT("絶壁")
+ENDSELECT
+SIF ARG:1
+	BUSTSIZE +=  "】"
+SIF ARG
+	SETCOLOR 0xFF70FF
+PRINTFORM %BUSTSIZE%
+RESETCOLOR
+
+
+
+;乳首の色
+@PRINT_NIPPLE_COLOR
+
+;ランダムキャラメイク中に来た時隠蔽
+IF GETBIT(＃ステータス隠蔽／おっぱい詳細＃) && !GETBIT(＃再シャッフル／おっぱい＃) && FLAG:キャラメイク隠蔽有効
+	CALL PRINTL_WORD_COLOR("[Nipple color unknown] ","灰")
+	RETURN
+ENDIF
+SETCOLOR CFLAG:カラーコード／乳首
+PRINTFORML [Nipples：%NIPPLES_ENG(CSTR:乳首の色)%] 
+RESETCOLOR
+
+
+
+;乳弾力
+@PRINT_BUST_FEELING
+
+PRINTFORM %SAVESTR:表記／乳房% Firmness：%BREAST_FIRMNESS_ENG(CSTR:乳弾力)% 
+
+

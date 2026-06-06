@@ -1,0 +1,150 @@
+﻿
+;服の色ランダム
+@RANDOM_SLAVE_CLOTHE_COLOR
+
+;奴隷候補の今の服で変更
+;種族が色になるバグがここで起きていたので対策に衣服欄が空なら帰れ
+;直ったはずなので来ないと思うけどあって困るものでもないので置いとく
+SIF ＃着用衣服／名称＃ == ""
+	RETURN
+SELECTCASE ＃着用衣服／名称＃
+CASE "ドレス","バトルドレス","淫乱ドレス","ゴスロリ衣装","軍服"
+	STR_REF = 6720
+CASEELSE
+	STR_REF = 6700
+ENDSELECT
+STR_MAX = 19
+CALL STR_REF_SHUFFLE(STR_REF)
+
+;一部配色に優先がある服
+SELECTCASE ＃着用衣服／名称＃
+CASE "巫女服","戦闘用巫女服"
+	;元々紅白やろと想像つくので空欄多め
+	SIF RAND:100 < 50
+		RESULTS =
+
+CASE "法衣","忍装束","メイド服","戦闘用メイド服","修道服","戦闘用シスター服"
+	;なんとなく想像つくので空欄少し
+	SIF RAND:100 < 20
+		RESULTS =
+
+CASE "ローブ"
+	;白魔術士は白、黒は黒
+	IF CSTR:ジョブ == "白魔術士" && RAND:100 < 80
+		RESULTS = 白い
+	ELSEIF CSTR:ジョブ == "黒魔術士" && RAND:100 < 80
+		RESULTS = 黒い
+	ENDIF
+ENDSELECT
+
+;金と銀はやめとこうかな…　ベージュもなんかダサいな…
+;このとき+10%で空欄にするくらいでちょうどいいかも
+SIF GROUPMATCH(RESULTS,"金色","銀色","ベージュの") || RAND:100 < 10
+	RESULTS =
+CSTR:(EQUIP:装備中ID／衣服) = %RESULTS%
+
+
+
+;下着色ランダム
+@RANDOM_SLAVE_LINGERIE_COLOR
+#DIMS LINGERIE_COLOR
+
+STR_REF = 6820
+STR_MAX = 19
+CALL STR_REF_SHUFFLE(STR_REF)
+
+;ここはループ防止に再シャッフルしない
+LINGERIE_COLOR = %RESULTS%
+FOR LOCAL,3,5
+	SIF EQUIPNAME:LOCAL == "" || !EQUIP:LOCAL
+		CONTINUE
+	
+	;一旦さっき指定した色を入れる
+	CSTR:(EQUIP:LOCAL) = %LINGERIE_COLOR%
+	
+	;物によって特殊配色
+	SELECTCASE EQUIPNAME:(EQUIP:LOCAL)
+	CASE "さらし","前貼り"
+		;空欄
+		CSTR:(EQUIP:LOCAL) =
+	ENDSELECT
+NEXT
+
+
+
+;アクセサリー色ランダム
+@RANDOM_SLAVE_ACCESSORY_COLOR
+#DIMS ACCESSORY_COLOR
+
+STR_REF = 6700
+STR_MAX = 19
+CALL STR_REF_SHUFFLE(STR_REF)
+
+;ここはループ防止に再シャッフルしない　10%で空欄
+SIF GROUPMATCH(RESULTS,"金色","銀色","ベージュの") || RAND:100 < 10
+	RESULTS =
+ACCESSORY_COLOR = %RESULTS%
+FOR LOCAL,10,20
+	SIF EQUIPNAME:LOCAL == "" || !EQUIP:LOCAL
+		CONTINUE
+	
+	;一旦さっき指定した色を入れる
+	CSTR:(EQUIP:LOCAL) = %ACCESSORY_COLOR%
+	
+	;物によって特殊配色
+	SELECTCASE EQUIPNAME:(EQUIP:LOCAL)
+	CASE "マント"
+		CALL RANDOM_SLAVE_ACCESSORY_COLOR_EX(EQUIP:LOCAL)
+	CASE "ティアラ","チョーカー","ガーターベルト"
+		;空欄
+		CSTR:(EQUIP:LOCAL) =
+	CASE "シスターヴェール"
+		;服装＝修道服と同じ色
+		IF EQUIP:修道服
+			CSTR:(EQUIP:LOCAL) = %CSTR:GETNUM(ITEM,"修道服")%
+		ELSEIF EQUIP:戦闘用シスター服
+			CSTR:(EQUIP:LOCAL) = %CSTR:GETNUM(ITEM,"戦闘用シスター服")%
+		ENDIF
+	CASE "メガネ"
+		;形の変更
+		CALL RANDOM_SLAVE_ACCESSORY_GLASSES(EQUIP:LOCAL)
+	ENDSELECT
+NEXT
+
+
+
+;特殊配色
+;ARG→装備ID
+@RANDOM_SLAVE_ACCESSORY_COLOR_EX(ARG)
+
+STR_REF = 6720
+STR_MAX = 19
+CALL STR_REF_SHUFFLE(STR_REF)
+CSTR:ARG = %RESULTS%
+
+
+
+;メガネの形変更
+@RANDOM_SLAVE_ACCESSORY_GLASSES(ARG)
+
+;他アクセサリーと別個色判定
+STR_REF = 6700
+STR_MAX = 19
+CALL STR_REF_SHUFFLE(STR_REF)
+SIF GROUPMATCH(RESULTS,"金色","銀色","ベージュの") || RAND:100 < 10
+	RESULTS =
+CSTR:ARG = %RESULTS%
+
+;形状を追加
+STR_REF = 6800
+STR_MAX = 19
+CALL STR_REF_SHUFFLE(STR_REF)
+SIF RAND:100 < 20
+	RESULTS =
+CSTR:ARG += RESULTS
+
+
+
+
+
+

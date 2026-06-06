@@ -1,0 +1,144 @@
+﻿
+;絶頂メッセージ
+@PRINT_ECSTASY_MESSAGE
+
+;あなた主導かメッセージ表示状態の時だけ表示
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+SIF !NOWEX:総絶頂
+	RETURN
+
+;他の口上表示がなかった場合に口上表示
+SIF !MESSAGE_EXIST
+	CALL KOJO_PRINT("絶頂")
+SETCOLOR 0xFF70FF
+FOR LOCAL,0,5
+	SIF NOWEX:LOCAL
+		PRINTFORM %EX_ENG(EXNAME:LOCAL)%+{NOWEX:LOCAL} 
+NEXT
+RESETCOLOR
+
+
+
+;改行合わせ
+@SOURCE_UP_AFTER_BR_FIX
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+SIF LINEISEMPTY()
+	RETURN
+
+;調教中なら改行　スケジュール中なら4部位絶頂で改行
+IF TFLAG:調教中
+	PRINTL
+ELSE
+	SIF MATCH(NOWEX,0,0,5) <= 2
+		PRINTL
+ENDIF
+
+
+
+;HP増減メッセージ
+@SOURCE_UP_AFTER_HP_MESSAGE
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+SIF !LOSEBASE:体力 && !SOURCE:調教対象体力回復
+	RETURN
+LOCAL = SOURCE:調教対象体力回復 -LOSEBASE:体力
+IF LOCAL > 0
+	PRINTFORM HP+{LOCAL} 
+ELSEIF LOCAL < 0
+	PRINTFORM HP-{LOCAL *-1} 
+ENDIF
+SIF !BASE:体力
+	PRINT 【0 HP】
+
+
+
+;SP増減メッセージ
+@SOURCE_UP_AFTER_SP_MESSAGE
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+SIF !LOSEBASE:気力 && !SOURCE:調教対象気力回復
+	RETURN
+LOCAL = SOURCE:調教対象気力回復 -LOSEBASE:気力
+IF LOCAL > 0
+	PRINTFORM SP+{LOCAL} 
+ELSEIF LOCAL < 0
+	PRINTFORM SP-{LOCAL *-1} 
+ENDIF
+SIF !BASE:気力
+	PRINT 【SP0】
+
+
+
+;経験値表示
+@PRINT_EXP_MESSAGE
+#DIMS SOURCEWORD
+
+CALL HALFLINE
+FOR LOCAL,0,5
+	SIF SOURCE:LOCAL <= 0
+		CONTINUE
+	
+	;絶頂した部位はピンク
+	IF NOWEX:LOCAL
+		CALL PRINTL_WORD_COLOR,@"%PALAM_ENG(SOURCENAME:LOCAL)%+{SOURCE:LOCAL} ","桃"
+	ELSE
+		PRINTFORML %PALAM_ENG(SOURCENAME:LOCAL)%+{SOURCE:LOCAL} 
+	ENDIF
+NEXT
+SIF SOURCE:Ｖ潤滑追加 || SOURCE:愛液
+	PRINTFORML ＶLub+{SOURCE:Ｖ潤滑追加+SOURCE:愛液} 
+SIF SOURCE:Ａ潤滑追加
+	PRINTFORML ＡLub+{SOURCE:Ａ潤滑追加} 
+FOR LOCAL,30,100
+	SIF SOURCE:LOCAL <= 0
+		CONTINUE
+	SIF !GETBIT(＃上限到達後表示／性経験値＃) && EXP:LOCAL >= EXP_MAX
+		CONTINUE
+	SOURCEWORD = %PALAM_ENG(SOURCENAME:LOCAL)%+{SOURCE:LOCAL}
+	PRINTFORM %SOURCEWORD,24,LEFT%
+	SIF LOCAL >= 40
+		PRINTFORM <EXP+{PALAM:LOCAL}> 
+	PRINTL
+NEXT
+CALL HALFLINE
+
+
+
+;コンドーム外し表示
+@CONDOM_REMOVE_MESSAGE
+
+PRINTL 
+PRINTFORML 使用済みとなったコンドームを%SAVESTR:表記／ペニス%から外した…
+
+
+
+;乳首吸引器外れメッセージ
+@NIPPLE_SUCKER_ADJUST_MESSAGE
+
+SIF !LINEISEMPTY()
+	PRINTL
+CALL PRINTL_WORD_COLOR,@"Unable to stand the forceful stream of %SLANG_MILK()%, the ＜Milker＞ falls off.","桃"
+
+
+
+;小型霊力抽出装置外しメッセージ
+@HANDY_ENERGY_DRAIN_ADJUST_MESSAGE
+
+SIF !LINEISEMPTY()
+	PRINTL
+PRINTFORML It seems there's nothing left to extracct from %CALLNAME%. You remove the ＜Portable Spirit Energy Extractor＞. 
+
+
+
+
+
+
+
+
+
+

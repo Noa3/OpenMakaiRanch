@@ -1,0 +1,66 @@
+﻿
+;下着
+@ITEM_DETAIL_CLOTHE_LINGERIE
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "ブラ"
+	CALL LINGERIE_DETAIL_COMMON("上","","","膨乳時破損")
+	PRINTFORML %SAVESTR:表記／乳房%を包み込み保持する女性用下着。
+	PRINTL バストサイズの段階が増加するとそれまでのブラはつけられなくなります。
+
+CASE "さらし"
+	CALL LINGERIE_DETAIL_COMMON("上")
+	PRINTFORML %SAVESTR:表記／乳房%に巻いて保護する、下着代わりの長い布。
+	PRINTL ジャパン地域特有のジョブを持つ女の子がつけていることが多い。
+
+CASE "ショーツ"
+	CALL LINGERIE_DETAIL_COMMON("下")
+	PRINTL 股間を保護する女性用下着。
+
+CASE "ドロワーズ"
+	CALL LINGERIE_DETAIL_COMMON("下")
+	PRINTL 女性用のゆったりとしたパンツ。
+
+CASE "トランクス"
+	CALL LINGERIE_DETAIL_COMMON("下")
+	PRINTL 股間を保護する男性用下着。
+
+
+;ここから拡張
+CASE "フロントホックブラ"
+	CALL LINGERIE_DETAIL_COMMON("上","","","膨乳時破損")
+	PRINTFORML %SAVESTR:表記／乳房%を包み込み保持する女性用下着で、胸の前で留めるタイプ。
+	PRINTFORML 違いはどうかというと、%SAVESTR:表記／乳房%をさらけ出しやすいかどうか。
+	PRINTL ゲーム的なステータス上の優劣はありません。
+	
+CASE "授乳スリットブラ"
+	CALL LINGERIE_DETAIL_COMMON("上","","授乳スリット","膨乳時破損")
+	PRINTFORML %SAVESTR:表記／乳房%を包み込み保持する女性用下着で、
+	PRINTFORML （本来は）赤ちゃんにすぐに%SAVESTR:表記／母乳%を与えられるよう、小窓を開いて乳首を露出できるようになっている。
+
+CASE "ビスチェ"
+	CALL LINGERIE_DETAIL_COMMON("上","","","膨乳時破損")
+	PRINTFORML お腹から%SAVESTR:表記／乳房%にかけて保護する、肩紐のない女性用下着。
+
+CASE "ひもブラ"
+	CALL LINGERIE_DETAIL_COMMON("上","","紐付き")
+	PRINTFORML %SAVESTR:表記／乳房%を包み込み保持する女性用下着で、前でひもを結び留めるタイプ。
+	PRINTL どう違うかというと、拘束中でも完全に取ってしまえる。
+
+CASE "ひもパン"
+	CALL LINGERIE_DETAIL_COMMON("下","","紐付き")
+	PRINTL 股間を保護する女性用下着で、横でひもを結び留めるタイプ。
+	PRINTL どう違うかというと、拘束中でも完全に取ってしまえる。
+
+CASE "ビキニ"
+	CALL LINGERIE_DETAIL_COMMON("上下","","紐付き")
+	PRINTL 上下セットの水着で、下着としても使える。
+	PRINTL 他のビキニタイプも同様だが、紐を結んで固定するタイプのため拘束中でも完全に脱がすことが可能。
+	IF FLAG:ジョーク表示
+		PRINTL マイクロビキニがあるなら通常ビキニもあるほうがええやろくらいの気分で作った部分です。
+	ENDIF
+
+ENDSELECT
+
+
+

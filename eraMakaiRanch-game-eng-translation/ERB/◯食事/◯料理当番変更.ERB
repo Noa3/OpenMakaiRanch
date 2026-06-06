@@ -1,0 +1,254 @@
+﻿
+;料理当番設定
+@DINNER_DUTY_LIST
+#DIM REF_ID,2
+
+CLEARLINE LINECOUNT
+PRINTL Setting the cooking duty.  
+PRINTL If unable to cook during the actual schedule execution, it will move to the selection screen.  
+PRINTL  
+
+;STR:月（曜日）→3900
+;FLAG:食事当番基準／月→300
+;FLAG:食事当番ID・ABL／月→310
+STR_REF = 3900
+FLAG_REF = 300
+FLAG_REF:1 = 310
+FOR LOCAL,0,7
+	REF_ID = FLAG:(FLAG_REF +LOCAL)
+	REF_ID:1 = FLAG:(FLAG_REF:1 +LOCAL)
+	PRINTFORM [{LOCAL,2}] %DAYS_SHORT_ENG(STR:(STR_REF +LOCAL))%：
+	
+	;基準フラグにより変える
+	SELECTCASE REF_ID
+	CASE 0
+		;適当
+		PRINTL Just get it done
+	CASE 1
+		;毎回選ぶ
+		PRINTL Always Ask
+	CASE 2
+		;料理ABL参照
+		IF !REF_ID:1
+			PRINTL From all characters, randomly. 
+		ELSE
+			PRINTFORML Randomly from characters with Cooking Lv{REF_ID:1} or higher. 
+		ENDIF
+		
+	CASEELSE
+		;指定IDのキャラ
+		;見つからないなら-1
+		FINDCHARA CFLAG:ID,REF_ID:1
+		IF RESULT >= 0
+			TARGET = RESULT
+			PRINTFORM %CALLNAME,FLAG:キャラ名前欄幅,LEFT%：Cooking Lv{ABL:料理,2}
+			CALL PRINT_POST_C
+			CALL TABLE_STATUS_BUST
+			; EN version splits over 2 lines
+			PRINTL 
+			PRINT         　　
+			CALL PRINT_MILKTANK(0,1,1,1)
+			
+			;現在料理不可の状態なら表示
+			CALL DINNER_DUTY_IMPOSSIBLE_STATUS
+			PRINTL
+		ELSE
+			CALL PRINTL_WORD_COLOR("　Specified character not found","灰")
+		ENDIF
+	ENDSELECT
+NEXT
+DRAWLINE
+PRINTLC [90] Bulk settings
+PRINTLC [98] Tip
+PRINTLC [99] Done
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0 TO 6
+	CALL DINNER_DUTY_WEEK(RESULT)
+CASE 90
+	CALL DINNER_DUTY_BULK
+CASE 98
+	CALL BROWSE_HINT("料理")
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;曜日ずつ選択
+;ARG→INPUT
+;FLAG_REF指定済み
+@DINNER_DUTY_WEEK(ARG)
+
+PRINTFORML Please select the duty for %DAYS_ENG(STR:(STR_REF +ARG))%.
+CALL DINNER_DUTY_CHOICE
+SELECTCASE RESULT
+CASE 0,1
+	;適当・毎回選ぶ
+	;食事当番基準フラグに入れる
+	FLAG:(FLAG_REF +ARG) = RESULT
+	
+	;ID・ABL格納部分は0に戻す
+	FLAG:(FLAG_REF:1 +ARG) = 0
+	
+CASE 2
+	;Lv指定
+	PRINTL
+	PRINTL Please enter the cooking level for random candidates.
+	PRINTL (If no one meets the criteria, a random character with the highest cooking level will be selected.)
+	PRINTL
+	PRINTLC [  0] Random from all characters
+	PRINTLC [  5] Random from Lv5 and above
+	PRINTL [100] Cancel
+	PRINTL Please enter a number between 0～99.
+	INPUT
+	SIF RESULT < 0 || RESULT >= 100
+		RETURN
+	FLAG:(FLAG_REF +ARG) = 2
+	FLAG:(FLAG_REF:1 +ARG) = RESULT
+	
+CASE 3
+	;キャラ指定
+	CALL DINNER_DUTY_SELECT_MANUAL
+	SIF RESULT < 0
+		RETURN
+	FLAG:(FLAG_REF +ARG) = 3
+	
+	;TARGET指定して帰ってくる
+	FLAG:(FLAG_REF:1 +ARG) = CFLAG:ID
+ENDSELECT
+
+
+
+;一括選択
+@DINNER_DUTY_BULK
+
+PRINTL Please select the duty to set for bulk configuration.
+CALL DINNER_DUTY_CHOICE
+SELECTCASE RESULT
+CASE 0,1
+	FLAG:FLAG_REF = RESULT
+	FLAG:(FLAG_REF:1) = 0
+CASE 2
+	PRINTL
+	PRINTL Please enter the cooking level for random candidates.
+	PRINTL (If no one meets the criteria, a random character with the highest cooking level will be selected.)
+	PRINTL
+	PRINTLC [  0] Random from all characters
+	PRINTLC [  5] Random from Lv5 and above
+	PRINTL [100] Cancel
+	PRINTL Please enter a number between 0～99.
+	INPUT
+	SIF RESULT < 0 || RESULT >= 100
+		RETURN
+	FLAG:FLAG_REF = 2
+	FLAG:(FLAG_REF:1) = RESULT
+CASE 3
+	CALL DINNER_DUTY_SELECT_MANUAL
+	SIF RESULT < 0
+		RETURN
+	FLAG:FLAG_REF = 3
+	FLAG:(FLAG_REF:1) = CFLAG:ID
+ENDSELECT
+
+;日曜部分に入れたあとに全部にコピー
+FOR LOCAL,1,7
+	FLAG:(FLAG_REF +LOCAL) = FLAG:FLAG_REF
+	FLAG:(FLAG_REF:1 +LOCAL) = FLAG:(FLAG_REF:1)
+NEXT
+
+
+
+@DINNER_DUTY_CHOICE
+
+PRINTL
+PRINTL [ 0] Make simple meal
+PRINTL [ 1] Always Ask
+PRINTL [ 2] Random from characters with specified cooking level or above
+PRINTL [ 3] Specify Character
+PRINTL
+PRINTL [99] Cancel
+BINPUT
+RETURN RESULT
+
+
+
+;料理当番選択
+@DINNER_DUTY_SELECT_MANUAL
+#DIM DYNAMIC PAGE
+
+PAGE_MAX = (CHARANUM -2)/20 +1
+SIF PAGE < 1
+	PAGE = 1
+CLEARLINE LINECOUNT
+PRINTL Please select the character for the dinner duty.
+DRAWLINE
+FOR TARGET_COUNT,0,20
+	SIF TARGET_COUNT +(PAGE -1)*20 >= CHARANUM
+		BREAK
+	TARGET = TARGET_COUNT +(PAGE -1)*20
+	IF !CFLAG:スケジュール設定可能／業務
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME_DIGIT(4)%：Unavailable","灰"
+		CONTINUE
+	ENDIF
+	PRINTFORM [{TARGET +100}] %CALLNAME_DIGIT()%
+	CALL PRINT_POST_C
+	CALL TABLE_STATUS("料理当番")
+	CALL DINNER_DUTY_IMPOSSIBLE_STATUS
+	PRINTL
+NEXT
+CALL PRINTL_ALIGN(-5)
+CALL PRINT_NOW_PAGE(PAGE,1)
+PRINTFORMLC [  8] Change Display Settings
+PRINTLC 　
+PRINTL [ 99] Cancel
+BINPUT
+SELECTCASE RESULT
+CASE 8
+	CALL CHANGE_TABLE_STATUS
+CASE 80
+	PAGE --
+	SIF PAGE < 1
+		PAGE = PAGE_MAX
+CASE 81
+	PAGE ++
+	SIF PAGE > PAGE_MAX
+		PAGE = 1
+CASE 99
+	RETURN -1
+
+CASEELSE
+	TARGET = RESULT -100
+	SIF !CFLAG:スケジュール設定可能／業務
+		RESTART
+	RETURN TARGET
+ENDSELECT
+RESTART
+
+
+
+;現在料理不可の状態なら表示
+@DINNER_DUTY_IMPOSSIBLE_STATUS
+
+;後からなることがあるので個別に
+IF CFLAG:家畜
+	CALL PRINT_WORD_COLOR("！[Livestock] ","桃")
+ELSEIF CSTR:居場所 == "体内"
+	CALL PRINT_WORD_COLOR("！Inside your body ","黄")
+ELSEIF CFLAG:崩壊
+	CALL PRINT_WORD_COLOR("！[Mindbroken] ","赤")
+ELSEIF CFLAG:牛舎番号
+	CALL PRINT_WORD_COLOR("！In Cowshed ","黄")
+ELSEIF !BASE:体力
+	CALL PRINT_WORD_COLOR("！0 HP ","黄")
+ELSEIF CFLAG:追跡対象
+	CALL PRINT_WORD_COLOR("！Not Captured ","黄")
+ELSEIF !CFLAG:業務可能
+	CALL PRINT_WORD_COLOR("！Not available ","黄")
+ENDIF
+
+
+
+

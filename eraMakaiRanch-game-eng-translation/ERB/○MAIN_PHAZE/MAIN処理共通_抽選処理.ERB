@@ -1,0 +1,119 @@
+﻿
+;表示するキャラの候補を入れる
+;ARGS→スケジュール
+@RANDOM_CHARA_SCHEDULE_BOX(ARGS)
+#DIM DYNAMIC LOOP_NUM
+
+VARSET RANDOM_NO_BOX
+VARSET BOX_COUNT
+SELECTCASE ARGS
+CASE "体内凌辱準備"
+	EXP_NAME = 区間実行回数／体内凌辱
+CASEELSE
+	EXP_NAME = 区間実行回数／%ARGS%
+ENDSELECT
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;実行したキャラは行動済みフラグで飛ばされる
+	SIF CSTR:スケジュール != ARGS || CFLAG:行動済み
+		CONTINUE
+	
+	;全員表示ならこの時点でBOX入れ
+	IF FLAG:スケジュール全員詳細表示
+		RANDOM_NO_BOX:BOX_COUNT = TARGET
+		BOX_COUNT ++
+		CONTINUE
+	ENDIF
+	
+	;仕事の場合体力0はダメ
+	SIF !BASE:体力 && GROUPMATCH(ARGS,＃業務スケジュール＃)
+		CONTINUE
+	
+	;繰り返した回数で条件がゆるくなるシステム
+	;優先順位：[EXP:区間実行回数]が0→口上あり→ほか
+	;区間実行回数が0から抽選→1以上は次へ
+	SIF LOOP_NUM == 0 && EXP:EXP_NAME
+		CONTINUE
+	
+	;画像があるキャラから抽選（搾乳・抽出など）→ない場合次へ
+	SIF LOOP_NUM == 1 && !CFLAG:調教画像あり
+		CONTINUE
+	
+	;口上があるキャラから抽選→ない場合次へ
+	SIF LOOP_NUM == 2 && !CFLAG:口上表示
+		CONTINUE
+	
+	;条件満たしたか誰も条件満たさない場合BOX入れ
+	RANDOM_NO_BOX:BOX_COUNT = TARGET
+	BOX_COUNT ++
+NEXT
+
+;BOX_COUNTが1以上ならおわり　続ける場合LOOP_NUMを+1してもう1度
+;LOOP_NUMが3にしてもまだダメならあなたしかいないのでRETURN
+SIF BOX_COUNT || LOOP_NUM >= 3
+	RETURN
+LOOP_NUM ++
+
+;業務スケジュールの場合は画像抽選を飛ばす
+SIF GROUPMATCH(ARGS,＃業務スケジュール＃) && LOOP_NUM == 1
+	LOOP_NUM ++
+RESTART
+
+
+
+;RANDOM_NO_BOX内のキャラを1人抽選
+;ARGS→スケジュール
+@PRINT_SCHEDULE_CHARA_LOTTERY(ARGS)
+
+SELECTCASE ARGS
+CASE "体内凌辱準備"
+	FLAG_NAME = 前回表示キャラID／体内凌辱
+CASEELSE
+	FLAG_NAME = 前回表示キャラID／%ARGS%
+ENDSELECT
+TARGET = RANDOM_NO_BOX:RAND(BOX_COUNT)
+
+;被った場合1度だけ再抽選
+SIF FLAG:FLAG_NAME == CFLAG:ID
+	TARGET = RANDOM_NO_BOX:RAND(BOX_COUNT)
+
+
+
+;牛舎内から抽選
+@RANDOM_CHARA_SCHEDULE_COWSHED
+#DIM DYNAMIC LOOP_NUM
+#DIM DYNAMIC MAX_BUST
+
+VARSET RANDOM_NO_BOX
+VARSET BOX_COUNT
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CFLAG:牛舎番号 != COWSHED_NUM
+		CONTINUE
+	
+	;先にMAX_BUST入れ
+ 	SIF MAX_BUST < ABL:バストサイズ
+		MAX_BUST = ABL:バストサイズ
+	
+	;初回→口上があるキャラから抽選
+	SIF !LOOP_NUM && !CFLAG:口上表示
+		CONTINUE
+	
+	;口上持ちがいない→乳が一番でかい家畜
+	;牛舎内でMAX_BUSTを取得しているのでそれ未満を弾く
+ 	SIF LOOP_NUM && MAX_BUST > ABL:バストサイズ
+		CONTINUE
+	RANDOM_NO_BOX:BOX_COUNT = TARGET
+	BOX_COUNT ++
+NEXT
+SIF BOX_COUNT
+	RETURN
+LOOP_NUM ++
+RESTART
+
+
+
+
+
+

@@ -1,0 +1,112 @@
+﻿
+;衣服の色柄
+;ARGS→装備
+@PRINT_PORTRAIT_CLOTHE_COLOR(ARGS)
+#FUNCTIONS
+#DIMS COLOR
+
+SELECTCASE ARGS
+CASE "衣服"
+	COLOR = %CSTR:(EQUIP:装備中ID／衣服)%
+CASE "下着上"
+	COLOR = %CSTR:(EQUIP:装備中ID／下着上)%
+CASE "下着下"
+	COLOR = %CSTR:(EQUIP:装備中ID／下着下)%
+CASE "頭装備"
+	COLOR = %CSTR:(EQUIP:装備中ID／頭)%
+ENDSELECT
+
+;色柄が含まれていればそれを返す
+IF STRCOUNT(COLOR,"黒")
+	RETURNF "黒い"
+
+;「紅白」あるかもなので白より上
+ELSEIF STRCOUNT(COLOR,"紅") || STRCOUNT(COLOR,"赤")
+	RETURNF "赤い"
+ELSEIF STRCOUNT(COLOR,"白")
+	RETURNF "白い"
+
+;「萌黄」があるので黄色より上
+ELSEIF STRCOUNT(COLOR,"萌黄") || STRCOUNT(COLOR,"緑")
+	RETURNF "緑の"
+
+;「紫紺」対応で青より上
+ELSEIF STRCOUNT(COLOR,"紫")
+	RETURNF "紫の"
+ELSEIF STRCOUNT(COLOR,"青") || STRCOUNT(COLOR,"紺")
+	RETURNF "青い"
+ELSEIF STRCOUNT(COLOR,"黄")
+	RETURNF "黄色い"
+ELSEIF STRCOUNT(COLOR,"桃") || STRCOUNT(COLOR,"ピンク")
+	RETURNF "ピンクの"
+ELSEIF STRCOUNT(COLOR,"琥珀") || STRCOUNT(COLOR,"橙")
+	RETURNF "オレンジの"
+ELSEIF STRCOUNT(COLOR,"水")
+	RETURNF "水色の"
+ENDIF
+
+;それ以外の場合衣服によりデフォルトカラー
+;軽装時代用いらないっぽい？
+SELECTCASE ＃着用衣服／名称＃
+CASE "作業着","オーバーオール","着物"
+	RETURNF "緑の"
+CASE "白衣","エプロン","ナース服","割烹着"
+	RETURNF "白い"
+
+;スク水衣服ではないけど来るようになるかもなので
+CASE "軍服","忍装束","法衣","ゴスロリ衣装","バニースーツ","淫乱シスター服","淫乱メイド服","スクール水着"
+	RETURNF "黒い"
+CASE "ディアンドル","チャイナドレス","淫乱チャイナドレス","淫乱巫女服"
+	RETURNF "赤い"
+CASE "アオザイ","セーラー服"
+	RETURNF "青い"
+CASE "淫乱ドレス"
+	RETURNF "ピンクの"
+
+;他はデフォにする
+CASEELSE
+	RETURNF ""
+ENDSELECT
+
+
+
+;猫耳カチューシャの色
+@PRINT_PORTRAIT_CATEAR
+#FUNCTIONS
+
+SELECTCASE RESULTS
+CASE "黒い"
+	RETURNF "黒髪"
+CASE "白い"
+	RETURNF "白髪"
+CASE "赤い"
+	RETURNF "赤髪"
+CASE "青い"
+	RETURNF "青髪"
+CASE "黄色い"
+	;金髪で代用
+	RETURNF "金髪"
+CASE "ピンクの"
+	RETURNF "桃髪"
+CASE "緑の"
+	RETURNF "緑髪"
+CASE "紫の"
+	RETURNF "紫髪"
+CASE "オレンジの"
+	RETURNF "橙髪"
+CASE "水色の"
+	RETURNF "空色髪"
+CASE "ベージュの"
+	;栗毛で代用
+	RETURNF "栗毛"
+CASE "金色"
+	RETURNF "金髪"
+CASE "銀色"
+	RETURNF "銀髪"
+CASEELSE
+	RETURNF CSTR:カテゴリ／髪色
+ENDSELECT
+
+
+
+

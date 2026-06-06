@@ -1,0 +1,379 @@
+﻿
+;射精処理
+@PENIS_EJACULATION
+
+;射精をMAXで割った回数射精
+SOURCE:射精回数 = BASE:PLAYER:射精 /MAXBASE:PLAYER:射精
+BASE:PLAYER:射精 -= (MAXBASE:PLAYER:射精 *SOURCE:射精回数)
+
+;スケジュール外に使う
+TFLAG:コマンド中射精回数 = SOURCE:射精回数
+
+;コンドーム使用中の場合
+IF TEQUIP:0:コンドーム
+	TFLAG:射精回数 += SOURCE:射精回数
+	
+	;奴隷の「あなたに射精された回数」とあなたの「射精した回数」+1
+	EXP:経験回数／あなた／射精合計 += 1
+	EXP:PLAYER:射精回数合計 += 1
+	SOURCE:ペニス引き抜き = 1
+
+	;射精回数に応じてPLAYERの体力消費
+	CALL EJACULATION_PLAYER_HP_DOWN
+	RETURN
+ENDIF
+
+;注ぎ込み以外の射精をしたかの確認
+SOURCE:注ぎ込み外射精回数 = SOURCE:射精回数
+
+;注ぎ込みならここで増加　大量注ぎ込みは合計+5
+SIF SOURCE:注ぎ込み霊力量 || SOURCE:注ぎ込み魔力量
+	SOURCE:射精回数 ++
+SIF SOURCE:大量注ぎ込み
+	SOURCE:射精回数 += 4
+
+;スケジュール外なら射精メッセージ前に止める
+;PRINTしなくなったので廃止
+;SIF TFLAG:スケジュール外Ｈ
+;	WAIT
+
+;射精箇所
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	CALL EJACULATION_PART_REF("Ｖセックス")
+	
+	;膣内射精
+	IF RESULT == 1
+		CALL EJACULATION_V
+	ELSE
+		CALL EJACULATION_OUT
+	ENDIF
+
+ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	CALL EJACULATION_PART_REF("Ａセックス")
+	IF RESULT == 1
+		CALL EJACULATION_A
+	ELSE
+		CALL EJACULATION_OUT
+	ENDIF
+
+ELSEIF GETBIT(＃Ｐ使用／パイズリ＃)
+	IF TEQUIP:パイズリ || TEQUIP:強制パイズリ
+		CALL EJACULATION_PART_REF("パイズリ")
+	ELSE
+		CALL EJACULATION_PART_REF("縦パイズリ")
+	ENDIF
+	SIF ABL:バストサイズ < BUSTSIZE_並乳 && RESULT == 1
+		RESULT = 2
+	IF RESULT == 1
+		CALL EJACULATION_B
+	ELSEIF RESULT == 2
+		CALL EJACULATION_B_OUT
+	ELSE
+		CALL EJACULATION_FACE
+	ENDIF
+	
+	;奉仕なら習得増加
+	SIF TEQUIP:パイズリ || TEQUIP:縦パイズリ
+		SOURCE:習得 += (SOURCE:射精回数 *2000)
+
+ELSEIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	IF TEQUIP:フェラチオ
+		CALL EJACULATION_PART_REF("フェラチオ")
+		SOURCE:習得 += (SOURCE:射精回数 *2000)
+	ELSE
+		CALL EJACULATION_PART_REF("イラマチオ")
+	ENDIF
+	IF RESULT == 1
+		CALL EJACULATION_M
+	ELSE
+		CALL EJACULATION_FACE
+	ENDIF
+
+ELSEIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	;素股・手コキは選択肢出ないかな
+	CALL EJACULATION_HAND
+ELSEIF TEQUIP:素股
+	CALL EJACULATION_CROTCH
+ENDIF
+RESETCOLOR
+SOURCE:不潔 += DAMAGE
+SOURCE:精液経験 += (DAMAGE /2)
+TFLAG:射精回数 += SOURCE:射精回数
+
+;注ぎ込み分の精力は消費しない
+SOURCE:調教者精力消費量 += (SOURCE:注ぎ込み外射精回数 *1000)
+EXP:経験回数／あなた／射精合計 += 1
+EXP:PLAYER:射精回数合計 += 1
+
+;射精回数に応じてPLAYERの体力消費
+CALL EJACULATION_PLAYER_HP_DOWN
+
+;霊力を注ぎ込んだなら100ごとに10HP回復
+SIF !SOURCE:注ぎ込み霊力量
+	RETURN
+SOURCE:調教対象体力回復 += SOURCE:注ぎ込み霊力量 /10
+SOURCE:調教対象体力回復 -= (SOURCE:調教対象体力回復 %10)
+SOURCE:調教対象体力回復 = LIMIT(SOURCE:調教対象体力回復,0,1000)
+
+
+
+;膣内射精
+@EJACULATION_V
+
+SOURCE:恥辱 += (SOURCE:射精回数 *1000)
+SOURCE:情愛 += (ABL:膣内射精中毒 *SOURCE:射精回数 *1000)
+SOURCE:屈辱 += (SOURCE:射精回数 *4000)
+CALL EJACULATION_SP_DAMAGE_CALC
+
+;不潔増加分
+DAMAGE = SOURCE:射精回数 *2000
+
+;Ｖ快楽増加　膣内射精中毒によりさらに増加
+PLEASURE = 1000 +ABL:膣内射精中毒 *200 +MARK:膣内射精中毒 *1000 +MARK:搾精おまんこ *2000 +MARK:精液便女 *3000
+
+;濃厚精液による増加
+CALL STRONG_SEMEN_FIX
+SOURCE:膣内射精経験 += PLEASURE
+SOURCE:Ｖ快楽／あなた責め += PLEASURE
+
+;奴隷の「射精された回数」「あなたに射精された回数」・あなたの「射精した回数」を増加
+;全体の回数は共通部分でやってる
+;奴隷がふたなりの場合は考えてないです
+EXP:膣内射精回数 += 1
+EXP:経験回数／あなた／膣内射精 += 1
+EXP:PLAYER:膣内射精回数 += 1
+
+;妊娠判定
+CALL PREGNANT_JUDGE
+SOURCE:Ｖ潤滑追加 += (SOURCE:射精回数 *1000)
+CALL SET_STAIN_TARGET("膣","精液")
+CALL SET_STAIN_PLAYER("ペニス","精液")
+TFLAG:子宮内精液量 += SOURCE:射精回数
+TFLAG:膣内精液 = 1
+
+
+
+;尻穴射精
+@EJACULATION_A
+
+SOURCE:恥辱 += (SOURCE:射精回数 *2000)
+SOURCE:情愛 += (ABL:尻穴射精中毒 *SOURCE:射精回数 *1000)
+SOURCE:屈辱 += (SOURCE:射精回数 *6000)
+CALL EJACULATION_SP_DAMAGE_CALC
+DAMAGE = SOURCE:射精回数 *4000
+PLEASURE = 1000 +ABL:尻穴射精中毒 *200 +MARK:尻穴射精中毒 *1000 +MARK:おしりまんこ *2000 +MARK:尻穴便器 *3000
+CALL STRONG_SEMEN_FIX
+SOURCE:尻穴射精経験 += PLEASURE
+SOURCE:Ａ快楽／あなた責め += PLEASURE
+EXP:尻穴射精回数 += 1
+EXP:経験回数／あなた／尻穴射精 += 1
+EXP:PLAYER:尻穴射精回数 += 1
+SOURCE:Ａ潤滑追加 += (SOURCE:射精回数 *1000)
+CALL SET_STAIN_TARGET("アナル","精液")
+CALL SET_STAIN_PLAYER("ペニス","精液")
+TFLAG:腸内精液量 += (SOURCE:射精回数 +TFLAG:尻穴精液 -1)
+TFLAG:尻穴精液 = 1
+
+
+
+;引き抜いて外出し
+@EJACULATION_OUT
+
+SOURCE:ペニス引き抜き = 1
+SOURCE:恥辱 += (SOURCE:射精回数 *500)
+SOURCE:情愛 += (SOURCE:射精回数 *500)
+SOURCE:屈辱 += (SOURCE:射精回数 *500)
+SOURCE:股ぶっかけ = 1
+DAMAGE = SOURCE:射精回数 *2000
+CALL STRONG_SEMEN_FIX
+SOURCE:不潔 += DAMAGE
+
+;あんまり増えないので外射精するメリットはぶっちゃけそんなにないよ
+SIF TFLAG:背後
+	CALL SET_STAIN_TARGET("尻","精液")
+CALL SET_STAIN_PLAYER("ペニス","精液")
+
+
+
+;乳内射精
+@EJACULATION_B
+
+SOURCE:恥辱 += (SOURCE:射精回数 *3000)
+SOURCE:情愛 += (ABL:乳内射精中毒 *SOURCE:射精回数 *1000)
+SOURCE:屈辱 += (SOURCE:射精回数 *4000)
+DAMAGE = SOURCE:射精回数 *3000
+PLEASURE = 1000 +ABL:乳内射精中毒 *200
+CALL STRONG_SEMEN_FIX
+SOURCE:乳内射精経験 += PLEASURE
+SOURCE:Ｂ快楽／あなた責め += PLEASURE
+EXP:乳内射精回数 += 1
+EXP:経験回数／あなた／乳内射精 += 1
+EXP:PLAYER:乳内射精回数 += 1
+CALL SET_STAIN_TARGET("乳房","精液")
+CALL SET_STAIN_PLAYER("ペニス","精液")
+TFLAG:乳内精液 = 1
+
+
+
+;胸ぶっかけ
+@EJACULATION_B_OUT
+
+SOURCE:ペニス引き抜き = 1
+SOURCE:恥辱 += (SOURCE:射精回数 *700)
+SOURCE:情愛 += (SOURCE:射精回数 *1000)
+SOURCE:屈辱 += (SOURCE:射精回数 *2000)
+SOURCE:胸ぶっかけ = 1
+DAMAGE = SOURCE:射精回数 *3000
+CALL STRONG_SEMEN_FIX
+CALL SET_STAIN_TARGET("乳房","精液")
+CALL SET_STAIN_TARGET("乳首","精液")
+CALL SET_STAIN_PLAYER("ペニス","精液")
+
+
+
+;顔ぶっかけ
+@EJACULATION_FACE
+
+SOURCE:ペニス引き抜き = 1
+SOURCE:恥辱 += (SOURCE:射精回数 *700)
+SOURCE:情愛 += (SOURCE:射精回数 *1000)
+SOURCE:屈辱 += (SOURCE:射精回数 *2000)
+SOURCE:顔ぶっかけ = 1
+DAMAGE = SOURCE:射精回数 *3000
+CALL STRONG_SEMEN_FIX
+EXP:顔射回数 += 1
+EXP:経験回数／あなた／顔射 += 1
+EXP:PLAYER:顔射回数 += 1
+CALL SET_STAIN_TARGET("顔","精液")
+CALL SET_STAIN_PLAYER("ペニス","精液")
+
+
+
+
+;口内射精
+@EJACULATION_M
+
+;終了判定出すためにここつける
+SOURCE:ペニス引き抜き = 1
+SOURCE:恥辱 += (SOURCE:射精回数 *1000)
+SOURCE:情愛 += (ABL:精飲中毒 *SOURCE:射精回数 *1000)
+SOURCE:屈辱 += (SOURCE:射精回数 *5000)
+CALL EJACULATION_SP_DAMAGE_CALC
+DAMAGE = SOURCE:射精回数 *5000
+PLEASURE = 1000 +ABL:精飲中毒 *200
+CALL STRONG_SEMEN_FIX
+SOURCE:精飲経験 += PLEASURE
+EXP:精飲回数 += 1
+EXP:経験回数／あなた／精飲 += 1
+EXP:PLAYER:精飲回数 += 1
+EXP:PLAYER:精飲回数 += SOURCE:射精回数
+CALL SET_STAIN_TARGET("口","精液")
+CALL SET_STAIN_PLAYER("ペニス","精液")
+TFLAG:嚥下精液量 += (SOURCE:射精回数 +TFLAG:口内精液 -1)
+TFLAG:口内精液 = 1
+
+
+
+;素股射精
+@EJACULATION_CROTCH
+
+SOURCE:ペニス引き抜き = 1
+SOURCE:恥辱 += (SOURCE:射精回数 *700)
+SOURCE:情愛 += (SOURCE:射精回数 *700)
+SOURCE:屈辱 += (SOURCE:射精回数 *1000)
+SOURCE:股ぶっかけ = 1
+DAMAGE = SOURCE:射精回数 *2000
+CALL STRONG_SEMEN_FIX
+CALL SET_STAIN_PLAYER("ペニス","精液")
+EXP:素股射精回数 += 1
+EXP:経験回数／あなた／素股射精 += 1
+EXP:PLAYER:素股射精回数 += 1
+SOURCE:習得 += DAMAGE
+
+
+
+;手コキ射精
+@EJACULATION_HAND
+
+SOURCE:ペニス引き抜き = 1
+SOURCE:恥辱 += (SOURCE:射精回数 *700)
+SOURCE:情愛 += (SOURCE:射精回数 *1500)
+SOURCE:屈辱 += (SOURCE:射精回数 *1000)
+DAMAGE = SOURCE:射精回数 *2000
+CALL STRONG_SEMEN_FIX
+CALL SET_STAIN_TARGET("手","精液")
+CALL SET_STAIN_PLAYER("ペニス","精液")
+EXP:手淫射精回数 += 1
+EXP:経験回数／あなた／手淫射精 += 1
+EXP:PLAYER:手淫射精回数 += 1
+SOURCE:習得 += DAMAGE
+
+
+
+;濃厚精液による快楽、不快値増加　ARGS:補正ABL
+@STRONG_SEMEN_FIX(ARGS)
+
+PLEASURE *= SOURCE:射精回数
+;そのうちABL:0:精液濃度　で判定
+
+;TIMES PLEASURE,1.50
+;TIMES DAMAGE,1.50
+
+
+
+;射精回数に応じてPLAYERの体力消費
+@EJACULATION_PLAYER_HP_DOWN
+
+;そのうちABL:0:連続射精力　で判定
+DAMAGE = SOURCE:射精回数 *200
+
+;ペニスサイズ差補正がプラスなら軽減
+SIF TFLAG:ペニスサイズ差補正 > 0
+	DAMAGE = DAMAGE * 1000 / (1000 + TFLAG:ペニスサイズ差補正)
+;絶倫なら半減
+SIF ITEM:絶倫 && GETBIT(＃有効／絶倫＃)
+	DAMAGE /= 2
+
+SOURCE:調教者体力消費 += DAMAGE
+
+;霊力・魔力注入した場合の追加の体力計算は先にやる
+SIF !SOURCE:注ぎ込み霊力量 && !SOURCE:注ぎ込み魔力量
+	RETURN
+SOURCE:調教者体力消費 += 100
+SIF SOURCE:大量注ぎ込み
+	SOURCE:調教者体力消費 += 500
+
+
+
+;体内射精時の気力減少
+@EJACULATION_SP_DAMAGE_CALC
+#DIM FALLING_FIX
+#DIM DAMAGE_ORIGN
+
+;気力減少→√射精回数 *10000
+DAMAGE = SQRT(SOURCE:射精回数 *10000)
+DAMAGE_ORIGN = DAMAGE
+
+;精液中毒で緩和、恋慕／隷属／乳牛ならさらに緩和
+IF ＃陥落状態／隷属＃
+	FALLING_FIX = 10
+ELSEIF CFLAG:乳牛
+	FALLING_FIX = 8
+ELSEIF ＃陥落状態／恋慕以上＃
+	FALLING_FIX = 7
+ELSE
+	FALLING_FIX = 5
+ENDIF
+FIX = 100 -ABL:精液中毒 *FALLING_FIX
+DAMAGE *= FIX
+DAMAGE /= 100
+
+;DAMAGEが-のとき気力増加
+IF DAMAGE >= 0
+	LOSEBASE:気力 += DAMAGE
+ELSE
+	SOURCE:調教対象気力回復 += (DAMAGE *-1)
+ENDIF
+
+
+

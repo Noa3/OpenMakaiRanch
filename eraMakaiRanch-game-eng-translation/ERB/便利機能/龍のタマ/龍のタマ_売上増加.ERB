@@ -1,0 +1,18 @@
+﻿
+;お金が欲しい
+@SELECT_WISH_GIVE_MONEY
+
+CALL DRAGON_MONEY_MESSAGE
+PRINTL
+PRINTL 7日間、ミルクの売上が倍増する状態にしますか？
+CALL ASK_YN
+SIF RESULT
+	RETURN
+FLAG:精算額倍増残り日数 = 7
+CALL PRINTL_WORD_COLOR("7日間、精算時の売上金額が倍増する状態になった！","黄")
+PRINTW
+ITEM:龍のタマ = 0
+
+
+
+

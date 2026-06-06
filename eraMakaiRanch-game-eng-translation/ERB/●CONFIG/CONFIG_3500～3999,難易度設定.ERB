@@ -1,0 +1,72 @@
+﻿
+;難易度設定一覧
+@LIST_CONFIG_DIFFICULTY
+
+PRINTL --- 《 Difficulty Settings 》 ---
+CALL PRINTL_WORD_COLOR("・Various difficulty settings and multiplier customizations can only be changed before the game starts or in Developer Mode.","黄")
+CALL PRINT_DIFFICULTY
+ALIGNMENT LEFT
+DRAWLINE
+FLAG_REF = 3500
+
+;難易度設定は直接部分ない
+IF FLAG:開発者モード && DAY
+	CALL PRINTL_WORD_COLOR("＜Developer Mode＞ cannot be selected after game starts","黄")
+ELSE
+	PRINT [ 0] ＜Developer Mode＞
+	CALL PRINT_ONOFF(FLAG:開発者モード,1)
+ENDIF
+PRINTL [ 1] ＜Easy Mode＞ Settings
+PRINTL [ 2] ＜Hard Mode＞ Settings
+PRINTL [ 3] Custom Mode
+
+
+
+;ARG→INPUT
+@CHANGE_CONFIG_DIFFICULTY(ARG)
+
+SELECTCASE ARG
+CASE 0	;開発者モードへの変更
+	CALL CONFIG_DIFFICULTY_FREE_MODE_CHECK
+CASE 1	;イージーモード設定
+	CALL EASYMODE_CONFIG
+CASE 2	;ハードモード設定
+	CALL HARDMODE_CONFIG
+CASE 3	;倍率カスタマイズ
+	CALL CUSTOM_MODE_CONFIG
+ENDSELECT
+
+
+
+;開発者モード確認
+@CONFIG_DIFFICULTY_FREE_MODE_CHECK
+
+IF FLAG:開発者モード
+	IF !DAY
+		PRINTL Cancel ＜Developer Mode＞?
+		CALL ASK_YN
+		SIF !RESULT
+			FLAG:開発者モード = 0
+	ENDIF
+	RETURN
+ENDIF
+PRINTL 　　　＜Developer Mode＞ Overview
+PRINTL Features Unlocked:
+PRINTL ・Access [Options]→[Debug] from the main menu to use debug and cheat commands
+PRINTL (With debug commands, you can change ranch names, pet names, and instantly capture slaves)
+PRINTL ・Freely change 《Race/Threshold Settings》 and 《Slave Candidate Settings》, and modify 《System/Difficulty Settings》 at any time during gameplay
+PRINTL ・Use [Status]→[Reset Training Limit Counter] during training
+PRINTL ・[Reshuffle] is available on the slave candidate display screen
+PRINTL
+PRINTL Disadvantages:
+CALL PRINTL_WORD_COLOR("・Difficulty changes to [DEVELOP] and can't be reverted once the game starts. That's it.","黄")
+PRINTL Turn on ＜Developer Mode＞?
+CALL ASK_YN
+SIF !RESULT
+	FLAG:開発者モード = 1
+
+;難易度表示再計算
+CALL PRINT_DIFFICULTY_CALC
+
+
+

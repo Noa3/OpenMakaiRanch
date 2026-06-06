@@ -1,0 +1,40 @@
+﻿
+;奴隷候補を選択する
+@TARGET_DECIDE
+
+FLAG:使用貢献PT = 0
+
+;一覧表示
+CALL PRINT_TRAVELLER_LIST("候補選択")
+
+;フリーならシャッフル可能にしておく
+IF FLAG:開発者モード
+	PRINTLC [90] 再シャッフル（開発者モードのみ）
+ELSE
+	CALL PRINTLC_WORD_COLOR("　→戻るボタン→","灰")
+ENDIF
+PRINTLC 　
+PRINTL [99] Return
+INPUT
+PRINTL
+IF RESULT == 90 && FLAG:開発者モード
+	CALL TRAVELLER_SHUFFLE
+	RESTART
+ELSEIF RESULT >= 0 && RESULT <= 9 && LIST_TRIBE:RESULT != ""
+	;キャラ決定し穴埋め
+	CALL CHARA_MAKE_SLAVE_BEFORE(RESULT)
+	
+	;ここで複製→元に戻す際に使用
+	ADDCOPYCHARA TARGET
+	
+	;確認・再シャッフル画面
+	CALL CHARA_MAKE_SLAVE
+	
+	;キャラメイク完了時の処理で結界付き、競売の競り落とし処理もしている
+	;全部終えたら複製のバックアップを消去
+	DELCHARA (CHARANUM -1)
+	TARGET = -1
+ENDIF
+
+
+

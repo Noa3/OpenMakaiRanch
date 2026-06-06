@@ -1,0 +1,20 @@
+﻿
+@COM70
+;スパンキング
+;連続だと効果アップ、下着ありだとダウン
+FIX = 100
+SIF PREVCOM == 70
+	TIMES FIX,1.50
+SIF EQUIP:装備中ID／下着下 && !GETBIT(＃半脱ぎ／下着下＃) && !TFLAG:一時的脱衣／下着下 && ＃着用下着下／名称＃ != "局部露出ショーツ"
+	TIMES FIX,0.80
+LOSEBASE:体力 += 50 * FIX / 100
+SOURCE:非性感帯痛み = 5000 * FIX / 100
+SOURCE:恥辱 = 2000 * FIX / 100
+SOURCE:屈辱 = 3000 * FIX / 100
+SOURCE:支配 = 2000 * FIX / 100
+SOURCE:調教者習得 = 300
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+

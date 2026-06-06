@@ -1,0 +1,119 @@
+﻿
+@COM50_MESSAGE
+;素股
+
+IF TFLAG:拘束BIT || !TFLAG:奉仕可能
+	SIF TFLAG:拘束BIT
+		PRINT While being bound, 
+	PRINTFORM %CALLNAME%'s %SLANG_STAIN("Ｖ")%%SLANG_V()% was rubbed with your %SLANG_PENIS()%...
+ELSE
+	PRINTFORM %CALLNAME%'s %SLANG_STAIN("Ｖ")%%SLANG_V()% was pressed with your %SLANG_PENIS()% and started moving hips %TRAIN_SERVICE()%...
+ENDIF
+PRINTL
+
+
+
+@COM51_MESSAGE
+;フェラチオ
+
+PRINTFORM You approach %CALLNAME%'s mouth with your %SLANG_PENIS()%, and she %TRAIN_SERVICE()% began sucking your 
+
+;ちんぽ汚れでのメッセージ
+CALL PENIS_STAIN_MESSAGE
+PRINTFORML ...
+
+
+
+@COM52_MESSAGE
+;イラマチオ
+
+PRINTFORM You forcefully push it into %CALLNAME%'s mouth and insert your 
+CALL PENIS_STAIN_MESSAGE
+PRINTFORML ...
+
+
+@COM53_MESSAGE
+;パイズリ
+
+PRINTFORM %CALLNAME%'s %SLANG_STAIN("Ｂ")%%SLANG_B()% pressed against your 
+CALL PENIS_STAIN_MESSAGE
+PRINTFORML , 
+IF ABL:バストサイズ >= BUSTSIZE_爆乳
+	PRINTFORM and you start moving as your %SLANG_PENIS()% gets completely enveloped by her %PRINT_BUST()% with a plump, plump motion...
+ELSEIF ABL:バストサイズ >= BUSTSIZE_巨乳
+	PRINTFORM and you start moving as your %SLANG_PENIS()%'s tip peeks out of her %PRINT_BUST()%, getting kneaded with a mushy, mushy motion...
+ELSEIF ABL:バストサイズ >= BUSTSIZE_並乳
+	PRINTFORM and you start moving as your %SLANG_PENIS()% slightly protruding from her %PRINT_BUST()% was kneaded with a mushy, mushy motion...
+ELSEIF ABL:バストサイズ >= 1
+	PRINTFORM and you start rubbing your %SLANG_PENIS()% with her small %SAVESTR:表記／乳房%...
+ELSE
+	PRINTFORM and you start rubbing your %SLANG_PENIS()% with her flat %SAVESTR:表記／乳房%...
+ENDIF
+PRINTL
+
+
+
+@COM54_MESSAGE
+;強制パイズリ
+
+IF ABL:バストサイズ >= BUSTSIZE_並乳
+	PRINTFORM You press your 
+	CALL PENIS_STAIN_MESSAGE
+    PRINTFORM  between her %SLANG_STAIN("Ｂ")%%SLANG_B()%, moving your hips as your %SLANG_PENIS()% 
+	IF ABL:バストサイズ >= BUSTSIZE_爆乳
+		PRINTL was completely engulfed by them.
+	ELSEIF ABL:バストサイズ >= BUSTSIZE_巨乳
+		PRINTL only peeked out of them with the tip.
+	ELSEIF ABL:バストサイズ >= BUSTSIZE_並乳
+		PRINTL slightly protruded in them.
+	ENDIF
+	PRINTFORM You massage her %PRINT_BUST()% firmly...
+ELSE
+	PRINTFORM  You rub your 
+	CALL PENIS_STAIN_MESSAGE
+	PRINTFORM against her chest...
+ENDIF
+PRINTL
+
+
+
+@COM55_MESSAGE
+;縦パイズリ
+
+;そもそも豊乳以上
+PRINTFORM With %CALLNAME%'s %SLANG_STAIN("Ｂ")%%SLANG_B()% your 
+CALL PENIS_STAIN_MESSAGE
+PRINTFORML was sandwiched, and she began moving %TRAIN_SERVICE()% back and forth, rubbing your %SLANG_PENIS()%...
+
+
+
+
+@COM56_MESSAGE
+;強制縦パイズリ
+
+PRINTFORM %CALLNAME%'s %SLANG_STAIN("Ｂ")%%SLANG_B()% sandwiched your 
+CALL PENIS_STAIN_MESSAGE
+PRINTFORML and %PRINT_BUST()% was kneaded while thrusting...
+
+
+
+
+@COM57_MESSAGE
+;手コキ
+
+PRINTFORM %CALLNAME% approached your 
+CALL PENIS_STAIN_MESSAGE
+PRINTFORML and started handling your %SLANG_PENIS()% by hand %TRAIN_SERVICE()%...
+
+
+
+
+@COM58_MESSAGE
+;授乳手コキ
+
+PRINTFORML You make %CALLNAME% do a lap pillow and start sucking her %SLANG_N()% while kneading her %SLANG_B()%...
+PRINTFORM Simultaneously, %CALLNAME% started handling your 
+CALL PENIS_STAIN_MESSAGE
+PRINTFORML with her hand...
+
+

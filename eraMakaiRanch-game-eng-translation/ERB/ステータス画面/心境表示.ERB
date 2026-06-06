@@ -1,0 +1,326 @@
+﻿;心境変更　ARGS：変更後の心境
+@PURPOSE_CHANGE(ARGS)
+
+;同じでもここ来る場合は心境地の文表示してるので止め用に通す
+;心境変更時表示のコンフィグがOFFならおわり
+IF !FLAG:心境変更時表示
+	;止め調整
+	SIF !TFLAG:刻印入手 && CSTR:心境 != ""
+		PRINTW
+	CSTR:心境 = %ARGS%
+	SOURCE:目的変更 = 1
+	RETURN
+ENDIF
+IF CSTR:心境 != ARGS
+	;心境空欄はキャラ作成時のみ
+	SETCOLOR 0xFFFF70
+	PRINT Goals Updated：
+	IF CSTR:心境 != ""
+		CALL PRINT_NOW_PURPOSE(1)
+		PRINT 　→　
+	ENDIF
+	CSTR:心境 = %ARGS%
+	CALL PRINT_NOW_PURPOSE(1)
+	RESETCOLOR
+ENDIF
+
+;止め調整
+SIF !TFLAG:刻印入手
+	PRINTW
+SOURCE:目的変更 = 1
+
+
+
+;心境表示　ARG：1なら目的変更
+@PRINT_NOW_PURPOSE(ARG)
+
+SIF !ARG
+	PRINT State Of Mind：
+SELECTCASE CSTR:心境
+CASE "魔界水晶"
+	PRINT Looking for a Makai Realm Crystal; aiming to make a big fortune!
+	
+CASE "魔界植物"
+	PRINT Looking for Makai Realm plants for experiments and potion-making
+	
+CASE "奪還"
+	PRINT Hoping that the missing comrades are safe...
+	
+CASE "名声"
+	PRINT Defeating demons in the Makai Realm to raise our fame on the surface!
+	
+CASE "帰還"
+	PRINT Wanting to return to the surface...
+	
+CASE "討伐"
+	PRINT Defeating demons to contribute to Ningen's victory!
+	
+CASE "討伐手伝い"
+	PRINT Helping defeat demons to assist ningens on the surface
+	
+CASE "地位向上"
+	PRINTFORM Defeating demons to elevate the status of our %CSTR:種族%
+	
+CASE "逃走"
+	PRINT Is there any chance to escape...?
+	
+CASE "異世界転移"
+	PRINT Is there a way to return to the original world...?
+	
+CASE "合流退却"
+	PRINT Needing to reunite with allies quickly to return to the surface...
+	
+CASE "退却"
+	PRINT Retreating to the surface for now...
+	
+CASE "牧場の女性の救出"
+	PRINTFORM Want to rescue the women who have been enslaved
+	
+CASE "懲らしめる"
+	PRINTFORM %SELF_CALL_ENG("I")%'ll teach %CALLNAME:0% a lesson
+	
+CASE "牧場から逃走"
+	PRINT Just need to escape this ranch... back to the surface, back to freedom...
+	
+CASE "体を元に戻させる"
+	PRINTFORM Restore %SELF_CALL_ENG("my")% body to its original state!
+	
+CASE "体を元に戻してもらう"
+	PRINTFORM %SELF_CALL_ENG("I")% want %SELF_CALL_ENG("my")% body back to how it used to be..
+	
+CASE "崩壊"
+	CALL PRINT_WORD_COLOR("Just muttering in a dazed state with lifeless eyes...","赤")
+	
+CASE "超乳状態"
+	CALL PRINT_WORD_COLOR,@"Even if %SELF_CALL_ENG("I")% escape, what will %SELF_CALL_ENG("I")% do with this body...","赤"
+	
+CASE "絶望"
+	CALL PRINT_WORD_COLOR("Someone help me...","赤")
+	
+CASE "諦めない"
+	PRINT Never giving up, even in this state...
+	
+CASE "肉体陥落"
+	PRINTFORM Even if %SELF_CALL_ENG("my")% body has been transformed, %SELF_CALL_ENG("I")% won't yield in spirit...
+	
+CASE "屈服状態"
+	PRINTFORM %SELF_CALL_ENG("I'm")% giving myself to %CSTR:あなた呼び方／陥落前%... but treat %SELF_CALL_ENG("me")% as more than just livestock, please...
+	
+CASE "陥落状態"
+	PRINT Living on the ranch like this might not be so bad...
+		
+CASE "搾乳奴隷"
+	CALL PRINT_WORD_COLOR,@"%SELF_CALL_ENG("I'm")% not yielding to the pleasure of milking...","桃"
+	CALL HEARTCB(0xD02830)
+		
+CASE "搾乳家畜"
+	CALL PRINT_WORD_COLOR,@"It feels good to be milked. %SELF_CALL_ENG("I")% need to stay strong or %SELF_CALL_ENG("I")%'ll give in...","桃"
+	CALL HEARTCB(0xD02830)
+	
+CASE "乳牛"
+	CALL PRINT_WORD_COLOR,@"%CSTR:一人称% wants everyone in Makai to savor plenty of %SAVESTR:表記／母乳%...","桃"
+	CALL HEARTCB(0xD02830)
+		
+CASE "乳牛奴隷"
+	CALL PRINT_WORD_COLOR,@"With %SELF_CALL_ENG("my")% lewd %SAVESTR:表記／乳房%—please milk a lot of %SAVESTR:表記／母乳%","桃"
+	CALL HEARTCB(0xD02830)
+		
+CASE "乳牛家畜"
+	CALL PRINT_WORD_COLOR,@"%SELF_CALL_ENG("I'm")% so happy to be %CSTR:あなた呼び方／陥落後%'s milking toy and personal livestock...","桃"
+	CALL HEARTCB(0xD02830)
+	
+CASE "恋慕"
+	PRINTFORM %CSTR:あなた呼び方／陥落後% has become %SELF_CALL_ENG("my")% everything...
+	CALL HEARTCB(0xD02830)
+	
+CASE "乳牛恋慕"
+	CALL PRINT_WORD_COLOR,@"Let's milk a lot of %SAVESTR:表記／母乳% for %SAVESTR:牧場名% and %CSTR:あなた呼び方／陥落後%","桃"
+	CALL HEARTCB(0xD02830)
+	
+CASE "乳牛恋慕奴隷"
+	CALL PRINT_WORD_COLOR,@"Letting %CSTR:あなた呼び方／陥落後% milk %SELF_CALL_ENG("me")% brings such sweet bliss...","桃"
+	CALL HEARTCB(0xD02830)
+	
+CASE "隷属"
+	CALL PRINT_WORD_COLOR,@"%CSTR:あなた呼び方／陥落後%—%SELF_CALL_ENG("I")% dedicate %SELF_CALL_ENG("my")% everything to you","桃"
+	CALL HEARTCB(0xD02830)
+	
+CASE "乳牛隷属"
+	CALL PRINT_WORD_COLOR,@"For %CSTR:あなた呼び方／陥落後%—%SELF_CALL_ENG("I")% offer %SELF_CALL_ENG("my")% heart, body, and every drop of %SAVESTR:表記／母乳%","桃"
+	CALL HEARTCB(0xD02830)
+	
+CASE "乳牛恋慕家畜","乳牛隷属奴隷"
+	CALL PRINT_WORD_COLOR,@"%SELF_CALL_ENG("I")% was born to be milked, to give %SAVESTR:表記／母乳% for %CSTR:あなた呼び方／陥落後%...","桃"
+	CALL HEARTCB(0xD02830,3)
+	
+CASE "乳牛隷属家畜"
+	CALL PRINT_WORD_COLOR,@"%SELF_CALL_ENG("I")% deeply love %CSTR:あなた呼び方／陥落後%, who taught %SELF_CALL_ENG("me")% the joy of being livestock","桃"
+	CALL HEARTCB(0xD02830,3)
+	
+CASE "恩返し"
+    PRINTFORM %SELF_CALL_ENG("I")% want to repay %CSTR:あなた呼び方／陥落後%
+
+CASE "子供"
+    PRINTFORM %SELF_CALL_ENG("I")% will do %SELF_CALL_ENG("my")% best to help %CSTR:あなた呼び方／陥落前%
+
+CASE "子供調教後"
+    PRINTFORM %CSTR:あなた呼び方／陥落前%, why...?
+	
+ENDSELECT
+RESETCOLOR
+PRINTL
+
+
+;場合による変化　ARGS：変更後の目的
+@PURPOSE_CHANGE_CALC(ARGS)
+
+SELECTCASE ARGS
+CASE "肉体陥落"
+	;快楽刻印取得
+	SIF CFLAG:家畜 || CFLAG:乳牛 || ＃陥落状態／陥落以上＃
+		RETURN
+	SIF GROUPMATCH(CSTR:心境,"崩壊","超乳状態","絶望","搾乳家畜","搾乳奴隷")
+		RETURN
+	CALL PURPOSE_CHANGE(ARGS)
+
+CASE "超乳状態"
+	;超乳化
+	SIF ＃陥落状態／恋慕以上＃ || CFLAG:乳牛
+		RETURN
+	SIF GROUPMATCH(CSTR:心境,"崩壊","絶望","搾乳家畜","搾乳奴隷","恩返し")
+		RETURN
+	CALL PURPOSE_CHANGE(ARGS)
+
+CASE "諦めない"
+	;反抗0
+	SIF GROUPMATCH(CSTR:心境,"崩壊","絶望","肉体陥落","搾乳家畜","搾乳奴隷","恩返し")
+		RETURN
+	IF MARK:恐怖刻印 || MARK:苦痛刻印
+		CALL PURPOSE_CHANGE("屈服状態")
+		
+	ELSEIF CSTR:心境 == "体を元に戻させる"
+		CALL PURPOSE_CHANGE("体を元に戻してもらう")
+	
+	ELSE
+		CALL PURPOSE_CHANGE(ARGS)
+	ENDIF
+	
+CASE "屈服状態"
+	;精神ギリギリ
+	SIF CSTR:心境 == ARGS
+		RETURN
+	SIF GROUPMATCH(CSTR:心境,"崩壊","絶望","肉体陥落","搾乳家畜","搾乳奴隷","恩返し")
+		RETURN
+	CALL PURPOSE_CHANGE(ARGS)
+
+CASE "乳牛"
+	IF ＃陥落状態／隷属＃
+		IF MARK:搾乳家畜
+			CALL PURPOSE_CHANGE("乳牛隷属家畜")
+		ELSEIF MARK:搾乳奴隷
+			CALL PURPOSE_CHANGE("乳牛隷属奴隷")
+		ELSE
+			CALL PURPOSE_CHANGE("乳牛隷属")
+		ENDIF
+	ELSEIF ＃陥落状態／恋慕以上＃
+		IF MARK:搾乳家畜
+			CALL PURPOSE_CHANGE("乳牛恋慕家畜")
+		ELSEIF MARK:搾乳奴隷
+			CALL PURPOSE_CHANGE("乳牛恋慕奴隷")
+		ELSE
+			CALL PURPOSE_CHANGE("乳牛恋慕")
+		ENDIF
+	ELSE
+		IF MARK:搾乳家畜
+			CALL PURPOSE_CHANGE("乳牛家畜")
+		ELSEIF CFLAG:乳牛
+			CALL PURPOSE_CHANGE("乳牛奴隷")
+		ELSE
+			CALL PURPOSE_CHANGE("乳牛")
+		ENDIF
+	ENDIF
+
+CASE "搾乳奴隷"
+	;搾乳奴隷の刻印
+	SIF CFLAG:崩壊
+		RETURN
+	IF ＃陥落状態／隷属＃
+		CALL PURPOSE_CHANGE("乳牛隷属奴隷")
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL PURPOSE_CHANGE("乳牛恋慕奴隷")
+	ELSEIF CFLAG:乳牛
+		CALL PURPOSE_CHANGE("乳牛奴隷")
+	ELSE
+		CALL PURPOSE_CHANGE("搾乳奴隷")
+	ENDIF
+
+CASE "搾乳家畜"
+	;搾乳家畜の刻印
+	SIF CFLAG:崩壊
+		RETURN
+	IF ＃陥落状態／隷属＃
+		CALL PURPOSE_CHANGE("乳牛隷属家畜")
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL PURPOSE_CHANGE("乳牛恋慕家畜")
+	ELSEIF CFLAG:乳牛
+		CALL PURPOSE_CHANGE("乳牛家畜")
+	ELSE
+		CALL PURPOSE_CHANGE("搾乳家畜")
+	ENDIF
+
+CASE "体を元に戻してもらう"
+	;母乳体質化
+	SIF CFLAG:家畜 || CFLAG:乳牛 || ＃陥落状態／屈服以上＃
+		RETURN
+	SIF GROUPMATCH(CSTR:心境,"体を元に戻してもらう","崩壊","絶望","諦めない","肉体陥落","搾乳家畜","搾乳奴隷")
+		RETURN
+	SIF CSTR:心境 == "体を元に戻させる" && !MARK:絶望刻印
+		RETURN
+	SIF TALENT:母性本能
+		RETURN
+
+	IF TALENT:高慢 || TALENT:プライド高い || TALENT:気丈 || CSTR:性格 == "強気"
+		CALL PURPOSE_CHANGE("体を元に戻させる")
+	ELSE
+		CALL PURPOSE_CHANGE("体を元に戻してもらう")
+	ENDIF
+
+CASE "絶望"
+	;崩壊から復帰
+	IF ＃陥落状態／恋慕以上＃
+		CALL PURPOSE_CHANGE("恋慕")
+	ELSEIF ＃陥落状態／陥落以上＃
+		CALL PURPOSE_CHANGE("屈服状態")
+	ELSE
+		CALL PURPOSE_CHANGE("絶望")
+	ENDIF
+
+CASE "恋慕"
+	IF CFLAG:乳牛
+		IF MARK:搾乳家畜
+			CALL PURPOSE_CHANGE("乳牛恋慕家畜")
+		ELSEIF MARK:搾乳奴隷
+			CALL PURPOSE_CHANGE("乳牛恋慕奴隷")
+		ELSE
+			CALL PURPOSE_CHANGE("乳牛恋慕")
+		ENDIF
+	ELSE
+		CALL PURPOSE_CHANGE("恋慕")
+	ENDIF
+
+CASE "隷属"
+	IF CFLAG:乳牛
+		IF MARK:搾乳家畜
+			CALL PURPOSE_CHANGE("乳牛隷属家畜")
+		ELSEIF MARK:搾乳奴隷
+			CALL PURPOSE_CHANGE("乳牛隷属奴隷")
+		ELSE
+			CALL PURPOSE_CHANGE("乳牛隷属")
+		ENDIF
+	ELSE
+		CALL PURPOSE_CHANGE("隷属")
+	ENDIF
+	
+ENDSELECT
+
+

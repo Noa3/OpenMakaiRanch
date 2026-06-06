@@ -1,0 +1,110 @@
+﻿
+;乳牛衣装・アダルトランジェリー
+@ITEM_DETAIL_CLOTHE_ADULT_LINGERIE
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "牛柄ビキニ"
+	CALL LINGERIE_DETAIL_COMMON("上下","","紐付き")
+	PRINTL 白黒のまだら模様柄のビキニ。
+	PRINTL 地上でも魔界でも、乳牛といえば白黒のまだら模様のようである。
+	PRINTL 下着の役割もさることながら、「お前はこれから搾乳される乳牛として暮らすんだ」という意思表示の効果もある。
+
+CASE "牛柄マイクロビキニ"
+	CALL LINGERIE_DETAIL_COMMON("上下","Ｂ露出","極小")
+	PRINTFORML 白黒のまだら模様柄のビキニで、布面積が少なく%SAVESTR:表記／乳房%が隠せていない。
+	PRINTFORML 裸にされるよりもむしろニンゲンの姿のまま%SAVESTR:表記／母乳%を搾られて性の対象として見られる趣がある。
+
+CASE "牛柄穴空きビキニ"
+	CALL LINGERIE_DETAIL_COMMON("上下","全露出","紐付き")
+	PRINTL 白黒のまだら模様柄のビキニだが、穴が空いており乳首も股間も隠せていない。
+	PRINTFORML 乳牛らしい衣服のまま%SAVESTR:表記／母乳%を搾ることのできる、搾乳家畜にうってつけの一品。
+
+CASE "牛柄ニーハイソックス"
+	CALL ACCESSORY_DETAIL_COMMON("脚")
+	PRINTL 脚に履く、白黒のまだら模様柄の長い靴下。
+	PRINTL 短くてもそれっぽくないかなと思い「ニーハイ」固定になっています。
+
+CASE "牛柄ロンググローブ"
+	CALL ACCESSORY_DETAIL_COMMON("腕")
+	PRINTL 手に着ける、白黒のまだら模様柄で肘まで覆う長い手袋。
+	PRINTL 手だけ覆ってもそれっぽくないかなと思い「ロング」固定になっています。
+
+CASE "乳牛つけみみ"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 乳牛を模した耳と角、のような見た目になれるヘアバンド。
+	PRINTL 他のどのアクセサリーよりも「お前は今日から乳牛だ」感が強いことに定評がある。
+	PRINTL 牛角族にもつけることが可能。今のところ差はありません。
+
+CASE "カウベル"
+	CALL ACCESSORY_DETAIL_COMMON("首")
+	PRINTL 放牧する家畜の首につけ、居場所がわかるようにする道具…のニンゲンサイズ版。
+	PRINTL 動くたびにカランカランといい音が鳴り、自分が家畜であることを思い出させると評判（要出典）。
+
+CASE "乳牛メイドカチューシャ"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL メイドブリムに乳牛を模した耳と角をつけたもの。
+	PRINTFORML ご主人様に%SAVESTR:表記／母乳%を捧げるのがメイドの仕事と言わんばかりのカチューシャであり、
+	PRINTL 本来メイドの女性にとっては屈辱の極みのようなアクセサリー。
+	PRINTL 牛角族にもつけることが可能。今のところ差はありません。
+
+CASE "牛柄スリングショット"
+	CALL LINGERIE_DETAIL_COMMON("上下","Ｂ露出")
+	PRINTL 上下セットの白黒のまだら模様柄水着なのだが、かなり布面積が少なく上は乳首しか隠せていない。
+	PRINTL なんなら白黒の紐。
+
+
+;アダルトランジェリー
+CASE "乳首露出ブラ"
+	CALL LINGERIE_DETAIL_COMMON("上","Ｎ露出","","膨乳時破損")
+	PRINTFORML %SAVESTR:表記／乳房%を包み込み保持する女性用下着…のはずだが、
+	PRINTL 肝心の乳首部分に布がなく隠せていないエッチな下着。
+
+CASE "ニップレス"
+	CALL LINGERIE_DETAIL_COMMON("上","Ｂ露出","シール")
+	PRINTL 乳首に貼り付け、乳首だけを隠す下着…というよりはシール。
+	PRINTFORML 当然だが、%SAVESTR:表記／乳房%自体は全く隠せていない。
+
+CASE "乳首札"
+	CALL LINGERIE_DETAIL_COMMON("上","Ｂ露出","シール")
+	PRINTL 乳首に貼り付けて隠すためのお札。
+	PRINTL ただのお札だと思うのだが、「乳首を隠す用」としたほうが抵抗感がなく安心感があるらしい。
+
+CASE "眼帯ブラ"
+	CALL LINGERIE_DETAIL_COMMON("上","Ｂ露出","極小","膨乳時破損")
+	PRINTL 眼帯のように乳首を布で隠した下着。
+	PRINTL 隠れている部分が非常に少ない上、紐をほどけば脱げてしまう。
+
+CASE "局部露出ショーツ"
+	CALL LINGERIE_DETAIL_COMMON("下","股間露出","")
+	PRINTL 股間を保護する女性用下着…のはずだが、
+	PRINTL その股間部分の布がないため一切隠せていないエッチな下着。
+
+CASE "前貼り"
+	CALL LINGERIE_DETAIL_COMMON("下","Ａ露出","シール")
+	PRINTL 股間の大事な部分だけが隠れるように貼り付ける、下着というよりシール。
+	PRINTL 剥がすだけで簡単に挿入できてしまいます。
+	PRINTL 着物や巫女服の下着どうしようか迷ったけど、この世界ではさらしと前貼りということにします。
+
+CASE "股間札"
+	CALL LINGERIE_DETAIL_COMMON("下","Ａ露出","シール")
+	PRINTL 股間の大事な部分に貼り付けて隠すためのお札。
+	PRINTL ただのお札だと思うのだが、「股間を保護する用」としたほうが抵抗感がなく安心感があるらしい。
+
+CASE "マイクロビキニ"
+	CALL LINGERIE_DETAIL_COMMON("上下","Ｂ露出","極小")
+	PRINTL 上下セットの水着で、下着としても使えるのだが非常に布面積が少なく、上は乳首しか隠せていない。
+	PRINTL 少し動けば乳首が見えてしまうため、おそらく泳ぐことは想定されていない。
+
+CASE "ガーターベルト"
+	CALL ACCESSORY_DETAIL_COMMON("脚")
+	PRINTL 4本のストラップでストッキングを固定するための靴下留め。
+	PRINTL そういうわけなので、「ガーターベルト」と言いながら脚アクセサリー扱いだし
+	PRINTL ストッキング込みということになっています。
+
+CASE "紐"
+	CALL LINGERIE_DETAIL_COMMON("上下","Ｂ露出")
+	PRINTL 上下セットの下着？で、上は乳首しか隠せていない。
+	PRINTL 紐なんだから当然である。
+
+ENDSELECT
+

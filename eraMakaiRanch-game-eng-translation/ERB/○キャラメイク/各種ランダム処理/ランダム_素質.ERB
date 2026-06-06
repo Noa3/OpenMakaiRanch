@@ -1,0 +1,40 @@
+﻿
+;奴隷候補の素質
+@RANDOM_SLAVE_TALENT
+#DIM SAVE_TALENT,5
+
+;性知識を保存
+SAVE_TALENT:0 = TALENT:性知識乏しい
+SAVE_TALENT:1 = TALENT:性知識豊富
+
+;シャッフルに来たら一旦リセット
+;種族によるものは飛ばすために番号変更した
+VARSET TALENT,0,70,1000
+
+;上書きし直し
+TALENT:性知識乏しい = SAVE_TALENT:0
+TALENT:性知識豊富 = SAVE_TALENT:1
+
+;共通で発生する部分
+CALL RANDOM_SLAVE_TALENT_COMMON
+
+;嗜好素質
+CALL RANDOM_SLAVE_TALENT_LIKING
+
+;ジョブ補正
+CALL RANDOM_SLAVE_TALENT_JOB
+
+;性格と身分による補正
+CALL RANDOM_SLAVE_TALENT_PERSONALITY
+
+;種族による補正
+CALL RANDOM_SLAVE_TALENT_TRIBE
+
+;調合知識を持ってる場合薬学+5する（ここでないと変になる）
+SIF TALENT:調合知識
+	ABL:薬学 = 5
+
+;排他素質の消去
+CALL EXCLUSIVE_TALENT
+
+

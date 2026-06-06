@@ -1,0 +1,112 @@
+﻿
+@HINT_TRAIN
+
+SELECT_TIPS = -1
+PRINTL 調教中の各種項目について解説します。
+PRINTL 以下から知りたい項目について選択してください。
+PRINTL
+PRINTLC [ 0] 奴隷を【母乳体質】にしたい
+PRINTLC [ 1] 調教の時間経過
+PRINTLC [ 2] コマンドの切り替え
+PRINTLC [ 3] 挿入ができない
+PRINTLC [ 9] その他仕様
+PRINTL
+CALL HINT_SPECIFICATION
+PRINTLC [99] Return
+INPUT
+INPUT_NUM = RESULT
+CALL MANYL(3)
+SELECTCASE INPUT_NUM
+CASE 0
+	CALL HINT_LACTATION_PROCESS
+CASE 1
+	CALL HINT_TRAIN_TIME
+CASE 2
+	CALL HINT_TRAIN_COMMAND
+CASE 3
+	CALL HINT_SEX_PROCESS
+CASE 9
+	CALL HINT_TRAIN_OTHER
+CASE 10
+	CALL HINT_MILK
+CASE 11
+	CALL HINT_PALAMETER
+CASE 12
+	CALL HINT_MIND_STATUS
+CASE 13
+	CALL HINT_SENSITIVE_STATUS
+CASE 14
+	CALL HINT_RESOURCE
+ENDSELECT
+SIF INPUT_NUM >= 10
+	RETURN
+DRAWLINE
+PRINTW
+
+
+
+
+
+@HINT_LACTATION_PROCESS
+
+PRINTL 奴隷を【母乳体質】にするには、＜母乳体質化薬＞を注射する必要があります。
+PRINTL ＜母乳体質化薬＞は乳首に注射するタイプのため、使用する条件として
+PRINTL 1：【Ｎ露出】状態である　　2：奴隷が無抵抗な状態である　　3：Ｎ装備が何もない
+PRINTL 以上の3つが必要です。
+PRINTL （+まだ【母乳体質】ではない、＜母乳体質化薬＞を持っている）
+PRINTL
+PRINTFORML 1：【衣服状態変更】で上を脱がせ、%SAVESTR:表記／乳房%を露出させましょう。
+PRINTL 2：奴隷のHPが0、【屈服】している、奴隷が拘束されている　のいずれかで
+PRINTL 抵抗されずに注射することができます。
+PRINTL 調教がまだ序盤なら、【拘束状態変更】から奴隷を拘束しましょう。
+PRINTL 3：＜乳首吸引器＞などを使用中の場合は【責め具解除】かもう1度コマンドを選択し
+PRINTL 取り外しておきましょう。
+PRINTL
+PRINTL この状態で、【道具・魔術コマンド】→【薬品・触手薬剤注入】→【母乳体質化薬】
+PRINTL を選択することで＜母乳体質化薬＞の使用が可能です。
+
+
+
+@HINT_TRAIN_TIME
+
+PRINTL 調教は初期残り時間10ターンから開始し、快楽値の増加する責めコマンド（～300番）
+PRINTL を使用するたびに1ターン経過します。
+PRINTL 衣服変更、拘束状態変更などではターンの経過はありません。
+PRINTL
+PRINTL 《 調教終了条件 》
+PRINTL 【調教終了】→確認画面で「はい」を押す
+PRINTL 調教残り時間が0ターンになる
+PRINTL あなたのHPが0になる
+
+
+
+@HINT_TRAIN_COMMAND
+
+PRINTL 【ペニスコマンド】など、400番台のコマンドを選択することで上部に表示される
+PRINTL 責めコマンドを切り替えることができます。
+PRINTL 切り替えでのターン経過はありません。
+
+
+
+@HINT_SEX_PROCESS
+
+PRINTL 奴隷が【Ｖ露出】（アナルに挿れたい場合【Ａ露出】）でなければ責めコマンドが出てきません。
+PRINTL また【ペニスコマンド】に切り替えていない場合挿入コマンドが出てきません。
+PRINTL
+PRINTL 最初に貰える奴隷を含め一部の奴隷は【処女結界】を持っています。
+PRINTL こちらが有効な場合はＶ責めをすることができません。
+PRINTL
+PRINTL 以下のいずれかの状態なら【処女結界】の保護を貫くことができます。
+PRINTL ・【隷属】【洗脳】【恋慕】【崩壊】【乳牛】のいずれかの状態
+PRINTL ・現在の霊力が最大値の半分以下
+
+
+
+@HINT_TRAIN_OTHER
+
+PRINTL 当バリアントでの仕様です。
+PRINTL ・コマンド連続使用のペナルティがありません
+PRINTL ・【反発刻印】がありません（そもそも魔族に捕らえられて反感MAXみたいな状態のため）
+PRINTL ・感度低めでも何度も乳絶頂を繰り返すのは仕様です
+CALL PRINTL_WORD_COLOR("・当バリアントでは奴隷の体力が0になっても死亡することはありません。","黄")
+

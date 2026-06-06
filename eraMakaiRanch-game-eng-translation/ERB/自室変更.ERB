@@ -1,0 +1,164 @@
+﻿
+;自室変更
+@VISIT_ALLOCATION_ROOM
+
+PRINTFORML Do you want to change %CALLNAME%'s assigned room?
+PRINTL Allocating a Private Room increases recovery rate, but also increases cost of living slightly.
+PRINT Currently：
+CALL PRINT_ROOM_NUM
+PRINTL
+IF EQUIP:個室
+	CALL PRINTL_WORD_COLOR("Has Private Room","水色")
+ELSEIF FLAG:個室数／空室
+	PRINTFORML [ 0] Assign Private Room（{FLAG:個室数／空室} available rooms）
+ELSE
+	CALL PRINTL_WORD_COLOR("No Private Rooms available","灰")
+ENDIF
+PRINTL
+CALL ABAILABLE_DORMITORY
+PRINTL
+IF EQUIP:自室
+	PRINTL [90] Remove Room Assignment
+	PRINTL
+ENDIF
+PRINTL [99] Cancel
+BINPUT
+PRINTL
+IF CSTR:状態／あなたの子 == "成長後" && RESULT != 99
+	CHILD_COM = RESULT
+	CALL CHILD_REBELLION
+	SIF RESULT
+		RESTART
+	RESULT = CHILD_COM
+ENDIF
+SELECTCASE RESULT
+CASE 0
+	CALL GIVE_SLAVE_PRIVATE_ROOM
+CASE 10 TO 30
+	CALL GIVE_SLAVE_DORMITORY(RESULT)
+CASE 90
+	IF EQUIP:自室
+		CALL REMOVE_SLAVE_ROOM
+		PRINTW Room assignment has been remvoed.
+	ENDIF
+CASE 99
+	RETURN
+ENDSELECT
+
+;変更したらフラグ
+FLAG:時刻制限／部屋割り変更 = 1
+
+;割り当て変更の最後にもう1度居場所判定しておく
+;本人だけにしないとTARGETがずれる
+CALL CHARA_WHEREABOUTS_TARGET
+
+
+
+;寮判定まとめて
+@ABAILABLE_DORMITORY
+#DIM ROOMMATE
+
+;寮がなければ終わり
+IF !ITEM:奴隷寮
+	CALL PRINTL_WORD_COLOR("No ＜Slave Dormitory＞","灰")
+	RETURN
+ENDIF
+PRINTL 　《 Slave Dormitory 》
+
+;寮があれば+2、増築回数*1
+FOR LOCAL,0,ITEM:奴隷寮増築 +2
+	;同じ部屋に何人いるか出す
+	ROOMMATE = CMATCH(CFLAG:寮番号,LOCAL +1)
+	
+	;満員だったりそもそも自分がいる場合ボタン非表示
+	IF ROOMMATE >= 4
+		CALL PRINT_WORD_COLOR,@"<{LOCAL +10}> Room {LOCAL +101}（{ROOMMATE}／4）","灰"
+		CALL PRINT_WORD_COLOR("Room full","黄")
+	ELSEIF CFLAG:寮番号 == LOCAL +1
+		CALL PRINT_WORD_COLOR,@"<{LOCAL +10}> Room {LOCAL +101}（{ROOMMATE}／4）Currently Assigned","水色"
+	ELSE
+		PRINTFORM [{LOCAL +10}] Room {LOCAL +101}（{ROOMMATE}／4）
+	ENDIF
+	PRINTL
+NEXT
+
+
+
+;個室の割り当て
+@GIVE_SLAVE_PRIVATE_ROOM
+
+SIF EQUIP:個室 || !FLAG:個室数／空室
+	RETURN
+
+;解除可能にしたし選択肢出さなくていいかな
+;一旦自室解除を呼ぶ
+CALL REMOVE_SLAVE_ROOM
+EQUIP:個室 = 1
+EQUIP:自室 = 1
+FLAG:個室数／空室 --
+PRINTFORML Assigned Pritate Room to %CALLNAME%.
+
+;解除可能なので何回か言うかもしれない
+CALL KOJO_PRINT("Visit","Assign to private room")
+PRINTW
+
+
+
+;寮の割り当て
+;ARG→INPUT
+@GIVE_SLAVE_DORMITORY(ARG)
+#DIM DORMITORY_NUM
+
+;寮番号→ARG-9（1に入れるならARG=10で来る）
+DORMITORY_NUM = ARG -9
+CALL REMOVE_SLAVE_ROOM
+CFLAG:寮番号 = DORMITORY_NUM
+EQUIP:自室 = 1
+PRINTFORML Assigned %CALLNAME% to room {DORMITORY_NUM +100}.
+
+;ルームメイトの表示
+CALL PRINT_SLAVE_DORMITORY_ROOMMATE
+PRINTW
+
+
+
+;自室を解除
+@REMOVE_SLAVE_ROOM
+
+;個室持ちの場合空き部屋数再計算する必要あり
+SIF EQUIP:個室
+	FLAG:個室数／空室 ++
+EQUIP:個室 = 0
+EQUIP:自室 = 0
+CFLAG:寮番号 = 0
+
+
+
+;自室強制解除
+;ARGS→理由
+@RESET_SLAVE_ROOM(ARGS)
+
+;自室なし状態ならおわり
+SIF !EQUIP:自室
+	RETURN
+SELECTCASE ARGS
+CASE "牛舎"
+	;自動解除フラグを見る
+	SIF !GETBIT(＃自動部屋割り／牛舎＃)
+		RETURN
+	PRINTFORMW ＜Removed room assignment for %CALLNAME% and sent her to the cowshed.＞
+	CALL REMOVE_SLAVE_ROOM
+	
+CASE "体内凌辱"
+	SIF !GETBIT(＃自動部屋割り／体内凌辱＃)
+		RETURN
+	PRINTFORML ＜To begin internal violation, %CALLNAME%'s room assignment will be revoked＞
+	CALL REMOVE_SLAVE_ROOM
+CASE "超乳化"
+	CALL PRINTW_WORD_COLOR,@"＜Due to becoming unable to work, %CALLNAME%'s room assignment will be revoked.＞","桃"
+	CALL REMOVE_SLAVE_ROOM
+ENDSELECT
+
+
+
+

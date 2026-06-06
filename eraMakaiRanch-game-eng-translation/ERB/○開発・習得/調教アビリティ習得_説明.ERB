@@ -1,0 +1,218 @@
+﻿
+;アイテム説明と購入数
+;ARG→SELECT_ITEM
+@ITEM_DETAIL_ABILITY(ARG)
+
+;非対応IDか名称なしならそのまま帰る
+IF ARG < ITEM_ID_MIN || ARG >= ITEM_ID_MAX || ITEMNAME:ARG == ""
+	PRINTL  　《 The description of the selected ability will be displayed 》
+	RETURN
+
+;とりあえずアイテム名、価格を出す
+;ここでは基礎値出す
+ELSEIF ABILITY_LEVEL_MAX:ARG
+	PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:ARG)% 》%VALUE_DIGIT(ITEMPRICE:ARG)%AP（Base Value）:Lv{ITEM:ARG}／{ABILITY_LEVEL_MAX:ARG}
+ELSE
+	PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:ARG)% 》%VALUE_DIGIT(ITEMPRICE:ARG)%AP（Base Value）:Currently Lv{ITEM:ARG}
+ENDIF
+
+;1限チェック
+CALL ABILITY_GET_ONCE_CHECK(ARG)
+SELECTCASE ITEMNAME:ARG
+CASE "汚れ無視"
+	PRINTL ＜Passive＞
+	PRINTL During training: ＜Lv1＞【Anal Fingering】・Permits oral commands even when exposed to [Tentacle Slime][Semen][Smegma]
+	PRINTL                  ＜Lv2＞【Lick Anus】　・Permits oral command even when exposed to [Feces]
+	PRINTL (A Sex is possible even at Lv0)
+	PRINTL
+	PRINTL Allows actions that might cause hesitation for ordinary people.
+	SIF FLAG:ジョーク表示
+		PRINTL Let's get covered in it quickly
+
+CASE "拘束技術"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Enables use of 【Piledriver Restraints】【Harness Restraints】【Tortoise Bondage】
+	PRINTL
+	PRINTL Enhances rope-binding skills, allowing even resistant slaves to be restrained in compromising positions.
+	PRINTL The surprise of being bound in such a way can be quite unsettling.
+
+CASE "調教時間増加"
+	PRINTL ＜Passive＞
+	PRINTL At the start of training: Increases the number of trainable turns by Lv
+	PRINTL
+	PRINTL Extends the initial 10-turn training time.
+	SIF FLAG:ジョーク表示
+		PRINTL When it's quick, it's fine, but past 20 or 30, the mechanics become a mystery.
+
+CASE "甘え上手"
+	PRINTL ＜Passive＞
+	PRINTL During training: Increases the 【Maternity】 EXP multiplier of the trainee
+	PRINTL
+	PRINTL Stimulates the slave's maternal instincts through teasing. What does that mean?
+	PRINTL ※Currently disabled as it is in beta.
+
+CASE "危険日感知"
+	PRINTL ＜Unlock＞＜ON／OFF＞
+	PRINTL Status screen: Displays the slave's dangerous days
+	PRINTL
+	PRINTL Allows you to roughly know when the slave's ovulation period will come.
+	PRINTL ※Currently disabled as it is in beta.
+
+CASE "異種族孕ませ"
+	PRINTL ＜Unlock＞＜ON／OFF＞
+	PRINTFORML During training: Capable of impregnating slaves with your offspring
+	PRINTL
+	PRINTL This mystical ability enables impregnation across different worlds and races, including ningens and makaians.
+	PRINTL Even without this ability, deep interactions with demon realm residents will eventually allow for impregnation later.
+
+;おっぱい責め
+CASE "乳責め技巧"
+	PRINTL ＜Passive＞
+	PRINTFORML During training: Increases pleasure when you directly touch breasts or nipples
+	PRINTL
+	PRINTFORML Applies only to %SAVESTR:表記／乳房%, further increasing the slave's pleasure.
+	PRINTL ※Currently disabled as it is in beta.
+
+CASE "豊穣"
+	PRINTL ＜Passive・Unlock＞
+	PRINTL Breast Massage training command：Breast Growth effect added
+	PRINTL Training Command: ＜Breast Growth Massage＞
+	PRINTL
+	PRINTFORML Performs massages suitable for promoting growth and pleasure in %SAVESTR:表記／乳房%.
+	PRINTL Breast Massage increases ＜Abundance Value＞ according to the ability level with each command, and if a certain value accumulates by bedtime, bust size increases by +1.
+
+CASE "濃厚母乳マッサージ"
+	PRINTL ＜Passive・Unlock＞
+	PRINTL Breast Massage training command：Breast Milk Enriching effect added
+	PRINTL Training Command: ＜Rich Breast Milk Massage＞
+	PRINTL
+	PRINTFORML Performs a massage suitable for extracting delicious %SAVESTR:表記／母乳%, promoting growth and pleasure.
+	PRINTL Breast Massage increases ＜Milk Density＞ according to the ability level with each command.
+
+CASE "ミルクタンクマッサージ"
+	PRINTL ＜Passive・Unlock＞
+	PRINTL Breast Massage training command：Milk Production increase added
+    PRINTL Training Command: <Milk Tank Massage>
+    PRINTL
+    PRINTFORML Perform a massage suitable for extracting plenty of %SAVESTR:表記／母乳% to promote growth while providing pleasure.
+    PRINTL With each Breast Massage command, the <Milk Production> increases according to the ability level.
+    PRINTL It seems like something you'd use once you've reached your ideal bust size.
+
+CASE "ペニスサイズ増加"
+    PRINTL <Unlocked>
+    PRINTFORML Allows modification of the size of your %SAVESTR:表記／ペニス%.
+    PRINTL Lv1 → 【Giant】 Lv2 → 【Extremely Thick】 Lv3 → 【Horse-like】
+    PRINTL
+    PRINTFORML Increases the size of your %SAVESTR:表記／ペニス% in the larger direction.
+    PRINTL While a larger size increases the pleasure given, it also increases pain, so moderation might be advisable.
+    PRINTL Particularly for smaller individuals, unless they have an exceptional 【Exquisite Pussy】, insertion might be difficult.
+    PRINTL ※Currently disabled as it is in beta.
+
+CASE "ペニスサイズ減少"
+    PRINTL <Unlocked>
+    PRINTFORML Allows modification of the size of your %SAVESTR:表記／ペニス%.
+    PRINTL Lv1 → 【Short】 Lv2 → 【Child-sized】
+    PRINTL
+    PRINTFORML Reduces the size of your %SAVESTR:表記／ペニス% in the smaller direction. Why???
+    PRINTL Reduces pleasure but also decreases pain, so it is not without its uses.
+    PRINTL It might be just the right size for smaller individuals, allowing for a feeling of affection.
+    PRINTL ※Currently disabled as it is in beta.
+
+CASE "ペニス硬度増加"
+    PRINTL <Unlocked>
+    PRINTFORML Allows modification of the hardness of your %SAVESTR:表記／ペニス%.
+    PRINTL Lv1 → 【Hard】 Lv2 → 【Solid】
+    PRINTL
+    PRINTFORML Makes %SAVESTR:表記／ペニス% harder.
+    PRINTL With increased hardness, even with "cat tongue" or "razor teeth," fellatio and deep-throating become possible.
+	PRINTL There is also a minor increase in pleasure provided as an additional effect.
+    PRINTL ※Currently disabled as it is in beta.
+
+CASE "精力増加"
+    PRINTL <Passive>
+    PRINTFORML Increases your maximum vigor and recovery rate.
+    PRINTL
+    PRINTL Increases vigor, allowing for more frequent ejaculation.
+    PRINTL ※Currently disabled as it is in beta.
+
+CASE "シャイニングチンポ"
+    PRINTL <Unlocked> <ON/OFF>
+    PRINTFORML Allows modification of the glowing effect of your %SAVESTR:表記／ペニス%.
+    PRINTL
+    PRINTFORML Mekes your %SAVESTR:表記／ペニス% glow. Not some mysterious light filter, but your %SAVESTR:表記／ペニス% actually glows. Why?
+    PRINTL There is a mysterious effect that reduces confusion and fear.
+    PRINTL ※Currently disabled as it is in beta.
+
+CASE "ゲーミングチンポ"
+    PRINTL <Unlocked> <ON/OFF>
+    PRINTFORML Allows modification of the glowing effect of your %SAVESTR:表記／ペニス%.
+    PRINTL
+    PRINTFORML Get your %SAVESTR:表記／ペニス% to glow with a rainbow color. Why???
+    PRINTL There is a mysterious effect that reduces confusion and fear.
+    PRINTL ※Currently disabled as it is in beta.
+
+CASE "濃厚精液"
+	PRINTL ＜Passive＞
+	PRINTFORML You can adjust the concentration of %SAVESTR:表記／精液% produced by you.
+	PRINTL
+	PRINTFORML The concentration of %SAVESTR:表記／精液% increases.
+	PRINTL It provides a bonus to "semen addiction" and a slight increase in pleasure at the ejaculation site,
+	PRINTL as well as increasing the chance of conception if "impregnate different races" is effective.
+    PRINTL ※Currently disabled as it is in beta.
+	
+	CASE "早漏"	
+	PRINTL ＜Unlock＞
+	PRINTFORML You can reduce the maximum value of your ejaculation gauge.
+	PRINTL
+	PRINTFORML This shortens the interval between your ejaculations.
+	PRINTL The amount of semen per ejaculation tends to be lower, so it's not necessarily a clear benefit.
+	PRINTL ※Currently disabled as it is in beta.
+	
+CASE "遅漏"
+	PRINTL ＜Unlock＞
+	PRINTFORML You can increase the maximum value of your ejaculation gauge.
+	PRINTL
+	PRINTFORML This lengthens the interval between your ejaculations.
+	PRINTL By building up and releasing all at once, the amount of semen per ejaculation becomes larger.
+	PRINTL ※Currently disabled as it is in beta.
+	
+CASE "絶倫"
+	PRINTL ＜Passive＞＜ON／OFF possible＞
+	PRINTFORML Your vigor becomes unlimited and your stamina consumption during ejaculation is halved.
+	PRINTL
+	PRINTFORML You will be able to ejaculate an unlimited number of times.
+	PRINTL As a secondary effect, stamina consumption during ejaculation is also halved.
+	
+CASE "百合手折り"
+	PRINTL ＜Passive＞
+	CALL PRINTL_WORD_COLOR,@"Only if 'you' are male","黄"
+	PRINTFORML When you use %SAVESTR:表記／ペニス%, it reduces the target's lesbian tendencies.
+	PRINTL
+	PRINTFORML Training with your %SAVESTR:表記／ペニス% decreases the target's lesbian tendencies.
+	PRINTL Increasing the level of 【Lesbian Tendency Suppression】 can prevent lesbian tendencies from exceeding a certain level.
+	PRINTL This is what is known as "losing to a penis" in lesbian contexts.
+	PRINTL
+	PRINTL I created this option thinking it might be interesting, but I wonder if it can be implemented effectively.
+	PRINTL ※Currently disabled as it is in beta.
+	
+CASE "獣欲"
+	PRINTL ＜Passive＞
+	PRINTFORML When you use your %SAVESTR:表記／ペニス%, it reduces the target's sadistic tendencies and increases their masochistic tendencies.
+	PRINTL
+	PRINTFORML Training with your %SAVESTR:表記／ペニス% imparts effects that reduce the target's sadistic tendencies and increase their masochistic tendencies.
+	PRINTL Increasing the level of 【Sadistic Tendency Suppression】 can prevent sadistic tendencies from exceeding a certain level.
+	PRINTFORML This option is for making females who thought they were superior understand their place by using your %SAVESTR:表記／ペニス%.
+	PRINTL
+	PRINTL I thought it might be interesting to have this feature, but I wonder if it can be implemented effectively.
+	PRINTL ※Currently disabled as it is in beta.
+	
+CASE "ふたなりちんぽ"
+	PRINTL ＜Passive＞＜ON／OFF available＞
+	CALL PRINT_WORD_COLOR,@"Only for when you are female","黄"
+	PRINTFORML : You develop a %SAVESTR:表記／ペニス%.
+	PRINTL
+	PRINTFORML As the name suggests, you will develop a %SAVESTR:表記／ペニス%.
+	PRINTFORML Naturally, if you don't have this, other %SAVESTR:表記／ペニス% related abilities will be meaningless, so please be aware.
+ENDSELECT
+
+

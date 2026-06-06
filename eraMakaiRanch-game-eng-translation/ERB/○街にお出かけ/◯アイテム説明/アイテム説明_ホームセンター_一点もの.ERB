@@ -1,0 +1,82 @@
+﻿
+;ホームセンターPAGE2
+@ITEM_SHOP_WORK_DETAIL_DEVICE
+
+;アイテム名・価格
+PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:SELECT_ITEM)% 》%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%G 
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "業務用魔力貯蔵器"
+	PRINTL ＜Upgrade＞
+	PRINTFORML Increases Mana storage capacity to %VALUE_DIGIT(MAGIC_TANK_BUSINESSUSE)%MP.
+	PRINTL
+	PRINTL A device that stores Mana and can be used as a battery, for business use.
+	PRINTL In the demon world, "machines" operate using Mana, but there are many humans who either lack Mana
+	PRINTL or cannot recover enough Mana in a single day to operate the machines,
+	PRINTL so a battery for operating the machines is very important.
+	PRINTL
+	PRINTL That said, for regular use, the amount of Mana in what we would call a "battery" in our world
+	PRINTL is sufficient, so it is not typically used in the form of a Mana storage device.
+	
+CASE "大容量魔力貯蔵器"
+	PRINTL ＜Unlock＞
+	PRINTFORML Increases Mana storage capacity to %VALUE_DIGIT(MAGIC_TANK_LARGE_CAPACITY)%MP.
+	PRINTL
+	PRINTL A device that stores Mana and can be used as a battery, reinfocred version.
+	IF FLAG:ジョーク表示
+		PRINTL An at-any-cost high-end model that boasts an enormous storage capacity. 
+		PRINTL It took the elite members of the Demon King's Army, 
+		PRINTL including the Demon King himself, several days to fill up this reservoir.
+	ENDIF
+	
+CASE "スタイリング道具セット"
+	PRINTL ＜Unlock＞
+	PRINTL Visit → Change Hairstyle
+	PRINTL
+	PRINTL A set of tools needed to arrange a girl's hair.
+	PRINTL While scissors are enough for men's hair, girls' hair is delicate, so various tools are required.
+	PRINTL Comes with a guide that even beginners can understand.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL While cutting hair is one thing, this mysterious set can instantly change short hair to long hair.
+		PRINTL Perhaps it contains some kind of magic that makes it possible.
+	ENDIF
+	
+CASE "工具セット"
+	PRINTL ＜Unlock＞
+	PRINTL Development/Learning → Development of New-Model Milking Machine
+	PRINTL
+	PRINTL A complete set of tools needed to build or modify machines.
+	PRINTL とはいえ巨大な機械を作れるほどではないので、搾乳器を開発するために使う。
+	PRINTL Comes with a guide that even beginners can understand。
+	
+CASE "裁縫道具セット"
+	PRINTL ＜Unlock＞
+	PRINTL Visit → Repair Torn Clothes
+	PRINTL
+	PRINTL A set of tools needed to repair torn clothing.
+	PRINTL Comes with a guide that even beginners can understand。
+	
+
+;外れたんだけど一応ここに残しておく
+CASE "ネクロノミコン"
+    PRINTL ＜Unlock＞
+    PRINTL Development/Learning → Magic Acquisition
+    PRINTL
+    PRINTL A reference needed to learn magic.
+    PRINTL The ＜Al Azif＞ grimoire, containing almost every form of magic from the demon world,
+    PRINTL has been condensed to exclude spells that lack clear principles, are too advanced to be practically acquired,
+    PRINTL or are overly niche, thus keeping the volume manageable.
+    IF FLAG:ジョーク表示
+        PRINTL
+        PRINTL Though an extraordinary artifact for humans on the surface, often sparking deadly conflicts,
+        PRINTL in the demon world, it's simply a reference book anyone can buy, price notwithstanding, at the bookstore.
+	ENDIF
+	
+CASE "マジカル裁ちバサミ"
+	PRINTL ＜Unlock＞
+	PRINTL Clothing Modification → Altered to Increase Exposure
+	PRINTL
+	PRINTL Allows modifying compatible clothing to increase exposure.
+ENDSELECT
+
+

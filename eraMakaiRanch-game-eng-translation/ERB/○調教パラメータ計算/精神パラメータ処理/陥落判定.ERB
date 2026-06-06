@@ -1,0 +1,51 @@
+﻿
+;コマンドごとに来る陥落判定
+@CAPITULATION_JUDGE
+
+;乳牛堕ち→乳牛堕ちMAX・精神力が0・今回3L以上搾られた・輪姦ではない
+;崩壊より先に判定出す
+SIF !BASE:精神力 && BASE:乳牛堕ち == MAXBASE:乳牛堕ち && EX:噴乳 >= 3000 && !CFLAG:乳牛 && !TFLAG:ゴブリン輪姦
+	CALL CAPITULATION_CATTLE
+
+;崩壊→精神力0
+SIF !BASE:精神力 && !CFLAG:崩壊
+	CALL CAPITULATION_MIND_BREAK
+
+;Ｍ装備がある場合崩壊化以外は飛ばす
+SIF TFLAG:Ｍ装備
+	RETURN
+
+;拒絶→抵抗心0
+SIF !BASE:抵抗心 && !＃陥落状態／拒絶以上＃
+	CALL CAPITULATION_DELETE_RESIST
+
+;屈服→尊厳0
+SIF !BASE:尊厳 && !＃陥落状態／屈服以上＃
+	CALL CAPITULATION_SUCCUMB
+
+
+
+;あなた調教終了時の陥落判定　好感度系を追加
+@TRAIN_END_CAPITULATION
+
+;実行回数が3回未満なら飛ばす
+SIF TFLAG:コマンド実行回数 < 3
+	RETURN
+
+;陥落→嫌悪感0
+SIF !BASE:嫌悪感 && !＃陥落状態／陥落以上＃
+	CALL CAPITULATION_FALLING
+
+;乳牛堕ち→あなた調教終了時：乳牛堕ちMAX・今回3L以上搾られた
+SIF BASE:乳牛堕ち == MAXBASE:乳牛堕ち && EX:噴乳 >= 3000 && !CFLAG:乳牛
+	CALL CAPITULATION_CATTLE
+
+;恋慕→好感度MAX　-1してるのでそれ対応
+SIF BASE:好感度 >= BASE_FIRST_MAX -1 && !＃陥落状態／恋慕以上＃
+	CALL CAPITULATION_LOVE
+
+;隷属→恋慕で上がった好感度をさらにMAX
+SIF BASE:好感度 >= BASE_FALLINLOVE_FAV -1 && !＃陥落状態／隷属＃
+	CALL CAPITULATION_LOVE_SLAVE
+
+

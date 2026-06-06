@@ -1,0 +1,43 @@
+﻿
+;掃除開始地の文
+@WORK_CLEANING_BEGIN_MESSAGE
+
+SIF !EXP:実行回数／掃除 && !TARGET
+	PRINTFORML You ordered %CALLNAME% to clean the office and bath...
+PRINTFORML %CALLNAME% cleans the large office.
+CALL KOJO_PRINT("スケジュール","掃除",KOJO_TYPE)
+
+
+
+;掃除上手さ表示
+@WORK_CLEANING_ABL_MESSAGE
+
+SIF !TARGET
+	RETURN
+IF !EXP:実行回数／掃除
+	IF ABL:掃除 >= 8
+		PRINTL It seems the experience from the outside world is coming into play, and the task is being done very efficiently.
+	ELSEIF ABL:掃除 >= 4
+		PRINTL They seem to have quite a knack for it.
+	ELSE
+		PRINTL ...It looks like progress is slow.
+	ENDIF
+ELSE
+	IF ABL:掃除 >= 8
+		PRINTL The office is quickly becoming clean. 
+	ELSEIF ABL:掃除 >= 4
+		PRINTL They've improved quite a bit.
+	ELSE
+		PRINTL ...It looks like progress is slow.
+	ENDIF
+ENDIF
+
+
+
+;完了
+@WORK_CLEANING_COMPLETE_MESSAGE
+
+PRINTFORML %CALLNAME% finished cleaning the office.
+
+
+

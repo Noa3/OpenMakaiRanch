@@ -1,0 +1,393 @@
+﻿
+;肉体改造・投薬入り口
+@COM800
+#DIM TENTACLE_OK
+
+;関数分けする
+IF CFLAG:当日制限／肉体改造薬
+	CALL PRINTL_WORD_COLOR,@"Can only administer 1 drug a day","灰"
+ELSE
+	CALL COM800_DOSAGE
+ENDIF
+PRINTL
+TENTACLE_OK = FLAG:触手肉体改造可能回数 -CFLAG:当日制限／肉体改造エキス
+IF !ITEM:触手変化
+	CALL PRINTL_WORD_COLOR,@"Requires [Tentacle Morph]","灰"
+ELSEIF TENTACLE_OK <= 0
+	CALL PRINTL_WORD_COLOR,@"Daily Modification Limit Reached","灰"
+ELSE
+	CALL COM800_DOSAGE_TENTACLE(TENTACLE_OK)
+ENDIF
+PRINTL
+PRINTL [99] Cancel
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL COM600
+CASE 1
+	CALL COM601
+CASE 2
+	CALL COM603
+CASE 3
+	CALL COM602
+CASE 4
+	CALL COM605
+CASE 5
+	CALL COM607
+CASE 9
+	CALL COM606
+CASE 10
+	CALL COM814
+CASE 11
+	CALL COM811
+CASE 12
+	CALL COM812
+CASE 13
+	CALL COM813
+CASE 14
+	CALL COM810
+CASE 20
+	CALL COM544
+CASE 21
+	CALL COM545
+CASE 22
+	CALL COM548
+CASE 23
+	CALL COM546
+CASE 24
+	CALL COM547
+CASE 30
+	CALL COM824
+CASE 31
+	CALL COM821
+CASE 32
+	CALL COM822
+CASE 33
+	CALL COM823
+CASE 34
+	CALL COM820
+CASE 50
+	CALL COM1000
+CASE 51
+	CALL COM1001
+CASE 99
+	RETURN
+ENDSELECT
+RETURN 1
+
+
+
+;関数分け→薬品投与
+@COM800_DOSAGE
+
+PRINTL 　　　《 Administer Drugs 》
+IF !(CFLAG:無抵抗 || TFLAG:拘束BIT || !BASE:体力) && !TFLAG:スケジュール外Ｈ
+	CALL PRINTL_WORD_COLOR,@"Resistant slaves must be either restrained or at 0 HP to administer drugs.","黄"
+	RETURN
+ENDIF
+
+;母乳関連
+CALL COM800_DOSAGE_MILK
+
+;膨乳薬
+CALL COM800_DOSAGE_BUSTUP
+PRINTL
+
+;多臓器活性薬
+SIF !TFLAG:スケジュール外Ｈ
+	CALL COM800_DOSAGE_ORGANS
+
+;感度増加
+CALL COM800_DOSAGE_SENSITIVE
+PRINTL
+
+
+
+;触手エキス
+;ARG→肉体改造可能回数
+@COM800_DOSAGE_TENTACLE(ARG)
+
+;薬剤と同じ条件で触手も判定→NGの場合こっちはメッセージ出さずに帰る
+SIF !(CFLAG:無抵抗 || TFLAG:拘束BIT || !BASE:体力) && !TFLAG:スケジュール外Ｈ
+	RETURN
+PRINTFORML 　　　《Tentacle Body Modification》 {ARG} more times. %CALLNAME:0%'s magic power: %VALUE_DIGIT(BASE:0:魔力)% MP.
+
+;母乳関連
+CALL COM800_DOSAGE_TENTACLE_MILK
+
+;膨乳薬
+CALL COM800_DOSAGE_TENTACLE_BUSTUP
+PRINTL
+
+;感度増加
+CALL COM800_DOSAGE_TENTACLE_SENSITIVE
+PRINTL
+
+
+
+;母乳関連
+@COM800_DOSAGE_MILK
+
+IF !TFLAG:Ｎ露出 && !TFLAG:スケジュール外Ｈ
+	CALL PRINTL_WORD_COLOR,@"Milk-related drugs can only be administered if the slave's nipples are exposed","黄"
+	RETURN
+ENDIF
+
+IF MARK:母乳体質
+	CALL PRINTL_WORD_COLOR,@"Already【Lactating】","桃"
+	PRINTL
+ELSE
+	;Ｎ注射共通部分
+	CALL DOSAGE_ITEM_NIPPLE_COMMON(0,"母乳体質化薬")
+	IF !TFLAG:調教中
+		CALL PRINTL_WORD_COLOR,@"Can only be used during training.","灰"
+	ELSEIF GETBIT(＃有効薬品／魔力母乳分泌促進薬＃)
+		CALL PRINTL_WORD_COLOR,@"Currently using ＜Mana-Infused Breast Milk Stimulant＞","黄"
+	ELSEIF GETBIT(＃有効薬品／母乳分泌促進薬＃)
+		CALL PRINTL_WORD_COLOR,@"Currently using ＜Breast Milk Stimulant＞","黄"
+	ELSE
+		CALL DOSAGE_ITEM_NIPPLE_COMMON(50,"母乳分泌促進薬")
+	ENDIF
+ENDIF
+
+IF MARK:魔力母乳体質
+	CALL PRINTL_WORD_COLOR,@"Milk is already【Mana-Infused】","桃"
+	PRINTL
+ELSEIF !MAXBASE:魔力
+	CALL PRINTL_WORD_COLOR,@"Target has no Mana","灰"
+	PRINTL
+ELSE
+	CALL DOSAGE_ITEM_NIPPLE_COMMON(1,"魔力母乳体質化薬")
+	IF !TFLAG:調教中
+		CALL PRINTL_WORD_COLOR,@"Can only be used during training.","灰"
+	ELSEIF GETBIT(＃有効薬品／魔力母乳分泌促進薬＃)
+		CALL PRINTL_WORD_COLOR,@"Currently using ＜Mana-Infused Breast Milk Stimulant＞","黄"
+	ELSE
+		CALL DOSAGE_ITEM_NIPPLE_COMMON(51,"魔力母乳分泌促進薬")
+	ENDIF
+ENDIF
+
+IF ABL:母乳濃度 >= 5
+	CALL PRINTL_WORD_COLOR,@"Milk already of highest quality","桃"
+ELSEIF !MARK:母乳体質
+	CALL PRINTL_WORD_COLOR,@"Target must be【Lactating】","灰"
+ELSE
+	CALL DOSAGE_ITEM_NIPPLE_COMMON(2,"母乳濃厚化薬")
+ENDIF
+
+
+
+;Ｎ注射共通
+;ARG→OK時の番号
+;ARGS→アイテム名
+@DOSAGE_ITEM_NIPPLE_COMMON(ARG,ARGS)
+
+IF !ITEM:ARGS
+	CALL PRINTL_WORD_COLOR,@"No %ITEMS_ENG(ARGS)% owned","灰"
+ELSEIF TFLAG:Ｎ装備
+	CALL PRINTL_WORD_COLOR,@"Ｎ Equipment must be removed","黄"
+ELSE
+	PRINTFORM [{ARG,2}] %ITEMS_ENG(ARGS)%　Owned：{ITEM:ARGS}
+	SIF ARGS == "母乳濃厚化薬"
+		PRINTFORM 　Current Quality：%PRINT_MILKWORD(2)%
+	PRINTL
+ENDIF
+
+
+
+;膨乳薬
+@COM800_DOSAGE_BUSTUP
+
+IF ABL:バストサイズ >= BUSTSIZE_神乳
+	CALL PRINTL_WORD_COLOR,@"Breast size cannot be increased further by this drug","灰"
+ELSEIF !ITEM:膨乳薬
+	CALL PRINTL_WORD_COLOR,@"No Breast Expansion Drugs owned","灰"
+ELSE
+	PRINTFORML [ 3] Breast Expansion Drug　Owned：{ITEM:膨乳薬}　Current Size：%PRINT_BUSTSIZE(ABL:バストサイズ)%
+ENDIF
+
+IF ABL:バストサイズ >= BUSTSIZE_MAX
+	CALL PRINTL_WORD_COLOR,@"Breast size cannot be increased further by this drug","桃"
+ELSEIF !ITEM:超乳薬
+	CALL PRINTL_WORD_COLOR,@"No Mega Milk Drugs owned","灰"
+ELSE
+	PRINTFORML [ 4] Mega Milk Drug　Owned：{ITEM:超乳薬}　Current Size：%PRINT_BUSTSIZE(ABL:バストサイズ)%
+ENDIF
+
+
+
+;多臓器活性薬
+@COM800_DOSAGE_ORGANS
+IF TFLAG:多臓器活性薬使用中
+	CALL PRINTL_WORD_COLOR,@"Already using Mana Incitement Drug","桃"
+ELSEIF !ITEM:多臓器活性薬
+	CALL PRINTL_WORD_COLOR,@"No Mana Incitement Drugs owned","灰"
+ELSEIF TFLAG:搾乳器
+	CALL PRINTL_WORD_COLOR,@"Can't sell %SAVESTR:表記／母乳% obtained while using this drug","黄"
+ELSE
+	PRINTFORML [ 5] Mana Incitement Drug　Owned：{ITEM:多臓器活性薬}
+ENDIF
+
+
+
+;浸透媚薬
+@COM800_DOSAGE_SENSITIVE
+
+{
+IF ABL:Ｎ感度 >= SENSITIVE_MAX && ABL:Ｂ感度 >= SENSITIVE_MAX && ABL:Ｃ感度 >= SENSITIVE_MAX 
+&& ABL:Ｖ感度 >= SENSITIVE_MAX && ABL:Ａ感度 >= SENSITIVE_MAX
+}
+	CALL PRINTL_WORD_COLOR,@"Sensitivity cannot be further increased","桃"
+ELSEIF !ITEM:受容器鋭敏化薬
+	CALL PRINTL_WORD_COLOR,@"No Nerve Remodeling Drugs owned","灰"
+ELSE
+	PRINTFORML [ 9] Nerve Remodeling Drug　Owned：{ITEM:受容器鋭敏化薬}　Current：Ｎ{ABL:Ｎ感度}\% Ｂ{ABL:Ｂ感度}\% Ｃ{ABL:Ｃ感度}\% Ｖ{ABL:Ｖ感度}\% Ａ{ABL:Ａ感度}\%
+ENDIF
+
+IF !ITEM:浸透媚薬
+	CALL PRINTL_WORD_COLOR,@"There is no permeating aphrodisiac","灰"
+	RETURN
+ENDIF
+PRINTFORML 　　　《 Permeating Aphrodisiac 》　Owned：{ITEM:浸透媚薬}
+CALL DOSAGE_SENSITIVE_UP_COMMON(10,"Ｎ")
+CALL DOSAGE_SENSITIVE_UP_COMMON(11,"Ｂ")
+CALL DOSAGE_SENSITIVE_UP_COMMON(12,"Ｃ")
+CALL DOSAGE_SENSITIVE_UP_COMMON(13,"Ｖ")
+CALL DOSAGE_SENSITIVE_UP_COMMON(14,"Ａ")
+
+
+
+;浸透媚薬・エキス共通
+;ARG→OKのとき出すコマンド番号
+;ARGS→部位
+@DOSAGE_SENSITIVE_UP_COMMON(ARG,ARGS)
+#DIMS JUDGE_PALAM,3
+
+JUDGE_PALAM:0 = %ARGS%露出
+JUDGE_PALAM:1 = %ARGS%感度
+JUDGE_PALAM:2 = %ARGS%装備
+
+;Ｖは処女結界判定する
+IF ARGS == "Ｖ" && TALENT:処女結界
+	CALL PRINTL_WORD_COLOR,@"Access blocked by【Virginity Barrier】","黄"
+
+;露出じゃないとダメ
+ELSEIF !TFLAG:(JUDGE_PALAM:0) && !TFLAG:スケジュール外Ｈ
+	CALL PRINTL_WORD_COLOR,@"Not exposed","灰"
+
+;感度MAXはダメ
+ELSEIF ABL:(JUDGE_PALAM:1) >= SENSITIVE_MAX
+	CALL PRINTL_WORD_COLOR,@"%ARGS% Sensitivity cannot be further increased","桃"
+
+;装備あるとダメ
+ELSEIF TFLAG:(JUDGE_PALAM:2)
+	CALL PRINTL_WORD_COLOR,@"%ARGS% equipment must be removed","黄"
+
+;OKならボタン
+ELSE
+	PRINTFORML [{ARG,2}] Enhance %ABL_ENG(JUDGE_PALAM:1)%　Current：{ABL:(JUDGE_PALAM:1)}\%
+ENDIF
+
+
+
+;母乳関連エキス
+@COM800_DOSAGE_TENTACLE_MILK
+
+IF !TFLAG:Ｎ露出 && !TFLAG:スケジュール外Ｈ
+	CALL PRINTL_WORD_COLOR,@"You cannot inject breast milk-related fluids unless in an exposed state","黄"
+	RETURN
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"母乳体質化エキス")
+IF MARK:母乳体質
+	CALL PRINTL_WORD_COLOR,@"Already【Lactating】","桃"
+ELSE
+	CALL DOSAGE_TENTACLE_NIPPLE_COMMON(20,"母乳体質化エキス")
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"魔力母乳体質化エキス")
+IF MARK:魔力母乳体質
+	CALL PRINTL_WORD_COLOR,@"Milk already【Mana-Infused】","桃"
+ELSEIF !MAXBASE:魔力
+	CALL PRINTL_WORD_COLOR,@"Target has no Mana","灰"
+ELSE
+	CALL DOSAGE_TENTACLE_NIPPLE_COMMON(21,"魔力母乳体質化エキス")
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"母乳濃厚化エキス")
+IF ABL:母乳濃度 >= 5
+	CALL PRINTL_WORD_COLOR,@"Milk already of highest quality","桃"
+ELSEIF !MARK:母乳体質
+	CALL PRINTL_WORD_COLOR,@"Target must be【Lactating】","灰"
+ELSE
+	CALL DOSAGE_TENTACLE_NIPPLE_COMMON(22,"母乳濃厚化エキス")
+ENDIF
+
+
+
+;Ｎ触手注射共通
+;ARG→OK時の番号
+;ARGS→魔術名
+@DOSAGE_TENTACLE_NIPPLE_COMMON(ARG,ARGS)
+
+IF !ITEM:ARGS
+	CALL PRINTL_WORD_COLOR,@"Requires [%ITEMS_ENG(ARGS)%]","灰"
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP, （%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSEIF TFLAG:Ｎ装備
+	CALL PRINTL_WORD_COLOR,@"Ｎ equipment must be removed","黄"
+ELSE
+	PRINTFORM [{ARG,2}] %ITEMS_ENG(ARGS)%：%VALUE_DIGIT(COST)%MP
+	SIF ARGS == "母乳濃厚化エキス"
+		PRINTFORM 　Current Quality：%PRINT_MILKWORD(2)%
+	PRINTL
+ENDIF
+
+
+
+;膨乳エキス
+@COM800_DOSAGE_TENTACLE_BUSTUP
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"膨乳改造エキス")
+IF ABL:バストサイズ >= 26
+	CALL PRINTL_WORD_COLOR,@"Breast size cannot be further increased by [Breast Expanding Extract]","灰"
+ELSEIF !ITEM:膨乳改造エキス
+	CALL PRINTL_WORD_COLOR,@"Requires [Breast Expanding Extract]","灰"
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP, （%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSE
+	PRINTFORML [23] Breast Expanding Extract：%VALUE_DIGIT(COST)%MP　Current Size：%PRINT_BUSTSIZE(ABL:バストサイズ)%
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"淫乳改造エキス")
+IF ABL:バストサイズ >= BUSTSIZE_MAX
+	CALL PRINTL_WORD_COLOR,@"Breast size cannot be increased further by [Lewd Breasts Extract]","桃"
+ELSEIF !ITEM:淫乳改造エキス
+	CALL PRINTL_WORD_COLOR,@"Requires [Lewd Breasts Extract]","灰"
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP, （%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSE
+	PRINTFORML [24] Lewd Breasts Extract：%VALUE_DIGIT(COST)%MP　Current Size：%PRINT_BUSTSIZE(ABL:バストサイズ)%
+ENDIF
+
+
+
+;感度上昇エキス
+@COM800_DOSAGE_TENTACLE_SENSITIVE
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"感度上昇粘液")
+IF !ITEM:感度上昇粘液
+	CALL PRINTL_WORD_COLOR,@"[Sensitivity Upgrading Slime] not known","灰"
+	RETURN
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP, （%VALUE_DIGIT(COST)%MP Required）","灰"
+	RETURN
+ENDIF
+PRINTFORML 　　　《 Sensitivity Upgrading Slime 》：%VALUE_DIGIT(COST)%MP
+CALL DOSAGE_SENSITIVE_UP_COMMON(30,"Ｎ")
+CALL DOSAGE_SENSITIVE_UP_COMMON(31,"Ｂ")
+CALL DOSAGE_SENSITIVE_UP_COMMON(32,"Ｃ")
+CALL DOSAGE_SENSITIVE_UP_COMMON(33,"Ｖ")
+CALL DOSAGE_SENSITIVE_UP_COMMON(34,"Ａ")
+
+

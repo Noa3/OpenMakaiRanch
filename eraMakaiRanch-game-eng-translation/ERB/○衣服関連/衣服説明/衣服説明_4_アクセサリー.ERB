@@ -1,0 +1,111 @@
+﻿
+;アクセサリー
+@ITEM_DETAIL_CLOTHE_ACCESSORY
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "メガネ"
+	CALL ACCESSORY_DETAIL_COMMON("眼")
+	PRINTL アクセサリー分類だが、視力を矯正する道具。
+	PRINTL 元々メガネをかけていない人は装備できません。その場合は伊達メガネをどうぞ。
+	IF FLAG:ジョーク表示
+		PRINTL 元々つけている場合メガネなしだと仕事能力低下、というのも考えたけど
+		PRINTL デメリットしかない処理をわざわざ作る気にあんまりならないので多分作りません。
+	ENDIF
+
+CASE "伊達メガネ"
+	CALL ACCESSORY_DETAIL_COMMON("眼")
+	PRINTL 視力を矯正する道具…っぽいだけのアクセサリー。
+	PRINTL 元々メガネをかけている人は装備できません。度の入ったメガネをどうぞ。
+	
+CASE "カチューシャ"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 「Ｃ」の形をしたヘアバンドの一種。
+	PRINTL 英語圏では「アリスバンド」と呼ばれるそうです。
+
+CASE "リボン"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 髪を留めるために使うことが多いアクセサリー。
+
+CASE "チョーカー"
+	CALL ACCESSORY_DETAIL_COMMON("首")
+	PRINTL 首に巻いたりして着けるアクセサリー。
+	PRINTL 「ネックレス」の一種で、短いものが「チョーカー」らしいです。
+
+CASE "眼帯"
+	CALL ACCESSORY_DETAIL_COMMON("眼")
+	PRINTL 眼をケガした際に保護するための医療道具…だが、
+	PRINTL 「なんか見た目がカッコいい」という理由でケガもしてないし視界が悪化するにも関わらずつける冒険者がいる。
+
+CASE "グローブ"
+	CALL ACCESSORY_DETAIL_COMMON("腕")
+	PRINTL 手首あたりまでを覆う手袋。
+
+CASE "ソックス"
+	CALL ACCESSORY_DETAIL_COMMON("脚")
+	PRINTL 足首の少し上くらいまでの丈の靴下。
+
+
+;ここから拡張
+CASE "マント"
+	CALL JACKET_DETAIL_COMMON("全露出")
+	PRINTL 首元で留める、前が開いた上着。
+	PRINTL 風に靡くため服を豪奢に見せる効果があるとかないとか。
+
+CASE "ケープ"
+	CALL JACKET_DETAIL_COMMON("全露出")
+	PRINTL 首元で留める、肩から少し下までを覆う程度の丈の外套。
+	PRINTL 本来はもっと長いもので、「ケープレット」だともっと短いものだそうです。
+
+CASE "シスターヴェール"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 聖職者が身に着けていることが多い、後ろに長く垂れ下がった黒の被り物。
+
+CASE "ティアラ"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 豪華な装飾をされた頭に載せるアクセサリー。
+	PRINTL 身分の高い女性がつけていることが多い。
+
+CASE "メイドブリム"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 主にメイドが身に着けるフリル付きのカチューシャ。
+	PRINTL 一般的に多いのは白いフリルで、その場合「ホワイトブリム」と呼ばれる。
+
+CASE "ハイソックス"
+	CALL ACCESSORY_DETAIL_COMMON("脚")
+	PRINTL 膝下くらいまでの丈の靴下。
+
+CASE "ニーハイソックス"
+	CALL ACCESSORY_DETAIL_COMMON("脚")
+	PRINTL 膝上くらいまでの丈の靴下。
+
+CASE "サイハイソックス"
+	CALL ACCESSORY_DETAIL_COMMON("脚")
+	PRINTL 太腿まで覆うくらいの丈の靴下。
+
+CASE "網タイツ"
+	CALL ACCESSORY_DETAIL_COMMON("脚")
+	PRINTL 網目模様のタイツ。バニースーツによく似合う。
+
+CASE "ロンググローブ"
+	CALL ACCESSORY_DETAIL_COMMON("腕")
+	PRINTL 肘あたりまでを覆う手袋。
+
+CASE "魔術師帽"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 円錐形の先がくしゃっと曲がった大きめの帽子。
+	PRINTL 地上で魔術の始祖と呼ばれたニンゲンが被っていたため、魔術師のシンボルみたいな扱いを受けているそうな。
+	
+CASE "麦わら帽子"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 藁で編み込まれた帽子。
+	PRINTL 風通しが良く涼しげで、夏の日差しを防ぐのにもってこい。
+	
+CASE "月桂冠"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL 月桂樹を枝を葉がついたままぐるりと編んだ冠。
+	PRINTL 地上では月桂樹が神聖なものとして天使や神様へのお供え物とされてきたのもあり、
+	PRINTL 天界種族は自分が天界から来ました感が出るということで好んでつけている。
+	
+ENDSELECT
+
+

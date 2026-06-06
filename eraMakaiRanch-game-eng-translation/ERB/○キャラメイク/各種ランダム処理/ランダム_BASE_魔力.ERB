@@ -1,0 +1,80 @@
+﻿
+;魔力　霊力の何割あるかで計算しよう
+@SLAVE_MP_CALC
+
+;一旦OFF
+CFLAG:膨大魔力 = 0
+STATUS = BASE:霊力 *CFLAG:魔力量 /10
+CALL RANDOM_FIX(STATUS,5,"魔力量")
+STATUS += FIX
+STATUS -= (STATUS %50)
+
+;魔力増加オプション判定
+CALL SLAVE_MP_CALC_TRIBE_FIX
+
+;低ランクで魔力量10以上の場合200万～増加させる処理
+;非戦闘職の場合も
+SIF (CFLAG:ランク < 3 && CFLAG:魔力量 >= 10) || (CFLAG:非戦闘職 && CFLAG:魔力量)
+	CALL SLAVE_MP_CALC_OVER_SPEC_FIX
+MAXBASE:魔力 = STATUS
+BASE:魔力 = MAXBASE:魔力
+
+;魔力回復量計算
+CALL SLAVE_MP_CALC_HEALMP
+
+
+
+;魔力増加オプション　とはいえ妖狐とヴァンパイアにしかない
+@SLAVE_MP_CALC_TRIBE_FIX
+
+SELECTCASE CSTR:種族
+CASE "ヴァンパイア"
+	SIF GETBIT(FLAG:種族設定／ヴァンパイア,2)
+		STATUS *= 2
+CASE "妖狐"
+	SIF GETBIT(FLAG:種族設定／妖狐,4)
+		STATUS *= 2
+ENDSELECT
+
+
+
+;低ランクだけど莫大な魔力の場合計算
+@SLAVE_MP_CALC_OVER_SPEC_FIX
+
+CFLAG:膨大魔力 = 1
+
+;10以上
+IF CFLAG:魔力量 >= 10
+	STATUS = 1000000 +100000 *(RAND:5 +CFLAG:魔力量)
+
+;非戦闘職で9以下
+ELSE
+	STATUS = 100000 *(RAND:3 +CFLAG:魔力量)
+ENDIF
+CALL RANDOM_FIX(STATUS,5,"魔力量")
+STATUS += FIX
+STATUS -= (STATUS %50)
+
+
+
+;魔力回復量計算
+@SLAVE_MP_CALC_HEALMP
+
+;魔力なしならおわり
+SIF !MAXBASE:魔力
+	RETURN
+
+;(ランク +1)%の30%上限,膨大魔力の場合は1%
+;魔界適応だと+10%
+MAXBASE:魔力回復割合 = LIMIT(CFLAG:ランク +1,1,30)
+SIF TALENT:魔界適応
+	MAXBASE:魔力回復割合 += 10
+SIF CFLAG:膨大魔力
+	MAXBASE:魔力回復割合 = 1
+BASE:魔力回復割合 = MAXBASE:魔力回復割合
+
+
+
+
+SIF TALENT:魔界種族
+	MAXBASE:魔力回復割合 += 5

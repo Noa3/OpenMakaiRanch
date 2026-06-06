@@ -1,0 +1,367 @@
+﻿
+;ヒント
+@HINT_PLAYER
+
+PRINTL あなたの一部パラメータを変更できます。
+PRINTL 変更可能なパラメータでのゲーム的な優劣はありませんので、好みで決めて構いません。
+PRINTL 【フルネーム】を設定時、詳細パラメータ画面などで表示されます。
+PRINTL
+PRINTL [外見追加エディット]を選択することで、
+PRINTL 【ヘアスタイル】【目の色】などの項目を開閉できます。
+PRINTL （没入感のための設定のため、表示される画面はごく一部です）
+PRINTL
+PRINTL [性経験エディット]を選択することで、
+PRINTL あなたの性経験項目を開閉できます。
+
+
+
+@HINT_FIRST_SLAVE
+
+PRINTL ゲーム開始前の時点であなたの元で働いている奴隷「スレイ（デフォルト名）」の
+PRINTL 一部パラメータを変更できます。
+PRINTL 変更可能なパラメータでのゲーム的な優劣はありませんので、好みで決めて構いません。
+PRINTL
+PRINTL 【ヘアスタイル】【目の色】に関しては、アイテムを使用することで
+PRINTL 見た目上ゲーム開始後でも変更可能です。
+PRINTL （キャラメイクで決定した部分は初期値として保存されます）
+
+
+
+@HINT_BARRIER_SLAVE
+
+PRINTL 初日に受け取る奴隷「かぐら／マリア（デフォルト名）」の
+PRINTL 一部パラメータを変更できます。
+PRINTL 変更可能なパラメータでのゲーム的な優劣はありませんので、好みで決めて構いません。
+PRINTL
+PRINTL 【ヘアスタイル】【目の色】に関しては、アイテムを使用することで
+PRINTL 見た目上ゲーム開始後でも変更可能です。
+PRINTL （キャラメイクで決定した部分は初期値として保存されます）
+
+
+
+@HINT_SORCEROUS_SLAVE
+
+PRINTL 魔術師のサンプルとして標的にする「シャロン／ノワール（デフォルト名）」の
+PRINTL 一部パラメータを変更できます。
+PRINTL 変更可能なパラメータでのゲーム的な優劣はありませんので、好みで決めて構いません。
+PRINTL
+PRINTL 【ヘアスタイル】【目の色】に関しては、アイテムを使用することで
+PRINTL 見た目上ゲーム開始後でも変更可能です。
+PRINTL （キャラメイクで決定した部分は初期値として保存されます）
+
+
+
+@HINT_UPGRADE
+
+PRINTL Upgrades will be carried out using Funds, Stored Spirit Energy, and your Mana.
+PRINTL
+PRINTL 【薬品の開発】：奴隷を【母乳体質】にする薬、母乳の濃度を増加させる薬などを製薬できます。
+PRINTFORML 【新型搾乳器の開発】：調教中に使用できる、奴隷に搾乳快楽をより与えながら%SAVESTR:表記／母乳%を搾り取る
+PRINTL 快楽搾乳器を開発できます。
+PRINTL 　＜工具セット＞は街の【ホームセンター】で購入可能です。
+PRINTFORML 【魔術の習得】：奴隷から吸い取った%CALLNAME:0%の魔力を消費し、新たな魔術を習得できます。
+PRINTL 　＜ネクロノミコン＞はマイルストーンを進めることでマノさんのお下がりを貰えます。 
+
+
+
+@HINT_PHARMACEUTICAL
+
+PRINTL 霊力抽出装置の霊力、また一部は追加で魔力を使用し薬品を調合します。
+PRINTFORML 魔力を消費するものに関しては、「魔力貯蔵器の魔力」と「%CALLNAME:0%の魔力」の両方を使用可能で、
+PRINTL 調合する際にどちらを優先して使用するか選ぶことができます。
+PRINTL 片方が不足していても、合計して足りていれば調合可能です。
+PRINTL
+PRINTL 【個数指定調合】：選択後に所持リソースでいくつ調合可能か計算・表示されるため、
+PRINTL その個数を上限に調合したい数を入力するとまとめて調合できます。
+
+
+
+@HINT_TOWN
+
+PRINTL 手持ちの資金などでアイテム購入、牧場の拡張などができます。
+PRINTL
+PRINTL 　　　　　　　　【町役場】：魔界に来ているニンゲンを捕まえるための手続きができます。
+PRINTL 　　　　　【魔王軍研究所】：主に貯蔵した霊力を消費し、牧場の施設拡張などができます。
+PRINTL 　　　【アダルトショップ】：調教で使用できるエッチな道具を購入できます。
+PRINTL 　　　　【ホームセンター】：日常生活で使う便利な道具や、一般的な牧場で家畜に使用する道具を購入できます。
+PRINTL 一部機能のアンロック用アイテムもここで購入できます。
+PRINTL
+PRINTL 　　　　　　　　【不動産】：牧場の施設を拡張することができます。
+PRINTL 拡張すると（設定により）日付が進みます。維持費計算などはスキップされますが、
+PRINTL 曜日が進むためスケジュールがずれる可能性があります。
+PRINTL 　　　　　　　　【呉服屋】：奴隷に着せることのできる着替え、アクセサリーなどを購入できます。
+PRINTL 　　　　【ペットショップ】：牧場で飼っているペットにあげるおやつ、遊び道具を購入できます。
+PRINTL 【魔界農協・オカチ街支店】：牧場で飼っている動物のごはんの種類を選択したり、
+PRINTL 健康度を上げる設備を導入することができます。
+PRINTL また＜ペット小屋＞に空きがあるなら、新たに大型ペットを迎えることもできます。
+PRINTL 納税する売上の割合設定もできます。
+PRINTL
+PRINTL 施設を利用した場合、あなたのスケジュールが【外出済み】になり
+PRINTL この時間は他の行動はできなくなります。
+PRINTL 処理の関係上、【帰宅】したあとに奴隷たちにスケジュールの指示を出すことは可能です。
+
+
+
+@HINT_TOWN_HALL
+
+PRINTL 【町役場】の各種メニューから奴隷にするニンゲンを探すことができます。
+PRINTL
+PRINTL 【追跡キャラを指定】：現在魔界に来ているニンゲンを標的として選択します。
+PRINTL [結界付き]：処分寸前のため、搾乳器代のみですぐに奴隷にすることができます。
+PRINTL [競売所]：ニンゲンの個性により上下する金額を支払うことで、すぐに奴隷にすることができます。
+PRINTL その他の奴隷候補に関しては、標的にした後に【傭兵アルバイト】を雇い、捕獲に行ってもらう必要があります。
+PRINTL
+PRINTL ※【ランダムキャラのみ許可】のコンフィグがONの場合、以下のメニューは選択できません。
+PRINTL 【特殊ゲート解放】【ニンゲン探索】【過去の記憶を呼び出す】では、
+PRINTL それぞれ異なる方法でプレイヤーの好みの奴隷を生成できます。
+
+
+
+@HINT_MERCENARY
+
+PRINTL 標的に設定したニンゲンを捕獲しに行く、傭兵アルバイトを雇うことができます。
+PRINTL 傭兵アルバイトはニンゲン1匹につき1グループを当てることができ、
+PRINTL 標的を追っている傭兵アルバイトは他のニンゲンに当てることはできません。
+PRINTL
+PRINTL 通常の傭兵アルバイト→標的を捕獲した場合、翌日の昼の精算フェイズで牧場に奴隷が送られてきます。
+PRINTL 捕獲後に凌辱を開始する傭兵アルバイト→標的を捕獲した後から自動で凌辱が始まります。
+PRINTL 捕獲後に改めて町役場を訪れることで、奴隷を引き取ることが可能です。（追加料金はかかりません）
+PRINTL
+PRINTL 戦闘については、現在の仕様では自動で行われます。
+DRAWLINE
+PRINTLC [ 0] OK
+PRINTLC [ 1] 戦闘について詳しく
+INPUT
+SIF !RESULT
+	RETURN 1
+
+PRINTL 標的を設定し、傭兵を雇用している場合昼、夕、夜に戦闘が発生します。
+PRINTL 戦闘は自動で行われます。
+PRINTL 標的側の攻撃力は[最大戦闘力]の10%で、疲労度1%につき攻撃力が0.5%減少します。
+PRINTL 標的キャラ→（いる場合）仲間→傭兵アルバイトの順に攻撃し1ターンが終了します。
+PRINTL 標的の仲間は規模によって、傭兵アルバイトは種族と雇用人数によって攻撃回数が増加します。
+PRINTL
+PRINTL 標的のニンゲンは条件を満たすと[大技]や[回復]を使用します。
+PRINTL それぞれ使用回数を消費し、使用回数は回復することがありません。
+PRINTL
+PRINTL 5ターン目以降はお互いに与えるダメージが100%ずつ増加していきます。
+PRINTL 標的に仲間がいる場合、仲間がダメージを肩代わりします。
+PRINTL また仲間がピンチになった場合、身代わりになり標的を逃がすことがあります。
+PRINTL
+PRINTL 標的キャラまたは傭兵アルバイトの戦闘力が0になると戦闘は終了します。
+PRINTL
+PRINTL ニンゲンたちは攻撃を受ける、戦闘が長引くなどで[疲労度]が蓄積されます。
+PRINTL 疲労度の回復はかなり遅いため、何度も戦闘を繰り返すと魔物に有利になります。
+PRINTL 疲労度影響：1%につき与ダメージ0.5%減少、攻撃／防御の不利判定を引きやすくなる
+PRINTL
+PRINTL 魔物の敗北時は傭兵アルバイトがギルドへ帰還してきます。
+PRINTL 魔物が勝利すると標的を捕らえ、牧場への輸送が開始されます。
+PRINTL ゴブリンを雇った場合は、ゴブリンによる凌辱が開始されます。
+
+
+
+@HINT_BATTLE_PLAYER
+
+PRINTL ＜テレポート＞を所持している場合、あなたおよび奴隷を直接戦闘に向かわせることができます。
+PRINTL
+PRINTFORML あなたが戦闘する場合、あなたは[行動済み]になり、魔力を%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"テレポート"))%MP消費します。
+PRINTL あなたの戦闘力の計算式：（現在の霊力+現在の魔力）×戦闘適性×現在の体力割合
+PRINTL 戦闘適性は【戦闘訓練】で上げることができます。
+PRINTL
+PRINTL 奴隷に戦闘させる場合、魔力を倍消費します。
+PRINTL 奴隷は[行動済み]にはならず、事後処理のためあなたは[行動済み]になります。
+PRINTL 奴隷に戦闘させる条件：【隷属】済み・【超乳】【虚脱】および＜牛舎＞内、体内凌辱中ではない
+PRINTL 奴隷の戦闘力の計算式：（現在の霊力+現在の魔力）×80%×現在の体力割合
+PRINTL
+PRINTL あなた・奴隷がレベル100以上／200以上／戦闘適性90%以上　の条件でそれぞれ攻撃回数を+1します。
+PRINTL ・複数回攻撃の場合1回の倍率は0.8倍になります
+
+
+
+@HINT_AUTO_SCHEDULE
+
+PRINTL Set automatic schedules for characters.
+
+PRINTL You and trainable slaves will see a "Task List" and "Training List," respectively.
+PRINTL Assignments move to the next day; select a day to set its schedule directly.
+PRINTL You and slaves with "Love" or higher can use custom schedules A–C.
+PRINTL Some schedules automatically switch to "Handle Cattle" if not needed.
+
+PRINTL ・XX/All Day → Applies all day.
+PRINTL ・XX/Morning & Evening → Applies in the morning and evening, free at noon.
+PRINTL ・XX/Farming → Handle Cattle in the morning and evening, schedule at noon.
+
+PRINTL ・Office/Immediate → If any clerical work exists, it's done; otherwise, Handle Cattle.
+PRINTL ・Office/Accumulated → Clerical work when it accumulates to half or more; otherwise, Handle Cattle.
+PRINTL ・Cleaning/Large Bath → Cleaning if the bath is unfinished; otherwise, Handle Cattle.
+PRINTL ・Combat Training/From Noon → Free in the morning, Combat Training in the afternoon and evening.
+PRINTL ・Milking → Extraction → Milking in the morning and noon, Extraction in the evening.
+
+
+
+@HINT_COOKING
+
+PRINTL Command yourself or available slaves to cook food for the number of employees + dinner you've set.
+{
+PRINTFORML Without a cook assigned, each person spends {ONEDAY_COST_SIMPLE_FOOD}G to prepare their own meal.
+With a cook assigned, preparing everyone's meals costs {ONEDAY_COST_DINNER}G total.
+}
+PRINTL There is no need to buy ingredients in the current version.
+PRINTL
+PRINTL A character uses ＜50 + number of people eating × 10＞ stamina to cook food.
+PRINTL Eating cooked food restores ＜100 + cook's 【Cooking】 Lv × 10＞ stamina.
+PRINTFORML If the assigned cook is 【Lactating】 and has more than ＜number of people eating × 100＞%MILK_COUNTING()% of %SAVESTR:表記／母乳%,
+PRINTFORML you can also have them add their own %SAVESTR:表記／母乳% to the meal.
+PRINTFORML ・%SAVESTR:表記／母乳% Meals→Additional ＜10+【Milk Richness】Lv × 10＞\% Recovery
+PRINTL 【Cooking Exp】 when cooking→20% per person eating
+PRINTL
+PRINTL Default：1 Menu Choice + 1 per 【Cooking】Lv, up to 5 choices.
+PRINTL ＜Different dishes don't affect recovery, so choose whichever you like.＞
+PRINTL ※Because they are randomized, some inhuman combinations may appear
+
+
+
+@HINT_BIND
+
+PRINTL ・Possible positions by restraint state
+PRINTL
+PRINTL        Standing Pillar：＜Standing＞＜Standing Paizuri＞【No Anal】【No M Insertion】
+PRINTL         Sitting Pillar：＜Sitting＞＜Paizuri＞　　【No Anal】
+PRINTL             Piledriver：＜Missionary＞　＜Paizuri＞　　【No Thighjob】
+PRINTL          Milking Stand：＜Reverse Standing＞
+PRINTL            Crucifixion：＜Standing＞＜Standing Paizuri＞【No Anal】【No M Insertion】
+PRINTL                X-Frame：＜Standing＞＜Standing Paizuri＞【No Anal】【No M Insertion】【No Thighjob】
+PRINTL                Hanging：＜Standing＞＜Reverse Standing＞＜Standing Paizuri＞　【No M Insertion】
+PRINTL               Shackled：＜Doggy＞【No Milking】【No Kissing】
+PRINTL
+PRINTL            Bed On Back：＜Missionary＞＜Paizuri＞
+PRINTL          Bed Face Down：＜Doggy＞【No Milking】【No M Insertion】
+PRINTL
+PRINTL Rope／Tortoise Bondage：＜Standing＞＜Reverse Standing＞ not available.
+PRINTL                Harness：＜Missionary＞＜Doggy＞ not available.
+PRINTL               Tentacle：Everything Possible.
+PRINTL     Lower Body In Wall：Insertion into lower Body and Thighjob not available・＜Standing Paizuri＞
+
+
+
+@HINT_PET_FOOD
+
+PRINTL You can choose what to feed each animal on your ranch.
+PRINTL (Herbivores are given supplementary food for added nutrition.)
+PRINTL
+PRINTL ＜General＞：A decent meal with well-balanced price and nutrition.
+CALL HINT_PET_FOOD_DETAIL(0)
+PRINTL 　＜Healthy＞：A little pricey, but a good meal for keeping a slim and healthy figure.
+PRINTL However, it doesn't taste good, making affection increase slowly.
+CALL HINT_PET_FOOD_DETAIL(1)
+PRINTL 　＜Nutritious＞：A meal that is nutritious, tasty, and good for building affection.
+PRINTL However, the extra nutrients also make it high in calories.
+CALL HINT_PET_FOOD_DETAIL(2)
+PRINTL ＜High Quality Balanced＞：A luxury meal that is nutritious, healthy, and delicious.
+PRINTL Of course, it takes a lot of work to make it, so it's expensive.
+CALL HINT_PET_FOOD_DETAIL(3)
+PRINTL Makai Dairy Cow's【Dairy Cow Health】 +increases by 0,1,1,3 respectively。
+PRINTL
+PRINTL 【Body Shape Adjustment】 becomes less effective when body shape is close to 【Body Shape Target】.
+PRINTFORML Body Shape Target±{BREAKFAST_WEIGHT_FIX_HALF}→halved,　±{BREAKFAST_WEIGHT_FIX_ZERO}→0
+
+;ペットのごはんによる変化
+@HINT_PET_FOOD_DETAIL(ARG)
+
+{
+PRINTFORML Food Cost：{PET_FOOD_PRICE_FIX:ARG}\%　Body Shape Target：{PET_FOOD_WEIGHT_BASE:ARG}　
+Body Shape Adjustment：{PET_FOOD_WEIGHT_FIX:ARG}　Affection Increase：{PET_FOOD_FRIENDRY:ARG}
+}
+PRINTL
+
+
+
+@HINT_COWSHED_DEVICE
+
+PRINTL Equipment installed in Makai Dairy Cow's barn.
+PRINTL Will be used automatically, spending one use per day.
+PRINTFORML Can be purchased in {COWSHED_DEVICE_DAY}-day increments、can be stocked for up to {COWSHED_DEVICE_DAY_MAX} days.
+PRINTL
+PRINTL ＜Cow Floor Mat＞：Elastic mat that is placed on the floor to reduce the strain on the legs.
+PRINTL 【Health+1 when executing schedule】
+PRINTL
+PRINTL ＜Water Filter＞：Disposable filter for the water dispenser, removing impurities.
+PRINTL 【Health+1 when executing schedule】
+
+
+
+@HINT_ADD_PET
+
+PRINTL Decide the characteristics of the pet you will welcome to your farm.
+PRINTL Some of the available names will automatically change the pet's [Coat] and [Gender] when selected.
+PRINTL
+PRINTL When naming <Orthros>, you can choose to give it one name as a whole, or give each head a name.
+PRINTL
+CALL PRINTL_WORD_COLOR("None of the changes affect parameters, so choose whatever you feel like.","黄")
+
+
+
+@HINT_PLAY_PET
+
+PRINTL Choose what to do with your pet in your free time.
+PRINTL ・Because parameter changes depend on affection level, the wording is a bit vague.
+PRINTL
+PRINTL Walk: Walk your pet around the ranch.
+PRINTL ※Not available in bad weather
+PRINTL 　Affection Increased: MED 　 Calories Burned: HIGH　 Player Stamina Consumed: LOW 
+PRINTL
+PRINTL Wash: Wash your pet.
+PRINTL 　Affection Increased: MED 　 Calories Burned: MED 　 Player Stamina Consumed: HIGH
+PRINTL
+PRINTL Brush: Brush your pet to keep its fur shiny.
+PRINTL 　Affection Increased: LOW 　 Calories Burned: NONE　 Player Stamina Consumed: HIGH
+PRINTL
+PRINTL Frisbee: Play with your pet using a frisbee.
+PRINTL ※Not available in bad weather
+PRINTL 　Affection Increased: HIGH　 Calories Burned: HIGH　 Player Stamina Consumed: MED 
+PRINTL
+PRINTL Nice Feeling Stick (Dog-chan Only): Play with your pet using a nice feeling stick.
+PRINTL ※Not available in bad weather
+PRINTL 　Affection Increased: HIGH　 Calories Burned: HIGH　 Player Stamina Consumed: MED 
+PRINTL
+PRINTL When you're done, you'll have the choice of petting them or giving them a treat.
+
+
+
+@HINT_TAX_SELECT
+
+PRINTL 精算時の納税割合を変更します。
+PRINTL
+PRINTL 　＜精算時の資金の流れ＞
+PRINTL 1.牧場の売上・固定出費・変動出費の計算
+PRINTL 2.利益の計算（赤字ならここで終了）
+PRINTFORML 3.牧場資金に直接入る分として[従業員人数×{WORKER_SALARY}]Gを先に確保
+PRINTL 4.経費計上した額の返済
+PRINTL 5.ローンの返済
+PRINTFORML 6.残金の{PROFIT_MONEY}\%を牧場資金に追加
+PRINTL 7.納税割合に応じて分配・納税額に追加
+PRINTL
+PRINTL 　＜効果＞
+PRINTL 　　軍事：傭兵アルバイトの戦闘力が増加
+PRINTL オカチ街：ローン借り入れ可能額増加
+PRINTL 　酪農業：Lv5で[事業提携]開放マイルストーン進行
+PRINTL
+PRINTL 　＜予定＞
+PRINTL 　　軍事：魔力母乳の需要にボーナス・一部目的の奴隷候補のランク上限が増加
+PRINTL 科学技術：新技術アンロック・作成可能薬品の増加
+PRINTL オカチ街：新店舗の開店
+PRINTL 　酪農業：母乳需要にボーナス
+
+
+
+@HINT_BUISINESS_PARTNER
+
+PRINTL 複数で魔界に来ているニンゲンの仲間を事業提携先に送ることができます。
+PRINTL 捕獲条件：[軍隊]規模のニンゲンが仲間と一緒に行動しているときにあなたが直接戦闘に向かって勝利する
+PRINTL
+PRINTL [事業提携]している企業からは、精算時にそれぞれに応じた報酬が貰えます。
+PRINTL 事業提携先の選択後に報酬・奴隷数上限・奴隷送付の条件を確認できます。
+
+
+
+

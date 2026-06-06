@@ -1,0 +1,77 @@
+﻿
+;傭兵とニンゲンの戦闘
+;戦闘前処理
+@BATTLE_MAIN_BEFORE
+
+;BATTLE_CHARAを-1にして判定に使う
+BATTLE_CHARA = -1
+
+;とりあえず当日に戦闘したフラグON
+CFLAG:当日戦闘済み = 1
+
+;降参フラグをOFF
+TFLAG:降参 = 0
+
+;戦闘開始前の口上・地の文と降参処理
+CALL BATTLE_BEFORE_ACTION
+
+;降参した場合そのまま敗北時処理へ
+IF TFLAG:降参
+	CALL TARGET_DEFEAT
+	RETURN
+ENDIF
+PRINTL 《 Combat Begins 》
+FORCEWAIT
+
+;戦闘開始　1ターン目とする
+TURN = 1
+TFLAG:バイト戦闘力 = TFLAG:バイト戦闘力／最大値
+CALL MANYL(5)
+CALL BATTLE_MAIN
+
+
+
+;本処理
+@BATTLE_MAIN
+
+CALL BATTLE_STATUS
+
+;1ターン目は先制攻撃判定→不意打ちフラグだけ見るように変更
+IF TFLAG:不意打ち && TURN == 1
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME%%PRINT_EXIST_GROUP()% is slow to react！","黄"
+	CALL PRINTL_WORD_COLOR,@"%PRINT_MONSTER()% gets the first strike！","黄"
+	CALL MONSTER_ATTACK
+
+;仲間がターゲットだけを逃した場合仲間と傭兵の戦い
+ELSEIF TFLAG:犠牲逃走
+	CALL TARGET_GROUP_ATTACK
+	SIF TFLAG:バイト戦闘力
+		CALL MONSTER_ATTACK
+
+;それ以外はニンゲン→仲間→傭兵の順で行動
+ELSE
+	CALL TARGET_ACTION_COMMON
+	PRINTW
+	SIF TFLAG:バイト戦闘力 && BASE:仲間戦闘力1
+		CALL TARGET_GROUP_ATTACK
+	SIF TFLAG:バイト戦闘力
+		CALL MONSTER_ATTACK
+ENDIF
+
+;傭兵ダウン、犠牲逃走かつ仲間ダウン、ターゲットダウンのどれかで終了
+IF !TFLAG:バイト戦闘力
+	CALL TARGET_WIN
+	
+ELSEIF TFLAG:犠牲逃走 && !BASE:仲間戦闘力1
+	CALL TARGET_ESCAPE_DEFEAT
+	
+ELSEIF !BASE:戦闘力
+	CALL TARGET_DEFEAT
+
+;戦闘継続
+ELSE
+	TURN ++
+	RESTART
+ENDIF
+TFLAG:犠牲逃走 = 0
+

@@ -1,0 +1,69 @@
+﻿
+@EQUIP_102_CONTINUE_MESSAGE
+;花弁型搾乳触手
+
+IF BASE:母乳容量
+	SELECTCASE RAND:5
+	CASE 0
+		PRINTFORM The milking tentacle caresses %CALLNAME%'s %SLANG_B()% with countless ridges, 
+	CASE 1
+		PRINTFORM Each time the milking tentacle writhes, from %CALLNAME%'s %SLANG_B()%, 
+	CASE 2
+		PRINTFORM The milking tentacle sucking on %CALLNAME%'s %SLANG_B()% vigorously, 
+	CASE 3
+		PRINTFORM The milking tentacle clinging to %CALLNAME%'s %SLANG_B()% writhes, 
+	CASE 4
+		PRINTFORM The milking tentacle kneads %CALLNAME%'s %SLANG_B()% while, 
+	ENDSELECT
+	PRINTFORML %SLANG_MILK()%%LACTATION_VAL()% 
+ELSE
+	PRINTFORML The milking tentacle sucking on %CALLNAME%'s %SLANG_B()% writhes as it sucks %SLANG_N()%... 
+ENDIF
+CALL ONOMATOPOEIA("花弁型搾乳触手")
+
+
+
+@EQUIP_103_CONTINUE_MESSAGE
+;カップ型搾乳触手
+
+IF BASE:母乳容量
+	SELECTCASE RAND:5
+	CASE 0
+		PRINTFORML Through the milking tentacle's cup, %SLANG_MILK()% is squeezed out from %CALLNAME%'s %SLANG_N()%...
+	CASE 1
+		PRINTFORML Each time the tentacle handles %CALLNAME%'s %SLANG_N()%, %SLANG_MILK()% spurts out, filling the cup...
+	CASE 2
+		PRINTFORML Displaying for %CALLNAME%, the tentacle inside the transparent cup torments %SLANG_N()% and extracts %SLANG_MILK()%...
+	CASE 3
+		PRINTFORML The tentacle torments %CALLNAME%'s %SLANG_N()%, while the inside of the cup turns white with %SLANG_MILK()%...
+	CASE 4
+		PRINTFORML When the milking tentacle sucks on %CALLNAME%'s %SLANG_B()%, %SLANG_MILK()% gushes out from %SLANG_N()% inside the cup...
+	ENDSELECT
+ELSE
+	PRINTFORML The milking tentacle sucking on %CALLNAME%'s %SLANG_B()% while sucking %SLANG_N()% inside the cup...
+ENDIF
+CALL ONOMATOPOEIA("カップ型搾乳触手")
+
+
+
+@EQUIP_104_CONTINUE_MESSAGE
+;ワーム型搾乳触手
+
+IF BASE:母乳容量
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTFORM The milking tentacle sucks on %CALLNAME%'s %SLANG_N()%, 
+	CASE 1
+		PRINTFORM The milking tentacle sucking on %CALLNAME%'s %SLANG_N()% does not let go, 
+	CASE 2
+		PRINTFORM The milking tentacle sucking on %CALLNAME%'s %SLANG_N()% includes sweet nibbling, 
+	ENDSELECT
+	PRINTFORML %SLANG_MILK()%%LACTATION_VAL()%
+ELSE
+	PRINTFORML The milking tentacle sucking on %CALLNAME%'s %SLANG_B()% sucks, licks, and sweetly nibbles %SLANG_N()%... 
+ENDIF
+CALL ONOMATOPOEIA("ワーム型搾乳触手")
+
+
+
+

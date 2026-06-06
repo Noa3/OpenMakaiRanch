@@ -1,0 +1,197 @@
+﻿
+;露出した場合の口上、擬音、地の文表示のフラグ立て
+@TRAIN_CLOTHE_STRIP_SENTENCE_FLAG
+
+;脱衣TFLAGのセット、かつ部位露出のTFLAGをセットしていない状態でここに来る
+;→脱衣フラグONかつ露出フラグOFFなら擬音なんかを出して返す
+
+;おっぱい
+;既にＢ露出なら無効
+IF !TFLAG:Ｂ露出
+	SOURCE:Ｂ露出地の文表示 = 1
+
+;Ｂ露出状態から乳首開放
+ELSEIF !TFLAG:Ｎ露出
+	SOURCE:Ｎ露出地の文表示 = 1
+ENDIF
+
+;股間
+SIF !TFLAG:Ｖ露出
+	SOURCE:Ｖ露出地の文表示 = 1
+
+
+
+;立てた表示フラグと露出フラグを比較して表示
+@TRAIN_CLOTHE_STRIP_SENTENCE
+
+;脱衣メッセージ表示の一時フラグが入っていないor成長途中の娘の場合帰る
+SIF !SOURCE:脱衣メッセージ表示 || CSTR:状態／あなたの子 == "成長中"
+	RETURN
+SIF SOURCE:Ｂ露出地の文表示 && TFLAG:Ｂ露出
+	CALL EXPOSURE_BUST_SENTENCE
+SIF SOURCE:Ｎ露出地の文表示 && TFLAG:Ｎ露出
+	CALL EXPOSURE_NIPPLE_SENTENCE
+SIF SOURCE:Ｖ露出地の文表示 && TFLAG:Ｖ露出
+	CALL EXPOSURE_VAGINA_SENTENCE
+
+
+
+;Ｂ露出擬音+地の文表示
+@EXPOSURE_BUST_SENTENCE
+#DIMS PREFIX_EN
+#DIMS ENDING_EN
+PREFIX_EN =
+ENDING_EN =
+
+CALL ONOMATOPOEIA("乳房露出")
+SETCOLOR 0xFF70FF
+
+;母乳容量5000+巨乳以上
+IF BASE:母乳容量 >= 5000 && ABL:バストサイズ >= BUSTSIZE_巨乳 && RAND:100 < 80
+	SELECTCASE RAND:5
+	CASE 0
+		ENDING_EN = . Swaying from wanthing the %SLANG_MILK()% squeezed out of them
+	CASE 1
+		ENDING_EN = , completely filled with %SLANG_MILK()%
+	CASE 2
+		ENDING_EN = , looking like the %SLANG_MILK()% will flow out any moment
+	CASEELSE
+		ENDING_EN = , with plenty of %SLANG_MILK()% inside them
+	ENDSELECT
+
+ELSEIF ABL:バストサイズ >= BUSTSIZE_爆乳
+	;元々のバストサイズより5以上増えてる
+	IF ABL:初期値／バストサイズ +5 <= ABL:バストサイズ && RAND:100 < 50
+		SELECTCASE RAND:4
+		CASE 0
+			ENDING_EN = , grown to a huge size by %CALLNAME:0%
+		CASE 1
+			ENDING_EN = , grown splendidly by %CALLNAME:0%
+		CASE 2
+			ENDING_EN = . Big, beautiful and obscene
+		CASEELSE
+			IF MARK:母乳体質 && RAND:100 < 80
+				ENDING_EN = , grown to produce plenty of %SLANG_MILK()%
+			ELSEIF ABL:初期値／バストサイズ < BUSTSIZE_巨乳
+				ENDING_EN = , grown to a size far beyond their original one
+			ELSE
+				ENDING_EN = , grown bigger than their original size
+			ENDIF
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:8
+		CASE 0
+			PREFIX_EN = big and beautiful
+		CASE 1
+			PREFIX_EN = soft but firm
+		CASE 2
+			PREFIX_EN = juicy and big
+		CASE 3
+			PREFIX_EN = soft and deliciously swaying
+		CASE 4
+			PREFIX_EN = large and powerfull
+		CASE 5
+			ENDING_EN = , their sheer size catching attention
+		CASE 6
+			ENDING_EN = . Big, beautiful and obscene
+		CASEELSE
+			ENDING_EN = , having a size appropriate for a 「Dairy Cow」
+		ENDSELECT
+	ENDIF
+
+ELSEIF ABL:バストサイズ >= BUSTSIZE_巨乳
+	SELECTCASE RAND:4
+	CASE 0
+		PREFIX_EN = big and beautiful
+	CASE 1
+		PREFIX_EN = soft but firm
+	CASE 2
+		PREFIX_EN = juicy and big
+	CASEELSE
+		PREFIX_EN = soft and deliciously swaying
+	ENDSELECT
+
+ELSEIF ABL:バストサイズ >= BUSTSIZE_並乳
+	SELECTCASE RAND:3
+	CASE 0
+		PREFIX_EN = well shaped
+	CASE 1
+		PREFIX_EN = very soft
+	CASEELSE
+		PREFIX_EN = juicy
+	ENDSELECT
+ENDIF
+SIF PREFIX_EN != ""
+	PREFIX_EN += " "
+PRINTFORM %CALLNAME%'s %PREFIX_EN%%SLANG_B()% are exposed%ENDING_EN%...
+CALL HEARTCB(0xD02830)
+PRINTL
+RESETCOLOR
+
+
+
+;乳首がこんにちは
+@EXPOSURE_NIPPLE_SENTENCE
+#DIMS ENDING_EN
+ENDING_EN =
+
+CALL ONOMATOPOEIA("乳首露出")
+SETCOLOR 0xFF70FF
+
+;母乳容量5000+巨乳以上
+IF BASE:母乳容量 >= 5000 && ABL:バストサイズ >= BUSTSIZE_巨乳 && RAND:100 < 80
+	SELECTCASE RAND:5
+	CASE 0
+		ENDING_EN = , practically begging to be milked
+	CASE 1 ; milk dripping/ dripping milk
+		ENDING_EN = , %SLANG_MILK()% dripping from them
+	CASE 2 ; releasing the smell of milk
+		ENDING_EN = , releasing the sweet smell of %SLANG_MILK()%
+	CASEELSE ; looking like they want to be sucked
+		ENDING_EN = , looking like they want the %SLANG_MILK()% to be sucked out of them
+	ENDSELECT
+ENDIF
+
+PRINTFORM %CALLNAME%'s %SLANG_N()% are exposed%ENDING_EN%...
+CALL HEARTCB(0xD02830)
+PRINTL
+RESETCOLOR
+
+
+
+;おまんこまるみえ 
+@EXPOSURE_VAGINA_SENTENCE
+#DIMS PREFIX_EN
+#DIMS ENDING_EN
+PREFIX_EN =
+ENDING_EN =
+
+;今ないけどここ擬音の候補あるだろうか
+SETCOLOR 0xFF70FF
+IF PALAM:Ｖ潤滑 >= 50000
+	ENDING_EN = , her juices flowing, begging for a %SAVESTR:表記／ペニス%
+	
+ELSEIF PALAM:Ｖ潤滑 >= 10000
+	ENDING_EN = , thoroughly wet from anticipation 
+	
+ENDIF
+SIF TALENT:処女
+	ENDING_EN = , having never experienced a man yet
+
+;あなたとのセックス100以上くらい？
+SIF EXP:経験回数／あなた／Ｖセックス >= 100
+	ENDING_EN = , trained to fit %CALLNAME:0%'s shape
+
+;ここだけスラング使う
+SIF CFLAG:身長 < FLAG:スラング／子供扱い上限身長数値
+	PREFIX_EN = young
+SIF PREFIX_EN != ""
+	PREFIX_EN += " "
+PRINTFORM %CALLNAME%'s %PREFIX_EN%%SLANG_V()% is exposed%ENDING_EN%...
+CALL HEARTCB(0xD02830)
+PRINTL
+RESETCOLOR
+
+
+
+

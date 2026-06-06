@@ -1,0 +1,269 @@
+﻿
+;脱衣時のフラグ上書き、地の文
+@AJUST_STRIP_FLAG
+
+;地の文、口上を表示するフラグはSOURCE:脱衣メッセージ表示で判定する
+CALL TRAIN_CLOTHE_STRIP_SENTENCE_FLAG
+
+;衣服を再度着せる場合もあるのでここでTFLAGの140～154をリセット
+VARSET TFLAG,0,140,155
+
+;衣服なし扱いの場合そのまま露出判定へ
+IF TFLAG:一時的脱衣／衣服 || !EQUIP:装備中ID／衣服 || ＃着用衣服／名称＃ == "逆バニー服"
+	CALL AJUST_STRIP_FLAG_LINGERIE_BUST
+	CALL AJUST_STRIP_FLAG_LINGERIE_VAGINA
+
+;衣服による露出度の判定
+ELSE
+	;おっぱい露出判定　破け時、半脱ぎ時、そもそも丸出しは下着で判定
+	IF ＃着用衣服／胸破け＃ || GETBIT(＃半脱ぎ／衣服上＃) || ＃着用衣服／乳出し＃
+		CALL AJUST_STRIP_FLAG_LINGERIE_BUST
+	ELSE
+		CALL AJUST_STRIP_FLAG_CLOTHE_BUST
+	ENDIF
+	IF ＃着用衣服／股間破け＃ || GETBIT(＃半脱ぎ／衣服下＃) || ＃着用衣服／股間出し＃
+		CALL AJUST_STRIP_FLAG_LINGERIE_VAGINA
+	ELSE
+		CALL AJUST_STRIP_FLAG_CLOTHE_VAGINA
+	ENDIF
+ENDIF
+
+;上着での露出上書き
+CALL AJUST_STRIP_FLAG_JACKET
+
+;着衣パイズリ対応衣服判定
+CALL WEAR_PAIZURI_CHECK
+
+;フラグ被り防止
+CALL STRIP_FLAG_FIX
+
+;露出地の文表示フラグによる表示
+CALL TRAIN_CLOTHE_STRIP_SENTENCE
+
+;露出フラグにより経験追加
+CALL ADD_STRIP_EXP
+
+
+
+;衣服着衣時のおっぱい露出度判定
+@AJUST_STRIP_FLAG_CLOTHE_BUST
+
+;改造している場合それに準ずる
+;乳出しだとここ来ないで下着で判定するよ
+;乳暖簾→Ｂ露出になってあとで[横乳露出]消すので不要
+SIF ＃着用衣服／横乳露出＃
+	TFLAG:横乳露出 = 1
+
+;[谷間露出]を作る
+SIF ＃着用衣服／谷間露出＃
+	TFLAG:谷間露出 = 1
+
+;乳暖簾のときＢ露出
+IF ＃着用衣服／乳暖簾＃
+	TFLAG:Ｂ露出 = 1
+	TFLAG:乳暖簾 = 1
+ENDIF
+
+;乳出し衣服はここに来ないはず
+;Ｂ露出かつ通常下着不可
+SIF GROUPMATCH(＃着用下着上／名称＃,"踊り子の衣装","淫乱巫女服","淫乱シスター服","淫乱メイド服","淫乱チャイナドレス","淫乱ドレス")
+	TFLAG:Ｂ露出 = 1
+
+;衣服が授乳スリットで下着ないか授乳スリットブラなら対応
+IF ＃着用衣服／授乳スリット＃
+	;開いている場合Ｎ露出
+	SIF TFLAG:授乳スリット開放
+		TFLAG:Ｎ露出 = 1
+	SIF !EQUIP:装備中ID／下着上
+		TFLAG:授乳スリット = 1
+	
+	SELECTCASE ＃着用下着上／名称＃
+	CASE "授乳スリットブラ"
+		TFLAG:授乳スリット = 1
+	CASE "乳首露出ブラ"
+		TFLAG:Ｎ露出 = 1
+	ENDSELECT
+ENDIF
+
+
+
+;大きめの上着なら露出度上書き
+@AJUST_STRIP_FLAG_JACKET
+
+SIF TFLAG:一時的脱衣／上着
+	RETURN
+SELECTCASE ＃着用上着／名称＃
+CASE "オーバーオール"
+	TFLAG:Ａ露出 = 0
+	TFLAG:Ｃ露出 = 0
+	TFLAG:Ｖ露出 = 0
+	
+	;半脱ぎなら下半身上書きまで
+	SIF GETBIT(＃半脱ぎ／上着＃)
+		RETURN
+	TFLAG:授乳スリット = 0
+	TFLAG:乳暖簾 = 0
+	TFLAG:Ｎ露出 = 0
+	IF TFLAG:Ｂ露出
+		TFLAG:横乳露出 = 1
+		TFLAG:谷間露出 = 1
+		TFLAG:Ｂ露出 = 0
+	ENDIF
+
+CASE "エプロン"
+	SIF GETBIT(＃半脱ぎ／上着＃)
+		RETURN
+	TFLAG:授乳スリット = 0
+	TFLAG:乳暖簾 = 0
+	TFLAG:Ｎ露出 = 0
+	IF TFLAG:Ｂ露出
+		TFLAG:横乳露出 = 1
+		TFLAG:谷間露出 = 1
+		TFLAG:Ｂ露出 = 0
+	ENDIF
+
+ENDSELECT
+
+
+
+;衣服にズリ穴がある場合の着衣パイズリ判定
+;谷間露出・乳暖簾・乳出しの場合もON
+@WEAR_PAIZURI_CHECK
+
+IF ＃着用衣服／ズリ穴＃ || ＃着用衣服／谷間露出＃ || ＃着用衣服／乳暖簾＃
+	SIF !EQUIP:装備中ID／下着上
+		TFLAG:着衣パイズリ可能 = 1
+	{
+	SIF GROUPMATCH(＃着用下着上／名称＃,"ねこブラ","ニップレス","マイクロビキニ","牛柄マイクロビキニ","牛柄穴空きビキニ","紐",
+	"ビキニ","ひもブラ","眼帯ブラ","スリングショット","牛柄スリングショット")
+	}
+		TFLAG:着衣パイズリ可能 = 1
+ENDIF
+
+
+
+
+
+;衣服着衣時の下半身露出判定
+@AJUST_STRIP_FLAG_CLOTHE_VAGINA
+
+;前掛けくらいしかなくなった
+SIF ＃着用衣服／前掛け＃
+	TFLAG:前掛け = 1
+
+
+
+;下着でのおっぱい露出判定
+@AJUST_STRIP_FLAG_LINGERIE_BUST
+
+;ノーブラ時は露出
+IF !EQUIP:装備中ID／下着上 || GETBIT(＃半脱ぎ／下着上＃) || TFLAG:一時的脱衣／下着上
+	TFLAG:Ｂ露出 = 1
+	TFLAG:Ｎ露出 = 1
+	RETURN
+ENDIF
+
+;ブラ種類による分岐
+SELECTCASE ＃着用下着上／名称＃
+CASE "授乳スリットブラ"
+	TFLAG:授乳スリット = 1
+	
+	;開いている場合Ｎ露出
+	SIF TFLAG:授乳スリット開放
+		TFLAG:Ｎ露出 = 1
+
+CASE "乳首露出ブラ"
+	TFLAG:Ｎ露出 = 1
+
+CASE "ニップレス","マイクロビキニ","牛柄マイクロビキニ","紐","眼帯ブラ","スリングショット","乳首札","牛柄スリングショット"
+	TFLAG:Ｂ露出 = 1
+
+CASE "牛柄穴空きビキニ"
+	TFLAG:Ｎ露出 = 1
+	TFLAG:Ｂ露出 = 1
+ENDSELECT
+
+
+
+;下着での下半身露出判定
+@AJUST_STRIP_FLAG_LINGERIE_VAGINA
+
+;ノーパン時は露出
+IF !EQUIP:装備中ID／下着下 || GETBIT(＃半脱ぎ／下着下＃) || TFLAG:一時的脱衣／下着下
+	TFLAG:Ａ露出 = 1
+	TFLAG:Ｃ露出 = 1
+	TFLAG:Ｖ露出 = 1
+	RETURN
+ENDIF
+
+;ショーツ種類による分岐
+SELECTCASE ＃着用下着下／名称＃
+CASE "局部露出ショーツ","牛柄穴空きビキニ"
+	TFLAG:Ａ露出 = 1
+	TFLAG:Ｃ露出 = 1
+	TFLAG:Ｖ露出 = 1
+CASE "前貼り","股間札"
+	TFLAG:Ａ露出 = 1
+ENDSELECT
+
+
+
+;フラグ被り防止
+@STRIP_FLAG_FIX
+
+;Ｂ露出のときフラグ被り防止
+IF TFLAG:Ｂ露出
+	TFLAG:横乳露出 = 0
+	TFLAG:谷間露出 = 0
+	TFLAG:着衣パイズリ可能 = 0
+ENDIF
+
+;Ｎ露出も同様
+IF TFLAG:Ｎ露出
+	TFLAG:授乳スリット = 0
+	TFLAG:乳暖簾 = 0
+ENDIF
+
+;Ｖだけ判断でOK
+SIF TFLAG:Ｖ露出
+	TFLAG:前掛け = 0
+
+;元々着ていない場合半脱ぎ、一時的脱衣フラグはOFF
+IF !EQUIP:装備中ID／衣服
+	TFLAG:一時的脱衣／衣服 = 0
+	CLEARBIT ＃半脱ぎ／衣服上＃
+	CLEARBIT ＃半脱ぎ／衣服下＃
+ENDIF
+IF !EQUIP:装備中ID／下着上
+	TFLAG:一時的脱衣／下着上 = 0
+	CLEARBIT ＃半脱ぎ／下着上＃
+ENDIF
+IF !EQUIP:装備中ID／下着下
+	TFLAG:一時的脱衣／下着下 = 0
+	CLEARBIT ＃半脱ぎ／下着下＃
+ENDIF
+IF !EQUIP:装備中ID／上着
+	TFLAG:一時的脱衣／上着 = 0
+	CLEARBIT ＃半脱ぎ／上着＃
+ENDIF
+
+
+
+;露出フラグにより経験追加
+@ADD_STRIP_EXP
+
+;全裸になった場合あなたに裸を見られた経験を追加
+;TFLAG:140～144が露出フラグ,最小値を取って1なら全部位露出
+SIF MINARRAY(TFLAG,140,145)
+	EXP:全裸見られ ++
+SIF TFLAG:Ｂ露出
+	EXP:乳見られ ++
+SIF TFLAG:Ｎ露出
+	EXP:乳首見られ ++
+SIF TFLAG:Ｃ露出
+	EXP:クリ見られ ++
+SIF TFLAG:Ｖ露出
+	EXP:膣見られ ++
+SIF TFLAG:Ａ露出
+	EXP:アナル見られ ++
+

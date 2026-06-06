@@ -1,0 +1,43 @@
+﻿
+;霊力・魔力ドレイン整理
+@SLAVE_ENERGY_DRAIN_CALC
+
+;レベルドレイン計算
+SIF SOURCE:霊力吸収量
+	CALL SLAVE_ENERGY_DRAIN(1)
+SIF !BASE:霊力
+	EXP:霊力ゼロ = 1
+CALL SLAVE_ENERGY_EMPTY_MESSAGE
+
+
+
+;搾乳エナジードレイン
+;ARG→1ならレベルドレイン適用時改行　2ならスケジュールから来た場合
+@SLAVE_ENERGY_DRAIN(ARG)
+
+;とりあえず下に飛ばす
+CALL SLAVE_LEVEL_DRAIN(ARG)
+CALL SLAVE_ENERGY_ZERO(ARG)
+RESETCOLOR
+
+
+
+;レベルドレイン
+;ARG→レベルドレイン適用時改行
+@SLAVE_LEVEL_DRAIN(ARG)
+#DIM NOW_LEVEL
+
+;メッセージスキップ処理が入っている間はレベル減少をしない
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+CALL EP_LEVEL_CALC
+NOW_LEVEL = RESULT
+
+;レベル再計算して減っていたらメッセージ表示+レベル低下
+SIF NOW_LEVEL >= BASE:レベル
+	RETURN
+CALL LEVEL_DRAIN_MESSAGE(ARG,NOW_LEVEL)
+BASE:レベル = NOW_LEVEL
+EXP:レベルドレイン ++
+
+

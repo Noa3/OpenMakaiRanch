@@ -1,0 +1,88 @@
+﻿
+;アナルスラング設定
+@SLANG_CONFIG_ANAL
+
+CLEARLINE LINECOUNT
+PRINTL Select slang options for Anus.
+DRAWLINE
+PRINTLC [ 0] 「butthole」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／アナル,0),1)
+PRINTLC [ 1] 「anus」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／アナル,1),1)
+PRINTLC [ 2] 「Backdoor」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／アナル,2),1)
+PRINTLC [ 3] 「rectum」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／アナル,3),1)
+PRINTLC [ 4] 「asshole」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／アナル,4),1)
+PRINTLC [ 5] 「back hole」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／アナル,5),1)
+PRINTLC [ 6] 「impure hole」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／アナル,6),1)
+PRINTL
+
+PRINTL 　《 Prefix Setting 》
+PRINTLC [10] 「promiscuous」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／アナル,0),0)
+PRINTL 　（With Lewd Anus）
+PRINTLC [11] 「worthless」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／アナル,1),0)
+PRINTL 　（With Lewd Anus）
+PRINTLC [12] 「immature」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／アナル,2),0)
+PRINTL 　（When Child Sized）
+PRINTL
+PRINTL 　《 Special Substitutions 》
+PRINTLC [20] Priority for Special Substitutions
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／アナル,0),0)
+PRINTL 　give Priority to cases that meet the conditions for special substitution 
+PRINTLC [21] 「pseudo-genitalia」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／アナル,1),0)
+PRINTL 　（With Exquisite Anus）
+PRINTLC [22] 「milking organ」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／アナル,2),0)
+PRINTL 　（With Exquisite Anus）
+PRINTLC [23] 「lewd hole」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／アナル,3),0)
+PRINTL 　（With Lewd Anus）
+PRINTLC [29] 《 Custom Replacement 》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／アナル,9),0)
+PRINTFORML 　（Current Setting：%SAVESTR:表記／アナル%）
+CALL SLANG_CONFIG_FOOTER
+INPUT
+SELECTCASE RESULT
+CASE 0 TO 5
+	INVERTBIT FLAG:スラング表示／アナル,RESULT
+CASE 10 TO 12
+	INVERTBIT FLAG:スラング接頭語／アナル,(RESULT -10)
+CASE 20 TO 23
+	INVERTBIT FLAG:スラング置換／アナル,(RESULT -20)
+CASE 29
+	INVERTBIT FLAG:スラング置換／アナル,(RESULT -20)
+CASE 80
+	FLAG:スラング表示／アナル = 65535
+CASE 81
+	FLAG:スラング接頭語／アナル = 65535
+CASE 82
+	FLAG:スラング置換／アナル = 65535
+CASE 90
+	FLAG:スラング表示／アナル = 0
+CASE 91
+	FLAG:スラング接頭語／アナル = 0
+CASE 92
+	FLAG:スラング置換／アナル = 0
+CASE 98
+	PRINTL Reset slang options for anus to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG_ANAL
+CASE 99
+	IF !FLAG:スラング表示／アナル
+		PRINTW At least one slang option must be selected.
+	ELSE
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+

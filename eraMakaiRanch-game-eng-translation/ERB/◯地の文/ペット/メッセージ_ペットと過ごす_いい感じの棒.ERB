@@ -1,0 +1,78 @@
+﻿
+;ペットと棒遊び：地の文
+;ｲﾇﾁｬﾝだけ
+;TARGET,ANIMAL,PET_NAME指定済み
+@PET_COMMU_MESSAGE_PLAY_NICE_STICK
+
+FLAG_NAME = なつき度／%ANIMAL%
+IF TALENT:動物に好かれる || BASE:FLAG_NAME >= 8000
+	CALL PET_COMMU_MESSAGE_PLAY_NICE_STICK_LOVE
+	
+	;投げる回数が多いのでむしろ懐かれてる場合のが体力消費が多い
+	DAMAGE = 150
+ELSEIF !TALENT:動物に嫌われる || BASE:FLAG_NAME >= 5000
+	CALL PET_COMMU_MESSAGE_PLAY_NICE_STICK_LOW
+	DAMAGE = 120
+ELSE
+	CALL PET_COMMU_MESSAGE_PLAY_NICE_STICK_HATE
+	DAMAGE = 50
+ENDIF
+
+
+
+;【動物に好かれる】orなつき時
+@PET_COMMU_MESSAGE_PLAY_NICE_STICK_LOVE
+
+PRINTFORML %CALLNAME%はなんかいい感じの形の棒を使って%PET_NAME%と遊ぶことにした。
+SELECTCASE RAND:3
+CASE 0
+	PRINTFORML %PET_NAME%に差し出してみると、楽しそうに%CALLNAME%の周りを走り回っている。
+	PRINTFORML 棒を投げてみると、%PET_NAME%は大はしゃぎで追いかけていく！
+	PRINTFORML 2つの頭で器用に咥えると、%CALLNAME%の元に駆けてきて棒を差し出しもう1度と催促してきた。
+CASE 1
+	PRINTFORML %PET_NAME%に差し出してみると、片方を噛んで%CALLNAME%に差し出してきた。
+	PRINTFORML %CALLNAME%がもう片方を持つと、引っ張り合いで遊び始めた！
+	PRINTL
+	PRINTFORML %PET_NAME%が力を入れると%CALLNAME%はものすごい力で引っ張られ、%PET_NAME%にもたれかかってしまった。
+	PRINTFORML %PET_NAME%はビクともせず、とても楽しそうにはしゃいでいる。
+CASE 2
+	PRINTFORML %PET_NAME%に差し出してみると、受け取らずに走り去ってしまった…
+	PRINTFORML …と思いきや、助走をつけて%CALLNAME%に飛びかかり棒を奪い取った！
+	PRINTL
+	PRINTFORML %PET_NAME%は奪った棒を%CALLNAME%の足元に置き、また離れて%CALLNAME%が手に持つのを待っている。
+	PRINTFORML 次は奪われないようにと持ち上げたり振ってみても、%PET_NAME%は狙いすまして棒を奪っていく！
+ENDSELECT
+PRINTL ………
+PRINTFORML 何度も繰り返し、棒がボロボロになったころ%PET_NAME%は大満足したようだ。
+
+
+
+
+;【動物に嫌われる】ではないor嫌われるけどなつき程々
+@PET_COMMU_MESSAGE_PLAY_NICE_STICK_LOW
+
+;上と同じ
+CALL PET_COMMU_MESSAGE_PLAY_NICE_STICK_LOVE
+
+
+
+;【動物に嫌われる】
+@PET_COMMU_MESSAGE_PLAY_NICE_STICK_HATE
+
+PRINTFORML %CALLNAME%はなんかいい感じの形の棒を使って%PET_NAME%と遊ぼうと試みた…
+PRINTFORML %PET_NAME%に差し出してみると、噛み付いて奪われてしまった…
+SELECTCASE RAND:3
+CASE 0
+	PRINTFORML %PET_NAME%は棒を振り回して遊んでいるようだ…
+CASE 1
+	PRINTFORML %PET_NAME%は棒を噛み砕いて遊んでいるようだ…
+CASE 2
+	PRINTFORML %PET_NAME%は棒を投げたり拾ったりして遊んでいるようだ…
+ENDSELECT
+PRINTL ………
+PRINTFORML 何度も繰り返し、棒がボロボロになったころ%PET_NAME%は満足したようだ。
+
+
+
+
+

@@ -1,0 +1,31 @@
+﻿
+;促進薬での母乳体質化判定
+@TRAIN_MILK_PROMOTION_CHECK
+
+;Ｂ／Ｎ絶頂していなければおわり
+SIF !NOWEX:Ｂ絶頂 && !NOWEX:Ｎ絶頂
+	RETURN
+
+;魔力母乳→母乳で見る
+IF GETBIT(＃有効薬品／魔力母乳分泌促進薬＃)
+	;既に魔力母乳体質ならおわり（一応）
+	SIF MARK:魔力母乳体質
+		RETURN
+	CALL KOJO_PRINT("絶頂")
+	CALL MILK_PROMOTION_MESSAGE
+	CALL MAKEUP_MAGIC_MILK
+	CLEARBIT ＃有効薬品／魔力母乳分泌促進薬＃
+	PRINTW
+	
+ELSEIF GETBIT(＃有効薬品／母乳分泌促進薬＃)
+	;既に母乳体質ならおわり
+	SIF MARK:母乳体質
+		RETURN
+	CALL KOJO_PRINT("絶頂")
+	CALL MILK_PROMOTION_MESSAGE
+	CALL MAKEUP_MILK
+	CLEARBIT ＃有効薬品／母乳分泌促進薬＃
+	PRINTW
+ENDIF
+
+

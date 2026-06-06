@@ -1,0 +1,71 @@
+﻿
+;捕獲時選択肢・キャラフラグ
+@CAPTURE_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Select choices on capturing and default character flags.
+DRAWLINE
+PRINTL 　《 Capturing behavior 》
+PRINTLC [ 0] Open drug screen（with ＜Tentacle Restraint＞）
+CALL PRINT_ONOFF(GETBIT(＃捕獲時投薬＃),1)
+PRINTLC [ 1] Open character configuration           　　　　
+CALL PRINT_ONOFF(GETBIT(＃捕獲時設定画面＃),1)
+PRINTLC [ 2] Purchase milking machine on capture    　　　　
+CALL PRINT_ONOFF(GETBIT(＃搾乳器自動購入＃),1)
+PRINTL
+
+PRINTL 　《 Default slave treatment 》
+PRINTLC [10] Dinner equal to that of employees      　　　　
+CALL PRINT_ONOFF(FLAG:加入奴隷デフォルト／夕食許可,1)
+PRINTLC [11] Allow using Bathhouse（with ＜Bathhouse＞）    
+CALL PRINT_ONOFF(FLAG:加入奴隷デフォルト／入浴許可,1)
+PRINTL
+
+PRINTL 　《 Abilities enabled by default 》
+
+;STR:アビリティ有効個人BIT→22020
+STR_REF = 22020
+FOR LOCAL,0,10
+	SIF STR:(STR_REF +LOCAL) == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL +20}] %ABILITIES_ACTIVE_ENG(STR:(STR_REF +LOCAL))%
+	CALL PRINT_ONOFF(GETBIT(FLAG:加入奴隷デフォルト／アビリティ有効個人BIT,LOCAL),1)
+NEXT
+CALL PRINTL_ALIGN(-5)
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 98
+	PRINTL Reset choices on capturing and default character flags to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_CAPTURE_CONFIG
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_CAPTURE_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_CAPTURE_CONFIG(ARG)
+
+;全部NUM
+SELECTCASE ARG
+CASE 0 TO 9
+	INVERTBIT FLAG:捕獲時選択肢BIT,ARG
+CASE 10
+	INVERTBIT FLAG:加入奴隷デフォルト／夕食許可,0
+CASE 11
+	INVERTBIT FLAG:加入奴隷デフォルト／入浴許可,0
+CASE 20 TO 29
+	INVERTBIT FLAG:加入奴隷デフォルト／アビリティ有効個人BIT,ARG -20
+ENDSELECT
+
+
+
+

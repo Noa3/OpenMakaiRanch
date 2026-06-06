@@ -1,0 +1,62 @@
+﻿
+;拘束が可能か・必要アイテムの判定
+;STR_REF指定済み
+;ARG→拘束番号
+;ARGS→判定／必要アイテム
+@BIND_NEED_ITEM(ARG,ARGS)
+
+;STR:拘束中→3930
+VARSET NEED_ITEM_ID
+
+;STR_REF+ARGをするために必要なアイテム返す
+SELECTCASE STR:(STR_REF +ARG)
+CASE "立ち柱","座り柱"
+	;必要アイテムなし
+	
+CASE "まんぐり"
+	NEED_ITEM_ID = GETNUM(ITEM,"拘束技術")
+	
+CASE "搾乳台"
+	NEED_ITEM_ID = GETNUM(ITEM,"調教用搾乳台")
+	
+CASE "吊るし"
+	NEED_ITEM_ID = GETNUM(ITEM,"吊るし鎖")
+	
+CASE "十字架"
+	NEED_ITEM_ID = GETNUM(ITEM,"十字架拘束台")
+	
+CASE "Ｘ字"
+	NEED_ITEM_ID = GETNUM(ITEM,"Ｘ字拘束台")
+	
+CASE "手枷屈脚"
+	NEED_ITEM_ID = GETNUM(ITEM,"手枷")
+	
+CASE "ハーネス"
+	;拘束技術も必要
+	NEED_ITEM_ID = GETNUM(ITEM,"吊るしハーネス")
+	NEED_ITEM_ID:1 = GETNUM(ITEM,"拘束技術")
+	
+CASE "ベッド仰向け","ベッドうつ伏せ"
+	NEED_ITEM_ID = GETNUM(ITEM,"拘束ベッド")
+	
+CASE "荒縄"
+	NEED_ITEM_ID = GETNUM(ITEM,"ＳＭ用荒縄")
+	
+CASE "亀甲縛り"
+	NEED_ITEM_ID = GETNUM(ITEM,"ＳＭ用荒縄")
+	NEED_ITEM_ID:1 = GETNUM(ITEM,"拘束技術")
+	
+CASE "触手"
+	NEED_ITEM_ID = GETNUM(ITEM,"触手変化")
+	
+CASE "壁乳"
+	NEED_ITEM_ID = GETNUM(ITEM,"壁乳拘束台")
+	
+CASE "三角木馬"
+	NEED_ITEM_ID = GETNUM(ITEM,"三角木馬")
+ENDSELECT
+
+;RESULTSに拘束名
+RESULTS = %STR:(STR_REF +ARG)%拘束
+
+

@@ -1,0 +1,72 @@
+﻿
+;調教コマンドのスイッチ
+@USERCOM_SHOW_COMMAND_SWITCH
+
+;コマンドを種類で分割orBIT処理
+DRAWLINE
+IF FLAG:表示調教コマンド切替
+	CALL COMMAND_SWITCH_OLD
+ELSE
+	CALL COMMAND_SWITCH_NEW
+ENDIF
+PRINTL
+CALL HALFLINE
+
+
+
+;コマンドを種類で分割
+@COMMAND_SWITCH_OLD
+
+; all commands increased by 1000 to prevent conflicts with SHOW_USERCOM_ENG
+IF FLAG:表示調教コマンド切替 == 1
+	CALL PRINTLC_WORD_COLOR("[Select]Hand・Mouth","水色")
+ELSE
+	PRINTLC [1400] Hand・Mouth
+ENDIF
+IF FLAG:表示調教コマンド切替 == 2
+	CALL PRINTLC_WORD_COLOR("[Select]Penis","水色")
+ELSE
+	PRINTLC [1401] Penis
+ENDIF
+IF FLAG:表示調教コマンド切替 == 3
+	CALL PRINTL_WORD_COLOR("[Select]Tools・Magic","水色")
+ELSE
+	PRINTL [1402] Tools・Magic
+ENDIF
+IF !ITEM:触手変化
+	CALL PRINTLC_WORD_COLOR("[Tentacle Morph] necessary","灰")
+ELSE
+	IF FLAG:表示調教コマンド切替 == 4
+		CALL PRINTLC_WORD_COLOR("[Select]Tentacles","水色")
+	ELSE
+		PRINTLC [1403] Tentacles
+	ENDIF
+ENDIF
+IF FLAG:表示調教コマンド切替 == 5
+	CALL PRINTLC_WORD_COLOR("[Select]Pain","水色")
+ELSE
+	PRINTLC [1404] Pain
+ENDIF
+
+@COMMAND_SWITCH_NEW
+
+; all commands increased by 1000 to prevent conflicts with SHOW_USERCOM_ENG
+;表示調教コマンドBIT用STR→8050
+STR_REF = 8050
+FOR LOCAL,0,20
+	SIF STR:(LOCAL +STR_REF) == ""
+		BREAK
+	IF GETBIT(FLAG:表示調教コマンドBIT,LOCAL)
+		SETCOLOR FLAG:カラーコード／メイン画面強調選択肢
+		PRINTFORM [{LOCAL +1400,3}] %TRAIN_DISPLAY_ENG(STR:(LOCAL +STR_REF)),8,LEFT%　
+		RESETCOLOR
+	ELSE
+		PRINTFORM [{LOCAL +1400,3}] %TRAIN_DISPLAY_ENG(STR:(LOCAL +STR_REF)),8,LEFT%　
+	ENDIF
+	SIF STR:(LOCAL +STR_REF) == "その他"
+		PRINTL
+NEXT
+PRINT [1418] All ON　
+PRINT [1419] All OFF
+
+

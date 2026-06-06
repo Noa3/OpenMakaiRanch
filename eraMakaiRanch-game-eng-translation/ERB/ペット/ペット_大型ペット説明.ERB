@@ -1,0 +1,127 @@
+﻿
+;アイテム説明
+@ITEM_SHOP_BIG_ANIMAL_DETAIL
+
+;対応IDでないなら汎用出して帰る
+;ITEM_ID_MIN,ITEM_ID_MAX指定済み
+IF SELECT_ITEM < ITEM_ID_MIN || SELECT_ITEM >= ITEM_ID_MAX || ITEMNAME:SELECT_ITEM == ""
+	PRINTL  　《 Clothing Description Shown Here 》
+	RETURN
+ENDIF
+
+;アイテム名、価格を出す
+;日付が0の場合価格は出さない
+IF !DAY
+	PRINTFORM 　《 %ITEMS_ENG(ITEMNAME:SELECT_ITEM)% 》
+ELSE
+	PRINTFORM 　《 %ITEMS_ENG(ITEMNAME:SELECT_ITEM)% 》%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%G 
+ENDIF
+
+;ペットは1匹のみ
+FLAG:１コ限定アイテム = 1
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "堕天馬"
+	PRINTFORML ＜Pet＞＜Rideable＞　Basic Food Cost: {PET_FOOD_PRICE_BASE:0}G/Day
+	PRINTL ・Require empty ＜Pet House＞
+	PRINTL
+	PRINTL The horse with black wings, is most commonly kept as a means of transportation in the makai.
+	PRINTL It is said that these horses originated from the celestial realm, where they were called Pegasus, 
+	PRINTL but some individuals grew tired of the celestial realm and came to the makai thousands of years ago.
+	PRINTL They are the perfect size for makai inhabitants to ride, 
+	PRINTL and have been tamed and used for transportation since ancient times.
+	PRINTL The horses are content because they receive food and they are naturally inclined to run.
+	PRINTL
+	PRINTL The Pegasus in the celestial realm is said to be able to fly and hover with its large wings, 
+	PRINTL but the fallen horses, lacking divine protection, do not possess the same level of flight capability.
+	PRINTL However, they can still spread their wings and extend their jumps to cover more distance.
+	PRINTL It seems a bit frustrating for them when they cannot fly while pulling a cart or carrying a load.
+	PRINTL Occasionally, allowing them to stretch their wings and run freely seems to be a good way to relieve their stress.
+	PRINTL
+	PRINTL There are records from thousands of years ago that some individuals were able to run faster than the speed of sound.
+	PRINTL However, such incredible speed would cause the rider to be blown away, so in recent years, 
+	PRINTL as they have settled into being domesticated animals for transportation purposes,
+	PRINTL their exceptional speed is no longer observed.
+	PRINTL
+	PRINTL Due to their large size, it is necessary to have available space in the ＜Pet House＞ to keep them. 
+	PRINTL They can be used as a means of transportation for ＜Going into Town＞.
+	
+CASE "オルトロス"
+	PRINTFORML ＜Pet＞＜Rideable＞　Basic Food Cost: {PET_FOOD_PRICE_BASE:1}G/Day
+	PRINTL ・Require empty ＜Pet House＞
+	PRINTL
+	PRINTL A two-headed dog of adult size, which is a common pet in the Makai.
+	PRINTL It may appear intimidating to humans on Earth, but like the "dogs" imagined by humans, 
+	PRINTL it is very affectionate and friendly towards its owner.
+	PRINTL However, its body is robust, and it shows no mercy to its owner's enemies, 
+	PRINTL giving humans on Earth the impression of a terrifying monster.
+	PRINTL
+	PRINTL There is also a three-headed and even larger and stronger dog called "Cerberus",
+	PRINTL but Cerberus tends to become displeased when its Makai owner tries to pet one of its heads,
+	PRINTL making it difficult to care for, so the more commonly kept pet is Orthros.
+	PRINTL Occasionally, dog lovers of species with three or more arms will keep a Cerberus.
+	PRINTL
+	PRINTL Due to its ability to effortlessly pull a cart alone, it is often kept as a means of transportation.
+	PRINTL However, despite its large size and friendliness, it requires determination to keep as a pet, 
+	PRINTL unlike other relatively calm large pets.
+	PRINTL Nevertheless, scenes of being playfully tackled and crushed by Orthros are frequently seen in the streets of the Makai.
+	PRINTL
+	PRINTL One dilemma when keeping Orthros is what to name it, considering it has two heads but one body.
+	PRINTL Recently, it has been discovered that the right head (the one on the left when facing each other) is the older sibling.
+	PRINTL
+	PRINTL As a large animal, it is necessary to have available space in the ＜Pet House＞ to keep them. 
+	PRINTL They can be used as a means of transportation for ＜Going into Town＞.
+	
+CASE "魔界ハムスター"
+	PRINTFORML ＜Pet＞＜Rideable＞　Basic Food Cost: {PET_FOOD_PRICE_BASE:2}G/Day
+	PRINTL ・Require empty ＜Pet House＞
+	PRINTL
+	PRINTL In the makai, pets are not as common as dogs or cats.
+	PRINTL Even compared to demonic horses and Orthros, they are small and adorable despite their larger size.
+	PRINTL
+	PRINTL They have a strong preference for the seeds dropped by the "Makai Sunflower" when it withers, 
+	PRINTL but these seeds have a tendency to explode when they reach that stage.
+	PRINTL Since most of the naturally occurring seeds end up flowing into the sea, they were not able to eat them very often.
+	PRINTL However, makai inhabitants began cultivating them for oil production, and collected the majority of the exploded seeds.
+	PRINTL As a result, they have become completely domesticated and can enjoy eating a large quantity of makai sunflower seeds.
+	PRINTL
+	PRINTL While wild ones are nocturnal, domesticated makai hamsters have a high adaptability,
+	PRINTL and adjust to their owners' schedule.
+	PRINTL In the wild, they have a habit of storing food in their cheek pouches, 
+	PRINTL but since they never face scarcity of food when kept as pets, this behavior is rarely observed.
+	SIF FLAG:ジョーク表示
+		PRINTL However, please note that their interior cannot be used for transportation.
+	PRINTL
+	PRINTL Due to their large size, it is necessary to have available space in the ＜Pet House＞ to keep them. 
+	PRINTL They can be used as a means of transportation for ＜Going into Town＞.
+	
+CASE "コヤネコ"
+	PRINTL ＜ペット＞＜騎乗可能（条件付き）＞
+	PRINTL ・＜特大ペット小屋＞の空きが必要
+	PRINTL
+	PRINTL 魔界で一般的なペットである猫…の、小屋くらいでかい種類。もちろん小型と比べ全く一般的ではない。
+	PRINTL 魔界の猫も地上の猫と同様に飼い主より自分を優先するタイプ。
+	PRINTL 非常に巨大なため飼うハードルがそもそも高いが、飼い主曰くそれでも飼いたい魅力がある。
+	PRINTL
+	PRINTL 巨体でのんびり屋のため癒やしパワーは絶大である。
+	PRINTL よく懐けば荷車くらいは引いてくれるため、移動目的としても飼えそうに思わせておいて
+	PRINTL 天気が悪いと気が乗らず外出を渋るため結局のところ移動目的には向いていない。
+	PRINTL
+	PRINTL 非常に巨大なため、飼うには＜特大ペット小屋＞に空きが必要になる。
+	PRINTL 天気が[快晴]・[どんより]の日は＜街へお出かけ＞の脚として使用可能。
+	
+CASE "魔界羊"
+	PRINTL ＜ペット＞
+	PRINTL ・＜ペット小屋＞の空きが必要
+	PRINTL
+	PRINTL 魔界の牧場でたまに飼われることのある家畜。
+	PRINTL 健康状態がいいほど毛がどんどん伸びていく。
+	PRINTL
+	PRINTL 刈ってもすぐにまた伸びる羊毛は保温性に優れており、衣服や毛布に重宝される。
+	PRINTL 肉もなかなか美味らしいが、牧場で飼われる場合ほぼ毛の生産が目的なのでそうそう出回らない。
+	PRINTL
+	PRINTL 魔界人より少し大きいくらいの体長があり、飼うには＜ペット小屋＞に空きが必要になる。
+	PRINTL 他より小型でもいいように見せておいて、専用の道具や刈った羊毛の保管場所など様々必要になるため
+	PRINTL 結局大型動物と同じスペースが必要になる。
+
+ENDSELECT
+

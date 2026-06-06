@@ -1,0 +1,15 @@
+﻿
+;母乳の単位を返すだけ
+;ARG→L表記
+@MILK_COUNTING(ARG)
+#FUNCTIONS
+
+IF ARG
+	RETURNF "L"
+ELSEIF FLAG:母乳単位
+	RETURNF "cc"
+ELSE
+	RETURNF "ml"
+ENDIF
+
+

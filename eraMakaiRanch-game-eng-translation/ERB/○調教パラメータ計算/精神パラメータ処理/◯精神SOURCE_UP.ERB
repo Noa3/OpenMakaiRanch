@@ -1,0 +1,27 @@
+﻿
+;精神パラメータPALAM加算
+@MIND_SOURCE_UP
+
+FOR LOCAL,30,40
+	;PALAMに1/5して加算
+	SOURCE:LOCAL /= 5
+	SIF SOURCE:LOCAL >= 0
+		PALAM:LOCAL += SOURCE:LOCAL
+NEXT
+
+;陥落してなくて気力ある→気力優先減少
+SIF ＃陥落状態／陥落以上＃ || !SOURCE:コマンド前気力
+	RETURN
+
+;もろもろで減少、屈服は倍
+;不快・反感は計算外
+DAMAGE = SUMARRAY(SOURCE,30,40) +SOURCE:屈服 -SOURCE:不快 -SOURCE:反感
+CALL MIND_BASE_CALC_FIX("",DAMAGE,CAP)
+
+;SPがある場合そっち優先
+;最大値の関係で1/5
+LOSEBASE:気力 += (RESULT /5)
+
+
+
+

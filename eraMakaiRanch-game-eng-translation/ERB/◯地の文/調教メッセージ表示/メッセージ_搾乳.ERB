@@ -1,0 +1,141 @@
+﻿
+;搾乳メッセージ
+@TRAIN_LACTATION_MESSAGE
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+CALL TRAIN_LACTATION_ECSTASY_MESSAGE
+CALL KOJO_PRINT("搾乳")
+
+
+
+;おっぱい絶頂していれば追加地の文
+@TRAIN_LACTATION_ECSTASY_MESSAGE
+#DIM HEART_NUM
+
+SIF !NOWEX:Ｂ絶頂 && !NOWEX:Ｎ絶頂
+	RETURN
+
+;関数呼ばんでもここでピンクにした
+SETCOLOR 0xFF70FF
+
+;Ｖ挿入中+Ｖ絶頂
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃) && NOWEX:Ｖ絶頂
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTFORM With every thrust into %CALLNAME%'s %SLANG_V()%, her %SLANG_B()% overflow with %SLANG_MILK()%...
+	CASE 1
+		PRINTFORM As %CALLNAME% climaxes from her %SLANG_V()%, %SLANG_MILK()% gushes out, leading to yet another orgasm...
+	CASE 2
+		PRINTFORM While being thrust into her %SLANG_V()%, %CALLNAME% squirts %SLANG_MILK()% all over her body and continues to climax...
+	ENDSELECT
+
+;アナル
+ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃) && NOWEX:Ａ絶頂
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTFORM With every thrust into %CALLNAME%'s %SLANG_A()%, her %SLANG_B()% overflow with %SLANG_MILK()%...
+	CASE 1
+		PRINTFORM As %CALLNAME% climaxes from her %SLANG_A()%, %SLANG_MILK()% gushes out, leading to yet another orgasm...
+	CASE 2
+		PRINTFORM While being thrust into her %SLANG_A()%, %CALLNAME% squirts %SLANG_MILK()% all over her body and continues to climax...
+	ENDSELECT
+
+;触手搾乳中
+ELSEIF TFLAG:搾乳触手
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTFORM Each time %CALLNAME% climaxes from being milked by the tentacles, her %SLANG_B()% has more %SLANG_MILK()% extracted...
+	CASE 1
+		PRINTFORM %CALLNAME%'s %SLANG_B()% are squeezed by the tentacles, causing a stream of %SLANG_MILK()% and leading to climax...
+	CASE 2
+		PRINTFORM As if responding to the tentacle's expectations, %CALLNAME% spurts out %SLANG_MILK()% from her %SLANG_B()%...
+	ENDSELECT
+
+;乳吸い中
+ELSEIF TFLAG:乳吸い
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTFORM As %CALLNAME%'s %SLANG_N()% are sucked, %SLANG_MILK()% spurts out, filling %SEX_PARTNER_ENG(MILK_SUCK_PLAYER)%'s mouth...
+	CASE 1
+		PRINTFORM %SLANG_MILK()% flows endlessly as %SEX_PARTNER_ENG(MILK_SUCK_PLAYER)% sucks on %CALLNAME%'s %SLANG_N()%...
+	CASE 2
+		PRINTFORM As if responding to %SEX_PARTNER_ENG(MILK_SUCK_PLAYER)%'s expectations, %CALLNAME% spurts out %SLANG_MILK()% from her %SLANG_B()%...
+	ENDSELECT
+
+;搾乳器使用中
+ELSEIF TFLAG:搾乳器
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTFORM Being milked by the milking machine, %CALLNAME% sprays out %SLANG_MILK()% as she climax...
+	CASE 1
+		PRINTFORM %CALLNAME%'s %SLANG_B()% is squeezed by the milking machine, causing streams of %SLANG_MILK()% and leading to climax...
+	CASE 2
+		PRINTFORM Unable to withstand the milking machine's assault, %CALLNAME% ends up squirting %SLANG_MILK()% from her %SLANG_B()%...
+	ENDSELECT
+
+;その他
+ELSE
+	PRINTFORM %CALLNAME% ends up squirting %SLANG_MILK()% from her %SLANG_B()% while simultaneously climaxing...
+ENDIF
+RESETCOLOR
+
+;噴乳量1000ccごとにハート1つ追加（MAX5コ）
+HEART_NUM = LIMIT(NOWEX:噴乳 /1000,0,4)
+CALL HEARTCB(0xD02830,(1 +HEART_NUM))
+PRINTL
+
+
+
+;搾乳量表示
+@PRINT_LACTATION_VOL
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+IF TFLAG:搾乳器 || TFLAG:搾乳触手 || TFLAG:料理搾乳
+	PRINTFORM %PRINT_MILKWORD(1)% {NOWEX:噴乳}%MILK_COUNTING()% Milked　 
+ELSEIF TFLAG:乳吸い
+	PRINTFORM %PRINT_MILKWORD(1)% {NOWEX:噴乳}%MILK_COUNTING()% Sucked　 
+ELSE
+	PRINTFORM %PRINT_MILKWORD(1)% {NOWEX:噴乳}%MILK_COUNTING()% Milked　 
+ENDIF
+CALL PRINT_LACTATION_EP_DRAIN_VOL
+CALL PRINT_LACTATION_MP_DRAIN_VOL
+
+
+
+;霊力吸収時メッセージ
+@PRINT_LACTATION_EP_DRAIN_VOL
+
+SIF !SOURCE:霊力吸収量
+	RETURN
+IF TFLAG:搾乳触手 || TFLAG:乳吸い
+	CALL PRINT_WORD_COLOR("【Absorbing】","桃")
+ELSE
+	CALL PRINT_WORD_COLOR("【Extracting】","桃")
+ENDIF
+PRINTFORM Spirit Energy-{SOURCE:霊力吸収量} 
+
+
+
+;魔力吸収時メッセージ
+@PRINT_LACTATION_MP_DRAIN_VOL
+
+SIF !SOURCE:魔力吸収量
+	RETURN
+IF TFLAG:搾乳触手 || TFLAG:乳吸い
+	CALL PRINT_WORD_COLOR("【Absorbing】","桃")
+ELSEIF TEQUIP:小型霊力抽出装置
+	CALL PRINT_WORD_COLOR("【Extracting】","桃")
+ENDIF
+PRINTFORM Mana-{SOURCE:魔力吸収量} 
+IF (TFLAG:抽出中 || TEQUIP:小型霊力抽出装置) && FLAG:貯蔵魔力上限値 && MONEY:貯蔵魔力 < FLAG:貯蔵魔力上限値
+	PRINTFORM Stored Mana+%VALUE_DIGIT(SOURCE:魔力吸収量)% 
+	SIF MONEY:貯蔵魔力 == FLAG:貯蔵魔力上限値
+		PRINT [Mana Reservoir Full] 
+ENDIF
+
+
+
+
+

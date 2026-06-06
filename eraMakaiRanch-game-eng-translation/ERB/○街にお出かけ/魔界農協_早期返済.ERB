@@ -1,0 +1,41 @@
+﻿
+;早期返済
+@AGRI_COOP_LOAN_REPAY
+#DIM PAY
+
+CALL MANYL(3)
+
+;まず経費から
+IF MONEY:経費計上
+	PAY = LIMIT(MONEY,0,MONEY:経費計上)
+	PRINTFORML Currently accruing expenses: %VALUE_DIGIT(MONEY:経費計上)%G 
+	PRINTFORML 　　　　Available funds: %VALUE_DIGIT(MONEY)%G 
+	PRINTL
+	PRINTFORML Would you like to accelerate the expense accrual by %VALUE_DIGIT(PAY)%G?
+	CALL ASK_YN
+	SIF RESULT
+		RETURN
+	MONEY -= PAY
+	MONEY:経費計上 -= PAY
+	PRINTFORML You have accelerated the expense accrual by %VALUE_DIGIT(PAY)%G.
+	SIF !MONEY:経費計上
+		CALL PRINT_WORD_COLOR("Expense Accrual Completed","黄")
+	PRINTW
+ENDIF
+IF MONEY:ローン
+	PAY = LIMIT(MONEY,0,MONEY:ローン)
+    PRINTFORML Currently in loan debt: %VALUE_DIGIT(MONEY:ローン)%G 
+    PRINTFORML 　　　　　　　Available funds: %VALUE_DIGIT(MONEY)%G 
+    PRINTL
+    PRINTFORML Would you like to accelerate the loan repayment by %VALUE_DIGIT(PAY)%G?
+    CALL ASK_YN
+    SIF RESULT
+        RETURN
+    MONEY -= PAY
+    MONEY:ローン -= PAY
+    PRINTFORML You have accelerated the loan repayment by %VALUE_DIGIT(PAY)%G.
+	SIF !MONEY:ローン
+		CALL PRINT_WORD_COLOR("ローン返済完了","黄")
+	PRINTW
+ENDIF
+

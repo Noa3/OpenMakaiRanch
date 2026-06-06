@@ -1,0 +1,110 @@
+﻿
+;魔力割合回復+貯蔵
+;ARG→非表示優先コンフィグ
+@MP_HEAL_RATIO(ARG)
+#DIM RATIO_FIX
+
+;魔力がない・魔力回復割合0ならおわり
+SIF !MAXBASE:魔力 || !BASE:魔力回復割合
+	RETURN
+
+;永久魔力母乳なら表示設定に応じて表示しおわり
+IF MARK:絶頂魔力回復淫紋
+	SIF !ARG
+		CALL MP_HEAL_INFINITY_MILK(ARG)
+	RETURN
+ENDIF
+
+;回復前を入れておく
+MP_BEFORE = BASE:魔力
+HEAL = MAXBASE:魔力 *BASE:魔力回復割合 /100
+BASE:魔力 = LIMIT(BASE:魔力 +HEAL,0,MAXBASE:魔力)
+SELECTCASE FLAG:休憩時回復表示形式
+CASE 1
+	SIF !HEAL_PRINT_DONE && !ARG
+		CALL PRINT_MP_HEAL_RATIO
+CASE 2
+	SIF !ARG
+		CALL PRINT_MP_HEAL_RATIO
+CASE 3
+	PRINTFORM MP+%VALUE_DIGIT(HEAL)% → %VALUE_DIGIT(BASE:魔力)% 
+ENDSELECT
+
+;あなたの場合回復して余った魔力を貯蔵
+SIF !TARGET
+	CALL MP_HEAL_CHARGE
+
+
+
+;MP回復割合表示
+@PRINT_MP_HEAL_RATIO
+
+PRINTFORM MP+{BASE:魔力回復割合,2}\% 
+CALL PRINT_MP_HEAL_EFFECT
+
+
+
+;要素表示フラグONならTALENTなど表示
+@PRINT_MP_HEAL_EFFECT
+
+SIF !GETBIT(＃影響要素表示／回復量＃)
+	RETURN
+SIF TALENT:魔界種族
+	PRINT 【Makaian】
+SIF TALENT:魔界適応
+	PRINT 【Makai Adaption】
+
+
+
+;永久魔力母乳の場合の魔力回復表示
+;ARG→非表示優先コンフィグ
+@MP_HEAL_INFINITY_MILK(ARG)
+#DIM MILK_PRINT
+
+MILK_PRINT = 0
+SELECTCASE FLAG:休憩時回復表示形式
+CASE 1
+	SIF !HEAL_PRINT_DONE && !ARG
+		MILK_PRINT = 1
+CASE 2
+	SIF !ARG
+		MILK_PRINT = 1
+CASE 3
+	MILK_PRINT = 1
+ENDSELECT
+
+;MILK_PRINTが0ならおわり
+SIF !MILK_PRINT
+	RETURN
+CALL HEARTCB(0xD02830)
+CALL PRINT_WORD_COLOR("永久魔力母乳","桃")
+CALL HEARTCB(0xD02830)
+
+
+
+;あなた魔力貯蔵
+@MP_HEAL_CHARGE
+
+;あなたは余った分の1/5を貯蔵に回す
+;回復前MP +HEAL が現在魔力より多いならその分余ってる
+HEAL = (MP_BEFORE +HEAL -BASE:魔力 ) /5
+
+;貯蔵器がある+1000以上貯められるなら余った分が貯蔵される
+SIF HEAL < 1000 || !FLAG:貯蔵魔力上限値 || MONEY:貯蔵魔力 >= FLAG:貯蔵魔力上限値
+	RETURN
+MONEY:貯蔵魔力 = LIMIT(MONEY:貯蔵魔力 +HEAL,0,FLAG:貯蔵魔力上限値)
+PRINTFORM 魔力貯蔵+%VALUE_DIGIT(HEAL)% 
+SIF MONEY:貯蔵魔力 >= FLAG:貯蔵魔力上限値
+	PRINT [魔力貯蔵量上限] 
+
+
+
+;あなた魔力固定値回復→常時表示
+;ARG→回復量
+@PLAYER_MP_HEAL_CONST(ARG)
+
+HEAL = ARG
+BASE:0:魔力 = LIMIT(BASE:0:魔力 +HEAL,0,MAXBASE:0:魔力)
+PRINTFORM MP+%VALUE_DIGIT(HEAL)% → %VALUE_DIGIT(BASE:0:魔力)% 
+
+

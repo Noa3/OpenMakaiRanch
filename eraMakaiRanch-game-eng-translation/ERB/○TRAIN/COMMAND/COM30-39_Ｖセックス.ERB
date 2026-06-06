@@ -1,0 +1,128 @@
+﻿
+@COM30
+;正常位
+;継続SOURCEが入るのであまりない状態にしとく
+
+;挿入確認フラグでの確認
+CALL V_INSERT_CONFIRM
+SIF RESULT
+	RETURN
+SOURCE:情愛 = 2000
+SOURCE:屈辱 = 300
+SOURCE:経過時間 = 1
+
+;挿入中は体位変更しないようにした
+TEQUIP:正常位 = 1
+
+;奴隷のおまんこ／あなたのちんぽで汚れ移動→射精判定部分で行う
+RETURN 1
+
+
+
+@COM31
+;後背位
+
+CALL V_INSERT_CONFIRM
+SIF RESULT
+	RETURN
+SOURCE:屈辱 = 1200
+SOURCE:支配 = 2000
+SOURCE:経過時間 = 1
+TEQUIP:後背位 = 1
+RETURN 1
+
+
+
+@COM32
+;対面座位
+
+CALL V_INSERT_CONFIRM
+SIF RESULT
+	RETURN
+SOURCE:情愛 = 2500
+SOURCE:経過時間 = 1
+TEQUIP:対面座位 = 1
+RETURN 1
+
+
+
+@COM33
+;背面座位
+
+CALL V_INSERT_CONFIRM
+SIF RESULT
+	RETURN
+SOURCE:屈辱 = 500
+SOURCE:支配 = 1200
+SOURCE:経過時間 = 1
+TEQUIP:背面座位 = 1
+RETURN 1
+
+
+
+@COM34
+;騎乗位
+
+CALL V_INSERT_CONFIRM
+SIF RESULT
+	RETURN
+
+;奉仕可能確認
+CALL SERVICE_JUDGE
+SIF !RESULT
+	RETURN
+SOURCE:習得 = 600
+SOURCE:恥辱 = 1000
+SOURCE:情愛 = 1500
+SOURCE:屈辱 = 1500
+SOURCE:経過時間 = 1
+TEQUIP:騎乗位 = 1
+RETURN 1
+
+
+
+@COM35
+;対面立位
+
+CALL V_INSERT_CONFIRM
+SIF RESULT
+	RETURN
+SOURCE:情愛 = 500
+SOURCE:屈辱 = 1000
+SOURCE:経過時間 = 1
+TEQUIP:対面立位 = 1
+RETURN 1
+
+
+
+@COM36
+;背面立位
+
+CALL V_INSERT_CONFIRM
+SIF RESULT
+	RETURN
+SOURCE:屈辱 = 1000
+SOURCE:支配 = 1500
+SOURCE:経過時間 = 1
+TEQUIP:背面立位 = 1
+RETURN 1
+
+
+
+@COM37
+;強制騎乗位　追加コマンド
+
+CALL V_INSERT_CONFIRM
+SIF RESULT
+	RETURN
+SOURCE:恥辱 = 1000
+SOURCE:屈辱 = 2500
+SOURCE:支配 = 2000
+SOURCE:経過時間 = 1
+TEQUIP:強制騎乗位 = 1
+RETURN 1
+
+
+
+
+

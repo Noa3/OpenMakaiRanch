@@ -1,0 +1,145 @@
+﻿
+@HINT_MAIN_MENU
+
+SELECT_TIPS = -1
+PRINTL このバリアントでは、【スケジュール実行】を選択することで
+PRINTL あなた含む各キャラに設定されたスケジュールの内容を実行、時間が進行します。
+PRINTL 以下から知りたい項目について選択してください。
+PRINTL
+PRINTL ・工事中のため情報が古い可能性が高いです。ご了承ください。
+PRINTL
+PRINTLC [ 0] まずは何をすればいい？
+PRINTLC [ 1] 魔力を得る方法
+PRINTLC [工事中] 次のマイルストーンのヒント
+PRINTLC [ 2] メインメニューボタン
+PRINTLC [ 3] スケジュール
+PRINTLC [ 4] 時間経過
+PRINTLC [ 5] 精算
+PRINTLC [ 6] 夜にできること
+PRINTL
+CALL HINT_SPECIFICATION
+PRINTLC [99] Return
+INPUT
+INPUT_NUM = RESULT
+CALL MANYL(3)
+SELECTCASE INPUT_NUM
+CASE 0
+	CALL HINT_FIRST
+CASE 1
+	CALL HINT_MAGIC_POWER
+CASE 2
+	CALL HINT_MAIN_MENU_BUTTON
+	RETURN
+CASE 3
+	CALL HINT_SCHEDULE
+	RETURN
+CASE 4
+	CALL HINT_TIME
+CASE 5
+	CALL HINT_SELL
+CASE 6
+	CALL HINT_NIGHT
+CASE 10
+	CALL HINT_MILK
+CASE 11
+	CALL HINT_PALAMETER
+CASE 12
+	CALL HINT_MIND_STATUS
+CASE 13
+	CALL HINT_SENSITIVE_STATUS
+CASE 14
+	CALL HINT_RESOURCE
+ENDSELECT
+SIF INPUT_NUM >= 10
+	RETURN
+DRAWLINE
+PRINTW
+
+
+
+;まず何をするか
+@HINT_FIRST
+
+CALL PRINTL_WORD_COLOR("名前を変更していてもヒント内では「あなた」「スレイ」とデフォルトネームで表示されます。ご了承ください。","黄")
+PRINTFORML このバリアントの主な目的は、奴隷たちの%SAVESTR:表記／母乳%を搾ることです。
+PRINTL 奴隷を【母乳体質】にすることで搾乳調教を行うことができ、
+PRINTL ・搾乳器で搾って出荷し資金にする
+PRINTL ・＜霊力抽出装置＞で【霊力】と共に搾り取る
+PRINTL ・あなたが直接吸って立派な雌牛ミルク奴隷に育てる
+PRINTL ことができます。
+PRINTL
+PRINTL ユジンから貰ったニンゲン用＜母乳体質化薬＞を使用することで奴隷を【母乳体質】にできます。
+PRINTL 序盤は奴隷の【調教】スケジュールから薬品の使用が可能です。
+PRINTL メインメニューの【調教対象選択】から手に入れた奴隷を【調教】するスケジュールを組み、
+PRINTL 家畜の世話をスレイに任せて【スケジュール実行】をしてみましょう。
+PRINTL
+PRINTL 【調教】内のヒントで、実際に【母乳体質】にするコマンド手順を解説しています。
+
+
+
+@HINT_MAGIC_POWER
+
+PRINTFORML 魔力を持つ奴隷を【魔力母乳体質】にすると、%SAVESTR:表記／母乳%と共に魔力を搾れるようになります。
+PRINTL 【魔力母乳体質】の奴隷から搾乳することで、
+PRINTL ・＜霊力抽出装置＞で【魔力】も同時に搾り取る
+PRINTL ・あなたが直接吸うことであなたの魔力最大値が増加していき、様々な魔術が使えるようになる
+PRINTL ことができます。
+PRINTL
+PRINTL ＜魔力母乳体質化薬＞の最初の1つは【マイルストーン】の進行で入手できます。
+PRINTL 上から順番に進めると数日で入手可能なため、
+PRINTL メインメニュー→【各種情報・管理】→【マイルストーン】を開いて進めてみましょう。
+PRINTL
+PRINTL ＜魔力母乳体質化薬＞は＜母乳体質化薬＞と同様の手順で使用できます。
+
+
+
+
+
+@HINT_TIME
+
+PRINTL このバリアントでは《朝→昼→夕→夜》と時間が経過し、それぞれの時間でできる行動が一部変化します。
+PRINTL 朝：【街へ行く】と【マイルストーン確認】ができません。
+PRINTL 昼・夕：ほぼ制限なく行動可能です。
+PRINTL 夜：就寝、あなたによる奴隷調教、寝る前の事務作業のみ可能です。
+PRINTL
+PRINTL また、朝昼夕は魔界乳牛の世話のため、あなたまたは従順な奴隷が1人以上
+PRINTL 【酪農】スケジュールを組まなければ大幅に魔界乳牛の【健康度】が下がるためご注意ください。
+PRINTL
+PRINTL 最初は《1年目・春・月曜日》から開始し、7日＝1週間、
+PRINTL 5週間＝35日＝1季節、20週間＝140日＝4季節＝1年　でゲーム内時間が進行します。
+
+
+
+@HINT_SELL
+
+PRINTL 朝の行動終了時、【精算】が行われます。
+PRINTL このバリアントの主な収入源は、牧場に元からいる【魔界乳牛】から搾るミルク、
+PRINTFORML それとニンゲンの奴隷から搾乳器で搾り取った%SAVESTR:表記／母乳%です。
+PRINTL これらはすぐに換金はされずに保管され、この精算で資金に還元されます。
+PRINTL
+PRINTL 精算時は生活費などの定期支出による資金減少も同時に行われます。
+PRINTL 奴隷の数が多いほど、魔動器を多く使用するほど支出も多くなりますが、
+PRINTFORML ニンゲンの%SAVESTR:表記／母乳%の出荷なしでも奴隷数人であれば微増程度に抑えられます。
+PRINTL
+PRINTL 精算時に【事務作業量】が3～4増加します。
+PRINTL 溜まった事務作業はスケジュールで【事務】を選択することで、実行者の【事務】Lvの合計分減少します。
+PRINTL 【事務作業量】が20未満の場合は特にデメリットはありません。
+PRINTL 20以上ある場合、あなたの（基本的には昼の）スケジュールが強制的に【事務】になります。
+
+
+
+@HINT_NIGHT
+
+PRINTL 夕行動が終了すると夜になります。
+PRINTL 夜は就寝、あなたによる奴隷調教、寝る前の事務作業のみ可能です。
+PRINTL 特別な指示のない奴隷は全員【就寝】し、体力・魔力が回復します。
+PRINTL
+PRINTL 【奴隷の調教】：日中と同様にあなたが調教する奴隷を選択し、調教を開始します。
+PRINTL この際日中は選択できない【牛舎】内の奴隷・【体内凌辱】中の奴隷も選択できます。
+PRINTL 調教後は就寝しますが、あなたと調教対象の回復量は普通に就寝した場合より減少します。
+PRINTL
+PRINTL 【今日はもう寝る】：就寝してあなたの体力を大きく回復します。
+PRINTL
+PRINTL 【事務作業をして寝る】：あなたの【事務】Lvの半分だけ事務作業量を減少させます。
+PRINTL その後就寝して体力・魔力を少し回復します。
+

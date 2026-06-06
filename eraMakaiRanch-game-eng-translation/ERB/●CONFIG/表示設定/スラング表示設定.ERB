@@ -1,0 +1,78 @@
+﻿
+;スラング表示設定目次
+@SLANG_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL 《 Slang Display Settings 》
+DRAWLINE
+PRINTL [ 0] Breasts
+PRINTL [ 1] Nipples
+PRINTL [ 2] Breast Milk
+PRINTL [ 3] Vagina
+PRINTL [ 4] Anus
+PRINTL [ 5] Ass
+PRINTL [ 6] Clitoris
+PRINTL [ 7] Semen
+PRINTL [ 8] Penis
+PRINT [ 9] Show Stains
+CALL PRINT_ONOFF(FLAG:スラング表示／汚れ追加,1)
+PRINTL
+PRINTFORML [10] Child Size treatment for slang： below {FLAG:スラング／子供扱い上限身長数値}mm
+CALL PRINTL_ALIGN(-5)
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+INPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	CALL SLANG_CONFIG_BUST
+CASE 1
+	CALL SLANG_CONFIG_NIPPLE
+CASE 2
+	CALL SLANG_CONFIG_MILK
+CASE 3
+	CALL SLANG_CONFIG_VAGINA
+CASE 4
+	CALL SLANG_CONFIG_ANAL
+CASE 5
+	CALL SLANG_CONFIG_HIP
+CASE 6
+	CALL SLANG_CONFIG_CLITORIS
+CASE 7
+	CALL SLANG_CONFIG_SEMEN
+CASE 8
+	CALL SLANG_CONFIG_PENIS
+CASE 9
+	INVERTBIT FLAG:スラング表示／汚れ追加,0
+CASE 10
+	PRINTL Select height for slang child size treatment
+	PRINTLC [ 0] 【Short】and shorter
+	PRINTLC [ 1] 【Petite】and shorter
+	PRINTL [ 2] 【Child】and shorter
+	PRINTL
+	PRINTLC [90] （Manual Input）
+	PRINTL [99] （Cancel）
+	INPUT
+	SELECTCASE RESULT
+	CASE 0
+		FLAG:スラング／子供扱い上限身長数値 = HEIGHT_MAX_低身長
+	CASE 1
+		FLAG:スラング／子供扱い上限身長数値 = HEIGHT_MAX_小柄
+	CASE 2
+		FLAG:スラング／子供扱い上限身長数値 = HEIGHT_MAX_子供体型
+	CASE 90
+		PRINTL Enter the upper limit for slang child size treatment in mm.（Treatment applies for values lower than this）
+		PRINTFORML （Possbie values are from 0 to【Tall】Sized （{HEIGHT_MAX_標準}））
+		INPUT
+		SIF RESULT >= 0 && RESULT <= HEIGHT_MAX_標準
+			FLAG:スラング／子供扱い上限身長数値 = RESULT
+	ENDSELECT
+CASE 98
+	PRINTL Restore all slang options to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+

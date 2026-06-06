@@ -1,0 +1,684 @@
+﻿
+;やたらに丁寧な口調を特徴にしようと思った
+;やたらに丁寧な口調を特徴にしようと思った
+;が、生真面目口上や気品口上の二番煎じみたいになってしまった…
+
+;試験的に「隷属」では「乳牛」と同じ口上が表示されるのではなく
+;「恋慕」に過激寄りな台詞をいくらか追加するような形で作成
+
+; ======================================
+
+;口上識別名：慇懃1
+;↑口上を作ったら[Str.csv]の6100～に口上識別名を書いてね
+;口上作者：DD
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：
+;↑加筆したら書いてね
+; ======================================
+
+;ARGS:0　シチュ指定　ARGS:1,2　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_慇懃口上1_EVENT(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+SELECTCASE ARGS:0
+
+CASE "魔界入り"
+	SELECTCASE ARGS:1
+	CASE "魔界水晶1"
+		CALL MESSAGE_BOX,@"「ここが魔界… もっと荒廃した過酷な地を想像しておりましたが…」"
+	CASE "魔界水晶2"
+		CALL MESSAGE_BOX,@"「近隣の【魔界水晶】は採り尽くされているようですね…」\n「元より容易くはいかないことは覚悟の上……慎重に参りましょう」"
+	CASE "魔界植物1"
+		CALL MESSAGE_BOX,@"「ここが魔界… 思っていたよりも草木が豊富に育っているのですね…」"
+	CASE "魔界植物2"
+		CALL MESSAGE_BOX,@"「近隣の【魔界植物】は採り尽くされているようですね…」\n「元より容易くはいかないことは覚悟の上……慎重に参りましょう」"
+	CASE "奪還1"
+		CALL MESSAGE_BOX,@"「ここが魔界… 傍目には悪鬼羅刹が蔓延る地には見えませんが…」"
+	CASE "奪還2"
+		CALL MESSAGE_BOX,@"（たとえ道半ばで倒れようと引き返すつもりはございません…っ）\n「どうぞご無事でいてください……！」"
+	CASE "名声1"
+		CALL MESSAGE_BOX,@"「ここが魔界… 意外とのどかな地なのですね…」"
+	CASE "名声2"
+		CALL MESSAGE_BOX,@"「とはいえ魔界には違いありませんし、名を上げるのに不足はないでしょう」\n（お城の向こうの『あれ』には絶対に近寄らないほうが良さそうですが…）"
+	CASE "ゲート事故1"
+		CALL MESSAGE_BOX,@"「……っ！ ……ここは…？ %SELF_CALL()%、まさか魔界に……！？」"
+	CASE "ゲート事故2"
+		CALL MESSAGE_BOX,@"「どうしたものでしょう…… まさか頼る先があるはずもなく……」"
+	CASE "ゲート事故3"
+		CALL MESSAGE_BOX,@"「それでも街のような所はあるみたいですね…」\n「交渉の余地も皆無ではないでしょう……甘い考えなのかもしれませんが…」"
+	CASE "討伐1"
+		CALL MESSAGE_BOX,@"「ここが魔界… とうとう魔族の蔓延る地へ辿り着きました…」"
+	CASE "討伐2"
+		CALL MESSAGE_BOX,@"「かの首魁はあの城郭を砦としているのでしょう… いざ、参ります…！」"
+	CASE "特殊種族1"
+		CALL MESSAGE_BOX,@"「ここが魔界… 瘴気に満ちた地というわけでもありませんのね…」"
+	CASE "特殊種族2"
+		CALL MESSAGE_BOX,@"「さて…地上のかよわき民のため、精励いたしましょう」"
+	CASE "処分寸前1"
+		CALL MESSAGE_BOX,@"（仲間を救いに来ておきながらこの失態…… いえ、己の浅慮を呪ってもとうに手遅れです…）"
+	CASE "処分寸前2"
+		CALL MESSAGE_BOX,@"（【処女結界】の加護がなければ、きっと今頃は惨憺たる有様だったのでしょう…）\n「ただ、どうして%SELF_CALL()%は生かされたままなのでしょう…？」"
+	CASE "競売1"
+		CALL MESSAGE_BOX,@"（ヒトを競売にかけるだなんて… これまで幾人も非道な目に遭ってきたのでしょう…）"
+	CASE "異世界転移1"
+		CALL MESSAGE_BOX,@"「……はて…ここは何処なのでしょう…？」"
+	CASE "異世界転移2"
+		CALL MESSAGE_BOX,@"「見たこともない風景… まるでお伽噺の国のようでございますね…」"
+	CASE "異世界転移3"
+		CALL MESSAGE_BOX,@"「あちらに見えるのは街…？ 住んでいる方と意思疎通ができれば…」"
+	ENDSELECT
+
+CASE "イベント"
+	IF TFLAG:Ｍ装備
+		CALL KOJO_PRINT("Ｍ装備中イベント",ARGS:1,ARGS:2,ARGS:3)
+		
+		;CALLの関係でＭ装備中イベント呼び出した場合ここでリセットが必要
+		MESSAGE_COUNT = 0
+		RETURN
+	ENDIF
+	
+	SELECTCASE ARGS:1
+	CASE "奴隷引き取り"
+		IF CFLAG:輪姦回数
+			CALL MESSAGE_BOX,@"「あ、あのような目に遭わせた挙句、次は奴隷になれと……」"
+		ELSE
+			CALL MESSAGE_BOX,@"「…こ、ここは牧場…？」"
+			CALL MESSAGE_BOX,@"「…このような所まで連れてきて何をするおつもりですか…」"
+			CALL MESSAGE_BOX,@"「…今すぐ拘束を解いてください……」"
+		ENDIF
+		
+	CASE "母乳体質化"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「あぁ…♥ %MASTER_CALL()%のために母乳が出せるように…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「あ、あぁ… このようなこと、あるはずが…」"
+		ENDIF
+		
+	CASE "魔力母乳体質化"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「んぁ…魔力が流れ出ています……これでは、とことん搾取されてしまいますね…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「っ！？ 魔力が抜けて…っ %SELF_CALL()%の胸に一体何を……！？」"
+		ENDIF
+		
+	CASE "超乳化"
+		IF CFLAG:乳牛
+			CALL MESSAGE_BOX,@"「あぁ♥ 乳牛にふさわしい身体にしていただけて感無量です…♥♥」\n「これからは『おっぱい家畜』として一生飼ってくださいませ♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「ふあぁ…♥ こんなにふしだらな胸にされてしまいましたぁ♥♥」\n「もう%MASTER_CALL()%のおっぱい奴隷としてしか生きられません…♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「なっ…あぁ……こんな…う、嘘です……っ」\n「返して…%SELF_CALL()%の身体、返してください…！」"
+		ENDIF
+		
+	CASE "崩壊"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"（あ…あ…%MASTER_CALL()%に……こわされ……）"
+			ELSE
+				CALL MESSAGE_BOX,@"（もう……なにもかも…どうでも……ふふっ……）"
+			ENDIF
+		CASEELSE
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「あっ…が……%MASTER_CALL()%……お、お許し……ぃ…」"
+			ELSE
+				CALL MESSAGE_BOX,@"「あぁ……あ…ぁ……っ…？」"
+			ENDIF
+		ENDSELECT
+		
+	CASE "反抗削除"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"（ここでは誰も助けになど来ない…っ 怖い…苦しい…っ）\n（反抗などいたしませんから…どうかお許しください……っ！）"
+		CASEELSE
+			CALL MESSAGE_BOX,@"（怖い……このまま折檻が続けばきっと壊されてしまう…）\n「に、二度と逆らったりいたしません…どうかお許しください…」"
+		ENDSELECT
+	
+	CASE "屈服"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"（どんな惨めな命令でも聞きますからっ…ここから出してください…っ）"
+		CASEELSE
+			CALL MESSAGE_BOX,@"「はっ…ぐ…%SELF_CALL()%は%MASTER_CALL()%の忠実な下僕です…」\n「……っ 如何様にでも、お使いくださいませ…」"
+		ENDSELECT
+	
+	CASE "陥落"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"（あぁ…地獄のような快楽を通してようやく理解できました…）\n（%SELF_CALL()%はこのお方に逆らうことなど出来ないのだと…）"
+		CASEELSE
+			CALL MESSAGE_BOX,@"「あの…%MASTER_CALL()%のこととか、教えてくださいませんか…？」\n「べ、別に少しは上手く立ち回ろうというだけです……」"
+		ENDSELECT
+	
+	CASE "恋慕告白"
+		SELECTCASE ARGS:2
+		CASE "前"
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「あ、あの…%MASTER_CALL()%は『家畜が主人に恋をした』と聞いてお笑いになりますか…」\n「『どうしてそんなこと聞くのか』って……いえ…そ、その…%SELF_CALL()%は…あの…」"
+			ELSE
+				CALL MESSAGE_BOX,@"「あ、あの…%MASTER_CALL()%は『奴隷が主人に恋をした』と聞いてお笑いになりますか…」\n「『どうしてそんなこと聞くのか』って……いえ…そ、その…%SELF_CALL()%は…あの…」"
+			ENDIF
+		CASE "後"
+			CALL MESSAGE_BOX,@"「%SELF_CALL()%…%MASTER_CALL()%のこと……その…お、お、お慕いしているのです…っ！」\n「ひとたびそう想うと…もう抑えきれなくて……その、ご迷惑…でしょうか…？」"
+		ENDSELECT
+	
+	CASE "隷属告白"
+		SELECTCASE ARGS:2
+		CASE "前"
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%…♥ %SELF_CALL()%、%MASTER_CALL()%に家畜にしていただけた感謝を改めてお伝えしたいです…♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%…♥ %SELF_CALL()%はもう、身も心も%MASTER_CALL()%に囚われてしまいました…♥♥」\n「今や%MASTER_CALL()%こそが%SELF_CALL()%の生きる意味そのものでございます…♥♥」"
+			ENDIF
+		CASE "後"
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「このような素晴らしい生き方があるなんて、これまで全く存じませんでした…♥♥」\n「身も心も全て献上いたします……どうか一生おそばに置いてくださいませ♥♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「どうか、この身が朽ちるその日まで…%MASTER_CALL()%のお傍に置いてくださいませ♥♥」\n「病める時も健やかなる時も、%MASTER_CALL()%に己の全てを捧げ、隷従することを誓います♥♥」"
+			ENDIF
+		ENDSELECT
+	
+	CASE "乳牛堕ち"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			CALL MESSAGE_BOX,@"（あぁ♥ きもちいい…しあわせ…♥ 今までの人生など、この至福に比べれば無価値に等しいです…♥）\n（もう『人生』などいりません…♥♥ これからは乳牛として幸せに生きていきます…♥♥）"
+		CASEELSE
+			CALL MESSAGE_BOX,@"「あぁ～…♥♥ きもちいい♥ きもちいい♥ おっぱいきもちいいっ…♥」\n「搾乳アクメの気持ちよさを、骨の髄まで刻み込まれてしまいました…♥」\n「乳牛として飼われる幸せを知ってしまったら、もう人間になんて戻れるはずございません…♥♥」"
+		ENDSELECT
+	
+	CASE "処女結界破壊"
+		SIF TALENT:性知識乏しい
+			RETURN
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「これまで%SELF_CALL()%を守ってくれた結界も、もはや不要となりました…♥♥」\n\d"
+		ELSE
+			CALL MESSAGE_BOX,@"「…っ！ 結界が維持できない……何故…！？」"
+		ENDIF
+	
+	CASE "処女喪失直前"
+		IF CFLAG:乳牛 || CFLAG:洗脳
+			;乳牛状態で乙女心もないだろ、ということで素質：乙女心の判定はしない
+			IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+				IF TFLAG:拘束BIT
+					CALL MESSAGE_BOX,@"「あぅ…拘束されたままの初体験だなんて♥ 怖いけれど、それ以上に興奮いたします…♥」"
+				ELSEIF TFLAG:目隠し
+					CALL MESSAGE_BOX,@"「あぅ…目隠しされたままの初体験だなんて♥ 怖いけれど、それ以上に興奮いたします…♥」"
+				ELSE
+					CALL MESSAGE_BOX,@"「あぁ…♥ %SELF_CALL()%の初めて、%MASTER_CALL()%に捧げられるのですね…♥♥」"
+				ENDIF
+			ELSEIF TFLAG:目隠し
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%…？ 目隠しで判然といたしませんが…も、もしかして…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「あひぃ…♥ %SELF_CALL()%の初めて、こんなモノに奪われてしまうだなんて…♥♥」"
+			ENDIF
+		ELSEIF ＃陥落状態／恋慕以上＃
+			;こちらは乙女心の判定あり
+			IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+				IF TALENT:乙女心
+					CALL MESSAGE_BOX,@"「あぁ…♥ %SELF_CALL()%の純潔、この世で最もお慕いするお方に捧げられるのですね…♥♥」"
+				ELSEIF TFLAG:目隠し
+					CALL MESSAGE_BOX,@"「あぁ…♥ 目隠しをするなら、せめて抱きしめながらシてください…♥♥\n　%MASTER_CALL()%の存在を感じていたいのです…っ♥♥」"
+				ELSE
+					CALL MESSAGE_BOX,@"「あぁ♥ %MASTER_CALL()%…♥ ついにこの時が…♥♥」"
+				ENDIF
+			ELSEIF TALENT:乙女心
+				CALL MESSAGE_BOX,@"「そ、そんな…っ！ 初めては%MASTER_CALL()%に差し上げたくて……っ」"
+			ELSEIF TFLAG:目隠し
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%…？ 目隠しで判然といたしませんが…も、もしかして…」"
+			ELSE
+				CALL MESSAGE_BOX,@"「あぁ…てっきり初めては%MASTER_CALL()%に差し上げられるものと……\n　い、いえ…%MASTER_CALL()%のお望みのままに……」"
+			ENDIF
+		ELSEIF TALENT:貞操観念 || TALENT:乙女心
+			CALL MESSAGE_BOX,@"「い、嫌です…っ それだけは…後生ですからぁ…っ！ いやぁぁっ！」"
+		ELSEIF ＃陥落状態／陥落以上＃ || TALENT:貞操無頓着
+			CALL MESSAGE_BOX,@"「う……いつかはこのような時が来るとは思っておりましたが……」"
+		ELSEIF V_PENIS == "触手"
+			CALL MESSAGE_BOX,@"「ひぃっ…は、初めての相手が触手…！？ そんな…残酷すぎます……っ」"
+		ELSEIF V_PENIS == "ゴブリン"
+			CALL MESSAGE_BOX,@"「いやぁぁっ！ ゴブリンなんかにっ……ぁぁあああああっ！」"
+		ELSE
+			CALL MESSAGE_BOX,@"「は、離してっ！ まだしたことなんてなくて…っ いやぁぁっ！」"
+		ENDIF
+	
+	CASE "処女喪失直後"
+		IF CFLAG:乳牛 || CFLAG:洗脳
+			IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+				IF TFLAG:拘束BIT || TFLAG:目隠し
+					CALL MESSAGE_BOX,@"「はぅっ♥ ……初めてがコレで、嗜好が歪んでしまったとしたら…♥♥\n　%MASTER_CALL()%が責任をおとりくださいませね…♥♥」"
+				ELSE
+					CALL MESSAGE_BOX,@"「愛しいお方と結ばれるのがこんなに幸せだなんて…♥♥」"
+				ENDIF
+			ELSE
+				IF TFLAG:目隠し
+					CALL MESSAGE_BOX,@"「ふぐぅっ♥…や、やっぱりぃ♥……なんてひどいお方…♥♥」"
+				ELSE
+					CALL MESSAGE_BOX,@"「はぐぅぅ♥……あ、あれ…涙？……きっと痛みのせい、です…♥♥」"
+				ENDIF
+			ENDIF
+		ELSEIF ＃陥落状態／恋慕以上＃
+			IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+				IF TALENT:乙女心
+					CALL MESSAGE_BOX,@"「ふあぁ…♥ 愛しいお方とひとつに結ばれて、嬉しすぎて怖いくらい…♥♥\n　%SELF_CALL()%、初めてがこんなに幸せでよろしいのでしょうか…♥♥♥」"
+				ELSEIF TFLAG:目隠し
+					CALL MESSAGE_BOX,@"「%MASTER_CALL()%♥♥ %SWEET_MASTER_CALL()%…♥♥ 愛してますぅ♥♥」"
+				ELSE
+					CALL MESSAGE_BOX,@"「愛しいお方と結ばれるのがこんなに幸せだなんて…♥♥」"
+				ENDIF
+			ELSE
+				IF TALENT:乙女心
+					CALL MESSAGE_BOX,@"「%SELF_CALL()%の想いを知っておきながら……%MASTER_CALL()%は酷薄なお方です……ぐすっ…」"
+				ELSE
+					CALL MESSAGE_BOX,@"「うぅぅ……こんな…このような形で純潔を散らそうとは……」"
+				ENDIF
+			ENDIF
+		ELSEIF TALENT:貞操観念 || TALENT:乙女心
+			CALL MESSAGE_BOX,@"「…こ、これは…きっと夢です……そう、ただの悪い…夢…」"
+		ELSEIF ＃陥落状態／陥落以上＃ || TALENT:貞操無頓着
+			IF V_PENIS == "ゴブリン"
+				CALL MESSAGE_BOX,@"「…初体験に夢など抱いてなどおりませんでしたが…\n　ゴブリン風情に奪われようとは…流石に堪えます……」"
+			ELSEIF PALAM:Ｖ潤滑 >= 10000
+				CALL MESSAGE_BOX,@"「んっ……思ったほどは辛くありません…」"
+			ELSE
+				CALL MESSAGE_BOX,@"「ぐぅ…い、痛いに決まっております…っ！\n　き、気遣うくらいなら早く抜いてくださいませ…っ」"
+			ENDIF
+		ELSE
+			CALL MESSAGE_BOX,@"「あぐっ……ぐっ…ひぅ…」"
+		ENDIF
+	
+	CASE "Ａ処女喪失直前"
+		IF TALENT:性知識乏しい
+			CALL MESSAGE_BOX,@"「……？ 一体%ANAL_CALL()%に何をするおつもりで…？\n　…っ！？ %ANAL_CALL()%にっ…捻じ込まれてっ…！？」"
+		ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%♥ 新品の%ANAL_CALL()%…どうぞご自由にお使いくださいませ♥♥」"
+			ELSEIF A_PENIS == "触手"
+				CALL MESSAGE_BOX,@"「触手が%ANAL_CALL()%に入ってくるのは…やっぱり少し怖いです……っ」"
+			ELSE
+				CALL MESSAGE_BOX,@"「あはぁ♥ %SELF_CALL()%の%ANAL_CALL()%で沢山遊んでくださいませ♥♥」"
+			ENDIF
+		ELSEIF A_PENIS == "ゴブリン"
+			CALL MESSAGE_BOX,@"「……っ！？ %ANAL_CALL()%に触らないで…っ！？」"
+		ELSE
+			CALL MESSAGE_BOX,@"「そ、そちらは違っ…… っ～～～！」"
+		ENDIF
+	
+	CASE "Ａ処女喪失直後"
+		IF TALENT:性知識乏しい
+			CALL MESSAGE_BOX,@"「かひっ…%ANAL_CALL()%は…排泄する所であって……んぐっ…」"
+		ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+				CALL MESSAGE_BOX,@"「…んおぉっ！？ ひ、一突きで…♥ %ANAL_CALL()%が%PENIS_CALL()%に屈服してしまいましたぁ…♥♥」"
+			ELSEIF A_PENIS == "触手"
+				CALL MESSAGE_BOX,@"「お、おぉ…っ♥ お腹が押し広げられて……っ♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「はひぃ…♥ これからは%MASTER_CALL()%好みの%ANAL_CALL()%になれるよう励みます♥♥」"
+			ENDIF
+		ELSEIF A_PENIS == "ゴブリン"
+			CALL MESSAGE_BOX,@"「ぎっ……うぐぅ……いたいっ！…やめてぇっ！」"
+		ELSE
+			IF GETBIT(＃Ｐ使用／Ａ挿入＃) && TALENT:処女結界
+				CALL MESSAGE_BOX,@"「はぐぅっ……結界の守護があるからといって、%ANAL_CALL()%を使うなんて…っ」"
+			ELSE
+				CALL MESSAGE_BOX,@"「ふぐぅ…っ こんな…%ANAL_CALL()%を無理やり……」"
+			ENDIF
+		ENDIF
+	
+	CASE "初キス"
+		IF CFLAG:乳牛 || CFLAG:洗脳
+			;乳牛状態で乙女心もないだろ、ということで素質：乙女心の判定はしない
+			CALL MESSAGE_BOX,@"「%MASTER_CALL()%♥♥ %SELF_CALL()%のファーストキス、受け取ってくださいませ♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			;こちらは乙女心の判定あり
+			IF TALENT:Ｍ処女
+				;フェラ・イラマ未経験
+				IF TALENT:乙女心
+					CALL MESSAGE_BOX,@"「あぁ…♥ 初めての口づけを最愛の方に捧げられるなんて…♥♥」"
+				ELSE
+					CALL MESSAGE_BOX,@"「%MASTER_CALL()%♥♥ %SELF_CALL()%のファーストキス、受け取ってくださいませ♥♥」"
+				ENDIF
+			ELSE
+				;フェラ・イラマ経験済み
+				CALL MESSAGE_BOX,@"「あぁ…本当のキス…♥ ようやく味わえるのでございますね♥♥」"
+			ENDIF
+		ELSEIF KISS_PLAYER == "ゴブリン"
+			CALL MESSAGE_BOX,@"「うぶぅっ！？…ぶふぅっ！……ぐぅぇぇっ！」"
+		ELSEIF TALENT:貞操観念 || TALENT:乙女心
+			CALL MESSAGE_BOX,@"「あ、ぁ…%SELF_CALL()%の唇……こ、こんな…いきなり……」"
+		ELSEIF ＃陥落状態／陥落以上＃ || TALENT:貞操無頓着
+			CALL MESSAGE_BOX,@"「……一応、これが初めての口づけでございました…」"
+		ELSE
+			CALL MESSAGE_BOX,@"「ぐぅ…っ このような形で唇を奪われるなんて……」"
+		ENDIF
+	
+	CASE "初パイズリ"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			IF TEQUIP:触手強制パイズリ
+				CALL MESSAGE_BOX,@"「あー…ぬるぬるして…何とも言えない感触でございますね…」"
+			ELSEIF ABL:バストサイズ >= BUSTSIZE_巨乳
+				CALL MESSAGE_BOX,@"「はぁ♥ %MASTER_CALL()%の%PENIS_CALL()%♥♥ 胸の中でとっても熱い…♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「はぁ♥ %MASTER_CALL()%の%PENIS_CALL()%♥♥ とっても熱い…♥♥」"
+			ENDIF
+		ELSEIF ＃陥落状態／屈服以上＃
+			IF TEQUIP:触手強制パイズリ
+				CALL MESSAGE_BOX,@"「ひうぅ…ぬるぬるして…動いております…」"
+			ELSE
+				CALL MESSAGE_BOX,@"「うぅ…どうしてこのような…」"
+			ENDIF
+		ELSEIF PAIZURI_PENIS == "ゴブリン"
+			CALL MESSAGE_BOX,@"「ひぃっ…汚いっ……いやぁっ…！」"
+		ELSE
+			CALL MESSAGE_BOX,@"「ひうぅっ……いや……はなして…っ」"
+		ENDIF
+	
+	CASE "初Ｍセックス"
+		;口が塞がっているのでここに来ない
+	
+	CASE "あなた童貞卒業"
+		IF ＃陥落状態／恋慕以上＃
+			IF SOURCE:処女喪失
+				IF TALENT:乙女心
+					CALL MESSAGE_BOX,@"「まぁ…♥ %MASTER_CALL()%も初めて…？ そんな夢のようなことが…♥♥\n　っ……うっ…ぐすっ♥ 幸せすぎて…涙が溢れて止まりません…♥♥♥」"
+				ELSE
+					CALL MESSAGE_BOX,@"「まぁ…♥ %MASTER_CALL()%も初めて…？ そんな夢のようなことが…♥♥\n　%SELF_CALL()%、%MASTER_CALL()%の初めてのお相手に選んでいただけたのですね…♥♥」"
+				ENDIF
+			ELSE
+				IF TALENT:乙女心
+					CALL MESSAGE_BOX,@"「うぅ…本当なら%SELF_CALL()%も清らかな身体でご奉仕しとうございました…」"
+				ELSE
+					CALL MESSAGE_BOX,@"「あの…初めてでしたのに、お相手が%SELF_CALL()%でよろしかったので…？\n　ま、まぁ…っ♥ %MASTER_CALL()%はお上手でございますね…♥♥」"
+				ENDIF
+			ENDIF
+		ELSEIF CFLAG:乳牛 || CFLAG:洗脳
+			IF SOURCE:処女喪失
+				CALL MESSAGE_BOX,@"「まぁ♥♥ %MASTER_CALL()%とお互い初めての相手になれるなんて…♥♥\n　%SELF_CALL()%、世界で最も幸せな家畜にございましょうね♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「まぁ♥♥ %MASTER_CALL()%の初めてのお相手、光栄にございます♥♥\n　本番で恥をかかぬよう、家畜の%VAGINA_CALL()%で沢山練習いたしましょうね♥♥」"
+			ENDIF
+		ELSEIF TALENT:貞操観念 || TALENT:乙女心
+			CALL MESSAGE_BOX,@"「ご自分が初めてだからって…そのようなこと慰めにもなりません……うっ、うっ…」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			CALL MESSAGE_BOX,@"「初めて…？ お相手が%SELF_CALL()%でよろしかったのですか…？」"
+		ELSEIF TALENT:貞操無頓着
+			CALL MESSAGE_BOX,@"「初めてだった…？ はぁ…よろしゅうございましたね…？」"
+		ELSE
+			CALL MESSAGE_BOX,@"「初めてだった…？ 抵抗できない相手に意気がって、さぞやご満悦でしょう…」"
+		ENDIF
+	
+	CASE "あなた初キス"
+		IF CFLAG:乳牛 || CFLAG:洗脳
+			IF SOURCE:初キス
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%とお互い初めての口づけを交わせるなんて…♥♥\n　%SELF_CALL()%、自分が家畜の中でも特別だと勘違いしそうです…♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%の初めての口づけをいただけるなんて…♥♥\n　%SELF_CALL()%、自分が家畜の中でも特別だと勘違いしそうです…♥♥」"
+			ENDIF
+		ELSEIF ＃陥落状態／恋慕以上＃
+			IF SOURCE:初キス
+				IF TALENT:乙女心 && TALENT:Ｍ処女
+					CALL MESSAGE_BOX,@"「それもお互いに初めての口づけだなんて……本当に素敵です…♥\n　……乙女なら誰もが憧れる、物語のように幸せなキス…♥」"
+				ELSE
+					CALL MESSAGE_BOX,@"「それもお互いに初めての口づけだなんて……本当に素敵です…♥♥」"
+				ENDIF
+			ELSE
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%の初めてのキス…♥ いただいてしまいました♥♥」"
+			ENDIF
+		ELSEIF TALENT:貞操観念 || TALENT:乙女心
+			CALL MESSAGE_BOX,@"「初めてだった…？ でしたら何してもよいと言うのですか…っ」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			IF SOURCE:初キス
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%も初めての口づけで…？ その、悪い気はいたしませんね…」"
+			ELSE
+				CALL MESSAGE_BOX,@"「口づけは初めて…？ お相手が%SELF_CALL()%でよろしかったのですか…？」"
+			ENDIF
+		ELSE
+			CALL MESSAGE_BOX,@"「初めてだった…？ でしたら何してもよいと言うのですか…っ」"
+		ENDIF
+	
+	CASE "あなた初パイズリ"
+	
+	CASE "あなた初授乳"
+	
+	CASE "あなた初Ｍセックス"
+	
+	CASE "枷外し"
+		SELECTCASE ARGS:2
+		CASE "超乳"
+		CASE "超乳隷属"
+		CASE "完堕ち"
+		CASE "崩壊"
+			;現状の分岐だと来ない
+		CASE "陥落"
+		CASE "屈服"
+		CASE "非戦闘職"
+		CASE "霊力0"
+		CASE "処女結界破壊"
+		CASE "魔力母乳体質"
+		CASE "反抗削除"
+		ENDSELECT
+	
+	CASE "処女結界解除"
+	;なんか２パターン考えついたから載せとく
+		SELECTCASE ARGS:2
+		CASE "前"
+			IF CFLAG:乳牛 || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%…♥ %SELF_CALL()%、隷属の証として差し上げたいモノがございます…♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「あぁ…♥ ついに%MASTER_CALL()%の寵愛を受けるときが…♥♥」\n「長らくこの身を護ってくれた結界も、たった今、その役目を終えました…♥」"
+			ENDIF
+		CASE "後"
+			IF CFLAG:乳牛 || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%の寵愛を阻む結界など、もはや無用の長物…♥♥\n　%SELF_CALL()%の純潔…%MASTER_CALL()%の手で奪ってくださいませ…♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「%SELF_CALL()%の純潔…どうぞ%MASTER_CALL()%の手で奪ってくださいませ…♥♥」"
+			ENDIF
+		ENDSELECT
+	ENDSELECT
+
+CASE "Ｍ装備中イベント"
+	SELECTCASE ARGS:1
+	CASE "母乳体質化"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「んむぅ♥……んん～～♥♥」\n（あぁ…♥ %MASTER_CALL()%のために母乳が出せるように…♥）"
+		ELSE
+			CALL MESSAGE_BOX,@"「んむっ！？ んん゛～～っ」\n（あ、あぁ… このようなこと、あるはずが…）"
+		ENDIF
+		
+	CASE "魔力母乳体質化"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「んふー♥…んー♥…んーっ♥」\n（はあ♥ これからは%MASTER_CALL()%に魔力もお捧げできるのですね…♥）"
+		ELSE
+			CALL MESSAGE_BOX,@"「ん゛っ！？…ふぐっ…ぅぐぅっ」\n（そんな、魔力が抜けていく… %SELF_CALL()%の胸に一体何を……！？）"
+		ENDIF
+		
+	CASE "超乳化"
+		IF CFLAG:乳牛
+			CALL MESSAGE_BOX,@"「んん～～っ♥♥ んむぅっ♥ ん～～っ♥♥」\n（これからは『おっぱい家畜』として一生飼ってくださいませ…♥）"
+		ELSEIF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「むぐぅ♥…ふん♥…ふん♥…んふ～♥♥」\n（もう%MASTER_CALL()%のおっぱい奴隷としてしか生きられません…♥）"
+		ELSE
+			CALL MESSAGE_BOX,@"「ぐぅぅっ…ぅんぐぅぅぅっ……うっ…うっ…」\n（なっ…あぁ……こんな…う、嘘です……っ）"
+		ENDIF
+		
+	CASE "崩壊"
+		SELECTCASE ARGS:2
+		CASE "体内凌辱中"
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"（あ…あ…%MASTER_CALL()%に……こわされ……）"
+			ELSE
+				CALL MESSAGE_BOX,@"（もう……なにもかも…どうでも……ふふっ……）"
+			ENDIF
+		CASEELSE
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「こひゅー……っひゅー………かひっ…」\n（……%MASTER_CALL()%……お、お許し……）"
+			ELSE
+				CALL MESSAGE_BOX,@"「…ぉ……ん………ぅぐ……？」\n（…………？ ………？）"
+			ENDIF
+		ENDSELECT
+	
+	CASE "処女結界破壊"
+		IF TALENT:性知識乏しい
+			CALL MESSAGE_BOX,@"「ぅう……？」"
+		ELSEIF CFLAG:乳牛 || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「ふー♥…ふー♥……んふっ♥」\n（今まで%SELF_CALL()%を守ってくれた結界も、もはや不要でございます…♥♥）"
+		ELSEIF  ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「んんっ……ふっ…ふっ…んんっ！？」\n（処女結界はともかく…もしや口枷されたまま初体験でございますか…！？）"
+		ELSE
+			CALL MESSAGE_BOX,@"「んんっ！？……ングッ…んぐぅっ！」\n（…っ！ 結界が維持できない……何故…！？）"
+		ENDIF
+	
+	CASE "処女喪失直前"
+		IF CFLAG:乳牛 || CFLAG:洗脳
+				IF TFLAG:拘束BIT && TFLAG:目隠し
+					CALL MESSAGE_BOX,@"「ふーっ♥♥ ふーっ♥♥ んふーっ♥♥」\n（拘束に目隠し、口枷まで…♥♥ なんとも常軌を逸した初体験でございます♥♥♥）"
+				ELSE
+					CALL MESSAGE_BOX,@"「んん～っ♥…んふっ♥…んっんっ♥♥」\n（口枷しながら…%MASTER_CALL()%はこういったプレイがお好きなのですね♥♥）"
+				ENDIF
+		ELSEIF ＃陥落状態／恋慕以上＃
+			IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+				CALL MESSAGE_BOX,@"「んん～っ……んふっ…んっんっ……」\n（あぁ…%MASTER_CALL()%……ついにこの時が訪れたのは喜ぶべきでしょうけど…）"
+			ELSE
+				IF TALENT:乙女心 && !CFLAG:乳牛 && !CFLAG:洗脳
+					CALL MESSAGE_BOX,@"「んーっ！…ぅう……んん……」\n（そ、そんな…っ！ 初めては%MASTER_CALL()%に差し上げたくて……っ）"
+				ELSEIF TFLAG:目隠し
+					CALL MESSAGE_BOX,@"「んぅ…っ！……んっ…んぐ……」\n（目隠しで判然といたしませんが…も、もしかして…）"
+				ELSE
+					CALL MESSAGE_BOX,@"「んぐ……ふぅ…んぐぅ……」\n（あぁ…てっきり初めては%MASTER_CALL()%に差し上げられるものと……）"
+				ENDIF
+			ENDIF
+		ELSEIF TALENT:貞操観念 || TALENT:乙女心
+			CALL MESSAGE_BOX,@"「ン゛ーッ！ ぅんぐ～～っ！ ぐぅぅっ！ ん゛む゛～～っ！！」\n（い、嫌です…っ それだけは…後生ですからぁ…っ！ いやぁぁっ！）"
+		ELSEIF ＃陥落状態／陥落以上＃ || TALENT:貞操無頓着
+			CALL MESSAGE_BOX,@"「…ぅぅ……ぐぅ……」\n（…いつかはこのような時が来るとは思っておりましたが……）"
+		ELSE
+			CALL MESSAGE_BOX,@"「ぐぅぅぅっ！ うぐぅっ！ んむ゛ぅぅぅっ！！」\n（は、離してっ！ まだしたことなんてなくて…っ いやぁぁっ！）"
+		ENDIF
+	
+	CASE "処女喪失直後"
+		IF CFLAG:乳牛 || CFLAG:洗脳
+				IF TFLAG:拘束BIT && TFLAG:目隠し
+					IF ABL:マゾっ気 >= 5
+						CALL MESSAGE_BOX,@"「んんっ♥…ん～～♥♥…んふふふ♥♥」\n（うふふ♥ 被虐趣味の変態にふさわしい初体験をご用意いただけるなんて♥♥）"
+					ELSE
+						CALL MESSAGE_BOX,@"「んんっ♥…ん～～♥♥…んふふふ♥♥」\n（初体験がコレですと、嗜好が歪んでしまうかも…♥♥）"
+					ENDIF
+				ELSE
+					CALL MESSAGE_BOX,@"「んぐっ♥…んふー♥…んん～♥♥」\n（愛しいお方と結ばれるのがこんなに幸せだなんて…♥♥）"
+				ENDIF
+		ELSEIF ＃陥落状態／恋慕以上＃
+			IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+				CALL MESSAGE_BOX,@"「んーんっ……んむーっ…んん……」\n（ただその、口枷とか、えぇ～…？ こちらは初めてで……もう少し、こう……）\n「ん～～……んむぅ♥♥…んーんっ♥♥」\n（あぁ…それでも身体は歓んでしまって……惚れた弱みでございますね…♥♥）"
+			ELSE
+				IF TALENT:乙女心
+					CALL MESSAGE_BOX,@"「んん～っ！……うぅっ…うぅぅ……ぐすっ…」\n（%MASTER_CALL()%は酷薄なお方です……）"
+				ELSE
+					CALL MESSAGE_BOX,@"「ぐぅっ……んん…んむぅ……」\n（うぅぅ……このような形で純潔を散らそうとは……）"
+				ENDIF
+			ENDIF
+		ELSEIF TALENT:貞操観念 || TALENT:乙女心
+			CALL MESSAGE_BOX,@"「うぐっ……ぐ……うぅ…ぉお……」\n（…こ、これは…きっと夢です……そう、ただの悪い…夢…）"
+		ELSEIF ＃陥落状態／陥落以上＃ || TALENT:貞操無頓着
+			IF PALAM:Ｖ潤滑 >= 10000
+				CALL MESSAGE_BOX,@"「んんっ……ふぅ……んん…♥」\n（しっかり濡れているせいか、思ったほどは辛くありませんね…）"
+			ELSE
+				CALL MESSAGE_BOX,@"「ぐぅっ！……んむ゛ぅっ……ぐ、ぐぅ…っ」\n（い、痛い…！ 抜いてください……っ！）"
+			ENDIF
+		ELSE
+			CALL MESSAGE_BOX,@"「うぐぅっ………………！」\n（………………ゆるさない……）"
+		ENDIF
+	
+	CASE "Ａ処女喪失直前"
+		IF TALENT:性知識乏しい
+			CALL MESSAGE_BOX,@"「むぅ？………！？ …！？…！？」\n（%ANAL_CALL()%に一体何を…？ …って！？ 捻じ込まれてっ…！？）"
+		ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+				CALL MESSAGE_BOX,@"「んふ～♥…んっ♥…んっ♥……んむ♥♥」\n（新品の%ANAL_CALL()%…どうぞご自由にお使いくださいませ♥♥）"
+			ELSEIF A_PENIS == "触手"
+				CALL MESSAGE_BOX,@"「んっ！ んんっ！ んん～～……」\n（触手が%ANAL_CALL()%に入ってくるのは…やっぱり少し怖いです……っ）"
+			ELSE
+				CALL MESSAGE_BOX,@"「んん～～♥♥ んむぅ♥ んふぅ…♥♥」\n（%SELF_CALL()%の%ANAL_CALL()%で沢山遊んでくださいませ♥♥）"
+			ENDIF
+		ELSE
+			CALL MESSAGE_BOX,@"「んっ！ んんっ！ ……んぐぅぅぅっ！！」\n（そ、そちらは違っ…… っ～～～！）"
+		ENDIF
+	
+	CASE "Ａ処女喪失直後"
+		IF TALENT:性知識乏しい
+			CALL MESSAGE_BOX,@"「…んぐっ……ぉぐぅ……ぅぐっ…」\n（%ANAL_CALL()%は…排泄する所であって……）"
+		ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+				CALL MESSAGE_BOX,@"「んぐぅっ！？♥♥……ぐふっ♥……んむぅぅ♥♥♥」\n（ひ、一突きで…♥ %ANAL_CALL()%が%PENIS_CALL()%に屈服してしまいましたぁ…♥♥）"
+			ELSEIF A_PENIS == "触手"
+				CALL MESSAGE_BOX,@"「んぐぅっ！？♥♥……ぐふっ♥……んむぅぅ♥♥♥」\n（お、おぉ…っ♥ お腹が押し広げられて……っ♥）"
+			ELSE
+				CALL MESSAGE_BOX,@"「んむ゛ぅっ！♥♥……ふぐっ♥……む゛っ♥…んん♥♥」\n（これからは%MASTER_CALL()%好みの%ANAL_CALL()%になれるよう励みます♥♥）"
+			ENDIF
+		ELSE
+			IF GETBIT(＃Ｐ使用／Ａ挿入＃) && TALENT:処女結界
+				CALL MESSAGE_BOX,@"「むぐぅっ！……ぐっ…うぐぅ……」\n（結界の守護があるからといって、%ANAL_CALL()%の方を使うなど…っ）"
+			ELSE
+				CALL MESSAGE_BOX,@"「ふぐぅ…っ！……うぅ…ぐっ……」\n（こんな%ANAL_CALL()%を無理やり……）"
+			ENDIF
+		ENDIF
+	
+	CASE "初パイズリ"
+		IF PAIZURI_PENIS == CALLNAME:0
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「んん♥…ん♥…むふー♥…んふ♥」\n（はぁ♥ %MASTER_CALL()%の%PENIS_CALL()%♥♥ とっても熱い…♥♥）"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「んぅ……んむぅ……」\n（うぅ…どうしてこのような…）"
+			ELSE
+				CALL MESSAGE_BOX,@"「んーっ……むぐぅっ…んんーっ！」\n（ひうぅっ……いや……はなして…っ）"
+			ENDIF
+		ELSE
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+				SIF TEQUIP:触手強制パイズリ
+					CALL MESSAGE_BOX,@"「んぅ……んむぅ……」\n（あー…ぬるぬるして…何とも言えない感触でございますね…）"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「んぅっ……んんっ…んむぅっ！」\n（ひうぅ…ぬるぬるして…動いております…」"
+			ELSE
+				CALL MESSAGE_BOX,@"「んーっ……むぐぅっ…んんーっ！」\n（ひうぅっ……いや……はなして…っ）"
+			ENDIF
+		ENDIF
+	
+	CASE "初Ｍセックス"
+		IF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+			IF TEQUIP:フェラチオ
+				IF CFLAG:乳牛 || CFLAG:洗脳
+					IF TALENT:キス未経験
+						CALL MESSAGE_BOX,@"「まだ口づけすら知らない新品のおくちオナホ…♥♥\n　%MASTER_CALL()%の%PENIS_CALL()%のお味を刷り込んでくださいませ♥♥」"
+					ELSE
+						CALL MESSAGE_BOX,@"「%SELF_CALL()%の初めてのおくちご奉仕♥ 精一杯お勤めいたします♥♥」"
+					ENDIF
+				ELSEIF ＃陥落状態／恋慕以上＃
+					IF TALENT:キス未経験
+						CALL MESSAGE_BOX,@"「%SELF_CALL()%のファーストキス…♥ %MASTER_CALL()%の%PENIS_CALL()%にお捧げします♥♥」"
+					ELSE
+						CALL MESSAGE_BOX,@"「%SELF_CALL()%の初めてのおくちご奉仕♥ 精一杯お勤めいたします♥♥」"
+					ENDIF
+				ELSEIF ＃陥落状態／陥落以上＃
+					CALL MESSAGE_BOX,@"「…いずれは求められると覚悟しておりました……」"
+				ELSEIF TALENT:キス未経験 && TALENT:乙女心
+					CALL MESSAGE_BOX,@"「あぁぁ……ま、まだ口づけも知りませんのに……」"
+				ELSE
+					CALL MESSAGE_BOX,@"「うぐ、ぐぅっ……こ、このようなものを口に……」"
+				ENDIF
+			ELSEIF TEQUIP:イラマチオ
+				IF CFLAG:乳牛 || CFLAG:洗脳
+					CALL MESSAGE_BOX,@"「ぐっ♥…んぐ♥……ぉぐ♥……」\n（あぁ♥ %SELF_CALL()%、上手に喉で%PENIS_CALL()%を締めつけられるでしょうか…♥）"
+				ELSEIF ＃陥落状態／恋慕以上＃
+					IF TALENT:キス未経験
+						CALL MESSAGE_BOX,@"「んん゛っ♥……ん…♥」\n（あぁ…口づけより先に%PENIS_CALL()%の味を知ってしまいました…♥）"
+					ELSE
+						CALL MESSAGE_BOX,@"「んぐっ♥……ぉご……♥」\n（こんなに苦しいなんて……しかし抵抗する気など微塵も湧きません…♥）"
+					ENDIF
+				ELSEIF TALENT:キス未経験 && TALENT:乙女心
+					CALL MESSAGE_BOX,@"「んぐぅっ！ ……～～～～っ！」\n（あ…あ……%SELF_CALL()%口づけもまだなのに……咥えさせられ…あ……あ…あ…っ）"
+				ELSE
+					CALL MESSAGE_BOX,@"「ぉごっ！…がほっ……んぐぅ…っ」\n（く、くるしいっ…！ 喉が塞がれて息がっ…！）"
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDSELECT
+ENDSELECT
+

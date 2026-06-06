@@ -1,0 +1,248 @@
+﻿
+@COM502
+;淫紋付与
+
+SELECTCOM = 502
+SOURCE:恥辱 = 10000
+SOURCE:情愛 = 1000
+SOURCE:屈辱 = 3000
+SOURCE:支配 = 3000
+SOURCE:経過時間 = 1
+SOURCE:選択コマンド口上非表示 = 1
+BASE:0:魔力 -= MAGIC_USE_MP:GETNUM(ITEM,"淫紋付与")
+MARK:淫紋 = 1
+TRYCALLFORM COM{SELECTCOM}_MESSAGE
+RETURN 1
+
+
+
+@COM503
+;苦痛快楽変換
+
+SELECTCOM = 503
+IF TFLAG:苦痛快楽変換中
+	PRINTFORML %CALLNAME%'s pain pleasure transformation is removed.
+	TFLAG:苦痛快楽変換中 = 0
+ELSE
+	PRINTFORML You cast pain pleasure transformation on %CALLNAME%...
+	BASE:0:魔力 -= MAGIC_USE_MP:GETNUM(ITEM,"苦痛快楽変換")
+	TFLAG:苦痛快楽変換中 = 1
+ENDIF
+RETURN 1
+
+
+
+@COM504
+#DIM NOW_SIZE
+;ペニス変化
+
+SELECTCOM = 504
+PRINTFORML "Will change the size of your %SAVESTR:表記／ペニス%."
+PRINTFORML "What size do you want to change it to? (Selecting the current size will be treated as cancel.)"
+CANDI_BOX:0 = 馬並
+CANDI_BOX:1 = 極太
+CANDI_BOX:2 = 巨根
+CANDI_BOX:3 = 太め
+CANDI_BOX:4 = 普通
+CANDI_BOX:5 = 短小
+CANDI_BOX:6 = 極小
+FIX:0 = ABL:PLAYER:初期値／ペニスサイズ * 5 / 2 - 2
+FIX:1 = ABL:PLAYER:初期値／ペニスサイズ * 2 - 2
+FIX:2 = ABL:PLAYER:初期値／ペニスサイズ * 3 / 2 - 2
+FIX:3 = ABL:PLAYER:初期値／ペニスサイズ * 5 / 4 - 2
+FIX:4 = ABL:PLAYER:初期値／ペニスサイズ
+FIX:5 = ABL:PLAYER:初期値／ペニスサイズ * 3 / 4
+FIX:6 = ABL:PLAYER:初期値／ペニスサイズ / 2
+NOW_SIZE = 4
+SELECTCASE ABL:PLAYER:ペニスサイズ
+	CASE IS >= FIX:0
+		NOW_SIZE = 0
+	CASE IS >= FIX:1
+		NOW_SIZE = 1
+	CASE IS >= FIX:2
+		NOW_SIZE = 2
+	CASE IS >= FIX:3
+		NOW_SIZE = 3
+	CASE IS < FIX:5
+		NOW_SIZE = 6
+	CASE IS < FIX:4
+		NOW_SIZE = 5
+ENDSELECT
+REPEAT 7
+	PRINTFORM [ {COUNT}] %CANDI_BOX:COUNT%
+	SIF COUNT == NOW_SIZE
+		CALL PRINT_WORD_COLOR( "<現在>","水色")
+	PRINTL
+REND
+BINPUT
+SELECTCASE RESULT
+CASE IS == NOW_SIZE
+	RETURN
+CASE 4
+	ABL:PLAYER:ペニスサイズ = FIX:4
+CASEELSE
+	ABL:PLAYER:ペニスサイズ = FIX:RESULT + RAND:3
+ENDSELECT
+PRINTFORML The size of your %SAVESTR:表記／ペニス% has become %CANDI_BOX:RESULT%.
+BASE:0:魔力 -= MAGIC_USE_MP:GETNUM(ITEM,"ペニス変化")
+RETURN 1
+
+
+
+@COM505
+;時間圧縮
+
+SELECTCOM = 505
+IF TFLAG:時間圧縮中
+	PRINTL The time compression has been released.
+	TFLAG:時間圧縮中 = 0
+ELSE
+	TRYCALLFORM COM{SELECTCOM}_MESSAGE
+	EXP:(SELECTCOM +1000) ++
+	TFLAG:時間圧縮中 = 1
+ENDIF
+RETURN 1
+
+
+
+@COM550
+;媚薬粘液
+;直接は来ない部分
+
+SELECTCOM = 550
+
+;効果中性ダメージ3倍、反感2倍にする
+;通常の媚薬フラグも同時にON
+TFLAG:媚薬粘液使用中 = 1
+TFLAG:媚薬使用中 = 1
+BASE:0:魔力 -= MAGIC_USE_MP:GETNUM(ITEM,"媚薬粘液")
+CALL SET_STAIN_TARGET("口","触手粘液")
+TRYCALLFORM COM{SELECTCOM}_MESSAGE
+RETURN 1
+
+
+
+@COM580
+;洗脳触手
+
+SELECTCOM = 580
+SOURCE:選択コマンド口上非表示 = 1
+BASE:0:魔力 -= MAGIC_USE_MP:GETNUM(ITEM,"洗脳")
+
+;解いてやる
+IF CFLAG:洗脳
+	CFLAG:洗脳 = 0
+	SIF !＃陥落状態／屈服以上＃
+		CFLAG:無抵抗 = 0
+	CALL COM580_REMOVE_MESSAGE
+	RETURN 1
+ENDIF
+CFLAG:洗脳 = 1
+CFLAG:無抵抗 = 1
+TRYCALLFORM COM{SELECTCOM}_MESSAGE
+RETURN 1
+
+
+
+@COM581
+#DIM FIXATION_RATE
+;絶頂体力回復淫紋
+
+;基本5%、好感度の1/3を上乗せした確率で定着
+FIXATION_RATE = 500 +BASE:好感度 /3
+FIXATION_RATE = LIMIT(FIXATION_RATE,500,10000)
+PRINTFORML The success chance to engrave【Health Recovering Climax Crest】is: {FIXATION_RATE /100}.{FIXATION_RATE %100}\%
+CALL PRINTL_WORD_COLOR("The success chance increases by 1/3 of【Favorability】","黄")
+IF FIXATION_RATE < 10000
+	PRINTFORML Regardless of success or failure, time will pass and %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"絶頂体力回復淫紋"))% MP will be consumed.
+	PRINTL （There are no other failure penalties.）
+ENDIF
+PRINTL Would you like to apply ＜Health Recovering Climax Crest＞?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+SELECTCOM = 581
+LOSEBASE:体力 += 500
+LOSEBASE:気力 += 500
+
+;あなたで触れてないので器具扱い
+SOURCE:Ｂ快楽／器具 = 30000
+SOURCE:Ｎ快楽／器具 = 30000
+SOURCE:恥辱 = 10000
+SOURCE:情愛 = 10000
+SOURCE:屈辱 = 10000
+SOURCE:支配 = 30000
+SOURCE:経過時間 = 1
+SOURCE:選択コマンド口上非表示 = 1
+BASE:0:魔力 -= MAGIC_USE_MP:GETNUM(ITEM,"絶頂体力回復淫紋")
+TRYCALLFORM COM{SELECTCOM}_MESSAGE
+
+;成功・失敗を判定
+IF RAND:10000 < FIXATION_RATE
+	MARK:絶頂体力回復淫紋 = 1
+	CALL COM581_SUCCESS_MESSAGE
+	CALL MILKTANK_CALC
+;失敗
+ELSE
+	CALL COM581_FAILED_MESSAGE
+ENDIF
+RETURN 1
+
+
+
+@COM582
+#DIM FIXATION_RATE
+;絶頂魔力回復淫紋
+
+;基本5%、好感度および乳牛堕ちの1/3を上乗せした確率で定着
+;けっこうなエンドコンテンツ感出したかった
+FIXATION_RATE = 500 +(BASE:好感度 +BASE:乳牛堕ち) /3
+FIXATION_RATE = LIMIT(FIXATION_RATE,500,10000)
+PRINTFORML The success chance to engrave【Mana Recovering Climax Crest】is: {FIXATION_RATE /100}.{FIXATION_RATE %100}\%.
+CALL PRINTL_WORD_COLOR("The success chance increases by a value equal to 1/3 of the total of【Favorability】and【Fall to Dairy Cow】","黄")
+IF FIXATION_RATE < 10000
+	PRINTFORML Regardless of success or failure, time will pass and %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"絶頂魔力回復淫紋"))% MP will be consumed.
+	PRINTL (There are no other failure penalties.)
+ENDIF
+PRINTL Would you like to apply ＜Mana Recovering Climax Crest＞?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+SELECTCOM = 582
+LOSEBASE:体力 += 500
+LOSEBASE:気力 += 500
+
+;あなたで触れてないので器具扱い
+SOURCE:Ｂ快楽／器具 = 30000
+SOURCE:Ｎ快楽／器具 = 30000
+SOURCE:恥辱 = 10000
+SOURCE:情愛 = 10000
+SOURCE:屈辱 = 10000
+SOURCE:支配 = 30000
+SOURCE:経過時間 = 1
+SOURCE:選択コマンド口上非表示 = 1
+BASE:0:魔力 -= MAGIC_USE_MP:GETNUM(ITEM,"絶頂魔力回復淫紋")
+TRYCALLFORM COM{SELECTCOM}_MESSAGE
+
+;成功・失敗を判定
+IF RAND:10000 < FIXATION_RATE
+	MARK:絶頂魔力回復淫紋 = 1
+	CALL COM582_SUCCESS_MESSAGE
+	CALL MILKTANK_CALC
+
+	;魔力10万以下なら引き上げ
+	IF MAXBASE:魔力 < INFINITY_MILK_TANK
+		MAXBASE:魔力 = INFINITY_MILK_TANK
+		CALL PRINTL_WORD_COLOR,@"Due to the secondary effect of 【Mana Recovering Climax Crest】, %CALLNAME%'s maximum magic power increases → %VALUE_DIGIT(INFINITY_MILK_TANK)% MP.","水色"
+	ENDIF
+;失敗
+ELSE
+	CALL COM582_FAILED_MESSAGE
+ENDIF
+RETURN 1
+
+
+
+
+
+

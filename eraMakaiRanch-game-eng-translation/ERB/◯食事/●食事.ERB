@@ -1,0 +1,152 @@
+﻿
+;食事
+@MAIN_DINNER
+#DIM CHEF
+
+;自室持ちおよび食事を与える設定のキャラ人数計算
+CALL DISH_QUANTITY_CALC
+
+;簡易食事の人数計算
+CALL SIMPLE_DISH_QUANTITY_CALC
+
+;システムキッチンがない場合適当に済ませておわり
+;↑で食事の人数計算してるのでそのまま
+IF !ITEM:システムキッチン
+	PRINTL 　　　《 Meal 》
+	PRINTFORMW You had your dinner.
+	RETURN
+ENDIF
+
+;食事当番指定
+CALL DINNER_DUTY_SELECT
+CHEF = RESULT
+
+;指定しない場合適当に済ませておわり
+IF CHEF < 0
+	PRINTL 　　　《 Meal 》
+	PRINTFORMW You and the others finished the dinner.
+	RETURN
+ENDIF
+TARGET = CHEF
+
+;EXP入れするときのバグ防止
+FLAG:作業ABL最大値 = ABL:料理
+PRINTL 　　　《 Meal 》
+
+;料理依頼地の文
+CALL DINNER_COOKING_BEFORE_MESSAGE
+
+;母乳料理判定
+CALL DINNER_SELECT_MILK
+
+;母乳料理なら搾乳
+CALL DINNER_LACTATION
+
+;メニュー候補生成+決定
+CALL DINNER_MENU_CANDIDATE
+
+;料理の様子地の文
+CALL DINNER_COOKING_ACTION_MESSAGE
+
+;料理したキャラの体力減少+経験値増加
+CALL DINNER_WORK
+
+;TARGET保存
+SAVE_TARGET = TARGET
+
+;完成・食事キャラの体力回復
+CALL DINNER_EAT
+
+;料理当番とスキンシップ
+CALL DINNER_PLAY
+
+
+
+;食事人数計算
+@DISH_QUANTITY_CALC
+
+;体内凌辱中は飛ばす
+DISH_QUANTITY = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:居場所 == "体内" || CFLAG:追跡対象 || (!EQUIP:自室 && !CFLAG:夕食許可)
+		CONTINUE
+	DISH_QUANTITY ++
+NEXT
+
+;母乳必要量
+DISH_NEED_MILK = DISH_QUANTITY *100
+
+
+
+;簡易食事の人数計算
+@SIMPLE_DISH_QUANTITY_CALC
+
+FLAG:食事人数 = 0
+FLAG:簡易食事人数 = 1
+
+;簡易食事人数は調教スケジュールに選べる奴隷+あなたで1
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF !CFLAG:スケジュール設定可能／調教
+		CONTINUE
+	FLAG:簡易食事人数 ++
+NEXT
+
+
+
+;母乳料理判定
+@DINNER_SELECT_MILK
+
+;母乳体質でOFF設定なし+人数*100cc以上あるなら母乳料理
+;永久魔力母乳でもOKにする
+MILK_DINNER = 0
+{
+SIF !MARK:母乳体質 || GROUPMATCH(CSTR:状態／あなたの子,"成長中","成長後") 
+|| (BASE:母乳生産力 < DISH_NEED_MILK && !MARK:絶頂魔力回復淫紋)
+}
+	RETURN
+SELECTCASE CFLAG:母乳料理／依頼
+
+;1は常にする
+CASE 1
+	MILK_DINNER = 1
+
+;0は毎回聞く
+CASE 0
+	CALL PRINT_MILK_NAME(1)
+	PRINTL . Would you like to use it in cooking?
+	CALL ASK_YN_DEFAULT(1)
+	SIF !RESULT
+		MILK_DINNER = 1
+	
+	;デフォルトセット
+	IF DEFAULT_SET
+		IF MILK_DINNER
+			CFLAG:母乳料理／依頼 = 1
+		ELSE
+			CFLAG:母乳料理／依頼 = -1
+		ENDIF
+	ENDIF
+
+;-1は常にしない
+;CASE -1
+ENDSELECT
+
+
+
+;料理したキャラの体力減少+経験値増加
+@DINNER_WORK
+
+;50+作る数*10の体力消費
+;0になっても作れることにしとく
+COST = 50 +DISH_QUANTITY *10
+PRINTFORM %CALLNAME%：
+CALL HP_COST(COST)
+CALL EXP_UP("料理")
+CALL ABL_UP
+PRINTL
+EXP:実行回数／料理 ++
+EXP:区間実行回数／料理 ++
+
+

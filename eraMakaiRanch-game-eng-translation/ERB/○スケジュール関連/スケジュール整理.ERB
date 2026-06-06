@@ -1,0 +1,136 @@
+﻿
+;スケジュールの整理
+@SCHEDULE_ADJUST
+#DIM TRAIN_TARGET
+
+;ひとまず単体処理
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	;調教ではない場合は調教対象を-1に
+	SIF CSTR:スケジュール != "調教"
+		CFLAG:調教対象ID = -1
+		
+	;搾る霊力も魔力もないなら抽出しない
+	SIF !BASE:霊力 && CSTR:スケジュール == "抽出" && !CFLAG:抽出解除判定済み
+		CALL EP_EMPTY_SCHEDULE
+
+	;前の時間が抽出・今も抽出の時だけ継続フラグ
+	SIF CSTR:スケジュール != "抽出"
+		CFLAG:抽出継続 = 0
+NEXT
+
+;他も関係する処理
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	;従業員で対象が調教状態じゃなくなった場合自由時間に戻す
+	IF CFLAG:調教対象ID > 0 && CSTR:スケジュール == "調教"
+		FINDCHARA CFLAG:ID,CFLAG:調教対象ID
+		SIF RESULT <= 0
+			BREAK
+		TRAIN_TARGET = RESULT
+		IF CSTR:TRAIN_TARGET:スケジュール != "調教対象"
+			CFLAG:調教対象ID = -1
+			CSTR:スケジュール = 自由
+		ENDIF
+	ENDIF
+	
+	;家畜で調教するキャラがいなくなった場合自由時間に戻す
+	IF CSTR:スケジュール == "調教対象"
+		EXIST = 0
+		FOR LOCAL,0,CHARANUM
+			SIF CFLAG:LOCAL:調教対象ID == CFLAG:ID
+				EXIST ++
+		NEXT
+		SIF !EXIST
+			CSTR:スケジュール = 自由
+	ENDIF
+NEXT
+
+;自室があるかないかで自由時間・待機を判断
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	CALL AUTO_SCHEDULE_REST_FIX
+NEXT
+
+
+
+;霊力からっぽの抽出解除判定
+@EP_EMPTY_SCHEDULE
+#DIMS CHANGE_SCHEDULE
+
+
+;CSTR:自動スケジュール／月→350
+FLAG_REF = 350
+FLAG_MAX = 10
+CFLAG:抽出解除判定済み = 1
+EXIST = 0
+CHANGE_SCHEDULE =
+FOR LOCAL,CSTR_REF,CSTR_REF +7
+	;CSTRに抽出含む文字が含まれているかチェック
+	CALL AUTO_SCHEDULE_DRAIN_NAME_CHECK(LOCAL)
+	EXIST += RESULT
+NEXT
+
+;EXISTがあれば再設定する
+SIF !EXIST
+	RETURN
+
+;魔力母乳体質だと解除しなくてもOK
+IF MARK:魔力母乳体質
+	PRINTFORML %CALLNAME%'s spiritual energy has been completely drained.
+	PRINTL Please reset the automatic schedule (this will change all days at once).
+	PRINTL ・Due to the [Mana-Infused Milk], it is possible to proceed without deactivating [Extraction].
+	PRINTL
+	PRINTL [ 0] Do not change
+ELSE
+PRINTFORML %CALLNAME%'s spiritual energy has been completely drained. [Extraction] will be deactivated.
+PRINTL Please reset the automatic schedule (this will change all days at once).
+	PRINTL
+ENDIF
+PRINTLC [ 1] Day Off
+PRINTLC [ 2] Milking / All Day
+PRINTL [ 3] Milking / Morning and Evening
+PRINTL
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	RETURN
+CASE 1
+	CALL AUTO_SCHEDULE_LIST_SET(10,99)
+CASE 2
+	CALL AUTO_SCHEDULE_LIST_SET(200,99)
+CASE 3
+	CALL AUTO_SCHEDULE_LIST_SET(201,99)
+ENDSELECT
+CALL AUTO_SCHEDULE_REST_FIX
+
+;カスタムの中身が抽出なら自由に変更
+;CSTR:自動スケジュール／カスタムＡ／朝→360
+CSTR_REF = 360
+FOR LOCAL,CSTR_REF,CSTR_REF +9
+	SIF CSTR:LOCAL == "抽出"
+		CSTR:LOCAL = 自由
+NEXT
+
+;自動スケジュールから予定スケジュールをセット
+CALL AUTO_SCHEDULE_CONFORM
+
+;スケジュールもそれにセット→状況に応じて補正していく
+CSTR:スケジュール = %CSTR:スケジュール／予定%
+CALL AUTO_SCHEDULE_FIX
+
+
+
+;CSTRに抽出含む文字が含まれているかチェック
+;ARG→LOCAL
+@AUTO_SCHEDULE_DRAIN_NAME_CHECK(ARG)
+
+STRFIND CSTR:ARG,"抽出"
+SIF RESULT >= 0
+	RETURN 1
+
+;めんどいのでカスタムの場合も含まれてる判定するよ
+STRFIND CSTR:ARG,"カスタム"
+SIF RESULT >= 0
+	RETURN 1
+

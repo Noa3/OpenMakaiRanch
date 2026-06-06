@@ -1,0 +1,232 @@
+﻿
+;調教の継続用メッセージ
+;ARGS→継続中コマンド
+@SEX_MESSAGE(ARGS)
+
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	CALL V_SEX_MESSAGE(ARGS)
+ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	CALL A_SEX_MESSAGE(ARGS)
+ELSEIF GETBIT(＃Ｐ使用／パイズリ＃)
+	CALL B_SEX_MESSAGE(ARGS)
+ELSEIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	CALL M_SEX_MESSAGE(ARGS)
+ELSE
+	CALL NOT_SEX_MESSAGE(ARGS)
+ENDIF
+
+
+
+;Ｖセックス
+;ARGS→継続中コマンド
+@V_SEX_MESSAGE(ARGS)
+
+SELECTCASE ARGS
+CASE "正常位"
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML You continue to savor the warmth of her %SLANG_V()% with your %SLANG_PENIS()%, while pressing your body against her...
+	CASE 1
+		PRINTFORML You continue to move deeply within %CALLNAME%, staying intimately connected...
+	CASE 2
+		PRINTFORML Your %SLANG_PENIS()% steadily slides in and out of %CALLNAME%'s %SLANG_V()%, each movement drawing your bodies closer...
+	CASE 3
+		PRINTFORML You continue to drive your %SLANG_PENIS()% deeper, aiming for %CALLNAME%'s womb...
+	ENDSELECT
+CASE "後背位"
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML %CALLNAME% is on all fours, submissively taking in each of your thrusts...
+	CASE 1
+		PRINTFORML Your relentless thrusting fills %CALLNAME%'s %SLANG_H()% again and again...
+	CASE 2
+		PRINTFORML With every thrust, lewd, wet sounds escape from %CALLNAME%'s %SLANG_H()%...
+	CASE 3
+		PRINTFORML You relish the sensation of claiming %CALLNAME%'s %SLANG_V()% from behind...
+	ENDSELECT
+CASE "対面座位"
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML %CALLNAME% clings tightly to you, her waist gently swaying with each movement...
+	CASE 1
+		PRINTFORML You grip %CALLNAME%'s %SLANG_H()% firmly, thrusting your %SLANG_PENIS()% deep inside her...
+	CASE 2
+		; Re-roll if stamina is 0 or collapsed
+		SIF !BASE:体力 || CFLAG:崩壊
+			RESTART
+		PRINTFORML %CALLNAME% moves her waist back and forth, her gaze locked directly on your face...
+	CASE 3
+		PRINTFORML You savor the sensation of %CALLNAME%'s %SLANG_V()%, holding her close as your bodies stay intertwined...
+	ENDSELECT
+CASE "背面座位"
+	SELECTCASE RAND:4
+	CASE 0
+		SIF !BASE:体力 || CFLAG:崩壊
+			RESTART
+		PRINTFORML %CALLNAME% sways her hips as she leans back against you...
+	CASE 1
+		PRINTFORML While savoring the sensation of %CALLNAME%'s %SLANG_H()%, you thrust your %SLANG_PENIS()% deeply inside her, enjoying the connection...
+	CASE 2
+		SIF !BASE:体力 || CFLAG:崩壊
+			RESTART
+		PRINTFORML %CALLNAME% moves her waist back and forth on your lap with her legs wide open...
+	CASE 3
+		PRINTFORML You're savoring %CALLNAME%'s %SLANG_V()% while embracing %CALLNAME% from behind...
+	ENDSELECT
+CASE "騎乗位"
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML %CALLNAME% is straddling you, moving her waist back and forth...
+	CASE 1
+		PRINTFORML %CALLNAME%'s %SLANG_H()% bounces and grinds against you with each movement...
+	CASE 2
+		PRINTFORML %CALLNAME% rocks her waist up and down, taking your %SLANG_PENIS()% deeply into her %SLANG_V()%...
+	CASE 3
+		PRINTFORML %CALLNAME% sensually sways her waist while pressing her lower abdomen against you...
+	ENDSELECT
+CASE "対面立位"
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML %CALLNAME% stands with one leg raised, passively accepting your thrusts...
+	CASE 1
+		PRINTFORML You continue thrusting into %CALLNAME%, remaining connected...
+	CASE 2
+		PRINTFORML Your %SLANG_PENIS()% moves in and out of %CALLNAME%'s %SLANG_V()% with rhythmic intensity...
+	CASE 3
+		PRINTFORML You thrust deeply into %CALLNAME%'s womb, focusing on penetrating her as much you can...
+	ENDSELECT
+CASE "背面立位"
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML %CALLNAME% stands with her %SLANG_H()% thrust out, accepting your thrusts from behind...
+	CASE 1
+		PRINTFORML You continue thrusting into %CALLNAME%'s %SLANG_H()% from behind...
+	CASE 2
+		PRINTFORML Each one of your thrusts causes %CALLNAME%'s %SLANG_H()% to produce lewds sounds...
+	CASE 3
+		PRINTFORML You are savoring %CALLNAME%'s %SLANG_V()% from behind...
+	ENDSELECT
+CASE "強制騎乗位"
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML Bound %CALLNAME% is being thrust up and down by tentacles, each movement forcing her into a rhythmic, involuntary motion...
+	CASE 1
+		PRINTFORML Tentacles maneuver %CALLNAME%, making her body move as if she's thrusting herself in a deeply humiliating manner...
+	CASE 2
+		PRINTFORML Restrained by tentacles, %CALLNAME% can only watch helplessly as her %SLANG_V()% is filled by your %SLANG_PENIS()%...
+	CASE 3
+		PRINTFORML Despite being forcibly moved by tentacles, %CALLNAME% feels as though her %SLANG_V()% is eagerly craving your %SLANG_PENIS()%...
+	ENDSELECT
+CASEELSE
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML Your %SLANG_PENIS()% continues to penetrate %CALLNAME%'s %SLANG_V()% relentlessly...
+	CASE 1
+		PRINTFORML You keep thrusting into %CALLNAME% while remaining connected...
+	CASE 2
+		PRINTFORML Your %SLANG_PENIS()% steadily slides in and out of %CALLNAME%'s %SLANG_V()%...
+	CASE 3
+		PRINTFORML You thrust deeply into %CALLNAME%'s womb, targeting her babycore...
+	ENDSELECT
+ENDSELECT
+CALL ONOMATOPOEIA("ピストン","Ｖ")
+
+
+
+;Ａセックス
+;ARGS→継続中コマンド
+@A_SEX_MESSAGE(ARGS)
+
+SELECTCASE RAND:4
+CASE 0
+	PRINTFORML %CALLNAME%'s %SLANG_A()% is relentlessly taken by your %SLANG_PENIS()%...
+CASE 1
+	PRINTFORML You thrust deeply into %CALLNAME%'s %SLANG_H()%...
+CASE 2
+	PRINTFORML Your %SLANG_PENIS()% repeatedly fills and withdraws from %CALLNAME%'s %SLANG_A()%...
+CASE 3
+	PRINTFORML Your %SLANG_PENIS()% continuously thrusts into %CALLNAME%'s %SLANG_A()%... 
+ENDSELECT
+CALL ONOMATOPOEIA("ピストン","Ａ")
+
+
+
+;パイズリ
+;ARGS→継続中コマンド
+@B_SEX_MESSAGE(ARGS)
+
+SELECTCASE ARGS
+CASE "パイズリ"
+	PRINTFORML %CALLNAME% stimulates your %SLANG_PENIS()% with her %SLANG_B()%...
+CASE "強制パイズリ"
+	IF ABL:バストサイズ < BUSTSIZE_並乳
+		PRINTFORML %CALLNAME% rubs your %SLANG_PENIS()% against her %SLANG_B()%...
+	ELSE
+		PRINTFORML %CALLNAME% grabs her %SLANG_B()% and thrusts your %SLANG_PENIS()% against it...
+	ENDIF
+	CALL ONOMATOPOEIA("ピストン","パイズリ")
+CASEELSE
+	PRINTFORML %CALLNAME% stimulates your %SLANG_PENIS()% with her %SLANG_B()%...
+ENDSELECT
+
+
+
+;Ｍセックス
+;ARGS→継続中コマンド
+@M_SEX_MESSAGE(ARGS)
+
+SELECTCASE ARGS
+CASE "フェラチオ"
+	PRINTFORML %CALLNAME% is sucking your %SLANG_PENIS()%...
+CASE "イラマチオ"
+	PRINTFORML You thrust your %SLANG_PENIS()% into %CALLNAME%'s mouth...
+	CALL ONOMATOPOEIA("ピストン","Ｍ")
+ENDSELECT
+
+
+
+;非挿入
+;ARGS→継続中コマンド
+@NOT_SEX_MESSAGE(ARGS)
+
+SELECTCASE ARGS
+CASE "素股"
+	IF TFLAG:拘束BIT || !TFLAG:奉仕可能 || SELECTCOM == 900
+		PRINTFORM You rub your %SLANG_PENIS()% against %CALLNAME%'s %SLANG_V()%
+		SIF TFLAG:拘束BIT
+			PRINT  while she is bound
+		PRINTL ...
+	ELSE
+		PRINTFORML %CALLNAME% rubs your %SLANG_PENIS()% against her groin...
+	ENDIF
+CASE "手コキ"
+	PRINTFORML %CALLNAME% is rubbing your %SLANG_PENIS()% with her hand...
+CASE "授乳手コキ"
+	PRINTFORML %CALLNAME% is rubbing your %SLANG_PENIS()% with her hand while you drink her %SLANG_MILK()%.
+ENDSELECT
+
+
+
+;搾乳触手バリエーション(FUNCTION型)
+;%SLANG_MILK()%の後につけるよ
+@LACTATION_VAL(ARG)
+#FUNCTIONS
+
+SELECTCASE RAND:10
+CASE 0
+	RETURNF "is being suctioned..."
+CASE 1
+	RETURNF "is being absorbed..."
+CASE 2
+	RETURNF "is being milked..."
+CASE 3
+	RETURNF "is being absorbed..."
+CASE 4
+	RETURNF "is being drunk up..."
+CASEELSE
+	RETURNF "is being squeezed out..."
+ENDSELECT
+
+
+
+

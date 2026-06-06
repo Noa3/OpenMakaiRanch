@@ -1,0 +1,109 @@
+﻿
+;ペニス引き抜き
+@COM890_MESSAGE
+
+;調教外から来た場合引き抜き前に止める
+;WAIT_SKIPがあれば止めない
+SIF !TFLAG:調教中 && !WAIT_SKIP
+	WAIT
+IF GETBIT(＃Ｐ解除／Ｖ挿入＃)
+	PRINTFORML You pulled your %SLANG_PENIS()% from %CALLNAME%'s %SLANG_V()%...
+	CALL KOJO_PRINT("調教コマンド","Ｖペニス引き抜き")
+	IF TFLAG:膣内精液
+		CALL PRINT_WORD_COLOR,@"　Your %SLANG_SEMEN()% begins to overflow from her %SLANG_V()%......","桃"
+		CALL HEARTCB(0xD02830)
+		PRINTL
+	ENDIF
+
+ELSEIF GETBIT(＃Ｐ解除／Ａ挿入＃)
+	PRINTFORML You pulled your %SLANG_PENIS()% from %CALLNAME%'s %SLANG_A()%...
+	CALL KOJO_PRINT("調教コマンド","Ａペニス引き抜き")
+	IF TFLAG:尻穴精液
+		CALL PRINT_WORD_COLOR,@"　Your %SLANG_SEMEN()% begins to overflow from her %SLANG_A()%......","桃"
+		CALL HEARTCB(0xD02830)
+		PRINTL
+	ENDIF
+
+ELSEIF GETBIT(＃Ｐ解除／パイズリ＃)
+	PRINTFORML You withdrew your %SLANG_PENIS()% from %CALLNAME%'s %SLANG_B()%...
+	CALL KOJO_PRINT("調教コマンド","Ｂペニス引き抜き")
+	IF TFLAG:乳内精液
+		CALL PRINT_WORD_COLOR,@"　From the cleavage of her %SLANG_B()%, your %SLANG_SEMEN()% begins to overflow...","桃"
+		CALL HEARTCB(0xD02830)
+		PRINTL
+	ENDIF
+
+ELSEIF GETBIT(＃Ｐ解除／Ｍ挿入＃)
+	PRINTFORML You pulled your %SLANG_PENIS()% from %CALLNAME%'s mouth...
+	CALL KOJO_PRINT("調教コマンド","Ｍペニス引き抜き")
+	IF TFLAG:口内精液
+		IF CFLAG:崩壊
+			PRINTFORM %CALLNAME%'s mouth overflows with your %SLANG_SEMEN()%...
+		ELSEIF ＃陥落状態／隷属＃ || (＃陥落状態／恋慕以上＃ && ABL:精液中毒 >= 10)
+			CALL PRINT_WORD_COLOR,@"　%CALLNAME% swallowed the rest of your %SLANG_SEMEN()% and, with her lips slightly parted, presented it to you...","桃"
+			CALL HEARTCB(0xD02830)
+		ELSEIF ABL:精液中毒 >= 10
+			CALL PRINT_WORD_COLOR,@"　%CALLNAME% swallowed the rest of your %SLANG_SEMEN()% in her mouth...","桃"
+			CALL HEARTCB(0xD02830)
+		ELSEIF MARK:恐怖刻印
+			PRINTFORM %CALLNAME% swallowed the rest of your %SLANG_SEMEN()% in her mouth with teary eyes...
+		ELSE
+			PRINTFORM %CALLNAME% spat out the rest of your %SLANG_SEMEN()% from her mouth...
+		ENDIF
+		PRINTL
+	ENDIF
+
+;素股、手コキ、授乳手コキ　とりあえず
+ELSE
+	PRINTFORML You stopped %CALLNAME%'s service.
+ENDIF
+
+
+
+;搾乳器取り外し
+;ARGS→LACTATION_TOOL
+@COM891_MESSAGE(ARGS)
+
+PRINTFORML You removed the %TEQUIP_ENG(ARGS)% from %CALLNAME%'s %SLANG_B()%...
+CALL KOJO_PRINT("調教コマンド","搾乳器取り外し")
+SIF BASE:母乳容量
+	CALL MILK_WHITE_BUST_MESSAGE
+
+
+
+;搾乳触手外し
+;ARGS→LACTATION_TENTACLE
+@COM892_MESSAGE(ARGS)
+
+PRINTFORML You removed the %TEQUIP_ENG(ARGS)% from %CALLNAME%'s %SLANG_B()%...
+CALL KOJO_PRINT("調教コマンド","搾乳触手取り外し")
+SIF BASE:母乳容量
+	CALL MILK_WHITE_BUST_MESSAGE
+
+
+
+;白く染めていく
+@MILK_WHITE_BUST_MESSAGE
+
+CALL PRINT_WORD_COLOR,@" The spilled %SLANG_MILK()% stains her %SLANG_B()% white...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;胸汚れ拭き取り
+@COM893_MESSAGE
+
+PRINTFORM %CALLNAME%'s %SLANG_STAIN("Ｂ")%%SLANG_B()% are wiped with a wet towel...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+SIF EX:Ｂ絶頂 +EX:Ｎ絶頂 >= 10
+	PRINTFORM %CALLNAME% seems to be aroused by that stimulation...
+
+
+
+;コンドーム外し
+@COM895_MESSAGE
+PRINTFORML You removed the condom from your %SAVESTR:表記／ペニス%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+
+

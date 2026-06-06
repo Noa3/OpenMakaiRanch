@@ -1,0 +1,28 @@
+﻿
+;種族名短縮変換
+@FONT_HARF(ARG)
+
+;種族名が長い場合表示を短縮する　ジョブはやめとく
+SELECTCASE LIST_TRIBE:ARG
+CASE "ハーフリング"
+	LIST_TRIBE:ARG = Ｈリング
+CASE "ハーフエルフ"
+	LIST_TRIBE:ARG = Ｈエルフ
+CASE "ダークエルフ"
+	LIST_TRIBE:ARG = Ｄエルフ
+ENDSELECT
+
+
+
+;戻す作業
+@FONT_FULL
+
+SELECTCASE CSTR:種族
+CASE "Ｈリング"
+	CSTR:種族 = ハーフリング
+CASE "Ｈエルフ"
+	CSTR:種族 = ハーフエルフ
+CASE "Ｄエルフ"
+	CSTR:種族 = ダークエルフ
+ENDSELECT
+

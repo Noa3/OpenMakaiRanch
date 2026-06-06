@@ -1,0 +1,39 @@
+﻿
+;アビリティ中の乳揉み追加SOURCE
+@BUST_ABILITY_SOURCE_CHECK
+
+;あなた調教でないか乳揉みでないならおわり
+SIF PLAYER || !SOURCE:乳揉み
+	RETURN
+
+;豊穣→豊穣バストサイズ以上だと無効
+IF ITEM:豊穣 && GETBIT(＃個人有効／豊穣＃) && GETBIT(＃有効／豊穣＃) && ABL:バストサイズ < FLAG:豊穣上限バストサイズ
+	SOURCE:豊穣増加 += (ITEM:豊穣 *100)
+	
+	;マッサージを選んでると3倍+500
+	IF TRAINNAME:SELECTCOM == "育乳マッサージ"
+		TIMES SOURCE:豊穣増加,3.00
+		SOURCE:豊穣増加 += 500
+	ENDIF
+ENDIF
+
+;濃厚母乳マッサージ→Lv5だと無効
+IF ITEM:濃厚母乳マッサージ && GETBIT(＃個人有効／濃厚母乳マッサージ＃) && GETBIT(＃有効／濃厚母乳マッサージ＃) && ABL:母乳濃度 < 5
+	SOURCE:母乳濃度増加 += (ITEM:濃厚母乳マッサージ *100)
+	IF TRAINNAME:SELECTCOM == "濃厚母乳マッサージ"
+		TIMES SOURCE:母乳濃度増加,3.00
+		SOURCE:母乳濃度増加 += 500
+	ENDIF
+ENDIF
+
+;母乳生産力
+IF ITEM:ミルクタンクマッサージ && GETBIT(＃個人有効／ミルクタンクマッサージ＃) && GETBIT(＃有効／ミルクタンクマッサージ＃)
+	SOURCE:母乳生産力増加 += (ITEM:ミルクタンクマッサージ *100)
+	IF TRAINNAME:SELECTCOM == "ミルクタンクマッサージ"
+		TIMES SOURCE:母乳生産力増加,3.00
+		SOURCE:母乳濃度増加 += 500
+	ENDIF
+ENDIF
+
+
+

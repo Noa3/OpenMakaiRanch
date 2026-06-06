@@ -1,0 +1,165 @@
+﻿
+;吐き出し時地の文
+@MASTER_REMOVE_MESSAGE
+#DIMS CATTLE_NAME
+
+;出した奴隷全員並べようかな
+CATTLE_NAME =
+PRINTFORML You extract from your internal space
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "解放準備"
+		CONTINUE
+	
+	;2人目以降区切り
+	IF CATTLE_NAME == ""
+		PRINTFORM %CALLNAME%
+		CATTLE_NAME = %CALLNAME%
+		SIF CATTLE_COUNT >= 2
+			CATTLE_NAME += "たち"
+	ELSE
+		PRINTFORM 、%CALLNAME%
+	ENDIF
+NEXT
+PRINTL Released them. 
+
+;一番目に当たったキャラの名前を出す
+PRINTFORMW %CATTLE_NAME% that came out from the tentacle meat wall is convulsing covered in slime...
+
+
+
+;虚脱状態
+@MASTER_REMOVE_COLLAPSE_MESSAGE
+
+PRINTFORML %CALLNAME% is weak and exhausted... It looks like she won't be able to move on her own without resting for a while. 
+WAIT_ON ++
+
+
+
+
+
+;取り込み時地の文
+@MASTER_VORE_MOVE_MESSAGE
+
+PRINTFORML Your body transforms into a grotesque form, with countless tentacles wrapping around %CALLNAME%...
+PRINTFORML Furthermore, you open up your body and draw %CALLNAME% in...
+CALL KOJO_PRINT("スケジュール","体内凌辱","取り込み開始",KOJO_TYPE)
+
+IF CFLAG:崩壊
+	PRINTFORML %CALLNAME% shows a faint expression of despair...
+ELSEIF ＃陥落状態／隷属＃ || MARK:触手の苗床
+	PRINTFORML %CALLNAME% shows no resistance at all, with a blissful expression, completely at your mercy...
+	
+;最初かどうか
+ELSEIF !EXP:実行回数／体内凌辱
+	PRINTFORML %CALLNAME%'s face turns pale, desperately trying to escape, but she is restrained by the tentacles and unable to move...
+ELSE
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		PRINTFORML %CALLNAME% shows attempts to escape, but the memories of pleasure make her naturally lose strength...
+	ELSE
+		PRINTFORML %CALLNAME%'s face turns pale, desperately trying to escape, but she is restrained by the tentacles and unable to move...
+	ENDIF
+ENDIF
+PRINTFORML They slowly swallow %CALLNAME% into your body...
+
+
+
+;取り込み時簡易版
+@MASTER_VORE_MOVE_MESSAGE_SIMPLE
+
+PRINTFORML You swallowed %CALLNAME% into your body...
+
+
+
+
+
+;体内凌辱待機表示地の文
+@MASTER_VORE_SEX_STANDBY_MESSAGE
+
+IF !EXP:実行回数／体内凌辱
+	PRINTFORML ...When %CALLNAME% opens her eyes, she find herself surrounded by pink walls in a dimly lit cave-like space. 
+	PRINTFORML She was swallowed by you earlier... and is now trapped in this space. 
+	PRINTL She feel a creepy sensation on her limbs, and upon looking at her body, she finds that all her clothes have been removed. 
+	PRINTL Furthermore, her limbs are engulfed by a mass of flesh, leaving her completely immobile...
+	PRINTL However, even without the mass of flesh, being trapped in this narrow space would prevent her from doing anything...
+ELSEIF CFLAG:体内凌辱継続
+	PRINTFORML ...%CALLNAME% is still trapped in your internal space, 
+	IF MARK:母乳体質
+		PRINTFORML subjected to tentacle violation all over her body, and in a pleasure hell where she is continuously milked by milking tentacles...
+	ELSE
+		PRINTL subjected to continuous tentacle violation in a pleasure hell...
+	ENDIF
+ELSE
+	PRINTFORML ...When %CALLNAME% opens her eyes, she finds herself surrounded by pink walls in a dimly lit cave-like space.
+	PRINTFORML Swallowed again by you and trapped in an internal space where she can only continue to receive tentacle violation...
+ENDIF
+CALL KOJO_PRINT("スケジュール","体内凌辱","実行前",KOJO_TYPE)
+PRINTL
+
+
+
+;体内凌辱開始
+@MASTER_VORE_SEX_RUN_MESSAGE
+
+IF CFLAG:体内凌辱継続
+	IF BASE:母乳生産力
+		PRINTFORML Unable to resist, %CALLNAME% continues to receive overwhelming pleasure throughout her body
+		PRINTFORML and has her %SLANG_MILK()% continuously milked from her %SLANG_B()%,
+		PRINTL being unable to do anything but endlessly repeat the climax received from milking...
+	ELSE
+		PRINTFORML Unable to resist, %CALLNAME% can only endure the massive pleasure throughout her body 
+		PRINTL almost to the point of fainting...
+	ENDIF
+ELSE
+	PRINTFORML The tentacles slowly approach the completely restrained %CALLNAME%...
+	CALL KOJO_PRINT("調教コマンド","乳包み花弁搾乳触手","焦らし")
+	PRINTFORML The milking tentacles, with countless folds writhing inside, latched onto her %SLANG_B()%,
+	PRINTFORML after which all the tentacles began to subject %CALLNAME% to pleasurable torment...
+ENDIF
+PRINTW
+
+
+
+;継続メッセージ
+@MASTER_VORE_SEX_CONTINUE_MESSAGE
+
+IF CFLAG:崩壊
+	PRINTFORML PRINTFORML The desperate cries of %CALLNAME% seeking help reach no one... 
+ELSEIF ＃陥落状態／隷属＃
+	PRINTFORML Becoming one with『%CSTR:あなた呼び方／陥落後%』, and continuously receiving supreme pleasure from 『%CSTR:あなた呼び方／陥落後%』...
+	PRINTFORML %CALLNAME% was absorbing ultimate pleasure throughout her body...
+ELSEIF CFLAG:乳牛
+	IF !CFLAG:非戦闘職
+		PRINTL Endless pleasure torture by tentacles... facing complete defeat by violation, 
+	ELSE
+		PRINTL Endless pleasure torture by tentacles... violation severe enough to almost break her mind, 
+	ENDIF
+	PRINTFORML turning into a heaven where %CALLNAME% continuously receives the highest happiness...
+ELSEIF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+	PRINTFORML Acting according to what『%CSTR:あなた呼び方／陥落後%』desires, serving『%CSTR:あなた呼び方／陥落後%』...
+	PRINTFORML Despite the madness-inducing full-body pleasure violation, %CALLNAME% accepts it as reality...
+ELSEIF ＃陥落状態／拒絶以上＃
+	PRINTFORML The heart of %CALLNAME% is breaking under the endless pleasure violation aimed at completely breaking her down...
+ELSE
+	IF !CFLAG:非戦闘職
+		PRINTFORML Inside your internal space, %CALLNAME% faces her complete defeat through tentacle violation...
+	ELSE
+		PRINTFORML Inside your internal space, %CALLNAME% continues to endure tentacle violation...
+	ENDIF
+ENDIF
+
+
+
+;虚脱化
+@BECOME_COLLAPSE_MESSAGE
+
+SETCOLOR 0xEE10EE
+PRINTFORML %CALLNAME% continues to endure unending torment within your body, leaving her in a state of daze...
+PRINTFORML %CALLNAME% has become【exhausted】
+RESETCOLOR
+
+
+
+
+
+

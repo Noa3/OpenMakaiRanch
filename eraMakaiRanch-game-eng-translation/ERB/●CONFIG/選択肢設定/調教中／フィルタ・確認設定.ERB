@@ -1,0 +1,67 @@
+﻿
+;調教中／フィルタ・確認
+@TRAIN_FILTER_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Set filter and confirmation settings for training.
+DRAWLINE
+PRINTL 　《 Insertion confirmation 》
+PRINTLC [ 0] Virginity                         　　
+CALL PRINT_ONOFF(GETBIT(＃Ｖ処女確認＃),1)
+PRINTLC [ 1] Anal Virginity                    　　
+CALL PRINT_ONOFF(GETBIT(＃Ａ処女確認＃),1)
+PRINTFORMLC [ 2] Not enough Ｖ Lub. (below {NEED_LUBRICATION})       
+CALL PRINT_ONOFF(GETBIT(＃Ｖ潤滑確認＃),1)
+PRINTFORMLC [ 3] Not enough Ａ Lub. (below {NEED_LUBRICATION})       
+CALL PRINT_ONOFF(GETBIT(＃Ａ潤滑確認＃),1)
+PRINTLC [ 4] 【Cross-Species Impregnation】possible
+CALL PRINT_ONOFF(GETBIT(＃異種族孕ませ確認＃),1)
+PRINTLC [ 5] Ｖ Size Check
+CALL PRINT_ONOFF(GETBIT(＃Ｖサイズ確認＃),1)
+PRINTLC [ 6] Ａ Size Check
+CALL PRINT_ONOFF(GETBIT(＃Ａサイズ確認＃),1)
+PRINTL
+
+PRINTL 　《 Anal filter：Hide training commands 》
+PRINTLC [10] Anal Insertion
+CALL PRINT_ONOFF(GETBIT(＃各種Ａ挿入無効＃),1)
+PRINTLC [11] Anal Fingering
+CALL PRINT_ONOFF(GETBIT(＃Ａ指挿れ無効＃),1)
+PRINTLC [12] Lick Anus
+CALL PRINT_ONOFF(GETBIT(＃Ａ舐め無効＃),1)
+PRINTLC [13] Ａ Tentacle Fuck
+CALL PRINT_ONOFF(GETBIT(＃触手Ａ挿入無効＃),1)
+
+CALL PRINTL_ALIGN(-5)
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 98
+	PRINTL Reset filter and confirmation settings to default？
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRAIN_FILTER_CONFIG
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_TRAIN_FILTER_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_TRAIN_FILTER_CONFIG(ARG)
+
+;全部NUM
+SELECTCASE ARG
+CASE 0 TO 9
+	INVERTBIT FLAG:挿入確認BIT,ARG
+CASE 10 TO 19
+	INVERTBIT FLAG:アナルフィルタBIT,ARG -10
+ENDSELECT
+
+
+

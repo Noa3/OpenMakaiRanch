@@ -1,0 +1,74 @@
+﻿
+;仙人
+@TRIBE_FEATURE_CONFIG_HERMIT
+
+CLEARLINE LINECOUNT
+PRINTL Modifying【Hermit】
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL Fixed：Always Has Mana
+PRINTLC [ 0] Height Tends Towards【Tall】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,0),1)
+PRINTLC [ 1] Skin Tends Towards【Fair】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,1),1)
+PRINTLC [ 2] Body Tends Towards【Slender】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,2),1)
+PRINTLC [ 3] 【Fast Recovery】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,3),1)
+PRINTLC [ 4] 【Loved By Animals】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,4),1)
+PRINTLC [ 5] 【Makai Adaption】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,5),1)
+PRINTL
+PRINTLC [10] 【Light Eater】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,10),1)
+PRINTLC [11] 【Stubborn】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,11),1)
+PRINTLC [12] 【Composed】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,12),1)
+PRINTLC [13] 【Righteous】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／仙人,13),1)
+CALL PRINTL_ALIGN
+CALL PRINT_SLAVE_CONFIG_FOOTER(13)
+SELECTCASE INPUT_NUM
+CASE 0
+	PRINTL IF【Average】・【Short】・【Petite】, replaced with【Tall】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 1
+	PRINTL If【Standard】、【Brown】、【Tanned】, replaced with【Fair】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 2
+	PRINTL Body figure limited to【Slender】and【Skinny】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 3
+	PRINTL Add the【Fast Recovery】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 4
+	PRINTL Add the【Loved By Animals】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 5
+	PRINTL Add the【Makai Adaption】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 10
+	PRINTL Add the【Light Eater】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 11
+	PRINTL Add the【Stubborn】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 12
+	PRINTL Add the【Composed】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 13
+	PRINTL Add the【Righteous】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／仙人"),INPUT_NUM)
+CASE 98
+	PRINTL Restore【Hermit】Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRIBE_FEATURE_CONFIG_HERMIT
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

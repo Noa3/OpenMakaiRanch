@@ -1,0 +1,108 @@
+﻿
+;あなたのパワーアップ
+@MASTER_POWERUP
+
+;「～吸収」だと上限増加分がない場合でも来ちゃうので増加分
+;強くてニューゲームとかの場合も来るので弾くのはここ
+SIF SOURCE:プレイヤー増加霊力量
+	CALL MASTER_POWERUP_EP
+SIF SOURCE:プレイヤー増加魔力量
+	CALL MASTER_POWERUP_MP
+
+
+
+;霊力吸収
+@MASTER_POWERUP_EP
+
+CALL MASTER_LEVELUP
+CALL MASTER_HPUP
+
+
+
+;レベルアップ
+@MASTER_LEVELUP
+#DIM NOW_LEVEL
+
+;あなたの場合→最大霊力量からレベルを計算（注ぎ込みで減るので）
+;10000未満ならLv1
+IF BASE:霊力 < 10000
+	NOW_LEVEL = 1
+ELSE
+	STATUS = 10000
+	FOR NOW_LEVEL,1,999
+		;10000超えたらLv2にアップ
+		SIF MAXBASE:0:霊力 < STATUS
+			BREAK
+		
+		;レベル*500が次に上がるのに必要な霊力
+		;これを霊力<STになるまで繰り返し
+		STATUS += (NOW_LEVEL *500)
+	NEXT
+ENDIF
+
+;計算結果が現在レベルより高いならレベルアップ
+SIF MAXBASE:0:レベル >= NOW_LEVEL
+	RETURN
+SIF !LINEISEMPTY()
+	PRINTL
+CALL PRINTL_WORD_COLOR,@"LvUP！　%CALLNAME:0% Lv{MAXBASE:0:レベル} → {NOW_LEVEL}","水色"
+MAXBASE:0:レベル = NOW_LEVEL
+BASE:0:レベル = NOW_LEVEL
+
+
+
+;体力増加
+@MASTER_HPUP
+#DIM HP_STEP
+
+;5万ごとに+50　4000になったら20万ごと
+;定数使おうとしたけど可読性が悪い
+IF MAXBASE:0:体力 < 4000
+	HP_STEP = MAXBASE:0:霊力 /50000
+	SIF MAXBASE:0:体力 >= 2000 +HP_STEP *50
+		RETURN
+	MAXBASE:0:体力 = LIMIT(2000 +HP_STEP *50,2000,4000)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME:0%'s max HP increases to {MAXBASE:0:体力}!","水色"
+	SIF !TFLAG:調教中
+		PRINTW
+	
+	;引き継ぎ時など一気に上がるのでRESTART挟む
+	RESTART
+ELSEIF MAXBASE:0:体力 < HP_MAX
+	HP_STEP = (MAXBASE:0:霊力 -2000000) /200000
+	SIF MAXBASE:0:体力 >= 4000 +HP_STEP *50
+		RETURN
+	MAXBASE:0:体力 = LIMIT(4000 +HP_STEP *50,4000,HP_MAX)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME:0%'s max HP increases to {MAXBASE:0:体力}!","水色"
+	SIF !TFLAG:調教中
+		PRINTW
+ENDIF
+
+
+
+
+;魔力吸収
+@MASTER_POWERUP_MP
+
+;ここにスキルポイントとか入れようかな
+;魔力を吸うことで肉体改造回数を増加させる
+;【触手変化】なし、既に5回でおわり
+SIF !ITEM:触手変化 || FLAG:触手肉体改造可能回数 >= 5
+	RETURN
+
+;500000,2000000,5000000,10000000で増加
+SIF TENTACLE_MODIFI_UP:(FLAG:触手肉体改造可能回数 -1) > MAXBASE:0:魔力
+	RETURN
+SIF !LINEISEMPTY()
+	PRINTL
+FLAG:触手肉体改造可能回数 ++
+CALL PRINTL_WORD_COLOR,@"%CALLNAME:0%'s Mana increases, increasing the amount of times he can perform Tentacle Body Modification! → {FLAG:触手肉体改造可能回数}／day","水色"
+SIF !TFLAG:調教中
+	PRINTW
+
+;1回ずつしか上がらないのでRESTART
+RESTART
+
+
+
+

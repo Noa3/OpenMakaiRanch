@@ -1,0 +1,69 @@
+﻿
+;性経験割合設定
+@TENDENCY_CONFIG_VARGIN
+
+;FLAG:候補割合／性経験／無垢→3130
+FLAG_REF = 3130
+STR_REF = 6590
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+CLEARLINE LINECOUNT
+PRINTL Adjust the weights for sexual experience of Ningen.
+CALL CONFIG_CHANGE_FLAG_CHECK
+CALL PRINT_TENDENCY_BUTTON
+CALL PRINTL_ALIGN(-10)
+CALL TENDENCY_CONFIG_FOOTER
+CALL TENDENCY_INPUT
+IF RESULT == 98
+	PRINTL Restore to Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TENDENCY_CONFIG_VARGIN
+ELSEIF RESULT == 99
+	RETURN
+ENDIF
+RESTART
+
+
+
+;性経験補足
+;ARG→INPUT
+@VARGIN_TENDENCY_TIPS(ARG)
+
+CALL HALFLINE
+SELECTCASE ARG
+CASE 0
+	PRINTL 【Completely Pure】：No experience and no knowledge about sex
+CASE 1
+	PRINTL 【Innocent Virgin】：No experience at all
+CASE 2
+	PRINTL 【Virgin】：Only kissed one person, ever
+CASE 3
+	PRINTL 【Experienced Virgin】：Virgin with experience in kissing, blowjobs, and possibly paizuri
+	PRINTL Been with around 3～10 people
+	PRINTL If【Lactating】, has breastfed between 0～5 people
+CASE 4
+	PRINTL 【Experienced】：Kissing and sex had with only 1 person, possibly paizuri if breasts are big
+	PRINTL No anal or oral experience
+	PRINTL If【Lactating】, has breastfed 1 person
+	PRINTL
+	PRINTL 【処女結界】が同時に付与される場合、【貞操死守】に置き換えられ、Ｖ経験が0になります
+CASE 5
+	PRINTL 【Abnormal】：Did everything with around 1～5 people
+	PRINTL If【Lactating】, has breastfed the same amount of people
+	PRINTL If【Virginity Barrier】Ｖ experience is changed to 0
+CASE 6
+	PRINTL 【Bitch】：Loves sex, has experienced everything
+	PRINTL Around 5～30 people per experience
+	PRINTL If【Lactating】, has breastfed between 5～30 people
+	PRINTL If【Virginity Barrier】Ｖ experience is changed to 0
+	PRINTL Cannot be【Virtuous】
+CASE 7
+	PRINTL 【Public Toilet】：Escaped a life of sexual slavery, has experienced everything
+	PRINTL Around 300～500 people per experience
+	PRINTL If【Lactating】, has breastfed between 100～500 people
+	PRINTL
+	PRINTL 【処女結界】が同時に付与される場合、【性奴隷】に置き換えられ、Ｖ経験が0になります
+ENDSELECT
+PRINTL
+
+

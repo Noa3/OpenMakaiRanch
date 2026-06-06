@@ -1,0 +1,104 @@
+﻿
+;選択肢設定一覧
+@LIST_CONFIG_CHOICE
+
+PRINTL --- 《 Command Settings 》 ---
+ALIGNMENT LEFT
+DRAWLINE
+FLAG_REF = 2300
+FOR LOCAL,0,50
+	SIF FLAGNAME:(LOCAL +FLAG_REF) == ""
+		CONTINUE
+	CALL PRINT_CONFIG_CHOICE(LOCAL)
+NEXT
+PRINTL
+PRINTL [70] Training／Automatic choices
+PRINTL [71] Training／Filter and confirmations
+PRINTL [72] Capture options and character flags
+PRINTL [73] Automatic room assignment
+
+
+;ARG→LOCAL　FLAG_REFを足すことでフラグ番号
+@PRINT_CONFIG_CHOICE(ARG)
+
+FLAG_NAME = %FLAGNAME:(ARG +FLAG_REF)%
+SELECTCASE FLAG_NAME
+CASE "仕事休憩体力"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：Rest Under {FLAG:FLAG_NAME}HP
+
+CASE "搾乳休憩母乳量"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：Rest Under {FLAG:FLAG_NAME}%MILK_COUNTING()%
+
+CASEELSE
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%
+	CALL PRINT_ONOFF(FLAG:FLAG_NAME)
+ENDSELECT
+PRINTL
+
+
+
+;ARG→INPUT
+@CHANGE_CONFIG_CHOICE(ARG)
+
+SELECTCASE ARG
+CASE 70	;調教中／自動選択肢
+	CALL TRAIN_AUTO_CONFIG
+CASE 71	;調教中／フィルタ・確認
+	CALL TRAIN_FILTER_CONFIG
+CASE 72	;捕獲時選択肢・キャラフラグ
+	CALL CAPTURE_CONFIG
+CASE 73	;部屋割り自動変更設定
+	CALL AUTO_ALLOCATION_ROOM_CONFIG
+CASEELSE
+	CALL CHANGE_CONFIG_CHOICE_NAME(ARG)
+ENDSELECT
+
+
+
+@CHANGE_CONFIG_CHOICE_NAME(ARG)
+
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+CALL CHANGE_CONFIG_INVERTBIT
+SIF RESULT
+	RETURN
+SELECTCASE FLAG_NAME
+CASE "仕事休憩体力"
+	PRINTL Cancels the current task and schedules [Free Time] or [Standby] when on auto-scheduling.
+	PRINTL Set the amount of HP to trigger（0～1000HP）
+	PRINTL
+	PRINTL [300] 300HP (Default: Rest when HP is less than 300)
+	PRINTL or enter value between 0~1000.
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 1000
+		FLAG:FLAG_NUM = RESULT
+
+CASE "搾乳休憩母乳量"
+	PRINTL Cancels milking and schedules [Free Time] or [Standby] when on auto-scheduling.
+	PRINTFORML Set the amount of milk to trigger（0～1000%MILK_COUNTING()%）
+	PRINTL
+	PRINTFORML [500] 500%MILK_COUNTING()% (Default： Rest when less than 500%MILK_COUNTING()%）
+	PRINTL or enter value between 0~1000.
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 1000
+		FLAG:FLAG_NUM = RESULT
+
+CASE "夕食メニューおまかせ"
+	PRINTL Configure whether to automatically decide the dinner menu.
+	PRINTL
+	PRINTL [ 0] Select from choices (Default)
+	PRINTL [ 1] Automatic decision
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "呼び方自動補正確認"
+	PRINTL Configure whether to prompt for confirmation when altering personal pronouns and genitalia terms after a certain number of orgasm.
+	PRINTL Manual inputs will always trigger a confirmation.
+	PRINTL
+	PRINTL [ 0] Automatic
+	PRINTL [ 1] Prompt for confirmation (Default)
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+ENDSELECT
+
+

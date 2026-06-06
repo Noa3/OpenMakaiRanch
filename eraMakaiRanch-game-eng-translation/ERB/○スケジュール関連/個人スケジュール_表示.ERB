@@ -1,0 +1,186 @@
+﻿
+;状態で変更するスケジュール選択肢表示
+@PRINT_SCHEDULE_PLAN_STATE
+
+IF EQUIP:自室
+	PRINTL [  0] Free Time
+ELSEIF CFLAG:調教可能
+	PRINTL [100] Standby
+ENDIF
+
+;体内のときこっちに合わせる
+IF CSTR:スケジュール == "体内凌辱"
+	PRINTL [105] Release from Internal Violation
+ELSEIF CSTR:スケジュール == "解放準備"
+	PRINTL [106] Stop Release from Internal Violation
+ENDIF
+
+
+
+;業務スケジュール選択肢表示
+;ここ以降を改行合わせれば合う
+@PRINT_SCHEDULE_PLAN_WORK
+
+IF CFLAG:業務可能
+	PRINTFORMLC [  1] Handle Cattle <Lv{ABL:酪農,2}> 
+	
+	;レズ調教の対応
+	IF !TARGET
+		PRINTFORML [  2] Train Slaves <Lv{ABL:技巧,2}> 
+	ELSE
+		PRINTFORML [  2] Train Others <Lv{ABL:技巧,2}／LesbianLv{ABL:レズっ気,2}> 
+	ENDIF
+	
+	;事務は恋慕以上にした
+	IF (＃陥落状態／恋慕以上＃ || CSTR:状態／あなたの子 == "成長後" || TALENT:オーナー) && FLAG:事務作業量
+		PRINTFORMLC [  3] Clerical Work <Lv{ABL:事務,2}> 
+	
+	;前半がNGの場合の表示
+	ELSEIF FLAG:事務作業量
+		CALL PRINTLC_WORD_COLOR("　Clerical Work：Requires【Love】","灰")
+	ELSE
+		CALL PRINTLC_WORD_COLOR("　Clerical Work","灰")
+	ENDIF
+	
+	CALL MILESTONE_UNLOCK_CHECK("調合","LC")
+	SIF RESULT
+		PRINTFORMLC [  4] Mix Drugs <Lv{ABL:薬学,2}> 
+	CALL MILESTONE_UNLOCK_CHECK("大浴場掃除","LC")
+	IF RESULT
+		IF FLAG:大浴場掃除完了度 < 100
+			PRINTFORMLC [  5] Bath Cleaning <Lv{ABL:掃除,2}> 
+		ELSE
+			CALL PRINTLC_WORD_COLOR("　Bath Cleaning","灰")
+		ENDIF
+	ENDIF
+	
+	;あなたのみ
+	IF !TARGET
+		PRINTL
+		CALL MILESTONE_UNLOCK_CHECK("自分で戦う","LC")
+		IF RESULT
+			LOCAL = LIMIT(EXP:実行回数／戦闘訓練 +1,1,30)
+			PRINTFORMLC [  6] Drills <Apt.{BASE:戦闘適性,3}\% Eff.{LOCAL,2}\%> 
+		ENDIF
+		CALL MILESTONE_UNLOCK_CHECK("禁断魔術","LC")
+		IF RESULT
+			;図書館が開いてるのは昼から
+			IF !TIME
+				CALL PRINTLC_WORD_COLOR("　Library: Before Opening","灰")
+			ELSE
+				PRINTLC [  7] Library
+			ENDIF
+		ENDIF
+	ENDIF
+
+;業務不可の場合の説明
+ELSE
+	IF CSTR:居場所 == "体内"
+		CALL PRINTL_WORD_COLOR,@"【Inside【Internal Violation】, can't work or train","灰"
+	ELSEIF CFLAG:家畜
+		CALL PRINTL_WORD_COLOR,@"【Livestock】cannot work","薄赤"
+	ELSEIF !TALENT:オーナー && !CFLAG:洗脳 && !＃陥落状態／屈服以上＃ && !CFLAG:乳牛
+		CALL PRINTL_WORD_COLOR,@"Uncooperative, can't work","灰"
+	ELSEIF CFLAG:崩壊
+		CALL PRINTL_WORD_COLOR,@"【Mindbroken】, can't work","灰"
+	ELSEIF CFLAG:虚脱
+		CALL PRINTL_WORD_COLOR,@"【Exhausted】, can't work","灰"
+	ELSEIF !BASE:体力
+		CALL PRINTL_WORD_COLOR,@"0 HP, can't work","灰"
+	
+	;部屋なしの場合も表示するように
+	ELSEIF !EQUIP:自室
+		PRINTL Assigning a room is necessary to delegate work.
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"　Unable to work. I wonder why (it might be a bug).","灰"
+	ENDIF
+ENDIF
+CALL MANYL(2)
+
+
+
+;調教スケジュール選択肢表示
+@PRINT_SCHEDULE_PLAN_TRAIN
+
+SIF !CFLAG:調教可能
+	RETURN
+IF CSTR:スケジュール == "調教対象"
+	CALL PRINTLC_WORD_COLOR,@"Training Scheduled","黄"
+ELSEIF CSTR:0:スケジュール != "行動済み"
+	PRINTLC [101] Train
+ELSE
+	CALL PRINTL_WORD_COLOR,@"You already acted","灰"
+ENDIF
+IF MARK:母乳体質
+	PRINTLC [102] Milk
+	
+	IF !ITEM:霊力抽出装置
+		CALL PRINTL_WORD_COLOR("　Extract","灰")
+	ELSEIF !BASE:霊力 && !BASE:魔力
+		CALL PRINTL_WORD_COLOR,@"　Spirit Energy and Mana 0","灰"
+	ELSE
+		PRINTL [103] Extract Spirit Energy
+	ENDIF
+ELSE
+	CALL PRINTL_WORD_COLOR,@"Not【Lactating】","灰"
+ENDIF
+SIF ITEM:体内凌辱
+	PRINTLC [104] Internal Violation
+IF MARK:母乳体質 && FLAG:触手出産合計 >= 10
+	PRINTLC [107] Tentacle-based milking
+ELSEIF MARK:母乳体質
+	CALL PRINTL_WORD_COLOR,@"Insufficient number of birthing tentacles","灰"
+ELSE
+	CALL PRINTL_WORD_COLOR,@"Not【Lactating】","灰"
+ENDIF
+SIF !LINEISEMPTY()
+	PRINTL
+
+
+
+;管理表示
+@PRINT_SCHEDULE_PLAN_MANAGEMENT
+
+PRINTL 　《 Management 》
+IF CFLAG:調教可能
+	IF CSTR:0:スケジュール == "行動済み"
+		CALL PRINTLC_WORD_COLOR,@"　You already acted","灰"
+	
+	;使い切っても会いに行けるように変更
+		;ELSEIF FLAG:現時刻訪問回数 >= 3
+		;	CALL PRINTLC_WORD_COLOR,@"　Visited the maximum number of times","灰"
+	ELSE
+		PRINTLC [200] Visit Slave
+	ENDIF
+	IF MARK:母乳体質
+		IF ITEM:牛舎
+			IF !CFLAG:牛舎番号
+				PRINTLC [201] Send to Cowshed
+			ELSE
+				PRINTLC [202] Recall From Cowshed
+			ENDIF
+		ELSE
+			CALL PRINTLC_WORD_COLOR,@"＜Cowshed＞Available for use after the cowshed is built","灰"
+		ENDIF
+	ELSE
+		CALL PRINTLC_WORD_COLOR,@"Not【Lactating】","灰"
+	ENDIF
+ELSEIF !TARGET
+	;アイテム使用欄を作る
+	IF CSTR:0:スケジュール == "行動済み"
+		CALL PRINTLC_WORD_COLOR,@"　%CALLNAME:0% already acted","灰"
+	ELSE
+		PRINTLC [208] Use Item
+		PRINTFORMLC [209] Drink stored %SAVESTR:表記／母乳%
+	ENDIF
+	
+ELSEIF CSTR:居場所 == "体内"
+	CALL PRINTLC_WORD_COLOR,@"【Internal Violation】","灰"
+ELSEIF CFLAG:追跡対象
+	CALL PRINTLC_WORD_COLOR,@"　Not Captured","灰"
+ELSE
+	CALL PRINTLC_WORD_COLOR,@"　Fuck Knows（Bugged）","灰"
+ENDIF
+PRINTL
+
+

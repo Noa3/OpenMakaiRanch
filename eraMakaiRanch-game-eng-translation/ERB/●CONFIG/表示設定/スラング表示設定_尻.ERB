@@ -1,0 +1,100 @@
+﻿
+;察してもらえるだろうけどケツどう分けていいかピンとこないんだ
+;もらったスラングをなるべく使わせていただいたよ
+;ケツスラング設定
+@SLANG_CONFIG_HIP
+
+CLEARLINE LINECOUNT
+PRINTL Select slang options for ass.
+DRAWLINE
+PRINTLC [ 0] 「butt」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／尻,0),1)
+PRINTLC [ 1] 「peach butt」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／尻,1),1)
+PRINTLC [ 2] 「rear」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／尻,2),1)
+PRINTLC [ 3] 「hip」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／尻,3),1)
+PRINTLC [ 4] 「ass」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／尻,4),1)
+PRINTL
+PRINTL 　《 Prefix Setting 》
+PRINTLC [10] 「voluptuous」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,0),0)
+PRINTL 　（With Boy Shape Curvy, Plump or Voluptuous）
+PRINTLC [11] 「plump」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,1),0)
+PRINTL 　（With Boy Shape Chubby, Full-figured or Thick）
+PRINTLC [12] 「well-padded」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,2),0)
+PRINTL 　（With Boy Shape Chubby, Full-figured or Thick）
+PRINTLC [13] 「chubby」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,3),0)
+PRINTL （With Boy Shape Full-figured or Thick）
+PRINTLC [14] 「slim」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,4),0)
+PRINTL 　（With Body Shape Skinny）
+PRINTLC [15] 「toned」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,5),0)
+PRINTL 　（With Body Shape Slender）
+PRINTLC [16] 「fertile」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,6),0)
+PRINTL （With Boy Shape Full-figured or Thick）
+PRINTLC [17] 「big」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,7),0)
+PRINTL 　（With Boy Shape Chubby, Full-figured or Thick）
+PRINTLC [18] 「small」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,8),0)
+PRINTL 　（With Body Shape Skinny or Slender）
+PRINTLC [19] 「rounded」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,9),0)
+PRINTL 　（With Body Shape not Skinny）
+PRINTLC [20] 「fresh」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,10),0)
+PRINTL 　（With Body Shape not Skinny）
+PRINTLC [21] 「soft」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,11),0)
+PRINTL 　（With Body Shape not Skinny）
+PRINTLC [22] 「shapely」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／尻,12),0)
+PRINTL 　（With Body Shape not Skinny）
+PRINTL
+PRINTL 　《 Special Substitutions 》
+PRINTL None
+;PRINTLC [20] 特殊置換を優先
+;CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／尻,0),0)
+;PRINTL 　…特殊置換の条件を満たす場合に優先して表示されます
+CALL SLANG_CONFIG_FOOTER
+INPUT
+SELECTCASE RESULT
+CASE 0 TO 6
+	INVERTBIT FLAG:スラング表示／尻,RESULT
+CASE 10 TO 22
+	INVERTBIT FLAG:スラング接頭語／尻,(RESULT -10)
+CASE 80
+	FLAG:スラング表示／尻 = 65535
+CASE 81
+	FLAG:スラング接頭語／尻 = 65535
+CASE 82
+	FLAG:スラング置換／尻 = 65535
+CASE 90
+	FLAG:スラング表示／尻 = 0
+CASE 91
+	FLAG:スラング接頭語／尻 = 0
+CASE 92
+	FLAG:スラング置換／尻 = 0
+CASE 98
+	PRINTL Reset slang options for ass to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG_HIP
+CASE 99
+	IF !FLAG:スラング表示／尻
+		PRINTW At least one slang option must be selected.
+	ELSE
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+

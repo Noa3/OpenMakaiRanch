@@ -1,0 +1,84 @@
+﻿
+;精液スラング設定
+@SLANG_CONFIG_SEMEN
+
+CLEARLINE LINECOUNT
+PRINTL Select slang options for semen.
+DRAWLINE
+PRINTLC [ 0] 「semen」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,0),1)
+PRINTLC [ 1] 「milky fluid」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,1),1)
+PRINTLC [ 2] 「cum」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,2),1)
+PRINTLC [ 3] 「cum juice」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,3),1)
+PRINTLC [ 4] 「sperm」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,4),1)
+PRINTLC [ 5] 「desire nectar」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,5),1)
+PRINTLC [ 6] 「seed」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,6),1)
+PRINTLC [ 7] 「baby milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,7),1)
+PRINTLC [ 8] 「cock milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,8),1)
+PRINTLC [ 9] 「male milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／精液,9),1)
+PRINTL
+PRINTL 　《  Prefix Setting 》
+PRINTL 　（拡張したらあなた／竿役の状態で条件付けの予定）
+PRINTLC [10] 「rich」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／精液,0),1)
+PRINTLC [11] 「thick」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／精液,1),1)
+PRINTLC [12] 「hot」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／精液,2),1)
+PRINTLC [13] 「boiling hot」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／精液,3),1)
+PRINTL
+PRINTL 　《 Special Substitutions 》
+PRINTLC [20] Priority for Special Substitutions
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／精液,0),0)
+PRINTL 　give Priority to cases that meet the conditions for special substitution 
+PRINTLC [29] 《 Custom Replacement 》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／精液,9),0)
+PRINTFORML 　（Current Setting: %SAVESTR:表記／精液%）
+CALL SLANG_CONFIG_FOOTER
+INPUT
+SELECTCASE RESULT
+CASE 0 TO 9
+	INVERTBIT FLAG:スラング表示／精液,RESULT
+CASE 10 TO 13
+	INVERTBIT FLAG:スラング接頭語／精液,(RESULT -10)
+CASE 20
+	INVERTBIT FLAG:スラング置換／精液,(RESULT -20)
+CASE 29
+	INVERTBIT FLAG:スラング置換／精液,(RESULT -20)
+CASE 80
+	FLAG:スラング表示／精液 = 65535
+CASE 81
+	FLAG:スラング接頭語／精液 = 65535
+CASE 82
+	FLAG:スラング置換／精液 = 65535
+CASE 90
+	FLAG:スラング表示／精液 = 0
+CASE 91
+	FLAG:スラング接頭語／精液 = 0
+CASE 92
+	FLAG:スラング置換／精液 = 0
+CASE 98
+	PRINTL Reset slang options for semen to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG_SEMEN
+CASE 99
+	IF !FLAG:スラング表示／精液
+		PRINTW At least one slang option must be selected.
+	ELSE
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+

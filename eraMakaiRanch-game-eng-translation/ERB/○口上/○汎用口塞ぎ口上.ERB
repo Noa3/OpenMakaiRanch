@@ -1,0 +1,79 @@
+﻿
+;口を塞がれているときに来る場所
+;そんなにバリエーション必要ないかな？と思いまとめる　口上から数パターンで来るのがいいかな？
+;SHACKLE_1　いろいろごちゃまぜになったもの
+;現在全口上これに分岐されるよ、必要に応じて2番以降を作ってね
+;いうて口塞がれてるので1つあれば十分では？とは思う
+
+;ARGS:0　シチュ指定　ARGS:1,2　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_MOUTH_SHACKLE_1(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+;あんまり多すぎてもあれだし一部に対応とかにする？
+;調教中か体内凌辱の間だけ有効化されるはず
+;Ｍ装備ならとりあえずここ来てここから表示するしない選ぶほうがやりやすいかも
+
+SELECTCASE ARGS:0
+CASE "射精"
+	;中にしたかぶっかけかで分岐
+	;SOURCE:乳内射精経験は…うーん、ぶっかけ？
+	IF SOURCE:膣内射精経験 || SOURCE:尻穴射精経験 || SOURCE:精飲経験
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Ahh〜♥ Mmm～っっっ♥♥♥」"
+			CALL MESSAGE_BOX,@"「Ahh〜♥♥ Mmm～っ♥♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Ahh!? Uhh, uhh!♥」"
+			CALL MESSAGE_BOX,@"「Uhh!? Mmm, Ahh♥」"
+		ENDIF
+	ELSE
+		CALL MESSAGE_BOX,@"「Mmm, Mmm…♥」"
+		CALL MESSAGE_BOX,@"「Uhh!?… Mmm…」"
+	ENDIF
+	
+CASE "絶頂"
+	CALL MESSAGE_BOX,@"「Ahh〜♥ Mmm♥」"
+	CALL MESSAGE_BOX,@"「Mmm〜♥ Fuu♥ Uhh〜♥」"
+	CALL MESSAGE_BOX,@"「Mmm♥ Guu♥ Uhh♥」"
+
+CASE "搾乳"
+	CALL MESSAGE_BOX,@"「Uhhhhh～～～っっ♥」"
+	CALL MESSAGE_BOX,@"「Uhh♥ Mmm♥♥ … Mmm～～～っ♥♥」"
+	CALL MESSAGE_BOX,@"「Mmm Mmm♥♥ Mmm～っ♥♥」"
+	
+CASE "抽出"
+	CALL MESSAGE_BOX,@"「Mmm… Mmm♥」"
+	CALL MESSAGE_BOX,@"「Mmm♥ Mmm♥ Mmm〜♥」"
+	CALL MESSAGE_BOX,@"「Mmm〜…♥ Mmm♥ … Mmm…♥」"
+
+CASE "調教コマンド"
+	SELECTCASE ARGS:2
+	
+	;継続は出さないようにする　同じのがいくつも並んじゃうので
+	CASE "継続"
+	
+	;焦らしを入れる
+	CASE "焦らし"
+		IF CFLAG:崩壊
+			CALL MESSAGE_BOX,@"「Mmm… Mmm………」"
+			CALL MESSAGE_BOX,@"「Uhh… Mmm…」"
+			CALL MESSAGE_BOX,@"「Mmm… Mmm… Uhh…」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Mmm…♥ Mmm♥♥」"
+			CALL MESSAGE_BOX,@"「…♥ Mmm♥ Mmm〜!」"
+		ENDIF
+	
+	CASEELSE
+		IF CFLAG:崩壊
+			CALL MESSAGE_BOX,@"「Mmm… Mmm………」"
+			CALL MESSAGE_BOX,@"「Uhh… Mmm…」"
+			CALL MESSAGE_BOX,@"「Mmm… Mmm… Uhh…」"
+		ELSEIF EX:総絶頂 >= 50
+			CALL MESSAGE_BOX,@"「Mmm♥ Mmm♥♥♥」"
+			CALL MESSAGE_BOX,@"「Mmm〜♥ Mmm♥♥ Mmm〜♥♥♥」"
+			CALL MESSAGE_BOX,@"「Mmm♥ Guu♥ Uhh♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Mmm〜! Uhh〜!!」"
+			CALL MESSAGE_BOX,@"「Mmm!! Uhh!!」"
+			CALL MESSAGE_BOX,@"「Mmm!? Mmm〜! Mmm〜!」"
+		ENDIF
+	ENDSELECT
+ENDSELECT

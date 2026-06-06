@@ -1,0 +1,140 @@
+﻿
+;1ページ
+@SELF_CHARA_MAKE_APPEARAINCE_1
+
+PRINTL 　《 Appearance 》
+CALL HALFLINE
+PRINTLC [ 0] Height
+PRINTFORM ：%PRINT_HEIGHT()%
+
+;シャッフルはCSTR内
+SIF SELF_CHARA_MAKE_RANDOM
+	PRINTFORM （Shuffle for【%HEIGHT_ENG(CSTR:身長)%】）
+PRINTL
+PRINTLC [ 1] Body Shape
+PRINTFORML ：%FIGURE_ENG(CSTR:体型)%
+PRINTLC [ 2] Skin Color
+PRINTFORML ：%SKIN_ENG(CSTR:肌の色)%
+PRINTL
+CALL PRINT_HAIR_STYLE
+PRINTL
+PRINTLC [ 3] Hair Color
+PRINTFORML ：%HAIR_COLOR_ENG(CSTR:髪色)%
+PRINTLC [ 4] Characteristic
+IF CSTR:髪特徴 != ""
+	PRINTFORML ：%HAIR_CHAR_ENG(CSTR:髪特徴)%
+ELSE
+	CALL PRINTL_WORD_COLOR,@"：None","灰"
+ENDIF
+PRINTLC [ 5] Hair Style
+PRINTFORML ：%HAIR_STYLE_ENG(CSTR:髪型)%
+
+IF !SELF_CHARA_MAKE_RANDOM
+	CALL PRINTLC_WORD_COLOR,@"< 6> All Hair：Shuffle","灰"
+	PRINTL [ 7] Hair Color Code
+ELSE
+	PRINTLC [ 6] All Hair
+	CALL PRINTL_WORD_COLOR,@"< 7> Hair Color Code：Manual","灰"
+ENDIF
+PRINTLC [ 8] Visual Age
+PRINTFORML ：{CFLAG:外見年齢}歳
+PRINTLC [ 9] Pubic Hair
+PRINTFORML ：%CSTR:陰毛%
+
+PRINTL
+PRINT 　
+CALL PRINT_EYE_COLOR
+PRINTL
+
+;目は手動かどうかでだいぶ変更
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTL [10] Right Eye Color
+	PRINTL [11] Right Eye Color Code
+	PRINTL [12] Left Eye Color
+	IF CSTR:左目の色 != ""
+		PRINTL [13] Left Eye Color Code
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"　Left Eye Color Code","灰"
+	ENDIF
+ELSE
+	PRINTL [10] Eye Color
+	CALL PRINTL_WORD_COLOR,@"<11> Eye Color Code：Manual","灰"
+	PRINTL [12] Heterochromia
+	PRINTL
+ENDIF
+PRINTLC [14] Eye Shape
+IF CSTR:瞳の形 != ""
+	PRINTFORML ：%EYE_ENG(CSTR:瞳の形)%
+ELSE
+	CALL PRINTL_WORD_COLOR,@"：Normal","灰"
+ENDIF
+PRINTLC [15] Eye Feature
+IF CSTR:目の特徴 != ""
+	PRINTFORML ：%EYE_ENG(CSTR:目の特徴)%
+ELSE
+	CALL PRINTL_WORD_COLOR,@"：None","灰"
+ENDIF
+PRINTL
+
+
+
+@SELF_CHARA_MAKE_APPEARAINCE_2
+
+PRINTFORML 　《 %SAVESTR:表記／乳房% 》
+CALL HALFLINE
+PRINTLC [ 0] Breast Size
+PRINTFORM ：%PRINT_BUSTSIZE(ABL:バストサイズ)%
+CALL PRINT_BUST_C(1,1)
+
+;シャッフルはサイズ内
+SIF SELF_CHARA_MAKE_RANDOM
+	PRINTFORM （Shuffle for【%PRINT_BUSTSIZE_TALENT()%】）
+PRINTL
+PRINTL
+PRINTFORMLC [ 1] %SAVESTR:表記／乳房% Firmness
+PRINTFORML ：%BREAST_FIRMNESS_ENG(CSTR:乳弾力)%
+PRINTLC [ 2] Nipple Color
+SETCOLOR CFLAG:カラーコード／乳首
+PRINTFORML ：%NIPPLE_COLOR_ENG(CSTR:乳首の色)%
+RESETCOLOR
+
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTL [ 3] Nipple Color Code
+ELSE
+	CALL PRINTL_WORD_COLOR,@"< 3> Nipple Color Code：Manual","灰"
+ENDIF
+PRINTL
+PRINTLC [ 4] ＢSensitivity
+PRINTFORML ：{ABL:Ｂ感度,3}\%
+PRINTLC [ 5] ＮSensitivity
+PRINTFORML ：{ABL:Ｎ感度,3}\%
+PRINTLC [ 6] 【Inverted Nipples】
+CALL PRINT_ONOFF(TALENT:陥没乳首,1)
+PRINTL
+PRINTLC [10] 【Lactating】
+CALL PRINT_ONOFF(MARK:母乳体質)
+IF MARK:母乳体質
+	IF TALENT:先天的母乳体質
+		PRINTL [Innate Lactation]
+	ELSE
+		PRINTL [Childbirth Experience]
+	ENDIF
+ELSE
+	PRINTL
+ENDIF
+PRINTLC [11] Milk Capacity Adjustment
+PRINTFORML ：{CFLAG:母乳容量補正値}\%
+PRINTLC [12] Milk Value Adjustment
+PRINTFORML ：{CFLAG:母乳価格ボーナス}\%
+IF ABL:バストサイズ >= BUSTSIZE_巨乳
+	PRINTLC [13] 【Superb Breast Pressure】
+	CALL PRINT_ONOFF(TALENT:極上乳圧,1)
+ELSE
+	CALL PRINTL_WORD_COLOR,@"<14> 【Superb Breast Pressure】requires【Large Breasts】or bigger","灰"
+ENDIF
+PRINTL
+PRINTFORMLC [20] Breast Size +1（MAX{BUSTSIZE_超乳 -1}）
+PRINTL [21] Breast Size -1
+
+
+

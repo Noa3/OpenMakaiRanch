@@ -1,0 +1,68 @@
+﻿
+;CSV読み込み後の身長補正
+@CSV_CHARA_HEIGHT_FIX
+
+;オトコの場合オトコ用へ
+IF TALENT:オトコ
+	CALL CSV_CHARA_HEIGHT_FIX_MALE
+	RETURN
+ENDIF
+
+;身長の数値が入ってる場合が基本
+SELECTCASE CFLAG:身長
+
+;身長数値が入ってない場合→身長ランダム処理に飛ぶ
+;CSTRが入ってる場合はその範囲のランダム数値が入る
+;CSTRもない場合は[標準]にするので身長入れ忘れ対策にもなってる
+CASE 0
+	CALL RANDOM_SLAVE_HEIGHT
+CASE IS <= HEIGHT_MAX_妖精体型
+	CSTR:身長 = 妖精体型
+CASE IS <= HEIGHT_MAX_幼児体型
+	CSTR:身長 = 幼児体型
+CASE IS <= HEIGHT_MAX_子供体型
+	CSTR:身長 = 子供体型
+CASE IS <= HEIGHT_MAX_小柄
+	CSTR:身長 = 小柄
+CASE IS <= HEIGHT_MAX_低身長
+	CSTR:身長 = 低身長
+CASE IS <= HEIGHT_MAX_標準
+	CSTR:身長 = 標準
+CASE IS <= HEIGHT_MAX_高身長
+	CSTR:身長 = 高身長
+CASE IS <= HEIGHT_MAX_大柄
+	CSTR:身長 = 大柄
+CASEELSE
+	CSTR:身長 = 巨躯
+ENDSELECT
+
+
+
+;オトコ用
+@CSV_CHARA_HEIGHT_FIX_MALE
+
+SELECTCASE CFLAG:身長
+CASE 0
+	CALL RANDOM_SLAVE_HEIGHT
+CASE IS <= HEIGHT_MAX_妖精体型
+	CSTR:身長 = 妖精体型
+CASE IS <= HEIGHT_MAX_幼児体型
+	CSTR:身長 = 幼児体型
+CASE IS <= HEIGHT_MAX_子供体型
+	CSTR:身長 = 子供体型
+CASE IS <= HEIGHT_MAX_小柄
+	CSTR:身長 = 小柄
+CASE IS <= MALE_HEIGHT_MAX_低身長
+	CSTR:身長 = 低身長
+CASE IS <= MALE_HEIGHT_MAX_標準
+	CSTR:身長 = 標準
+CASE IS <= MALE_HEIGHT_MAX_高身長
+	CSTR:身長 = 高身長
+CASE IS <= MALE_HEIGHT_MAX_大柄
+	CSTR:身長 = 大柄
+CASEELSE
+	CSTR:身長 = 巨躯
+ENDSELECT
+
+
+

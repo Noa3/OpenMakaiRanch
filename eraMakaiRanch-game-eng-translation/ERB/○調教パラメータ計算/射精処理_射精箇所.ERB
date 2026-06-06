@@ -1,0 +1,104 @@
+﻿
+;射精箇所をコンフィグから参照
+;ARGS:場所
+@EJACULATION_PART_REF(ARGS)
+#DIMS PARTS
+
+;霊力or魔力注ぎ込みの場合常に中に出す
+SIF SOURCE:注ぎ込み霊力量 || SOURCE:注ぎ込み魔力量
+	RETURN 1
+
+;先にキャラ個別設定を見る
+PARTS = 個別設定／射精箇所／%ARGS%
+
+;-1→毎回選ぶ
+IF CFLAG:PARTS < 0
+	CALL SELECT_EJACULATION_PART(ARGS)
+	
+	;デフォルトセット
+	SIF DEFAULT_SET
+		CFLAG:PARTS = RESULT
+	RETURN RESULT
+
+;+→選ばず返す
+ELSEIF CFLAG:PARTS > 0
+	RETURN CFLAG:PARTS
+ENDIF
+
+;全体コンフィグを見る→+なら選ばず返す
+PARTS = 射精箇所／%ARGS%
+SIF FLAG:PARTS
+	RETURN FLAG:PARTS
+
+;ここまで来たら選択
+CALL SELECT_EJACULATION_PART(ARGS)
+PARTS = 個別設定／射精箇所／%ARGS%
+SIF DEFAULT_SET
+	CFLAG:PARTS = RESULT
+RETURN RESULT
+
+
+
+;射精箇所選択
+;ARGS:場所
+@SELECT_EJACULATION_PART(ARGS)
+#DIM DYNAMIC SET
+#DIM EJACULATION_PART
+
+LINECOUNT_BEFORE = LINECOUNT
+DEFAULT_SET = SET
+CALL PRINTL_WORD_COLOR,@"%CALLNAME:0% is close to ejaculating...","桃"
+SOURCE:射精箇所選択 = 1
+SELECTCASE ARGS
+CASE "Ｖセックス"
+	PRINTLC [ 0] Cum in pussy
+	PRINTLC [ 1] Pull out and cum on pussy
+	
+CASE "Ａセックス"
+	PRINTLC [ 0] Cum in ass
+	PRINTLC [ 1] Pull out and cum on ass
+	
+CASE "パイズリ"
+	IF ABL:バストサイズ < BUSTSIZE_並乳
+		PRINTLC [ 0] Cum on tits
+	ELSE
+		PRINTLC [ 0] Cum between tits
+	ENDIF
+	PRINTLC [ 1] Pull away and cum on tits
+	PRINTLC [ 2] Pull away and cum on face
+	
+CASE "縦パイズリ"
+	PRINTLC [ 0] Cum Between Tits
+	PRINTLC [ 1] Pull away and cum on tits
+	PRINTLC [ 2] Pull away and cum on face
+	
+CASE "フェラチオ","イラマチオ"
+	PRINTLC [ 0] Cum in mouth
+	PRINTLC [ 1] Pull out and cum on face
+ENDSELECT
+
+;デフォルト設定の追加
+PRINTL
+PRINT [ 9] Set as default for this character
+CALL PRINT_CHECKBOX(SET,1)
+INPUT
+
+;+1してRETURN候補に入れる
+EJACULATION_PART = RESULT +1
+
+;デフォルト設定
+SIF RESULT == 9
+	INVERTBIT SET,0
+
+;（縦）パイズリ以外は2だとダメ
+IF EJACULATION_PART == 3 && GROUPMATCH(ARGS,"パイズリ","縦パイズリ")
+	RETURN EJACULATION_PART
+
+ELSEIF EJACULATION_PART == 1 || EJACULATION_PART == 2
+	RETURN EJACULATION_PART
+ENDIF
+
+;012以外は消して再開
+CLEARLINE LINECOUNT -LINECOUNT_BEFORE
+RESTART
+

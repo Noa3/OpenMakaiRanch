@@ -1,0 +1,164 @@
+﻿
+;霊力・魔力の注入
+@POWER_INJECTION
+
+;霊力注ぎ込みと魔力はどっちか
+;体力の直接増減は射精処理でやる
+IF SOURCE:注ぎ込み霊力量
+	CALL POWER_INJECTION_EP
+ELSEIF SOURCE:注ぎ込み魔力量
+	CALL POWER_INJECTION_MP
+ENDIF
+
+
+
+;霊力注入
+@POWER_INJECTION_EP
+
+BASE:0:霊力 -= SOURCE:注ぎ込み霊力量
+
+;最大霊力ではない場合現在値だけ増加
+IF BASE:霊力 < MAXBASE:霊力
+	BASE:霊力 = LIMIT(BASE:霊力 +SOURCE:注ぎ込み霊力量,0,MAXBASE:霊力)
+	CALL POWER_INJECTION_EP_MESSAGE
+
+;最大値で条件満たすなら最大値ごと注入量の1/4増加
+ELSE
+	CALL SLAVE_MAX_EP_UP
+ENDIF
+
+;増加後の霊力量からレベルを再計算
+CALL SLAVE_LEVELUP
+
+;体力増加判定
+CALL SLAVE_HP_UP
+
+
+
+;最大霊力の増加
+@SLAVE_MAX_EP_UP
+#DIM MAX_UP_EP
+
+;最大霊力・搾り尽くしたことがある・隷属・あなた霊力より低い　が条件
+SIF !EXP:霊力ゼロ || !＃陥落状態／隷属＃ || MAXBASE:霊力 >= MAXBASE:0:霊力
+	RETURN
+MAX_UP_EP = SOURCE:注ぎ込み霊力量 /4
+MAX_UP_EP -= (MAX_UP_EP %10)
+
+;あなた最大値－奴隷最大値より高い場合この差に下げる
+SIF MAX_UP_EP > MAXBASE:0:霊力 -MAXBASE:霊力
+	MAX_UP_EP = MAXBASE:0:霊力 -MAXBASE:霊力
+MAXBASE:霊力 += MAX_UP_EP
+BASE:霊力 = MAXBASE:霊力
+CALL SLAVE_MAX_EP_UP_MESSAGE(MAX_UP_EP)
+
+
+
+;奴隷が霊力注ぎ込まれてのレベルアップ
+@SLAVE_LEVELUP
+#DIM NOW_LEVEL
+
+CALL EP_LEVEL_CALC
+NOW_LEVEL = RESULT
+SIF NOW_LEVEL <= BASE:レベル
+	RETURN
+CALL SLAVE_LEVELUP_MESSAGE(NOW_LEVEL)
+BASE:レベル = NOW_LEVEL
+
+;元のレベルを超えていたらMAXも上げる
+SIF MAXBASE:レベル < BASE:レベル
+	MAXBASE:レベル = BASE:レベル
+
+
+
+;奴隷の体力増加
+@SLAVE_HP_UP
+
+;搾り尽くしたことがある・隷属・HP最大値が9900未満が条件
+SIF !EXP:霊力ゼロ || !＃陥落状態／隷属＃ || MAXBASE:体力 >= HP_MAX
+	RETURN
+CFLAG:霊力蓄積量 += SOURCE:注ぎ込み霊力量
+
+;最大HP*50の霊力を注ぐたびにHP+50
+SIF CFLAG:霊力蓄積量 < MAXBASE:体力 *50
+	RETURN
+CFLAG:霊力蓄積量 -= (MAXBASE:体力 *50)
+
+;溢れた分は次の増加値-10まで下がる
+SIF CFLAG:霊力蓄積量 >= MAXBASE:体力 *50
+	CFLAG:霊力蓄積量 = MAXBASE:体力 *50 -10
+MAXBASE:体力 += 50
+BASE:体力 += 50
+CALL SLAVE_HP_UP_MESSAGE
+
+
+
+
+
+;魔力注入
+@POWER_INJECTION_MP
+
+BASE:0:魔力 -= SOURCE:注ぎ込み魔力量
+
+;隷属してる・魔力がない　場合蓄積して300万になると魔力増加
+IF !MAXBASE:魔力
+	CALL SLAVE_MP_INJECTION
+
+;魔力が80%以上、または最大魔力の半分以上注ぎ込んだ
+;SOURCE:魔力上限増加可能が80%以上で実行のフラグ
+ELSEIF SOURCE:魔力上限増加可能 || SOURCE:注ぎ込み魔力量 >= MAXBASE:魔力 /2
+	;隷属・あなた魔力より低い　なら最大値ごと注入量の1/5増加　霊力より回復しやすいのでちと減らす
+	IF ＃陥落状態／隷属＃ && MAXBASE:魔力 < MAXBASE:0:魔力
+		CALL SLAVE_MAX_MP_UP
+	
+	;ではない場合現在値だけ増加
+	ELSE
+		BASE:魔力 = LIMIT(BASE:魔力 +SOURCE:注ぎ込み魔力量,0,MAXBASE:魔力)
+		CALL POWER_INJECTION_MP_MESSAGE
+	ENDIF
+
+;魔力が80%以上ではない場合現在値だけ増加
+ELSE
+	BASE:魔力 = LIMIT(BASE:魔力 +SOURCE:注ぎ込み魔力量,0,MAXBASE:魔力)
+	CALL POWER_INJECTION_MP_MESSAGE
+ENDIF
+
+
+
+;魔力のない奴隷に魔力を注ぎ込む
+@SLAVE_MP_INJECTION
+
+;隷属してないと無効
+SIF !＃陥落状態／隷属＃
+	RETURN
+CFLAG:魔力蓄積量 += SOURCE:注ぎ込み魔力量
+
+;300万を超えたら魔力が宿る
+SIF CFLAG:魔力蓄積量 < MP_OCCUR_VALUE
+	RETURN
+CFLAG:魔力蓄積量 = 0
+CFLAG:魔力定着 = 1
+MAXBASE:魔力 += 100
+BASE:魔力 += 100
+CALL SLAVE_MP_INJECTION_MESSAGE
+
+
+
+;最大魔力増加
+@SLAVE_MAX_MP_UP
+#DIM MAX_UP_MP
+
+;魔力80%以上・隷属・あなた魔力より低い　が条件
+SIF !＃陥落状態／隷属＃ || MAXBASE:魔力 >= MAXBASE:0:魔力
+	RETURN
+MAX_UP_MP = SOURCE:注ぎ込み魔力量 /5
+MAX_UP_MP -= (MAX_UP_MP %10)
+SIF MAX_UP_MP > MAXBASE:0:魔力 - MAXBASE:魔力
+	MAX_UP_MP = MAXBASE:0:魔力 - MAXBASE:魔力
+MAXBASE:魔力 += MAX_UP_MP
+BASE:魔力 += MAX_UP_MP
+CALL SLAVE_MAX_MP_UP_MESSAGE(MAX_UP_MP)
+
+
+
+

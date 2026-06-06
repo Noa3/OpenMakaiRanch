@@ -1,0 +1,35 @@
+﻿
+;帰宅
+@GOING_HOME
+
+;ペットで外出していなければおわり
+SIF !FLAG:外出済み || FLAG:外出済み == 20
+	RETURN
+TARGET = 0
+
+;ITEM:堕天馬→100
+;FLAG:外出済み　に+1からが入ってるので-1
+ANIMAL = %ITEMNAME:(100 -1 +FLAG:外出済み)%
+PET_NAME = %PET_NAME_REF(ANIMAL)%
+
+;たまに龍のタマ見つける
+CALL GOING_HOME_DRAGON_BALL
+PRINTFORML %CALLNAME% returned home from the city with %PET_NAME%.
+
+;運動して体型-
+PRINTFORM %PET_NAME%：
+CALL PET_WEIGHT_MINUS(300)
+PRINTL
+
+;ごほうび選択
+CALL MASTER_REWORD_ANIMAL_SELECT
+
+IF FLAG:外出中着衣
+	PRINTFORMW Returning from the city, %CALLNAME% changed out of the work clothes.
+	EQUIP:0:装備中ID／衣服 = 0
+	FLAG:外出中着衣 = 0
+	CALL AJUST_STRIP_FLAG
+ENDIF
+
+
+

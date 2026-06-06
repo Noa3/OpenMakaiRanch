@@ -1,0 +1,42 @@
+﻿
+;選択肢設定デフォルト
+@DEFAULT_CONFIG_CHOICE
+
+VARSET FLAG,0,2300,2500
+FLAG:仕事休憩体力 = 300
+FLAG:搾乳休憩母乳量 = 500
+FLAG:呼び方自動補正確認 = 1
+FLAG:部屋割り自動変更BIT = 1
+CALL DEFAULT_TRAIN_AUTO_CONFIG
+CALL DEFAULT_TRAIN_FILTER_CONFIG
+CALL DEFAULT_CAPTURE_CONFIG
+
+
+
+;調教中自動選択肢設定デフォルト
+@DEFAULT_TRAIN_AUTO_CONFIG
+
+VARSET FLAG,0,2400,2420
+FLAG:射精箇所／縦パイズリ = 1
+FLAG:射精箇所／イラマチオ = 1
+FLAG:射精箇所／Ｖセックス = 1
+FLAG:射精箇所／Ａセックス = 1
+FLAG:調教後衣服没収BIT = 0b111
+
+
+
+;調教中／フィルタ・確認設定デフォルト
+@DEFAULT_TRAIN_FILTER_CONFIG
+
+FLAG:挿入確認BIT = 0b111111
+FLAG:アナルフィルタBIT = 0
+
+
+
+;捕獲時選択肢・キャラフラグデフォルト
+@DEFAULT_CAPTURE_CONFIG
+
+VARSET FLAG,0,2420,2430
+FLAG:捕獲時選択肢BIT = 0b101
+FLAG:加入奴隷デフォルト／アビリティ有効個人BIT = 65535
+

@@ -1,0 +1,186 @@
+﻿; ======================================
+; 口上エントリポイント
+;ARGS:0　シチュ指定　ARGS:1,2　さらに細かく振り分けたい場合に使用
+@KOJO_PRINT(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+;ハートの文中らくらく表記とランダム表示を触手宮から参考にしました　ありがとうございます
+;CFLAGにより使用する口上の振り分けをする
+;んまあ要するに追加されてもなるべく追加口上のファイル以外いじらなくていいようにみたいなもんだね
+
+;まず初期化
+VARSET MESSAGE_BOX
+VARSET MESSAGE_COUNT
+
+;そもそも口上表示フラグOFFなら表示しない　口上表示がOFFでも同様
+SIF !FLAG:口上表示 || !CFLAG:口上表示
+	RETURN
+
+;口上表示するときは行の最初から
+SIF !LINEISEMPTY()
+	PRINTL
+
+;対応口上の読み込み
+;文字列で判断すると書くときわかりやすいけどデータ量は多いだろうなあ
+;データ量が問題になってきたら数値指定に変更するかもしれない
+;まあそこまで膨大なファイル数になるとは思ってないのでへーきへーき
+
+;動作確認用口上を使う場合候補を全部表示する
+IF CSTR:使用口上 == "動作確認用口上"
+	CALL KOJO_OPERATION_CHECK(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+	RETURN
+ENDIF
+
+;専用口上を使う場合まずそちらを呼び出し
+IF CFLAG:専用設定／口上
+	TRYCALLFORM EX_KOJO_%CSTR:識別名%_%CSTR:出典作品名%(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+	
+	;専用口上を呼び出して中身が入っていたら口上抽選+表示して終了
+	;これにより専用口上にしたい部分だけちょっぴり書いて他は汎用口上で補うって使い方ができるよ！
+	IF MESSAGE_COUNT
+		CALL MESSAGE_PRINT
+		RETURN
+	ENDIF
+ENDIF
+
+;専用口上使用しないか見つからなかったら汎用口上を呼び出し
+TRYCALLFORM KOJO_GENERAL_INDEX_%CSTR:使用口上%(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+;箱に中身が入っていたら表示
+SIF MESSAGE_COUNT
+	CALL MESSAGE_PRINT
+
+
+
+;======================================
+;口上追加
+;文中で改行を行いたい場合\nのエスケープシーケンスを利用してください
+@MESSAGE_BOX(ARGS)
+
+MESSAGE_BOX:(MESSAGE_COUNT ++) = %ARGS%
+
+; ======================================
+; 汎用口上 口上選出・表示処理
+@MESSAGE_PRINT
+#DIM  LCOUNT,2		;ループ用
+#DIM  FIND_ARRAY_COUNT,VARSIZE("MESSAGE_BOX")		;ストック別適合数
+#DIM  CANDIDATE_COUNT		;ランダム選出用の箱の個数
+#DIMS CANDIDATE_BOX,500	;ランダム選出用の箱
+#DIM  TEMP
+
+;初期化
+VARSET FIND_ARRAY_COUNT
+VARSET CANDIDATE_COUNT
+VARSET CANDIDATE_BOX
+	
+;過去ログとMESSAGE_BOX内の口上を比較、被り数をカウント
+FOR LCOUNT:0,0,VARSIZE("MESSAGE_LOG")
+	FOR LCOUNT:1,0,MESSAGE_COUNT
+		SIF MESSAGE_BOX:(LCOUNT:1) == MESSAGE_LOG:(LCOUNT:0)
+			FIND_ARRAY_COUNT:(LCOUNT:1)++
+	NEXT
+NEXT
+
+;口上ランダム選出用の箱を作る
+;箱の中身はストックを過去ログと照らし合わせて比率調整した口上の詰め合わせ
+TEMP = 0
+WHILE (CANDIDATE_COUNT != VARSIZE("CANDIDATE_BOX"))
+	;1 /(適合回数 +1)の確率でBOXに登録
+	;つまり1度呼び出された口上は1/2,2度呼び出された口上は1/3のように登録確率が下がっていく
+	;ただしストックに一種類の口上しか入っていない場合は判定なしで登録
+	;(1/VARSIZE("CANDIDATE_BOX")) *VARSIZE("CANDIDATE_BOX"))を無駄に行う事になる為)
+	
+	IF !(RAND:(FIND_ARRAY_COUNT:TEMP +1)) || MESSAGE_COUNT == 1
+		CANDIDATE_BOX:CANDIDATE_COUNT = %MESSAGE_BOX:TEMP%
+		CANDIDATE_COUNT ++
+	ENDIF
+	
+	;口上ストックインクリメント ストック数を超えたらリセット
+	TEMP++
+	SIF TEMP == MESSAGE_COUNT
+		TEMP = 0
+WEND
+
+;ランダム口上のうち一つを確定&表示
+TEMP = RAND:VARSIZE("CANDIDATE_BOX")
+CALL MESSAGE_PRINT_ESCAPE(CANDIDATE_BOX:TEMP)
+RESETCOLOR
+PRINTL
+
+;確定した口上をログに保存
+ARRAYSHIFT MESSAGE_LOG,1,""
+MESSAGE_LOG:0 = %CANDIDATE_BOX:TEMP%
+
+;初期化しないことでMESSAGE_COUNTが1以上＝口上表示した　と判定に使える（地の文分岐に使えるかも）
+
+
+
+;======================================
+;汎用口上 口上エスケープシーケンス処理・表示
+@MESSAGE_PRINT_ESCAPE(MESSAGE_VALUE,FONT_COLOR = 0)
+#DIM  DYNAMIC SPLIT_COUNT
+#DIM  DYNAMIC LCOUNT
+#DIM  DYNAMIC FONT_COLOR
+#DIMS DYNAMIC MESSAGE_VALUE
+#DIMS DYNAMIC MESSAGE_ARRAY,100
+
+VARSET MESSAGE_ARRAY
+
+;メッセージ中で\d
+;\d～\dの間、又は\d(単独)以降の文字列をシステム標準色で表示する
+SPLIT MESSAGE_VALUE,"\\d",MESSAGE_ARRAY
+SPLIT_COUNT = RESULT
+IF SPLIT_COUNT != 1
+	FOR LCOUNT,0,SPLIT_COUNT
+		;\dに挟まれた内容のみシステム標準色で表示
+		IF LCOUNT %2 == 1
+			CALL MESSAGE_PRINT_ESCAPE(MESSAGE_ARRAY:(LCOUNT),1)
+		;通常文字色で描画
+		ELSE
+			CALL MESSAGE_PRINT_ESCAPE(MESSAGE_ARRAY:(LCOUNT),0)
+		ENDIF
+	NEXT
+	RETURN
+ENDIF
+
+;メッセージ中で\n
+SPLIT MESSAGE_VALUE,"\n",MESSAGE_ARRAY
+SPLIT_COUNT = RESULT
+IF SPLIT_COUNT != 1
+	FOR LCOUNT,0,SPLIT_COUNT
+		CALL MESSAGE_PRINT_ESCAPE(MESSAGE_ARRAY:(LCOUNT),FONT_COLOR)
+		;改行処理
+		SIF LCOUNT != (SPLIT_COUNT -1)
+			PRINTL
+	NEXT
+	RETURN
+ENDIF
+
+;メッセージ中で♥
+SPLIT MESSAGE_VALUE,"♥",MESSAGE_ARRAY
+SPLIT_COUNT = RESULT
+IF SPLIT_COUNT != 1
+	FOR LCOUNT,0,SPLIT_COUNT
+		CALL MESSAGE_PRINT_ESCAPE(MESSAGE_ARRAY:(LCOUNT),FONT_COLOR)
+		;ハート表示
+		SIF LCOUNT != (SPLIT_COUNT -1)
+			CALL HEARTCB(0xD02830)
+	NEXT
+	RETURN
+ENDIF
+
+;フォントカラー指定
+;FONT_COLORが1の場合RESETCOLORする
+;CFLAG:カラーコード／口上が0でもRESETCOLOR
+
+IF CFLAG:カラーコード／口上 && !FONT_COLOR
+	SETCOLOR CFLAG:カラーコード／口上
+ELSE
+	RESETCOLOR
+ENDIF
+
+;既に平文
+PRINTFORM %MESSAGE_VALUE%
+
+;文字色をリセット
+RESETCOLOR
+

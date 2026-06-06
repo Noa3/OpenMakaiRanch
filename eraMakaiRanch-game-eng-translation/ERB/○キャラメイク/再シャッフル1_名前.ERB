@@ -1,0 +1,90 @@
+﻿;名前変更
+;ARG→貢献pt消費がそもそもなし
+@CHARA_MAKE_SLAVE_SHUFFLE_NAME(ARG)
+
+;一人称が名前の場合設定し直す　この関数中に分岐ある場合書き換え必要、今は大丈夫
+SIF CFLAG:一人称が名前
+	CALL RANDOM_SLAVE_CALLPERSON
+
+CLEARLINE LINECOUNT
+CALL PRINT_IMAGE("ステータス")
+CALL PRINT_PORTRAIT
+PRINT Change slave name.
+SIF !ARG
+	PRINT （Doens't use Contribution Points）
+CALL MANYL(2)
+PRINTFORML Name：%CALLNAME%
+CALL NAME_DUPLICATE_CHECK
+PRINT Full Name：
+IF NAME == ""
+	CALL PRINTL_WORD_COLOR,@"(Not Set)","灰"
+ELSE
+	PRINTFORML %NAME%
+ENDIF
+CALL HALFLINE
+; Custom random name override
+CALL CREATE_NAME_LIST
+PRINTL 《 Randomize Name 》※Full name will be reset when randomizing
+PRINTL [ 0] Japanese
+PRINTL [ 1] English
+PRINTL [ 2] Chinese
+;PRINTL [ 2] French
+;PRINTL [ 3] German
+;PRINTL [ 4] Italian
+;PRINTL [ 5] Russian
+;PRINTL [ 6] Fantasy
+PRINTL
+PRINTL [20] Reset Source Information
+CALL PRINTL_ALIGN
+DRAWLINE
+PRINTLC [10] Input Manually
+PRINTLC [11] Input Full Name
+PRINTL [99] Done
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	NAME =
+	CALL GENERATE_NAME_JF
+	CALLNAME = %RESULTS%
+CASE 1
+	NAME =
+	CALL GENERATE_NAME_KF
+	CALLNAME = %RESULTS%
+CASE 2
+	NAME =
+	CALL GENERATE_NAME_CF
+	CALLNAME = %RESULTS%
+CASE 10
+	PRINTL Please enter a name (Leave blank to cancel)
+	INPUTS
+	SIF RESULTS != ""
+		CALLNAME = %RESULTS%
+CASE 11
+	PRINTL Please enter a full name (Leave blank to cancel)
+	INPUTS
+	SIF RESULTS != ""
+		NAME = %RESULTS%
+CASE 20
+	PRINTL Reset character【Source】and【Identification Name】information, and return the name to blank.
+	PRINTL （These fields are empty for random characters, so it is not relevant for them）
+	PRINTL
+	PRINTL Reset?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL CSV_TITLE_SOURCE_RESET
+CASE 99
+	RETURN
+;CASEELSE
+	;ランダムに来たらフルネームは消す
+;	NAME =
+;	FIX = RESULT
+;	STR_MAX = 999
+;	STR_REF = 10000 +FIX *1000
+;	CALL STR_REF_SHUFFLE(STR_REF)
+;	CALLNAME = %RESULTS%
+ENDSELECT
+RESTART
+
+
+

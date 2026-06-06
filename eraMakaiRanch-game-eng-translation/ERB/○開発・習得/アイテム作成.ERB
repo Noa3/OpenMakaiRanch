@@ -1,0 +1,176 @@
+﻿
+;アイテム作成
+@ITEM_CREATION
+
+CLEARLINE LINECOUNT
+CALL SHOW_RESOURCE_UPGRADE("アイテム作成")
+PRINTFORML You will use magical energy and other resources to craft the item.
+PRINTL
+BR = 0
+CALL ITEM_CREATION_LIST
+PRINTL
+DRAWLINE
+CALL ITEM_DETAIL_ITEM_CREATION
+CALL PRINTL_ALIGN
+CALL ITEM_CREATION_JUDGE(SELECT_ITEM,1)
+DRAWLINE
+CALL RIGHT_RETURN_BUTTON(1,"戻る")
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	;購入処理
+	CALL ITEM_CREATION_BUY(1)
+CASE 1
+	CALL ITEM_CREATION_BUY
+CASE 98
+	;CALL BROWSE_HINT("製薬")
+CASE 99
+	RETURN
+CASE 1800
+	SELECT_ITEM = RESULT
+ENDSELECT
+RESTART
+
+
+
+;アイテム作成リスト
+@ITEM_CREATION_LIST
+PRINTL 　　　《 Item Creation 》
+
+;まだ触手服しかないので直接代入
+;ITEM:触手服→1800
+LOCAL = 1800
+
+;アイテム名があれば表示
+;SIF ITEMNAME:SELECT_ITEM == ""
+;	CONTINUE
+CALL BR_PLUS(3)
+;リソース不足チェック
+CALL ITEM_CREATION_JUDGE(LOCAL)
+IF RESULT
+	PRINTFORMLC [{LOCAL}] %ITEMNAME:LOCAL% 
+ELSE
+	CALL PRINTLC_WORD_COLOR,@"[{LOCAL}] %ITEMNAME:LOCAL%","灰"
+ENDIF
+
+
+
+
+;必要な魔力（現状ではCSV記載の価格そのまま）
+;ARG→選択アイテムID
+@ITEM_CREATION_PRICE_MP(ARG)
+#FUNCTION
+
+RETURNF ITEMPRICE:ARG
+
+
+;アイテム説明
+@ITEM_DETAIL_ITEM_CREATION
+
+;対応IDでないなら汎用出して帰る
+IF SELECT_ITEM != 1800 || ITEMNAME:SELECT_ITEM == ""
+	PRINTL  《 Clothing Description Shown Here 》
+	RETURN
+ENDIF
+;とりあえずアイテム名、価格、所持数を出す
+PRINTFORML %ITEMS_ENG(ITEMNAME:SELECT_ITEM)%：%TOSTR(ITEMPRICE:SELECT_ITEM,"#,0")%MP Owned {ITEM:SELECT_ITEM,3} 
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "触手服"
+	PRINTFORML A leotard made of living tentacles.
+	PRINTL It looks like a regular leotard, but after wearing it, its true nature reveals itself. Countless fine tentacles hidden inside relentlessly torment the wearer.
+	PRINTL When the wearer tries to take it off, the tentacles' movements become more intense, sapping their resistance, making it extremely difficult to remove the suit on their own.
+	PRINTL 
+	PRINTL Creation Requirements: Magic Infusion, Brush Tentacle Mastery
+	PRINTFORML Consumption Material: Tentacle×1(所持数{FLAG:触手出産合計})
+ENDSELECT
+
+
+
+;アイテム作成実行　ARG=1だと一個指定
+@ITEM_CREATION_BUY(ARG)
+#DIM MP_COST
+
+MP_COST = ITEM_CREATION_PRICE_MP(SELECT_ITEM)
+
+IF !ARG
+	CALL ITEM_CREATION_JUDGE(SELECT_ITEM)
+	BUY_NUM = RESULT
+	PRINTFORML Please enter the number of ＜%ITEMS_ENG(ITEMNAME:SELECT_ITEM)%＞ you want to create.
+	PRINTFORML You can create up to 《 {BUY_NUM} 》 pieces.
+	PRINTL [ 0] Cancel
+	INPUT
+	SIF RESULT <= 0 || RESULT > BUY_NUM
+		RETURN
+	BUY_NUM = RESULT
+ELSE
+	BUY_NUM = 1
+ENDIF
+
+IF MP_COST
+	PRINTFORML Prioritize using %CALLNAME:0%'s Mana or Stored Mana?
+	PRINTFORMLC [ 0] %CALLNAME:0%'s Mana：%TOSTR(BASE:0:魔力,"#,0")%MP 
+	PRINTFORMLC [ 1] Stored Mana：%TOSTR(MONEY:貯蔵魔力,"#,0")%MP 
+	INPUT
+	IF !RESULT
+		BASE:0:魔力 -= (MP_COST * BUY_NUM)
+		SIF BASE:0:魔力 < 0
+			MONEY:貯蔵魔力 += BASE:0:魔力
+	ELSE
+		MONEY:貯蔵魔力 -= (MP_COST * BUY_NUM)
+		SIF MONEY:貯蔵魔力 < 0
+			BASE:0:魔力 += MONEY:貯蔵魔力
+	ENDIF
+ENDIF
+
+ITEM:SELECT_ITEM += BUY_NUM
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "触手服"
+	FLAG:触手出産合計 -= BUY_NUM
+ENDSELECT
+BASE:0:魔力 = LIMIT(BASE:0:魔力,0,MAXBASE:0:魔力)
+MONEY:貯蔵魔力 = LIMIT(MONEY:貯蔵魔力,0,FLAG:貯蔵魔力上限値)
+PRINTFORMW You have created 《 {BUY_NUM} 》 pieces of ＜%ITEMS_ENG(ITEMNAME:SELECT_ITEM)%＞
+
+
+
+;作成できるか判定　ARG=アイテム番号、ARG:1=1だと表示あり
+@ITEM_CREATION_JUDGE(ARG,ARG:1)
+#DIM MP_COST
+#DIM CREATION_C,3
+
+VARSET CREATION_C,99
+
+;対応IDでないなら汎用出して帰る
+IF ARG != 1800 || ITEMNAME:ARG == ""
+	PRINTL 
+	RETURN
+ENDIF
+
+;コストの判定
+;魔力
+MP_COST = ITEM_CREATION_PRICE_MP(ARG)
+SIF MP_COST
+	CREATION_C:1 = (MONEY:貯蔵魔力 +BASE:0:魔力) / MP_COST
+;素材と作成条件確認
+SELECTCASE ITEMNAME:ARG
+CASE "触手服"
+	CREATION_C:2 = FLAG:触手出産合計
+ENDSELECT
+
+IF ARG:1
+	IF !CREATION_C:1 && !CREATION_C:2
+		CALL PRINTL_WORD_COLOR("　Insufficient magic power and materials","灰")
+	ELSEIF !CREATION_C:1
+		CALL PRINTL_WORD_COLOR("　Insufficient magic power","灰")
+	ELSEIF !CREATION_C:2
+		CALL PRINTL_WORD_COLOR("　Insufficient materials","灰")
+	ELSE
+		PRINTFORMLC [  0] Create: %TOSTR(MP_COST,"#,0")%MP
+		PRINTLC [  1] Specify quantity to create
+		PRINTL
+	ENDIF
+ENDIF
+RETURN LIMIT(MIN(CREATION_C,CREATION_C:1,CREATION_C:2),0,99)
+

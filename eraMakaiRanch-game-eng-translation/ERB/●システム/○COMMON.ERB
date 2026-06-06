@@ -1,0 +1,513 @@
+﻿
+;共通処理など
+;一覧
+;	@PRINT_TIME(ARG)				秒数を渡すとhh:mm:ss表記の文字列に変換
+;	@ASK_YN							「はい」/「いいえ」の２択を表示
+;	@ASK_YN_DEFAULT(ARG)			「はい」/「いいえ」の２択を表示+デフォルトをそれにするか聞く
+;	@ASK_ONOFF						「ON」/「OFF」の２択を表示
+;	@ASK_ONOFF_DEFAULT(ARG)			「ON」/「OFF」の２択を表示+デフォルトをそれにするか聞く
+;	@ASK_BIT_ONOFF(ARG,ARG:1)		種族特徴のBITをON／OFFする
+;	@GET_CSVCHARA					現在のCSV数を返す
+;	@HEART1							塗りつぶしハートを表示する
+;	@DOT_TIMER(ARG)					・で時間経過を表現する
+;	@MANYL							たくさん改行する（FORとか使わず行数削減するだけ）
+;	@COUNTINUE_SELECT				コンティニューするかしないか選ぶ
+;	@RANGE							「（範囲外の数値ならキャンセル）」を出力(FUNCTIONS)
+;	@INPUTBUTTON(ARG)				手動入力/キャンセル選択のボタンを出力
+;	@PRINT_ONOFF(ARG,ARG:1)			設定中にフラグとか該当数値が○か×か色付きで返す
+;	@PRINT_CHECKBOX(ARG,ARG:1)		チェックボックスで返す
+;	@PRINTL_ALIGN(ARG)				[FLAG:自動改行合わせの行数]の行数から+-ARGになるように改行を挟む
+;	@HALFLINE						ドット絵に被らない程度に線を引くだけ
+;	@BR_PLUS(ARG)					BRの値を+1してARGになったら改行、BRを0にリセット
+;	@STR_REF_SHUFFLE(ARG)			STRからランダムに1つ取り出し
+;	@RANDOM_BOX_LOTTERY(ARG)		STRからRANDOM_BOXにフラグ参照して詰めて抽選
+;	@CHANGE_STR_LINEUP(ARGS)		入力STR候補を一覧で並べる
+;	@RIGHT_RETURN_BUTTON(ARG,ARGS)		右側がRETURNボタンになるように行表示
+;	@ON_OFF_BUTTON_FOOTER			DRAWLINE,ON/OFF反転,デフォルト/空欄/完了ボタンのセット
+;	@DEFAULT_VOID_RETURN_BUTTON		デフォルト／空欄／完了
+;	@INPUT_COMMAND_OK_NUM			COMMAND_OKが有効な番号が選択されるまでループ、INPUT_NUMに入れて返す
+;	@PRINT_NOW_PAGE(ARG,ARG:1,ARG:2)			現在ページ・最大ページ・前後ボタン表示
+
+
+
+;-------------------------------------------------
+;プレイ時間表示
+;ARG	プレイ時間(秒数)
+;戻り値	表示する時間。hh:mm:ss表記
+@PRINT_TIME(ARG)
+#FUNCTIONS
+#DIM DISP_TIME,5
+#DIMS DISP_TIMES,5
+
+;時
+DISP_TIME:0 = ARG /3600
+
+;分
+DISP_TIME:1 = (ARG %3600) /60
+
+;秒
+DISP_TIME:2 = ARG %60
+
+FOR DISP_TIME:3,0,3
+	IF DISP_TIME:(DISP_TIME:3) < 10
+		DISP_TIMES:(DISP_TIME:3) = {0}{DISP_TIME:(DISP_TIME:3)}
+	ELSE
+		DISP_TIMES:(DISP_TIME:3) = {DISP_TIME:(DISP_TIME:3)}
+	ENDIF
+NEXT
+
+RETURNF (DISP_TIMES:0 +":" +DISP_TIMES:1 +":" +DISP_TIMES:2)
+
+
+
+
+;-------------------------------------------------
+;「はい」/「いいえ」の２択を表示
+@ASK_YN
+
+PRINTLC [ 0] Yes
+PRINTLC [ 1] No
+PRINTL
+INPUT
+IF !RESULT
+	RETURN 0
+ELSE
+	RETURN 1
+ENDIF
+
+
+
+;-------------------------------------------------
+;「はい」/「いいえ」の２択を表示+デフォルトをそれにするか聞く
+;ARG→1ならキャラごと
+@ASK_YN_DEFAULT(ARG)
+#DIM DYNAMIC SET
+
+LINECOUNT_BEFORE = LINECOUNT
+DEFAULT_SET = SET
+PRINTLC [ 0] Yes
+PRINTLC [ 1] No
+IF ARG
+    PRINT [ 9] Set this character as default
+ELSE
+    PRINT [ 9] Set as default
+ENDIF
+CALL PRINT_CHECKBOX(SET,1)
+INPUT
+SELECTCASE RESULT
+CASE 0
+	RETURN 0
+CASE 1
+	RETURN 1
+CASEELSE
+	INVERTBIT SET,0
+	CLEARLINE LINECOUNT -LINECOUNT_BEFORE
+	RESTART
+ENDSELECT
+
+
+
+;-------------------------------------------------
+;「ON」/「OFF」の２択を表示
+;上とはRETURNが別なので気をつけて（ON=1のが都合いいため）
+@ASK_ONOFF
+
+PRINTLC [ 0] ON
+PRINTLC [ 1] OFF
+PRINTL
+INPUT
+IF !RESULT
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+
+
+;-------------------------------------------------
+;「ON」/「OFF」の２択を表示+デフォルトをそれにするか聞く
+;ARG→1ならキャラごと
+@ASK_ONOFF_DEFAULT(ARG)
+#DIM DYNAMIC SET
+
+LINECOUNT_BEFORE = LINECOUNT
+DEFAULT_SET = SET
+PRINTLC [ 0] ON
+PRINTLC [ 1] OFF
+IF ARG
+    PRINT [ 9] Set this character as default
+ELSE
+    PRINT [ 9] Set as default
+ENDIF
+CALL PRINT_CHECKBOX(SET,1)
+INPUT
+SELECTCASE RESULT
+CASE 0
+	RETURN 1
+CASE 1
+	RETURN 0
+CASEELSE
+	INVERTBIT SET,0
+	CLEARLINE LINECOUNT -LINECOUNT_BEFORE
+	RESTART
+ENDSELECT
+
+
+
+;-------------------------------------------------
+;種族特徴のBITをON／OFFする
+;ARG→フラグ番号　ARG:1→BIT番号
+@ASK_BIT_ONOFF(ARG,ARG:1)
+
+;飛ばすフラグがONならINVERT
+IF FLAG:ON／OFF項目の詳細を飛ばして反転
+	INVERTBIT FLAG:(ARG),ARG:1
+	RETURN
+ENDIF
+PRINTLC [ 0] ON
+PRINTLC [ 1] OFF
+PRINTL
+INPUT
+IF !RESULT
+	SETBIT FLAG:ARG,ARG:1
+ELSE
+	CLEARBIT FLAG:ARG,ARG:1
+ENDIF
+
+
+
+;-------------------------------------------------
+;CSVの数を返す
+@GET_CSVCHARA
+
+VARSET CSVCHARA
+FOR LOCAL,0,300
+	;CSVがあったら続けるなければそこで終了
+	EXISTCSV LOCAL
+	IF RESULT
+		CSVCHARA:0 ++
+		
+		;プレイヤーがカスタムしたキャラか判定
+		IF CSVCFLAG(LOCAL,802) == 1
+			CSVCHARA:3 ++
+		ELSE
+			;専用口上ありのキャラか判定
+			IF CSVCFLAG(LOCAL,801) == 1
+				CSVCHARA:2 ++
+			ELSE
+				CSVCHARA:1 ++
+			ENDIF
+		ENDIF
+		
+	ELSE
+		BREAK
+	ENDIF
+NEXT
+;あなたも数えるので合計人数と口上なしは-1
+CSVCHARA:0 --
+CSVCHARA:1 --
+
+
+
+;=================================================
+;   sub HEARTB
+;=================================================
+;   ハート(黒塗り)
+;-------------------------------------------------
+; Output:
+;  RETURNF				ハート
+;-------------------------------------------------
+@HEART1
+#FUNCTIONS
+RETURNF UNICODE(0x2665)
+
+
+
+
+;-------------------------------------------------
+;・の表示
+@DOT_TIMER(ARG)
+#DIM DOTKOSUU
+
+;ALIGNMENT CENTER
+FOR DOTKOSUU,0,ARG
+	PRINTFORML 　　・
+NEXT
+;ALIGNMENT LEFT
+
+
+
+
+;-------------------------------------------------
+;たくさん改行
+;ARG　改行する回数
+@MANYL(ARG)
+
+FOR LOCAL,0,ARG
+	PRINTL
+NEXT
+
+
+
+
+
+;-------------------------------------------------
+;「（範囲外の数値ならキャンセル）」を出力(FUNCTIONS)
+@RANGE
+#FUNCTIONS
+
+RETURNF "（Cancel If Outside of Range）"
+
+
+
+
+;-------------------------------------------------
+;手動入力/キャンセル選択のボタンを出力
+;ARG→0：2つ　1：（指定なし）含め3つ
+
+@INPUTBUTTON(ARG)
+
+PRINTL
+SIF ARG
+	PRINTL [900] （Unspecified）
+PRINTLC [901] （Input Manually）
+PRINTLC [999] （Cancel）
+CALL MANYL(2)
+
+
+
+;-------------------------------------------------
+;設定中にフラグとか該当数値が○か×か色付きで返す
+;ARG→判定フラグ　ARG:1→改行
+@PRINT_ONOFF(ARG,ARG:1)
+
+PRINT ：
+IF ARG
+	SETCOLOR 0x80FFFF
+	PRINTFORM ○　
+ELSE
+	SETCOLOR 0x707070
+	PRINTFORM 　×
+ENDIF
+RESETCOLOR
+SIF ARG:1
+	PRINTL
+
+
+
+;-------------------------------------------------
+;チェックボックスで返す
+;ARG→判定フラグ　ARG:1→改行
+@PRINT_CHECKBOX(ARG,ARG:1)
+
+PRINTFORM ：\@ ARG ? ☑ # □ \@
+SIF ARG:1
+	PRINTL
+
+
+
+;-------------------------------------------------
+;[FLAG:自動改行合わせの行数]の行数から+-ARGになるように改行を挟む
+@PRINTL_ALIGN(ARG)
+
+FOR LOCAL,LINECOUNT,FLAG:自動改行合わせの行数 +ARG
+	PRINTL
+NEXT
+
+
+
+;-------------------------------------------------
+;ドット絵に被らない程度に線を引くだけ
+@HALFLINE
+
+PRINTL -------------------------------------------------------
+
+
+
+;-------------------------------------------------
+;BRの値を+1してARGになったら改行、BRを0にリセット
+;元ファイルのほうでFOR回す前にちゃんと0にしておこうね
+;ARG→改行するBR数　ARG:1→1なら改行後にスペース入れ
+@BR_PLUS(ARG,ARG:1)
+
+IF BR < ARG
+	BR ++
+	RETURN
+ENDIF
+PRINTL
+SIF ARG:1
+	PRINT 　　　　    　
+BR = 1
+
+
+
+;-------------------------------------------------
+;STRからランダムに1つ取り出し
+;元関数でSTR_MAXの指定が必要
+;ARG→だいたいの場合STR_REF
+@STR_REF_SHUFFLE(ARG)
+#DIMS RANDOM_STR
+
+STR_MAX = RAND:(STR_MAX +1)
+RANDOM_STR = %STR:(ARG +STR_MAX)%
+SIF RANDOM_STR == ""
+	RESTART
+RESULTS = %RANDOM_STR%
+RETURN
+
+
+
+;-------------------------------------------------
+;STRからRANDOM_BOXにフラグ参照して詰めて抽選
+;元関数でFLAG_REFとSTR_REFを指定
+;ARG→1回目FORループの回数
+@RANDOM_BOX_LOTTERY(ARG)
+
+;それぞれの候補割合の数だけBOXに詰めていく
+VARSET RANDOM_BOX
+VARSET BOX_COUNT
+FOR LOCAL,0,ARG
+	FLAG_NUM = FLAG_REF +LOCAL
+	SIF FLAGNAME:FLAG_NUM == ""
+		BREAK
+	FOR LOCAL:1,0,FLAG:FLAG_NUM
+		RANDOM_BOX:BOX_COUNT = %STR:(STR_REF +LOCAL)%
+		BOX_COUNT ++
+	NEXT
+NEXT
+
+;ランダム抽選
+RESULTS = %RANDOM_BOX:RAND(BOX_COUNT)%
+
+
+
+;-------------------------------------------------
+;入力STR候補を一覧で並べる
+;STR_REF,STR_MAX指定済み
+;ARGS→項目名
+;ARG→INPUTBUTTONに送るARG
+@CHANGE_STR_LINEUP(ARGS,ARG)
+
+IF ARGS == @"%SAVESTR:表記／乳房%の弾力"
+	PRINTFORML Select %SAVESTR:表記／乳房% Firmness.
+ELSE
+	PRINTFORML Select %CSTR_ENG(ARGS)%.
+ENDIF
+FOR LOCAL,0,STR_MAX
+	SIF STR:(STR_REF +LOCAL) != ""
+		PRINTFORMLC [{LOCAL,3}] %STR_LINEUP_ENG(STR:(STR_REF +LOCAL))%
+NEXT
+CALL INPUTBUTTON(ARG)
+
+;先に一旦リセット
+RESULTS =
+BINPUT
+SELECTCASE RESULT
+CASE 900
+CASE 901
+	IF ARGS == @"%SAVESTR:表記／乳房%の弾力"
+		PRINTFORML Enter %SAVESTR:表記／乳房% Firmness.
+	ELSE
+		PRINTFORML Enter %CSTR_ENG(ARGS)%.
+	ENDIF
+	INPUTS
+CASE 999
+	;キャンセル
+	RETURN 1
+CASEELSE
+	RESULTS = %STR:(STR_REF +RESULT)%
+ENDSELECT
+
+
+
+;-------------------------------------------------
+;右側がRETURNボタンになるように行表示
+;ARG→ヒントボタン表示
+;ARGS→RETURNボタン文面　空なら「完了」
+@RIGHT_RETURN_BUTTON(ARG,ARGS)
+
+IF ARG
+	PRINTLC [ 98] Hint
+ELSE
+	CALL PRINTLC_WORD_COLOR("　→Back Button→","灰")
+ENDIF
+PRINTLC 　
+IF ARGS == ""
+	PRINTL [ 99] Done
+ELSE
+	PRINTFORML [ 99] %BACK_BUTTON_ENG(ARGS)%
+ENDIF
+
+
+
+;-------------------------------------------------
+;DRAWLINE,ON/OFF反転,デフォルト/空欄/完了ボタンのセット
+@ON_OFF_BUTTON_FOOTER
+
+DRAWLINE
+PRINTFORM [82] Skip the details of the ON/OFF items and invert them.
+CALL PRINT_ONOFF(FLAG:ON／OFF項目の詳細を飛ばして反転,1)
+CALL DEFAULT_VOID_RETURN_BUTTON
+
+
+
+;-------------------------------------------------
+;デフォルト／空欄／完了
+;ARG→DRAWLINE
+@DEFAULT_VOID_RETURN_BUTTON(ARG)
+
+SIF ARG
+	DRAWLINE
+PRINTLC [98] Reset to Default
+PRINTLC 　
+PRINTL [99] Done
+
+
+
+;-------------------------------------------------
+;COMMAND_OKが有効な番号が選択されるまでループ、INPUT_NUMに入れて返す
+;BINPUTで十分なので使わないかも
+@INPUT_COMMAND_OK_NUM
+
+INPUT
+SIF !COMMAND_OK:RESULT
+	RESTART
+INPUT_NUM = RESULT
+
+
+
+;-------------------------------------------------
+;文字列に空欄以外が入力されるまでループ
+;ARGS→入力する項目
+;,@""でも来れる
+@INPUTS_NOT_EMPTY(ARGS)
+
+PRINTFORML Enter value for %ARGS%.
+INPUTS
+SIF RESULTS == ""
+	RESTART
+
+
+
+;-------------------------------------------------
+;現在ページ・最大ページ・前後ボタン表示
+;ARG→現在ページ数
+;ARG:1→下にDRAWLINE
+;ARG:2→目次表示
+@PRINT_NOW_PAGE(ARG,ARG:1,ARG:2)
+
+PRINTLC [ 80] Previous Page
+IF ARG:2
+	PRINTFORMLC [ 89] Index <PAGE{ARG,2}／{PAGE_MAX}>
+ELSE
+	PRINTFORMLC <PAGE{ARG,2}／{PAGE_MAX}>
+ENDIF
+PRINTL [ 81] Next Page
+SIF ARG:1
+	DRAWLINE
+
+
+
+
+
+

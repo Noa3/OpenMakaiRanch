@@ -1,0 +1,98 @@
+﻿
+;奴隷→奴隷の調教の乳責め地の文
+@TRAIN_LESBIAN_MILK_SUCK_MESSAGE
+
+IF PLAYER > 0 && CSTR:PLAYER:状態／あなたの子 == "成長中"
+	;母親の場合
+	IF CFLAG:PLAYER:母親ID == CFLAG:ID
+	PRINTFORML %CALLNAME:0% told %CALLNAME:PLAYER% to drink mother's %SLANG_MILK()%.
+	ELSE
+		PRINTFORML %CALLNAME:0% told %CALLNAME:PLAYER% to drink %CALLNAME%'s %SLANG_MILK()%.
+	ENDIF
+ELSE
+	;レズっ気と心境の分岐
+	IF ABL:PLAYER:レズっ気 >= 7
+		;常に陥落だったかもしれない
+		IF CFLAG:PLAYER:乳牛
+			PRINTFORML Breathless, %CALLNAME:PLAYER% approaches the bound %CALLNAME% in the training room with a smile...
+			PRINTFORML To teach the joy of living as a 『milking cow』 under you, just like herself...
+		ELSEIF ＃陥落状態／陥落以上＃ || CFLAG:PLAYER:洗脳
+			PRINTFORML Breathless, %CALLNAME:PLAYER% slowly approaches the bound %CALLNAME% in the training room...
+		ELSE
+			PRINTFORML Looking at the bound %CALLNAME%, %CALLNAME:PLAYER% seems eager...
+		ENDIF
+	ELSE
+		IF CFLAG:PLAYER:乳牛
+			PRINTFORML %CALLNAME:PLAYER% approaches the bound %CALLNAME% in the training room with a smile...
+			PRINTFORML To teach the joy of living as a 『milking cow』 under you, just like herself...
+		ELSEIF ＃陥落状態／陥落以上＃ || CFLAG:PLAYER:洗脳
+			PRINTFORML %CALLNAME:PLAYER% approaches the bound %CALLNAME% in the training room with a smile...
+		ELSE
+			PRINTFORML She don't want to demean a fellow slave, but if she don't act, she don't know what you will do to her.
+			PRINTFORML %CALLNAME:PLAYER% approaches the bound %CALLNAME% in the training room with a look of regret...
+		ENDIF
+	ENDIF
+ENDIF
+PRINTW
+
+;母乳体質かとバストサイズで分岐
+PRINTFORM %CALLNAME:PLAYER% holds %CALLNAME%'s %SLANG_B()%, 
+IF MARK:母乳体質
+	IF ABL:バストサイズ >= BUSTSIZE_爆乳
+		PRINTFORM cradling it with both hands, kneading it, and suckling on the %SLANG_MILK()% spilling from the nipple...
+	ELSEIF ABL:バストサイズ >= BUSTSIZE_巨乳
+		PRINTFORM kneading it with both hands, and suckling on the %SLANG_MILK()% spilling from the nipple...
+	ELSE
+		PRINTFORM stroking it, and suckling on the %SLANG_MILK()% spilling from the tip...
+	ENDIF
+ELSE
+	IF ABL:バストサイズ >= BUSTSIZE_爆乳
+		PRINTFORM kneading it with both hands while licking and sucking on the hardened nipple...
+	ELSEIF ABL:バストサイズ >= BUSTSIZE_巨乳
+		PRINTFORM kneading it with both hands while licking and sucking on the hardened nipple...
+	ELSE
+		PRINTFORM stroking it while licking and sucking on the hardened nipple...
+	ENDIF
+ENDIF
+CALL HEARTCB(0xD02830)
+PRINTL
+CALL ONOMATOPOEIA("乳揉み")
+CALL ONOMATOPOEIA("乳吸い")
+SIF EX:噴乳
+	CALL KOJO_PRINT("搾乳")
+
+
+
+;Ｃ責め地の文
+@TRAIN_LESBIAN_C_MESSAGE
+
+PRINTFORML Furthermore, %CALLNAME:PLAYER% stimulates %CALLNAME%'s %SLANG_C()% with a rotor...
+
+;Ｖ
+@TRAIN_LESBIAN_V_MESSAGE
+
+PRINTFORML %CALLNAME:PLAYER% inserts and removes the vibrator from %CALLNAME%'s %SLANG_V()%...
+
+;Ａ
+@TRAIN_LESBIAN_A_MESSAGE
+
+PRINTFORML %CALLNAME:PLAYER% thrusts the anal vibrator into %CALLNAME%'s %SLANG_A()%...
+
+
+
+;ミルクを吸った分表示
+@TRAIN_LESBIAN_MILK_MESSAGE
+#DIM MILK_VALUE
+
+;調教者の身長*ccまで吸える、残りは搾り取る
+;記録などの合計量の時だけkMG表記
+MILK_VALUE = EX:噴乳 -TFLAG:吸飲ミルク
+SIF MILK_VALUE <= 0
+	RETURN
+{
+PRINTFORML %CALLNAME:PLAYER% drank %CALLNAME%'s %SAVESTR:表記／母乳%
+%TOSTR(TFLAG:吸飲ミルク)%%MILK_COUNTING()% and became full,
+%TOSTR(MILK_VALUE)%%MILK_COUNTING()% was squeezed out and placed into a container for shipment as %SAVESTR:表記／母乳%...
+}
+
+

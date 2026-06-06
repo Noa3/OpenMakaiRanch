@@ -1,0 +1,79 @@
+﻿
+;母乳価格の計算
+@MILK_PRICE_CALC
+
+;誰も出荷しない場合帰る
+SIF !MAXCARRAY(CFLAG:出荷予定母乳量)
+	RETURN
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;出荷分がないなら次
+	SIF !CFLAG:出荷予定母乳量
+		CONTINUE
+	CALL SELL_MILK_PRICE_CALC_COMMON
+	CALL SELL_MILK_RECORD
+NEXT
+
+;牛舎外分まとめて表示
+EXIST = 0
+IF COWSHED_TOTAL_MILK_CC:0
+	EXIST ++
+	{
+	PRINTFORML Slave %SAVESTR:表記／母乳%：Total %VALUE_DIGIT(COWSHED_TOTAL_MILK_CC:0,"母乳"),8% ／
+	%VALUE_DIGIT(COWSHED_TOTAL_MILK_PRICE:0)%G 
+	}
+ENDIF
+
+;牛舎内表示
+FOR LOCAL,1,11
+	;そもそもまとめて表示じゃないなら0のまま
+	SIF !COWSHED_TOTAL_MILK_CC:LOCAL
+		CONTINUE
+	EXIST ++
+	{
+	PRINTFORML %ITEMS_ENG(COWSHED_NAME:LOCAL),38%：%VALUE_DIGIT(COWSHED_TOTAL_MILK_CC:LOCAL,"母乳"),8% ／
+	%VALUE_DIGIT(COWSHED_TOTAL_MILK_PRICE:LOCAL)%G 
+	}
+NEXT
+SIF EXIST >= 2
+	{
+	PRINTFORM 　　Slave %SAVESTR:表記／母乳%：%VALUE_DIGIT(MILK_SUM,"母乳"),8% ／
+	%VALUE_DIGIT(MONEY_SELL:2)%G 
+	}
+IF FLAG:精算額倍増残り日数
+	MONEY_SELL:2 *= 2
+	CALL PRINT_WORD_COLOR,@"Dragon Ball ×2 Bonus → %VALUE_DIGIT(MONEY_SELL:2)%G ","黄"
+ENDIF
+PRINTL
+
+
+
+;出荷量・金額記録
+@SELL_MILK_RECORD
+
+;合計金額・乳量に入れる
+;個人記録
+CFLAG:出荷母乳／合計金額 += CFLAG:母乳出荷金額／当日
+CFLAG:出荷母乳／合計量 += CFLAG:出荷予定母乳量
+
+;全体記録
+FLAG:母乳合計出荷金額 += CFLAG:母乳出荷金額／当日
+FLAG:母乳合計出荷量 += CFLAG:出荷予定母乳量
+
+;当日の精算量
+MONEY_SELL:2 += CFLAG:母乳出荷金額／当日
+MILK_SUM += CFLAG:出荷予定母乳量
+
+;牛舎／その他の合計
+;0番を家畜小屋・従業員として使用
+COWSHED_TOTAL_MILK_CC:(CFLAG:牛舎番号) += CFLAG:出荷予定母乳量
+COWSHED_TOTAL_MILK_PRICE:(CFLAG:牛舎番号) += CFLAG:母乳出荷金額／当日
+
+
+
+
+
+
+
+

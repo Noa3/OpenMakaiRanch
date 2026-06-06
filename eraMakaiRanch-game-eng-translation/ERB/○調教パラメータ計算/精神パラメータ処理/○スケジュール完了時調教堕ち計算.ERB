@@ -1,0 +1,59 @@
+﻿
+;調教終了時の計算
+@TRAIN_END_PALAM_CALC
+
+;調教終了
+;崩壊だと計算しない
+IF CFLAG:崩壊
+	SIF !TFLAG:調教中
+		CALL PRINTL_WORD_COLOR("[Mindbroken][Brainwashing] ","赤")
+	RETURN
+
+;洗脳でも
+ELSEIF CFLAG:洗脳
+	SIF !TFLAG:調教中
+		CALL PRINTL_WORD_COLOR("[Brainwashing]  ","桃")
+	RETURN
+ENDIF
+
+;快楽刻印追加：100絶頂くらいでいいかな　輪姦時は500基準にする
+SIF EX:総絶頂 >= 100 && !MARK:快楽刻印 && !(TFLAG:ゴブリン輪姦 && EX:総絶頂 >= 500)
+	CALL MARK_GET_PLEASURE
+
+;調教中のみ苦痛・恐怖刻印追加チェック
+CALL MARK_GET_PAIN
+
+;あなた以外の調教だと恭順は増えない・苦痛／恐怖刻印があると恭順無効
+SIF PLAYER || MARK:苦痛刻印 || MARK:恐怖刻印
+	PALAM:恭順 = 0
+
+;乳牛か隷属なら失意・反感無効
+IF CFLAG:乳牛 || ＃陥落状態／隷属＃
+	PALAM:失意 = 0
+	PALAM:反感 = 0
+ENDIF
+
+;PALAM→SOURCEにして計算する
+FOR LOCAL,30,40
+	SOURCE:LOCAL = PALAM:LOCAL
+NEXT
+
+;コマンド実行時と部分的に同じ
+;スケジュール完了時は絶頂見ない、増減値多め
+IF TFLAG:調教中
+	CALL MIND_PALAM_CALC_RESIST(0,50)
+	CALL MIND_PALAM_CALC_HATE(0,50)
+ELSE
+	CALL MIND_PALAM_CALC_RESIST(0,200)
+	CALL MIND_PALAM_CALC_PRIDE(0,200)
+	CALL MIND_PALAM_CALC_HATE(0,50)
+	CALL MIND_PALAM_CALC_REASON(0,200)
+	CALL MIND_PALAM_CALC_HEART(0,200)
+	CALL MIND_PALAM_CALC_LOVE(0,50)
+	
+	;スケジュール用絶頂判定無効
+	CALL MIND_PALAM_CALC_CATTLE(0,200,1)
+ENDIF
+CALL MIND_PALAM_AFTER_PRINT(1)
+
+

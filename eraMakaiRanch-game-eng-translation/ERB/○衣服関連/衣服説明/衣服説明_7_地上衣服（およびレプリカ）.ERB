@@ -1,0 +1,100 @@
+﻿
+;ニンゲン衣服
+@ITEM_DETAIL_CLOTHE_HUMAN_REPLICA
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "旅人の服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 一般的なデザインの衣服を、旅や戦闘にも使えるよう丈夫かつ動きやすくしたもの。
+	PRINTL 少なくとも冒険者であればこのくらいの装備はしておきたいものである。
+
+CASE "ローブ"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 魔術士などが身に着ける足元まで隠れる上下一体型の衣服。
+	PRINTFORML %SAVESTR:表記／乳房%が大きな女性は腰にベルトを足して太って見えないようにすることが多いらしい。
+
+CASE "貴族服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 身分のそれなりに高いニンゲンが身に着ける、装飾の多い服装の総称。
+	PRINTL 素材もいいものを使っているようで、解体・再利用の素材として魔界の住民の間で人気だったりする。
+	
+CASE "巫女服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 「小袖」という白い上部服、「緋袴」という赤い下部服のセットが基本の衣服。
+	PRINTL これを身に着ける「巫女」というのはジャパン地域でのシスターのようなものらしい。
+
+CASE "修道服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL シスターが身に着けるローブに近い衣服。
+	PRINTL 脱がしにくいが、そもそも脱がしやすい必要のある服ではない。
+
+CASE "法衣"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 僧侶が身に着ける、体のラインが非常に出にくい衣服。
+	PRINTL それがむしろ脱がす楽しみがありえっちだ、という概念はニンゲンも魔族も共通してあるらしい。
+
+CASE "忍装束"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL くのいちが身に着ける衣服。
+	PRINTL 素早い身のこなしを邪魔しないように布地はかなり少ない。男性ニンジャ用はそうでもないはずだが、
+	PRINTL くのいちは色仕掛けするのも任務のうちという認識があるためこうなるらしい。
+
+CASE "戦闘用巫女服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 魔族と戦う力を持った巫女が身に着ける、動きやすく改造された巫女服。
+	PRINTL 袴というものがそもそも機敏に動くことを想定していないため、
+	PRINTL その袴を短くしただけでもかなり動きやすくはなっている。
+
+CASE "戦闘用シスター服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 魔族と戦う力を持ったシスターが身に着ける、動きやすく改造されたシスター服。
+	PRINTL 動きやすくした結果上下分離できる形になり、脱がしやすくなった。
+
+CASE "戦闘用メイド服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 魔族と戦う力を持ったメイドが身に着ける、動きやすく改造されたメイド服。
+	PRINTL 戦闘用として最適化した結果メイドの仕事に向いているかと言われると微妙になったため、
+	PRINTL 戦闘しつつも自分がメイドであることを忘れないための服なのかもしれない。
+
+CASE "ビキニアーマー"
+	CALL CLOTHE_DETAIL_COMMON("シールタイプのみ")
+	PRINTFORML %SAVESTR:表記／乳房%と股間の部分だけを防護している鎧。
+	PRINTL 装甲をその部分だけにして動きやすくする、という理屈はわかるが普通の鎧でいい気がしてならない。
+
+CASE "コート"
+	CALL ACCESSORY_DETAIL_COMMON("上着")
+	PRINTL 衣服の上に着る防寒着もしくは防具。
+
+CASE "魔術学園制服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 地上で魔術を学ぶ人々が通う大規模な学園の外套付き制服。
+	PRINTL 防護魔術が込められており、魔術訓練での怪我や事故を防ぐ効果がある。
+	PRINTL その国での知名度がかなり高いらしく、着ているだけで身分証明になるそうな。
+
+
+;ここから拡張
+CASE "天界のローブ"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 天界の素材が使われたローブ。
+	PRINTL 1つ1つ聖なる力が込められているそうで、見た目に反してものすごく丈夫な上汚れも滅多につかない。
+	PRINTL 「再現するなら完璧に」という信念、というか執念の末、
+	PRINTL 魔界で作成したレプリカにもどういうわけか同等の力が込められている。
+	
+CASE "ドレス"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 身分の高いニンゲンの女性が身に着ける、特注の豪華な衣服。
+	PRINTL 普通に洗濯していいものか迷う豪華さだが、別にゲーム的な差はありません。
+	IF FLAG:ジョーク表示
+		PRINTL 身分のそれなりに高い女性でも、宴の場合は身に着けるらしい。
+		PRINTL …えっ、宴じゃない？
+		PRINTL 社交界？パーティー？とかそういうものらしい。魔界に似た風習あったっけ…？
+	ENDIF
+
+CASE "バトルドレス"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 身分が高く、自ら戦闘に赴くニンゲンの女性が身に着ける、動きやすくて豪華な衣服。
+	PRINTL 「ノブレス・オブリージュ」という考えらしいが、
+	PRINTL 魔族の間では基本的に強い＝偉いという考えのため、魔族的には逆に偉いのに戦わないというのがよくわからない。
+ENDSELECT
+
+

@@ -1,0 +1,25 @@
+﻿
+;CSVから読み込んだ奴隷候補のおっぱい補正
+@CSV_CHARA_BUST_FIX
+
+;素質でバストサイズ指定している場合は範囲内ランダム
+IF SUMARRAY(TALENT,10,20)
+	CALL RANDOM_SLAVE_BUST
+
+;素質指定がない場合
+ELSE
+	CALL BUSTSIZE_TALENT_SET
+ENDIF
+
+;乳弾力入れ忘れ対策
+SIF CSTR:乳弾力 == ""
+	CALL RANDOM_SLAVE_BUST_FEELING
+
+;乳首の色入れ忘れ対策
+SIF CSTR:乳首の色 == ""
+	CALL RANDOM_SLAVE_NIPPLE_COLOR
+
+
+
+
+

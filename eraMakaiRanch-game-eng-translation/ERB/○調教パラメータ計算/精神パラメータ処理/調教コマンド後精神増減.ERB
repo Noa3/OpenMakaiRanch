@@ -1,0 +1,177 @@
+﻿
+;調教コマンド後抵抗心処理
+@MIND_PALAM_CHECK
+
+;崩壊か洗脳ならおわり
+SIF CFLAG:崩壊 || CFLAG:洗脳
+	RETURN
+
+;調教中かスケジュール外：[おっぱい吸わせて]とかそのへん以外はおわり
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ
+	RETURN
+
+;PALAM:乳牛→30
+;それぞれのステータスが増減できる場合について見よう
+;コマンド毎からは絶頂した場合キャップ増加
+;抵抗心調整
+
+CALL MIND_PALAM_CALC_RESIST(1,200)
+CALL MIND_PALAM_CALC_PRIDE(1,100)
+CALL MIND_PALAM_CALC_HATE(1,100)
+CALL MIND_PALAM_CALC_REASON(1,100)
+CALL MIND_PALAM_CALC_HEART(1,100)
+CALL MIND_PALAM_CALC_LOVE(1,100)
+CALL MIND_PALAM_CALC_CATTLE(1,100)
+CALL MIND_PALAM_AFTER_PRINT
+
+
+
+
+
+;抵抗心→+値と-値の差
+;ARG→絶頂を見る
+;ARG:1→キャップつく増減値
+@MIND_PALAM_CALC_RESIST(ARG,ARG:1)
+
+;既に抵抗心ない場合無効
+SIF !BASE:抵抗心
+	RETURN
+
+;ARG=1のとき絶頂時はキャップ*2
+CAP = ARG:1
+SIF ARG && NOWEX:総絶頂
+	CAP *= 2
+
+;もろもろで減少、屈服は倍
+;不快・反感は計算外
+DAMAGE = SUMARRAY(SOURCE,30,40) +SOURCE:屈服 -SOURCE:不快 -SOURCE:反感
+
+;共通内部で気力優先ある
+CALL MIND_BASE_MINUS("抵抗心",DAMAGE,CAP)
+
+
+
+;尊厳→もろもろで減少
+@MIND_PALAM_CALC_PRIDE(ARG,ARG:1)
+
+SIF !BASE:尊厳
+	RETURN
+CAP = ARG:1
+SIF ARG && NOWEX:総絶頂
+	CAP *= 2
+
+;もろもろで減少、失意が倍
+;反感は計算外
+DAMAGE = SUMARRAY(SOURCE,30,40) +SOURCE:失意 -SOURCE:反感
+
+;反抗なら-100
+;あとで/30して調整してるのでここで-3000
+;/20に再調整→-2000
+
+SIF !＃陥落状態／拒絶以上＃
+	DAMAGE = LIMIT(DAMAGE -2000,0,DAMAGE)
+CALL MIND_BASE_MINUS("尊厳",DAMAGE,CAP)
+
+
+
+;嫌悪感→乳牛少し・恭順多く・後半で抑制
+@MIND_PALAM_CALC_HATE(ARG,ARG:1)
+
+SIF !BASE:嫌悪感
+	RETURN
+CAP = ARG:1
+SIF ARG && NOWEX:総絶頂
+	CAP *= 2
+DAMAGE = SUMARRAY(SOURCE,35,40) /2
+LOVE = SOURCE:乳牛 +SOURCE:恭順 *2 -DAMAGE
+
+;屈服していないなら-100
+SIF !＃陥落状態／屈服以上＃
+	LOVE = LIMIT(LOVE -2000,0,LOVE)
+
+;反抗ならさらに-100
+SIF !＃陥落状態／拒絶以上＃
+	LOVE = LIMIT(LOVE -2000,0,LOVE)
+CALL MIND_BASE_MINUS("嫌悪感",LOVE,CAP)
+
+
+
+;理性→乳牛多く・淫欲少し
+@MIND_PALAM_CALC_REASON(ARG,ARG:1)
+
+SIF !BASE:理性
+	RETURN
+CAP = ARG:1
+SIF ARG && NOWEX:総絶頂
+	CAP *= 2
+LOVE = SOURCE:乳牛 *2 +SOURCE:淫欲
+
+;反抗なら-100
+SIF !＃陥落状態／拒絶以上＃
+	LOVE = LIMIT(LOVE -2000,0,LOVE)
+CALL MIND_BASE_MINUS("理性",LOVE,CAP)
+
+
+
+;精神力→失意のみ・恭順で抑制
+@MIND_PALAM_CALC_HEART(ARG,ARG:1)
+
+SIF !BASE:精神力
+	RETURN
+
+;HP・SPあれば無効
+SIF BASE:体力 || BASE:気力
+	RETURN
+CAP = ARG:1
+SIF ARG && NOWEX:総絶頂
+	CAP *= 2
+DAMAGE = SOURCE:失意 -SOURCE:恭順
+
+;反抗なら-100
+SIF !＃陥落状態／拒絶以上＃
+	DAMAGE = LIMIT(DAMAGE -2000,0,DAMAGE)
+CALL MIND_BASE_MINUS("精神力",DAMAGE,CAP)
+
+
+
+;好感度→恭順・後半で抑制
+@MIND_PALAM_CALC_LOVE(ARG,ARG:1)
+
+;抵抗心・嫌悪感が1でもあれば無効
+SIF BASE:抵抗心 || BASE:嫌悪感
+	RETURN
+
+;MAXなら別処理が入る
+	;SIF BASE:好感度 == MAXBASE:好感度
+CAP = ARG:1
+SIF ARG && NOWEX:総絶頂
+	CAP *= 2
+DAMAGE = SUMARRAY(SOURCE,35,40) /2
+LOVE = SOURCE:恭順 -DAMAGE
+CALL MIND_BASE_PLUS("好感度",LOVE,CAP)
+
+
+
+;乳牛堕ち→乳牛・反感で抑制
+;ARG:2→スケジュール時は絶頂判定スキップ
+@MIND_PALAM_CALC_CATTLE(ARG,ARG:1,ARG:2)
+
+;抵抗心・理性が1でもあれば無効・搾乳絶頂してないと無効（スケジュール時は絶頂判定スキップ）
+SIF BASE:抵抗心 || BASE:理性 || !(NOWEX:Ｂ絶頂 +NOWEX:Ｎ絶頂 +ARG:2)
+	RETURN
+
+;MAXなら別処理が入る
+	;SIF BASE:乳牛堕ち == MAXBASE:乳牛堕ち
+CAP = ARG:1
+SIF ARG && NOWEX:総絶頂
+	CAP *= 2
+LOVE = SOURCE:乳牛 -SOURCE:反感 /2
+CALL MIND_BASE_PLUS("乳牛堕ち",LOVE,CAP)
+
+
+
+
+
+
+
+

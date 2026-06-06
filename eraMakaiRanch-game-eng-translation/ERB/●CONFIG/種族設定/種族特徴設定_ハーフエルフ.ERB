@@ -1,0 +1,59 @@
+﻿
+;ハーフエルフ
+@TRIBE_FEATURE_CONFIG_HALFELF
+
+CLEARLINE LINECOUNT
+PRINTL Modifying【Half-Elf】
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL Fixed：【Elf Ears】
+PRINTLC [ 1] Skin Tends Towards【Fair】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ハーフエルフ,1),1)
+PRINTLC [ 2] Body Tends Towards【Slender】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ハーフエルフ,2),1)
+PRINTLC [ 3] Body Tends Towards【Plump】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ハーフエルフ,3),1)
+PRINTLC [ 4] Hair Color Is【Golden】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ハーフエルフ,4),1)
+PRINTLC [ 5] Non-Magicians Also Have Mana
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ハーフエルフ,5),1)
+PRINTLC [ 6] Physical Strength－200
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ハーフエルフ,6),1)
+CALL PRINTL_ALIGN
+CALL PRINT_SLAVE_CONFIG_FOOTER(3)
+SELECTCASE INPUT_NUM
+CASE 1
+	PRINTL If【Standard】、【Brown】、【Tanned】, replaced with【Fair】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ハーフエルフ"),INPUT_NUM)
+CASE 2
+	PRINTL Body figure limited to【Slender】and【Skinny】
+	PRINTL ※Mutually exclusive with【Plump】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ハーフエルフ"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／ハーフエルフ,2) && GETBIT(FLAG:種族設定／ハーフエルフ,3)
+		CLEARBIT FLAG:種族設定／ハーフエルフ,3
+CASE 3
+	PRINTL Body figure limited to【Plump】and【Chubby】
+	PRINTL ※Mutually exclusive with【Slender】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ハーフエルフ"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／ハーフエルフ,2) && GETBIT(FLAG:種族設定／ハーフエルフ,3)
+		CLEARBIT FLAG:種族設定／ハーフエルフ,2
+CASE 4
+	PRINTL Fix hair color to【Golden】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ハーフエルフ"),INPUT_NUM)
+CASE 5
+	PRINTL Even non-magic job holders possess Mana
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ハーフエルフ"),INPUT_NUM)
+CASE 6
+	PRINTL Strength is decreased by 200 after base calculations
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ハーフエルフ"),INPUT_NUM)
+CASE 98
+	PRINTL Restore【Half-Elf】Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRIBE_FEATURE_CONFIG_HALFELF
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

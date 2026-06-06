@@ -1,0 +1,36 @@
+﻿
+;輪姦開始地の文
+@RINKAN_SLAVE_BEGIN_MESSAGE
+
+;処女結界あるかどうかで変わってくる
+IF TALENT:処女結界
+	IF !CFLAG:輪姦回数
+		PRINTFORML The goblins forcibly tear away %CALLNAME%'s clothes and stretch their hands towards to her exposed crotch...
+		PRINTFORML But the【Virginity Barrier】prevents them from touching %CALLNAME%'s pussy!
+		
+		;乳が小さいと物好きだけ寄り付く　この要素いる？　いるんじゃない？
+		PRINTFORML The goblins are purplexed, but an exasperated goblin jams his cock into her unprepared %SLANG_A()%...
+		PRINTFORML The other goblins snicker at %CALLNAME%'s reaction.
+		PRINTFORML They start playing with %CALLNAME%'s %SLANG_C()%,
+		IF ABL:バストサイズ < BUSTSIZE_並乳
+			PRINTFORML and some start reluctantly sucking on %CALLNAME%'s %SLANG_B()%...
+		ELSE
+			PRINTFORML and some start wantonly sucking on %CALLNAME%'s %SLANG_B()%...
+		ENDIF
+	ELSE
+		PRINTFORML While %CALLNAME%'s virginity is protected by the barrier,
+		PRINTFORML they still toy with her %SLANG_C()% and %SLANG_B()% while using her %SLANG_A()%...  
+	ENDIF
+ELSE
+	IF !CFLAG:輪姦回数
+		PRINTFORML The goblins forcibly tear away %CALLNAME%'s clothes and jam their cocks into her still dry %SLANG_V()%...
+		PRINTFORML While mocking the captured %CALLNAME%, the goblins wantonly suck on her %SLANG_B()%,
+		PRINTFORML torment her nipples and clit, and even rape her ass, using it as a meat urinal...
+	ELSE
+		PRINTFORML %CALLNAME% continues to be raped by the goblins... 
+	ENDIF
+ENDIF
+
+
+
+

@@ -1,0 +1,31 @@
+﻿
+;標的解除時のもろもろフラグをリセット
+@TARGET_FLAG_RESET
+
+;TARGET指定状態
+CALL MERCENARY_RESET
+CFLAG:追跡対象 = 0
+BASE:疲労度 = 0
+
+
+
+;雇った傭兵の帰還　方法変えてみる
+;ここが先
+@MERCENARY_RESET
+
+;FLAG:傭兵バイト標的ID／ゴブリン→440
+FLAG_REF = 440
+FLAG_MAX = 4
+FOR LOCAL,FLAG_REF,FLAG_REF +FLAG_MAX
+	SIF FLAG:LOCAL == CFLAG:ID
+	
+	
+	;SIF !CMATCH(CFLAG:追跡者,1 +LOCAL)
+		FLAG:LOCAL = 0
+NEXT
+CFLAG:追跡者 = 0
+CFLAG:追跡人数 = 0
+
+
+
+

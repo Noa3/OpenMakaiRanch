@@ -1,0 +1,163 @@
+﻿
+;搾乳スケジュールから来る搾乳ループ
+;ARG→1:口上など表示
+@SLAVE_LACTATION_LOOP(ARG)
+
+FOR LOCAL,0,10
+	LOSEBASE:体力 = 10
+	LOSEBASE:気力 = 20
+	
+	;あなたが酪農していればあなた責め
+	IF CSTR:0:スケジュール == "酪農"
+		SOURCE:Ｂ快楽／あなた責め = 800
+	ELSE
+		SOURCE:Ｂ快楽／レズ調教 = 800
+	ENDIF
+	CALL SOURCE_CHECK
+	SIF !ARG
+		CONTINUE
+	
+	;3回目まで搾乳継続メッセージ
+	SIF LOCAL <= 2
+		CALL LACTATION_CONTINUE_MESSAGE("搾乳器")
+	
+	;2回目に擬音
+	SIF LOCAL == 1 && EX:噴乳
+		CALL ONOMATOPOEIA("搾乳器")
+	SIF LOCAL >= 1
+		TFLAG:ループ中メッセージ表示 = 0
+	
+	;3回目以降は・表示
+	SIF LOCAL >= 2
+		PRINTL 　　・
+NEXT
+
+
+
+;抽出ループ
+;ARG→1:口上など表示
+@SLAVE_DRAIN_LACTATION_LOOP(ARG)
+
+FOR LOCAL,0,10
+	;母性増加はなし
+	LOSEBASE:体力 = 10
+	LOSEBASE:気力 = 30
+	SOURCE:Ｂ快楽／器具 = 400
+	SOURCE:Ｎ快楽／器具 = 2000
+	SOURCE:恥辱 = 500
+	SOURCE:屈辱 = 1000
+	SOURCE:支配 = 2000
+	SOURCE:バッテリー消費量 = 100
+	CALL SOURCE_CHECK
+	SIF !ARG
+		CONTINUE
+	SIF LOCAL <= 2
+		CALL LACTATION_CONTINUE_MESSAGE("抽出装置")
+	SIF LOCAL == 1 && EX:噴乳
+		CALL ONOMATOPOEIA("搾乳器")
+	SIF LOCAL >= 1
+		TFLAG:ループ中メッセージ表示 = 0
+	SIF LOCAL >= 2
+		PRINTL 　　・
+NEXT
+
+
+
+;牛舎ループ
+;ARG→1:口上など表示
+@SLAVE_COWSHED_LACTATION_LOOP(ARG)
+
+FOR LOCAL,0,10
+	LOSEBASE:体力 = 10
+	LOSEBASE:気力 = 20
+	IF CSTR:0:スケジュール == "酪農"
+		SOURCE:Ｂ快楽／あなた責め = 800
+	ELSE
+		SOURCE:Ｂ快楽／レズ調教 = 800
+	ENDIF
+	CALL SOURCE_CHECK
+	
+	;1回目でARG=1のみ口上表示
+	SIF !ARG || LOCAL || !EX:噴乳
+		CONTINUE
+	CALL ONOMATOPOEIA("搾乳器")
+	CALL KOJO_PRINT("搾乳")
+NEXT
+
+
+
+;体内凌辱ループ
+;ARG→口上など表示
+@SLAVE_VORE_SEX_LOOP(ARG)
+
+FOR LOCAL,0,10
+	;1回目、詳細表示時のみ触手責めの口上表示
+	SIF !LOCAL && ARG
+		SOURCE:体内凌辱中継続メッセージ表示 = 1
+	
+	;体内凌辱中はSOURCE_CHECK内部でSOURCEを上書きする
+	CALL SOURCE_CHECK
+	SIF !ARG
+		CONTINUE
+	
+	;3回目まで搾乳継続メッセージ
+	SIF LOCAL <= 2
+		CALL LACTATION_CONTINUE_MESSAGE("搾乳触手")
+	
+	;1,2回目に擬音
+	IF LOCAL <= 1
+		CALL ONOMATOPOEIA("触手ピストン")
+		CALL ONOMATOPOEIA("乳揉み")
+		SIF TEQUIP:乳包み花弁搾乳触手
+			CALL ONOMATOPOEIA("乳包み花弁搾乳触手")
+		SIF TEQUIP:透明カップ搾乳触手
+			CALL ONOMATOPOEIA("透明カップ搾乳触手")
+	ENDIF
+	
+	;1回目だけ
+	IF !LOCAL
+		SIF EX:噴乳
+			CALL KOJO_PRINT("搾乳")
+		CALL MASTER_VORE_SEX_CONTINUE_MESSAGE
+	ENDIF
+	
+	;だいぶ長くなるので1回だけ表示
+	TFLAG:ループ中メッセージ表示 = 0
+	SIF LOCAL >= 2
+		PRINTL 　　・
+NEXT
+
+
+
+;触手責め搾乳
+;ARG→口上など表示
+@SLAVE_T_LACTATION_LOOP(ARG)
+
+FOR LOCAL,0,10
+	;1回目、詳細表示時のみ触手責めの口上表示
+	SIF !LOCAL && ARG
+		SOURCE:体内凌辱中継続メッセージ表示 = 1
+	CALL SOURCE_CHECK
+	SIF !ARG
+		CONTINUE
+	
+	;3回目まで搾乳継続メッセージ
+	SIF LOCAL <= 2
+		CALL LACTATION_CONTINUE_MESSAGE("搾乳器")
+	
+	;1,2回目に擬音
+	IF LOCAL <= 1
+		SIF !TALENT:Ａ処女 || !TALENT:処女
+			CALL ONOMATOPOEIA("触手ピストン")
+		CALL ONOMATOPOEIA("乳揉み")
+		CALL ONOMATOPOEIA("搾乳器")
+	ENDIF
+	
+	TFLAG:ループ中メッセージ表示 = 0
+	SIF LOCAL >= 2
+		PRINTL 　　・
+NEXT
+
+
+
+

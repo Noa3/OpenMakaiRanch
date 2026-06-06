@@ -1,0 +1,31 @@
+﻿
+;部屋割り自動変更設定
+@AUTO_ALLOCATION_ROOM_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Configure automatic room assignment changes.
+DRAWLINE
+PRINTLC [ 0] Remove room asignment when entering ＜Cowshed＞   
+CALL PRINT_ONOFF(GETBIT(＃自動部屋割り／牛舎＃),1)
+PRINTLC [ 1] Remove room assignment when using【Internal Violation】
+CALL PRINT_ONOFF(GETBIT(＃自動部屋割り／体内凌辱＃),1)
+
+CALL PRINTL_ALIGN(-5)
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 98
+	PRINTL Reset automatic room assignment to default?
+	CALL ASK_YN
+	SIF !RESULT
+		FLAG:部屋割り自動変更BIT = 1
+CASE 99
+	RETURN
+CASEELSE
+	INVERTBIT FLAG:部屋割り自動変更BIT,RESULT
+ENDSELECT
+RESTART
+
+
+

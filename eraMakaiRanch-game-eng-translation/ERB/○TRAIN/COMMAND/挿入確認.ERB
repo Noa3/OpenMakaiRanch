@@ -1,0 +1,138 @@
+﻿
+;Ｖ挿入前の確認
+;ARG→サイズ確認スキップ
+@V_INSERT_CONFIRM(ARG)
+
+EXIST = 0
+IF !ARG
+	CALL SIZE_CONFIRM
+	SIF RESULT
+		EXIST ++
+ENDIF
+CALL LUBRICATION_CONFIRM
+SIF RESULT
+	EXIST ++
+CALL LOST_VARGIN_CONFIRM
+SIF RESULT
+	EXIST ++
+
+;Ｖのみ【異種族孕ませ】確認
+CALL PREGNANT_CONFIRM
+SIF RESULT
+	EXIST ++
+SIF !EXIST
+	RETURN
+PRINTL Do you want to insert?
+CALL ASK_YN
+
+;[いいえ]なら1
+SIF RESULT
+	RETURN 1
+
+
+
+;Ｖ処女喪失確認
+@LOST_VARGIN_CONFIRM
+
+;確認しない設定か非処女なら飛ばす
+SIF !GETBIT(＃Ｖ処女確認＃) || !TALENT:処女
+	RETURN
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% is a【Virgin】.","黄"
+RETURN 1
+
+
+;Ｖ潤滑確認
+@LUBRICATION_CONFIRM
+
+;触手分泌液増量あれば無視
+SIF SELECTCOM == 105 && ITEM:触手分泌液増量 && GETBIT(＃有効／触手分泌液増量＃)
+	RETURN
+SIF !GETBIT(＃Ｖ潤滑確認＃) || PALAM:Ｖ潤滑 >= NEED_LUBRICATION
+	RETURN
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s %SAVESTR:表記／膣% is not wet enough.","黄"
+RETURN 1
+
+
+;異種族孕ませ確認
+@PREGNANT_CONFIRM
+
+{
+SIF !GETBIT(＃異種族孕ませ確認＃) || !ITEM:異種族孕ませ || TEQUIP:0:コンドーム ||
+!GETBIT(＃個人有効／異種族孕ませ＃) || !GETBIT(＃有効／異種族孕ませ＃)
+}
+	RETURN
+CALL PRINTL_WORD_COLOR,@"Since 【Cross-Species Impregnation】 is effective and there is no ＜Condom＞, there is a possibility of pregnancy from vaginal ejaculation.","黄"
+RETURN 1
+
+
+;サイズ差確認
+@SIZE_CONFIRM
+#DIM SIZE_DIFF
+
+SIF !GETBIT(＃Ｖサイズ確認＃) || !PLAYER_PENIS
+	RETURN
+SIZE_DIFF = ABL:0:ペニスサイズ - ABL:Ｖサイズ - ABL:Ｖ拡張
+SIF !(SIZE_DIFF > 20 || (ABL:0:ペニスサイズ - ABL:初期値／Ｖサイズ * 3 > 0 && SIZE_DIFF > 0))
+	RETURN
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s %SAVESTR:表記／膣% is too small to accept %CALLNAME:0%'s %SAVESTR:表記／ペニス%, causing severe pain.","黄"
+RETURN 1
+
+
+
+;Ａ挿入前の確認
+@A_INSERT_CONFIRM(ARG)
+
+EXIST = 0
+IF !ARG
+	CALL A_SIZE_CONFIRM
+	SIF RESULT
+		EXIST ++
+ENDIF
+CALL A_LUBRICATION_CONFIRM
+SIF RESULT
+	EXIST ++
+CALL A_LOST_VARGIN_CONFIRM
+SIF RESULT
+	EXIST ++
+SIF !EXIST
+	RETURN
+PRINTL Do you want to insert?
+CALL ASK_YN
+SIF RESULT
+	RETURN 1
+
+
+
+;Ａ処女喪失確認
+@A_LOST_VARGIN_CONFIRM
+
+SIF !GETBIT(＃Ａ処女確認＃) || !TALENT:Ａ処女
+	RETURN
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% is an【Anal Virgin】.","黄"
+RETURN 1
+
+
+;Ａ潤滑確認
+@A_LUBRICATION_CONFIRM
+
+SIF SELECTCOM == 106 && ITEM:触手分泌液増量 && GETBIT(＃有効／触手分泌液増量＃)
+	RETURN
+SIF !GETBIT(＃Ａ潤滑確認＃) || PALAM:Ａ潤滑 >= NEED_LUBRICATION
+	RETURN
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s %SAVESTR:表記／アナル% is not wet enough.","黄"
+RETURN 1
+
+
+;Ａサイズ差確認
+@A_SIZE_CONFIRM
+#DIM SIZE_DIFF
+
+SIF !GETBIT(＃Ａサイズ確認＃) || !PLAYER_PENIS
+	RETURN
+SIZE_DIFF = ABL:0:ペニスサイズ - ABL:Ａサイズ - ABL:Ａ拡張
+SIF !(SIZE_DIFF > 20 || (ABL:0:ペニスサイズ - ABL:初期値／Ａサイズ * 6 > 0 && SIZE_DIFF > 0))
+	RETURN
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s %SAVESTR:表記／アナル% is too small to accept %CALLNAME:0%'s %SAVESTR:表記／ペニス%, causing severe pain.","黄"
+RETURN 1
+
+

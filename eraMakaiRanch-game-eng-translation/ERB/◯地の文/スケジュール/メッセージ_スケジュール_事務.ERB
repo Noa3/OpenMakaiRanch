@@ -1,0 +1,41 @@
+﻿
+;事務内容表示
+@WORK_FINANCE_BEGIN_MESSAGE
+
+SIF !EXP:実行回数／事務 && TARGET
+	PRINTFORML You instructed %CALLNAME% to help with the farm's administrative tasks...
+PRINTFORM %CALLNAME%%PRINT_WORK_GROUP()% is
+
+;あなたも事務の場合追加
+SIF CSTR:0:スケジュール == "事務" && TARGET > 0
+	PRINTFORM %CALLNAME:0% and together
+PRINTL tackled the accumulated administrative tasks.
+	CALL KOJO_PRINT("スケジュール","事務",KOJO_TYPE)
+
+
+
+;事務上手さ表示
+@WORK_FINANCE_ABL_MESSAGE
+
+SIF !TARGET
+	RETURN
+IF !EXP:実行回数／事務
+	IF ABL:事務 >= 8
+		PRINTL It seems that the experience from the surface is being put to good use, working very efficiently.
+	ELSEIF ABL:事務 >= 4
+		PRINTL Shows considerable skill.
+	ELSE
+		PRINTL ...It seems the work is not progressing well.
+	ENDIF
+ELSE
+	IF ABL:事務 >= 8
+		PRINTL Handles the administrative tasks with professional-level skill.
+	ELSEIF ABL:事務 >= 4
+		PRINTL Shows improvement in skill.
+	ELSE
+		PRINTL ...It seems the work is not progressing well.
+	ENDIF
+ENDIF
+
+
+

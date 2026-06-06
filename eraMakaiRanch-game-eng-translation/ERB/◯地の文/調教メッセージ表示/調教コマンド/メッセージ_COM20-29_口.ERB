@@ -1,0 +1,119 @@
+﻿
+@COM20_MESSAGE
+;乳吸い
+
+CALL TRAIN_INSERT_MESSAGE
+;PRINTFORM %BUST_CLOTHES()%%CALLNAME%の ; this is part of TRAIN_BUST_LUB_WHILE_MESSAGE
+CALL TRAIN_BUST_LUB_WHILE_MESSAGE
+CALL TRAIN_MILK_SUCK_MESSAGE
+
+
+
+@COM21_MESSAGE
+;乳首しゃぶり
+
+CALL TRAIN_INSERT_MESSAGE
+;PRINTFORM %BUST_CLOTHES()%%CALLNAME%の ; this is part of TRAIN_BUST_LUB_WHILE_MESSAGE
+CALL TRAIN_BUST_LUB_WHILE_MESSAGE
+IF MARK:母乳体質 && BASE:母乳容量
+	PRINTFORM you lick and suck on her %SLANG_N()%, sucking up %SLANG_MILK()%...
+ELSE
+	PRINTFORM you lick and suck on her %SLANG_N()%...
+ENDIF
+PRINTL
+
+
+
+@COM22_MESSAGE
+;キス
+
+CALL TRAIN_INSERT_MESSAGE
+IF ＃陥落状態／恋慕以上＃
+	PRINTFORM %DIRECTION()% you lean closer to %CALLNAME%, 
+	IF TFLAG:拘束BIT
+		PRINTL who is kissed while being restrained...
+	ELSE
+		PRINTFORML then, as you wrap your arms around her, she asks for your lips......
+	ENDIF
+ELSEIF CFLAG:無抵抗
+	PRINTFORM Approaching her%DIRECTION()%, you kissed %CALLNAME%, who accepts it without resistance...
+ELSE
+	PRINTFORM Approaching her%DIRECTION()%, you forcefully kissed %CALLNAME%...
+ENDIF
+PRINTL
+
+
+
+@COM23_MESSAGE
+;Ｃ舐め
+
+PRINTFORML You lick %CALLNAME%'s %SLANG_C()%...
+
+
+
+@COM24_MESSAGE
+;Ｖ舐め
+
+PRINTFORML You lick %CALLNAME%'s %SLANG_V()%...
+
+
+
+@COM25_MESSAGE
+;Ａ舐め
+
+PRINTFORML You lick %CALLNAME%'s %SLANG_A()%...
+
+
+
+@COM26_MESSAGE
+;乳舐め
+
+CALL TRAIN_INSERT_MESSAGE
+
+;横乳時かなり変えないと変かな
+IF TFLAG:横乳露出
+	PRINTFORM From the side of her clothing, %CALLNAME%'s %SLANG_B()% gets exposed and
+ELSEIF TFLAG:谷間露出
+	PRINTFORM %CALLNAME%'s %SLANG_B()% are exposed, and, unable to be contained by her clothing
+ELSE
+	PRINTFORM %CALLNAME%'s %BUST_CLOTHES()% %SLANG_STAIN("Ｂ")% %SLANG_B()%
+	IF ABL:バストサイズ >= BUSTSIZE_豊乳
+		PRINT  are lifted from the side, 
+	ELSEIF ABL:バストサイズ >= BUSTSIZE_並乳
+		PRINT  are touched gently, 
+	ELSE
+		PRINT , by deliberately avoiding the tips, 
+	ENDIF
+ENDIF
+PRINTL to get licked and lapped with your tongue...
+
+
+
+@COM27_MESSAGE
+;耳舐め　追加コマンド
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML You nibble and lick %CALLNAME%'s ears...
+
+
+
+@COM28_MESSAGE
+;腋舐め　追加コマンド
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML You lick %CALLNAME%'s armpits...
+
+
+
+@COM29_MESSAGE
+;頬舐め　追加コマンド
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML You lick %CALLNAME%'s face...
+
+
+
+
+
+
+

@@ -1,0 +1,70 @@
+﻿
+;ホームセンターPAGE1
+@ITEM_SHOP_WORK_DETAIL_DISPOSABLE
+
+;アイテム名・価格・所持数
+PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:SELECT_ITEM)% 》%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%G Owned {ITEM:SELECT_ITEM,2} 
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "栄養ドリンク"
+PRINTL ＜Consumable＞
+PRINTL Visit → Give Energy Drink or Use Item with owner → Use Item
+PRINTL
+PRINTL A drug that restores some physical strength.
+PRINTL Recovers 20% of the maximum physical strength or 400, whichever is greater.
+PRINTL Only one bottle per day can be taken.
+
+CASE "衣服補修布"
+PRINTL ＜Consumable＞
+PRINTL Visit → Repair Torn Clothes
+PRINTFORML ※ requires ＜%ITEMS_ENG("裁縫道具セット")%＞
+PRINTL
+PRINTL Tool used to mend clothes.
+IF FLAG:ジョーク表示
+    PRINTL After repair, there is a noticeable color or seam where it was mended
+	PRINTL But before you know it, you can no longer tell where it was repaired.
+    PRINTL Perhaps it's imbued with some kind of magic.
+ENDIF
+
+CASE "ヘアカラー"
+PRINTL ＜Consumable＞
+PRINTL Visit → Change Hairstyle
+PRINTFORML ※ requires ＜%ITEMS_ENG("スタイリング道具セット")%＞
+PRINTL
+PRINTL A styling product that changes the hair color by applying it to the hair.
+IF FLAG:ジョーク表示
+    PRINTL I thought there would be a variety of colors, but there's only one,
+	PRINTL And if you use it while thinking, "I want it to turn red," it turns red.
+    PRINTL Moreover, even if you take a bath, it won't wash out.
+    PRINTL Perhaps it contains some kind of magic.
+ENDIF
+
+CASE "カラーコンタクト"
+PRINTL ＜Consumable＞
+PRINTL Visit → Change Eye Color and Shape
+PRINTL
+PRINTL A fashionable item that changes the appearance of eye color and shape when inserted into the eyes.
+IF FLAG:ジョーク表示
+    PRINTL I thought there would be a variety of colors, but there's only one,
+	PRINTL And if you use it while thinking, "I want it to turn red," it turns red.
+    PRINTL Also, if you try to remove them, they don't come off unless you really try,
+	PRINTL and they don't have any negative effects even if left in.
+    PRINTL Perhaps it contains some kind of magic.
+ENDIF
+
+CASE "家畜管理タグ"
+PRINTL ＜Consumable＞
+PRINTL Visit → Assign New Identity
+PRINTL
+PRINTL A tag for livestock ears that allows individual management.
+PRINTL Normally unnecessary for humans, but by attaching it, you can overwrite one's status.
+PRINTL The greatest symbol of humiliation, proof that one has fallen into the status of "slave" or "livestock."
+
+CASE "ハーブティー"
+PRINTL ＜Consumable＞
+PRINTL Visit → Give Herbal Tea
+PRINTL
+PRINTL A tea made from herbs from the demon world, with an incredibly powerful relaxing effect.
+PRINTL It can restore reason and mental strength, and reduce the chances of falling into a cow-like state.
+ENDSELECT
+
+

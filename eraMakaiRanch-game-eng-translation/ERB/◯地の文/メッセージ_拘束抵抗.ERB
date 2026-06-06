@@ -1,0 +1,99 @@
+﻿
+;拘束抵抗or魔力枷外しメッセージ
+;ARGS→状態
+@RESIST_SHACKLE_MESSAGE(ARGS)
+
+PRINTL
+SELECTCASE ARGS
+CASE "家畜"
+	IF !＃陥落状態／隷属＃ && !CFLAG:乳牛
+		CALL KOJO_PRINT("イベント","枷外し","超乳")
+		PRINTL ... She held a faint hope that this was all just a nightmare.
+		PRINTFORML But come morning, as %CALLNAME% once again sees her %SAVESTR:表記／乳房%, which have grown to 
+		PRINTFORML the point they hindered movement, she despairs once more...
+	ELSE
+		CALL KOJO_PRINT("イベント","枷外し","超乳隷属")
+		PRINTFORML As %CALLNAME% awakens, her %SAVESTR:表記／乳房%, which have grown to the point they hindered movement, greets her sight as usual.
+		IF MARK:母乳体質
+			PRINTFORML From her oversized %SAVESTR:表記／乳房%, %CALLNAME:0% can squeeze out plenty of %SAVESTR:表記／母乳%...
+			PRINTFORML Just thinking about it gets %CALLNAME%'s pussy wet and causes %SAVESTR:表記／母乳% to leak from her nipples...
+		ELSE
+			PRINTFORML %CALLNAME:0% will surely give her plenty of love due to her %SAVESTR:表記／乳房%...
+			PRINTFORML Just thinking about it gets %CALLNAME%'s pussy wet...
+		ENDIF
+	ENDIF
+	PRINTL
+	PRINTFORML It seems %CALLNAME% no longer intends to resist. Removing the [Mana Shackles] should be fine.
+	
+CASE "完堕ち"
+	CALL KOJO_PRINT("イベント","枷外し","完堕ち")
+	PRINTFORML It seems %CALLNAME% no longer intends to resist. Removing the [Mana Shackles] should be fine.
+	
+CASE "崩壊"
+	CALL KOJO_PRINT("イベント","枷外し","崩壊")
+	PRINTFORML %CALLNAME% merely stares at you with hollow eyes...
+	PRINTL Even if she recovers, she still won't have the will to resist.
+	PRINTL Removing the [Mana Shackles] should be fine.
+	
+CASE "陥落"
+	CALL KOJO_PRINT("イベント","枷外し","陥落")
+	PRINTFORML As you check up on %CALLNAME% in the morning, she greets you with absolute deference.
+	PRINTL From the looks of things, removing the [Mana Shackles] should be fine.
+	
+CASE "屈服"
+	CALL KOJO_PRINT("イベント","枷外し","屈服")
+	PRINTFORML %CALLNAME% seems to have learned her place, and is now completely obedient.
+	PRINTL  From the looks of things, removing the [Mana Shackles] should be fine.
+
+CASE "非戦闘職"
+	CALL KOJO_PRINT("イベント","枷外し","非戦闘職")
+	PRINTFORML Although you restrained her with the Mana Shackles, 
+	PRINTFORML it seems %CALLNAME% never had the necessary power to escape to begin with.
+	PRINTL Mana Shackles aren't even needed.
+	
+CASE "霊力0"
+	CALL KOJO_PRINT("イベント","枷外し","霊力0")
+	PRINTFORML  %CALLNAME% desperately struggles, but drained of Spirit Energy, her body can't muster much force...
+	PRINTL No matter how strong %CALLNAME% was originally, she's now nothing more than a lowly slave.
+	PRINTL It seems there's no longer a need to keep the [Mana Shackles] on.
+	
+CASE "処女結界破壊"
+	CALL KOJO_PRINT("イベント","枷外し","処女結界破壊")
+	PRINTFORML %CALLNAME% struggles her hardest, but the shackles hold firm.
+	PRINTFORML Without the【Virginity Barrier】, the Holy Light no longer responds to %CALLNAME%...
+	
+CASE "魔力母乳体質"
+	CALL KOJO_PRINT("イベント","枷外し","魔力母乳体質")
+	PRINTFORML %CALLNAME% attempts to resist by guiding her Mana into the shackles,
+	PRINTFORML but contrary to her expectations, Mana only circulates within her %SAVESTR:表記／乳房% instead...
+	PRINTFORML Having【Mana-Infused Breast Milk】means that %CALLNAME%'s Mana is now nothing more than nutrients within her %SAVESTR:表記／母乳%.
+	PRINTFORML With her Mana sealed, %CALLNAME%'s strength no different than that of a feeble slave...
+	PRINTFORML %CALLNAME%'s face pales as she realizes not only has she been deprived of all her power, 
+	PRINTFORML but that she'll be used as a「Cow」as well...
+	PRINTL
+	PRINTL It seems there's no longer a need to keep the [Mana Shackles] on.
+	
+CASE "反抗削除"
+	CALL KOJO_PRINT("イベント","枷外し","反抗削除")
+	PRINTFORML %CALLNAME% is still somewhat resistant, but seems to understand that escape is both futile and impossible.
+	PRINTL It seems there's no longer a need to keep the [Mana Shackles] on.
+	
+CASE "休憩"
+	CALL KOJO_PRINT("繰り返しイベント","拘束抵抗","休憩")
+	PRINTFORML %CALLNAME% prioritizes resting over resisting.
+	
+CASE "触手服"
+	CALL KOJO_PRINT("繰り返しイベント","拘束抵抗","触手服")
+	PRINTFORML %CALLNAME% tries to resist, but the tentacle suit reacts and tortures her violently, making it impossible...
+	
+CASE "抵抗"
+	CALL KOJO_PRINT("繰り返しイベント","拘束抵抗","抵抗")
+	IF MARK:魔力母乳体質
+		PRINTFORML As %CALLNAME% desperately resists despite being unable to use her Mana,
+		PRINTFORML the [Mana Shackles] on her limbs activate, forcefully suppressing her power...
+	ELSE
+		PRINTFORML As %CALLNAME% desperately resists, the [Mana Shackles] on her limbs activate, forcefully suppressing her power...
+	ENDIF
+ENDSELECT
+
+

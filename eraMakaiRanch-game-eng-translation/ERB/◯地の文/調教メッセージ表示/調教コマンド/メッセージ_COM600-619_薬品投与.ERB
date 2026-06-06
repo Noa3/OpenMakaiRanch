@@ -1,0 +1,152 @@
+﻿
+@COM600_MESSAGE
+;母乳体質化薬
+
+PRINTFORML You hold %CALLNAME%'s %SLANG_B()% and inject drugs into her nipples...
+PRINTFORML （Lactation Drugs-1 → {ITEM:母乳体質化薬}）
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTL ...The effects of the drug are immediate...!
+
+
+
+@COM601_MESSAGE
+;魔力母乳体質化薬
+
+PRINTFORML You hold %CALLNAME%'s %SLANG_B()% and inject drugs into her nipples...
+PRINTFORML （Mana Infusion Drugs-1 → {ITEM:魔力母乳体質化薬}）
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTL ...The effects of the drug are immediate...!
+
+
+
+@COM602_MESSAGE
+;膨乳薬
+
+PRINTFORML You inject the drugs into %CALLNAME%'s neck...
+PRINTFORML （Breast Expansion Drugs-1 → {ITEM:膨乳薬}）
+CALL KOJO_PRINT("調教コマンド","注射","首筋")
+PRINTW
+PRINTL ...The effects of the drug are immediate...!
+PRINTFORML %CALLNAME%'s %SLANG_B()% grow in size!
+
+
+
+@COM603_MESSAGE
+;母乳濃厚化薬
+
+PRINTFORML You hold %CALLNAME%'s %SLANG_B()% and inject drugs into her nipples...
+PRINTFORML （Breast Milk Enriching Drugs-1 → {ITEM:母乳濃厚化薬}）
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTL ...The effects of the drug are immediate...!
+PRINTFORML The %SLANG_MILK()% spurting from %CALLNAME%'s %SLANG_N()% grows thicker...!
+CALL KOJO_PRINT("肉体改造","母乳濃厚化")
+PRINTW
+
+
+
+@COM605_MESSAGE
+;超乳薬
+
+PRINTFORML You inject the drugs into %CALLNAME%'s neck...
+PRINTFORML （Mega Milk Drugs-1 → {ITEM:超乳薬}）
+CALL KOJO_PRINT("調教コマンド","注射","首筋")
+PRINTW
+PRINTL ...The effects of the drug are immediate...!
+PRINTFORML ...The effects of the drug cause %CALLNAME%'s %SLANG_B()% to gradually enlarge!
+
+
+
+@COM606_MESSAGE
+;受容器鋭敏化薬
+
+PRINTFORML You inject the drugs into %CALLNAME%'s neck...
+PRINTFORML （Nerve Remodeling Drugs-1 → {ITEM:受容器鋭敏化薬}）
+CALL KOJO_PRINT("調教コマンド","注射","首筋")
+PRINTW
+PRINTFORML ...%CALLNAME%'s whole body became sensitive, her breathing turning rough...
+
+
+
+@COM607_MESSAGE
+;多臓器活性薬
+
+PRINTFORML You inject the drugs into %CALLNAME%'s neck...
+PRINTFORML （Mana Incitement Drugs-1 → {ITEM:多臓器活性薬}）
+CALL KOJO_PRINT("調教コマンド","注射","首筋")
+PRINTFORML %CALLNAME% felt her body burning with heat, writhing in pleasure...
+PRINTW
+
+
+
+@COM810_MESSAGE
+;浸透媚薬A
+
+PRINTFORML You inject the drugs into %CALLNAME%'s %SLANG_A()%...
+PRINTFORML （浸透媚薬所持数-1 → {ITEM:浸透媚薬}コ）
+CALL KOJO_PRINT("調教コマンド","注射","Ａ")
+PRINTW
+PRINTFORML ...%CALLNAME%'s %SLANG_A()% pulsed, her breath growing increasingly ragged...!
+CALL KOJO_PRINT("肉体改造","Ａ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【ＡSensiv+{ABL:Ａ感度 -SENSITIVE_BEFORE}→{ABL:Ａ感度}\%】","桃"
+PRINTW
+
+
+
+@COM811_MESSAGE
+;浸透媚薬B
+
+PRINTFORML You inject the drugs into %CALLNAME%'s %SLANG_B()%...
+PRINTFORML （浸透媚薬所持数-1 → {ITEM:浸透媚薬}コ）
+CALL KOJO_PRINT("調教コマンド","注射","Ｂ")
+PRINTW
+PRINTFORML ...%CALLNAME%'s %SLANG_B()% throbbed, her breath growing increasingly ragged...!
+CALL KOJO_PRINT("肉体改造","Ｂ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【ＢSensiv+{ABL:Ｂ感度 -SENSITIVE_BEFORE}→{ABL:Ｂ感度}\%】","桃"
+
+
+
+@COM812_MESSAGE
+;浸透媚薬C
+
+PRINTFORML You inject the drugs into %CALLNAME%'s %SLANG_C()%...
+PRINTFORML （浸透媚薬所持数-1 → {ITEM:浸透媚薬}コ）
+CALL KOJO_PRINT("調教コマンド","注射","Ｃ")
+PRINTW
+PRINTFORML  ...%CALLNAME%'s %SLANG_C()% throbbed, her breath growing increasingly ragged...!
+CALL KOJO_PRINT("肉体改造","Ｃ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【ＣSensiv+{ABL:Ｃ感度 -SENSITIVE_BEFORE}→{ABL:Ｃ感度}\%】","桃"
+PRINTW
+
+
+
+@COM813_MESSAGE
+;浸透媚薬V
+
+PRINTFORML You inject the drugs into %CALLNAME%'s %SLANG_V()%...
+PRINTFORML （浸透媚薬所持数-1 → {ITEM:浸透媚薬}コ）
+CALL KOJO_PRINT("調教コマンド","注射","Ｖ")
+PRINTW
+PRINTFORML ...%CALLNAME%'s %SLANG_V()% pulsed, her breath growing increasingly ragged...!
+CALL KOJO_PRINT("肉体改造","Ｖ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【ＶSensiv+{ABL:Ｖ感度 -SENSITIVE_BEFORE}→{ABL:Ｖ感度}\%】","桃"
+PRINTW
+
+
+
+@COM814_MESSAGE
+;浸透媚薬N
+
+PRINTFORML You hold %CALLNAME%'s %SLANG_B()% and inject drugs into her nipples...
+PRINTFORML （浸透媚薬所持数-1 → {ITEM:浸透媚薬}コ）
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTFORML ...%CALLNAME%'s %SLANG_N()% throbbed, her breath growing increasingly ragged...!
+CALL KOJO_PRINT("肉体改造","Ｎ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【ＮSensiv+{ABL:Ｎ感度 -SENSITIVE_BEFORE}→{ABL:Ｎ感度}\%】","桃"
+PRINTW
+
+
+

@@ -1,0 +1,25 @@
+﻿
+;ゲーム開始時にグローバル変数を読み込む処理
+@FIRST_LOAD_SYSTEM_SAVE
+
+;GLOBALはRESETDATAやLOADDATAによって初期化・上書きされない。
+LOADGLOBAL
+
+;GLOBAL.savがない場合は初期値を作成
+SIF !RESULT
+	CALL CREATE_GLOBAL_CONFIG
+
+;SAVESTRが保存されてなかったりするので対応
+IF GLOBALS:表記／乳房 == ""
+	CALL DEFAULT_SENTENCE_CONFIG
+	FOR LOCAL,0,10
+		GLOBALS:LOCAL = %SAVESTR:LOCAL%
+	NEXT
+	VARSET SAVESTR
+ENDIF
+
+;古いバージョンの場合に互換性あるよう直す処理
+;ここにゲームのバージョンアップによるフラグ修正とかを入れる
+CALL SYSTEM_SAVE_UPDATE
+
+

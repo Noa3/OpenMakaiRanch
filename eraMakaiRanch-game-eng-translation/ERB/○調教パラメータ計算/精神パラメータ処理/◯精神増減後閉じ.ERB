@@ -1,0 +1,17 @@
+﻿
+;精神パラメータの増減表示したあとに<>で閉じる
+;ARG→改行
+@MIND_PALAM_AFTER_PRINT(ARG)
+
+SIF SOURCE:精神パラメータ増減済み
+	PRINT >
+SIF ARG && !LINEISEMPTY()
+	PRINTL
+SOURCE:精神パラメータ増減済み = 0
+RESETCOLOR
+
+
+
+
+
+

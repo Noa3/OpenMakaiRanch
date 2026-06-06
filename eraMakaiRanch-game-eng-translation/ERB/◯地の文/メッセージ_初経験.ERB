@@ -1,0 +1,170 @@
+﻿
+;処女喪失
+@LOST_VARGIN_V_MESSAGE
+
+;非表示設定のときは表示はしないけど奪いはする
+SIF !GETBIT(＃経験表示／Ｖセックス＃)
+	RETURN
+IF CFLAG:崩壊
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her virginity to %SEX_PARTNER_ENG(V_PENIS)%...","赤"
+ELSEIF ＃陥落状態／隷属＃ && GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gives her virginity to %SEX_PARTNER_ENG(V_PENIS)% with glee...","桃"
+ELSEIF ＃陥落状態／恋慕以上＃ && GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gives her virginity to %SEX_PARTNER_ENG(V_PENIS)%...","桃"
+ELSEIF CFLAG:乳牛 || ＃陥落状態／陥落以上＃
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% accepts %SEX_PARTNER_ENG(V_PENIS)%'s entry into her %SLANG_V()% without resistance…","桃"
+ELSE
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her virginity to %SEX_PARTNER_ENG(V_PENIS)%...","赤"
+ENDIF
+
+
+
+;Ａ処女
+@LOST_VARGIN_A_MESSAGE
+
+SIF !GETBIT(＃経験表示／Ａセックス＃)
+	RETURN
+IF CFLAG:崩壊
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her anal virginity to %SEX_PARTNER_ENG(A_PENIS)%...","赤"
+ELSEIF ＃陥落状態／隷属＃ && GETBIT(＃Ｐ使用／Ａ挿入＃)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gives her anal virginity to %SEX_PARTNER_ENG(A_PENIS)% with glee...","桃"
+ELSEIF ＃陥落状態／恋慕以上＃ && GETBIT(＃Ｐ使用／Ａ挿入＃)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gives her anal virginity to %SEX_PARTNER_ENG(A_PENIS)%...","桃"
+ELSEIF CFLAG:乳牛 || ＃陥落状態／陥落以上＃
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% accepts %SEX_PARTNER_ENG(A_PENIS)%'s penis penetrating her %SLANG_A()% without any resistance...","桃"
+ELSE
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her anal virginity to %SEX_PARTNER_ENG(A_PENIS)%..."
+ENDIF
+
+
+
+;口挿入
+@LOST_VARGIN_M_MESSAGE
+
+SIF !GETBIT(＃経験表示／Ｍセックス＃)
+	RETURN
+IF CFLAG:崩壊
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her oral virginity to %SEX_PARTNER_ENG(M_PENIS)%...","赤"
+ELSEIF ＃陥落状態／隷属＃ && GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gives %SEX_PARTNER_ENG(M_PENIS)% her oral virginity with glee...","桃"
+ELSEIF ＃陥落状態／恋慕以上＃ && GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gives her oral virginity to %SEX_PARTNER_ENG(M_PENIS)%...","桃"
+ELSEIF CFLAG:乳牛 || ＃陥落状態／陥落以上＃
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% accepts %SEX_PARTNER_ENG(M_PENIS)%'s penis into her mouth without resistance...","桃"
+ELSE
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her oral virginity to %SEX_PARTNER_ENG(M_PENIS)%...","赤"
+ENDIF
+
+
+
+;ファーストキス
+@LOST_VARGIN_KISS_MESSAGE
+
+SIF !GETBIT(＃経験表示／キス＃)
+	RETURN
+IF CFLAG:崩壊
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her first kiss to %SEX_PARTNER_ENG(KISS_PLAYER)%...","赤"
+ELSEIF ＃陥落状態／恋慕以上＃ && KISS_PLAYER == CALLNAME:0
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% offers her first kiss to %SEX_PARTNER_ENG(KISS_PLAYER)% with glee...","桃"
+ELSEIF CFLAG:乳牛 || ＃陥落状態／陥落以上＃
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% accepts %SEX_PARTNER_ENG(KISS_PLAYER)%'s kiss without resistance...","桃"
+ELSE
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her first kiss to %SEX_PARTNER_ENG(KISS_PLAYER)%...","赤"
+ENDIF
+
+
+
+;初パイズリ
+@LOST_VARGIN_PAIZURI_MESSAGE
+
+SIF !GETBIT(＃経験表示／パイズリ＃)
+	RETURN
+IF CFLAG:崩壊
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her paizuri virginity to %SEX_PARTNER_ENG(PAIZURI_PENIS)%...","赤"
+ELSEIF ＃陥落状態／隷属＃ && GETBIT(＃Ｐ使用／パイズリ＃)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gives her paizuri virginity to %SEX_PARTNER_ENG(PAIZURI_PENIS)% with glee...","桃"
+ELSEIF ＃陥落状態／恋慕以上＃ && GETBIT(＃Ｐ使用／パイズリ＃)
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gives her paizuri virginity to %SEX_PARTNER_ENG(PAIZURI_PENIS)%...","桃"
+ELSEIF CFLAG:乳牛 || ＃陥落状態／陥落以上＃
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% accept being paizuri-ed by %SEX_PARTNER_ENG(PAIZURI_PENIS)% without resistance...","桃"
+ELSE
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her paizuri virginity to %SEX_PARTNER_ENG(PAIZURI_PENIS)%...","赤"
+ENDIF
+
+
+
+;初めておっぱい吸われた
+@LOST_VARGIN_MILK_MESSAGE
+
+SIF !GETBIT(＃経験表示／授乳＃)
+	RETURN
+IF !FLAG:あなたの触手もあなた扱い && TFLAG:搾乳触手
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% had her own %SLANG_MILK()% drawn from her for the first time by the tentacle...","桃"
+ELSEIF CFLAG:崩壊
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s %SLANG_MILK()% is drunk by %SEX_PARTNER_ENG(MILK_SUCK_PLAYER)% for the first time...","桃"
+ELSEIF ＃陥落状態／隷属＃ && MILK_SUCK_PLAYER == CALLNAME:0
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% gleefully offers her %SLANG_MILK()% to %SEX_PARTNER_ENG(MILK_SUCK_PLAYER)%...","桃"
+ELSEIF ＃陥落状態／恋慕以上＃ && MILK_SUCK_PLAYER == CALLNAME:0
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% offers her %SLANG_MILK()% to %SEX_PARTNER_ENG(MILK_SUCK_PLAYER)%...","桃"
+ELSEIF CFLAG:乳牛 || ＃陥落状態／陥落以上＃
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% lets %SEX_PARTNER_ENG(MILK_SUCK_PLAYER)% drink her %SLANG_MILK()% without resistance...","桃"
+ELSE
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s %SLANG_MILK()% is drunk by %SEX_PARTNER_ENG(MILK_SUCK_PLAYER)% for the first time...","桃"
+ENDIF
+
+
+
+;あなた処理
+;童貞卒業
+@LOST_VARGIN_PLAYER_V_MESSAGE
+
+SIF !GETBIT(＃経験表示／Ｖセックス＃)
+	RETURN
+CALL PRINTL_WORD_COLOR,@"You graduate from virginity...","桃"
+
+
+;Ａに初めて突っ込んだ
+@LOST_VARGIN_PLAYER_A_MESSAGE
+
+SIF !GETBIT(＃経験表示／Ａセックス＃)
+	RETURN
+CALL PRINTL_WORD_COLOR,@"You have anal sex for the first time...","桃"
+
+
+;口に初めて
+@LOST_VARGIN_PLAYER_M_MESSAGE
+
+SIF !GETBIT(＃経験表示／Ｍセックス＃)
+	RETURN
+CALL PRINTL_WORD_COLOR,@"You let %CALLNAME% be the first to ever suck your penis...","桃"
+
+
+;ファーストキス
+@LOST_VARGIN_PLAYER_KISS_MESSAGE
+
+SIF !GETBIT(＃経験表示／キス＃)
+	RETURN
+CALL PRINTL_WORD_COLOR,@"You shared your first kiss with %CALLNAME%...","桃"
+
+
+;初パイズリ
+@LOST_VARGIN_PLAYER_PAIZURI_MESSAGE
+
+SIF !GETBIT(＃経験表示／パイズリ＃)
+	RETURN
+CALL PRINTL_WORD_COLOR,@"You graduate from paizuri virginity...","桃"
+
+
+;初乳飲み
+@LOST_VARGIN_PLAYER_MILK_MESSAGE
+
+SIF !GETBIT(＃経験表示／授乳＃)
+	RETURN
+CALL PRINTL_WORD_COLOR,@"You taste Ningen %SLANG_MILK()% for the first time from %CALLNAME%...","桃"
+
+
+
+
+
+
+

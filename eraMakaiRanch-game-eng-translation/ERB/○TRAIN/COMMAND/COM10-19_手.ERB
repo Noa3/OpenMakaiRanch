@@ -1,0 +1,141 @@
+﻿
+@COM10
+;乳揉み
+
+;乳揉み共通SOURCEを追加
+CALL BUST_RUB_SOURCE_COMMON
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM11
+;乳搾り
+
+CALL LACTATION_SOURCE_COMMON
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM12
+;乳首つまみ
+
+LOSEBASE:気力 += 20
+SOURCE:Ｎ快楽／あなた責め = 2000
+SOURCE:恥辱 = 2000
+SOURCE:屈辱 = 2500
+SOURCE:情愛 = 1000
+SOURCE:調教者習得 = 400
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM13
+;Ｃ愛撫
+
+LOSEBASE:気力 += 20
+SOURCE:Ｃ快楽／あなた責め = 2000
+SOURCE:恥辱 = 2000
+SOURCE:屈辱 = 2000
+SOURCE:情愛 = 1500
+SOURCE:調教者習得 = 500
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM14
+;Ｖ指挿れ
+
+LOSEBASE:気力 += 30
+SOURCE:Ｖ快楽／あなた責め = 2000
+SOURCE:Ｖ痛み = 500
+SOURCE:恥辱 = 2000
+SOURCE:屈辱 = 2000
+SOURCE:不潔 = 1000
+SOURCE:情愛 = 500
+SOURCE:調教者習得 = 500
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM15
+;Ａ指挿れ
+
+LOSEBASE:体力 += 20
+LOSEBASE:気力 += 40
+SOURCE:Ａ快楽／あなた責め = 2000
+SOURCE:Ａ痛み = 1000
+SOURCE:恥辱 = 1000
+SOURCE:屈辱 = 3000
+SOURCE:不潔 = 3000
+SOURCE:情愛 = 500
+SOURCE:調教者習得 = 500
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM16
+;尻撫で　追加コマンド、条件ゆるい代わりに威力は低いよ
+
+LOSEBASE:気力 += 20
+SOURCE:Ａ快楽／あなた責め = 500
+SOURCE:恥辱 = 2000
+SOURCE:屈辱 = 1000
+SOURCE:情愛 = 2000
+SOURCE:調教者習得 = 300
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM17
+;乳撫で　追加コマンド
+
+LOSEBASE:気力 += 10
+SOURCE:Ｂ快楽／あなた責め = 1000
+SOURCE:恥辱 = 500
+SOURCE:情愛 = 2000
+SOURCE:屈辱 = 500
+SOURCE:調教者習得 = 300
+SOURCE:経過時間 = 1
+CALL BUST_TENTACLE_RESET
+RETURN 1
+
+
+
+@COM18
+;くすぐり　追加コマンド
+
+LOSEBASE:体力 += 20
+LOSEBASE:気力 += 40
+SOURCE:Ｂ快楽／あなた責め = 1000
+SOURCE:恥辱 = 3000
+SOURCE:屈辱 = 3000
+SOURCE:支配 = 1000
+SOURCE:調教者習得 = 500
+SOURCE:経過時間 = 1
+CALL BUST_TENTACLE_RESET
+RETURN 1
+
+
+@COM19
+;お腹撫で　追加コマンド
+
+LOSEBASE:気力 += 10
+SIF MARK:淫紋
+	SOURCE:Ｖ快楽／あなた責め = 1000
+SOURCE:恥辱 = 300 +(TFLAG:膣内精液 +TFLAG:尻穴精液 +TFLAG:口内精液)*10
+SOURCE:情愛 = 2000
+SOURCE:屈辱 = 300 +(TFLAG:膣内精液 +TFLAG:尻穴精液 +TFLAG:口内精液)*10
+SOURCE:調教者習得 = 300
+SOURCE:経過時間 = 1
+CALL BUST_TENTACLE_RESET
+RETURN 1
+
+
+

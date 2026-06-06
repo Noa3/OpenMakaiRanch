@@ -1,0 +1,115 @@
+﻿
+;使用口上の変更
+@KOJO_SETTING
+#DIM COLOR
+
+IF !FLAG:口上表示
+	PRINTL Currently, dialogue display is OFF. Switch ON?
+	CALL ASK_YN
+	IF !RESULT
+		FLAG:口上表示 = 1
+	ELSE
+		RETURN
+	ENDIF
+ENDIF
+
+CLEARLINE LINECOUNT
+CALL PRINT_IMAGE("ステータス")
+CALL PRINT_PORTRAIT
+PRINTL
+PRINTFORML %CALLNAME%'s Dialogue Options　Personality：【%PERSONALITY_ENG(CSTR:性格)%】
+CALL KOJO_PRINT("例文")
+CALL PRINTL_ALIGN(-10)
+PRINTFORM [ 0] Display Dialogue
+CALL PRINT_ONOFF(CFLAG:口上表示,1)
+IF CFLAG:口上表示
+	PRINTFORML [ 1] Use Dialogue：%DIALOGUE_ENG(CSTR:使用口上)%
+	PRINT [ 2] Dialogue Color：
+	COLOR = CFLAG:カラーコード／口上
+	IF COLOR
+		SETCOLOR COLOR
+		PRINTFORML %UNICODE(0x2586)%(R:{GETRED(COLOR)} G:{GETGREEN(COLOR)} B:{GETBLUE(COLOR)})
+		RESETCOLOR
+	ELSE
+		PRINTL No Display Color Set
+	ENDIF
+	SIF !LINEISEMPTY()
+		PRINTL
+	PRINTFORM [ 3] Personal Dialogue
+	CALL PRINT_ONOFF(CFLAG:専用設定／口上,1)
+	PRINTFORM [ 4]   Personal Events
+	CALL PRINT_ONOFF(CFLAG:専用設定／イベント,1)
+ELSE
+	CALL PRINTL_WORD_COLOR("     Use Dialogue","灰")
+	CALL PRINTL_WORD_COLOR("    Dialogue Color","灰")
+	CALL PRINTL_WORD_COLOR("     Personal Dialogue","灰")
+	CALL PRINTL_WORD_COLOR("     Personal Events","灰")
+ENDIF
+DRAWLINE
+PRINTL [99] Done
+INPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	INVERTBIT CFLAG:口上表示,0
+	
+CASE 1
+	PRINTL Select which dialogue to use
+	
+	;RESULTに目次の関数の数を入れる、RESULTSにその関数名入れる
+	ENUMFUNCWITH "KOJO_GENERAL_INDEX_"
+		;FOR LOCAL,0,ENUMFUNCBEGINSWITH("KOJO_GENERAL_INDEX_")
+	FOR LOCAL,0,RESULT
+		PRINTFORMLC [{LOCAL,2}] %DIALOGUE_ENG(SUBSTRING(RESULTS:LOCAL,19,-1))%
+	NEXT
+	PRINTL
+	PRINTL
+	PRINTL [99] Cancel
+	BINPUT
+	SIF RESULT >= 0 && RESULT < 99
+		CSTR:使用口上 = %SUBSTRING(RESULTS:RESULT,19,-1)%
+	
+CASE 2
+	CALL EDIT_COLOR_CODE(CFLAG:カラーコード／口上,1)
+	SIF RESULT
+		CFLAG:カラーコード／口上 = RESULT
+		
+CASE 3
+	;引数渡さずにTRYCして関数が存在するか見る
+	TRYCCALLFORM EX_KOJO_%CSTR:識別名%_%CSTR:出典作品名%
+		PRINTFORML Use [%CSTR:識別名%_%CSTR:出典作品名%]-exclusive dialogue?
+		CALL ASK_YN
+		IF !RESULT
+			CFLAG:専用設定／口上 = 1
+		ELSE
+			CFLAG:専用設定／口上 = 0
+		ENDIF
+	CATCH
+		PRINTW No exclusive dialogue found.
+	ENDCATCH
+	
+CASE 4
+	;イベントに直す
+	TRYCCALLFORM EX_EVENT_EXIST_%CSTR:識別名%_%CSTR:出典作品名%
+		PRINTFORML Use [%CSTR:識別名%_%CSTR:出典作品名%]-exclusive events?
+		CALL ASK_YN
+		IF !RESULT
+			CFLAG:専用設定／イベント = 1
+		ELSE
+			CFLAG:専用設定／イベント = 0
+		ENDIF
+	CATCH
+		PRINTW No exclusive events not found.
+	ENDCATCH
+
+CASE 99
+	IF CSTR:使用口上 == ""
+		PRINTW Turning off dialogue due to invalid configuration.
+		CFLAG:口上表示 = 0
+	ENDIF
+	RETURN
+	
+ENDSELECT
+RESTART
+
+

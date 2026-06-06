@@ -1,0 +1,82 @@
+
+;ゲーム開始前コンフィグ・牧場状態変更
+@NEWGAME_RANCH_SETTING
+
+CLEARLINE LINECOUNT
+PRINTL You can set up configurations before starting the game.
+DRAWLINE
+PRINT [ 0] Check Threshold Constants
+CALL PRINTL_WORD_COLOR,@"   <Recommended to check first>","Yellow"
+PRINTL
+PRINTL [ 1] Check Display Colors for Makaians in Makai
+
+;引き継ぎ有効なら出す→霊力記録されているかで確認
+IF GLOBAL:引き継ぎ前周回数
+    PRINTL [ 2] NEWGAME+ Settings
+ELSE
+    CALL PRINTL_WORD_COLOR,@"   NEWGAME+ is disabled","灰"
+
+ENDIF
+PRINTL
+PRINTL [10] Configurations
+PRINTL  ・Pages 1-3 → Can be freely changed at any time
+PRINTL  ・Pages 4-5 → Changes after the game starts require special items (Some changes on page 5 can be made at any time)
+PRINTL  ・Page 6  → Changes after the game starts can only be made in <Developer Mode>
+CALL PRINT_DIFFICULTY
+PRINTL
+PRINTLC [11] Change Farm Name
+PRINTFORML ：%SAVESTR:牧場名%
+PRINTLC [12] Change Pet and Mount
+PRINT ：
+
+;ペット関係のフラグ番号一斉取得
+CALL GET_PET_FLAG_REF
+FOR LOCAL,0,10
+	ANIMAL = %ITEMNAME:(ITEM_REF +LOCAL)%
+	SIF ANIMAL == "" || !ITEM:ANIMAL
+		CONTINUE
+	PRINTFORM %ITEMS_ENG(ANIMAL)%／%PET_NAME_REF(ANIMAL)%　
+	CALL PRINT_PET_GENDER(FLAG:(FLAG_REF +LOCAL),1)
+NEXT
+PRINTL
+PRINTFORML [13] Customize「%CALLNAME:0%」
+PRINTFORML [14] Customize the child living on the farm: “%CALLNAME:1%”
+PRINTFORML [15] Customize the slave brought by Eugene : “%CALLNAME:2%”
+PRINTL ・You can switch between 【Miko】 and 【Battle Sister】.
+
+CALL PRINTL_ALIGN
+DRAWLINE
+CALL PRINTL_WORD_COLOR,@"[99] Start Game","黄"
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL NEWGAME_CONFIRM_THRESHOLD
+CASE 1
+	CALL NEWGAME_CONFIRM_MAKAI_MESSAGE
+CASE 2
+	CALL NEWGAMEPLUS_CONFIG
+
+CASE 10
+	;この時点でDAYが0なのでコンフィグいろいろ弄れる
+	CALL GAME_CONFIG
+CASE 11
+	CALL NEWGAME_RANCH_NAME_BEFORE
+CASE 12
+	CALL NEWGAME_FIRST_PET
+CASE 13
+	TARGET = 0
+	CALL NEWGAME_PLAYER_DATA
+CASE 14
+	TARGET = 1
+	CALL CHARA_MAKE_FIXED_SLAVE("最初の奴隷")
+CASE 15
+	TARGET = 2
+	CALL CHARA_MAKE_FIXED_SLAVE("処女結界")
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+

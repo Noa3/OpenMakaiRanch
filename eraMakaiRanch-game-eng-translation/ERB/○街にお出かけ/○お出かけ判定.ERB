@@ -1,0 +1,165 @@
+﻿
+;お出かけ前の判定
+@SHOPPING_MOVE_SELECT
+#DIM DYNAMIC SET
+
+;股間出てると衣服着衣状態にする(女性は乳首も)
+TARGET = 0
+CALL AJUST_STRIP_FLAG
+SIF TFLAG:Ｖ露出 || TFLAG:Ａ露出 || TFLAG:Ｃ露出 || (TFLAG:Ｎ露出 && !TALENT:オトコ)
+	FLAG:外出中着衣 = 1
+
+;お出かけ条件確認、移動方法選んでたらおわり
+SIF TIME <= 0 || FLAG:事務作業量 >= 20 || FLAG:外出済み
+	RETURN
+
+;優先決定コンフィグを見る
+CALL SHOPPING_MOVE(FLAG:外出手段デフォルト)
+SIF FLAG:外出済み
+	RETURN
+
+DEFAULT_SET = SET
+CALL MANYL(3)
+PRINTL Pick how to go to the city.
+
+;牧場情報からも来るので関数化
+CALL SHOPPING_MOVE_LIST("お出かけ")
+PRINT [90] Set As Default
+CALL PRINT_CHECKBOX(SET,1)
+PRINTL [99] Cancel
+BINPUT
+INPUT_NUM = RESULT
+SELECTCASE INPUT_NUM
+CASE 1 TO 20
+	CALL SHOPPING_MOVE(INPUT_NUM)
+	
+	;デフォルトセット
+	SIF DEFAULT_SET
+		FLAG:外出手段デフォルト = INPUT_NUM
+	RETURN
+CASE 90
+	INVERTBIT SET,0
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;移動手段表示
+;ペットはなつき度必要にするつもりだったけど今特に必要なのいない
+;ARGS→元関数　設定時は現在の状況とか無視しとく
+@SHOPPING_MOVE_LIST(ARGS)
+
+;ITEM:堕天馬→100　選択肢を1から始めるので-1
+ITEM_REF = 100 -1
+PRINTL
+FOR LOCAL,1,11
+	ANIMAL = %ITEMNAME:(ITEM_REF +LOCAL)%
+	SIF ANIMAL == ""
+		CONTINUE
+	IF !ITEM:ANIMAL
+		CALL PRINTL_WORD_COLOR,@"　　 %ITEMS_ENG(ANIMAL)%","灰"
+		CONTINUE
+	ENDIF
+	PRINTFORML [{LOCAL,2}] %PET_NAME_REF(ANIMAL)%
+NEXT
+
+;魔術
+IF ITEM:個人用転移門
+	IF BASE:魔力 < MAGIC_USE_MP:GETNUM(ITEM,"個人用転移門") && ARGS == "お出かけ"
+		CALL PRINTL_WORD_COLOR("　　 Not enough Mana for ＜Personal Teleport Gate＞","灰")
+	ELSE
+		PRINTFORML [20] Use ＜Personal Teleport Gate＞（requires %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"個人用転移門"))%MP）
+		SIF ARGS == "お出かけ"
+			PRINTFORML 　　 Current MP：%VALUE_DIGIT(BASE:魔力)% 
+	ENDIF
+ELSE
+	CALL PRINTL_WORD_COLOR("　　 ＜Personal Teleport Gate＞","灰")
+ENDIF
+PRINTL
+
+
+
+;移動
+;ARG→移動手段
+@SHOPPING_MOVE(ARG)
+
+;対応番号以外は何もしないので直接ここでいい
+SELECTCASE ARG
+CASE 1
+	CALL SHOPPING_MOVE_HORSE
+CASE 2
+	CALL SHOPPING_MOVE_DOG
+CASE 3
+	CALL SHOPPING_MOVE_HAMSTER
+CASE 20
+	CALL SHOPPING_MOVE_MAGIC
+ENDSELECT
+
+;外出済みフラグが入ったらメッセージ
+SIF !FLAG:外出済み
+	RETURN
+
+;外出中着衣フラグがあればまず服を着る
+IF FLAG:外出中着衣 && !EQUIP:0:装備中ID／衣服
+	PRINTFORML %CALLNAME% puts on work clothes to go into town.
+	EQUIP:0:装備中ID／衣服 = GETNUM(EQUIP,"作業着")
+	CALL AJUST_STRIP_FLAG
+ENDIF
+SELECTCASE FLAG:外出済み
+CASE 1
+	PRINTFORMW %CALLNAME% rides %PET_NAME% into town.
+CASE 2,3
+	PRINTFORMW %CALLNAME% has %PET_NAME% pull the carriage into town.
+CASE 20
+	PRINTFORMW %CALLNAME% uses the ＜Personal Teleport Gate＞ to go into town.（%VALUE_DIGIT(USE_MP)%MP used）
+ENDSELECT
+
+
+
+;ｳﾏﾁｬﾝ
+@SHOPPING_MOVE_HORSE
+
+;一応なんだけど馬の名前が空欄ならおわり
+PET_NAME = %PET_NAME_REF("堕天馬")%
+SIF PET_NAME == ""
+	RETURN
+
+;外出済みフラグに外出手段として入れる
+FLAG:外出済み = 1
+
+
+
+;ｲﾇﾁｬﾝ
+@SHOPPING_MOVE_DOG
+
+PET_NAME = %PET_NAME_REF("オルトロス")%
+SIF PET_NAME == ""
+	RETURN
+FLAG:外出済み = 2
+
+
+
+;ﾊﾑﾁｬﾝ
+@SHOPPING_MOVE_HAMSTER
+
+PET_NAME = %PET_NAME_REF("魔界ハムスター")%
+SIF PET_NAME == ""
+	RETURN
+FLAG:外出済み = 3
+
+
+
+;ﾃﾝｲﾁｬﾝ
+@SHOPPING_MOVE_MAGIC
+
+USE_MP = MAGIC_USE_MP:GETNUM(ITEM,"個人用転移門")
+SIF !ITEM:個人用転移門 || BASE:魔力 < USE_MP
+	RETURN
+BASE:魔力 = LIMIT(BASE:魔力 -USE_MP,0,BASE:魔力)
+FLAG:外出済み = 20
+
+
+
+

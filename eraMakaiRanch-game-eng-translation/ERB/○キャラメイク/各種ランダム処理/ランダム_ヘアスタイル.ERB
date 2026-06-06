@@ -1,0 +1,145 @@
+﻿
+;奴隷候補のヘアスタイル
+;まとめてシャッフルで来る場所
+@RANDOM_SLAVE_HAIR
+
+CALL RANDOM_SLAVE_HAIR_COLOR
+CALL RANDOM_SLAVE_HAIR_STYLE
+CALL RANDOM_SLAVE_HAIR_FEATURE
+
+
+
+;髪色
+@RANDOM_SLAVE_HAIR_COLOR
+
+LAST_SHUFFLE_S = %CSTR:髪色%
+STR_REF = 200
+STR_MAX = 19
+CALL STR_REF_SHUFFLE(STR_REF)
+
+;髪色補正
+CALL RANDOM_SLAVE_HAIR_COLOR_FIX
+
+;10回まで同じものになったら再シャッフル
+IF SHUFFLE_COUNT < 10 && LAST_SHUFFLE_S == RESULTS
+	SHUFFLE_COUNT ++
+	RESTART
+ENDIF
+SHUFFLE_COUNT = 0
+CSTR:髪色 = %RESULTS%
+CALL AUTOSET_HAIR_COLOR_CODE
+CALL CATEGORY_HAIR_COLOR
+
+;髪色の中に口上が指定されてなければ口上色セットする処理つける
+CALL KOJO_COLOR_SET_HAIR_COLOR_AUTO
+
+
+
+;髪色補正
+@RANDOM_SLAVE_HAIR_COLOR_FIX
+
+SIF FLAG:銀髪派 && RESULTS == "白髪"
+	RESULTS = 銀髪
+
+;現実的な髪色がいいなら確率で強制変更
+SIF RAND:100 < FLAG:現実的な髪色率
+	RESULTS = %STR:(STR_REF +RAND:3)%
+
+;上書き系統はSHUFFLE_COUNTが入っている場合やらない
+SIF SHUFFLE_COUNT
+	RETURN
+
+;日本っぽいジョブで黒髪優先設定してれば上書き
+{
+SIF GROUPMATCH(CSTR:ジョブ,"巫女","退魔巫女","くのいち","サムライ","武将","陰陽師") 
+&& RAND:100 < FLAG:日本っぽいジョブの黒髪率
+}
+	RESULTS = 黒髪
+
+;種族補正
+CALL RANDOM_SLAVE_HAIR_COLOR_TRIBE_REVISION
+
+
+
+;髪色種族補正
+@RANDOM_SLAVE_HAIR_COLOR_TRIBE_REVISION
+
+SELECTCASE CSTR:種族
+CASE "エルフ"
+	SIF GETBIT(FLAG:種族設定／エルフ,4) && (RAND:100 < FLAG:外見反映率／エルフ)
+		RESULTS = 金髪
+CASE "ダークエルフ"
+	SIF GETBIT(FLAG:種族設定／ダークエルフ,4) && (RAND:100 < FLAG:外見反映率／ダークエルフ)
+		RESULTS = 銀髪
+CASE "ハーフエルフ"
+	SIF GETBIT(FLAG:種族設定／ハーフエルフ,4) && (RAND:100 < FLAG:外見反映率／ハーフエルフ)
+		RESULTS = 金髪
+CASE "羊角族"
+	SIF GETBIT(FLAG:種族設定／羊角族,1) && (RAND:100 < FLAG:外見反映率／羊角族)
+		RESULTS = 白髪
+CASE "翼人"
+	SIF GETBIT(FLAG:種族設定／翼人,2) && (RAND:100 < FLAG:外見反映率／翼人)
+		RESULTS = 空色髪
+CASE "ヴァンパイア"
+	SIF GETBIT(FLAG:種族設定／ヴァンパイア,1) && (RAND:100 < FLAG:外見反映率／ヴァンパイア)
+		RESULTS = 銀髪
+CASE "ダンピール"
+	SIF GETBIT(FLAG:種族設定／ダンピール,1) && (RAND:100 < FLAG:外見反映率／ダンピール)
+		RESULTS = 銀髪
+CASE "妖狐"
+	IF GETBIT(FLAG:種族設定／妖狐,2) && (RAND:100 < FLAG:外見反映率／妖狐)
+		RESULTS = 金髪
+	ELSEIF GETBIT(FLAG:種族設定／妖狐,3) && (RAND:100 < FLAG:外見反映率／妖狐)
+		RESULTS = 銀髪
+	ENDIF
+ENDSELECT
+
+
+
+;髪型
+@RANDOM_SLAVE_HAIR_STYLE
+
+LAST_SHUFFLE_S = %CSTR:髪型%
+STR_REF = 500
+STR_MAX = 39
+CALL STR_REF_SHUFFLE(STR_REF)
+
+;30%で基本的な髪型にする
+SIF RAND:100 < 30
+	RESULTS = %STR:(500 +RAND:10)%
+IF SHUFFLE_COUNT < 10 && LAST_SHUFFLE_S == RESULTS
+	SHUFFLE_COUNT ++
+	RESTART
+ENDIF
+SHUFFLE_COUNT = 0
+CSTR:髪型 = %RESULTS%
+CALL CATEGORY_HAIR_STYLE
+
+
+
+;髪特徴
+@RANDOM_SLAVE_HAIR_FEATURE
+
+LAST_SHUFFLE_S = %CSTR:髪特徴%
+STR_REF = 300
+STR_MAX = 29
+CALL STR_REF_SHUFFLE(STR_REF)
+
+;50%で空欄・霊力入ってない場合はもう1度50%
+SIF RAND:100 < 50
+	RESULTS =
+SIF RAND:100 < 50 && !MAXBASE:霊力
+	RESULTS =
+
+;霊力入ってない＝最初のシャッフルでは空欄でもそのまま通す
+IF SHUFFLE_COUNT < 10 && LAST_SHUFFLE_S == RESULTS && MAXBASE:霊力
+	SHUFFLE_COUNT ++
+	RESTART
+ENDIF
+SHUFFLE_COUNT = 0
+CSTR:髪特徴 = %RESULTS%
+CALL CATEGORY_HAIR_FEATURE
+
+
+
+

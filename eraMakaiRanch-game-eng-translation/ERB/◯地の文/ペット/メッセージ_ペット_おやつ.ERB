@@ -1,0 +1,75 @@
+﻿
+;ペットにおやつ：地の文
+;TARGET,ANIMAL,PET_NAME指定済み
+;ARG→アイテムNO
+@PET_COMMU_MESSAGE_SNACK(ARG)
+
+ITEM_NAME = %ITEMNAME:ARG%
+FLAG_NAME = なつき度／%ANIMAL%
+IF TALENT:動物に好かれる || BASE:FLAG_NAME >= 6000
+	CALL PET_COMMU_MESSAGE_SNACK_LOVE
+ELSEIF !TALENT:動物に嫌われる
+	CALL PET_COMMU_MESSAGE_SNACK_LOW
+ELSE
+	CALL PET_COMMU_MESSAGE_SNACK_HATE
+ENDIF
+
+
+
+;【動物に好かれる】orなつき時
+@PET_COMMU_MESSAGE_SNACK_LOVE
+
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	;ガッツニンジン
+	PRINTFORML %CALLNAME%が%ITEM_NAME%を取り出すと、%PET_NAME%は鼻をふんふんさせている。
+	PRINTFORML %ITEM_NAME%をあげると%PET_NAME%は大はしゃぎで食べたのち、元気が有り余っているという風に飛び跳ねている！
+CASE "オルトロス"
+	;謎肉ジャーキー
+	PRINTFORML %CALLNAME%が%ITEM_NAME%を取り出すと、%PET_NAME%は舌を出して目を輝かせている。
+	PRINTFORML %ITEM_NAME%を半分こにして左右の頭にあげると、%PET_NAME%は大はしゃぎで食べたのち、
+	PRINTFORML 喜びを表すように%CALLNAME%の周りを駆け回っている！
+CASE "魔界ハムスター"
+	;煎り魔界ひまわりの種
+	PRINTFORML %CALLNAME%が%ITEM_NAME%を抱えてくると、%PET_NAME%は小さな尻尾をパタパタさせている。
+	PRINTFORML %ITEM_NAME%をあげると%PET_NAME%は大はしゃぎで食べ始め、
+	PRINTL しばらくすると口に全て詰め込み、頬袋をパンパンにして満足そうにしている！
+ENDSELECT
+
+
+
+;【動物に嫌われる】ではなくなつき度低い
+@PET_COMMU_MESSAGE_SNACK_LOW
+
+PRINTFORML %CALLNAME%が%ITEM_NAME%を取り出すと、%PET_NAME%は鼻をふんふんさせている。
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	PRINTFORML %ITEM_NAME%をあげると%PET_NAME%は大はしゃぎで食べた！
+CASE "オルトロス"
+	PRINTFORML %ITEM_NAME%を半分こにして左右の頭にあげると、%PET_NAME%は大はしゃぎで食べた！
+CASE "魔界ハムスター"
+	PRINTFORML %ITEM_NAME%をあげると%PET_NAME%は大はしゃぎで食べ始めた！
+	PRINTL しばらくすると口に全て詰め込み、頬袋をパンパンにして満足そうにしている！
+ENDSELECT
+PRINTL 「このヒトはいいヒトかもしれない」という目をしている。
+
+
+
+;【動物に嫌われる】
+@PET_COMMU_MESSAGE_SNACK_HATE
+
+PRINTFORML %CALLNAME%が%ITEM_NAME%を取り出すと、%PET_NAME%が興味を示した。
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	PRINTFORML %ITEM_NAME%をあげると%PET_NAME%は奪うように食いついた！
+CASE "オルトロス"
+	PRINTFORML %ITEM_NAME%を半分こにして左右の頭にあげると、%PET_NAME%は奪うように食いついた！
+CASE "魔界ハムスター"
+	PRINTFORML %ITEM_NAME%を差し出すと%PET_NAME%が奪い取るように抱えて食べ始め、
+	PRINTL しばらくすると口に全て詰め込み、頬袋をパンパンにしている！
+ENDSELECT
+PRINTL 「本能的に気に入らないが、話がわかる奴だ」という目をしている。
+
+
+
+

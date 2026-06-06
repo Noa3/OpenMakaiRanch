@@ -1,0 +1,106 @@
+﻿
+;アイテム説明と購入数
+;ARG→選択項目
+@ITEM_SHOP_ESTATE_DETAIL(ARG)
+
+;対応IDでないなら汎用出して帰る
+;ここでは選択項目による
+IF ARG < 10 || ARG > 10 +ESTATE_LIST_NUM
+	PRINTL  　《 Item Description Shown Here 》
+	RETURN
+ENDIF
+
+SELECTCASE ARG
+CASE 10
+    PRINTFORM New Cowshed Construction  Number Built: {ITEM:牛舎} Units
+    CALL ITEM_SHOP_ESTATE_PRICE(ITEMPRICE:牛舎)
+    PRINTL
+    PRINTL Constructs a cowshed for managing slaves with 【Lactating】 status collectively.
+    PRINTL An initial cowshed has a capacity for 10 slaves, and up to 10 cowsheds can be built.
+
+CASE 11
+    PRINTFORM Cowshed Expansion  Number Built: {ITEM:牛舎} Units
+    CALL ITEM_SHOP_ESTATE_PRICE(ESTATE_COWSHED_EXTENSION)
+    PRINTL
+    PRINTL Selects a built cowshed to expand, increasing the number of slaves it can house.
+    PRINTL Each expansion adds room for 10 slaves, up to a maximum capacity of 100 slaves.
+
+CASE 12
+    PRINTFORM Office Expansion  Current Expansions: {ITEM:事務所増築} Times
+    CALL ITEM_SHOP_ESTATE_PRICE(ITEMPRICE:事務所増築)
+    PRINTL
+    PRINTL Expands the ranch office, adding four additional rooms for slave allocation.
+    PRINTL Assigned slaves are treated as employees, slightly increasing living costs but enhancing
+    PRINTL stamina recovery during breaks and sleep.
+
+CASE 13
+    PRINTFORM Remodel to Family Bath
+    CALL ITEM_SHOP_ESTATE_PRICE(ITEMPRICE:家族風呂)
+    PRINTL Requires 【Office Expansion】 at least once
+    PRINTL
+    PRINTFORML Enlarges the ranch bath, allowing you and the slaves to bathe together.
+    PRINTL Bathing together restores slave stamina.
+    PRINTL Enables skinship interactions while in the bath.
+    PRINTL
+    PRINTL This bath is likely intended for family use rather than for erotic activities.
+
+CASE 14
+    PRINTFORM Large Bathhouse Construction
+    CALL ITEM_SHOP_ESTATE_PRICE(ITEMPRICE:大浴場)
+    PRINTL Requires <Family Bath>
+    PRINTL
+    PRINTL Constructs a large bathhouse where slaves can bathe together.
+    PRINTL Adds <Large Bathhouse Cleaning> to the schedule, removing the one-person limit.
+    PRINTL With a 【Large Bathhouse Cleaning Completion】 of 100%, the bathhouse can be used that day.
+    PRINTL
+    PRINTL (Heavy labor required; high stamina and cleaning skills in slaves are recommended.)
+
+CASE 15
+    PRINTFORM Additional Pet House  Current Houses: {ITEM:ペット小屋} Units
+    CALL ITEM_SHOP_ESTATE_PRICE(ITEMPRICE:ペット小屋)
+    PRINTL Requires 【Office Expansion】 at least once
+    PRINTL
+    PRINTL Constructs an additional house for keeping large pets.
+    PRINTL Required for acquiring [Fallen Horse], [Orthros], and [Demon Realm Hamster].
+
+CASE 16
+    PRINTFORM Slave Dormitory Construction
+    CALL ITEM_SHOP_ESTATE_PRICE(ITEMPRICE:奴隷寮)
+    PRINTL Requires 【Office Expansion】 at least once
+    PRINTL
+    PRINTL Builds a <Slave Dormitory> for slaves, allowing them to live and work as employees.
+    PRINTL Two rooms are provided initially, each accommodating four slaves.
+
+CASE 17
+    PRINTFORM Slave Dormitory Expansion  Current Expansions: {ITEM:奴隷寮増築} Times
+    CALL ITEM_SHOP_ESTATE_PRICE(ITEMPRICE:奴隷寮増築)
+    PRINTL Requires <Slave Dormitory>
+    PRINTL
+    PRINTL Expands the <Slave Dormitory> by adding one more room.
+
+CASE 18
+    PRINTFORM Remodel to System Kitchen
+    CALL ITEM_SHOP_ESTATE_PRICE(ITEMPRICE:システムキッチン)
+    PRINTL Requires 【Office Expansion】 at least once
+    PRINTL
+    PRINTFORML Allows you or slaves to prepare a meal for all employees at once.
+    PRINTL Costs slightly more than individual meals, but has stamina recovery benefits.
+    PRINTL The higher the character's 【Cooking】 level, the better the recovery and the wider the menu options.
+    PRINTL
+    PRINTFORML If the cook has the 【Lactating】 trait, meals can be made with %SAVESTR:表記／母乳% upon request,
+    PRINTFORML and you can assist with milking if needed.
+
+ENDSELECT
+
+
+
+;費用表示：前の名残でとりあえず関数化
+;ARG→費用
+@ITEM_SHOP_ESTATE_PRICE(ARG)
+
+PRINTFORML 　費用：%VALUE_DIGIT(ARG)%G
+
+
+
+
+

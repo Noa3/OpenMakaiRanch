@@ -1,0 +1,119 @@
+﻿
+;名器メッセージ　関数名がアホすぎない？
+@SEX_GOOD_VAGINA_MESSAGE
+
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s %SLANG_V()% provides exquisite pleasure to your %SLANG_PENIS()%...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;Ａ名器
+@SEX_GOOD_ANAL_MESSAGE
+
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s %SLANG_A()% provides exquisite pleasure to your %SLANG_PENIS()%...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;極上乳圧
+@SEX_GOOD_PAIZURI_MESSAGE
+
+CALL PRINT_WORD_COLOR,@"The pressure from %CALLNAME%'s %SLANG_B()% provides exquisite pleasure to your %SLANG_PENIS()%...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;母乳パイズリ
+@MILK_PAIZURI_MESSAGE
+
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s %SLANG_STAIN("Ｂ")% %SLANG_B()% amplifies your pleasure...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;ローションパイズリ
+@LOTION_PAIZURI_MESSAGE
+
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s lotion-covered %SLANG_B()% amplifies your pleasure...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;おくちまんこ
+@SEX_GOOD_MOUSE_MESSAGE
+
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s mouth provides exquisite pleasure to your %SLANG_PENIS()%...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;技巧メッセージ
+@SEX_TECHNIQUE_MESSAGE
+
+;関数呼ばんでもここでピンクにした
+SETCOLOR 0xFF70FF
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃) || GETBIT(＃Ｐ使用／Ａ挿入＃)
+	IF CFLAG:洗脳
+		PRINTFORM %CALLNAME% moves her hips lasciviously as ordered by you...
+	ELSEIF (＃陥落状態／恋慕以上＃ && !PLAYER) || ABL:奉仕精神 >= 10
+		PRINTFORM %CALLNAME% moves her hips, eager to please you...
+	ELSEIF GETBIT(＃Ｐ使用／Ｖ挿入＃) && ABL:膣内射精中毒 >= 10
+		PRINTFORM "%CALLNAME%'s %SLANG_V()% can't forget the pleasure of being ejaculated inside, and she quickly moves her hips to prompt your ejaculation...
+	ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃) && ABL:尻穴射精中毒 >= 10
+		PRINTFORM %CALLNAME%'s %SLANG_A()% craves the pleasure of being filled, and she starts moving her hips to urge another release...
+	ELSEIF PALAM:淫欲 >= 50000
+		PRINTFORM %CALLNAME% moves her hips, greedily seeking pleasure...
+	ELSE
+		RESETCOLOR
+		RETURN
+	ENDIF
+ELSEIF GETBIT(＃Ｐ使用／パイズリ＃)
+	IF CFLAG:洗脳
+		PRINTFORM %CALLNAME% serves you with her %SLANG_B()% on your %SLANG_PENIS()% as ordered...
+	ELSEIF (＃陥落状態／恋慕以上＃ && !PLAYER) || ABL:奉仕精神 >= 10
+		PRINTFORM %CALLNAME% serves you with her %SLANG_B()% on your %SLANG_PENIS()%, trying her best to make you feel good.
+	ELSEIF ABL:乳内射精中毒 >= 10
+		PRINTFORM %CALLNAME%'s %SLANG_B()% cannot forget the pleasure of milk ejaculation, serving to prompt ejaculation...
+	ELSEIF PALAM:淫欲 >= 50000
+		PRINTFORM %CALLNAME% serves with her %SLANG_B()% seeking pleasure greedily...
+	ELSE
+		RESETCOLOR
+		RETURN
+	ENDIF
+ELSEIF TEQUIP:フェラチオ
+	IF CFLAG:洗脳
+		PRINTFORM %CALLNAME% serves %CALLNAME:PLAYER% with her mouth on %SLANG_PENIS()% as ordered...
+	ELSEIF (＃陥落状態／恋慕以上＃ && !PLAYER) || ABL:奉仕精神 >= 10
+		PRINTFORM %CALLNAME% is serving you with a seductive expression, trying her best to make your %SLANG_PENIS()% feel pleasure...
+	ELSEIF ABL:精飲中毒 >= 10
+		PRINTFORM %CALLNAME%'s %SLANG_B()% cannot forget the taste of %SAVESTR:表記／精液%, and as a result, she ends up serving to encourage ejaculation...
+	ELSEIF PALAM:淫欲 >= 50000
+		PRINTFORM %CALLNAME% serves you with her mouth, seeking pleasure greedily...
+	ELSE
+		RESETCOLOR
+		RETURN
+	ENDIF
+ELSEIF TEQUIP:手コキ || TEQUIP:授乳手コキ || TEQUIP:素股
+	IF CFLAG:洗脳
+		PRINTFORM %CALLNAME% serves %SLANG_PENIS()% as ordered by %CALLNAME:PLAYER%...
+	ELSEIF (＃陥落状態／恋慕以上＃ && !PLAYER) || ABL:奉仕精神 >= 10
+		PRINTFORM %CALLNAME% serves you with her hand on your %SLANG_PENIS()%, trying her best to make you feel good...
+	ELSEIF PALAM:淫欲 >= 50000
+		PRINTFORM %CALLNAME% serves you with her hand, seeking pleasure greedily...
+	ELSE
+		RESETCOLOR
+		RETURN
+	ENDIF
+ENDIF
+RESETCOLOR
+CALL HEARTCB(0xD02830)
+PRINTL
+RETURN 1
+
+

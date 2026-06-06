@@ -1,0 +1,47 @@
+﻿
+;挿入しながらの乳吸いに身長制限つけるかコンフィグ
+;RETURN1でNG
+@BUST_SUCK_HEIGHT_CONFIG_JUDGE
+#DIM BUST_HEIGHT
+
+SIF !GETBIT(＃身長差制限／挿入乳吸い＃)
+	RETURN
+SIF !TFLAG:Ｐ使用BIT
+	RETURN
+
+;絶壁の場合身長差が10cm以上あるとダメ
+;50cm差あっても10=Jあれば吸える
+BUST_HEIGHT = CFLAG:身長 +ABL:バストサイズ *50 +100
+SIF CFLAG:PLAYER:身長 > BUST_HEIGHT
+	RETURN 1
+
+
+
+;挿入しながらのキス
+;RETURN1でNG
+@KISS_HEIGHT_CONFIG_JUDGE
+
+SIF !GETBIT(＃身長差制限／挿入キス＃)
+	RETURN
+SIF !TFLAG:Ｐ使用BIT
+	RETURN
+
+;身長差が30cm以上あるとダメ
+SIF CFLAG:PLAYER:身長 > CFLAG:身長 +300
+	RETURN 1
+
+
+
+;立ち拘束時のパイズリ
+@PAIZURI_HEIGHT_CONFIG_JUDGE
+
+SIF !GETBIT(＃身長差制限／立ちパイズリ＃)
+	RETURN
+
+;あなたより40cm以上身長が低いなら立ちパイズリ可能
+SIF CFLAG:PLAYER:身長 < CFLAG:身長 +400
+	SETBIT ＃体位制限／パイズリ＃
+
+
+
+

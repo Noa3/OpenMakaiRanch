@@ -1,0 +1,16 @@
+﻿
+;事業提携先からの報酬
+@PARTNER_REWORD_CALC
+#DIM REWORD,10
+
+;奴隷数は変更ないのでIFのまま
+VARSET REWORD
+SIF FLAG:事業提携先奴隷数／ニンゲン搾乳牧場
+	REWORD:1 = FLAG:事業提携先奴隷数／ニンゲン搾乳牧場 *PARTNER_ALLSLAVE_REWORD
+
+;合計計算
+MONEY_SELL:3 = SUMARRAY(REWORD)
+SIF MONEY_SELL:3
+	PRINTFORML 　Business Partnership Gains：%VALUE_DIGIT(MONEY_SELL:3)%G
+
+

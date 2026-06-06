@@ -1,0 +1,124 @@
+﻿
+;外見・おっぱいの変更シャッフル
+;ARGS→CHANGE_STATE
+@SELF_CHARA_MAKE_APPEARAINCE_INPUT_SHUFFLE(ARGS)
+
+;INPUT_NUMにより変更箇所選択
+SELECTCASE ARGS
+CASE "身長"
+	;CSTR表記内になる　候補入れてってやるとさすがに面倒なんよ
+	CALL RANDOM_SLAVE_HEIGHT
+	
+CASE "体型"
+	CALL RANDOM_SLAVE_SHAPE
+CASE "肌の色"
+	CALL RANDOM_SLAVE_SKIN_COLOR
+CASE "髪色"
+	CALL RANDOM_SLAVE_HAIR_COLOR
+CASE "ヘアスタイル一括"
+	CALL RANDOM_SLAVE_HAIR
+	
+CASE "カラーコード／髪"
+	;手動のみ
+
+CASE "髪特徴"
+	CALL RANDOM_SLAVE_HAIR_FEATURE
+CASE "髪型"
+	CALL RANDOM_SLAVE_HAIR_STYLE
+CASE "外見年齢"
+	CALL RANDOM_SLAVE_VISUAL_AGE
+CASE "陰毛"
+	CALL RANDOM_SLAVE_UNDERHAIR
+CASE "右目の色"
+	;右だけはややこしいので普通に
+	CALL RANDOM_SLAVE_EYE_COLOR
+
+CASE "カラーコード／右目"
+	
+CASE "左目の色"
+	;オッドアイ確定シャッフルに置換
+	CALL RANDOM_SLAVE_EYE_COLOR(1)
+
+CASE "カラーコード／左目"
+
+CASE "瞳の形"
+	CALL RANDOM_SLAVE_PUPIL
+CASE "目の特徴"
+	CALL RANDOM_SLAVE_EYE_FEATURE
+
+;2ページ目
+CASE "バストサイズ"
+	CALL RANDOM_SLAVE_BUST
+CASE "乳弾力"
+	CALL RANDOM_SLAVE_BUST_FEELING
+CASE "乳首の色"
+	CALL RANDOM_SLAVE_NIPPLE_COLOR
+CASE "カラーコード／乳首"
+	
+CASE "Ｂ感度"
+	ABL:Ｂ感度 = 7 +RAND:7
+	ABL:Ｂ感度 *= 10
+	
+	;サイズ補正はいいや
+	CALL NIPPLE_SENSITIVE_FIX
+	
+CASE "Ｎ感度"
+	ABL:Ｎ感度 = 7 +RAND:7
+	ABL:Ｎ感度 *= 10
+	CALL NIPPLE_SENSITIVE_FIX
+
+CASE "陥没乳首"
+	;ON/OFFに関してはシャッフルも何もない
+	INVERTBIT TALENT:陥没乳首,0
+
+CASE "母乳体質"
+	INVERTBIT MARK:母乳体質,0
+	IF MARK:母乳体質
+		IF TALENT:処女
+			EXP:出産 = 0
+			TALENT:先天的母乳体質 = 1
+		ELSE
+			PRINTL [出産経験]から来るものか[先天的母乳体質]か選択してください。
+			PRINTLC [ 0] 出産経験あり
+			PRINTLC [ 1] 先天的母乳体質
+			INPUT
+			IF !RESULT
+				EXP:出産 = 1
+				TALENT:先天的母乳体質 = 0
+			ELSE
+				EXP:出産 = 0
+				TALENT:先天的母乳体質 = 1
+			ENDIF
+		ENDIF
+	ELSE
+		EXP:出産 = 0
+		TALENT:先天的母乳体質 = 0
+	ENDIF
+
+CASE "母乳容量補正値"
+	CFLAG:母乳容量補正値 = 90 +RAND:5 *5
+
+CASE "母乳価格ボーナス"
+	CFLAG:母乳価格ボーナス = 0 +RAND:5 *5
+
+CASE "極上乳圧"
+	INVERTBIT TALENT:極上乳圧,0
+
+CASE "バストサイズ+1"
+	SIF ABL:バストサイズ >= BUSTSIZE_超乳 -1
+		RETURN
+	ABL:バストサイズ ++
+	CALL BUSTSIZE_TALENT_SET
+	SIF ABL:バストサイズ < BUSTSIZE_巨乳
+		TALENT:極上乳圧 = 0
+
+CASE "バストサイズ-1"
+	SIF !ABL:バストサイズ
+		RETURN
+	ABL:バストサイズ --
+	CALL BUSTSIZE_TALENT_SET
+	SIF ABL:バストサイズ < BUSTSIZE_巨乳
+		TALENT:極上乳圧 = 0
+ENDSELECT
+
+

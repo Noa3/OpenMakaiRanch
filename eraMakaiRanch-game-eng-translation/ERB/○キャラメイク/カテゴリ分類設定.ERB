@@ -1,0 +1,247 @@
+﻿
+;カテゴリ分類設定
+;固有のヘアスタイルにしたり作品固有の種族名を使ってもドット絵表示とかできるようにする処理だよ
+;シャッフル後に逐一設定に行くようにしたので不要と言えばそうだけど利便性のため残すのがよさげ
+;ARG→上書きしない（CSV読み込みとか）
+@CHOICE_CATEGORY(ARG)
+
+;野郎はどうでもいい
+SIF TALENT:オトコ
+	RETURN
+CALL CATEGORY_SKIN_COLOR(ARG)
+CALL CATEGORY_EYE_COLOR(ARG)
+CALL CATEGORY_HAIR_COLOR(ARG)
+CALL CATEGORY_HAIR_FEATURE(ARG)
+CALL CATEGORY_HAIR_STYLE(ARG)
+CALL CATEGORY_TRIVE(ARG)
+CALL CATEGORY_PERSONALITY(ARG)
+EXIST = 0
+
+
+
+;肌の色
+@CATEGORY_SKIN_COLOR(ARG)
+
+STR_REF = 100
+FOR LOCAL,STR_REF,STR_REF +50
+	SIF STR:LOCAL == ""
+		CONTINUE
+	;カテゴリを指定されてる場合に対応する　ARG=1で上書きしない
+	SIF STR:LOCAL == CSTR:カテゴリ／肌の色 && ARG
+		RETURN
+	IF STR:LOCAL == CSTR:肌の色
+		CSTR:カテゴリ／肌の色 = %CSTR:肌の色%
+		RETURN
+	ENDIF
+NEXT
+PRINTFORML %CALLNAME%'s skin color「%CSTR:肌の色%」is unrepresented here. Please choose the closest from the below.
+PRINTFORML （On the status page it will still be displayed as「%CSTR:肌の色%」）
+FOR LOCAL,STR_REF,STR_REF +50
+	SIF STR:LOCAL == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL -STR_REF,3}] %SKIN_ENG(STR:LOCAL)%
+NEXT
+BINPUT
+CSTR:カテゴリ／肌の色 = %STR:(RESULT +STR_REF)%
+
+
+
+;左右の目入り口
+@CATEGORY_EYE_COLOR(ARG)
+
+CALL CATEGORY_RIGHT_EYE_COLOR(ARG)
+CALL CATEGORY_LEFT_EYE_COLOR(ARG)
+
+
+
+;右目
+@CATEGORY_RIGHT_EYE_COLOR(ARG)
+
+STR_REF = 150
+FOR LOCAL,STR_REF,STR_REF +50
+	SIF STR:LOCAL == ""
+		CONTINUE
+	SIF STR:LOCAL == CSTR:カテゴリ／右目の色 && ARG
+		RETURN
+	IF STR:LOCAL == CSTR:右目の色
+		CSTR:カテゴリ／右目の色 = %CSTR:右目の色%
+		RETURN
+	ENDIF
+NEXT
+PRINTFORML %CALLNAME%'s right eye color「%CSTR:右目の色%」is unrepresented here. Please choose the closest from the below.
+PRINTFORML （On the status page it will still be displayed as「%CSTR:右目の色%」）
+FOR LOCAL,STR_REF,STR_REF +50
+	SIF STR:LOCAL == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL-STR_REF,3}] %EYE_ENG(STR:LOCAL)%
+NEXT
+BINPUT
+CSTR:カテゴリ／右目の色 = %STR:(RESULT +STR_REF)%
+
+
+
+;左目
+@CATEGORY_LEFT_EYE_COLOR(ARG)
+
+;左目の色は空欄になることもあるので空欄だと帰る
+IF CSTR:左目の色 == ""
+	CSTR:カテゴリ／左目の色 =
+	RETURN
+ENDIF
+STR_REF = 150
+FOR LOCAL,STR_REF,STR_REF +50
+	SIF STR:LOCAL == ""
+		CONTINUE
+	SIF STR:LOCAL == CSTR:カテゴリ／左目の色 && ARG
+		RETURN
+	IF STR:LOCAL == CSTR:左目の色
+		CSTR:カテゴリ／左目の色 = %CSTR:左目の色%
+		RETURN
+	ENDIF
+NEXT
+PRINTFORML %CALLNAME%'s left eye color「%CSTR:左目の色%」is unrepresented here. Please choose the closest from the below.
+PRINTFORML （On the status page it will still be displayed as「%CSTR:左目の色%」）
+FOR LOCAL,STR_REF,STR_REF +50
+	SIF STR:LOCAL == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL-STR_REF,3}] %EYE_ENG(STR:LOCAL)%
+NEXT
+BINPUT
+CSTR:カテゴリ／左目の色 = %STR:(RESULT +STR_REF)%
+
+
+
+;髪色
+@CATEGORY_HAIR_COLOR(ARG)
+
+STR_REF = 200
+FOR LOCAL,STR_REF,STR_REF +100
+	SIF STR:LOCAL == ""
+		CONTINUE
+	SIF STR:LOCAL == CSTR:カテゴリ／髪色 && ARG
+		RETURN
+	IF STR:LOCAL == CSTR:髪色
+		CSTR:カテゴリ／髪色 = %CSTR:髪色%
+		RETURN
+	ENDIF
+NEXT
+PRINTFORML %CALLNAME%'s hair color「%CSTR:髪色%」is unrepresented here. Please choose the closest from the below.
+PRINTFORML （On the status page it will still be displayed as「%CSTR:髪色%」）
+FOR LOCAL,STR_REF,STR_REF +100
+	SIF STR:LOCAL == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL-STR_REF,3}] %HAIR_COLOR_ENG(STR:LOCAL)%
+NEXT
+BINPUT
+CSTR:カテゴリ／髪色 = %STR:(RESULT +STR_REF)%
+
+
+
+;髪特徴
+@CATEGORY_HAIR_FEATURE(ARG)
+
+;髪特徴も空欄がありえる
+IF CSTR:髪特徴 == ""
+	CSTR:カテゴリ／髪特徴 =
+	RETURN
+ENDIF
+STR_REF = 300
+FOR LOCAL,STR_REF,STR_REF +100
+	SIF STR:LOCAL == ""
+		CONTINUE
+	SIF STR:LOCAL == CSTR:カテゴリ／髪特徴 && ARG
+		RETURN
+	IF STR:LOCAL == CSTR:髪特徴
+		CSTR:カテゴリ／髪特徴 = %CSTR:髪特徴%
+		RETURN
+	ENDIF
+NEXT
+PRINTFORML %CALLNAME%'s hair characteristic「%CSTR:髪特徴%」is unrepresented here. Please choose the closest from the below.
+PRINTFORML （On the status page it will still be displayed as「%CSTR:髪特徴%」）
+FOR LOCAL,STR_REF,STR_REF +100
+	SIF STR:LOCAL == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL-STR_REF,3}] %HAIR_CHAR_ENG(STR:LOCAL)%
+NEXT
+BINPUT
+CSTR:カテゴリ／髪特徴 = %STR:(RESULT +STR_REF)%
+
+
+
+;髪型
+@CATEGORY_HAIR_STYLE(ARG)
+
+STR_REF = 500
+FOR LOCAL,STR_REF,STR_REF +100
+	SIF STR:LOCAL == ""
+		CONTINUE
+	SIF STR:LOCAL == CSTR:カテゴリ／髪型 && ARG
+		RETURN
+	IF STR:LOCAL == CSTR:髪型
+		CSTR:カテゴリ／髪型 = %CSTR:髪型%
+		RETURN
+	ENDIF
+NEXT
+PRINTFORML %CALLNAME%'s hair style「%CSTR:髪型%」is unrepresented here. Please choose the closest from the below.
+PRINTFORML （On the status page it will still be displayed as「%CSTR:髪型%」）
+FOR LOCAL,STR_REF,STR_REF +100
+	SIF STR:LOCAL == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL-STR_REF,3}] %HAIR_STYLE_ENG(STR:LOCAL)%
+NEXT
+BINPUT
+CSTR:カテゴリ／髪型 = %STR:(RESULT +STR_REF)%
+
+
+
+;種族
+@CATEGORY_TRIVE(ARG)
+
+STR_REF = 1000
+FOR LOCAL,STR_REF,STR_REF +300
+	SIF STR:LOCAL == ""
+		CONTINUE
+	SIF STR:LOCAL == CSTR:カテゴリ／種族 && ARG
+		RETURN
+	IF STR:LOCAL == CSTR:種族
+		CSTR:カテゴリ／種族 = %CSTR:種族%
+		RETURN
+	ENDIF
+NEXT
+PRINTFORML %CALLNAME%'s race「%CSTR:種族%」is unrepresented here. Please choose the closest from the below.
+PRINTFORML （On the status page it will still be displayed as「%CSTR:種族%」）
+FOR LOCAL,STR_REF,STR_REF +300
+	SIF STR:LOCAL == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL-STR_REF,3}] %RACE_ENG(STR:LOCAL)%
+NEXT
+BINPUT
+CSTR:カテゴリ／種族 = %STR:(RESULT +STR_REF)%
+
+
+
+;性格
+@CATEGORY_PERSONALITY(ARG)
+
+STR_REF = 3000
+FOR LOCAL,STR_REF,STR_REF +100
+	SIF STR:LOCAL == ""
+		CONTINUE
+	SIF STR:LOCAL == CSTR:カテゴリ／性格 && ARG
+		RETURN
+	IF STR:LOCAL == CSTR:性格
+		CSTR:カテゴリ／性格 = %CSTR:性格%
+		RETURN
+	ENDIF
+NEXT
+PRINTFORML %CALLNAME%'s personality「%CSTR:性格%」is unrepresented here. Please choose the closest from the below.
+PRINTFORML （On the status page it will still be displayed as「%CSTR:性格%」）
+FOR LOCAL,STR_REF,STR_REF +100
+	SIF STR:LOCAL == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL-STR_REF,3}] %PERSONALITY_ENG(STR:LOCAL)%
+NEXT
+BINPUT
+CSTR:カテゴリ／性格 = %STR:(RESULT +STR_REF)%
+
+

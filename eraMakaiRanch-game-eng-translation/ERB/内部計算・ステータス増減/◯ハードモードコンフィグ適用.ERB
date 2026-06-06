@@ -1,0 +1,108 @@
+﻿
+;カスタマイズコンフィグ適用
+;ARGS→適用項目
+;ARG→性EXPで来るときのSOURCE番号／精算支出の合計
+@DIFFICULTY_CONFIG_APPLY(ARGS,ARG)
+
+SELECTCASE ARGS
+CASE "母乳容量・生産力"
+	IF FLAG:半減／母乳容量・生産力
+		BASE:母乳容量 /= 2
+		BASE:母乳容量 -= (BASE:母乳容量 %10)
+		BASE:母乳生産力 /= 2
+		BASE:母乳生産力 -= (BASE:母乳生産力 %10)
+	ENDIF
+
+CASE "噴乳量"
+	IF FLAG:カスタマイズ／噴乳量
+		NOWEX:噴乳 *= FLAG:カスタマイズ／噴乳量
+		NOWEX:噴乳 /= 100
+	ENDIF
+	SIF FLAG:半減／噴乳量
+		NOWEX:噴乳 /= 2
+
+CASE "母乳出荷価格"
+	IF FLAG:カスタマイズ／母乳出荷価格
+		CFLAG:母乳出荷金額／当日 *= FLAG:カスタマイズ／母乳出荷価格
+		CFLAG:母乳出荷金額／当日 /= 100
+	ENDIF
+	SIF FLAG:半減／母乳出荷価格
+		CFLAG:母乳出荷金額／当日 /= 2
+
+CASE "快楽値"
+	IF FLAG:カスタマイズ／快楽値
+		FOR LOCAL,0,5
+			SOURCE:LOCAL *= FLAG:カスタマイズ／快楽値
+			SOURCE:LOCAL /= 100
+		NEXT
+	ENDIF
+	IF FLAG:半減／快楽値
+		FOR LOCAL,0,5
+			SOURCE:LOCAL /= 2
+		NEXT
+	ENDIF
+
+CASE "業務EXP獲得量"
+	IF FLAG:カスタマイズ／業務EXP獲得量
+		EXPUP *= FLAG:カスタマイズ／業務EXP獲得量
+		EXPUP /= 100
+	ENDIF
+	SIF FLAG:半減／業務EXP獲得量
+		EXPUP /= 2
+
+CASE "性EXP獲得量"
+	IF FLAG:カスタマイズ／性EXP獲得量
+		EXPUP *= FLAG:カスタマイズ／性EXP獲得量
+		EXPUP /= 100
+	ENDIF
+	SIF FLAG:半減／性EXP獲得量
+		EXPUP /= 2
+
+;SOURCE_UPで来る場所
+CASE "性EXP獲得量_PALAM"
+	IF FLAG:カスタマイズ／性EXP獲得量
+		PALAM:ARG *= FLAG:カスタマイズ／性EXP獲得量
+		PALAM:ARG /= 100
+	ENDIF
+	SIF FLAG:半減／性EXP獲得量
+		PALAM:ARG /= 2
+
+CASE "魔力消費量"
+	IF FLAG:カスタマイズ／魔力消費量,
+		SOURCE:魔力消費量 *= FLAG:カスタマイズ／魔力消費量,
+		SOURCE:魔力消費量 /= 100
+	ENDIF
+
+CASE "バッテリー消費量"
+	IF FLAG:カスタマイズ／バッテリー消費量,
+		SOURCE:バッテリー消費量 *= FLAG:カスタマイズ／バッテリー消費量,
+		SOURCE:バッテリー消費量 /= 100
+	ENDIF
+
+CASE "戦闘与ダメージ"
+	IF FLAG:カスタマイズ／戦闘与ダメージ
+		DAMAGE *= FLAG:カスタマイズ／戦闘与ダメージ
+		DAMAGE /= 100
+	ENDIF
+	SIF FLAG:半減／戦闘与ダメージ
+		DAMAGE /= 2
+
+CASE "戦闘被ダメージ"
+	IF FLAG:カスタマイズ／戦闘被ダメージ
+		DAMAGE *= FLAG:カスタマイズ／戦闘被ダメージ
+		DAMAGE /= 100
+	ENDIF
+
+CASE "精算支出"
+	SIF !FLAG:カスタマイズ／精算支出
+		RETURN
+	PART_COST = ARG
+	PART_COST *= FLAG:カスタマイズ／精算支出
+	PART_COST /= 100
+	PRINTFORML ＜カスタマイズ設定：{FLAG:カスタマイズ／精算支出}\% 合計支出：%VALUE_DIGIT(PART_COST)%G＞
+	RETURN PART_COST
+ENDSELECT
+
+
+
+

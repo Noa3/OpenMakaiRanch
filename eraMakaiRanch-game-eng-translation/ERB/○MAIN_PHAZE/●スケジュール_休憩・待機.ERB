@@ -1,0 +1,129 @@
+﻿
+;自由時間
+@MAIN_REST_ROOM
+
+;自由時間の誰か1人を見る→他を休憩にする　予定だけど今とりあえずみんなそのまま休憩
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "自由"
+		CONTINUE
+	IF CSTR:状態／あなたの子 == "成長中"
+		CSTR:スケジュール = 成長
+		CONTINUE
+	ENDIF
+	CSTR:スケジュール = 休憩
+NEXT
+CALL MAIN_REST_ROOM_1
+CALL MAIN_REST_ROOM_2
+
+
+
+;休憩
+@MAIN_REST_ROOM_1
+
+;人数
+WORKER = CMATCH(CSTR:スケジュール,"休憩")
+SIF !WORKER
+	RETURN
+
+
+PRINTL 　　　《 Resting 》
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "休憩"
+		CONTINUE
+	;一番目に当たったキャラの名前
+	PRINTFORM %CALLNAME% 
+	SIF WORKER > 1
+		PRINT and the others 
+	BREAK
+NEXT
+PRINTFORML \@ WORKER > 1 ? spend time relaxing in their rooms # spends time relaxing in her room \@
+
+;回復処理とメッセージ
+HEAL_PRINT_DONE = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "休憩"
+		CONTINUE
+	CALL REST_HEAL
+NEXT
+PRINTW
+DRAWLINE
+
+
+
+;成長
+@MAIN_REST_ROOM_2
+
+WORKER = CMATCH(CSTR:スケジュール,"成長")
+SIF !WORKER
+	RETURN
+
+TARGET = -1
+LOCAL = 0
+HEAL_PRINT_DONE = 0
+
+WHILE 1
+	FINDCHARA CSTR:スケジュール, "成長", TARGET + 1
+	TARGET = RESULT
+	SIF TARGET < 0
+		BREAK
+	IF !LOCAL
+		PRINTL 　　　《 成長 》
+		PRINTFORM %CALLNAME%
+		SIF WORKER > 1
+			PRINT たち
+		PRINTL は健やかに育っている…
+		LOCAL = 1
+	ENDIF
+	PRINTFORM %CALLNAME%：
+	;回復処理
+	;CALL REST_HEAL
+	;ランダムで経験値増加
+	;接客はまだないのでRAND:5
+	FIX = 20 + RAND:5
+	ABL_NAME = %ABLNAME:FIX%
+	SIF ABL_NAME != ""
+		CALL EXP_UP(ABL_NAME)
+	CALL ABL_UP_WORK
+	RESETCOLOR
+	PRINTL 
+	SIF TARGET == CHARANUM - 1
+		BREAK
+WEND
+PRINTW
+DRAWLINE
+
+
+
+;待機
+@MAIN_REST_CAGE
+
+CATTLE_COUNT = CMATCH(CSTR:スケジュール,"待機")
+SIF !CATTLE_COUNT
+	RETURN
+PRINTL 　　　《 Waiting 》
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "待機"
+		CONTINUE
+	PRINTFORM %CALLNAME% 
+	SIF CATTLE_COUNT > 1
+		PRINT and the others 
+	BREAK
+NEXT
+PRINTFORML \@ WORKER > 1 ? spend time in captivity # spends time in captivity \@
+HEAL_PRINT_DONE = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "待機"
+		CONTINUE
+	CALL REST_HEAL
+NEXT
+PRINTW
+DRAWLINE
+
+
+
+

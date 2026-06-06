@@ -1,0 +1,150 @@
+﻿
+;会いに行く→コマンド判定
+@VISIT_SLAVE_CHECK
+
+;訪問回数使い切っていたら着替えだけできる
+IF FLAG:現時刻訪問回数 >= 3
+	CALL PRINTL_WORD_COLOR("Only changing clothes is possible right now（advance the time to make other commands available again）","黄")
+	PRINTL [ 9] Change Clothes
+	RETURN
+ENDIF
+
+;成長途中の娘
+IF CSTR:状態／あなたの子 == "成長中"
+	PRINTL [ 9] Change Clothes
+	PRINTL
+
+	PRINTL 《 Skinship 》
+	IF CFLAG:時刻制限／頭撫で
+		CALL PRINTL_WORD_COLOR("　Already headpatted","灰")
+	ELSE
+		PRINTL [10] Headpats
+	ENDIF
+	IF CFLAG:時刻制限／キス
+		CALL PRINTL_WORD_COLOR("　Already kissed","灰")
+	ELSE
+		PRINTL [11] Kiss
+	ENDIF
+	IF CFLAG:時刻制限／子供と遊び
+		CALL PRINTL_WORD_COLOR("Already played","灰")
+	ELSE
+		PRINTL [15] Play
+	ENDIF
+	RETURN
+ENDIF
+EXIST = 0
+IF !＃陥落状態／拒絶以上＃
+	CALL PRINTL_WORD_COLOR("　Can't change hairstyles or use colored contacts if not obedient","灰")
+ELSE
+	IF !ITEM:スタイリング道具セット
+		CALL PRINTL_WORD_COLOR("Requires ＜Styling Toolkit＞","灰")
+	ELSE
+		PRINTL [ 0] Change Hairstyle
+	ENDIF
+	PRINTL [ 1] Change Eye Color and Pupil
+ENDIF
+
+IF !＃着用衣服／胸破け＃ && !＃着用衣服／股間破け＃
+	CALL PRINTL_WORD_COLOR("　Clothing not torn","灰")
+ELSEIF !ITEM:裁縫道具セット
+	CALL PRINTL_WORD_COLOR("　Requires ＜Sewing Kit＞","灰")
+ELSEIF !ITEM:衣服補修布
+	CALL PRINTL_WORD_COLOR("　Requires ＜Mending Cloth＞","灰")
+ELSE
+	PRINTL [ 2] Fix Torn Clothes
+ENDIF
+
+IF !＃陥落状態／拒絶以上＃
+	CALL PRINTL_WORD_COLOR("　Can't change Term of Reference if not obedient","灰")
+ELSE
+	PRINTFORML [ 4] Change Term of Reference for %CALLNAME:0%
+ENDIF
+
+IF !ITEM:家畜管理タグ && !EQUIP:家畜管理タグ／身分
+	CALL PRINTL_WORD_COLOR("　Requires ＜Livestock Tag＞","灰")
+	EXIST ++
+ELSE
+	PRINTL [ 5] Assign New Identity
+ENDIF
+IF !ITEM:家畜管理タグ && !EQUIP:家畜管理タグ／呼び名
+	IF EXIST
+		PRINTL
+	ELSE
+		CALL PRINTL_WORD_COLOR("　Requires ＜Livestock Tag＞","灰")
+	ENDIF
+ELSE
+	PRINTL [ 6] Change Name
+ENDIF
+
+;栄養ドリンクは1日1本
+IF CFLAG:当日制限／栄養ドリンク
+	CALL PRINTL_WORD_COLOR("　Only 1 ＜Energy Drink＞ a day","灰")
+ELSEIF BASE:体力 == MAXBASE:体力
+	CALL PRINTL_WORD_COLOR("　Health already full","灰")
+ELSEIF !ITEM:栄養ドリンク
+	CALL PRINTL_WORD_COLOR("　No ＜Energy Drink＞","灰")
+ELSE
+	PRINTFORML [ 7] Give ＜Energy Drink＞： {ITEM:栄養ドリンク} Owned
+ENDIF
+
+IF CFLAG:時刻制限／ハーブティー
+	CALL PRINTL_WORD_COLOR("　Wait a while before drinking more ＜Herbal Tea＞","灰")
+{
+ELSEIF CFLAG:崩壊 || CFLAG:洗脳 || 
+((!BASE:理性 || BASE:理性 == MAXBASE:理性) && (!BASE:精神力 || BASE:精神力 == MAXBASE:精神力) && (!BASE:乳牛堕ち || CFLAG:乳牛))
+}
+	CALL PRINTL_WORD_COLOR("　＜Herbal Tea＞ doesn't seem to be effective","灰")
+ELSEIF !ITEM:ハーブティー
+	CALL PRINTL_WORD_COLOR("　No ＜Herbal Tea＞","灰")
+ELSE
+	PRINTFORML [ 8] Give ＜Herbal Tea＞： {ITEM:ハーブティー} Owned
+ENDIF
+
+;とりあえず衣服変更の条件なし
+PRINTL [ 9] Change Clothes
+PRINTL
+
+PRINTL 《 Skinship 》
+IF CFLAG:時刻制限／頭撫で
+	CALL PRINTL_WORD_COLOR("　Already headpatted","灰")
+ELSE
+	PRINTL [10] Headpats
+ENDIF
+
+IF CFLAG:時刻制限／キス
+	CALL PRINTL_WORD_COLOR("　Already kissed","灰")
+ELSE
+	PRINTL [11] Kiss
+ENDIF
+
+;母乳体質でなくても授乳要求は一応できる
+IF CFLAG:時刻制限／授乳
+	CALL PRINTL_WORD_COLOR("　Already breastfed","灰")
+ELSE
+	PRINTL [12] Suck Breasts
+ENDIF
+
+IF !PLAYER_PENIS
+ELSEIF !ITEM:霊力注入
+	CALL PRINTL_WORD_COLOR("　Requires ＜Spirit Energy Injection＞","灰")
+ELSEIF TALENT:処女結界
+	CALL PRINTL_WORD_COLOR("　Blocked by【Virginity Barrier】","灰")
+ELSEIF CFLAG:時刻制限／霊力注入
+	CALL PRINTL_WORD_COLOR("　Already infused","灰")
+ELSEIF BASE:0:霊力 < 10000
+	CALL PRINTL_WORD_COLOR,@"　%CALLNAME:0%doesn't have enough Spirit Energy","灰"
+ELSEIF !BASE:0:精力
+	CALL PRINTL_WORD_COLOR,@"　%CALLNAME:0%doesn't have enough Vigor","灰"
+ELSE
+	PRINTL [13] Infuse Spirit Energy
+ENDIF
+
+IF !ITEM:触手変化
+	CALL PRINTL_WORD_COLOR("　Requires ＜Tentacle Morph＞","灰")
+ELSEIF CFLAG:時刻制限／投薬
+	CALL PRINTL_WORD_COLOR("　Already medicated","灰")
+ELSE
+	PRINTL [14] Tentacle Restain + Use Drugs
+ENDIF
+
+

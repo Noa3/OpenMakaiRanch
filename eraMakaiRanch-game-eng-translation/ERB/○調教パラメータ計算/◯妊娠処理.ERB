@@ -1,0 +1,62 @@
+﻿
+;妊娠判定
+@PREGNANT_JUDGE
+#DIM PREGNANT
+
+;妊娠中・＜異種族孕ませ＞未取得・無効でおわり
+SIF CFLAG:妊娠日数 || !ITEM:異種族孕ませ || !GETBIT(＃個人有効／異種族孕ませ＃) || !GETBIT(＃有効／異種族孕ませ＃)
+	RETURN
+
+;妊娠確率計算
+CALL PREGNANT_PROBABILITY_CALC
+PREGNANT = RESULT
+
+;射精回数分繰り返して命中したらこっそり妊娠（メッセージなどはまだなし）
+FOR LOCAL,0,SOURCE:射精回数
+	SIF RAND:1000 < PREGNANT
+		CFLAG:妊娠日数 = 1
+NEXT
+
+
+
+;触手妊娠判定
+@TENTACLE_PREGNANT_JUDGE
+#DIM PREGNANT
+
+;妊娠中・＜触手受胎＞未取得・無効でおわり
+SIF CFLAG:妊娠日数 || !ITEM:触手受胎 || !GETBIT(＃個人有効／触手受胎＃) || !GETBIT(＃有効／触手受胎＃)
+	RETURN
+CALL PREGNANT_PROBABILITY_CALC(1)
+PREGNANT = RESULT
+FOR LOCAL,0,TFLAG:触手射精回数
+	SIF RAND:1000 < PREGNANT
+		;触手の場合は日数+90(HITした当日もカウント)
+		CFLAG:妊娠日数 = 91
+NEXT
+
+
+
+;妊娠確率計算
+;ARG→触手の場合
+@PREGNANT_PROBABILITY_CALC(ARG)
+#DIM PREGNANT
+#DIM OVULATION
+
+;1年=112日から排卵周期は10日に設定(BASE:初期値／レベル +CFLAG:身長 %12で設定)
+OVULATION = (BASE:初期値／レベル+ CFLAG:身長) %10
+
+;妊娠確率→とりあえず3%で危険日5倍
+PREGNANT = 30
+SIF ((DAY + 1) %12) == OVULATION || (DAY %12) == OVULATION
+	PREGNANT *= 5
+
+;長命種っぽいのは確率半分
+SIF GROUPMATCH(CSTR:種族,"エルフ","精霊","ダークエルフ") || CFLAG:上位種族 || TALENT:天界種族
+	PREGNANT /= 2
+
+;触手の場合3倍
+SIF ARG
+	PREGNANT *= 3
+RETURN PREGNANT
+
+

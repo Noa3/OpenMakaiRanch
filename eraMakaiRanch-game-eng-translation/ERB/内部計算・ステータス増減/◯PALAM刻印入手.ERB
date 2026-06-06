@@ -1,0 +1,36 @@
+﻿
+;快楽刻印入手
+@MARK_GET_PLEASURE
+
+MARK:快楽刻印 = 1
+TFLAG:刻印入手 = 1
+CALL MARK_GET_PLEASURE_MESSAGE
+CALL DELETE_BAD_MARK
+CALL PURPOSE_CHANGE_CALC("肉体陥落")
+
+
+
+;苦痛・恐怖刻印チェック
+@MARK_GET_PAIN
+
+;調教中以外はなし・快楽刻印ある場合なし・崩壊／洗脳／隷属／乳牛ならなし
+;崩壊・洗脳はここ来ない
+SIF !TFLAG:調教中 || MARK:快楽刻印 || ＃陥落状態／隷属＃ || CFLAG:乳牛
+	RETURN
+
+;終了時に10万あると刻印つく
+IF PALAM:苦痛 >= 100000 && !MARK:苦痛刻印
+	MARK:苦痛刻印 = 1
+	CALL MARK_GET_PAIN_MESSAGE
+ENDIF
+IF PALAM:恐怖 >= 100000 && !MARK:恐怖刻印
+	MARK:恐怖刻印 = 1
+	CALL MARK_GET_FEAR_MESSAGE
+ENDIF
+
+
+
+
+
+
+

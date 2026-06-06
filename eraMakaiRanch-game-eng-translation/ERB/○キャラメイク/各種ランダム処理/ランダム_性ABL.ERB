@@ -1,0 +1,69 @@
+﻿
+;奴隷候補の性ABL
+@RANDOM_SLAVE_NASTY_ABL
+
+;ランダム用リセット
+ABL:奉仕精神 = 0
+ABL:技巧 = 0
+ABL:母性 = 0
+ABL:マゾっ気 = 0
+ABL:レズっ気 = 0
+
+;奉仕精神
+SIF TALENT:臆病
+	ABL:奉仕精神 += RAND:3
+SIF TALENT:反抗的
+	ABL:奉仕精神 -= RAND:3
+SIF TALENT:素直
+	ABL:奉仕精神 += RAND:3
+SIF TALENT:プライド高い
+	ABL:奉仕精神 -= RAND:3
+SIF TALENT:一線越えない
+	ABL:奉仕精神 -= RAND:3
+SIF TALENT:貞操観念
+	ABL:奉仕精神 -= RAND:3
+SIF TALENT:献身的
+	ABL:奉仕精神 += RAND:6
+SIF TALENT:高慢
+	ABL:奉仕精神 -= RAND:6
+SIF TALENT:清楚
+	ABL:奉仕精神 += RAND:3
+SIF TALENT:性知識乏しい
+	ABL:奉仕精神 = 0
+ABL:奉仕精神 = LIMIT(ABL:奉仕精神,0,10)
+
+;技巧　性格とは無関係に決めてよさげ　ギャップ萌えとかあるし？
+ABL:技巧 = RAND:8
+SIF RAND:100 < 70
+	ABL:技巧 /= 2
+	
+;マゾ、レズも無関係でいいかな　0の場合が多め
+SIF RAND:100 < 30
+	ABL:マゾっ気 = RAND:4
+SIF RAND:100 < 30
+	ABL:レズっ気 = RAND:4
+
+;女好きだと+4
+SIF TALENT:女好き > 0
+	ABL:レズっ気 += 4
+SIF TALENT:女好き < 0
+	ABL:レズっ気 = 0
+
+;母性
+SIF TALENT:大人しい
+	ABL:母性 += RAND:3
+SIF TALENT:気丈
+	ABL:母性 += RAND:3
+SIF TALENT:無関心
+	ABL:母性 -= RAND:6
+SIF TALENT:感情乏しい
+	ABL:母性 -= RAND:3
+SIF TALENT:献身的
+	ABL:母性 += RAND:3
+SIF TALENT:清楚
+	ABL:母性 += RAND:3
+SIF EXP:出産
+	ABL:母性 += RAND:6
+ABL:母性 = LIMIT(ABL:母性,0,10)
+
+

@@ -1,0 +1,45 @@
+﻿
+;スキルポイント蓄積値計算
+@GET_SKILL_POINT_CALC
+#DIM SKILL_POINT
+
+;調教中だけ
+SIF !TFLAG:調教中
+	RETURN
+
+;調教APで確定表示するからEXISTいらないや
+;調教コマンドのたび調教AP+50+乱数,イかせたら部位*100,射精時回数*300
+SKILL_POINT = 50 +RAND:10
+
+;NOWEX:Ａ絶頂→0
+FOR LOCAL,0,5
+	;絶頂回数により+10
+	SIF NOWEX:LOCAL
+		SKILL_POINT += (90 +NOWEX:LOCAL *10)
+NEXT
+SKILL_POINT += (SOURCE:射精回数 *300)
+MONEY:調教AP蓄積値 += SKILL_POINT
+PRINTFORM Training AP accumulation +{SKILL_POINT} 
+
+;吸った魔力母乳の減衰前値をそのまま魔術APへ
+SKILL_POINT = SOURCE:プレイヤー増加魔力量／減衰前
+IF SKILL_POINT
+	MONEY:魔術AP蓄積値 += SKILL_POINT
+	PRINTFORM Magic AP accumulation +%VALUE_DIGIT(SKILL_POINT)% 
+ENDIF
+
+;触手魔力消費量*5を触手APへ
+SKILL_POINT = SOURCE:触手魔力消費量 *5
+IF SKILL_POINT
+	MONEY:触手AP蓄積値 += SKILL_POINT
+	PRINTFORM Tentacle AP accumulation +%VALUE_DIGIT(SKILL_POINT)% 
+ENDIF
+PRINTL
+
+
+
+
+
+
+
+

@@ -1,0 +1,171 @@
+﻿
+;リソース目次
+@HINT_RESOURCE
+
+CLEARLINE LINECOUNT
+PRINTL 解説を見る項目を選択してください。
+DRAWLINE
+BR = 0
+STR_REF = 9200
+CALL HINT_BUTTON_LIST
+DRAWLINE
+CALL HINT_DETAIL_RESOURCE
+CALL PRINTL_ALIGN(5)
+DRAWLINE
+PRINTL [99] Return
+INPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0 TO 29
+	SELECT_TIPS = RESULT
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;リソースの解説
+@HINT_DETAIL_RESOURCE
+
+STR_NUM = STR_REF +SELECT_TIPS
+
+;対応IDでないなら汎用出して帰る
+IF SELECT_TIPS < 0 || SELECT_TIPS >= 30 || STR:STR_NUM == ""
+	CALL NOT_SELECT_HINT_COMMON
+	RETURN
+ENDIF
+
+;項目名
+PRINTFORML 　《 %STR:STR_NUM% 》
+SELECTCASE STR:STR_NUM
+CASE "資金"
+	PRINTL 牧場が所持している資金です。
+	CALL PRINTL_WORD_COLOR("・当バリアントでは資金0になってもゲームオーバーにはなりません。","黄")
+	PRINTL
+	PRINTL 《 資金使用先 》
+	PRINTL 街の施設でのアイテム購入／牧場拡張
+	PRINTL 朝のスケジュール終了後の「精算」時の牧場の維持費
+	PRINTL 【競売所】の奴隷の購入
+	PRINTL 傭兵アルバイトの雇用
+	PRINTL 奴隷受け取り時の＜家畜用搾乳器＞の購入
+	PRINTL
+	PRINTL 《 資金調達 》
+	PRINTFORML 朝のスケジュール終了後の「精算」時、【魔界乳牛】のミルクや奴隷の%SAVESTR:表記／母乳%を出荷
+	
+CASE "貯蔵霊力"
+	PRINTFORML 奴隷の%SAVESTR:表記／母乳%と共に搾り取り、＜霊力抽出装置＞に保存されている霊力です。
+	PRINTL
+	PRINTL 《 貯蔵霊力使用先 》
+	PRINTL 【開発・習得】からの薬品製造
+	PRINTL 【魔王軍研究所】でのアイテム購入／設備購入／【貢献pt】変換
+	PRINTL
+	PRINTL 《 貯蔵霊力調達 》
+	PRINTL スケジュール【抽出】または調教中の＜小型霊力抽出装置＞の使用により
+	PRINTFORML 奴隷の%SAVESTR:表記／母乳%と共に抽出
+	
+CASE "貯蔵魔力"
+	PRINTFORML 【魔力母乳体質】の奴隷の%SAVESTR:表記／母乳%と共に搾り取り、
+	PRINTL 各種＜魔力貯蔵器＞に保存されている魔力です。
+	PRINTL
+	PRINTL 《 貯蔵魔力上限値の増加 》
+	PRINTL 【ホームセンター】で購入、マイルストーンで入手、【魔王軍研究所】での改造により
+	PRINTL 上位の＜魔力貯蔵器＞を入手する
+	PRINTL
+	PRINTL 《 貯蔵魔力使用先 》
+	PRINTL 【開発・習得】からの薬品製造
+	PRINTL 【魔王軍研究所】でのアイテム購入／設備購入
+	PRINTL 精算時に魔力バッテリー費用として消費
+	PRINTL ＜魔力補給装置＞によるあなたへの魔力補給
+	PRINTL
+	PRINTL 《 貯蔵魔力調達 》
+	PRINTL スケジュール【抽出】または調教中の＜小型霊力抽出装置＞の使用により
+	PRINTFORML 【魔力母乳体質】の奴隷の%SAVESTR:表記／母乳%と共に抽出
+	PRINTL 就寝でのあなたの魔力回復時に溢れた分の1／5を貯蔵（1,000MP以上溜められる場合）
+	
+CASE "あなたの霊力"
+	PRINTFORML 奴隷の%SAVESTR:表記／母乳%と共に＜搾乳エナジードレイン＞で吸い取り、あなたのものにした霊力です。
+	PRINTL
+	PRINTL 《 あなたの霊力使用先 》
+	PRINTL 霊力最大値の増加により体力・レベル増加
+	PRINTL コマンド＜霊力注ぎ込み＞
+	PRINTL 【開発・習得】からの薬品製造
+	PRINTL 【魔王軍研究所】でのアイテム購入／設備購入／【貢献pt】変換
+	PRINTL
+	PRINTL 《 あなたの霊力調達 》
+	PRINTFORML ＜エナジードレイン＞が有効なときに奴隷の%SAVESTR:表記／母乳%を吸うことで増加
+	PRINTL 就寝時：2%回復
+	PRINTL スケジュール【戦闘訓練】：5%回復
+	
+CASE "あなたの魔力"
+	PRINTFORML 【魔力母乳体質】の奴隷の%SAVESTR:表記／母乳%と共に吸い取り、あなたのものにした魔力です。
+	PRINTL
+	PRINTL 《 あなたの魔力使用先 》
+	PRINTL 【開発・習得】や【魔王軍研究所】で貯蔵魔力の代わりに消費
+	PRINTL ゲーム中の様々な魔術の発動
+	PRINTL 調教中の触手魔術の維持
+	PRINTL 【体内凌辱】の維持
+	PRINTL
+	PRINTL 《 あなたの魔力調達 》
+	PRINTFORML 【魔力母乳体質】の奴隷の%SAVESTR:表記／母乳%を吸うことで増加
+	PRINTL 就寝時：20%回復
+	PRINTL ＜魔力補給装置＞によるあなたへの魔力補給
+	
+CASE "貢献pt"
+	PRINTL あなたの活動が魔王軍の役に立ったときに貰える謎のポイントです。
+	PRINTL
+	PRINTL 《 貢献pt使用先 》
+	PRINTL ランダムキャラメイクのとき個性再シャッフルに使用
+	PRINTFORML 外部読み込み、手動キャラメイクの実行に%VALUE_DIGIT(CHARA_MAKE_COST)%消費
+	PRINTL
+	PRINTL 《 貢献pt調達 》
+	PRINTFORML 精算時にニンゲンの%SAVESTR:表記／母乳%の出荷金額が10,000G以上のとき、出荷金額の√計算分を入手
+	PRINTL 【魔王軍研究所】で霊力と交換
+	
+CASE "乳牛健康度"
+	PRINTL 牧場で飼育している【魔界乳牛】の健康度です。
+	PRINTL
+	PRINTL 《 乳牛健康度影響 》（スケジュール実行時点の値で判定）
+	PRINTL 【酪農】実行者の体力消費が変化
+	PRINTL 　～20：400HP　21～89：200HP　90～：100HP
+	PRINTL 朝・夕の搾乳時の魔界乳牛ミルク出荷予定金額の増加量が変化
+	PRINTL 　～19：5,000G　20～49：9,000G　50～90：12,000G　91～：15,000G（それぞれ+乱数）
+	PRINTL
+	PRINTL 《 乳牛健康度増加行動 》
+	PRINTL 【酪農】スケジュール実行時、実行者の【酪農】Lvの合計分増加
+	PRINTL
+	PRINTL 《 乳牛健康度減少行動 》
+	PRINTL 朝～夕までの毎時間に5～7消費
+	PRINTL 消費後、【酪農】スケジュール実行者の【酪農】Lv合計が20未満なら最大90に補正
+	PRINTL 誰も【酪農】スケジュールを実行しなかった場合30～40減少
+	
+CASE "事務作業量"
+	PRINTL 毎日牧場に溜まっていく、やらなければならない事務作業の量です。
+	PRINTL
+	PRINTL 《 事務作業量影響 》
+	PRINTL 20以上の場合、あなたの（基本的には昼の）スケジュールが強制的に【事務】になる
+	PRINTL
+	PRINTL 《 事務作業量増加行動 》
+	PRINTL 毎日の精算時に3～4増加
+	PRINTL
+	PRINTL 《 事務作業量減少行動 》
+	PRINTL 【事務】スケジュール実行時、実行者の【事務】Lvの合計分減少
+	PRINTL 【事務作業をしてから寝る】実行時、あなたの【事務】Lvの1／2減少
+	
+CASE "大浴場掃除完了度"
+	PRINTL ＜大浴場＞の建築後、大浴場を使うための掃除の進捗です。
+	PRINTL
+	PRINTL 《 大浴場掃除完了度影響 》
+	PRINTL 100%の場合、夕方の行動後に奴隷たちが大浴場使用可能
+	PRINTL
+	PRINTL 《 大浴場掃除完了度増加行動 》
+	PRINTL 【大浴場掃除】スケジュールで大浴場掃除実行時、実行者の【掃除】Lvの合計分増加
+	PRINTL ↑を体力0での脱落／10回ループ／掃除完了　まで繰り返し
+	PRINTL
+	PRINTL 《 大浴場掃除完了度減少行動 》
+	PRINTL 大浴場使用後に0%にリセット
+	PRINTL 大浴場を使用しなかった場合、就寝時に-10%
+	
+ENDSELECT
+
+

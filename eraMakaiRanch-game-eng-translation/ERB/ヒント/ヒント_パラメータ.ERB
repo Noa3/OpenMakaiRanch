@@ -1,0 +1,194 @@
+﻿
+;パラメータ目次
+@HINT_PALAMETER
+
+CLEARLINE LINECOUNT
+PRINTL 解説を見る項目を選択してください。
+DRAWLINE
+BR = 0
+STR_REF = 9100
+CALL HINT_BUTTON_LIST
+DRAWLINE
+CALL HINT_DETAIL_PALAMETER
+CALL PRINTL_ALIGN(5)
+DRAWLINE
+PRINTL [99] Return
+INPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0 TO 29
+	SELECT_TIPS = RESULT
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;パラメータの解説
+@HINT_DETAIL_PALAMETER
+
+STR_NUM = STR_REF +SELECT_TIPS
+
+;対応IDでないなら汎用出して帰る
+IF SELECT_TIPS < 0 || SELECT_TIPS >= 30 || STR:STR_NUM == ""
+	CALL NOT_SELECT_HINT_COMMON
+	RETURN
+ENDIF
+
+;項目名
+PRINTFORML 　《 %STR:STR_NUM% 》
+SELECTCASE STR:STR_NUM
+CASE "体力"
+	PRINTL キャラの体力またはHPです。
+	PRINTL 【霊力】の多いキャラほど最大値が多い傾向にあります。
+	PRINTL 体力が0になると各種業務・奉仕ができなくなります。
+	PRINTL 調教中にあなたの体力が0になると、その時点で調教が終了します。
+	CALL PRINTL_WORD_COLOR("・当バリアントでは奴隷の体力が0になっても死亡することはありません。","黄")
+	PRINTL
+	PRINTL 《 消費行動 》
+	PRINTL ・スケジュールの各種業務　・スケジュールの各種調教
+	PRINTFORML ・調教コマンドを行う　・調教される　・%SAVESTR:表記／母乳%を搾られる　・射精する
+	PRINTL
+	PRINTL 《 回復行動 》
+	PRINTL ・スケジュール【自由】【待機】　・就寝　・＜栄養ドリンク＞使用（固定値回復）
+	PRINTFORML ・奴隷の%SAVESTR:表記／母乳%を飲む
+	PRINTL
+	PRINTL 《 上限値増加行動 》
+	PRINTL あなた：＜エナジードレイン＞で霊力を吸った累計量で増加
+	PRINTL 奴隷：あなたに＜霊力注ぎ込み＞された累計量で増加
+	
+CASE "霊力"
+	PRINTL キャラの戦う強さ、もしくはRPG的な経験値です。
+	PRINTL 霊力を基に【レベル】が計算されます。
+	PRINTL 戦闘の訓練や実戦での経験から成長するもので、訓練を怠ったり体が衰えたりという要因でしか
+	PRINTL 減少しない「はずの」パラメータです。
+	PRINTL
+	PRINTL 《 減少行動 》
+	PRINTL ・＜（小型）霊力抽出装置＞で搾乳される　・あなたに＜エナジードレイン＞される
+	PRINTL ・あなたのみ：＜霊力注ぎ込み＞をする
+	PRINTL
+	PRINTL 《 回復行動 》
+	PRINTL ・＜霊力注ぎ込み＞をされる
+	PRINTL ・あなたのみ：奴隷から＜エナジードレイン＞する
+	PRINTL ・【魔界種族】のみ：就寝（10%回復）
+	PRINTL
+	PRINTL 《 上限値増加行動 》
+	PRINTL あなた：＜エナジードレイン＞で霊力を吸った時、奴隷に【吸収可能霊力】があれば増加
+	PRINTL 奴隷：あなたに＜霊力注ぎ込み＞された時に以下の条件を全て満たしていれば増加
+	PRINTL ①一度霊力を搾り尽くしたことがある　②現在の霊力が最大値　③【隷属】状態　④あなたより最大霊力が低い
+	
+CASE "魔力"
+	PRINTL キャラの持つ魔術的な力またはMPです。
+	PRINTL ニンゲンたちは基本的に【レベル】およびジョブ・種族から計算される【魔力量】を基に計算されます。
+	PRINTL 一部のニンゲンはレベルを無視して非常に高い魔力を有しています。
+	PRINTL
+	PRINTL 《 減少行動 》
+	PRINTL ・【魔力母乳体質】にされた状態で搾乳される
+	PRINTL ・あなたのみ：各種魔術の発動および維持コスト　・＜魔力注ぎ込み＞をする　・対応アイテム開発コスト
+	PRINTL
+	PRINTL 《 回復行動 》
+	PRINTFORML ・＜魔力注ぎ込み＞をされる　・他の奴隷の%SAVESTR:表記／魔力母乳%を飲む
+	PRINTL ・就寝（【魔界種族】：20%回復　その他：10%回復）
+	PRINTL ・あなたのみ：＜魔力補給装置＞の使用
+	PRINTL
+	PRINTL 《 上限値増加行動 》
+	PRINTFORML あなた：奴隷の%SAVESTR:表記／魔力母乳%を吸った時、奴隷に【吸収可能魔力】があれば増加
+	PRINTL 奴隷：あなたに＜魔力注ぎ込み＞された時に以下の条件を全て満たしていれば増加
+	PRINTL ①現在の魔力が80%以上　②【隷属】状態　③あなたより最大魔力が低い
+	PRINTFORML 【隷属】状態の奴隷であれば、累計%VALUE_DIGIT(MP_OCCUR_VALUE)%MPの膨大な魔力を注ぎ込んであげることで
+	CALL PRINT_WORD_COLOR("「魔力のない奴隷に魔力を宿らせる」","黄")
+	PRINTL ことも可能です。
+	
+CASE "吸収可能霊力"
+	CALL PART_HINT_EP_DRAIN_LIMIT
+	
+CASE "吸収可能魔力"
+	CALL PART_HINT_MP_DRAIN_LIMIT
+	
+CASE "レベル"
+	PRINTL RPG的な強さの指標です。【霊力】を基に計算されます。
+	PRINTL 奴隷のレベルは現在の霊力を、あなたのレベルは最大値を参照します。
+	PRINTL あなたが霊力を消費しても下がることはありません。
+	PRINTL
+	PRINTL 《 減少行動 》
+	PRINTL ・＜（小型）霊力抽出装置＞で搾乳される　・あなたに＜エナジードレイン＞される
+	PRINTL
+	PRINTL 《 増加行動 》
+	PRINTL ・霊力の上限値増加条件を満たして＜霊力注ぎ込み＞をされる
+	PRINTL ・あなたのみ：奴隷から＜エナジードレイン＞する
+	PRINTL
+	PRINTL 《 レベル影響 》
+	PRINTL ＜魔力枷＞への抵抗値→現在のレベル×100MP・レベル50ごとに倍率+1
+	
+CASE "戦闘力"
+	PRINTL 戦闘における強さです。【霊力】【魔力】を基に計算されます。
+	PRINTL 魔力が高いなら防護魔術なども使えるだろう、ということで単純計算をされています。
+	PRINTL 【膨大魔力】によりランクに見合わない魔力を持つ場合、最大魔力の1／10だけ反映されます。
+	PRINTL 【非戦闘職】のニンゲンは初期値10固定です。
+	PRINTL
+	PRINTL 傭兵アルバイトの人々とニンゲンが戦闘を行う際、戦闘力を削り合って先に0になると敗北になります。
+	PRINTL ニンゲンが消耗した戦闘力は夜行動後に10%回復します。
+	PRINTL
+	PRINTL あなたや奴隷が戦闘に向かう場合、霊力・魔力に加え【戦闘適性】の値で補正がかかります。
+	
+CASE "仲間戦闘力"
+	PRINTL 奴隷候補のニンゲンが仲間と共に魔界に来ている場合、その仲間の合計戦闘力です。
+	PRINTL 【仲間ランク】を基にキャラだった場合のレベル→そのレベルでのおおよその霊力、で計算されます。
+	PRINTL
+	PRINTL 仲間戦闘力が1以上＝仲間がいる場合、仲間戦闘力から先にダメージを受けていきます。
+	PRINTL 仲間戦闘力が0になると仲間が戦闘不能になり、もう回復することはありません。
+	PRINTL 消耗した仲間戦闘力は夜行動後に5%回復します。
+
+CASE "戦闘適性"
+	PRINTL あなたや奴隷が戦闘でどれくらいの力を発揮できるかの能力です。
+	PRINTL 傭兵アルバイトを雇わずに戦闘に向かう場合、戦闘適性の分だけ霊力・魔力を戦闘力に変換することができます。
+	PRINTL
+	PRINTL 《 増加行動 》
+	PRINTL スケジュール【戦闘訓練】実行（あなたのみ）
+	PRINTL
+	PRINTL 《 減少行動 》
+	PRINTL 就寝時に30%の確率で-1%
+	
+CASE "バストサイズ"
+	CALL PART_HINT_BUSTSIZE
+	
+CASE "バストサイズ補足"
+	CALL PART_HINT_BUSTSIZE2
+	
+CASE "酪農"
+	PRINTL 牧場仕事を効率的に行う能力です。
+	PRINTL スケジュール【酪農】実行時に【乳牛健康度】を酪農Lv分増加させます。
+	
+CASE "事務"
+	PRINTL 事務仕事や書類整理を効率的に行う能力です。
+	PRINTL スケジュール【事務】実行時に【事務作業量】を事務Lv分減少させます。
+	
+CASE "掃除"
+	PRINTL 部屋や施設の掃除、整理整頓を効率的に行う能力です。
+	PRINTL スケジュール【大浴場掃除】実行時の体力消費を掃除Lvに応じて軽減し、
+	PRINTL ＜大浴場＞を建築済みの場合掃除Lvが高いほど掃除完了が早くなります。
+	PRINTL
+	PRINTL （下は実装予定）
+	PRINTL スケジュール【掃除】実行時に【清潔度】を掃除Lv分に応じて増加させます。
+	
+CASE "料理"
+	PRINTL （実装予定）
+	PRINTL 料理を上手に作る能力です。
+	PRINTL 【料理当番】に指名したとき、料理Lvに応じて体力の回復量が増加するほか、
+	PRINTL 【カフェ】での【キッチン担当】の場合に料理Lvに応じて【顧客満足度】と【人気】の増加量にボーナスが入ります。
+	
+CASE "薬学"
+	PRINTL 薬品に関する知識や調剤を効率的に行う能力です。
+	PRINTL スケジュール【調剤】実行時に【調合進行度】を薬学Lvに応じて増加させます。
+	
+CASE "接客"
+	PRINTL （実装予定）
+	PRINTL 多くの客をさばく能力、また客のニーズに応える能力です。
+	PRINTL 接客Lvに応じて常時【人気】の増加量にボーナスが入ります。
+	PRINTL 【カフェ】での各種担当の場合に接客Lvに応じて【顧客満足度】にボーナスが入ります。
+	PRINTL
+	PRINTL 接客Lvが低くてもそれはそれで需要がありますが、客をさばけるかどうかは別問題になります。
+ENDSELECT
+
+

@@ -1,0 +1,28 @@
+﻿
+;鎧
+@ITEM_DETAIL_CLOTHE_ARMOR
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "革の鎧"
+	CALL ACCESSORY_DETAIL_COMMON("鎧")
+	PRINTL 獣の丈夫な革を使った安価な鎧。
+	PRINTL 安価とはいえその軽さがメリットにもなるため人気。
+	
+CASE "軽鎧"
+	CALL ACCESSORY_DETAIL_COMMON("鎧")
+	PRINTL 金属を加工して作った鎧。
+	PRINTL 動きを阻害しないように軽く作られている。
+	
+CASE "重鎧"
+	CALL ACCESSORY_DETAIL_COMMON("鎧")
+	PRINTL 金属を加工して作った鎧。
+	PRINTL 防御力を重視して何層も張り合わせた結果非常に重い。
+	
+CASE "甲冑"
+	CALL ACCESSORY_DETAIL_COMMON("鎧")
+	PRINTL 金属を加工して作った鎧。
+	PRINTL ジャパン地域特有の鎧で、カタナで戦うのに最適化されている。
+	
+ENDSELECT
+
+

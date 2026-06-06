@@ -1,0 +1,22 @@
+﻿
+;豊穣値処理
+@BUST_GROW_CHECK
+
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;豊穣値がバストサイズ*1000以上なら0にしてバストサイズ増加
+	;一応上限も見る
+	SIF EXP:豊穣値 < BUST_GROW_CALC() || ABL:バストサイズ >= FLAG:豊穣上限バストサイズ
+		CONTINUE
+	EXP:豊穣値 = 0
+	
+	;BUSTUP_MESSAGEに繋ぐ
+	CALL PRINT_WORD_COLOR,@"%CALLNAME:0%に丹念に揉まれた%CALLNAME%の%SLANG_B()%が寝ている間に成長したようだ…","桃"
+	CALL HEARTCB(0xD02830)
+	PRINTL
+	CALL BUSTUP
+NEXT
+TARGET = -1
+
+

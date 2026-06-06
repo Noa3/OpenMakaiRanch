@@ -1,0 +1,167 @@
+﻿
+;デバッグコマンド用
+;実装したイベントを試したいときとかに使えるぞ
+;終了でSHOPに戻る
+
+
+;デバッグ関数で行う処理をここに書く
+@DEBUG_FILE
+ITEM:魔力枷 += 100
+
+
+;牛舎増築段階を+
+;FLAG:第1牛舎増築段階→500
+FLAG_REF = 490
+FOR LOCAL,0,ITEM:牛舎
+	SIF !FLAG:(FLAG_REF +LOCAL *10)
+		FLAG:(FLAG_REF +LOCAL *10) ++
+NEXT
+
+
+
+@DEBUG
+
+;フリー以外だと帰る
+IF !FLAG:開発者モード
+	PRINTL Debug commands can only be used in ＜Developer Mode＞
+	CALL CONFIG_DIFFICULTY_FREE_MODE_CHECK
+	
+	;ここでONにしたらそのまま下へ
+	SIF !FLAG:開発者モード
+		RETURN
+ENDIF
+
+CLEARLINE LINECOUNT
+PRINTL 　《 Debug Menu 》
+PRINTLC [ 0] 牧場名の変更
+PRINTLC [ 1] キャラの名前など変更
+PRINTLC [ 2] ペットの名前など変更
+PRINTL
+PRINTL
+PRINTL 　《 チートコマンド 》
+PRINTLC [10] Add Funds
+PRINTLC [11] Increase Your Spirit Energy
+PRINTLC [12] Increase Your Mana
+PRINTLC [13] Add Stored Spirit Energy
+PRINTLC [14] Add Contribution Points
+PRINTLC [15] Acquire Every Item
+PRINTLC [16] Instant Target Capture
+PRINTLC [17] Collect ＜Dragon Balls＞
+PRINTLC [18] 各種スキルポイント増加
+PRINTLC [19] 貯蔵魔力増加
+PRINTL
+
+;emueraのデバッグモード以外だと表示しないで誤操作防止したほうがよさげ
+;#;PRINTL
+;#;PRINTL [90] デバッグ関数呼び出し（開発用およびERBファイルいじれる人向け）
+DRAWLINE
+PRINTL [99] Done
+INPUT
+SELECTCASE RESULT
+CASE 0
+	CALL NEWGAME_RANCH_NAME_BEFORE
+	
+CASE 1
+	CALL DEBUG_CHARA_NAME_EDIT_SELECT
+
+CASE 2
+	CALL DEBUG_PET_NAME_EDIT
+
+CASE 10
+	MONEY += 1000000
+	MONEY *= 2
+	CALL RESOURCE_LIMIT
+	PRINTFORMW You now have %VALUE_DIGIT(MONEY)%G Funds.
+	
+CASE 11
+	MAXBASE:0:霊力 += 1000000
+	MAXBASE:0:霊力 *= 2
+	BASE:0:霊力 = MAXBASE:0:霊力
+	CALL RESOURCE_LIMIT
+	PRINTFORMW %CALLNAME:0%'s spirit energy has increased to %VALUE_DIGIT(MAXBASE:0:霊力)%EP.
+	
+CASE 12
+	MAXBASE:0:魔力 += 1000000
+	MAXBASE:0:魔力 *= 2
+	BASE:0:魔力 = MAXBASE:0:魔力
+	CALL RESOURCE_LIMIT
+	PRINTFORMW %CALLNAME:0%'s mana has increased to %VALUE_DIGIT(MAXBASE:0:魔力)%MP.
+	
+CASE 13
+	MONEY:貯蔵霊力 += 1000000
+	MONEY:貯蔵霊力 *= 2
+	CALL RESOURCE_LIMIT
+	PRINTFORMW Stored Spirit Energy increased to %VALUE_DIGIT(MONEY:貯蔵霊力)%EP.
+	
+CASE 14
+	MONEY:貢献PT += 1000000
+	MONEY:貢献PT *= 2
+	CALL RESOURCE_LIMIT
+	PRINTFORMW Contribution Points increased to %VALUE_DIGIT(MONEY:貢献PT)%
+
+CASE 15
+	;ペットは外す
+	FOR LOCAL,0,100
+		SIF ITEMNAME:LOCAL != ""
+			ITEM:LOCAL += 1
+	NEXT
+	FOR LOCAL,120,2000
+		SIF ITEMNAME:LOCAL != ""
+			ITEM:LOCAL += 1
+	NEXT
+	;ふたなり持ってなかった=ペニスサイズ0の場合設定
+	IF !ABL:0:ペニスサイズ
+		ABL:0:ペニスサイズ = CFLAG:0:身長 / 50 + RAND:6 + 15
+		ABL:0:初期値／ペニスサイズ = ABL:0:ペニスサイズ
+	ENDIF
+	;触手も追加(最初からITEMで設定すればよかったかな？)
+	FLAG:触手出産合計 ++
+	PRINTW ペット以外で名称設定されているアイテム・魔術・設備の所持数を+1しました。
+	
+	;マイルストーン回す
+	CALL MILESTONE_CHECK_ALL
+	
+	;牛舎増築段階を+
+	;FLAG:第1牛舎増築段階→500
+	FLAG_REF = 490
+	FLAG:(FLAG_REF +ITEM:牛舎 *10) ++
+	
+CASE 16
+	EXIST = 0
+	FOR TARGET_COUNT,0,CHARANUM
+		TARGET = TARGET_COUNT
+		SIF !CFLAG:追跡対象
+			CONTINUE
+		CALL SLAVE_RECEIVE_COMMON
+		EXIST ++
+	NEXT
+	SIF !EXIST
+		PRINTW 追跡対象キャラがいませんでした。
+
+CASE 17
+	ITEM:龍のタマ = 7
+	PRINTW ＜龍のタマ＞が手元に7つ揃いました。
+
+CASE 18
+	FOR LOCAL,20,25
+		MONEY:LOCAL += 10000
+		MONEY:LOCAL *= 2
+	NEXT
+	CALL RESOURCE_LIMIT
+	PRINTW 各種スキルポイントを+10000→2倍にしました。
+
+CASE 19
+	MONEY:貯蔵魔力 = FLAG:貯蔵魔力上限値
+	PRINTW 貯蔵魔力を現在の上限の値にしました。
+
+CASE 90
+	;#;CALL DEBUG_FILE
+	;#;PRINTW デバッグ関数終了
+
+CASE 99
+	RETURN
+
+ENDSELECT
+RESTART
+
+

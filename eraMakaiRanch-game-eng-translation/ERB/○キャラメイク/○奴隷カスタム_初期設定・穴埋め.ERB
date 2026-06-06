@@ -1,0 +1,95 @@
+﻿
+;狙うメスの特徴を決める
+;ARG→選択標的番号
+@CHARA_MAKE_SLAVE_BEFORE(ARG)
+
+;候補のパーソナルデータからランダムで埋めてキャラ追加、それを複製
+;CHARANUM -2をTARGETにして変更、変更箇所に応じて貢献PTを消費する
+;処理を全て終えたらリスト最後をCHARADEL、LIST_STATUSを0にする
+;デフォルトに戻すときはカスタムしたキャラを消して現在タゲを複製
+;キャンセルする場合もLIST_STATUSは0にしよう　リセマラが出来てしまう
+;セーブロードすればリセマラできるけどまあそこまでやりたいならどうぞでいいような
+
+;ここでとりあえず穴埋めする
+;シャッフル固定フラグOFF
+FLAG:再シャッフルBIT = 0
+FLAG:キャラメイク中 = 1
+
+ADDVOIDCHARA
+TARGET = CHARANUM -1
+CFLAG:追跡対象 = 1
+CSTR:種族 = %LIST_TRIBE:ARG%
+CSTR:ジョブ = %LIST_JOB:ARG%
+
+;たぶんこれでバストサイズ設定できる
+TALENT:(LIST_BUST:ARG) = 1
+CSTR:身長 = %LIST_HEIGHT:ARG%
+CSTR:身分 = %LIST_POSITION:ARG%
+CFLAG:ランク = LIST_RANK:ARG
+CFLAG:仲間ランク = LIST_GROUP_RANK:ARG
+CFLAG:仲間規模 = LIST_GROUP:ARG
+CFLAG:魔界入りの目的 = LIST_PURPOSE:ARG
+CFLAG:魔力量 = LIST_MAGIC_POWER:ARG
+SIF LIST_DIVINITY:ARG
+	TALENT:神格 = 1
+
+;変更した
+SIF CFLAG:魔界入りの目的 == 8 || GROUPMATCH(CSTR:種族,"天人","女神")
+	CFLAG:上位種族 = 1
+
+;ここで天界種族判定もしておく
+SIF CFLAG:魔界入りの目的 == 9
+	TALENT:天界種族 = 1
+
+;種族・ジョブが半角だったら全角に戻す
+CALL FONT_FULL
+SIF CFLAG:魔界入りの目的 == 4
+	CFLAG:非戦闘職 = 1
+
+;ほか細かいとこをランダム決定
+;上で決定してるので先にやってしまっていい部分
+CALL RANDOM_SLAVE_NAME
+CALL RANDOM_SLAVE_HEIGHT
+
+;身長の後
+CALL RANDOM_SLAVE_VISUAL_AGE
+CALL RANDOM_SLAVE_BUST
+CALL RANDOM_SLAVE_BUST_FEELING
+
+;髪色の中に口上が指定されてなければ口上色セットする処理つける
+CALL RANDOM_SLAVE_HAIR
+CALL RANDOM_SLAVE_EYE
+CALL RANDOM_SLAVE_SKIN_COLOR
+CALL RANDOM_SLAVE_NIPPLE_COLOR
+CALL RANDOM_SLAVE_SHAPE
+CALL RANDOM_SLAVE_SENSITIVE
+CALL RANDOM_SLAVE_UNDERHAIR
+
+;性経験
+CALL RANDOM_SLAVE_VARGIN
+
+;性経験判定後
+CALL RANDOM_SLAVE_PERSONALITY
+CALL RANDOM_SLAVE_NASTY_TALENT
+
+;性格・性知識決定後
+CALL RANDOM_SLAVE_CLOTHE
+CALL RANDOM_SLAVE_TALENT
+CALL RANDOM_SLAVE_BASE_STATUS
+CALL RANDOM_SLAVE_CALLPERSON
+
+;TALENT決定後
+CALL RANDOM_SLAVE_WORK_ABL
+CALL RANDOM_SLAVE_NASTY_ABL
+
+;肩書き記入
+;CALL CHARA_SECOND_NAME_SETTING
+
+;最後にドット合わせ
+CALL CHOICE_CATEGORY
+
+;最後までやったらLIST_TRIBEを消してしまう　これで重複読み込み防止
+LIST_TRIBE:ARG =
+
+
+

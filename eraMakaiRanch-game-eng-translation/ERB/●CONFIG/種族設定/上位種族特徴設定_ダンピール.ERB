@@ -1,0 +1,105 @@
+﻿
+;ダンピール
+@TRIBE_FEATURE_CONFIG_DHAMPIR
+
+CLEARLINE LINECOUNT
+PRINTL Modifying【Dhampir】
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL Fixed:Always Has Mana
+PRINTLC [ 0] Skin Tends Towards【Fair】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,0),1)
+PRINTLC [ 1] Hair Color Is【Silver】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,1),1)
+PRINTLC [ 2] 【Fast Recovery】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,2),1)
+PRINTLC [ 3] 【Drug Resistant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,3),1)
+PRINTLC [ 4] 【Hated By Animals】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,4),1)
+PRINTLC [ 5] 【Sunlight Adverse】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,5),1)
+PRINTLC [ 6]  Physical Strength＋300
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,6),1)
+PRINTLC [ 7] 【Makai Adaptation】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,7),1)
+PRINTL
+PRINTLC [10] 【Subversive】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,10),1)
+PRINTLC [11] 【Light Eater】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,11),1)
+PRINTLC [12] 【Prideful】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,12),1)
+PRINTLC [13] 【Arrogant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,13),1)
+PRINTLC [14] 【Charismatic】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,14),1)
+PRINTLC [15] 【Sadistic】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,15),1)
+PRINTLC [16] 【Dignified】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダンピール,16),1)
+CALL PRINTL_ALIGN
+CALL PRINT_SLAVE_CONFIG_FOOTER(17)
+SELECTCASE INPUT_NUM
+CASE 0
+	PRINTL If【Standard】、【Brown】、【Tanned】, replaced with【Fair】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 1
+	PRINTL Fix hair color to【Silver】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 2
+	PRINTL Add the【Fast Recovery】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 3
+	PRINTL Add the【Drug Resistant】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 4
+	PRINTL Add the【Hated By Animals】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 5
+	PRINTL Add the【Sunlight Adverse】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 6
+	PRINTL Strength is increased by 300 after base calculations
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 7
+	PRINTL Add the【Makai Adaptation】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 10
+	PRINTL Add the【Subversive】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 11
+	PRINTL Add the【Light Eater】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 12
+	PRINTL Add the【Prideful】trait
+	PRINTL ※Mutually exclusive with【Arrogant】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／ダンピール,12) && GETBIT(FLAG:種族設定／ダンピール,13)
+		CLEARBIT FLAG:種族設定／ダンピール,13
+CASE 13
+	PRINTL Add the【Arrogant】trait
+	PRINTL ※Mutually exclusive with【Prideful】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／ダンピール,12) && GETBIT(FLAG:種族設定／ダンピール,13)
+		CLEARBIT FLAG:種族設定／ダンピール,12
+CASE 14
+	PRINTL Add the【Charismatic】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 15
+	PRINTL Add the【Sadistic】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 16
+	PRINTL Add the【Dignified】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダンピール"),INPUT_NUM)
+CASE 98
+	PRINTL Restore【Dhampir】Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRIBE_FEATURE_CONFIG_DHAMPIR
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

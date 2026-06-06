@@ -1,0 +1,144 @@
+﻿
+@COM502_MESSAGE
+;淫紋付与
+
+PRINTFORML The magic circle is drawn on the floor of the room, and magic power poured into %CALLNAME%, who is placed at the center...
+PRINTFORML （Mana consumption -%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"淫紋付与"))%MP）
+CALL PRINTL_WORD_COLOR,@"A heart-shaped pattern appears on %CALLNAME%'s lower abdomen!","桃"
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"付与中")
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% begins to writhe, breathing heavily and drooling...","桃"
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"完了")
+CALL HEARTCB(0xD02830)
+CALL PRINT_WORD_COLOR,@"%CALLNAME% has been marked with 【Lewd Mark】","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+@COM505_MESSAGE
+;時間圧縮
+
+PRINTL Magic power circulates throughout the training room...
+PRINTFORML The flow of time changes inside and outside the training room, allowing only you and %CALLNAME% inside the room to experience a prolonged period of time!
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+CALL PRINTL_WORD_COLOR,@"＜Time Compression＞'s MP cost increases with each turn. Selecting again will deactivate it.","黄"
+
+
+
+@COM550_MESSAGE
+;媚薬粘液
+;直接は来ない部分
+
+PRINTFORML You insert a tentacle into %CALLNAME%'s mouth, making her drink the special fluid...
+PRINTFORML （（Mana consumption -%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"媚薬粘液"))%MP）
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+PRINTFORML %CALLNAME% seems to be intensely flushed...
+
+
+
+@COM580_MESSAGE
+;洗脳触手
+
+PRINTFORML You completely cover %CALLNAME%'s head with a tentacle and pour in your magical power...
+PRINTFORML （Mana consumption -%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"洗脳"))%MP）
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"洗脳中")
+PRINTW ………
+PRINTFORML After thoroughly pouring magic power directly into her brain, %CALLNAME% is set free...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"洗脳完了")
+PRINTFORML With her vacant eyes, %CALLNAME% has lost all sense of self and is now completely at your mercy...
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% has been【Brainwashed】","黄"
+
+
+
+;解いたとき
+@COM580_REMOVE_MESSAGE
+
+PRINTFORML You completely cover %CALLNAME%'s head with a tentacle and pour in your magical power...
+PRINTFORML （Mana consumption -%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"洗脳"))%MP）
+PRINTW ………
+PRINTFORML After thoroughly pouring magic power directly into her brain, the tentacle is removed...
+PRINTFORML The light returned to %CALLNAME%'s once vacant eyes, and she seem to have regained her self...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"解除")
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s【Brainwashing】has been removed.","黄"
+
+
+
+@COM581_MESSAGE
+;絶頂体力回復淫紋付与
+;確認は元のほうで出す
+
+PRINTFORML A magic circle is drawn, and enormous magic power is poured into %CALLNAME%...
+PRINTFORML （Mana consumption -%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"絶頂体力回復淫紋"))%MP）
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s Lewd Mark changes shape...!","桃"
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"付与中")
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s body twitches and she climax while emitting %SLANG_MILK()%...!","桃"
+PRINTW
+
+
+
+;定着成功
+@COM581_SUCCESS_MESSAGE
+
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"完了")
+SETCOLOR 0xFF70FF
+PRINTL ………
+PRINTFORML ...By the time the climax subsides, %CALLNAME% regains her stamina every time she cums, and is now what you might call a top-tier succubus...
+CALL HEARTCB(0xD02830,3)
+CALL PRINT_WORD_COLOR,@"%CALLNAME% has been marked with【Health Recovering Climax Crest】...","桃"
+CALL HEARTCB(0xD02830,3)
+PRINTL
+
+
+
+;失敗
+@COM581_FAILED_MESSAGE
+
+PRINTL ………
+PRINTL After a while, the mark reverted to its original form.
+PRINTL It seems the【Health Recovering Climax Crest】did not take hold...
+
+
+
+@COM582_MESSAGE
+;絶頂魔力回復淫紋付与
+;確認は元のほうで出す
+
+PRINTFORML A magic circle is drawn, and enormous magic power is poured into %CALLNAME%...
+PRINTFORML （Mana consumption -%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"絶頂魔力回復淫紋"))%MP）
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s Lewd Mark changes shape...!","桃"
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"付与中")
+CALL PRINT_WORD_COLOR,@"%CALLNAME%'s body twitches and she climax while emitting %SLANG_MILK()%...!","桃"
+PRINTW
+
+
+
+;定着成功
+@COM582_SUCCESS_MESSAGE
+
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"完了")
+SETCOLOR 0xFF70FF
+PRINTL ………
+PRINTFORML By the time the climax subsides, %CALLNAME%'s body is completely transformed into that of a makaian livestock,
+PRINTFORML Climaxing will restore magic power, which overflows as %SLANG_MILK()%.
+PRINTL She has become a lewd perpetual motion machine...
+CALL HEARTCB(0xD02830,3)
+CALL PRINT_WORD_COLOR,@"%CALLNAME% has been marked with【Mana Recovering Climax Crest】...","桃"
+CALL HEARTCB(0xD02830,3)
+PRINTL
+CALL HEARTCB(0xD02830,3)
+CALL PRINT_WORD_COLOR,@"From now on, you can infinitely extract %SAVESTR:表記／母乳% from %CALLNAME%'s %PRINT_BUST()%...","桃"
+CALL HEARTCB(0xD02830,3)
+PRINTL
+
+
+
+;失敗
+@COM582_FAILED_MESSAGE
+
+PRINTL ………
+PRINTL After a while, the mark reverted to its original form.
+PRINTL It seems the【Mana Recovering Climax Crest】did not take hold...
+
+
+
+

@@ -1,0 +1,333 @@
+﻿
+;調教中自動選択肢設定
+@TRAIN_AUTO_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Set Automatic Choices For Training.
+DRAWLINE
+PRINTL 　《 Start Of Training 》
+FOR LOCAL,0,6
+	CALL PRINT_TRAIN_AUTO_CONFIG(LOCAL)
+NEXT
+PRINTLC [ 9] Confirm automatic settings at the start of training
+CALL PRINT_ONOFF(!FLAG:調教開始時設定確認,1)
+PRINTL
+PRINTL 　《 Ejaculation 》
+FOR LOCAL,10,16
+	CALL PRINT_TRAIN_AUTO_CONFIG(LOCAL)
+NEXT
+PRINTL
+PRINTL 　《 Clothes confiscation after training 》
+PRINTL ・When resisting
+PRINTLC [20] Clothing
+CALL PRINT_ONOFF(GETBIT(＃衣服没収／抵抗＃),1)
+PRINTLC [21] Underwear
+CALL PRINT_ONOFF(GETBIT(＃下着没収／抵抗＃),1)
+PRINTLC [22] Accessories
+CALL PRINT_ONOFF(GETBIT(＃アクセ没収／抵抗＃),1)
+PRINTL ・When not resisting
+PRINTLC [23] Clothing
+CALL PRINT_ONOFF(GETBIT(＃衣服没収／無抵抗＃),1)
+PRINTLC [24] Underwear
+CALL PRINT_ONOFF(GETBIT(＃下着没収／無抵抗＃),1)
+PRINTLC [25] Accessories
+CALL PRINT_ONOFF(GETBIT(＃アクセ没収／無抵抗＃),1)
+
+CALL PRINTL_ALIGN
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 98
+	PRINTL Reset to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRAIN_AUTO_CONFIG
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_TRAIN_AUTO_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;PRINT部分　長いので別関数
+;ARG→LOCAL
+@PRINT_TRAIN_AUTO_CONFIG(ARG)
+
+;FLAG:デフォルト脱衣状態／抵抗→2400
+;FLAG:射精箇所／パイズリ→2410
+;ARG >=10だと-10する関係でどうせ2400
+FLAG_REF = 2400
+
+;FLAG_NAMEを入れてCASEする
+FLAG_NAME = %FLAGNAME:(ARG +FLAG_REF)%
+PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),35,LEFT%：
+SELECTCASE FLAG_NAME
+CASE "デフォルト脱衣状態／抵抗","デフォルト脱衣状態／無抵抗"
+	;ver1.030で「毎回選ぶ」がなくなったので-1されてる
+	;STR:デフォルト脱衣状態→8130
+	STR_REF = 8130
+	PRINTFORML %STRIP_SELECT_ENG(STR:(STR_REF +FLAG:FLAG_NAME))%
+
+CASE "デフォルト拘束状態／抵抗","デフォルト拘束状態／無抵抗"
+	;STR:拘束中→3930
+	STR_REF = 3930
+	SELECTCASE FLAG:FLAG_NAME
+	CASE 0
+		PRINTL No Restraints
+	CASEELSE
+		;拘束必要アイテム参照
+		CALL BIND_NEED_ITEM(FLAG:FLAG_NAME -1)
+		PRINTFORM %RESTRAINTS_LONG_ENG(RESULTS),20,LEFT%
+		
+		;必要アイテムIDが入っていれば表示
+		IF !NEED_ITEM_ID
+			PRINTL
+		ELSEIF !NEED_ITEM_ID:1
+			PRINTFORML ：＜%ITEMS_ENG(ITEMNAME:NEED_ITEM_ID)%＞ required
+		ELSE
+			PRINTFORML ：＜%ITEMS_ENG(ITEMNAME:NEED_ITEM_ID)%＞ and ＜%ITEMS_ENG(ITEMNAME:(NEED_ITEM_ID:1))%＞ required
+		ENDIF
+	ENDSELECT
+CASE "デフォルト使用アイテム／ローション"
+	IF !FLAG:FLAG_NAME
+		PRINTL Do not use 
+	ELSE
+		SIF GETBIT(FLAG:FLAG_NAME,0)
+			PRINT Ｖ
+		SIF GETBIT(FLAG:FLAG_NAME,1)
+			PRINT Ａ
+		SIF GETBIT(FLAG:FLAG_NAME,2)
+			PRINT Ｂ
+		PRINTL Use 
+	ENDIF
+CASE "デフォルト使用アイテム／媚薬"
+	SELECTCASE FLAG:FLAG_NAME
+	CASE 0
+		PRINTL Do not use
+	CASE 1
+        PRINTL Using ＜Aphrodisiac＞
+    CASE 2
+        PRINTL Using ＜Aphrodisiac Slime＞
+	ENDSELECT
+CASE "射精箇所／パイズリ","射精箇所／縦パイズリ"
+	SELECTCASE FLAG:FLAG_NAME
+	CASE 0
+		PRINTL Always Ask
+	CASE 1
+		IF FLAG_NAME == "射精箇所／パイズリ"
+			PRINTL In-Between Breasts（On Breasts if size is Small or below）
+		ELSE
+			PRINTL In-Between Breasts
+		ENDIF
+	CASE 2
+		PRINTL On Breasts
+	CASE 3
+		PRINTL On Face
+	ENDSELECT
+
+CASE "射精箇所／フェラチオ","射精箇所／イラマチオ"
+	SELECTCASE FLAG:FLAG_NAME
+	CASE 0
+		PRINTL Always Ask
+	CASE 1
+		PRINTL In Mouth
+	CASE 2
+		PRINTL On Face
+	ENDSELECT
+
+CASE "射精箇所／Ｖセックス"
+	SELECTCASE FLAG:FLAG_NAME
+	CASE 0
+		PRINTL Always Ask
+	CASE 1
+		PRINTL In Pussy
+	CASE 2
+		PRINTL Outside
+	ENDSELECT
+
+CASE "射精箇所／Ａセックス"
+	SELECTCASE FLAG:FLAG_NAME
+	CASE 0
+		PRINTL Always Ask
+	CASE 1
+		PRINTL In Ass
+	CASE 2
+		PRINTL Outside
+	ENDSELECT
+ENDSELECT
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_TRAIN_AUTO_CONFIG(ARG)
+
+;20までは元CONFIG使いまわし
+IF ARG < 20
+	CALL CHANGE_TRAIN_AUTO_CONFIG_NAME(ARG)
+ELSE
+	CALL CHANGE_TRAIN_AUTO_CONFIG_NUM(ARG)
+ENDIF
+
+
+
+;FLAG_NAMEでの変更
+@CHANGE_TRAIN_AUTO_CONFIG_NAME(ARG)
+
+FLAG_REF = 2400
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+SELECTCASE FLAG_NAME
+CASE "デフォルト脱衣状態／抵抗"
+	PRINTL Set the clothing・underwear state of resistant slaves at the start of training.
+	PRINTL
+	
+	;ver1.030で「毎回選ぶ」がなくなったので-1されてる
+	;STR:デフォルト脱衣状態→8130
+	STR_REF = 8130
+	FOR LOCAL,0,3
+		PRINTFORM [{LOCAL,2}] %STRIP_SELECT_ENG(STR:(STR_REF +LOCAL))%
+		SIF !LOCAL
+			PRINT （Default）
+		PRINTL
+	NEXT
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "デフォルト拘束状態／抵抗"
+	PRINTL Set the restraint status of resistant slaves at the start of training.
+	PRINTL 
+	CALL BIND_CHOICE("全体設定")
+	SIF RESULT >= 0
+		FLAG:FLAG_NUM = RESULT
+
+CASE "デフォルト脱衣状態／無抵抗"
+	PRINTL Set the clothing・underwear state of obedient slaves at the start of training.
+	PRINTL
+	STR_REF = 8130
+	FOR LOCAL,0,7
+		PRINTFORM [{LOCAL,2}] %STRIP_SELECT_ENG(STR:(STR_REF +LOCAL))%
+		SIF !LOCAL
+			PRINT （Default）
+		PRINTL
+	NEXT
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "デフォルト拘束状態／無抵抗"
+	PRINTL Set the restraint status of obedient slaves at the start of training.
+	PRINTL 
+	CALL BIND_CHOICE("全体設定")
+	SIF RESULT >= 0
+		FLAG:FLAG_NUM = RESULT
+
+CASE "デフォルト使用アイテム／ローション"
+	CALL CHANGE_TRAIN_AUTO_CONFIG_LOTION
+	
+CASE "デフォルト使用アイテム／媚薬"
+	PRINTL Set whether to use ＜Aphrodisiac＞ or ＜Aphrodisiac Slime＞ at the start of training.
+	PRINTL ※Will not be used if there are no items / magic not learned or insufficient magic power
+	PRINTL
+	PRINTL [ 0] Do not use (Default)
+	PRINTL [ 1] Use ＜Aphrodisiac＞
+	PRINTL [ 2] Use ＜Aphrodisiac Slime＞
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+	
+CASE "調教開始時設定確認"
+	INVERTBIT FLAG:FLAG_NUM,0
+CASE "射精箇所／パイズリ"
+	PRINTL Choose where to ejculate for paizuri.
+	PRINTL
+	PRINTL [ 0] Always Ask (Default)
+	PRINTL [ 1] In-Between Breasts
+	PRINTL [ 2] On Breasts
+	PRINTL [ 3] On Face
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "射精箇所／縦パイズリ"
+	PRINTL Choose where to ejculate for horizontal paizuri.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] In-Between Breasts (Default)
+	PRINTL [ 2] On Breasts
+	PRINTL [ 3] On Face
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "射精箇所／フェラチオ"
+	PRINTL Choose where to ejculate for blowjobs.
+	PRINTL
+	PRINTL [ 0] Always Ask (Default)
+	PRINTL [ 1] In Mouth
+	PRINTL [ 2] On Face
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "射精箇所／イラマチオ"
+	PRINTL Choose where to ejculate for blowjobs.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] In Mouth (Default)
+	PRINTL [ 2] On Face
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "射精箇所／Ｖセックス"
+	PRINTL Choose where to ejculate for Ｖ sex.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] In Pussy (Default)
+	PRINTL [ 2] Pull Out
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "射精箇所／Ａセックス"
+	PRINTL Choose where to ejculate for Ａ sex.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] In Ass (Default)
+	PRINTL [ 2] Pull Out
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+ENDSELECT
+
+
+
+;ローション使用
+@CHANGE_TRAIN_AUTO_CONFIG_LOTION
+
+CLEARLINE LINECOUNT
+PRINTL 調教開始時に＜ローション＞を自動使用するかを設定します。
+PRINTL ※露出状態の場合に使用、アイテム不足→上から優先で実行
+PRINTL
+PRINTFORMLC [ 0] %SAVESTR:表記／膣,12%
+CALL PRINT_ONOFF(GETBIT(FLAG:デフォルト使用アイテム／ローション,0),1)
+PRINTFORMLC [ 1] %SAVESTR:表記／アナル,12%
+CALL PRINT_ONOFF(GETBIT(FLAG:デフォルト使用アイテム／ローション,1),1)
+PRINTFORMLC [ 2] %SAVESTR:表記／乳房,12%
+CALL PRINT_ONOFF(GETBIT(FLAG:デフォルト使用アイテム／ローション,2),1)
+PRINTL [ 99] 戻る
+BINPUT
+SELECTCASE RESULT
+CASE 99
+	RETURN
+CASEELSE
+	INVERTBIT FLAG:デフォルト使用アイテム／ローション,RESULT
+ENDSELECT
+RESTART
+
+
+
+;番号変更
+@CHANGE_TRAIN_AUTO_CONFIG_NUM(ARG)
+
+;+20で来てる
+INVERTBIT FLAG:調教後衣服没収BIT,ARG -20
+
+
+

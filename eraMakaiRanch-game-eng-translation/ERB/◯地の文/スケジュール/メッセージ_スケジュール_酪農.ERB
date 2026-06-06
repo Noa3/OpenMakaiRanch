@@ -1,0 +1,79 @@
+﻿
+;魔界乳牛の世話内容地の文
+@WORK_LACTATION_BEGIN_MESSAGE
+#DIMS S_EN
+#DIMS ES_EN
+S_EN = \@ WORK_GROUP > 0 ?  # s \@
+ES_EN = \@ WORK_GROUP > 0 ?  # es \@
+
+SIF !EXP:実行回数／酪農 && TARGET
+	PRINTFORML You ordered %CALLNAME% to take care of the makai dairy cows...
+
+;WORK_GROUPが2以上なら「たち」表記
+PRINTFORM %CALLNAME%%PRINT_WORK_GROUP()%
+
+;あなたも酪農の場合追加　当然だけどあなたを除く
+SIF CSTR:0:スケジュール == "酪農" && TARGET
+	PRINTFORM , together with you,
+SELECTCASE TIME
+CASE 0
+	PRINTFORML  give%S_EN% the cattle their morning milking and replace%S_EN% their straw.
+CASE 1
+	;悪天候なら牛舎の中
+	IF GROUPMATCH(SAVESTR:天気／今日,＃悪天候＃)
+		PRINTFORML  check%S_EN% the physical condition of cattle relaxing in the cowshed.
+	ELSE
+		PRINTFORML  observe%S_EN% the grazing cattle and clean%S_EN% their cowshed.
+	ENDIF
+CASE 2
+	PRINTFORML  give%S_EN% the cattle their afternoon milking and brush%ES_EN% them afterwards.
+ENDSELECT
+CALL KOJO_PRINT("スケジュール","酪農",KOJO_TYPE)
+
+
+
+;酪農上手さ表示地の文
+@WORK_LACTATION_ABL_MESSAGE
+
+;あなたを除く
+SIF !TARGET
+	RETURN
+IF !EXP:実行回数／酪農
+	IF ABL:酪農 >= 8
+		PRINTL With her strong experience, the work is finished very efficiently.
+	ELSEIF ABL:酪農 >= 4
+		PRINTL She seems to be picking it up pretty well.
+	ELSE
+		PRINTL She's handling the work quite clumsily.
+	ENDIF
+ELSE
+	IF ABL:酪農 >= 9
+		PRINTFORML She fully understands dairy farming, and it seems there's nothing more for you to teach her.
+	ELSEIF ABL:酪農 >= 4
+		PRINTL Her skill has improved significantly.
+	ELSE
+		PRINTL She is still somewhat clumsy in this work.
+	ENDIF
+ENDIF
+
+
+
+;魔界乳牛のミルクの出地の文
+@COW_MILK_VALUE_MESSAGE
+
+IF FIRST_HEALTH < 20
+	PRINT The cattle are sick, and don't produce much milk...　 
+ELSEIF FIRST_HEALTH < 50
+	PRINT The cattle are slightly sick, and produce less milk...　
+ELSEIF FIRST_HEALTH < 91
+	PRINT The cattle are healthy, and produce more milk.　
+ELSE
+	PRINT The cattle are extremely healthy, and produce much more milk.　
+ENDIF
+PRINTL
+
+
+
+
+
+

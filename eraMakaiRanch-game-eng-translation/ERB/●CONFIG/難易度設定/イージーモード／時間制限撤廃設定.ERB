@@ -1,0 +1,51 @@
+﻿
+;各種回数制限撤廃設定
+@EASYMODE_LIMIT_BREAK_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Removing command usage restrictions and more.
+DRAWLINE
+CALL PRINTL_WORD_COLOR,@"Removing command usage restrictions can significantly disrupt game balance. Proceed at your own risk.","黄"
+PRINTLC [ 0] No Time Limit for Training
+CALL PRINT_ONOFF(GETBIT(＃制限撤廃／調教時間＃),1)
+PRINTLC [ 1] No MP Consumption for <Time Compression>
+CALL PRINT_ONOFF(GETBIT(＃制限撤廃／時間圧縮＃),1)
+PRINTLC [ 2] No Dizziness from Family Bath
+CALL PRINT_ONOFF(GETBIT(＃制限撤廃／家族風呂＃),1)
+PRINTLC [ 3] No Visit Limit
+CALL PRINT_ONOFF(GETBIT(＃制限撤廃／訪問回数＃),1)
+PRINTLC [ 4] No Item Usage Limit
+CALL PRINT_ONOFF(GETBIT(＃制限撤廃／アイテム使用＃),1)
+PRINTLC [ 5] No Skinship Limit
+CALL PRINT_ONOFF(GETBIT(＃制限撤廃／スキンシップ＃),1)
+PRINTLC [ 6] No Restriction on Drugs & Extracts usage
+CALL PRINT_ONOFF(GETBIT(＃制限撤廃／肉体改造＃),1)
+
+CALL PRINTL_ALIGN(-5)
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+PRINTL
+SIF !FLAG:開発者モード && DAY
+	RETURN
+SELECTCASE RESULT
+CASE 98
+	PRINTL Do you want to reset the command usage restrictions to default?
+	CALL ASK_YN
+	SIF !RESULT
+		FLAG:回数制限撤廃BIT = 0
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_LIMIT_BREAK_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_LIMIT_BREAK_CONFIG(ARG)
+
+;ひっくり返すだけ
+INVERTBIT FLAG:回数制限撤廃BIT,ARG
+

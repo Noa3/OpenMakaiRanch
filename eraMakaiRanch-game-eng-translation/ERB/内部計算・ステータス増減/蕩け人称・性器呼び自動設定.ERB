@@ -1,0 +1,319 @@
+﻿
+;一人称・二人称の蕩け・甘えを補正　ひらがなにするだけと言えばだけ
+;ARG→1なら蕩けが入ってるとき上書きしない
+@SWEET_PERSON_CALL_ALL(ARG)
+
+;あなたはあなたを呼ばない
+SIF !TARGET
+	RETURN
+CALL SWEET_PERSON_CALL_SELF(ARG)
+CALL SWEET_PERSON_CALL_MASTER(ARG)
+CALL SWEET_PERSON_CALL_MASTER_LOVE(ARG)
+
+
+
+;蕩け一人称設定
+;ARG→1なら蕩けが入ってるとき上書きしない
+@SWEET_PERSON_CALL_SELF(ARG)
+
+;this function makes absolutely no sense as it's now in english, and always ends in CASEEELSE
+SIF CSTR:一人称／蕩け != "" && ARG
+	RETURN
+SELECTCASE CSTR:一人称
+CASE "私"
+	CSTR:一人称／蕩け = I
+CASE "僕"
+	CSTR:一人称／蕩け = I
+CASE "我"
+	CSTR:一人称／蕩け = I
+CASEELSE
+	CSTR:一人称／蕩け = %CSTR:一人称%
+ENDSELECT
+
+
+
+;陥落前のあなた呼び方蕩け設定
+;ARG→1なら蕩けが入ってるとき上書きしない
+@SWEET_PERSON_CALL_MASTER(ARG)
+
+SIF CSTR:あなた呼び方／陥落前／蕩け != "" && ARG
+	RETURN
+SELECTCASE CSTR:あなた呼び方／陥落前
+CASE "貴方"
+	CSTR:あなた呼び方／陥落前／蕩け = you
+CASE "貴様"
+	CSTR:あなた呼び方／陥落前／蕩け = you bastard
+CASE "お前"
+	CSTR:あなた呼び方／陥落前／蕩け = you
+CASE "君"
+	CSTR:あなた呼び方／陥落前／蕩け = you
+CASEELSE
+	CSTR:あなた呼び方／陥落前／蕩け = %CSTR:あなた呼び方／陥落前%
+ENDSELECT
+
+
+
+;蕩け陥落後・甘え二人称設定
+;ARG→1なら蕩けが入ってるとき上書きしない
+@SWEET_PERSON_CALL_MASTER_LOVE(ARG)
+; Not a fan of how I did this (translating the case statements), but our code currently stores english text in CSTR:あなた呼び方／*.
+; Changing that would be a lot of work.
+
+; Not a fan of this function in general anyway: Alot of the strings from the case statements will never happen ingame, unless the player manually enters them.
+; And it's impossible to anticipate everything a player might enter.
+; The strings that can't happen without manually entering them don't have a translation in MASTER_ENG, but we still call the function for consistency.
+
+SIF CSTR:あなた呼び方／陥落後／蕩け != "" && CSTR:あなた呼び方／甘え != "" && ARG
+	RETURN
+SELECTCASE CSTR:あなた呼び方／陥落後
+CASE MASTER_ENG("ご主人様"),MASTER_ENG("ごしゅじん様"),MASTER_ENG("ごしゅじんさま")
+	CSTR:あなた呼び方／陥落後／蕩け = Master
+	CSTR:あなた呼び方／甘え = Ma～aster
+	
+CASE MASTER_ENG("マスター")
+	CSTR:あなた呼び方／陥落後／蕩け = Master
+	CSTR:あなた呼び方／甘え = Ma～aster
+	
+CASE MASTER_ENG("お兄ちゃん"),MASTER_ENG("おにいちゃん")
+	CSTR:あなた呼び方／陥落後／蕩け = Onii-chan
+	CSTR:あなた呼び方／甘え = Oni～i-chan
+	
+CASE MASTER_ENG("お兄様"),"おにい様","おにいさま"
+	CSTR:あなた呼び方／陥落後／蕩け = Onii-sama
+	CSTR:あなた呼び方／甘え = Oni～i-sama
+	
+CASE MASTER_ENG("兄様"),MASTER_ENG("にいさま")
+	CSTR:あなた呼び方／陥落後／蕩け = Nii-sama
+	CSTR:あなた呼び方／甘え = Ni～i-sama
+	
+CASE MASTER_ENG("お父さん"),MASTER_ENG("おとうさん")
+	CSTR:あなた呼び方／陥落後／蕩け = Father
+	CSTR:あなた呼び方／甘え = Da～ddy
+	
+CASE MASTER_ENG("パパ")
+	CSTR:あなた呼び方／陥落後／蕩け = Papa
+	CSTR:あなた呼び方／甘え = Pa～pa
+	
+CASE MASTER_ENG("あなた様"),MASTER_ENG("あなたさま")
+	CSTR:あなた呼び方／陥落後／蕩け = Mister
+	CSTR:あなた呼び方／甘え = Mis～ter
+	
+CASE MASTER_ENG("ダーリン")
+	CSTR:あなた呼び方／陥落後／蕩け = Darling
+	CSTR:あなた呼び方／甘え = Da～arling
+	
+CASE MASTER_ENG("主様"),MASTER_ENG("主さま"),MASTER_ENG("あるじさま")
+	CSTR:あなた呼び方／陥落後／蕩け = Chief
+	CSTR:あなた呼び方／甘え = Chi～ef
+	
+CASE MASTER_ENG("旦那様"),MASTER_ENG("ダンナ様"),MASTER_ENG("だんな様"),MASTER_ENG("旦那さま"),MASTER_ENG("ダンナさま"),MASTER_ENG("だんなさま")
+	CSTR:あなた呼び方／陥落後／蕩け = Sir
+	CSTR:あなた呼び方／甘え = S～ir
+	
+CASE MASTER_ENG("お館様"),MASTER_ENG("オヤカタさま"),MASTER_ENG("おやかたさま")
+	CSTR:あなた呼び方／陥落後／蕩け = Boss
+	CSTR:あなた呼び方／甘え = Bos～s
+	
+CASE MASTER_ENG("兄上"),MASTER_ENG("あにうえ")
+	CSTR:あなた呼び方／陥落後／蕩け = Elder Brother
+	CSTR:あなた呼び方／甘え = Elder Bro～other
+	
+CASE MASTER_ENG("主殿"),MASTER_ENG("あるじどの")
+	CSTR:あなた呼び方／陥落後／蕩け = Lord
+	CSTR:あなた呼び方／甘え = Lo～ord
+	
+CASE MASTER_ENG("閣下"),MASTER_ENG("かっか")
+	CSTR:あなた呼び方／陥落後／蕩け = Your Excellency
+	CSTR:あなた呼び方／甘え = Your Excelle～ency
+	
+CASE MASTER_ENG("陛下"),MASTER_ENG("へいか")
+	CSTR:あなた呼び方／陥落後／蕩け = Your Majesty
+	CSTR:あなた呼び方／甘え = Your Majes～sty
+	
+CASEELSE
+	CSTR:あなた呼び方／陥落後／蕩け = %CSTR:あなた呼び方／陥落後%
+	CSTR:あなた呼び方／甘え = %CSTR:あなた呼び方／陥落後%
+ENDSELECT
+
+
+
+;性器の蕩け補正　やっぱりほぼひらがな
+;ARG→1なら蕩けが入ってるとき上書きしない
+@SWEET_GENITAL_CALL_ALL(ARG)
+
+SIF !TARGET
+	RETURN
+CALL SWEET_PENIS_CALL(ARG)
+CALL SWEET_VAGINA_CALL(ARG)
+CALL SWEET_ANAL_CALL(ARG)
+
+
+
+;ちんぽ
+;ARG→1なら蕩けが入ってるとき上書きしない
+@SWEET_PENIS_CALL(ARG)
+; This function made absolutely no sense for english as is, and barely any for japanese (some strings appeared in multiple case statements).
+; Completly rewritten for english because of that.
+; This function sets CSTR:性器呼び方／ペニス／蕩け, which is only used after a girl had more than 50 orgasms.
+; Note: The player can change what the girl uses to whatever they like, this function just sets the default options.
+
+; TODO: PENIS_CALL_ENG translations are work in progress. Change these case statements if PENIS_CALL_ENG gets changed.
+
+SELECTCASE CSTR:性器呼び方／ペニス
+; Most use "Cock" or "Dick" after they got their brains fucked out of them
+CASE "","ちんちん","おちんちん","陰茎"
+	CSTR:性器呼び方／ペニス／蕩け = おちんぽ
+CASE "ペニス","チンポ","男根"
+	CSTR:性器呼び方／ペニス／蕩け = 肉棒
+; Girls that used one of the polite options before use "Penis" now (The options most likely used by"清楚" or "高潔")
+CASE "男性器","男の人の"
+	CSTR:性器呼び方／ペニス／蕩け = ペニス
+
+CASEELSE
+	CSTR:性器呼び方／ペニス／蕩け = %CSTR:性器呼び方／ペニス%
+	
+ENDSELECT
+
+; Original JP code of this function
+;SIF CSTR:性器呼び方／ペニス／蕩け != "" && ARG
+;	RETURN
+;SELECTCASE CSTR:性器呼び方／ペニス
+;CASE "ペニス","孕ませ棒","肉棒","男の人の"
+;	CSTR:性器呼び方／ペニス／蕩け = ぺにす
+	
+;;ちんぽ呼び増やす　ひらがなでもそうはなんないかな部分が多くて
+;CASE "チンポ","男根","陰茎","男性器"
+;	CSTR:性器呼び方／ペニス／蕩け = ちんぽ
+	
+;;堕ちた後から選択可能系
+;CASE "息子様","ご立派様","剛直","魔羅"
+;	CSTR:性器呼び方／ペニス／蕩け = おちんぽ様
+
+;CASEELSE
+;	CSTR:性器呼び方／ペニス／蕩け = %CSTR:性器呼び方／ペニス%
+	
+;ENDSELECT
+
+;;恋慕以上なら忠実に喋ってくれる
+;SIF !＃陥落状態／隷属＃
+;	RETURN
+;SELECTCASE CSTR:性器呼び方／ペニス
+;CASE "孕ませ棒"
+;	CSTR:性器呼び方／ペニス／蕩け = はらませ棒
+;CASE "肉棒","男の人の"
+;	CSTR:性器呼び方／ペニス／蕩け = にくぼう
+;CASE "男の人の"
+;	CSTR:性器呼び方／ペニス／蕩け = おとこのひとの
+;CASE "男根"
+;	CSTR:性器呼び方／ペニス／蕩け = だんこん
+;CASE "陰茎"
+;	CSTR:性器呼び方／ペニス／蕩け = いんけぇ
+;CASE "男性器"
+;	CSTR:性器呼び方／ペニス／蕩け = だんせぇき
+;CASE "息子様"
+;	CSTR:性器呼び方／ペニス／蕩け = むすこさま
+;CASE "ご立派様"
+;	CSTR:性器呼び方／ペニス／蕩け = ごりっぱさま
+;CASE "剛直"
+;	CSTR:性器呼び方／ペニス／蕩け = ごぉちょく
+;CASE "魔羅"
+;	CSTR:性器呼び方／ペニス／蕩け = まら
+;ENDSELECT
+
+
+
+;おまんこ
+;ARG→1なら蕩けが入ってるとき上書きしない
+@SWEET_VAGINA_CALL(ARG)
+; This function made absolutely no sense for english as is, and barely any for japanese (some strings appeared in multiple case statements).
+; Completly rewritten for english because of that.
+; This function sets CSTR:性器呼び方／膣／蕩け, which is only used after a girl had more than 50 orgasms.
+; Note: The player can change what the girl uses to whatever they like, this function just sets the default options.
+
+; TODO: VAGINA_CALL_ENG translations are work in progress. Change these case statements if PENIS_CALL_ENG gets changed.
+
+SELECTCASE CSTR:性器呼び方／膣
+; The ones that used "Pussy" or "Cunt" use "Cunt" now, every one else uses "Pussy"
+CASE "おまんこ","マンコ","膣穴","膣内"
+	CSTR:性器呼び方／膣／蕩け = "膣穴"
+CASE  "膣","おまた","ヴァギナ","女性器"
+	CSTR:性器呼び方／膣／蕩け = "おまんこ"
+
+CASEELSE
+	CSTR:性器呼び方／膣／蕩け = %CSTR:性器呼び方／膣%
+	
+ENDSELECT
+
+
+; Original JP code of this function
+;SIF CSTR:性器呼び方／膣／蕩け != "" && ARG
+;	RETURN
+;SELECTCASE CSTR:性器呼び方／膣
+;CASE "マンコ","女性器","チンポケース","ペニスケース","精液入れ","淫乱おまんこ"
+;	CSTR:性器呼び方／膣／蕩け = おまんこ
+;CASE "膣穴","膣内","膣"
+;	CSTR:性器呼び方／膣／蕩け = ちつあな
+;CASE "雌穴"
+;	CSTR:性器呼び方／膣／蕩け = めすあな
+;CASE "肉壺"
+;	CSTR:性器呼び方／膣／蕩け = にくつぼ
+;CASEELSE
+;	CSTR:性器呼び方／膣／蕩け = %CSTR:性器呼び方／膣%
+;ENDSELECT
+
+;SIF !＃陥落状態／隷属＃
+;	RETURN
+;SELECTCASE CSTR:性器呼び方／膣
+;CASE "女性器"
+;	CSTR:性器呼び方／膣／蕩け = じょせぇき
+;CASE "チンポケース"
+;	CSTR:性器呼び方／膣／蕩け = ちんぽけぇす
+;CASE "ペニスケース"
+;	CSTR:性器呼び方／膣／蕩け = ぺにすけぇす
+;CASE "精液入れ"
+;	CSTR:性器呼び方／膣／蕩け = せぇえきいれ
+;CASE "淫乱おまんこ"
+;	CSTR:性器呼び方／膣／蕩け = いんらんおまんこ
+;ENDSELECT
+
+
+
+;アナル
+;ARG→1なら蕩けが入ってるとき上書きしない
+@SWEET_ANAL_CALL(ARG)
+; This function made absolutely no sense for english as is, and barely any for japanese (some strings appeared in multiple case statements).
+; Can't think of any good supstitution fules for english, so just copying the term for now.
+CSTR:性器呼び方／アナル／蕩け = %CSTR:性器呼び方／アナル%
+
+; Original JP code of this function
+;SIF CSTR:性器呼び方／アナル／蕩け != "" && ARG
+;	RETURN
+;SELECTCASE CSTR:性器呼び方／アナル
+;CASE "お尻の穴","お尻のあな","不浄の穴","ケツマンコ"
+;	CSTR:性器呼び方／アナル／蕩け = おしりのあな
+;CASE "おしり","お尻"
+;	CSTR:性器呼び方／アナル／蕩け = おしり
+;CASE "尻穴","肛門"
+;	CSTR:性器呼び方／アナル／蕩け = しりあな
+;CASE "アナル","後ろの穴"
+;	CSTR:性器呼び方／アナル／蕩け = あなる
+;CASEELSE
+;	CSTR:性器呼び方／アナル／蕩け = %CSTR:性器呼び方／アナル%
+;ENDSELECT
+
+;SIF !＃陥落状態／隷属＃
+;	RETURN
+;SELECTCASE CSTR:性器呼び方／アナル
+;CASE "不浄の穴"
+;	CSTR:性器呼び方／アナル／蕩け = ふじょぉのあな
+;CASE "肛門"
+;	CSTR:性器呼び方／アナル／蕩け = こぉもん
+;CASE "後ろの穴"
+;	CSTR:性器呼び方／アナル／蕩け = うしろのあな
+;CASE "ケツマンコ"
+;	CSTR:性器呼び方／アナル／蕩け = けつまんこ
+;ENDSELECT
+
+
+
+

@@ -1,0 +1,257 @@
+﻿
+;目の色変更
+@VISIT_EYE_COLOR_CHANGE_BEFORE
+
+CHANGE_PLANS:0 = %CSTR:右目の色%
+CHANGE_PLANS:1 = %CSTR:左目の色%
+CHANGE_PLANS:2 = %CSTR:瞳の形%
+CHANGE_PLANS:3= %CSTR:カテゴリ／右目の色%
+CHANGE_PLANS:4= %CSTR:カテゴリ／左目の色%
+CHANGE_PLAN:0 = CFLAG:カラーコード／右目
+CHANGE_PLAN:1 = CFLAG:カラーコード／左目
+CALL VISIT_EYE_COLOR_CHANGE
+
+VARSET CHANGE_PLANS
+VARSET CHANGE_PLAN
+
+
+
+;本設定
+@VISIT_EYE_COLOR_CHANGE
+#DIM NO_COST
+
+CLEARLINE LINECOUNT
+CALL PRINT_IMAGE("ステータス")
+CALL PRINT_PORTRAIT
+CALL MANYL(3)
+PRINT Original Eye Color：
+SIF CFLAG:初期値／カラーコード／右目
+	SETCOLOR CFLAG:初期値／カラーコード／右目
+PRINTFORM %EYE_ENG(CSTR:初期値／右目の色)%
+
+SIF CFLAG:初期値／カラーコード／左目
+	SETCOLOR CFLAG:初期値／カラーコード／左目
+SIF CSTR:初期値／左目の色 != ""
+	PRINTFORM ／%EYE_ENG(CSTR:初期値／左目の色)%
+RESETCOLOR
+
+IF CSTR:初期値／瞳の形 != ""
+	SIF CFLAG:初期値／カラーコード／右目
+		SETCOLOR CFLAG:初期値／カラーコード／右目
+	PRINTFORM 【%EYE_ENG(CSTR:初期値／瞳の形)%】
+	RESETCOLOR
+ENDIF
+PRINTL
+PRINT Current Eye Color：
+SIF CHANGE_PLAN:0
+	SETCOLOR CHANGE_PLAN:0
+PRINTFORM %EYE_ENG(CHANGE_PLANS:0)%
+SIF CHANGE_PLAN:1
+	SETCOLOR CHANGE_PLAN:1
+SIF CHANGE_PLANS:1 != ""
+	PRINTFORM ／%EYE_ENG(CHANGE_PLANS:1)%
+RESETCOLOR
+
+IF CHANGE_PLANS:2 != ""
+	SIF CHANGE_PLAN:0
+		SETCOLOR CHANGE_PLAN:0
+	PRINTFORM 【%EYE_ENG(CHANGE_PLANS:2)%】
+	RESETCOLOR
+ENDIF
+PRINTL
+PRINTL
+
+IF !ITEM:カラーコンタクト
+	CALL PRINTL_WORD_COLOR("　Requires ＜Color Contacts＞","灰")
+	PRINTL
+	PRINTL
+ELSE
+	PRINTL [ 0] Change Right Eye Color
+	PRINTL [ 1] Change Left Eye Color
+	PRINTL [ 2] Change Eye Shape
+ENDIF
+PRINTL [ 3] Change Right Eye Color By Code
+PRINTL [ 4] Change Left Eye Color By Code
+PRINTL
+PRINT New 
+CALL PRINT_EYE_COLOR
+PRINTL
+DRAWLINE
+PRINTLC [90] Cancel
+IF EQUIP:カラーコンタクト
+	PRINTLC [91] Reset to Original Eye Color・Shape
+ELSE
+	PRINTLC 　
+ENDIF
+PRINTL [99] Done
+INPUT
+PRINTL
+
+SELECTCASE RESULT
+CASE 0
+	SIF !ITEM:カラーコンタクト
+		RESTART
+	PRINTL Select a color for the right eye.
+	
+	;150～,目の色
+	STR_REF = 150
+	FOR LOCAL,STR_REF,STR_REF+50
+		SIF STR:LOCAL == ""
+			BREAK
+		PRINTFORMLC [{LOCAL-STR_REF,3}] %EYE_ENG(STR:LOCAL)% 
+	NEXT
+	CALL INPUTBUTTON
+	INPUT
+	IF RESULT >= 0 && RESULT < 50 && STR:(RESULT+STR_REF) != ""
+		CSTR:右目の色 = %STR:(RESULT+STR_REF)%
+	ELSEIF RESULT == 901
+		PRINTL Enter a color for the right eye.
+		INPUTS
+		SIF RESULTS != ""
+			CSTR:右目の色 = %RESULTS%
+	ELSE
+		RESTART
+	ENDIF
+	CALL CATEGORY_EYE_COLOR
+	CALL AUTOSET_EYE_COLOR_CODE
+	
+CASE 1
+	SIF !ITEM:カラーコンタクト
+		RESTART
+	PRINTL Select a color for the left eye.
+	
+	;150～,目の色
+	STR_REF = 150
+	FOR LOCAL,STR_REF,STR_REF+50
+		SIF STR:LOCAL == ""
+			BREAK
+		PRINTFORMLC [{LOCAL-STR_REF,3}] %EYE_ENG(STR:LOCAL)% 
+	NEXT
+	CALL INPUTBUTTON(1)
+	INPUT
+	IF RESULT >= 0 && RESULT < 50 && STR:(RESULT+STR_REF) != ""
+		CSTR:左目の色 = %STR:(RESULT+STR_REF)%
+	ELSEIF RESULT == 900
+		CSTR:左目の色 = 
+	ELSEIF RESULT == 901
+		PRINTL Enter a color for the left eye.
+		INPUTS
+		SIF RESULTS != ""
+			CSTR:左目の色 = %RESULTS%
+	ELSE
+		RESTART
+	ENDIF
+	CALL CATEGORY_EYE_COLOR
+	CALL AUTOSET_EYE_COLOR_CODE
+
+CASE 2
+	SIF !ITEM:カラーコンタクト
+		RESTART
+	PRINTL Select a pupil shape.
+	
+	;800～,瞳の形
+	STR_REF = 800
+	FOR LOCAL,STR_REF,STR_REF+50
+		SIF STR:LOCAL == ""
+			BREAK
+		PRINTFORMLC [{LOCAL-STR_REF,3}] %EYE_ENG(STR:LOCAL)% 
+	NEXT
+	CALL INPUTBUTTON(1)
+	INPUT
+	IF RESULT >= 0 && RESULT < 50 && STR:(RESULT+STR_REF) != ""
+		CSTR:瞳の形 = %STR:(RESULT+STR_REF)%
+	ELSEIF RESULT == 900
+		CSTR:瞳の形 = 
+	ELSEIF RESULT == 901
+		PRINTL Enter a pupil shape.
+		INPUTS
+		SIF RESULTS != ""
+			CSTR:瞳の形 = %RESULTS%
+	ELSE
+		RESTART
+	ENDIF
+	
+CASE 3
+	CALL EDIT_COLOR_CODE(CFLAG:カラーコード／右目,1)
+	SIF RESULT
+		CFLAG:カラーコード／右目 = RESULT
+
+CASE 4
+	CALL EDIT_COLOR_CODE(CFLAG:カラーコード／左目,1)
+	SIF RESULT
+		CFLAG:カラーコード／左目 = RESULT
+	
+CASE 90
+	CSTR:右目の色 = %CHANGE_PLANS:0%
+	CSTR:左目の色 = %CHANGE_PLANS:1%
+	CSTR:瞳の形 = %CHANGE_PLANS:2%
+	CSTR:カテゴリ／右目の色 = %CHANGE_PLANS:3%
+	CSTR:カテゴリ／左目の色 = %CHANGE_PLANS:4%
+	CFLAG:カラーコード／右目 = CHANGE_PLAN:0
+	CFLAG:カラーコード／左目 = CHANGE_PLAN:1
+	RETURN
+	
+CASE 91
+	SIF !EQUIP:カラーコンタクト
+		RESTART
+	PRINTL Restore eyes to their original color・pupil?
+	CALL ASK_YN
+	IF !RESULT
+		EQUIP:カラーコンタクト = 0
+		CSTR:右目の色 = %CSTR:初期値／右目の色%
+		CSTR:左目の色 = %CSTR:初期値／左目の色%
+		CSTR:瞳の形 = %CSTR:初期値／瞳の形%
+		CFLAG:カラーコード／右目 = CFLAG:初期値／カラーコード／右目
+		CFLAG:カラーコード／左目 = CFLAG:初期値／カラーコード／左目
+		PRINTFORMW You remove %CALLNAME%'s color contacts.
+		RETURN
+	ENDIF
+	
+CASE 99
+	CALL ONLY_EYE_COLOR_CODE
+	NO_COST = RESULT
+	;変更ないならキャンセルと同じ
+	SIF NO_COST == 2
+		RETURN
+	PRINT Change eye color・pupil to  
+	CALL PRINT_EYE_COLOR(1)
+	PRINTL ?
+	IF NO_COST
+		CALL PRINTL_WORD_COLOR("Changed by color code, no ＜Color Contacts＞ were used","黄")
+	ELSE
+		CALL PRINTL_WORD_COLOR("1x ＜Color Contacts＞ used in the process","黄")
+	ENDIF
+	CALL ASK_YN
+	IF !RESULT
+		IF NO_COST
+			PRINTL Changed by color code
+		ELSE
+			ITEM:カラーコンタクト --
+			EQUIP:カラーコンタクト = 1
+			PRINTFORML %CALLNAME% is given color contacts
+			CALL KOJO_PRINT("訪問","カラーコンタクト")
+		ENDIF
+		PRINTW
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+
+
+;カラーコードだけ変更したか判定
+@ONLY_EYE_COLOR_CODE
+
+IF CSTR:右目の色 != CHANGE_PLANS:0
+	RETURN
+ELSEIF CSTR:左目の色 != CHANGE_PLANS:1
+	RETURN
+ELSEIF CSTR:瞳の形 != CHANGE_PLANS:2
+	RETURN
+ELSEIF CFLAG:カラーコード／右目 != CHANGE_PLAN:0
+	RETURN 1
+ELSEIF CFLAG:カラーコード／左目 != CHANGE_PLAN:1
+	RETURN 1
+ENDIF
+RETURN 2
+

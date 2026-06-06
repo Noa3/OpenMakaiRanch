@@ -1,0 +1,55 @@
+﻿
+;奴隷候補の現在の状態
+@PRINT_CHASE_SLAVE
+
+;いないなら帰る
+SIF !FLAG:追跡中人数
+	RETURN
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF !CFLAG:追跡対象
+		CONTINUE
+	PRINTFORM [{100 +TARGET_COUNT}] %CALLNAME_DIGIT()% Rank：{CFLAG:ランク}
+	SIF CFLAG:仲間規模
+		PRINTFORM ／{CFLAG:仲間ランク}
+	PRINT 　
+	SELECTCASE CFLAG:追跡対象
+	CASE 1
+		CALL CHASE_SLAVE_CHASER
+		
+	;捕獲中、ゴブリン軍団のみ
+	CASE 2
+		PRINTFORML Captured Rape Count：{CFLAG:輪姦回数} 
+		
+	;輸送中
+	CASE 3
+		PRINTL Captured・In Transit 
+	CASEELSE
+		PRINTL （Bugged）
+	ENDSELECT
+NEXT
+
+;10人未満なら表示
+SIF FLAG:追跡中人数 < 10
+	CALL PRINTL_WORD_COLOR("EMPTY","灰")
+PRINTL
+
+
+;追跡者表示
+@CHASE_SLAVE_CHASER
+
+SELECTCASE CFLAG:追跡者
+CASE 0
+	PRINTL Tracking (Currently no pursuers)
+CASE 1
+	PRINTFORML {CFLAG:追跡人数} Goblin Army Troops Pursuing
+CASE 2
+	PRINTFORML {CFLAG:追跡人数} Rookie Mercenaries Pursuing
+CASE 3
+	PRINTFORML {CFLAG:追跡人数} Veteran Mercenaries Pursuing
+CASE 4
+	PRINTFORML {CFLAG:追跡人数} Oni Mercenaries Pursing
+ENDSELECT
+
+
+

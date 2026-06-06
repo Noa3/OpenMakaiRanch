@@ -1,0 +1,173 @@
+﻿
+;崩壊時の素質消去
+@CAPITULATION_MIND_BREAK_DELETE_TALENT
+
+;さすがに地の文と分けるにはめんどい
+IF TALENT:プライド高い
+	TALENT:プライド高い = 0
+	MARK:プライド崩壊 = 1
+	PRINTFORML %CALLNAME% is no longer【Prideful】
+ENDIF
+IF TALENT:高慢
+	TALENT:高慢 = 0
+	MARK:高慢消滅 = 1
+	PRINTFORML %CALLNAME% is no longer【Arrogant】
+ENDIF
+IF TALENT:気丈
+	TALENT:気丈 = 0
+	MARK:気丈崩壊 = 1
+	PRINTFORML %CALLNAME% is no longer【Stubborn】
+ENDIF
+IF TALENT:反抗的
+	TALENT:反抗的 = 0
+	MARK:反抗的消滅 = 1
+	PRINTFORML %CALLNAME% is no longer【Definant】
+ENDIF
+IF TALENT:生意気
+	TALENT:生意気 = 0
+	MARK:生意気消滅 = 1
+	PRINTFORML %CALLNAME% is no longer【Sassy】
+ENDIF
+IF TALENT:楽観的
+	TALENT:楽観的 = 0
+	MARK:楽観的消滅 = 1
+	PRINTFORML %CALLNAME% is no longer【Optimistic】
+ENDIF
+IF TALENT:カリスマ
+	TALENT:カリスマ = 0
+	MARK:カリスマ崩壊 = 1
+	PRINTFORML %CALLNAME% is no longer【Charismatic】
+ENDIF
+IF TALENT:正義感
+	TALENT:正義感 = 0
+	MARK:正義の敗北 = 1
+	PRINTFORML %CALLNAME% is no longer【Righteous】
+ENDIF
+IF TALENT:乙女心
+	TALENT:乙女心 = 0
+	MARK:乙女心凌辱 = 1
+	PRINTFORML %CALLNAME% lost her【Maiden's Heart】
+ENDIF
+IF TALENT:自制心
+	TALENT:自制心 = 0
+	MARK:自制心崩壊 = 1
+	PRINTFORML %CALLNAME% lost her【Composure】
+ENDIF
+
+
+
+;心境変化の共通処理
+;ARGS→変化後の心境
+@MIND_CHANGE_CALC(ARGS)
+
+SELECTCASE ARGS
+CASE "反抗削除"
+	CSTR:陥落状態 = 拒絶
+	
+CASE "屈服"
+	CSTR:陥落状態 = 屈服
+	
+CASE "陥落"
+	CSTR:陥落状態 = 陥落
+	
+CASE "恋慕"
+	CSTR:陥落状態 = 恋慕
+
+CASE "隷属"
+	CSTR:陥落状態 = 隷属
+	
+CASE "崩壊"
+	;屈服していない場合屈服にする
+	SIF !＃陥落状態／屈服以上＃
+		CSTR:陥落状態 = 屈服
+	CFLAG:崩壊 = 1
+
+CASE "乳牛"
+	;陥落していない場合陥落にする
+	SIF !＃陥落状態／陥落以上＃
+		CSTR:陥落状態 = 陥落
+	CFLAG:乳牛 = 1
+ENDSELECT
+CALL DROP_OUT_MIND
+
+;屈服以上or崩壊なら無抵抗
+SIF ＃陥落状態／屈服以上＃ || CFLAG:崩壊
+	CFLAG:無抵抗 = 1
+
+;区間実行回数をリセット
+;EXP:区間実行回数／酪農→450
+VARSET EXP,0,450,500
+
+;陥落して陥落日が入ってないなら記録
+SIF ＃陥落状態／陥落以上＃ && !CFLAG:陥落日
+	CFLAG:陥落日 = DAY
+SIF !LINEISEMPTY()
+	PRINTL
+
+
+
+;恋慕・隷属・乳牛堕ちでマイナス感情が0
+@DROP_OUT_MIND
+
+;恋慕・隷属・乳牛堕ちでなければおわり
+SIF !＃陥落状態／恋慕以上＃ && !CFLAG:乳牛
+	RETURN
+BASE:抵抗心 = 0
+BASE:尊厳 = 0
+BASE:嫌悪感 = 0
+BASE:理性 = 0
+
+
+
+;苦痛・恐怖刻印の消去
+@DELETE_BAD_MARK
+
+IF MARK:苦痛刻印
+	MARK:苦痛刻印 = 0
+	PRINTFORML %CALLNAME% lost【Pain Mark】
+ENDIF
+IF MARK:恐怖刻印
+	MARK:恐怖刻印 = 0
+	PRINTFORML %CALLNAME% lost【Fear Mark】
+ENDIF
+
+
+
+;処女結界を自ら無くす
+;調教終了後が確定しているのでここで奪うか選択肢出すとか
+@DELETE_VARGIN_BARRIER
+
+SIF !TALENT:処女結界
+	RETURN
+TALENT:処女結界 = 0
+MARK:処女結界解除 = 1
+CALL KOJO_PRINT("イベント","処女結界解除","前")
+CALL DELETE_VARGIN_BARRIER_MESSAGE_1
+CALL KOJO_PRINT("イベント","処女結界解除","後")
+PRINTFORML %CALLNAME% offers her virginity to %CALLNAME:0%...
+PRINTFORMLC [ 0] Insert %SAVESTR:表記／ペニス%
+PRINTLC [ 1] Not Now
+BINPUT
+SIF RESULT
+	RETURN
+PLAYER = MASTER
+VARSET SOURCE
+CALL COM30
+
+;調教外判定にする前に装備整理を通す
+CALL TEQUIP_ADJUST
+CALL PRINT_IMAGE("調教実行")
+TFLAG:調教中 = 0
+TFLAG:スケジュール外Ｈ = 1
+V_PENIS = %CALLNAME:0%
+CALL LOST_VARGIN
+CALL LOST_VARGIN_PLAYER
+PRINTW
+SELECTCOM = 30
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+CALL SOURCE_CHECK
+
+;射精するまでピストン
+CALL EJACULATION_PISTON
+
+

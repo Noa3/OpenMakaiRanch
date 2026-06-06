@@ -1,0 +1,220 @@
+﻿
+@EQUIP_100_CONTINUE_MESSAGE
+;触手乳揉み
+
+PRINTFORM The tentacles are wrapped around %CALLNAME%'s %BUST_CLOTHES()% %SLANG_B()%, 
+
+;揉むほどあるかが問題
+IF ABL:バストサイズ >= BUSTSIZE_並乳
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTL kneading and massaging them vigorously...
+	CASE 1
+		PRINTL kneading and massaging them softly...
+	CASE 2
+		PRINTL kneading and massaging them as if molding...
+	ENDSELECT
+	CALL ONOMATOPOEIA("乳揉み")
+ELSE
+	PRINTL Gently caressing...
+ENDIF
+
+
+
+@EQUIP_101_CONTINUE_MESSAGE
+;触手乳搾り
+
+PRINTFORM Tentacles wrapped around %CALLNAME%'s %SLANG_B()% are kneading and massaging. 
+IF BASE:母乳容量
+	PRINTFORML %SLANG_MILK()% is being extracted...
+ELSE
+	PRINTL They are being milked aggressively...
+ENDIF
+CALL ONOMATOPOEIA("乳揉み")
+
+
+
+@EQUIP_105_CONTINUE_MESSAGE
+;触手Ｖ挿入
+
+SELECTCASE RAND:4
+CASE 0
+	PRINTFORML %SAVESTR:表記／ペニス触手% continues to violate %CALLNAME%'s %SLANG_V()%...
+CASE 1
+	PRINTFORML Several %SAVESTR:表記／ペニス触手% invade %CALLNAME%'s %SLANG_V()% one after another...
+CASE 2
+	PRINTFORML %SAVESTR:表記／ペニス触手% stirs up %CALLNAME%'s %SLANG_V()%...
+CASE 3
+	PRINTFORML %SAVESTR:表記／ペニス触手% invades %CALLNAME%'s %SLANG_V()% while expanding...
+ENDSELECT
+CALL ONOMATOPOEIA("触手ピストン")
+
+
+
+@EQUIP_106_CONTINUE_MESSAGE
+;触手Ａ挿入
+
+SELECTCASE RAND:4
+CASE 0
+	PRINTFORML %SAVESTR:表記／ペニス触手% continues to violate %CALLNAME%'s %SLANG_A()%...
+CASE 1
+	PRINTFORML Several %SAVESTR:表記／ペニス触手% invade %CALLNAME%'s %SLANG_A()% one after another...
+CASE 2
+	PRINTFORML %SAVESTR:表記／ペニス触手% stirs up %CALLNAME%'s %SLANG_A()%...
+CASE 3
+	PRINTFORML %SAVESTR:表記／ペニス触手% invades %CALLNAME%'s %SLANG_A()% while expanding...
+ENDSELECT
+CALL ONOMATOPOEIA("触手ピストン")
+
+
+
+@EQUIP_107_CONTINUE_MESSAGE
+;触手強制パイズリ
+
+PRINTFORM The slimy %SAVESTR:表記／ペニス触手% slides back and forth 
+IF ABL:バストサイズ >= BUSTSIZE_並乳
+	PRINT between 
+ELSE
+	PRINT against 
+ENDIF
+PRINTFORML %CALLNAME%'s %SLANG_B()%...
+CALL ONOMATOPOEIA("触手ピストン")
+
+
+
+@EQUIP_108_CONTINUE_MESSAGE
+;触手フェラチオ
+
+PRINTFORML %CALLNAME% is sucking on %TRAIN_SERVICE()%%SAVESTR:表記／ペニス触手%...
+
+
+
+@EQUIP_109_CONTINUE_MESSAGE
+;触手イラマチオ
+
+IF MARK:触手中毒
+	PRINTFORML %CALLNAME% is gazing enraptured at the %SAVESTR:表記／ペニス触手% that is violating her mouth...
+ELSEIF BASE:体力
+	PRINTFORML The %SAVESTR:表記／ペニス触手% in her mouth slides back and forth, %CALLNAME% appears to be struggling for breath...
+ELSE
+	PRINTFORML The %SAVESTR:表記／ペニス触手% in her mouth slides back and forth, %CALLNAME% is struggling for breath, tears streaming...
+ENDIF
+CALL ONOMATOPOEIA("触手ピストン")
+
+
+
+@EQUIP_112_CONTINUE_MESSAGE
+;触手目隠し
+
+PRINTFORML %CALLNAME%'s vision is obscured by the tentacles...
+
+
+
+@EQUIP_113_CONTINUE_MESSAGE
+;クリ吸い触手
+
+PRINTFORML The tentacle is sucking on and tormenting %CALLNAME%'s %SLANG_C()%...
+CALL ONOMATOPOEIA("クリ吸い")
+
+
+
+@EQUIP_114_CONTINUE_MESSAGE
+;耳姦触手
+
+PRINTFORML The tentacle is teasing %CALLNAME%'s ear canal...
+
+@EQUIP_115_CONTINUE_MESSAGE
+;触手強制手コキ
+
+PRINTFORML The %SAVESTR:表記／ペニス触手% moves smoothly through %CALLNAME%'s hand...
+
+
+@EQUIP_155_CONTINUE_MESSAGE
+;ブラシ触手
+
+#DIM BR_COUNT_EN
+BR_COUNT_EN = 0
+SIF TEQUIP:ブラシ触手Ｂ
+	BR_COUNT_EN ++
+SIF TEQUIP:ブラシ触手Ｎ
+	BR_COUNT_EN ++
+SIF TEQUIP:ブラシ触手Ｃ
+	BR_COUNT_EN ++
+SIF TEQUIP:ブラシ触手Ｖ
+	BR_COUNT_EN ++
+SIF TEQUIP:ブラシ触手Ａ
+	BR_COUNT_EN ++
+
+;PRINTFORM %CALLNAME%の
+IF ＃着用下着下／名称＃ == "触手服" && !TFLAG:一時的脱衣／下着下
+	PRINTFORM The tentacles growing from %CALLNAME%'s tentacle suit wrap around her 
+ELSE
+	PRINTFORM %CALLNAME%'s 
+ENDIF
+BR = 0
+IF TEQUIP:ブラシ触手Ｂ
+	PRINTFORM %SLANG_B()%
+	BR ++
+ENDIF
+IF TEQUIP:ブラシ触手Ｎ
+	IF BR
+		IF BR == BR_COUNT_EN -1
+			PRINT  and 
+		ELSE
+			PRINT , 
+		ENDIF
+	ENDIF
+	PRINTFORM %SLANG_N()%
+	BR ++
+ENDIF
+IF TEQUIP:ブラシ触手Ｃ
+	IF BR
+		IF BR == BR_COUNT_EN -1
+			PRINT  and 
+		ELSE
+			PRINT , 
+		ENDIF
+	ENDIF
+	PRINTFORM %SLANG_C()%
+	BR ++
+ENDIF
+IF TEQUIP:ブラシ触手Ｖ
+	IF BR
+		IF BR == BR_COUNT_EN -1
+			PRINT  and 
+		ELSE
+			PRINT , 
+		ENDIF
+	ENDIF
+	PRINTFORM %SLANG_V()%
+	BR ++
+ENDIF
+IF TEQUIP:ブラシ触手Ａ
+	IF BR
+		IF BR == BR_COUNT_EN -1
+			PRINT  and 
+		ELSE
+			PRINT , 
+		ENDIF
+	ENDIF
+	PRINTFORM %SLANG_A()%
+	BR ++
+ENDIF
+IF ＃着用下着下／名称＃ == "触手服" && !TFLAG:一時的脱衣／下着下
+	PRINTL  , torturing her...
+ELSE
+	IF BR > 1 || TEQUIP:ブラシ触手Ｂ || TEQUIP:ブラシ触手Ｎ
+		PRINT are 
+	ELSE
+		PRINT is 
+	ENDIF
+	PRINT scrubbed and tortued by brush-like tentacles
+	IF BR >= 3
+		PRINTL  wrapped around her....
+	ELSE
+		PRINTL ...
+	ENDIF
+ENDIF
+
+
+

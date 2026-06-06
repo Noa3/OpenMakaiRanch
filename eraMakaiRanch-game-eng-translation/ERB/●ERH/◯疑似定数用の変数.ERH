@@ -1,0 +1,34 @@
+﻿
+;ニューゲーム時、ロード時にセットして疑似的に定数として使う変数
+
+;奴隷候補再シャッフルに使う貢献pt
+;FLAG:使用貢献PTのBITと連動
+#DIM SHUFFLE_AGAIN_PT,30
+
+;魔術発動に使うMP
+;ITEMと連動
+#DIM MAGIC_USE_MP,1000
+
+;魔術習得の前提魔術
+#DIM MAGIC_GET_PREMISE,1000
+
+;アビリティ習得のレベル上限
+#DIM ABILITY_LEVEL_MAX,1000
+
+
+
+;不動産建築日数
+;不動産のINPUT番号と連動
+#DIM ESTATE_DAY,100
+
+;傭兵アルバイトの戦闘力など
+;追跡者番号と連動
+#DIM MERCENARY_REWORD,5
+#DIM MERCENARY_POWER,5
+#DIM MERCENARY_POWER_LVFIX,5
+#DIM MERCENARY_ATTACK,5
+#DIM MERCENARY_ATTACK_LVFIX,5
+#DIM MERCENARY_ATTACK_NUM,5
+#DIM MERCENARY_SEARCH,5
+
+

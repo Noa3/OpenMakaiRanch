@@ -1,0 +1,143 @@
+﻿
+;アイテム購入可能判定
+;ARGS→来た画面
+@BUY_ITEM_JUDGE(ARGS)
+
+;貯蔵器の関係でここだけ先にやる
+SIF ARGS == "ホームセンター" && GROUPMATCH(ITEMNAME:SELECT_ITEM,"業務用魔力貯蔵器","大容量魔力貯蔵器")
+	GOTO BUY_ITEM_JUDGE_COMPLETE
+
+;非対応IDならおわり
+IF SELECT_ITEM < ITEM_ID_MIN || SELECT_ITEM >= ITEM_ID_MAX || ITEMNAME:SELECT_ITEM == ""
+	PRINTL
+	RETURN
+ENDIF
+$BUY_ITEM_JUDGE_COMPLETE
+
+;特殊判定→RETURN1ならおわり
+CALL BUY_ITEM_JUDGE_SPECIAL
+SIF RESULT
+	RETURN
+
+;1限定アイテムのフラグありで所持済みなら帰る
+IF FLAG:１コ限定アイテム && ITEM:SELECT_ITEM
+	CALL PRINTL_WORD_COLOR("Already Owned","水色")
+	RETURN
+ENDIF
+
+;値段を出す
+CALL BUY_ITEM_PRICE_CALC
+
+;ペットの場合ローン組むので特殊分岐
+IF SELECT_ITEM >= 100 && SELECT_ITEM < 120
+	CALL BUY_PET_COST
+ELSEIF FLAG:買い物／経費計上
+	CALL BUY_ITEM_COST_BUDGET
+ELSE
+	CALL BUY_ITEM_COST_MONEY
+ENDIF
+
+
+
+;値段を出す
+@BUY_ITEM_PRICE_CALC
+
+;衣服一式は中身の合計を1割引
+IF SELECT_ITEM >= 1000 && SELECT_ITEM < 1050
+	COST = 0
+	CALL EQUIP_CLOTHE_SET_COMMON("合計金額")
+	COST *= 90
+	COST /= 100
+ELSE
+	COST = ITEMPRICE:SELECT_ITEM
+ENDIF
+
+
+
+;経費計上
+@BUY_ITEM_COST_BUDGET
+
+;10万以上のアイテムは超過する場合資金に変更
+IF COST >= BUDGET_CAP && COST > USE_MONEY
+	CALL PRINT_WORD_COLOR,@"＜Overage cannot be recorded＞","黄"
+	FLAG:買い物／経費計上 = 0
+	CALL BUY_ITEM_COST_MONEY
+	RETURN
+ENDIF
+
+;経費計上は最低1コ購入可能
+PRINTFORMLC [  0] Buy：%VALUE_DIGIT(COST)%G
+
+;まとめ買いできるようにする
+;いくつ買えるか計算　10コまで
+BUY_NUM = LIMIT(USE_MONEY /COST,0,9) +1
+
+;1コ限定じゃない+2コ以上買える場合出す
+SIF !FLAG:１コ限定アイテム && BUY_NUM >= 2
+	PRINTFORMLC [  1] Buy {BUY_NUM}：%VALUE_DIGIT(COST *BUY_NUM)%G
+PRINTFORML （%VALUE_DIGIT(USE_MONEY)%G Income Available） 
+
+
+
+;資金
+@BUY_ITEM_COST_MONEY
+
+;財布は足りない場合がある
+IF COST > MONEY
+	PRINTFORML 　Not Enough Money：%VALUE_DIGIT(COST)%G　（%VALUE_DIGIT(MONEY)%Held） 
+	RETURN
+ENDIF
+PRINTFORMLC [  0] Buy：%VALUE_DIGIT(COST)%G
+BUY_NUM = LIMIT(MONEY /COST,1,10)
+SIF !FLAG:１コ限定アイテム && BUY_NUM >= 2
+	PRINTFORMLC [  1] Buy {BUY_NUM}：%VALUE_DIGIT(COST *BUY_NUM)%G
+PRINTFORML （%VALUE_DIGIT(MONEY)%G Held）
+
+
+
+;購入不可特殊判定
+@BUY_ITEM_JUDGE_SPECIAL
+
+;下のグレードがないと買えない：今のとこ大容量魔力貯蔵器だけ
+IF ITEMNAME:SELECT_ITEM == "大容量魔力貯蔵器" && !ITEM:業務用魔力貯蔵器
+	CALL PRINTL_WORD_COLOR("Must have＜Industrial Mana Reservoir＞","黄")
+	RETURN 1
+ENDIF
+
+;ペット特殊判定
+IF SELECT_ITEM >= 100 && SELECT_ITEM < 120
+
+	;もう持ってる場合名前出しておわり
+	IF ITEM:SELECT_ITEM
+		CALL PRINTL_WORD_COLOR,@"You already have【%PET_NAME_REF(ITEMNAME:SELECT_ITEM)%】","水色"
+		RETURN 1
+	
+	;大型ペットはペット小屋に空きがないとダメ
+	ELSEIF GROUPMATCH(ITEMNAME:SELECT_ITEM,"堕天馬","オルトロス","魔界ハムスター")
+		CALL PET_HOUSE_BLANC_CHECK
+		IF !FLAG:空きペット小屋数
+			CALL PRINTL_WORD_COLOR("No free space in ＜Pet House＞","灰")
+			RETURN 1
+		ENDIF
+	ENDIF
+ENDIF
+
+
+
+;ペットのローン用
+;CAN_LOAN_MONEY計算済み
+@BUY_PET_COST
+
+;所持金足してもダメ
+IF COST > CAN_LOAN_MONEY +MONEY
+	PRINTFORMLC 　Loan limit + available funds are insufficient: %VALUE_DIGIT(COST)%G
+ELSE
+	PRINTFORMLC [  0] Purchase (Loan automatically prioritized): %VALUE_DIGIT(COST)%G
+ENDIF
+PRINTFORML （%VALUE_DIGIT(MONEY)%G available / %VALUE_DIGIT(CAN_LOAN_MONEY)%G loanable）
+
+
+
+
+
+

@@ -1,0 +1,22 @@
+﻿
+;うちの近くに温泉湧かない？
+@SELECT_WISH_GROW_SPA
+
+CALL DRAGON_SPA_MESSAGE
+CALL ASK_YN
+SIF RESULT
+	RETURN
+PRINTL 龍の体が光ると、地面が揺れる…地震とは違うようだ。
+PRINTL 突然牧場の敷地内から温泉が吹き出した！
+CALL MANYL(3)
+PRINTL …マッカイドウ建設に連絡し、風呂に使えるよう工事してもらった。
+CALL PRINTL_WORD_COLOR("＜天然温泉＞が使えるようになった！","黄")
+PRINTFORML （工事費用：%VALUE_DIGIT(ITEMPRICE:天然温泉)%G）
+PRINTW
+MONEY -= ITEMPRICE:天然温泉
+ITEM:天然温泉 ++
+ITEM:龍のタマ = 0
+
+
+
+

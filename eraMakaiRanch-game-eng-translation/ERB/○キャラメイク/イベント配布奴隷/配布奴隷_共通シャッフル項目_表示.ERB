@@ -1,0 +1,48 @@
+﻿
+;配布奴隷のシャッフル項目一覧
+@FIXED_SLAVE_CHANGE_LIST
+
+PRINTL [ 0] Name Change Screen
+PRINTLC [ 1] Breast Firmness
+PRINTLC [ 2] Nipple Color
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTL [ 3] Nipple Color Code
+ELSE
+	CALL PRINTL_WORD_COLOR,@"< 3> Nipple Color Code：Manual","灰"
+ENDIF
+PRINTLC [ 4] Hair Color
+PRINTLC [ 5] Hair Characteristic
+PRINTL [ 6] Hair Style
+
+IF !SELF_CHARA_MAKE_RANDOM
+	CALL PRINTLC_WORD_COLOR,@"< 7> All Hair：Shuffle","灰"
+	PRINTL [ 8] Hair Color Code
+ELSE
+	PRINTLC [ 7] All Hair
+	CALL PRINTL_WORD_COLOR,@"< 8> Hair Color Code：Manual","灰"
+ENDIF
+PRINTL [ 9] Pubic Hair
+PRINTL
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTLC [10] Right Eye Color
+	PRINTL [11] Right Eye Color Code
+	PRINTLC [12] Left Eye Color
+	IF CSTR:左目の色 != ""
+		PRINTL [13] Left Eye Color Code
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"　Left Eye Color Code","灰"
+	ENDIF
+ELSE
+	PRINTLC [10] Eye Color
+	CALL PRINTL_WORD_COLOR,@"<11> Eye Color Code：Manual","灰"
+	PRINTL [12] Heterochromia
+ENDIF
+
+;識別名が「スレイ」の場合のみ別個処理
+SIF CSTR:識別名 == "スレイ"
+	PRINTFORM [20] Change %CALLNAME:0%'s name.
+CALL MANYL(2)
+PRINTFORML [30] Dialogue Options　Currently Using：%DIALOGUE_ENG(CSTR:使用口上)%
+
+
+

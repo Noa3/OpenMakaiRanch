@@ -1,0 +1,107 @@
+﻿
+;カラーコードの設定
+;髪色
+@AUTOSET_HAIR_COLOR_CODE
+
+SELECTCASE CSTR:髪色
+CASE "黒髪"
+	CFLAG:カラーコード／髪 = 0
+CASE "金髪"
+	CFLAG:カラーコード／髪 = 0xFFD700
+CASE "栗毛"
+	CFLAG:カラーコード／髪 = 0xD26930
+CASE "赤髪"
+	CFLAG:カラーコード／髪 = 0xFF2020
+CASE "桃髪"
+	CFLAG:カラーコード／髪 = 0xF19CA7
+CASE "青髪"
+	CFLAG:カラーコード／髪 = 0x49BDF0
+CASE "緑髪"
+	CFLAG:カラーコード／髪 = 0x00FF00
+CASE "銀髪"
+	CFLAG:カラーコード／髪 = 0xA9AAAA
+CASE "紫髪"
+	CFLAG:カラーコード／髪 = 0xFF82FF
+CASE "白髪"
+	CFLAG:カラーコード／髪 = 0xF8F8F8
+CASE "橙髪"
+	CFLAG:カラーコード／髪 = 0xF5A323
+CASE "空色髪"
+	CFLAG:カラーコード／髪 = 0x7FFFD4
+ENDSELECT
+
+
+;目の色
+@AUTOSET_EYE_COLOR_CODE
+
+;左右別のほうが手動時便利
+CALL AUTOSET_EYE_COLOR_CODE_RIGHT
+CALL AUTOSET_EYE_COLOR_CODE_LEFT
+
+
+
+;右目
+@AUTOSET_EYE_COLOR_CODE_RIGHT
+
+SELECTCASE CSTR:右目の色
+CASE "黒"
+	CFLAG:カラーコード／右目 = 0
+CASE "金"
+	CFLAG:カラーコード／右目 = 0xFFD700
+CASE "茶"
+	CFLAG:カラーコード／右目 = 0xD26930
+CASE "赤"
+	CFLAG:カラーコード／右目 = 0xFF2020
+CASE "桃"
+	CFLAG:カラーコード／右目 = 0xF19CA7
+CASE "青"
+	CFLAG:カラーコード／右目 = 0x49BDF0
+CASE "緑"
+	CFLAG:カラーコード／右目 = 0x00FF00
+CASE "銀"
+	CFLAG:カラーコード／右目 = 0xA9AAAA
+CASE "紫"
+	CFLAG:カラーコード／右目 = 0xFF82FF
+CASE "白"
+	CFLAG:カラーコード／右目 = 0xF8F8F8
+CASE "橙"
+	CFLAG:カラーコード／右目 = 0xF5A323
+CASE "空"
+	CFLAG:カラーコード／右目 = 0x7FFFD4
+ENDSELECT
+
+
+
+;左目
+@AUTOSET_EYE_COLOR_CODE_LEFT
+
+SELECTCASE CSTR:左目の色
+CASE "黒"
+	CFLAG:カラーコード／左目 = 0
+CASE "金"
+	CFLAG:カラーコード／左目 = 0xFFD700
+CASE "茶"
+	CFLAG:カラーコード／左目 = 0xD26930
+CASE "赤"
+	CFLAG:カラーコード／左目 = 0xFF2020
+CASE "桃"
+	CFLAG:カラーコード／左目 = 0xF19CA7
+CASE "青"
+	CFLAG:カラーコード／左目 = 0x49BDF0
+CASE "緑"
+	CFLAG:カラーコード／左目 = 0x00FF00
+CASE "銀"
+	CFLAG:カラーコード／左目 = 0xA9AAAA
+CASE "紫"
+	CFLAG:カラーコード／左目 = 0xFF82FF
+CASE "白"
+	CFLAG:カラーコード／左目 = 0xF8F8F8
+CASE "橙"
+	CFLAG:カラーコード／左目 = 0xF5A323
+CASE "空"
+	CFLAG:カラーコード／左目 = 0x7FFFD4
+ENDSELECT
+
+
+
+

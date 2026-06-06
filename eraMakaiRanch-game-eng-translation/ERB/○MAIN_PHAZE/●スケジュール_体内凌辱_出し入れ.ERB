@@ -1,0 +1,152 @@
+﻿
+;体内凌辱　3段階必要
+;吐き出す判定
+@MASTER_REMOVE
+
+CATTLE_COUNT = CMATCH(CSTR:スケジュール,"解放準備")
+SIF !CATTLE_COUNT
+	RETURN
+PRINTL 　　　《 体内から解放 》
+CALL MASTER_REMOVE_MESSAGE
+WAIT_ON = 0
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "解放準備"
+		CONTINUE
+	CALL KOJO_PRINT("スケジュール","体内凌辱","解放")
+	SIF MESSAGE_COUNT
+		WAIT_ON ++
+	
+	;この後行動はしないので何でもいいっちゃいい
+	CSTR:スケジュール = 解放
+	
+	;空にしておく
+	CSTR:居場所 =
+	CFLAG:行動済み = 1
+	
+	;裸を見られる
+	CALL NUDE_EXP_SET
+	SIF CFLAG:虚脱
+		CALL MASTER_REMOVE_COLLAPSE_MESSAGE
+NEXT
+IF WAIT_ON
+	PRINTW
+ELSE
+	PRINTL
+ENDIF
+DRAWLINE
+
+
+
+;取り込み判定
+@MASTER_VORE_MOVE
+
+CATTLE_COUNT = CMATCH(CSTR:スケジュール,"体内凌辱準備")
+SIF !CATTLE_COUNT
+	RETURN
+PRINTL 　　　《 呑み込み 》
+WAIT_ON = 0
+CALL RANDOM_CHARA_SCHEDULE_COMMON("体内凌辱準備")
+SIF WAIT_ON
+	PRINTW
+DRAWLINE
+CALL RESET_TRAIN_PALAM
+
+
+
+;体内取り込み入り口
+;ARG→メッセージのシンプル版
+@MASTER_VORE_MOVE_ENTRANCE(ARG)
+
+SIF CSTR:状態／あなたの子 == "成長後"
+	CALL CHILD_REBELLION(1)
+IF !EXP:実行回数／体内凌辱
+	KOJO_TYPE = 初回
+ELSE
+	KOJO_TYPE = 通常
+ENDIF
+IF !ARG
+	CALL MASTER_VORE_MOVE_MESSAGE
+ELSE
+	CALL MASTER_VORE_MOVE_MESSAGE_SIMPLE
+ENDIF
+
+;WAIT_ONを+しておいて脱衣が入った場合は0にリセットし無駄WAITをなくす
+WAIT_ON ++
+
+;強制脱衣　鎧は取っておく、アクセサリーは無視
+EQUIP:装備中ID／鎧 = 0
+CALL MASTER_VORE_MOVE_STRIP_CLOTHE
+CALL MASTER_VORE_MOVE_STRIP_LINGERIE
+CSTR:スケジュール = 体内凌辱
+CSTR:居場所 = 体内
+CALL RESET_SLAVE_ROOM("体内凌辱")
+
+
+
+;衣服吐き出すか破れにするか
+@MASTER_VORE_MOVE_STRIP_CLOTHE
+
+SIF !EQUIP:装備中ID／衣服
+	RETURN
+PRINTFORML %CALLNAME%の%＃着用衣服／名称＃%を吐き出しますか？
+PRINTLC [ 0] 吐き出す
+PRINTLC [ 1] 衣服消化液で溶かしてしまう
+IF ＃着用衣服／胸破け＃ && ＃着用衣服／股間破け＃
+	PRINTL [ 2] そのまま（破れ状態）
+ELSEIF (＃着用衣服／胸破け＃ || ＃着用衣服／乳出し＃) && (＃着用衣服／股間破け＃ || ＃着用衣服／股間出し＃)
+	PRINTL [ 2] そのまま（露出衣服）
+ELSE
+	PRINTL [ 2] 邪魔な部分だけ溶かす
+ENDIF
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	PRINTFORML %CALLNAME%の%＃着用衣服／名称＃%を吐き出した。
+	EQUIP:装備中ID／衣服 = 0
+CASE 1
+	PRINTFORML 衣服消化液を浴びせ、%CALLNAME%の%＃着用衣服／名称＃%を溶かしてしまった。
+	EQUIP:(EQUIP:装備中ID／衣服) = 0
+	EQUIP:装備中ID／衣服 = 0
+CASE 2
+	IF !(＃着用衣服／胸破け＃ || ＃着用衣服／乳出し＃)
+		PRINTFORML %CALLNAME%の%＃着用衣服／名称＃%の胸に衣服消化液を浴びせ、
+		PRINTFORML 形を留めたまま%SLANG_B()%を露出させた…
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),1
+	ENDIF
+	IF !(＃着用衣服／股間破け＃ || ＃着用衣服／股間出し＃)
+		PRINTFORML %CALLNAME%の%＃着用衣服／名称＃%の股間に衣服消化液を浴びせ、
+		PRINTFORML 形を留めたまま%SLANG_V()%を露出させた…
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),2
+	ENDIF
+ENDSELECT
+PRINTW
+WAIT_ON = 0
+
+
+
+;下着
+@MASTER_VORE_MOVE_STRIP_LINGERIE
+
+SIF !EQUIP:装備中ID／下着上 && !EQUIP:装備中ID／下着下
+	RETURN
+PRINTFORML %CALLNAME%の%EQUIP_LINGERIE()%を吐き出しますか？
+PRINTLC [ 0] 吐き出す
+PRINTL [ 1] 衣服消化液で溶かしてしまう
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	PRINTFORML %CALLNAME%の%EQUIP_LINGERIE()%を吐き出した。
+	EQUIP:装備中ID／下着上 = 0
+	EQUIP:装備中ID／下着下 = 0
+CASE 1
+	PRINTFORML 衣服消化液を浴びせ、%CALLNAME%の%EQUIP_LINGERIE()%を溶かしてしまった。
+	EQUIP:(EQUIP:装備中ID／下着上) = 0
+	EQUIP:(EQUIP:装備中ID／下着下) = 0
+	EQUIP:装備中ID／下着上 = 0
+	EQUIP:装備中ID／下着下 = 0
+ENDSELECT
+PRINTW
+WAIT_ON = 0
+
+

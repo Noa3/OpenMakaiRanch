@@ -1,0 +1,123 @@
+﻿
+;下着の露出などの情報
+;ARGS→上下
+;ARGS:1→露出情報
+;ARGS:2→その他情報
+;ARGS:3→その他2
+@LINGERIE_DETAIL_COMMON(ARGS,ARGS:1,ARGS:2,ARGS:3)
+
+SELECTCASE ARGS
+CASE "上"
+	PRINT 【Underwear／Top】
+CASE "下"
+	PRINT 【Underwear／Bottom】
+CASE "上下"
+	PRINT 【Underwear／Full Set】
+ENDSELECT
+
+SELECTCASE ARGS:1
+CASE "Ａ露出"
+	CALL PRINT_WORD_COLOR("＜ＡExposed＞","桃")
+CASE "Ｂ露出"
+	CALL PRINT_WORD_COLOR("＜ＢExposed＞","桃")
+CASE "Ｎ露出"
+	CALL PRINT_WORD_COLOR("＜ＮExposed＞","桃")
+CASE "股間露出"
+	CALL PRINT_WORD_COLOR("＜ＡＣＶExposed＞","桃")
+CASE "全露出"
+	CALL PRINT_WORD_COLOR("＜着用していても全部位露出＞","桃")
+ENDSELECT
+
+SELECTCASE ARGS:2
+CASE "授乳スリット"
+	CALL PRINT_WORD_COLOR("＜Breastfeeding Slit＞","桃")
+CASE "極小"
+	CALL PRINT_WORD_COLOR("＜Minimal Cover Type＞＜String Untieable＞","桃")
+CASE "シール"
+	CALL PRINT_WORD_COLOR("＜Sticker Type＞","桃")
+CASE "ズリ穴"
+	CALL PRINT_WORD_COLOR("＜Paizuri Possible Without ＢExopsed＞","桃")
+CASE "紐付き"
+	CALL PRINT_WORD_COLOR("＜String Untieable＞","桃")
+ENDSELECT
+
+SELECTCASE ARGS:3
+CASE "膨乳時破損"
+	;行が長くなるのでこの場合だけ改行
+	PRINTL
+	PRINT バストサイズ段階増加時に破損（【巨乳】以上に成長する場合）
+
+CASE "膨乳時胸破け"
+	PRINTL
+	PRINT バストサイズ段階増加時に胸破け化（【巨乳】以上に成長する場合）
+ENDSELECT
+
+;ここで共通で呼んでしまう
+CALL CHECK_EQUIP_DETAIL_CHANGE_LIST(ITEMNAME:SELECT_ITEM)
+
+
+
+;衣服の露出などの情報
+;ARGS→形状情報　ARGS:1→露出情報
+@CLOTHE_DETAIL_COMMON(ARGS,ARGS:1)
+
+PRINT 【Clothes】
+SELECTCASE ARGS
+CASE "横乳露出"
+	CALL PRINT_WORD_COLOR("＜Sideboob＞","桃")
+CASE "シールタイプのみ"
+	CALL PRINT_WORD_COLOR("＜Only Sticker Type Underwear Wearable＞","桃")
+CASE "極小タイプのみ"
+	CALL PRINT_WORD_COLOR("＜Only Sticker／Minimal Type Underwear Wearable＞","桃")
+CASE "逆バニー"
+	PRINT ＜Incompatible With Leg Accessories／Untearable＞
+ENDSELECT
+
+SELECTCASE ARGS:1
+CASE "Ｂ露出"
+	CALL PRINT_WORD_COLOR("＜Always ＢExposed＞","桃")
+CASE "全露出"
+	CALL PRINT_WORD_COLOR("＜All Exposed If No Underwear＞","桃")
+ENDSELECT
+CALL CHECK_EQUIP_DETAIL_CHANGE_LIST(ITEMNAME:SELECT_ITEM)
+
+
+
+;アクセサリー情報
+;ARGS→部位
+@ACCESSORY_DETAIL_COMMON(ARGS)
+
+SELECTCASE ARGS
+CASE "眼"
+	PRINT 【Accessory／Eyes】
+CASE "頭"
+	PRINT 【Accessory／Face】
+CASE "腕"
+	PRINT 【Accessory／Arms】
+CASE "脚"
+	PRINT 【Accessory／Legs】
+CASE "首"
+	PRINT 【Accessory／Neck】
+CASE "鎧"
+	PRINT 【Armor】
+	;CASE "上着"
+	;	PRINT 【アクセサリー／上着】
+ENDSELECT
+CALL CHECK_EQUIP_DETAIL_CHANGE_LIST(ITEMNAME:SELECT_ITEM)
+
+
+
+;上着情報
+;ARGS→これだけ着てる場合の露出度
+@JACKET_DETAIL_COMMON(ARGS)
+
+PRINT 【上着】
+SELECTCASE ARGS
+CASE "横乳露出"
+	CALL PRINT_WORD_COLOR,@"%ITEMNAME:SELECT_ITEM%のみの場合：＜横乳露出＞＜谷間露出＞","桃"
+CASE "全露出"
+	CALL PRINT_WORD_COLOR,@"%ITEMNAME:SELECT_ITEM%のみの場合：＜全部位露出＞","桃"
+ENDSELECT
+CALL CHECK_EQUIP_DETAIL_CHANGE_LIST(ITEMNAME:SELECT_ITEM)
+
+

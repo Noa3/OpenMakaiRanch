@@ -1,0 +1,43 @@
+﻿
+@COM1000
+;母乳分泌促進薬
+
+SELECTCOM = 1000
+LOSEBASE:体力 += 30
+LOSEBASE:気力 += 30
+SOURCE:Ｎ痛み = 1000
+SOURCE:恥辱 = 1000
+SOURCE:屈辱 = 1000
+SOURCE:支配 = 600
+SOURCE:経過時間 = 1
+SOURCE:選択コマンド口上非表示 = 1
+EXP:肉体改造 ++
+SETBIT ＃有効薬品／母乳分泌促進薬＃
+ITEM:母乳分泌促進薬 --
+CALL BUST_TENTACLE_RESET
+TRYCALLFORM COM{SELECTCOM}_MESSAGE
+RETURN 1
+
+
+
+@COM1001
+;魔力母乳分泌促進薬
+
+SELECTCOM = 1001
+LOSEBASE:体力 += 30
+LOSEBASE:気力 += 30
+SOURCE:Ｎ痛み = 1000
+SOURCE:恥辱 = 1000
+SOURCE:屈辱 = 1000
+SOURCE:支配 = 600
+SOURCE:経過時間 = 1
+SOURCE:選択コマンド口上非表示 = 1
+EXP:肉体改造 ++
+SETBIT ＃有効薬品／魔力母乳分泌促進薬＃
+ITEM:魔力母乳分泌促進薬 --
+CALL BUST_TENTACLE_RESET
+TRYCALLFORM COM{SELECTCOM}_MESSAGE
+RETURN 1
+
+
+

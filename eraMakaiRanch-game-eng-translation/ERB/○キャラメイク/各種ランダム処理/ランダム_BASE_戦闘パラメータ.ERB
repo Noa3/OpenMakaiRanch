@@ -1,0 +1,101 @@
+﻿
+;霊力*150%+魔力で戦闘力かな　仲間もここで計算
+;霊力+魔力にしておく
+;ARG→仲間の計算スキップ
+@SLAVE_BATTLE_POWER_CALC(ARG)
+
+;膨大魔力ONの場合魔力の1/10のみ戦闘力に加える
+IF CFLAG:膨大魔力
+	STATUS = MAXBASE:霊力 +MAXBASE:魔力 /10
+ELSE
+	STATUS = MAXBASE:霊力 +MAXBASE:魔力
+ENDIF
+
+;非戦闘職なら10
+SIF CFLAG:非戦闘職
+	STATUS = 10
+MAXBASE:戦闘力 = STATUS
+BASE:戦闘力 = MAXBASE:戦闘力
+SIF !ARG
+	CALL GROUP_BATTLE_POWER_CALC
+
+
+
+;仲間ランクから仲間戦闘力を計算　霊力に対応する値のみ
+@GROUP_BATTLE_POWER_CALC
+#DIM LEVEL_GUIDE
+
+IF !CFLAG:仲間規模
+	CFLAG:仲間ランク = 0
+	MAXBASE:仲間戦闘力1 = 0
+	BASE:仲間戦闘力1 = MAXBASE:仲間戦闘力1
+	RETURN
+ENDIF
+LEVEL_GUIDE = CFLAG:仲間ランク*10 +RAND:5
+STATUS = 10000
+FOR LOCAL,0,LEVEL_GUIDE 
+	STATUS += (LOCAL *500)
+NEXT
+CALL RANDOM_FIX(STATUS,5,"仲間戦闘力")
+STATUS += FIX
+STATUS -= (STATUS %100)
+MAXBASE:仲間戦闘力1 = STATUS
+BASE:仲間戦闘力1 = MAXBASE:仲間戦闘力1
+
+
+
+;特殊行動を使える回数
+;そのうち整理されて消える
+@SLAVE_BATTLE_SPECIAL_CALC
+
+BASE:回復回数 = 1
+BASE:大技回数 = 1
+
+;性格補正
+SELECTCASE CSTR:性格
+CASE "強気"
+	BASE:回復回数 -= 1
+	BASE:大技回数 += 1
+CASE "弱気","温厚","大人しい"
+	BASE:回復回数 += 1
+	BASE:大技回数 -= 1
+ENDSELECT
+
+;ジョブ補正
+SELECTCASE CSTR:ジョブ
+CASE "盗賊","勇者（自称）"
+	BASE:大技回数 -= 3
+CASE "旅人","ビショップ"
+	BASE:回復回数 += 1
+CASE "薬師","プリースト","白魔術士"
+	BASE:回復回数 += 1
+	BASE:大技回数 -= 3
+CASE "黒魔術士","死霊術士","戦士","剣闘士","魔女"
+	BASE:回復回数 -= 3
+	BASE:大技回数 += 1
+CASE "魔法少女","賢者","パラディン","ワルキューレ","騎士団長","聖騎士"
+	BASE:回復回数 += 1
+	BASE:大技回数 += 1
+CASE "ブラックナイト","武将","大魔導師"
+	BASE:大技回数 += 2
+CASE "勇者"
+	BASE:回復回数 += 2
+	BASE:大技回数 += 2
+CASE "カーディナル"
+	BASE:回復回数 += 2
+ENDSELECT
+
+IF CFLAG:上位種族
+	BASE:回復回数 += 2
+	BASE:大技回数 += 2
+ENDIF
+IF CFLAG:非戦闘職
+	BASE:回復回数 = 0
+	BASE:大技回数 = 0
+ENDIF
+BASE:回復回数 = LIMIT(BASE:回復回数,0,5)
+BASE:大技回数 = LIMIT(BASE:大技回数,0,5)
+
+
+
+

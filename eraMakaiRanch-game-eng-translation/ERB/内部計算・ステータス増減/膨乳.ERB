@@ -1,0 +1,218 @@
+﻿
+;膨乳　1段階ずつ、複数の場合はその回数ここ呼んでね
+@BUSTUP
+
+ABL:バストサイズ ++
+CALL BUSTUP_MESSAGE("基本増加")
+EXP:膨乳 ++
+SOURCE:膨乳段階 ++
+
+;目的変更
+CALL BUSTUP_PURPOSE_CHANGE
+
+;上から見たほうが記述的にわかりやすくなった
+SELECTCASE ABL:バストサイズ
+
+;ZA～ZZ,超乳
+CASE IS >= BUSTSIZE_超乳
+	IF !TALENT:超乳
+		;VARSETで乳サイズTALENTを一旦リセット　10～19
+		VARSET TALENT,0,10,20
+		TALENT:超乳 = 1
+		CFLAG:家畜 = 1
+		CALL BUSTUP_MESSAGE("超乳")
+		CALL BUSTUP_BREAK_EQUIP
+		CALL PURPOSE_CHANGE_CALC("超乳状態")
+		
+		;部屋割り当てしてたら解除
+		CALL RESET_SLAVE_ROOM("超乳化")
+		
+		;スケジュールを変更
+		CALL AUTO_SCHEDULE_CATTLE_LACTATION
+	ENDIF
+
+;目安サイズはデフォルトしきい値
+;VWXYZ,魔乳
+CASE IS >= BUSTSIZE_魔乳
+	IF !TALENT:魔乳
+		VARSET TALENT,0,10,20
+		TALENT:魔乳 = 1
+		CALL BUSTUP_MESSAGE("魔乳")
+		CALL BUSTUP_BREAK_EQUIP
+	ENDIF
+
+;QRSTU,神乳
+CASE IS >= BUSTSIZE_神乳
+	IF !TALENT:神乳
+		VARSET TALENT,0,10,20
+		TALENT:神乳 = 1
+		CALL BUSTUP_MESSAGE("神乳")
+		CALL BUSTUP_BREAK_EQUIP
+	ENDIF
+
+;LMNOP,爆乳
+CASE IS >= BUSTSIZE_爆乳
+	IF !TALENT:爆乳
+		VARSET TALENT,0,10,20
+		TALENT:爆乳 = 1
+		CALL BUSTUP_MESSAGE("爆乳")
+		CALL BUSTUP_BREAK_EQUIP
+	ENDIF
+
+;HIJK,豊乳
+CASE IS >= BUSTSIZE_豊乳
+	IF !TALENT:豊乳
+		VARSET TALENT,0,10,20
+		TALENT:豊乳 = 1
+		CALL BUSTUP_MESSAGE("豊乳")
+		CALL BUSTUP_BREAK_EQUIP
+	ENDIF
+
+;EFG,巨乳
+CASE IS >= BUSTSIZE_巨乳
+	IF !TALENT:巨乳
+		VARSET TALENT,0,10,20
+		TALENT:巨乳 = 1
+		CALL BUSTUP_MESSAGE("巨乳")
+		CALL BUSTUP_BREAK_EQUIP
+	ENDIF
+
+;CD,並乳
+CASE IS >= BUSTSIZE_並乳
+	IF !TALENT:並乳
+		VARSET TALENT,0,10,20
+		TALENT:並乳 = 1
+		CALL BUSTUP_MESSAGE("並乳")
+	ENDIF
+
+;AB,貧乳
+CASE IS >= BUSTSIZE_貧乳
+	IF !TALENT:貧乳
+		VARSET TALENT,0,10,20
+		TALENT:貧乳 = 1
+		CALL BUSTUP_MESSAGE("貧乳")
+	ENDIF
+
+;AA,絶壁　多分来ないと思うけど
+CASE BUSTSIZE_絶壁
+	VARSET TALENT,0,10,20
+	TALENT:絶壁 = 1
+ENDSELECT
+CALL MILKTANK_CALC
+
+
+
+;膨乳時の目的変更
+@BUSTUP_PURPOSE_CHANGE
+
+SIF CFLAG:家畜 || ＃陥落状態／恋慕以上＃ || ＃陥落状態／屈服以上＃ || CFLAG:乳牛
+	RETURN
+SIF GROUPMATCH(CSTR:心境,"体を元に戻してもらう","崩壊状態","絶望","諦めない","肉体陥落")
+	RETURN
+SIF CSTR:心境 == "体を元に戻させる" && !MARK:絶望刻印
+	RETURN
+SIF ABL:バストサイズ < ABL:初期値／バストサイズ +3
+	RETURN
+
+IF TALENT:高慢 || TALENT:プライド高い || TALENT:気丈
+	CALL PURPOSE_CHANGE("体を元に戻させる")
+ELSE
+	CALL PURPOSE_CHANGE("体を元に戻してもらう")
+ENDIF
+PRINTL
+
+
+
+;膨乳時に衣服・ブラ破損
+@BUSTUP_BREAK_EQUIP
+
+CALL BUSTUP_BREAK_CLOTHE
+CALL BUSTUP_BREAK_BRA
+
+
+
+;衣服を谷間露出にするor谷間にできないものは破く
+@BUSTUP_BREAK_CLOTHE
+
+IF EQUIP:装備中ID／衣服 && !TFLAG:一時的脱衣／衣服
+	IF TALENT:超乳
+		;超乳になった場合問答無用に乳出しにしてみる
+		SIF !＃着用衣服／胸破け＃ && !＃着用衣服／乳出し＃ && !＃着用衣服／乳暖簾＃
+			{
+			CALL PRINTL_WORD_COLOR,@"Her %SAVESTR:表記／乳房% grew too large to fit into the %CLOTHES_ENG(＃着用衣服／名称＃)%,
+			so her %SAVESTR:表記／乳房% ended up completely exposed...","桃"
+			}
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),8
+	ELSEIF GROUPMATCH(＃着用衣服／名称＃,＃膨乳破損衣服＃)
+		;胸破けになる衣服
+		SIF !＃着用衣服／胸破け＃ && !＃着用衣服／乳出し＃ && !＃着用衣服／乳暖簾＃
+			CALL PRINTL_WORD_COLOR,@"Unable to withstand the growth of the %SAVESTR:表記／乳房%, the %CLOTHES_ENG(＃着用衣服／名称＃)% tore apart!","桃"
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),1
+	ELSE
+		;谷間露出になる衣服
+		SIF !＃着用衣服／胸破け＃ && !＃着用衣服／乳出し＃ && !＃着用衣服／乳暖簾＃ && !＃着用衣服／谷間露出＃
+			{
+			CALL PRINTL_WORD_COLOR,@"Unable to withstand the growth of the %SAVESTR:表記／乳房%,
+			the %CLOTHES_ENG(＃着用衣服／名称＃)% burst open, and the cleavage of her %SAVESTR:表記／乳房% spilled out..","桃"
+			}
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),5
+	ENDIF
+ENDIF
+
+;谷間露出化
+EXIST = 0
+FOR LOCAL,1000,2000
+	SIF ITEMNAME:LOCAL == ""
+		CONTINUE
+	CALL CLOTHE_CATEGORY_CHECK(ITEMNAME:LOCAL)
+	SIF RESULTS != "衣服"
+		CONTINUE
+	
+	;超乳なら乳出し
+	IF TALENT:超乳
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),8
+	ELSE
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),5
+	ENDIF
+	EXIST ++
+NEXT
+SIF EXIST
+	PRINTFORML （Due to the growth of her %SAVESTR:表記／乳房%, they no longer fit into the clothes）
+
+
+
+;膨乳時にブラ破損
+@BUSTUP_BREAK_BRA
+
+;着用中なら一時的脱衣or破損
+IF EQUIP:装備中ID／下着上 && !TFLAG:一時的脱衣／下着上
+	IF GROUPMATCH(＃着用下着上／名称＃,＃膨乳破損ブラ＃)
+		;破損メッセージ
+		CALL PRINTL_WORD_COLOR,@"Unable to withstand the growth of the %SAVESTR:表記／乳房%, the %＃着用下着上／名称＃% broke apart!","桃"
+		EQUIP:装備中ID／下着上 = 0
+	ELSE
+		;外れたメッセージ
+		CALL PRINTL_WORD_COLOR,@"Unable to withstand the growth of %SAVESTR:表記／乳房%, the %＃着用下着上／名称＃% came off and the nipples spilled out...","桃"
+		TFLAG:一時的脱衣／下着上 = 1
+	ENDIF
+ENDIF
+
+;破損するなら=0
+EXIST = 0
+FOR LOCAL,1000,2000
+	SIF ITEMNAME:LOCAL == ""
+		CONTINUE
+	SIF !GROUPMATCH(ITEMNAME:LOCAL,＃膨乳破損ブラ＃)
+		CONTINUE
+	EQUIP:LOCAL = 0
+	EXIST ++
+NEXT
+SIF EXIST
+	PRINTFORML （Due to the growth of her %SAVESTR:表記／乳房%, some of her underwear can no longer be worn）
+CALL AJUST_STRIP_FLAG
+
+
+
+
+
+

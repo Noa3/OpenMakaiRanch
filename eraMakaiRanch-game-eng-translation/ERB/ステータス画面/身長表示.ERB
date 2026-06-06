@@ -1,0 +1,53 @@
+﻿
+;身長表示
+@PRINT_HEIGHT()
+#DIMS HEIGHT
+#DIMS HEIGHT2
+#FUNCTIONS
+
+;グローバルフラグによる
+IF FLAG:身長小数点表示
+	HEIGHT = {CFLAG:身長/10}.{CFLAG:身長%10}cm
+ELSE
+	HEIGHT = {CFLAG:身長/10}cm
+ENDIF
+HEIGHT2 = 【%HEIGHT_ENG(CSTR:身長)%】
+HEIGHT += HEIGHT2
+RETURNF HEIGHT
+
+
+
+;CALL型
+@PRINT_HEIGHT_SHORT
+
+IF FLAG:身長小数点表示
+	PRINTFORM {CFLAG:身長/10,3}.{CFLAG:身長%10}cm 
+ELSE
+	PRINTFORM {CFLAG:身長/10,3}cm 
+ENDIF
+SELECTCASE CSTR:身長
+CASE "幼児体型"
+	PRINT [Infant]
+	
+CASE "子供体型"
+	PRINT [Child]
+	
+CASE "小柄"
+	PRINT [Petite]
+	
+CASE "低身長"
+	PRINT [Short]
+	
+CASE "標準"
+	PRINT [Average]
+	
+CASE "高身長"
+	PRINT [Tall]
+	
+CASE "大柄"
+	PRINT [Large]
+	
+ENDSELECT
+
+
+

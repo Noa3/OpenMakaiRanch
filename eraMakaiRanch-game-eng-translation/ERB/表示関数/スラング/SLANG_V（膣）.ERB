@@ -1,0 +1,125 @@
+﻿;**********************************************************
+;Vagina(ヴァギナ)の淫語
+;**********************************************************
+@SLANG_V(ARG)
+#DIM WORD_LIMIT
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+WORD_LIMIT = 0
+SLANGWORD=
+
+; flag bits are wrong in jp here, and don't match what's in SLANG_CONFIG_VAGINA. Fixed for en version.
+SIF GETBIT(FLAG:スラング接頭語／膣,2) && CFLAG:身長 < FLAG:スラング／子供扱い上限身長数値 && RAND:100 < 80
+	SLANGWORD += "immature "
+IF GETBIT(FLAG:スラング接頭語／膣,1) && MARK:淫壺 && RAND:100 < 20
+	SLANGWORD += "obscene "
+	WORD_LIMIT ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／膣,0) && MARK:淫壺 && RAND:100 < 50
+	SLANGWORD += "lewd "
+	WORD_LIMIT ++
+ENDIF
+
+IF GETBIT(FLAG:スラング置換／膣,9)
+	EXIST ++
+	SIF RAND:100 < 50
+		RETURNF SAVESTR:表記／膣
+ENDIF
+IF GETBIT(FLAG:スラング置換／膣,6) && MARK:淫壺
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD += "cock hole"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／膣,5) && MARK:淫壺
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD += "dick holster"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／膣,4) && MARK:搾精おまんこ
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD += "semen sucking pussy"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／膣,3) && TALENT:名器
+	EXIST ++
+	IF RAND:100 < 30
+		;スラング置換仕切り直し
+		SLANGWORD =
+		SIF GETBIT(FLAG:スラング接頭語／膣,2) && MARK:淫壺 && RAND:100 < 80
+			SLANGWORD += "lewd "
+		SLANGWORD += "exquisite pussy"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／膣,2) && CFLAG:身長 < FLAG:スラング／子供扱い上限身長数値
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD =
+		SIF GETBIT(FLAG:スラング接頭語／膣,2) && MARK:淫壺 && RAND:100 < 80
+			SLANGWORD += "lewd "
+		SLANGWORD += "loli pussy"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／膣,1) && CFLAG:身長 < FLAG:スラング／子供扱い上限身長数値
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD += "childish pussy"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+SIF GETBIT(FLAG:スラング置換／膣,0) && EXIST
+	RESTART
+
+IF GETBIT(FLAG:スラング表示／膣,0) && RAND:100 < 50
+	SLANGWORD += "vagina"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／膣,1) && RAND:100 < 30
+	SLANGWORD += "pussy"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／膣,3) && RAND:100 < 70
+	SLANGWORD += "cunt"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／膣,2) && RAND:100 < 30
+	SLANGWORD += "hole"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／膣,4) && RAND:100 < 30
+	SLANGWORD += "meat hole"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／膣,5) && RAND:100 < 30
+	SLANGWORD += "genitalia"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／膣,6)
+	IF !WORD_LIMIT
+		SLANGWORD += "lower lips"
+		RETURNF SLANGWORD
+	ELSEIF RAND:100 < 50
+		SLANGWORD =
+		SLANGWORD += "lower lips"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+RESTART
+
+
+;*************【淫語覚書（未登録）】***********************
+;肉洞
+;肉壁
+;肉筒
+;膣筒
+;産道
+;蜜壺
+;肉オナホ
+;
+;*************【淫語覚書（未登録）】***********************
+
+
+

@@ -1,0 +1,87 @@
+﻿
+;奴隷候補の性体質ランダム
+@RANDOM_SLAVE_NASTY_TALENT
+
+;性体質をつけるか、5%
+IF RAND:100 < 5
+	CALL NASTY_TALENT
+	
+	;さらにもう一度判定
+	RESTART
+ENDIF
+CALL SLAVE_MILK_BODY_FIX
+
+
+
+;シャッフル時はこちらを使って性体質つける確率大幅増加
+@RANDOM_SLAVE_NASTY_TALENT_PLUS
+
+;再シャッフル用にリセット
+TALENT:名器 = 0
+TALENT:Ａ名器 = 0
+TALENT:先天的母乳体質 = 0
+TALENT:おくちまんこ = 0
+TALENT:極上乳圧 = 0
+MARK:母乳体質 = 0
+EXP:出産 = 0
+
+$NASTY_TALENT_LOOP
+;性体質をつけるか、40%
+IF RAND:100 < 40
+	CALL NASTY_TALENT
+	;さらにもう一度判定
+	GOTO NASTY_TALENT_LOOP
+ENDIF
+CALL SLAVE_MILK_BODY_FIX
+
+
+
+;性体質：名器、Ａ名器、母乳体質、おくちまんこ、極上乳圧のどれかを付与
+;ループ時被ることがあるけど気にしない
+@NASTY_TALENT
+
+SELECTCASE RAND:5
+CASE 0
+	TALENT:名器 = 1
+CASE 1
+	TALENT:Ａ名器 = 1
+CASE 2
+	MARK:母乳体質 = 1
+CASE 3
+	TALENT:おくちまんこ = 1
+CASE 4
+	TALENT:極上乳圧 = 1
+ENDSELECT
+
+
+
+;母乳体質の場合の原因および確定母乳体質オプション
+@SLAVE_MILK_BODY_FIX
+
+;母乳体質の場合先天的か出産経験からか
+IF MARK:母乳体質
+	IF TALENT:処女
+		EXP:出産 = 0
+		TALENT:先天的母乳体質 = 1
+	ELSE
+		EXP:出産 = 1
+		TALENT:先天的母乳体質 = 0
+	ENDIF
+ENDIF
+
+;EASYのオプションで全員先天的母乳体質
+IF FLAG:奴隷候補全員先天的母乳体質
+	TALENT:先天的母乳体質 = 1
+	EXP:出産 = 0
+	MARK:母乳体質 = 1
+ENDIF
+
+;牛角族は先天的母乳体質オプション
+IF CSTR:種族 == "牛角族" && GETBIT(FLAG:種族設定／牛角族,3) && (RAND:100 < FLAG:体質反映率／牛角族)
+	TALENT:先天的母乳体質 = 1
+	EXP:出産 = 0
+	MARK:母乳体質 = 1
+ENDIF
+
+
+

@@ -1,0 +1,82 @@
+﻿
+;体力　2000前後になればちょうどいいかな
+@SLAVE_HP_CALC
+
+;先にジョブ補正
+CALL SLAVE_HP_CALC_JOB_FIX
+STATUS = 500 +(CFLAG:ランク +10) *CFLAG:体力補正
+CALL RANDOM_FIX(STATUS,5,"体力量")
+STATUS += FIX
+
+;50刻みに補正
+STATUS -= (STATUS %50)
+STATUS = LIMIT(STATUS,1000,5000)
+
+;計算後に種族補正
+CALL SLAVE_HP_CALC_TRIBE_FIX
+MAXBASE:体力 = STATUS
+BASE:体力 = MAXBASE:体力
+
+
+
+;HPのジョブ補正
+@SLAVE_HP_CALC_JOB_FIX
+
+;上位種族なら110固定
+IF CFLAG:上位種族
+	CFLAG:体力補正 = 110
+	RETURN
+ENDIF
+SELECTCASE CSTR:ジョブ
+CASE "学者"
+	CFLAG:体力補正 = 60
+CASE "プリースト","黒魔術士","白魔術士","死霊術士","呪術士","錬金術師","魔女","聖女"
+	CFLAG:体力補正 = 70
+CASE "魔法戦士","薬師","ビショップ","シャーマン","カーディナル","時魔道士","大魔導師","賢者","姫巫女"
+	CFLAG:体力補正 = 80
+CASE "盗賊","陰陽師","魔法少女","シスター","巫女"
+	CFLAG:体力補正 = 90
+CASE "サムライ","剣闘士","旅人","戦士","騎士","冒険者"
+	CFLAG:体力補正 = 110
+CASE "聖騎士","暗黒騎士","重装兵","姫騎士"
+	CFLAG:体力補正 = 120
+CASE "パラディン","ブラックナイト","ワルキューレ","騎士団長"
+	CFLAG:体力補正 = 130
+CASE "武将","勇者"
+	CFLAG:体力補正 = 150
+CASEELSE
+	CFLAG:体力補正 = 100
+ENDSELECT
+
+
+
+;HPの種族補正
+@SLAVE_HP_CALC_TRIBE_FIX
+
+SELECTCASE CSTR:種族
+CASE "エルフ"
+	SIF GETBIT(FLAG:種族設定／エルフ,6) && (RAND:100 < FLAG:体質反映率／エルフ)
+		STATUS -= 200
+CASE "ダークエルフ"
+	SIF GETBIT(FLAG:種族設定／ダークエルフ,6) && (RAND:100 < FLAG:体質反映率／ダークエルフ)
+		STATUS -= 200
+CASE "ハーフエルフ"
+	SIF GETBIT(FLAG:種族設定／ハーフエルフ,6) && (RAND:100 < FLAG:体質反映率／ハーフエルフ)
+		STATUS -= 200
+CASE "犬耳族"
+	SIF GETBIT(FLAG:種族設定／犬耳族,4) && (RAND:100 < FLAG:体質反映率／犬耳族)
+		STATUS += 200
+CASE "牛角族"
+	SIF GETBIT(FLAG:種族設定／牛角族,5) && (RAND:100 < FLAG:体質反映率／牛角族)
+		STATUS += 200
+CASE "ヴァンパイア"
+	SIF GETBIT(FLAG:種族設定／ヴァンパイア,7) && (RAND:100 < FLAG:体質反映率／ヴァンパイア)
+		STATUS += 400
+CASE "ダンピール"
+	SIF GETBIT(FLAG:種族設定／ダンピール,6) && (RAND:100 < FLAG:体質反映率／ダンピール)
+		STATUS += 300
+CASE "竜人"
+	SIF GETBIT(FLAG:種族設定／竜人,5) && (RAND:100 < FLAG:体質反映率／竜人)
+		STATUS += 1000
+ENDSELECT
+

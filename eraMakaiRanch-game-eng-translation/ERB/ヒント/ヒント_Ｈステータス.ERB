@@ -1,0 +1,324 @@
+﻿
+;Ｈステータス目次
+@HINT_SENSITIVE_STATUS
+#DIM DYNAMIC PAGE
+
+PAGE_MAX = 2
+SIF PAGE < 1
+	PAGE = 1
+CLEARLINE LINECOUNT
+PRINTL 解説を見る項目を選択してください。
+DRAWLINE
+BR = 0
+STR_REF = 9160
+SELECTCASE PAGE
+CASE 1
+	CALL HINT_BUTTON_LIST(0,15)
+CASE 2
+	CALL HINT_BUTTON_LIST(15)
+ENDSELECT
+DRAWLINE
+CALL HINT_DETAIL_SENSITIVE_STATUS
+CALL PRINTL_ALIGN(5)
+DRAWLINE
+PRINTLC [90] ページ切り替え
+PRINTFORMLC PAGE：{PAGE}／{PAGE_MAX}
+PRINTL [99] Return
+INPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0 TO 29
+	SELECT_TIPS = RESULT
+CASE 90
+	PAGE ++
+	SIF PAGE > PAGE_MAX
+		PAGE = 1
+	SELECT_TIPS = -1
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;Ｈステータスの解説
+@HINT_DETAIL_SENSITIVE_STATUS
+
+STR_NUM = STR_REF +SELECT_TIPS
+
+;対応IDでないなら汎用出して帰る
+IF SELECT_TIPS < 0 || SELECT_TIPS >= 30 || STR:STR_NUM == ""
+	CALL NOT_SELECT_HINT_COMMON
+	RETURN
+ENDIF
+
+;項目名
+PRINTFORML 　《 %STR:STR_NUM% 》
+SELECTCASE STR:STR_NUM
+CASE "Ａ感覚／Ａ感度"
+	PRINTFORML %SAVESTR:表記／アナル%を責められたとき、どれだけ感じてしまうかのステータスです。
+	PRINTL
+	PRINTL 《 Ａ感覚 》
+	PRINTFORML %SAVESTR:表記／アナル%を責められて絶頂した回数に応じてLvUP
+	PRINTL 1Lvごとに快楽値倍率増加　～10：+10　11～：+5
+	PRINTFORML Lv3以下の場合、Ａ挿入時にあなたの%SAVESTR:表記／ペニス%への快楽+10\%
+	PRINTL
+	PRINTL 《 Ａ感度 》
+	PRINTL ＜浸透媚薬＞＜受容器鋭敏化薬＞＜感度上昇粘液＞の使用により増加
+	PRINTL そのまま快楽値にかかる倍率として計算
+	
+CASE "Ｂ感覚／Ｂ感度"
+	PRINTFORML %SAVESTR:表記／乳房%を責められたとき、どれだけ感じてしまうかのステータスです。
+	PRINTL
+	PRINTL 《 Ｂ感覚 》
+	PRINTFORML %SAVESTR:表記／乳房%を責められて絶頂した回数に応じてLvUP
+	PRINTL 1Lvごとに快楽値倍率増加　～10：+10　11～：+5
+	PRINTL
+	PRINTL 《 Ｂ感度 》
+	PRINTL ＜浸透媚薬＞＜受容器鋭敏化薬＞＜感度上昇粘液＞の使用により増加
+	PRINTL 300%未満のとき＜淫乳改造エキス＞の副次効果として増加
+	PRINTL そのまま快楽値にかかる倍率として計算
+	PRINTL ランダムキャラの生成時、（シャッフル前の）初期バストサイズが小さいほど
+	PRINTL 【Ｂ感度】が高くなりやすい傾向にあります
+	
+CASE "Ｃ感覚／Ｃ感度"
+	PRINTFORML %SAVESTR:表記／陰核%を責められたとき、どれだけ感じてしまうかのステータスです。
+	PRINTL
+	PRINTL 《 Ｃ感覚 》
+	PRINTFORML %SAVESTR:表記／陰核%を責められて絶頂した回数に応じてLvUP
+	PRINTL 1Lvごとに快楽値倍率増加　～10：+10　11～：+5
+	PRINTL
+	PRINTL 《 Ｃ感度 》
+	PRINTL ＜浸透媚薬＞＜受容器鋭敏化薬＞＜感度上昇粘液＞の使用により増加
+	PRINTL （他の部位に使用した時より増加量が倍増します）
+	PRINTL そのまま快楽値にかかる倍率として計算
+	
+CASE "Ｖ感覚／Ｖ感度"
+	PRINTFORML %SAVESTR:表記／膣%を責められたとき、どれだけ感じてしまうかのステータスです。
+	PRINTL
+	PRINTL 《 Ｖ感覚 》
+	PRINTFORML %SAVESTR:表記／膣%を責められて絶頂した回数に応じてLvUP
+	PRINTL 1Lvごとに快楽値倍率増加　～10：+10　11～：+5
+	PRINTFORML Lv3以下の場合、Ｖ挿入時にあなたの%SAVESTR:表記／ペニス%への快楽+10\%
+	PRINTL
+	PRINTL 《 Ｖ感度 》
+	PRINTL ＜浸透媚薬＞＜受容器鋭敏化薬＞＜感度上昇粘液＞の使用により増加
+	PRINTL そのまま快楽値にかかる倍率として計算
+	
+CASE "Ｎ感覚／Ｎ感度"
+	PRINTL 乳首を責められたとき、どれだけ感じてしまうかのステータスです。
+	PRINTL
+	PRINTL 《 Ｎ感覚 》
+	PRINTL 乳首を責められて絶頂した回数に応じてLvUP
+	PRINTL 1Lvごとに快楽値倍率増加　～10：+10　11～：+5
+	PRINTFORML Lv3以下の場合、Ｎ挿入時にあなたの%SAVESTR:表記／ペニス%への快楽+10\%
+	PRINTL
+	PRINTL 《 Ｎ感度 》
+	PRINTL ＜浸透媚薬＞＜受容器鋭敏化薬＞＜感度上昇粘液＞の使用により増加
+	PRINTL そのまま快楽値にかかる倍率として計算
+	
+CASE "バストサイズ"
+	CALL PART_HINT_BUSTSIZE
+	
+CASE "バストサイズ補足"
+	CALL PART_HINT_BUSTSIZE2
+	
+CASE "母乳容量"
+	CALL PART_HINT_MILK_CAPACITY
+	
+CASE "母乳生産力"
+	CALL PART_HINT_MILK_PRODUCT
+	
+CASE "母乳容量・生産力計算"
+	CALL PART_HINT_MILK_CALC
+	
+CASE "母乳濃度"
+	CALL PART_HINT_MILK_RICHNESS
+	
+CASE "母性"
+	CALL PART_HINT_MATERNAL
+	
+CASE "母性補足"
+	CALL PART_HINT_MATERNAL2
+	
+CASE "技巧"
+	PRINTL 調教によりどれだけ快楽を与えられるかのステータスです。
+	PRINTL
+	PRINTL 《 技巧経験値取得 》
+	PRINTL 調教コマンド全般の実行時に調教者が経験値取得
+	PRINTL ・調教対象を絶頂させるとそのコマンドでの取得経験値が倍増
+	PRINTFORML 調教者の%SAVESTR:表記／ペニス%に快楽を与えるコマンドの実行時に調教対象が経験値取得（少量）
+	PRINTL 奉仕コマンド実行時に調教対象が経験値取得（多量）
+	PRINTL
+	PRINTL 《 技巧効果 》
+	PRINTL ・スケジュールで奴隷から搾乳したときに与える快楽に補正
+	PRINTL ～Lv10：1Lvにつき+8%　Lv11～：1Lvにつき+5%
+	PRINTL 
+	PRINTL ・直接責め（器具・触手以外）で調教対象に与える快楽に補正
+	PRINTL ～Lv10：1Lvにつき+10%　Lv11～：1Lvにつき+5%
+	PRINTL
+	PRINTL ・奉仕コマンド時に【奉仕精神】との合計で調教者に与える快楽が増加
+	PRINTL ～合計Lv15：1Lvにつき+8%　合計Lv16～：1Lvにつき+3%
+	PRINTL [淫欲]50,000以上／【奉仕精神】Lv10以上／【恋慕】／【洗脳】のいずれかを満たす場合
+	PRINTL 【技巧】1Lvにつきさらに+3%
+	
+CASE "奉仕精神"
+	PRINTL 奉仕したときに「調教者に対して」与える快楽を増加させるステータスです。
+	PRINTL また奉仕コマンドなどの実行判定で参照されます。
+	PRINTL
+	PRINTL 《 奉仕精神経験値取得 》
+	PRINTL 【技巧】経験値を取得するときに【好感度】を乗算して追加取得
+	PRINTL
+	PRINTL 《 奉仕精神効果 》
+	PRINTL ・Lv5以上なら【陥落】【屈服】していなくても奉仕コマンド実行可能
+	PRINTL ・奉仕コマンド実行時
+	PRINTL Lv×500[情愛]増加　継続中Lv×300増加
+	PRINTL 【技巧】との合計で調教者に与える快楽が増加
+	PRINTL ～合計Lv15：1Lvにつき+8%　合計Lv16～：1Lvにつき+3%
+	PRINTL  ・【母性】経験値の増加量が1Lvにつき+3%
+	
+CASE "膣内射精中毒"
+	PRINTFORML %SAVESTR:表記／膣%を%SAVESTR:表記／ペニス%で責められているとき、
+	PRINTL また膣内射精されたときに影響するステータスです。
+	PRINTL
+	PRINTL 《 膣内射精中毒経験値取得 》
+	PRINTL 膣内射精されたとき取得、Lv×200追加取得
+	PRINTL 
+	PRINTL 《 膣内射精中毒効果 》
+	PRINTL ・Ｖ挿入中
+	PRINTL Lv×500[情愛]増加　1Lvにつき[Ｖ快楽]+5%
+	PRINTL 調教者に与える[射精]パラメータが増加
+	PRINTL ～Lv10：1Lvにつき+8%　Lv11～：1Lvにつき+3%
+	PRINTL
+	PRINTL ・膣内射精されたとき
+	PRINTL Lv×1000×射精回数[情愛]増加　Lv×200[Ｖ快楽]増加
+	
+CASE "尻穴射精中毒"
+	PRINTFORML %SAVESTR:表記／アナル%を%SAVESTR:表記／ペニス%で責められているとき、
+	PRINTL また尻穴射精されたときに影響するステータスです。
+	PRINTL
+	PRINTL 《 尻穴射精中毒経験値取得 》
+	PRINTL 尻穴射精されたとき取得、Lv×200追加取得
+	PRINTL 
+	PRINTL 《 尻穴射精中毒効果 》
+	PRINTL ・Ａ挿入中
+	PRINTL Lv×500[情愛]増加　1Lvにつき[Ａ快楽]+5%
+	PRINTL 調教者に与える[射精]パラメータが増加
+	PRINTL ～Lv10：1Lvにつき+8%　Lv11～：1Lvにつき+3%
+	PRINTL
+	PRINTL ・尻穴射精されたとき
+	PRINTL Lv×1000×射精回数[情愛]増加　Lv×200[Ａ快楽]増加
+	
+CASE "乳内射精中毒"
+	PRINTL パイズリさせられているとき、
+	PRINTL また乳内射精されたときに影響するステータスです。
+	PRINTL
+	PRINTL 《 乳内射精中毒経験値取得 》
+	PRINTL 乳内射精されたとき取得、Lv×200追加取得
+	PRINTL 
+	PRINTL 《 乳内射精中毒効果 》
+	PRINTL ・Ｂ挿入中
+	PRINTL Lv×500[情愛]増加　1Lvにつき[Ｂ快楽]+5%
+	PRINTL 体力が1以上のとき、調教者に与える[射精]パラメータが増加
+	PRINTL ～Lv10：1Lvにつき+8%　Lv11～：1Lvにつき+2%
+	PRINTL
+	PRINTL ・乳内射精されたとき
+	PRINTL Lv×1000×射精回数[情愛]増加　Lv×200[Ｂ快楽]増加
+	
+CASE "精飲中毒"
+	PRINTL 口内射精されたときに影響するステータスです。
+	PRINTL
+	PRINTL 《 精飲中毒経験値取得 》
+	PRINTL 口内射精されたとき取得、Lv×200追加取得
+	PRINTL 
+	PRINTL 《 精飲中毒効果 》
+	PRINTL ・Ｍ挿入中
+	PRINTL Lv×500[情愛]増加
+	PRINTL 体力が1以上のとき、調教者に与える[射精]パラメータが増加
+	PRINTL ～Lv10：1Lvにつき+8%　Lv11～：1Lvにつき+3%
+	PRINTL
+	PRINTL ・口内射精されたとき
+	PRINTL Lv×1000×射精回数[情愛]増加
+	PRINTL （現在のバージョンではＭ感覚は実装されていません。）
+	
+CASE "精液中毒"
+	PRINTL どの部位でも共通で射精されたときに影響するステータスです。
+	PRINTL
+	PRINTL 《 精液中毒経験値取得 》
+	PRINTL どの部位でも射精されたとき取得
+	PRINTL 
+	PRINTL 《 精液中毒効果 》
+	PRINTL ・射精されたとき
+	PRINTL Lv×300×射精回数[恭順]増加
+	
+CASE "輪姦中毒"
+	PRINTL 輪姦されたときに影響するステータスです。
+	PRINTL
+	PRINTL ・おわび：現在機能していないかもしれません
+	PRINTL 《 輪姦中毒経験値取得 》
+	PRINTL 傭兵アルバイトでゴブリンたちを雇い、奴隷を捕らえて輪姦が発生するたびに取得
+	PRINTL 
+	PRINTL 《 輪姦中毒効果 》
+	PRINTL （機能していません）
+	
+CASE "マゾっ気"
+	PRINTL 痛みの発生する調教を受けたときに影響するステータスです。
+	PRINTL
+	PRINTL 《 マゾっ気経験値取得 》
+	PRINTL 強制奉仕コマンド、拘束コマンド継続中の調教を受けたときに取得
+	PRINTL 
+	PRINTL 《 マゾっ気効果 》
+	PRINTL 責められた部位の【感覚】との合計が5Lv以上ならLvに応じて部位の[苦痛]を快楽に変換
+	PRINTL 　快楽の入らない部位は【マゾっ気】のみで判定し[淫欲]に変換
+	PRINTL 拘束+目隠し状態のとき【感度】全てに1Lvにつき+5%上乗せ
+	PRINTL [苦痛][視覚恐怖]由来の[恐怖][反感]を1Lvにつき10%軽減
+	PRINTL [触手恐怖]由来の[恐怖][失意]を【触手中毒】との合計Lvにより軽減
+	PRINTL Lv5以上のとき受けた[屈辱][支配][恥辱][被虐快楽経験]により[淫欲]増加
+	PRINTL 　受けた[苦痛]によりさらに[被虐快楽経験]増加
+	
+CASE "レズっ気"
+	PRINTL 女性が女性からの調教を受けたとき、また調教するときに影響するステータスです。
+	PRINTL
+	PRINTL 《 レズっ気経験値取得 》
+	PRINTL スケジュール【レズ調教させる】で調教者が少量、調教対象が多量取得
+	PRINTL ・調教者
+	PRINTFORML 調教対象のレズっ気Lv×500増加　直飲みした%SAVESTR:表記／母乳%の量×5増加
+	PRINTL ・調教対象
+	PRINTL 調教者のレズっ気Lv×1000増加　絶頂させられた回数×50増加
+	PRINTFORML 直飲みされた%SAVESTR:表記／母乳%の量×5増加
+	PRINTL 
+	PRINTL 《 レズっ気効果 》
+	PRINTL 調教者・調教対象の【レズっ気】Lvの合計×3%全部位の快楽値増加
+	PRINTL 　補正が50%以上になる場合は超過分を1／4する
+	
+CASE "搾乳中毒"
+	CALL PART_HINT_LACTATION_RELIANCE
+	
+CASE "触手中毒"
+	PRINTL 触手調教をされるときに影響するステータスです。
+	PRINTL 触手責めを受けて絶頂をした場合、【触手絶頂回数】に触手責めされている部位での絶頂回数が加算され
+	PRINTL 一定回数を超えると【触手中毒】Lvが増加します。
+	PRINTL
+	PRINTL 《 触手中毒効果 》
+	PRINTL 触手責めでの快楽値を増加
+	PRINTL ～Lv10：1Lvにつき+10%　Lv11～20：1Lvにつき+5%　Lv21～：1Lvにつき+2%
+	PRINTL 触手搾乳されているとき【搾乳中毒】【触手中毒】が合計10Lv以上なら[恭順]・【母性】経験値が増加
+	
+CASE "Ｖ・Ａ・Ｐのサイズ"
+	PRINTFORML それぞれ%SAVESTR:表記／膣%、%SAVESTR:表記／アナル%、%SAVESTR:表記／ペニス%の直径でのサイズです。
+	PRINTL 〇〇～〇〇mmとなっている場合は上限側までは苦痛なく広がる(柔軟性がある)ことを示しています。
+	PRINTL
+	PRINTFORML 挿入の際に%SAVESTR:表記／ペニス%のサイズが、挿入される側のサイズの範囲内なら互いへの快楽が増加します。
+	PRINTL 範囲外なら逆に快楽が減少します。
+	PRINTFORML 更に、%SAVESTR:表記／ペニス%のサイズが挿入される側のサイズ範囲より上の場合、
+	PRINTL サイズ差に応じて苦痛の増加、サイズの上限側が確率で上昇し、
+	PRINTFORML その差が20mmを超える場合や%SAVESTR:表記／ペニス%のサイズが一定以上の場合にはサイズの下限側も上昇します。
+	PRINTL (下限側が上昇する場合はサイズ表示部分が赤く表示されます)
+	PRINTL
+	PRINTFORML また、%SAVESTR:表記／ペニス%のサイズは基本的には大きい程相手への快楽が増加しますが、
+	PRINTL 挿入される側とのサイズ差によっては減少したりします。
+	PRINTL
+	PRINTL 挿入以外でＶ・Ａに快楽が発生した場合でも、サイズの上限側が一定の数値までは確率で上昇します。
+ENDSELECT
+
+

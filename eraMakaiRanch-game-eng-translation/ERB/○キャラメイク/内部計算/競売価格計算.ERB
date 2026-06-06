@@ -1,0 +1,47 @@
+﻿
+;競売価格計算
+@SLAVE_AUCTION_PRICE_CALC
+
+;競売じゃないならおわり
+CFLAG:競売価格 = 0
+SIF CFLAG:魔界入りの目的 != 7
+	RETURN
+CFLAG:競売価格 = 1000000
+
+;ランクにより増加
+CFLAG:競売価格 += (CFLAG:ランク *100000)
+
+;魔力量により増加
+CFLAG:競売価格 += (CFLAG:魔力量 *50000)
+
+;巨乳以上なら増加
+SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+	CFLAG:競売価格 += 200000
+
+;豊乳以上なら追加
+SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+	CFLAG:競売価格 += 100000
+
+;非処女だと下がる　ユニコーン的な輩に判定させてるんじゃない？
+SIF !TALENT:処女
+	CFLAG:競売価格 -= 300000
+
+;Ａ非処女だと少し下がる
+SIF !TALENT:Ａ処女
+	CFLAG:競売価格 -= 50000
+
+;他の参加者は便器扱いする前提なので仕事ABLなどでは上がらないよ
+;名器などでも不明な状態なので上がらないよ
+;身分により増加
+SELECTCASE CSTR:身分
+CASE "教官"
+	CFLAG:競売価格 += 300000
+CASE "貴族"
+	CFLAG:競売価格 += 1000000
+CASE "王族"
+	CFLAG:競売価格 += 5000000
+ENDSELECT
+CFLAG:競売価格 = LIMIT(CFLAG:競売価格,100000,1000000000)
+
+
+

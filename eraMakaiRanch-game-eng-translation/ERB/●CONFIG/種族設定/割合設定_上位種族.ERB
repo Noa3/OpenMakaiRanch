@@ -1,0 +1,31 @@
+﻿
+;種族割合設定
+@SPECIAL_TRIBE_CONFIG
+
+;FLAG:候補割合／上位種族／仙人→2620
+FLAG_REF = 2620
+STR_REF = 6530
+FLAG:候補割合／上位種族／合計 = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +10)
+TOTAL_RATIO = FLAG:候補割合／上位種族／合計
+CLEARLINE LINECOUNT
+PRINTL Adjust the appearance weights for higher races of Ningen.
+CALL CONFIG_CHANGE_FLAG_CHECK
+CALL PRINT_TENDENCY_BUTTON(1)
+CALL PRINTL_ALIGN(-10)
+CALL TENDENCY_CONFIG_FOOTER
+CALL TENDENCY_INPUT
+IF RESULT == 98
+	PRINTL Reset the weights for higher races to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SPECIAL_TRIBE_CONFIG
+ELSEIF RESULT == 99
+	IF FLAG:候補割合／上位種族／合計 <= 0 || FLAG:候補割合／上位種族／合計 > 1000
+		PRINTW Total weights must be from 1～1000.
+		RESTART
+	ENDIF
+	RETURN
+ENDIF
+RESTART
+
+

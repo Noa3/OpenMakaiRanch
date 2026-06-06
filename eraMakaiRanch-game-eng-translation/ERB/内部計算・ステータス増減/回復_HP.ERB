@@ -1,0 +1,119 @@
+﻿
+;体力割合回復
+;ARG→回復割合
+;ARG:1→非表示優先コンフィグ
+@HP_HEAL_RATIO(ARG,ARG:1)
+#DIM RATIO_FIX
+
+;あとで表示する用の割合数値
+RATIO_FIX = ARG *10
+
+;割合回復
+HEAL = MAXBASE:体力 *ARG /100
+
+;素質による回復量変動
+IF TALENT:回復早い
+	TIMES HEAL,1.50
+	TIMES RATIO_FIX,1.50
+ELSEIF TALENT:回復遅い
+	TIMES HEAL,0.70
+	TIMES RATIO_FIX,0.70
+ENDIF
+CALL RANDOM_FIX(HEAL,5,"体力回復量")
+HEAL += FIX
+
+;1の桁切り捨て
+HEAL -= (HEAL %10)
+
+;割合を戻す
+RATIO_FIX /= 10
+BASE:体力 = LIMIT(BASE:体力 +HEAL,0,MAXBASE:体力)
+
+SELECTCASE FLAG:休憩時回復表示形式
+CASE 0
+	;0→常に非表示
+CASE 1
+	;1→最初の1人だけ表示
+	;非表示優先ならOFF
+	SIF !HEAL_PRINT_DONE && !ARG:1
+		CALL PRINT_HP_HEAL_RATIO(RATIO_FIX)
+CASE 2
+	;2→全員表示
+	;非表示優先ならOFF
+	SIF !ARG:1
+		CALL PRINT_HP_HEAL_RATIO(RATIO_FIX)
+CASE 3
+	;3→全員を詳細表示
+	;非表示優先でも無視する
+	PRINTFORM HP+{HEAL,4} → {BASE:体力,4} 
+	CALL PRINT_HP_HEAL_EFFECT
+ENDSELECT
+
+;体力回復時の虚脱回復
+CALL RECOVER_COLLAPSE
+
+
+
+;HP回復割合表示
+;ARG→RATIO_FIX
+@PRINT_HP_HEAL_RATIO(ARG)
+
+PRINTFORM HP+{ARG,2}\% 
+CALL PRINT_HP_HEAL_EFFECT
+
+
+
+;要素表示フラグONならTALENTなど表示
+@PRINT_HP_HEAL_EFFECT
+
+SIF !GETBIT(＃影響要素表示／回復量＃)
+	RETURN
+SIF TALENT:回復早い
+	PRINT 【Fast Recovery】
+SIF TALENT:回復遅い
+	PRINT 【Slow Recovery】
+
+
+
+;体力回復時、虚脱でHPMAXのとき回復
+@RECOVER_COLLAPSE
+
+SIF !CFLAG:虚脱 || BASE:体力 < MAXBASE:体力
+	RETURN
+CFLAG:虚脱 = 0
+SIF !LINEISEMPTY()
+	PRINTL
+CALL PRINTL_WORD_COLOR,@"After a long rest, %CALLNAME% regained their senses.","水色"
+
+
+
+;HP固定値回復
+;ARG→回復量
+;ARG:1→非表示優先コンフィグ
+@HP_HEAL_CONST(ARG,ARG:1)
+
+;素質などの変動はなし
+HEAL = ARG
+BASE:体力 = LIMIT(BASE:体力 +HEAL,0,MAXBASE:体力)
+SELECTCASE FLAG:休憩時回復表示形式
+CASE 1
+	SIF !HEAL_PRINT_DONE && !ARG:1
+		PRINTFORM HP+{HEAL,2} 
+CASE 2
+	SIF !ARG:1
+		PRINTFORM HP+{HEAL,2} 
+CASE 3
+	PRINTFORM HP+{HEAL,4} → {BASE:体力,4} 
+ENDSELECT
+CALL RECOVER_COLLAPSE
+
+
+
+;保存ミルクを飲んだ時などにあなた体力固定値回復→常時表示
+;ARG→回復量
+@PLAYER_HP_HEAL_CONST(ARG)
+
+HEAL = ARG
+BASE:0:体力 = LIMIT(BASE:0:体力 +HEAL,0,MAXBASE:0:体力)
+PRINTFORM HP+{HEAL,4} → {BASE:0:体力,4} 
+

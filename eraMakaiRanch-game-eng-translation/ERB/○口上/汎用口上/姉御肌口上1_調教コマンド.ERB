@@ -1,0 +1,1117 @@
+﻿
+;生真面目口上をベースに色々な口上を参考に作成
+;とりあえず形にするために生真面目口上を上書きする形で作ったけどセリフパターンは正直もっとほしいよね
+; ======================================
+;口上はいろんな人が作ってくれるとうれしいななので口上作者欄やライセンス欄も置いておくね
+
+;姉御肌口上（サンプル）
+;口上番号：1
+;口上作者：2-121
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：
+;↑加筆したら書いてね
+; ======================================
+
+;ARGS:0　シチュ指定　ARGS:1～　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_姉御肌1_TRAIN(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+;ここに来てる場合ARGS:0は"調教コマンド"固定
+;調教コマンドごとにシチュ指定で振り分けするよ　名称はTRAIN.csv参照
+;現状の仕様は@COMに書かれた地の文→口上になる
+
+SELECTCASE ARGS:1
+CASE "乳揉み","育乳マッサージ","濃厚母乳マッサージ","ミルクタンクマッサージ"
+	;ここからバリエーションでの振り分けをするよ　振り分けが多いほどたのしいけど大変だよ
+	;振り分け方はそれぞれだけど好感度状態などから振り分けるのが楽かなあ
+	
+	;まず『初回処理』かどうかを見てみよう　EXP:(SELECTCOM +1000) ++　という命令を口上表示『後』にしてます
+	;よってこの値が0なら『このキャラはこのコマンドを使ったことがない』ってことだね
+	;細かいことはさておき下のIF文で初回処理ができます
+	;隷属乳牛になるまで乳揉みしたことないことは…搾ってばかりならありそう
+	;\nを書くとそこで改行されるよ　プログラムの仕様上Enter改行はNGよ
+	;CALLを2回すると『どちらかしか表示されない』ので改行目的だとこれもNGよ
+	
+	IF !EXP:(SELECTCOM+1000)
+		;直接表示しないでまず[MESSAGE_BOX]関数を呼び出してそこに候補を一旦入れておく、という方法
+		;触手宮さんを参考にしました
+		;[MASTER_CALL]という部分が「ご主人様」とかそのへんの呼び名を持ってくる関数
+		;[SWEET_MASTER_CALL]にすると「ごしゅじんさまぁ」とかおねだりっぽい呼び方を持ってくるよ
+		;[SELF_CALL]という部分が「わたし」とかそのへんの一人称を持ってくる関数
+		;♥を書くと表示される時に自動で絵文字っぽいハートになるよ　便利だね
+		
+		;乳牛、隷属、洗脳の場合
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%♥ %SELF_CALL()%のおっぱいもみたいのかい♥♥\n　すきかってに、めちゃめちゃにしとくれ♥ %SELF_CALL()%のカラダは%MASTER_CALL()%の『モノ』なんだからさ♥♥」"
+		
+		;ELSEで分けると候補に入らなくなるよ
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「ふふ…♥ %SELF_CALL()%のおっぱい、自由にいじっていいんだよ…♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「んっ…こんなの揉んで…楽しいのかい…？♥」"
+		;素質分岐なども入れられる
+		ELSE
+			CALL MESSAGE_BOX,@"「くそっ、触るんじゃないよ！」"
+		ENDIF
+		;初回処理は確実に↑を表示するためにRETURNしてしまおう
+		RETURN
+		
+	ENDIF
+	;乳牛、隷属、洗脳の場合
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「んんっ♥ %SWEET_MASTER_CALL()%♥ %SELF_CALL()%のおっぱいめちゃめちゃにしてぇ♥♥」"
+		CALL MESSAGE_BOX,@"「気が済むまでやりな…♥ %SELF_CALL()%のおっぱいは、%MASTER_CALL()%の『モノ』さ…♥♥」"
+		CALL MESSAGE_BOX,@"「はぁぁ♥ おっぱいもまれて、ごくらくぅぅ…♥♥」"
+		
+		;このように並べて書いても1回の口上呼び出しで表示されるのは1つなのだ
+		;[MESSAGE_BOX]関数を呼び出し→箱に入っている文面のどれか1つを表示、という処理をするよ
+		;そこで↓のように特定の条件で『候補を追加』とかもできちゃう　この場合はおっぱいが豊乳以上の場合
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「ふふ…♥ %SELF_CALL()%のたわわに育ったおっぱい、たんと収穫しとくれ♥♥」"
+		;他の条件も追加できたりする
+		SIF ABL:バストサイズ < BUSTSIZE_並乳
+			CALL MESSAGE_BOX,@"「%SELF_CALL()%みたいなちいさいおっぱいでも愛でてくれるんだね…♥♥」"
+		;今回調教で100絶頂以上
+		;他のも書いててそういえばとなったけどNOWEXは[調教コマンド]のとこに書いても死に分岐だわ
+		;今まさにされそうなとこなので『今○○されたらだめぇ』みたいなの書くとちょうどよい
+		SIF EX:Ｂ絶頂 >= 100
+			CALL MESSAGE_BOX,@"「ああぁっ♥♥ キちまう♥♥ 今おっぱいイジられたら、%SELF_CALL()%トンじまうっ♥♥」"
+	
+	ELSEIF ＃陥落状態／恋慕以上＃
+		;上よりは控えめにしたほうが気分が出るかもしれない
+		CALL MESSAGE_BOX,@"「%SELF_CALL()%のおっぱい、満足するまで楽しんでいいんだよ…？♥」"
+		CALL MESSAGE_BOX,@"「ふふ…♥ おっぱい揉みたいのかい…？♥♥」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「へへ…♥ %SELF_CALL()%の自慢のおっぱい、%MASTER_CALL()%の好きにしていいんだよ♥♥」"
+		SIF ABL:バストサイズ < BUSTSIZE_並乳
+			CALL MESSAGE_BOX,@"「こんな%SELF_CALL()%の小ぶりなおっぱいでも、%MASTER_CALL()%はいいって言ってくれるのかい…♥♥」"
+		
+	ELSEIF ＃陥落状態／陥落以上＃
+		;基本的に難しい条件から書いていかないと上の分岐ばかりに到達しちゃうよ
+		CALL MESSAGE_BOX,@"「んっ…%MASTER_CALL()%はホントに乳が好きだね…♥」"
+		CALL MESSAGE_BOX,@"「はいはい…満足するまでやっとくれ…♥」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「んっ…ったく…男ってのはデカけりゃそれでいいのかい…？ …ま、%MASTER_CALL()%が嬉しいんならそれでいいけど…」"
+		SIF ABL:バストサイズ < BUSTSIZE_並乳
+			CALL MESSAGE_BOX,@"「男ってのはデカいのが好きなんじゃないのかい…？%SELF_CALL()%のじゃ満足できないだろうに…\n　…満足そうなツラしてるね… ならいいけど…」"
+	
+	ELSEIF ＃陥落状態／屈服以上＃
+		;↓よりは観念した感じ
+		CALL MESSAGE_BOX,@"「んっ…こんな脂肪のかたまり…何がいいんだい…」"
+		CALL MESSAGE_BOX,@"「もう好きにしとくれ…」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「はぁ…ったく…男ってのはデカけりゃそれでいいのかい…？」"
+		SIF ABL:バストサイズ < BUSTSIZE_並乳
+			CALL MESSAGE_BOX,@"「%SELF_CALL()%の小ぶりな乳イジって楽しいのかい…？\n　…あ、そう…楽しいのかい…」"
+	
+	ELSE
+		;反抗か枷はないけど反抗的か　当然ツンツン
+		CALL MESSAGE_BOX,@"「くそっ、離せ！気安くイジるんじゃないよ！」"
+		CALL MESSAGE_BOX,@"「何好き勝手に揉んでんだい！」"
+		CALL MESSAGE_BOX,@"「ちっ、気色悪い！なんだってんだい…！」"
+	ENDIF
+	;ここまで乳揉み分岐　…長くない？
+	
+;ここからまた他の調教コマンドの分岐を始めるよ
+CASE "乳搾り"
+	IF !EXP:(SELECTCOM+1000)
+		;母乳体質か否かで分岐させよう
+		IF MARK:母乳体質
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「んお゛お゛ーっ♥♥ みるく♥ みるくしぼられるぅ♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「んはぁっ♥ おっぱいしぼられるぅ♥♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「ああっ…♥ こんな、まるで『家畜』扱い…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「やめっ、触るな！%SELF_CALL()%は家畜になったつもりはないよ！」"
+			ENDIF
+		ELSE
+			IF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「んんっ、あっ♥ おっぱいしぼっても母乳は出ないぞ♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「っ…ああっ♥ 『家畜』みたいにしぼられても何も出せないって…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「やめっ、触るな！%SELF_CALL()%は家畜になったつもりはないよ！」"
+			ENDIF
+		ENDIF
+		RETURN
+	ENDIF
+	IF MARK:母乳体質
+		IF ABL:搾乳中毒 >= 10
+			CALL MESSAGE_BOX,@"「あ゛ーっ♥♥ んお゛っ♥ はへっ♥♥ もっと♥ もっとしぼってぇ♥♥」"
+			CALL MESSAGE_BOX,@"「んあ゛っ♥♥ みるくだすぅ♥ だすのきもちいいっ♥ あああ゛っ♥♥」"
+			CALL MESSAGE_BOX,@"「クるクるっ♥ クるぅぅっ♥♥ みるく出してイくぅっ♥♥」"
+		ENDIF
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「はーっ♥ はーっ♥ さくにゅう♥ さくにゅうもっと♥♥ %SELF_CALL()%のみるく絞り尽くして♥♥」"
+			CALL MESSAGE_BOX,@"「はへっ♥ はへっ♥♥ %SWEET_MASTER_CALL()%♥ しぼられるのすきぃ♥ ちくびからみるくだすのすきぃぃ♥♥」"
+			CALL MESSAGE_BOX,@"「おねがいっ♥ しぼってっ♥ しぼられるのガマンできないっ♥ おっぱいガマンしてくれないのっ♥♥」"
+			CALL MESSAGE_BOX,@"「はぁぁ♥ %SELF_CALL()%のおっぱいにっ♥ %MASTER_CALL()%のゆびがくいこんでくぅ♥♥」"
+			SIF ABL:バストサイズ >= BUSTSIZE_爆乳
+				CALL MESSAGE_BOX,@"「はぁーっ…はぁーっ♥ %SELF_CALL()%のたっぷりおっぱい、みるくだしたがっててガマンできないよ♥♥」"
+			SIF EX:Ｂ絶頂 >= 100
+				CALL MESSAGE_BOX,@"「ん゛ーっ♥♥ おっぱいイくっ♥♥ おっぱいであたまいっぱいになるぅぅっ♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「%SELF_CALL()%のおっぱい、たくさんしぼっとくれ…♥」"
+			CALL MESSAGE_BOX,@"「ほら…♥ 好きなだけしぼりな…♥♥」"
+			SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+				CALL MESSAGE_BOX,@"「ふふ…♥ %SELF_CALL()%のいっぱい母乳詰まったおっぱい、好きなだけしぼりな♥♥」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			CALL MESSAGE_BOX,@"「んっ…しぼるのかい…？♥」"
+			CALL MESSAGE_BOX,@"「はいはい…好きなだけやりな…」"
+			SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+				CALL MESSAGE_BOX,@"「んっ…ったく…男ってのはデカけりゃそれでいいのかい…？\n　…ま、%MASTER_CALL()%が嬉しいんならそれでいいけど…」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「んっ…少し苦しいよ…♥」"
+			CALL MESSAGE_BOX,@"「いいさ…好きにしな…」"
+			SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+				CALL MESSAGE_BOX,@"「はぁ…ったく…男ってのはデカけりゃそれでいいのかい…？」"
+		ELSE
+			CALL MESSAGE_BOX,@"「やめろっ！しぼるんじゃない！」"
+			CALL MESSAGE_BOX,@"「くそっ離せ！%SELF_CALL()%は家畜になった覚えはないよ！」"
+			CALL MESSAGE_BOX,@"「くっ…気色悪いね…！なんだってんだい！」"
+		ENDIF
+	ENDIF
+
+CASE "乳首つまみ"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「あっ♥ ちくびぃ♥ もっとちくびこりこりしてぇ♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「んっ！♥ ち、乳首そんなされると…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「っ！ 何気安く乳首イジってんだい！」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF ABL:Ｎ感度 >= 200 || ABL:Ｎ感覚 >= 10
+		CALL MESSAGE_BOX,@"「あっ♥ そこっ♥♥ びんかんなとこっ♥♥」"
+		CALL MESSAGE_BOX,@"「ちくびぃ♥ ちくびくにくにってされてぇぇ♥♥ がまんできないぃぃ♥♥」"
+		CALL MESSAGE_BOX,@"「んお゛ぉっ♥♥ ちくびひっぱらないでぇぇ♥ あたまばかになるぅぅ♥♥」"
+		CALL MESSAGE_BOX,@"「ちくびぃ♥ あっ♥ ちくびすきぃぃ♥ もっとちくびいじめてぇぇ♥♥」"
+		SIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%♥ ちくびもっとこりこりしてぇぇ♥♥」"
+	ENDIF
+	
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「はーっ♥ あーっ♥ もっと%SELF_CALL()%のちくびくにくにしてぇ♥♥」"
+		CALL MESSAGE_BOX,@"「んんっ♥ さきっぽがジンジンするぅ♥」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「そんな乳首こりこりされると…疼くのガマンできないよ…♥」"
+		CALL MESSAGE_BOX,@"「乳首ばっかりイジられると…切ないよ…♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「はぁっ♥ さっきから、乳首ばっか…んんっ♥」"
+		CALL MESSAGE_BOX,@"「ふっ♥ んんっ♥ 乳首っ転がされっ♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「なんだってんだい…乳首ばっかイジってぇ…♥」"
+		CALL MESSAGE_BOX,@"「くっ♥ ううっ♥ 乳首、つま、むなぁ…っ」"
+	ENDIF
+
+CASE "Ｃ愛撫"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「あっ♥ クリトリスっ♥ びりってするぅ♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「んひっ！♥ クリトリスいじられると…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「なっ！？ どこ触ってんだい！」"
+		ENDIF
+		RETURN
+	ENDIF
+	SIF ABL:Ｃ感度 >= 200 || ABL:Ｃ感覚 >= 10
+		CALL MESSAGE_BOX,@"「そこびんかんだってぇ♥ カラダはねちゃうぅ♥♥」"
+		
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「んんんっ♥ こりこりってぇ♥ くにくにってしてぇ♥ もっと%SELF_CALL()%のクリトリスイジってぇぇ♥♥」"
+		CALL MESSAGE_BOX,@"「んおお♥ びんかんなとこ♥ くりくりされたらぁ♥ あ゛ひ♥♥」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「クリトリス…イジられると気持ちいい…♥」"
+		CALL MESSAGE_BOX,@"「あっ♥ そこっ♥ もっとイジくり回してっ♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「んひっ♥ そこ敏感だってのにぃ…♥」"
+		CALL MESSAGE_BOX,@"「う…っ♥ クリトリス…しびれる…♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「くっ…イジられて…力が入らない…♥」"
+		CALL MESSAGE_BOX,@"「うあっ♥ クリトリス…触るなぁっ…！」"
+	ENDIF
+
+CASE "Ｖ指挿れ"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「はぁっ♥ ゆびはいってくるぅ♥ %MASTER_CALL()%のゆびがなかにぃ♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「うあぁっ！♥ 指が中にぃっ…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「んなっ！？ 何挿れてんだい！」"
+		ENDIF
+		RETURN
+	ENDIF
+	;[%PENIS_CALL()%]、[%VAGINA_CALL()%]、[%ANAL_CALL()%]でそれぞれペニス呼び方、膣呼び方、アナル呼び方を持ってくる
+	;直接CSTR参照と違うのは絶頂回数が設定数より多いと蕩けになるとこ
+	
+	SIF ABL:Ｖ感度 >= 200 || ABL:Ｖ感覚 >= 10
+		CALL MESSAGE_BOX,@"「お゛ーっ♥ %VAGINA_CALL()%っ♥ ゆびでなかであばれてっ♥♥ イっイくぅ♥♥」"
+		
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「ゆびでされてるぅ♥ %MASTER_CALL()%の%PENIS_CALL()%ほしいのにぃ♥♥ せつないよぉぉ♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「んひぃ♥ 指がなかでぇぇ♥ そこ掻き回さないでぇ♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「やめ…動かすなぁぁ♥」"
+	ENDIF
+
+CASE "Ａ指挿れ"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「んひぃ♥ ゆびっ♥ %MASTER_CALL()%のゆびが%ANAL_CALL()%にぃぃ♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「うあぁっ！♥ そんなとこ…指を挿れるなんてぇ…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「っっ！？ おかしくなったのかい%MASTER_CALL()%！？」"
+		ENDIF
+		RETURN
+	ENDIF
+	;Ａ潤滑を見る
+	IF PALAM:Ａ潤滑 >= 5000
+		SIF ABL:Ａ感度 >= 200 || ABL:Ａ感覚 >= 10
+			CALL MESSAGE_BOX,@"「んお゛お゛っ♥ %ANAL_CALL()%っ♥ %ANAL_CALL()%であたまばかになるぅ♥♥」"
+			
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「ゆびっ♥ %ANAL_CALL()%が%MASTER_CALL()%の%PENIS_CALL()%ほしがってぇっ♥♥ ウズウズするぅぅっ♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「くっ、ううっ…やめっ…♥」"
+		ENDIF
+	ELSE
+		SIF ABL:Ａ感度 >= 200 || ABL:Ａ感覚 >= 10
+			CALL MESSAGE_BOX,@"「お゛っ♥ あ゛あ゛っ♥ せめてもう少し優しくっ…♥」"
+			
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「ああ゛っ！？ ちょっ、%MASTER_CALL()%、もう少し濡らすとかさ…」"
+		ELSE
+			CALL MESSAGE_BOX,@"「うあ゛っ！何、考えてんだい…っ！」"
+		ENDIF
+	ENDIF
+
+CASE "尻撫で"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「んっ♥ 尻も楽しもうってかい？♥ %MASTER_CALL()%はホント強欲だね…♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「んっ♥ 尻すりすりして楽しいのかい…？」"
+		ELSE
+			CALL MESSAGE_BOX,@"「んっ… 不愉快だね…」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		SIF ABL:Ａ感度 >= 200 || ABL:Ａ感覚 >= 10
+			CALL MESSAGE_BOX,@"「ふふ…♥ なでるだけで満足なのかい？%SELF_CALL()%は物足りないよ…♥\n　%ANAL_CALL()%がいじってほしいって訴えてくるんだ♥♥」"
+		CALL MESSAGE_BOX,@"「んっ…♥ そんな撫で回してどうしようってんだい…♥♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「っ…♥ やらしい手つきだね…」"
+	ENDIF
+	
+CASE "乳撫で"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「ふふ…♥ 焦らされてるみたいでゾクゾクするよ…♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「んっ…撫でるだけで、いいのかい…？」"
+		ELSE
+			CALL MESSAGE_BOX,@"「なんだい、気色悪いね…」"
+		ENDIF
+		RETURN
+		
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「んふぅ…♥ 優しく撫で回す…だけかい…？♥」"
+		CALL MESSAGE_BOX,@"「はぁ♥ %SELF_CALL()%を焦らしてるのかい…？♥」"
+		CALL MESSAGE_BOX,@"「ふふ…♥ ずいぶん優しく撫で回すんだね♥」"
+ 	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「焦らすように撫で回して…んっ♥ どうしようってんだい…？」"
+		CALL MESSAGE_BOX,@"「んっ…乳撫で回して楽しいかい？♥」"
+		CALL MESSAGE_BOX,@"「はぁ…好きにしなよ…」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「んっ…はぁ…男ってのはデカい乳が好きだねぇ…」"
+		SIF ABL:バストサイズ < BUSTSIZE_並乳
+			CALL MESSAGE_BOX,@"「なんだい…%SELF_CALL()%の乳撫で回して… ケンカ売ってんのかい？\n　あん？そういうつもりないのかい…あ、そ…」"
+	
+	ELSE
+		CALL MESSAGE_BOX,@"「なんなんだい…気味悪いね…」"
+	ENDIF
+	
+CASE "くすぐり"
+	IF !EXP:(SELECTCOM+1000)
+		CALL MESSAGE_BOX,@"「あっははっ、っはぁ♥ はっは…はっはっはっ…はぁ…♥\n　な、何のつもりだい！？」"
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「あっはっはっははっ♥ っひぃー♥ はぁ♥ い、息が、苦しいよ♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「はっはっ…♥ っかはぁ… やめっ！あっははっ♥ なんだってん…はははっ…はぁ…♥」"
+	ENDIF
+	
+;似たコマンドで共通の口上でOKの場合コンマ区切りでいい　初回判定はそれぞれで出ちゃうけども
+CASE "乳吸い","母乳吸い尽くし"
+	IF !EXP:(SELECTCOM+1000)
+		;母乳体質か否かで分岐させよう
+		IF MARK:母乳体質
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「んふふ♥♥ %MASTER_CALL()%にみるくのみたいっていわれるなんて♥\n　%SELF_CALL()%のこと『乳牛』としてみてくれてるってことだよな♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「母乳飲みたくなったかい？♥ そら、好きなだけ飲みな♥♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「んんっ♥ 母乳直飲みとはね…贅沢もんめ…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「うっ♥ な、何が悲しくて%MASTER_CALL()%に乳やらなきゃいけないんだい！」"
+			ENDIF
+		ELSE
+			IF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「ふふ…♥ 赤ん坊みたいに吸い付いて、もう…♥ 母乳ホントに出ちまいそうだよ…♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「はぁっ♥ そんなに乳首吸っても何も出せないよ…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「んっ♥ 赤ん坊みたいに乳首に吸い付いても何も出ないよ！」"
+			ENDIF
+		ENDIF
+		RETURN
+	ENDIF
+	;搾乳処理の前に調教口上表示が来るので現在母乳量を見る
+	IF MARK:母乳体質
+		;母乳がある
+		IF BASE:母乳容量
+			IF ABL:搾乳中毒 >= 10
+				CALL MESSAGE_BOX,@"「あ゛ーっ♥♥ みるくぅ♥♥ いっぱい吸ってっ♥ ぜんぶ吸ってぇぇっ♥♥」"
+				CALL MESSAGE_BOX,@"「さきっぽっ♥ ちくびいっぱいすってぇ♥♥ みるくぴゅっぴゅしてイくぅっ♥♥」"
+				CALL MESSAGE_BOX,@"「みるくっ♥ みるくだすのガマンできないっ♥♥ ガマンしたくないっ♥♥ ああっあーっ♥♥」"
+			ENDIF
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+				CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%♥ %MASTER_CALL()%にみるくのんでもらうのしあわせぇ♥♥」"
+				CALL MESSAGE_BOX,@"「%SELF_CALL()%のみるく♥ だらしなくあふれる%SELF_CALL()%のみるく♥ ちゅーちゅー吸って♥ おねがいだからぁ♥♥」"
+				CALL MESSAGE_BOX,@"「そら、たんとおのみ♥ %SELF_CALL()%のおちち、%MASTER_CALL()%にのんでもらうとよろこぶんだよ♥♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_爆乳
+					CALL MESSAGE_BOX,@"「%SELF_CALL()%のたぷたぷおっぱい♥ うんと吸ってくれっ♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「ふふっ♥ %MASTER_CALL()%ったら、まるで赤ん坊だね…♥」"
+				CALL MESSAGE_BOX,@"「はっああぁっ♥♥ そんなに激しく吸ったら…♥ 疼いちまうよ…♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+					CALL MESSAGE_BOX,@"「ふふ…♥ %SELF_CALL()%のいっぱい母乳詰まったおっぱい、好きなだけ吸っていいんだよ♥♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「ったく、赤ん坊かい、%MASTER_CALL()%は…♥」"
+				CALL MESSAGE_BOX,@"「んっふぅぅっ♥ 乳首吸われて…ジンジンしちまう…♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+					CALL MESSAGE_BOX,@"「くっうぅっ…♥ 幸せそうなツラで吸い付きやがって…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「離せ…！吸い付くんじゃない…！」"
+				CALL MESSAGE_BOX,@"「やめ…っ♥ %MASTER_CALL()%にやる母乳なんてあるもんか…！」"
+			ENDIF
+		;母乳からっぽ
+		ELSE
+			SIF ABL:搾乳中毒 >= 10
+				CALL MESSAGE_BOX,@"「もうからっぽだよぉ♥ すってもでないっ♥ でないからぁ♥ あああぁっ♥♥」"
+				CALL MESSAGE_BOX,@"「みるくないのぉ♥ もうでないのにぃ♥ すわれてイくぅぅっ♥♥」"
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+				CALL MESSAGE_BOX,@"「み、みるくかいっ？♥ はへぇ♥ %MASTER_CALL()%がほしいんなら、がんばるよ…♥♥」"
+				CALL MESSAGE_BOX,@"「も、もうからっぽだよ♥ まっへ、そんなに吸わな、んへぇぇぇぇっっ♥♥」"
+				CALL MESSAGE_BOX,@"「はぁ…♥ はぁ…♥ そんなに熱く吸われたら、もっとみるくだせそうな気もするよ♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「はんっ♥ %MASTER_CALL()%、もう限界だよ…ぅあっ♥♥」"
+				CALL MESSAGE_BOX,@"「母乳、ほしいのかい…？♥ が、頑張ってみるけどさ…♥」"
+				CALL MESSAGE_BOX,@"「んんっ…♥ すまないねぇ…%SELF_CALL()%のおっぱい、疲れちゃったみたいだよ…」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「もうからっぽだよ…吸われても出そうにな…あっ♥」"
+				CALL MESSAGE_BOX,@"「んっ♥ …も、もう出ないからやめ…んぅ♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「いい加減にしな…！いくらやっても限界だよ…！」"
+				CALL MESSAGE_BOX,@"「くっ…限度ってもんを考えな！」"
+			ENDIF
+		ENDIF
+	;母乳体質じゃない
+	ELSE
+		IF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「やれやれ…まだ母乳が出せるカラダじゃないんだがね…♥」"
+			CALL MESSAGE_BOX,@"「おっぱい出せないカラダですまないねぇ…\n　できることなら%MASTER_CALL()%に飲ませてあげたいよ…♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「出ないもんは…出ないよっ…んぅっ…♥」"
+			CALL MESSAGE_BOX,@"「無いものねだりしたって無駄だよ…」"
+		ELSE
+			CALL MESSAGE_BOX,@"「なんなんだい！？%MASTER_CALL()%は赤ん坊かい！？」"
+			CALL MESSAGE_BOX,@"「やめっ！？いくら吸ったって出ないよ！」"
+		ENDIF
+	ENDIF
+	
+CASE "乳首しゃぶり","乳揉み吸い","直飲み触手複合搾乳"
+	;パターン分けをしたい場合は別個にするとよさげ
+	IF !EXP:(SELECTCOM+1000)
+		IF MARK:母乳体質
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「ひゃへぇぇ♥♥ %SELF_CALL()%のみるくどばどばでちまうよぉぉ♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「んっ♥ はっ♥ ふぁぁっ♥♥ ずいぶんガツガツ吸うじゃないか…♥♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「んんっ♥ 母乳直飲みとはね…贅沢もんめ…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「うっ♥ な、何が悲しくて%MASTER_CALL()%に乳やらなきゃいけないんだい！」"
+			ENDIF
+		ELSE
+			IF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「ふふ…♥ 赤ん坊みたいに吸い付いて、もう…♥ 母乳ホントに出ちまいそうだよ…♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「はぁっ♥ そんなに乳首吸っても何も出せないよ…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「んっ♥ 赤ん坊みたいに乳首に吸い付いても何も出ないよ！」"
+			ENDIF
+		ENDIF
+		RETURN
+	ENDIF
+	IF MARK:母乳体質
+		IF BASE:母乳容量
+			IF ABL:搾乳中毒 >= 10
+				CALL MESSAGE_BOX,@"「ちくびっ♥ ちくびもっとすってぇ♥♥ たくさんみるくだすっ♥ んはあ゛ーっ♥♥」"
+				CALL MESSAGE_BOX,@"「おっぱいすわれるぅ♥ ぜんぶすいだされてイくぅっ♥♥」"
+				CALL MESSAGE_BOX,@"「%SELF_CALL()%のうずきっぱなしのちくびっ♥ もっとしゃぶってぇ♥ あ゛っ♥ っイぐぅぅっ♥♥」"
+			ENDIF
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+				CALL MESSAGE_BOX,@"「んっ♥ %MASTER_CALL()%ったら♥ こんなにひっしにちくびすってぇ♥ し、しあわへぇ♥♥」"
+				CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%♥ もっとっ♥ もっとちくびしゃぶってっ♥ ぜんぶすってぇぇ♥♥」"
+				CALL MESSAGE_BOX,@"「あ゛ーっ♥ ちくびっしゃぶられてっ♥♥ こんなの、みるくもイくのもガマンできないよっ♥♥」"
+				CALL MESSAGE_BOX,@"「お゛ーっ♥♥ みるくのまれてっ♥ %SELF_CALL()%しあわせかみしめてるぅっ♥♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_爆乳
+					CALL MESSAGE_BOX,@"「%SELF_CALL()%のたぷたぷおっぱい♥ からっぽになるまでたんのうしな♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「んんっ♥ ったく…%MASTER_CALL()%、いいカオでしゃぶりつくねぇ…♥」"
+				CALL MESSAGE_BOX,@"「んっ♥♥ こんな元気にしゃぶられたら、母乳止まんなくなるじゃないか♥♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+					CALL MESSAGE_BOX,@"「どっしり育った%SELF_CALL()%のおっぱい♥ %MASTER_CALL()%が自由にしていいんだよ♥♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「ったく、赤ん坊かい、%MASTER_CALL()%は…♥」"
+				CALL MESSAGE_BOX,@"「んっふぅぅっ♥ 乳首吸われて…ジンジンしちまう…♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+					CALL MESSAGE_BOX,@"「くっうぅっ…♥ 幸せそうなツラでしゃぶりつきやがって…♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「離れ…！しゃぶるなぁぁ…！」"
+				CALL MESSAGE_BOX,@"「やめ…っ♥ %MASTER_CALL()%にやる母乳なんてあるもんか…！」"
+			ENDIF
+		ELSE
+			SIF ABL:搾乳中毒 >= 10
+				CALL MESSAGE_BOX,@"「もうからっぽだよぉ♥ すってもでないっ♥ でないからぁ♥ あああぁっ♥♥」"
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+				CALL MESSAGE_BOX,@"「み、みるくかいっ？♥ はへぇ♥ %MASTER_CALL()%がほしいんなら、がんばるよ…♥♥」"
+				CALL MESSAGE_BOX,@"「も、もうからっぽだよ♥ まっへ、そんなに吸わな、んへぇぇぇぇっっ♥♥」"
+				CALL MESSAGE_BOX,@"「はぁ…♥ はぁ…♥ そんなにちくびしゃぶられたら、もっとみるくだせそうな気もするよ♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「はんっ♥ %MASTER_CALL()%、もう限界だよ…ぅあっ♥♥」"
+				CALL MESSAGE_BOX,@"「母乳、ほしいのかい…？♥ が、頑張ってみるけどさ…♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「もうからっぽだよ…いくらしゃぶろうが、出そうにな…あっ♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「いい加減にしな…！いくらやっても限界だよ…！」"
+			ENDIF
+		ENDIF
+	ELSE
+		IF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「やれやれ…まだ母乳が出せるカラダじゃないんだがね…♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「出ないもんは…出ないよっ…んぅっ…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「なんなんだい！？%MASTER_CALL()%は赤ん坊かい！？」"
+		ENDIF
+	ENDIF
+	
+CASE "キス"
+	SIF TALENT:キス未経験
+		RETURN
+	;初キス時の口上：[イベント]参照　ここは何もせず戻る
+	;ファーストキスは済んでるけどコマンドとしては初めてという面倒な部分
+	;は下だけ表示するってことでいいんじゃない？
+	;というわけでELSE部分を消した
+	
+	IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+		CALL MESSAGE_BOX,@"「んむ、れろ、んちゅっ♥ %SWEET_MASTER_CALL()%…もっと熱いのがしたいよ…♥♥」"
+		CALL MESSAGE_BOX,@"「んちゅ、れろ、ぷはっ♥ 情熱的だねぇ♥ な、もう一回頼むよぉ♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「んむむぅ！っはぁ… 満足かい…？」"
+		CALL MESSAGE_BOX,@"「ちょ、顔が近… んむっ…♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「んぐぐぅ！ …いくらやろうが、%SELF_CALL()%は堕ちないよ…！」"
+		CALL MESSAGE_BOX,@"「んぶっ！？ …ペッ　下衆が…」"
+		CALL MESSAGE_BOX,@"「近、寄る、なぁ…！―――んむぅっ！？」"
+	ENDIF
+	
+CASE "Ｃ舐め"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「んっ♥ あっあっ♥ %MASTER_CALL()%♥ そこ舐められるとぉ♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「ひぁっ！？♥ ど、どこ舐めてんだい…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「うあっ！？♥ な、何気安く舐めてくれてんだい！」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+		CALL MESSAGE_BOX,@"「はへぇ♥ クリトリスぅ♥ したでころころきもちいいぃ♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「うっ、あっ、やめ、舐め…あぁっ♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「やめろぉっ…♥ そこ…舐めるなぁぁ…♥」"
+	ENDIF
+	
+CASE "Ｖ舐め"
+CASE "Ａ舐め"
+CASE "乳舐め"
+CASE "耳舐め"
+CASE "腋舐め"
+CASE "頬舐め"
+	IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+		CALL MESSAGE_BOX,@"「犬ッコロみたいでカワイイね♥ なでなでしてやろうかい？♥」"
+		CALL MESSAGE_BOX,@"「ふ、んふふ♥ く、くすぐったいよ、%MASTER_CALL()%♥」"
+
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「んん…♥ くすぐったいよ…」"
+		CALL MESSAGE_BOX,@"「顔がベタベタするじゃないか…」"
+	ELSE
+		CALL MESSAGE_BOX,@"「犬ッコロの真似かい、鬱陶しいね…」"
+		CALL MESSAGE_BOX,@"「顔がベタベタして気持ち悪いね…」"
+	ENDIF
+
+
+CASE "正常位","後背位","対面座位","背面座位","騎乗位","対面立位","背面立位","強制騎乗位"
+	;今のところ全部[Ｖセックス]を呼び出す
+	;差分作る気あるなら作っちゃってもいいのよ
+	;口上内部で口上呼び出すと2回判定が出てしまうので別口の処理を使うよ
+	;体位で変更したい場合は↓を消しつつ参考にして書いてね
+	CALL KOJO_GENERAL_姉御肌1_TRAIN_INSIDE("Ｖセックス",ARGS:2)
+
+CASE "Ａ正常位","Ａ後背位","Ａ対面座位","Ａ背面座位","Ａ騎乗位","Ａ対面立位","Ａ背面立位","強制Ａ騎乗位"
+	CALL KOJO_GENERAL_姉御肌1_TRAIN_INSIDE("Ａセックス",ARGS:2)
+	
+CASE "素股"
+CASE "フェラチオ"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「もちろん♥ 他でもない%MASTER_CALL()%の頼みさ、喜んで奉仕させてもらうよ♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「ふふ♥ %PENIS_CALL()%、舐めてほしいのかい？♥ しかたないねぇ♥♥」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			CALL MESSAGE_BOX,@"「…%PENIS_CALL()%を、舐めろって？ま…今更口でするぐらい、構わないさ…♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「ちっ、そんなもんしゃぶれってかい…」"
+		ELSE
+			CALL MESSAGE_BOX,@"「なっ…！？ そんな粗末なもん咥えろってのかい…！？」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「……んぐ……じゅる……れろ……ちゅぽっ♥\n　%SELF_CALL()%の口の具合、気に入ったかい……？♥」"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%の%PENIS_CALL()%、苦しそうだね♥ ほら、%SELF_CALL()%に任せな♥」"
+		SIF GETBIT(STAIN:MASTER:ペニス,1)
+			CALL MESSAGE_BOX,@"「%SELF_CALL()%の汁で%PENIS_CALL()%よごしちまったね\n　セキニンとってお掃除しないと…♥」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「……んむ……じゅる……ちゅぱっ……ちゅっ♥\n　ふふ♥ %PENIS_CALL()%もこうやって見ると、カワイイねぇ…♥」"
+		CALL MESSAGE_BOX,@"「……はむ……れろ……じゅる……んぱっ♥\n　%SELF_CALL()%のおクチの具合はどうだい？♥」"
+		SIF GETBIT(STAIN:MASTER:ペニス,1)
+			CALL MESSAGE_BOX,@"「%SELF_CALL()%の汁でべとべとだね、お掃除しないと…♥」"
+	ELSEIF ＃陥落状態／陥落以上＃
+		CALL MESSAGE_BOX,@"「……じゅる……れろ……んぐ……ぷはっ♥\n　……こんなもんかい？」"
+		SIF GETBIT(STAIN:MASTER:ペニス,1) && !Talent:汚臭鈍感
+			CALL MESSAGE_BOX,@"「自分の汁ついたモノ舐めるのちょっと抵抗あるんだけど…\n　やればいいんだろ、やれば…」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「はいはい、またしゃぶればいいんだろ？」"
+		SIF GETBIT(STAIN:MASTER:ペニス,1) && !Talent:汚臭鈍感
+			CALL MESSAGE_BOX,@"「そういうのはできれば突っ込む前にしてほしかったね…」"
+	ELSE
+		CALL MESSAGE_BOX,@"「…また、咥えろってかい……」"
+		SIF GETBIT(STAIN:MASTER:ペニス,1) && !Talent:汚臭鈍感
+			CALL MESSAGE_BOX,@"「くっ…　自分の汁舐め取れってのかい…　悪趣味だね…」"
+	ENDIF
+
+CASE "イラマチオ"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「へ？ %SELF_CALL()%の喉で、無理やり？\n　んふふっ♥ %MASTER_CALL()%の『モノ』って感じ、ゾクゾクするね♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「%SELF_CALL()%の喉を、犯したい…？\n　へぇ…♥ イイね、%MASTER_CALL()%からオスを感じてきゅんきゅんしちまうよ♥♥」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			CALL MESSAGE_BOX,@"「口を開け、って…あーー、こんな感じ？ってちょっ…\n　―――んぐぅっ！？お゛っご！んぶぅっ！！♥ ふぐぅっ！！♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「口を開け、って…や、やな予感のする命令だね… あーー……おええ、あいを…？\n　―――んぶっ！？ん゛ーっ！んう゛っ！ん゛っっ！！」"
+		ELSE
+			CALL MESSAGE_BOX,@"「は…？ そんな粗末なもん見せびらかして何だい…！近寄るんじゃ…\n　―――んむ゛っ！？ん゛っ！んぐっ！ん゛むぅぅっ！！」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「あーっ♥ どうぞご自由にお使いください、ってな♥♥\n　―――んぶっ♥ む゛ーっ！♥ じゅるっ♥ ん゛むっっ♥」"
+		CALL MESSAGE_BOX,@"「ん゛お゛っ♥ じゅるっ♥ む゛う゛っ♥ ん゛っ♥」\n（%MASTER_CALL()%に使われてるって感覚、しあわせぇ♥♥）"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「ん゛むっ♥ お゛っっ♥ ん゛ん゛っ♥ じゅるっ♥\n ―――ハァーッ♥ ハァーッ♥ %SELF_CALL()%の喉、よかったかい？♥♥」"
+	ELSEIF ＃陥落状態／陥落以上＃
+		CALL MESSAGE_BOX,@"「はいはい、ご自由にどうぞ… んあ♥\n　―――ん゛っ！んぶっっ！お゛っぁ！♥ ふっう゛っ！♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「ん゛ん゛っ！ん゛む゛ぅっ！！ん゛ーっ！ん゛っぐぅぅ！！\n　―――ゴホッ、コホッ！はぁ…はぁっ……少しは、加減してほしいね……っ」"
+	ELSE
+		CALL MESSAGE_BOX,@"「…ま、また%SELF_CALL()%の喉犯そうっての！？やっ…離せっ！んあ゛ぁ\n　―――ん゛っ！んぐっっ！んっぐぶ！！ん゛ーーっ！」"
+		CALL MESSAGE_BOX,@"「ん゛ん゛っ！ん゛む゛ぅっ！！ん゛ーっ！ん゛っぐぅぅ！！\n　―――ゴホッ、カハッ！はぁ……はぁっ……%SELF_CALL()%を…なんだと…」"
+	ENDIF
+
+CASE "パイズリ"
+CASE "強制パイズリ"
+CASE "縦パイズリ"
+CASE "強制縦パイズリ"
+CASE "手コキ"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「もちろん♥ 他でもない%MASTER_CALL()%の頼みさ、喜んで奉仕させてもらうよ♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「ふふ♥ 手でシてほしいのかい？♥ しかたないねぇ♥♥」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			CALL MESSAGE_BOX,@"「…手でシてほしい？まぁいいけど…痛かったらちゃんと言うんだよ？」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「そ、ソレを握れ…と？……まぁ、いいけどさ……」"
+		ELSE
+			CALL MESSAGE_BOX,@"「はぁ？手でシろだぁ…？\n　ま、他のことよりかマシ……か？」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「いいよ♥ %MASTER_CALL()%が満足するまで、シコシコしてあげるよ♥♥」"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%の%PENIS_CALL()%、苦しそうだね♥ ほら、%SELF_CALL()%に任せな♥」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「ふふ♥ %MASTER_CALL()%の%PENIS_CALL()%、きもちよさそうにピクピクしてる…♥」"
+	ELSEIF ＃陥落状態／陥落以上＃
+		CALL MESSAGE_BOX,@"「…手でシたいのかい？わかったから出しな……」\n（ん……%MASTER_CALL()%の%PENIS_CALL()%、熱…っ♥）"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「…はいはい、また手ですればいいんだろ……　…痛くないのかねぇ？」"
+	ELSE
+		CALL MESSAGE_BOX,@"「また、手で……？何がイイのかわからないね……」"
+	ENDIF
+
+
+CASE "家畜用搾乳器"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "魔動快楽搾乳器"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手快楽搾乳器"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "小型霊力抽出装置"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+
+CASE "触手乳揉み"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手乳搾り"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "乳包み花弁搾乳触手"
+	SELECTCASE ARGS:2
+	CASE "焦らし"
+		IF !EXP:(SELECTCOM+1000)
+			IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「んん…？ おもしろい形だね…♥\n　まさか、これで%SELF_CALL()%のおっぱいしゃぶろうってかい？♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「っ！？ な、なんだいこの気色悪いのは… こ、これで何しようってんだ…」"
+			ENDIF
+			RETURN
+		ENDIF
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「はっ…♥ はぁっ…♥ またしゃぶられるぅ…♥♥\n　しょくしゅに、ねっぷりしゃぶられてぇ、ちゅーちゅーされるぅ…♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「ひぅっ…♥ またそれかい…！？ またこれで弄ぶってのかい…！♥」"
+		ENDIF
+	CASE "取り外し"
+	
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「しょくしゅっ♥♥ すってるぅぅっ♥♥\n　おっぱい♥ きゅっきゅってぇ♥♥ ああ゛ーっ♥♥」"
+	
+	CASEELSE
+		CALL MESSAGE_BOX,@"「んっ♥ お゛お゛ーーーっ♥♥\n　はへぇっ♥ いいぃ♥ しょくしゅいいぃ♥♥」"
+	
+	ENDSELECT
+	
+CASE "透明カップ搾乳触手"
+	SELECTCASE ARGS:2
+	CASE "焦らし"
+	
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "搾乳ワーム触手"
+	SELECTCASE ARGS:2
+	CASE "焦らし"
+	
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手Ｖ挿入"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手Ａ挿入"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手強制パイズリ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手フェラチオ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手イラマチオ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "ブラシ触手"
+	;5部位あるのでここは5つの口上内包みたいな状態　分岐もちょっと違うんじゃ
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "Ａ"
+	
+	CASE "Ｂ"
+	
+	CASE "Ｃ"
+	
+	CASE "Ｖ"
+	
+	CASE "Ｎ"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手拘束"
+CASE "触手目隠し"
+CASE "触手クリ吸い"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手耳姦"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+	
+;CASE "ローション"
+CASE "Ｖローション"
+CASE "Ａローション"
+CASE "Ｂローション"
+CASE "バイブ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "アナルバイブ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "乳首ローター"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "クリローター"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "乳首吸引器"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "クリ吸引器"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "アイマスク"
+CASE "口枷"
+CASE "ボールギャグ"
+CASE "媚薬"
+CASE "強制開口器"
+
+CASE "淫紋付与"
+	SELECTCASE ARGS:2
+	CASE "付与中"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「んんっ♥ ぉっ♥♥ 一番奥が…っ♥ 疼くぅぅっ♥♥」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			CALL MESSAGE_BOX,@"「っ！？♥ ぁっ♥ …今、%SELF_CALL()%の腹に…何をっ？♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「…っ！？♥ …今、腹に妙な感覚が…っ」"
+		ELSE
+			CALL MESSAGE_BOX,@"「っ！？♥ %SELF_CALL()%の腹に、何かして……っ！？」"
+		ENDIF
+
+	CASEELSE	;完了
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「はへぇぇ…っ♥ あぁ…っ♥\n　この模様…っ♥ これが%SELF_CALL()%の『家畜』の証なんだね…♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「はぁ…っ♥ あぁ…っ♥\n　この模様…♥ %SELF_CALL()%が『特別』だって証と、思っていいかい…？♥♥」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			CALL MESSAGE_BOX,@"「はへ…っ♥ んっ♥\n　…これが、%MASTER_CALL()%の『モノ』の烙印…ってことかい…♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「はっ、はぁっ♥ カラダ、がっ♥ 疼くっ…♥ 疼くぅっ…♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「っ♥ んんっ♥ ……なんだい…この模様っ！？♥」\n（カラダが…おかしい♥ 腹の奥が、疼くっ♥♥）"
+		ENDIF
+	
+	ENDSELECT
+
+CASE "洗脳触手"
+	SELECTCASE ARGS:2
+	CASE "開始"
+		CALL MESSAGE_BOX,@"「な、耳から…っ！？ い゛っっ―――！！？♥」\n（あたまのなか、ぐちゃぐちゃにされ、なにも…わから―――）"
+		CALL MESSAGE_BOX,@"「なっ！？ やめっ！ %SELF_CALL()%がっ♥ どんどんわからなくっ♥\n　きえてくっ♥ おもいでもなにもっ♥ やめ…っ――――――」"
+	CASE "完了"
+		IF CFLAG:崩壊
+			CALL MESSAGE_BOX,@"「───んんっ ……あれ…？…%SELF_CALL()%、いったい…？\n　あ、%MASTER_CALL()%…おはよう♥」"
+			CALL MESSAGE_BOX,@"「───はぁっ ……はぁ、はっ……？ なぁ%MASTER_CALL()%、%SELF_CALL()%に何が…？\n　ここしばらくの記憶が…思い出そうとすると、頭が痛いんだ……」"
+		ELSE
+			CALL MESSAGE_BOX,@"「───%SELF_CALL()%は%MASTER_CALL()%にさからえない…さからっちゃいけない…\n　%MASTER_CALL()%に、絶対服従……♥」"
+			CALL MESSAGE_BOX,@"「───なんだか、生まれ変わった気分だよ……今までの%SELF_CALL()%は何してたんだか…\n　ほら、%MASTER_CALL()%？♥ %SELF_CALL()%に命令はあるかい？♥」"
+		ENDIF
+	CASE "解除"
+		IF CFLAG:崩壊
+			CALL MESSAGE_BOX,@"「ひぐっ！ なん、だ…？きおく、が……だん、だん……っ？\n　いや、だ……おもい、だしたくな―――……ぅ……ぁ……」"
+			CALL MESSAGE_BOX,@"「…っ！？ うっあ、頭がっ、割れそう…っ！？%MASTER_CALL()%、これ、は…？ いし、き、が───\n　………ぅ？ ……ぅぁ ……ぁ……んぅ……」"
+		ENDIF
+		CALL MESSAGE_BOX,@"「───っ…？ %SELF_CALL()%、意識トんでたのか……？」"
+		CALL MESSAGE_BOX,@"「───ぁぇ…？ %SELF_CALL()%…何、してた……？」"
+
+	CASEELSE
+	
+	ENDSELECT
+
+CASE "絶頂魔力回復淫紋付与"
+	SELECTCASE ARGS:2
+	CASE "付与中"
+	
+	CASE "完了"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "目隠し取り外し"
+CASE "口枷取り外し"
+CASE "Ｖペニス引き抜き"
+CASE "Ａペニス引き抜き"
+CASE "搾乳器取り外し"
+CASE "搾乳触手取り外し"
+CASE "胸汚れ拭き取り"
+
+CASE "Ａ注射"
+CASE "Ｂ注射"
+CASE "Ｃ注射"
+CASE "Ｖ注射"
+CASE "Ｎ注射"
+CASE "首筋注射"
+	
+ENDSELECT
+
+
+
+;口上内で汎用的に呼び出すための部分　処理はCALL MESSAGE_BOX関数だけ呼ぶと便利だよ
+@KOJO_GENERAL_姉御肌1_TRAIN_INSIDE(ARGS:1,ARGS:2)
+
+SELECTCASE ARGS:1
+CASE "Ｖセックス"
+	;処女喪失の場合は[イベント]のほうに口上があるのでそっちだけ表示する
+	SIF SOURCE:処女喪失
+		RETURN
+	
+	SELECTCASE ARGS:2
+	CASE "継続"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「%MASTER_CALL()%の%PENIS_CALL()%♥ もっと%VAGINA_CALL()%に感じさせてぇ♥♥」"
+			CALL MESSAGE_BOX,@"「あっ♥ あっ♥ んっ♥ %PENIS_CALL()%っ♥ %VAGINA_CALL()%に出たりっ♥ 入ったりぃっ♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「%MASTER_CALL()%の%PENIS_CALL()%…♥ %SELF_CALL()%の中で元気にしてるぅ…っ♥♥」"
+			CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%っ…♥ もっと…っ♥ もっと動いてっ♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「うっ♥ くっ…♥ まだ、満足しないのかい…？♥」"
+			CALL MESSAGE_BOX,@"「うっ♥ んっ♥ うっ♥ あっ♥ ったく♥ 元気だね…♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「いい加減… うっ…♥ やめろぉぉ…！」"
+			CALL MESSAGE_BOX,@"「うっ…♥ くそ…ぉっ 動、かすなぁ…っ！」"
+		ENDIF
+	
+	CASE "実行"
+		;挿入
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「んあぁっ♥ %SELF_CALL()%の%VAGINA_CALL()%満たされてるぅぅ♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「んぅぅっ！？は、入ってきたぁ…っ♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「っっ！？くそぉっ、抜けっ！抜けぇぇっ！」"
+		ENDIF
+	
+	ENDSELECT
+	
+CASE "Ａセックス"
+	SIF SOURCE:Ａ処女喪失
+		RETURN
+	
+	SELECTCASE ARGS:2
+	CASE "継続"
+		IF ABL:Ａ感覚 >= 5
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+				CALL MESSAGE_BOX,@"「%MASTER_CALL()%♥ %MASTER_CALL()%の%PENIS_CALL()%かんじるぅっ♥♥\n　%SELF_CALL()%、すっかり%ANAL_CALL()%はまってるぅぅ♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「んっ♥ ああっ♥♥ んひぃ♥ %ANAL_CALL()%にこんな使い道あったなんてぇ♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「うっ♥ く、くそぉ♥ こんなの間違ってるってぇ♥」"
+			ENDIF
+		ELSE
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+				CALL MESSAGE_BOX,@"「んんっ♥ %ANAL_CALL()%でもどこでも、%MASTER_CALL()%の自由にしていいから♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「うっ、くぅ…♥ ホントに、これであってんのかい…？♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「ううっ…ぐっ…おかしいよこんなの…！」"
+				CALL MESSAGE_BOX,@"「うっ… くそ…ぉっ 動、かすなぁ…っ！」"
+
+			ENDIF
+		ENDIF
+
+	CASE "実行"
+		IF ABL:Ａ感覚 >= 5
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「はへっ♥ %PENIS_CALL()%♥ %ANAL_CALL()%にぃぃ♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「くぁっ♥ ヘンだよこんなの…♥」"
+			ENDIF
+		ELSE
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「あ？ %ANAL_CALL()%だ…？構わないけどそりゃ…ふぁっ♥♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「なっ！？痛っ、無茶だよっ…！」"
+			ENDIF
+		ENDIF
+	
+	ENDSELECT
+
+ENDSELECT
+
+

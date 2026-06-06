@@ -1,0 +1,221 @@
+﻿@SPLIT_SINGLE(ARGS:0, ARG:0 = 0, ARGS:1 = ":")
+#FUNCTIONS
+#DIMS DYNAMIC strSplit, 30
+
+SPLIT ARGS:0, ARGS:1, strSplit
+
+RETURNF strSplit:(ARG:0)
+
+@CAPITALIZE(ARGS:0)
+#FUNCTIONS
+RETURNF TOUPPER(SUBSTRING(ARGS:0, 0, 1)) + SUBSTRING(ARGS:0, 1, -1)
+
+;when you need to only uncap the first letter of the sentence and leave the rest
+@UNCAPITALIZE(ARGS:0)
+#FUNCTIONS
+RETURNF TOLOWER(SUBSTRING(ARGS:0, 0, 1)) + SUBSTRING(ARGS:0, 1, -1)
+
+@RAND_CAP(ARGS)
+#FUNCTIONS
+LOCALS =
+LOCAL:0 = RAND:2
+
+FOR LOCAL:1, 0, STRLENS(ARGS)
+	IF RAND:3 < LOCAL:0
+		LOCALS += @"%TOUPPER(SUBSTRING(ARGS, LOCAL:1, 1))%"
+		LOCAL:0 -= 1
+	ELSE
+		LOCALS += @"%TOLOWER(SUBSTRING(ARGS, LOCAL:1, 1))%"
+		LOCAL:0 += 1
+	ENDIF
+NEXT
+RETURNF LOCALS
+
+@CAP_WORD(ARGS)
+#FUNCTIONS
+LOCALS '= ARGS
+
+LOCALS:1 =
+FOR LOCAL, 0, STRCOUNT(LOCALS, " ") + 1
+	LOCALS:1 = %CAPITALIZE(LOCALS:1) + \@ STRLENS(LOCALS:1) ? %" "%#\@%%CAPITALIZE(SPLIT_SINGLE(LOCALS, LOCAL, " "))%
+NEXT
+LOCALS '= LOCALS:1
+LOCALS:1 =
+FOR LOCAL, 0, STRCOUNT(LOCALS, "-") + 1
+	LOCALS:1 = %CAPITALIZE(LOCALS:1) + \@ STRLENS(LOCALS:1) ? %"-"%#\@%%CAPITALIZE(SPLIT_SINGLE(LOCALS, LOCAL, "-"))%
+NEXT
+LOCALS '= LOCALS:1
+
+RETURNF LOCALS
+
+@CENTER(ARGS, ARG)
+#FUNCTIONS
+LOCAL = (ARG/2) - (STRLENS(ARGS) / 2)
+ARGS = %"", LOCAL%%ARGS%%"", ((LOCAL+ARG%2)-(STRLENS(ARGS)%2))%
+RETURNF ARGS
+
+@TOSTR_SPACE(ARG:0)
+#FUNCTIONS
+LOCALS:0 = 
+FOR LOCAL:0, 0, ARG:0
+	LOCALS:0 += " "
+NEXT
+RETURNF LOCALS:0
+
+;--------------------------------------------------------
+;text splitting functions from eraTohoK
+;@SPLIT_R
+;:で区切られた文字列からランダムに一つを返す
+;--------------------------------------------------------
+@SPLIT_R(ARGS)
+#FUNCTIONS
+#DIM LCOUNT
+#LOCALSSIZE 100
+
+VARSET LOCAL
+VARSET LOCALS
+
+SPLIT ARGS, ":", LOCALS
+
+RETURNF LOCALS:(RAND:RESULT)
+
+
+@CAP_PROCESS(ARGS, ARG)
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 1
+		RETURNF TOLOWER(ARGS)
+	CASE 2
+		RETURNF TOUPPER(ARGS)
+	CASE 3
+		RETURNF CAPITALIZE(ARGS)
+	;random capitalization, courtesy of grammar anon
+	CASE 4
+		RETURNF RAND_CAP(ARGS)
+	;capitalize every word with some limitations
+	CASE 5
+		RETURNF CAP_WORD(ARGS)
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+;-------------------------------------------------
+;確率判定関数@PERCENT
+;式中で使用する関数です。引数％の確率判定を行います。通れば1を返します
+;常用する関数ですが、なぜ本体にこれ無いんだろ…。
+;-------------------------------------------------
+@PERCENT(ARG)
+#FUNCTION
+RETURNF (ARG - RAND:100) > 0
+
+;--------------------------------------------------------
+;Check if a string ARGS:0 ends in any specified substring ARGS:1 through ARGS:9
+;--------------------------------------------------------
+@STRING_ENDS_IN(ARGS:0, ARGS:1 = "NULL", ARGS:2 = "NULL", ARGS:3 = "NULL", ARGS:4 = "NULL", ARGS:5 = "NULL", ARGS:6 = "NULL", ARGS:7 = "NULL", ARGS:8 = "NULL", ARGS:9 = "NULL")
+#FUNCTION
+RETURNF STRCOUNT(ARGS:0, "(" + ARGS:1 + "|" + ARGS:2 + "|" + ARGS:3 + "|" + ARGS:4 + "|" + ARGS:5 + "|" + ARGS:6 + "|" + ARGS:7 + "|" + ARGS:8 + "|" + ARGS:9 + ")$")
+
+; WARNING: Not currently usable, bust sizes listed here are no longer correct
+@GET_BUSTSIZE(ARG)
+#FUNCTION
+IF TALENT:ARG:絶壁 == 1     ; Flat
+	RETURNF -2
+ELSEIF TALENT:ARG:貧乳 == 1 ; Small
+	RETURNF -1
+ELSEIF TALENT:ARG:並乳 == 1 ; Average
+	RETURNF 0
+ELSEIF TALENT:ARG:巨乳 == 1 ; Large
+	RETURNF 1
+ELSEIF TALENT:ARG:豊乳 == 1 ; Huge
+	RETURNF 2
+ELSEIF TALENT:ARG:爆乳 == 1 ; Enormous
+	RETURNF 3
+ELSEIF TALENT:ARG:超乳 == 1 ; Gigantic
+	RETURNF 4
+ELSEIF TALENT:ARG:魔乳 == 1 ; Otherworldly
+	RETURNF 5
+ENDIF
+
+;-------------------------------------------------
+;ARG:0番のキャラが巨乳か爆乳なら1を返す関数
+; WARNING: Not currently usable, bust sizes listed in GET_BUSTSIZE are no longer correct
+;-------------------------------------------------
+@IS_BOIN(ARG:0)
+#FUNCTION
+IF GET_BUSTSIZE(ARG:0) > 0
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+
+; ARGS is the word that needs to be replaced (I, me, my, I'm)
+; CSTR:一人称 or CSTR:一人称／蕩け is the Value telling us how to replace it.
+; It Contains I for first person, We for plural, and a name or description for third person
+@SELF_CALL_ENG(ARGS)
+#FUNCTIONS
+IF EX:総絶頂 >= FLAG:蕩け口上化絶頂回数
+	RETURNF SELF_CALL_ENG_2(ARGS, CSTR:一人称／蕩け)
+ELSE
+	RETURNF SELF_CALL_ENG_2(ARGS, CSTR:一人称)
+ENDIF
+
+@SELF_CALL_ENG_2(ARGS, ARGS:1)
+#FUNCTIONS
+
+; if ARGS is I, we can always return the content of ARGS:1
+IF ARGS == "I"
+	RETURNF @"%ARGS:1%"
+
+; if ARGS:1 is I, we can always return the content of ARGS
+ELSEIF ARGS:1 == "I"
+	RETURNF @"%ARGS%"
+
+; if neither argument is I, use this ugly if chain to see what we need to return
+ELSEIF ARGS == "me"
+	IF ARGS:1 == "We"
+		RETURNF "us"
+	ELSE
+		RETURNF @"%ARGS:1%"
+	ENDIF
+
+ELSEIF ARGS == "my"
+	IF ARGS:1 == "We"
+		RETURNF "our"
+	ELSE
+		RETURNF @"%ARGS:1%'s"
+	ENDIF
+
+ELSEIF ARGS == "My"
+	IF ARGS:1 == "We"
+		RETURNF "Our"
+	ELSE
+		RETURNF @"%ARGS:1%'s"
+	ENDIF
+
+ELSEIF ARGS == "I'm"
+	IF ARGS:1 == "We"
+		RETURNF "We are"
+	ELSE
+		RETURNF @"%ARGS:1% is"
+	ENDIF
+
+ELSEIF ARGS == "have"
+	IF ARGS:1 == "We"
+		RETURNF "have"
+	ELSE
+		RETURNF @"has"
+	ENDIF
+
+ENDIF
+
+
+;-------------------------------------------------
+; Add space to non-empty string
+;-------------------------------------------------
+@ADD_SPACE(ARGS)
+#FUNCTIONS
+SIF ARGS == ""
+	RETURNF ""
+
+RETURNF @"%ARGS% "

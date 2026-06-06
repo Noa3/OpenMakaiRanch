@@ -1,0 +1,88 @@
+﻿
+;奴隷を引き取る
+@SLAVE_RECEIVE_COMMON
+
+;TARGET指定されたまま
+CFLAG:捕獲日 = DAY
+EQUIP:魔力枷 = 1
+
+;ゴブリン輪姦でなければ反抗ON　輪姦だと屈服してる可能性とかあるので
+SIF !CFLAG:輪姦回数
+	CSTR:陥落状態 = 反抗
+
+;追跡者リセット
+CALL MERCENARY_RESET
+
+;FLAG:外出済みで牧場で受け取ったか違うか判定できるよ→とりあえず保留
+CALL KOJO_PRINT("イベント","奴隷引き取り")
+CALL SLAVE_RECEIVE_MESSAGE
+
+;TALENTで変化　ここ来る場合絶対1人は家畜になってる
+IF ＃陥落状態／拒絶以上＃
+	;輪姦によって反抗なしの場合は変化なし
+
+ELSEIF TALENT:正義感
+	PRINTFORML 牧場に来た%CALLNAME%は、ニンゲンの女性が奴隷として扱われているのを見て怒りに震えている…
+	CALL PURPOSE_CHANGE("牧場の女性の救出")
+ELSEIF TALENT:気丈 || TALENT:高慢 || TALENT:男好き < 0
+	CALL PURPOSE_CHANGE("懲らしめる")
+ELSE
+	CALL PURPOSE_CHANGE("牧場から逃走")
+ENDIF
+
+IF GETBIT(＃搾乳器自動購入＃)
+	;ここでは-になることもある
+	MONEY -= ITEMPRICE:家畜用搾乳器
+
+	;一応アイテムも増加しとく
+	ITEM:家畜用搾乳器 ++
+	PRINTFORMW Purchased a Livestock Milker for %VALUE_DIGIT(ITEMPRICE:家畜用搾乳器)%G.
+	PRINTL
+ENDIF
+CALL TARGET_FLAG_RESET
+CALL SLAVE_RECEIVE_FLAG_SET
+
+;触手変化を持ってる+コンフィグONなら投薬画面へ
+IF ITEM:触手変化 && GETBIT(＃捕獲時投薬＃)
+	;一旦リセットかける
+	CALL RESET_TRAIN_PALAM
+
+	;一旦ここでスケジュール外をONにしないと外れちゃってた
+	TFLAG:スケジュール外Ｈ = 1
+	PLAYER = MASTER
+	CALL MANYL(3)
+	CALL VISIT_DOSAGE
+	TFLAG:スケジュール外Ｈ = 0
+ENDIF
+CALL SCHEDULE_RESET_TARGET
+
+;コンフィグONなら個人設定開く
+SIF GETBIT(＃捕獲時設定画面＃)
+	CALL SLAVE_CONFIG
+
+;マイルストーン達成BITをON
+SETBIT ＃マイルストーン達成／奴隷捕獲＃
+
+
+
+;輪姦されている奴隷を引き取る
+@SLAVE_RECEIVE_TOWN
+
+;ここに来る条件がゴブリン+捕獲中
+SIF CFLAG:追跡対象 != 2
+	RETURN
+PRINTFORML 捕獲されていた%CALLNAME%を奴隷として引き取りました。
+PRINTFORML 引き取るまでの間にゴブリン達により{CFLAG:輪姦回数}回輪姦されたようです。
+CALL SLAVE_RECEIVE_COMMON
+
+
+
+;デフォルトのキャラコンフィグをセット
+@SLAVE_RECEIVE_FLAG_SET
+
+CFLAG:夕食許可 = FLAG:加入奴隷デフォルト／夕食許可
+CFLAG:入浴許可 = FLAG:加入奴隷デフォルト／入浴許可
+CFLAG:アビリティ有効個人BIT = FLAG:加入奴隷デフォルト／アビリティ有効個人BIT
+
+
+

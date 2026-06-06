@@ -1,0 +1,154 @@
+﻿
+;手動入力
+;ARGS→CHANGE_STATE
+@PLAYER_DATA_CONFIG_INPUT_MANUAL(ARGS)
+
+;奴隷の手動キャラメイクを流用できる部分はそのまま使っちゃう
+SELECTCASE ARGS
+CASE "バストサイズ","体型","肌の色","一人称"
+	CALL SELF_CHARA_MAKE_PROFILE_INPUT_MANUAL(ARGS)
+
+{
+CASE "髪色","髪特徴","髪型","カラーコード／髪","陰毛","右目の色","左目の色","カラーコード／右目","カラーコード／左目",
+"瞳の形","目の特徴","乳弾力","乳首の色","カラーコード／乳首"
+}
+	CALL SELF_CHARA_MAKE_APPEARAINCE_INPUT_MANUAL(ARGS)
+
+CASE "初経験／Ｖ","初経験／Ａ","初経験／Ｍセックス","初経験／パイズリ","初経験／キス"
+	CALL SELF_CHARA_MAKE_SENSITIVE_INPUT_MANUAL(ARGS)
+
+
+;名前はあなたの場合別個必要
+CASE "名前"
+	PRINTL Enter a name
+	INPUTS
+	IF RESULTS != ""
+		CALLNAME = %RESULTS%
+		IF NAME != ""
+			PRINTL Reset Full Name?
+			CALL ASK_YN
+			SIF !RESULT
+				NAME =
+		ENDIF
+	ENDIF
+
+CASE "フルネーム"
+	PRINTL Enter a full name
+	INPUTS
+	NAME = %RESULTS%
+
+CASE "口調"
+	PRINTL Please select how casual your tone should be.
+	PRINTL
+	PRINTLC [ 0] Always speak politely
+	PRINTLC [ 1] Vary tone (politely with adult residents)
+	PRINTL [ 2] Always speak casually
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0
+		SAVESTR:あなた口調 = 常時丁寧
+	CASE 1
+		SAVESTR:あなた口調 = 使い分け
+	CASE 2
+		SAVESTR:あなた口調 = 常時砕け
+	ENDSELECT
+
+CASE "種族"
+	PRINTL Enter the name of a race.(Only the display will be changed)
+	INPUTS
+	CSTR:種族 = %RESULTS%
+
+CASE "カラーコード／口上"
+	CALL EDIT_COLOR_CODE(CFLAG:カラーコード／口上,1)
+	SIF RESULT
+		CFLAG:カラーコード／口上 = RESULT
+
+CASE "身長"
+	;EXモードが有効かどうかで見ることにした
+	PRINTL Enter a numerical value for height.（Units：mm）
+	IF !FLAG:EXモード
+		;自動的にオトコ
+		PRINTFORML （{MALE_HEIGHT_MAX_低身長 +1}～{MALE_HEIGHT_MAX_大柄}：Please enter a value between Standard and Large.）
+		INPUT
+		IF RESULT > MALE_HEIGHT_MAX_低身長 && RESULT <= MALE_HEIGHT_MAX_大柄
+			CFLAG:身長 = RESULT
+			CALL HEIGHT_CSTR_CALC
+		ENDIF
+	ELSE
+		; 下限を幼児体系まで拡張。これによってロリショタ判定が利かなくなるので統一しました。
+		;下限10に、しきい値表示を追加
+		PRINTFORML （Please enter a value between 10～{MALE_HEIGHT_MAX_大柄}）
+		PRINTFORML ＜Infant Body Shape：{HEIGHT_MAX_妖精体型 +1}～　Adult Male Standard：{MALE_HEIGHT_MAX_低身長 +1}～）
+		INPUT
+		IF RESULT >= 10 && RESULT <= MALE_HEIGHT_MAX_大柄
+			CFLAG:身長 = RESULT
+			CALL HEIGHT_CSTR_CALC(1)
+		ENDIF
+	ENDIF
+
+CASE "二本角"
+	INVERTBIT TALENT:二本角,0
+CASE "メガネ"
+	INVERTBIT EQUIP:メガネ,0
+	IF EQUIP:メガネ
+		EQUIP:装備中ID／眼 = GETNUM(EQUIP,"メガネ")
+	ELSE
+		EQUIP:装備中ID／眼 = 0
+	ENDIF
+
+CASE "外見年齢"
+	;ここもEXモード
+	PRINTL Please enter a numeric value for apparent age.
+	IF !FLAG:EXモード
+		PRINTFORML （Please enter a value between {VISUAL_AGE_CHILD_MAX +1}～{VISUAL_AGE_ADULT_MAX}）
+		INPUT
+		SIF RESULT > VISUAL_AGE_CHILD_MAX && RESULT <= VISUAL_AGE_ADULT_MAX
+			CFLAG:外見年齢 = RESULT
+	ELSE
+		; 下限拡張。これによってロリショタ判定が利かなくなるので統一しました。
+		PRINTFORML （Please enter a value between {VISUAL_AGE_MIN}～{VISUAL_AGE_ADULT_MAX +10}）
+		PRINTFORML ＜Adult Minimum：{VISUAL_AGE_CHILD_MAX +1}＞
+		INPUT
+		SIF RESULT >= VISUAL_AGE_MIN && RESULT <= VISUAL_AGE_ADULT_MAX +10
+			CFLAG:外見年齢 = RESULT
+	ENDIF
+
+;性経験
+CASE "童貞","Ａ童貞","Ｍ童貞","パイズリ未経験","キス未経験"
+	INVERTBIT TALENT:ARGS,0
+	CALL SELECT_VIRGIN_RESET_PLAYER
+
+CASE "あなた経験人数／Ｖ"
+	PRINTL Enter the amount of ＶSex partners（1+）
+	INPUT
+	SIF RESULT >= 1
+		FLAG:あなた経験人数／Ｖ = RESULT
+	
+CASE "あなた経験人数／Ａ"
+	PRINTL Enter the amount of ＡSex partners（1+）
+	INPUT
+	SIF RESULT >= 1
+		FLAG:あなた経験人数／Ａ = RESULT
+	
+CASE "あなた経験人数／Ｍ"
+	PRINTL Enter the number of ＭSex partners（1+）
+	INPUT
+	SIF RESULT >= 1
+		FLAG:あなた経験人数／Ｍ = RESULT
+	
+CASE "あなた経験人数／パイズリ"
+	PRINTL Enter the number of paizuri partners（1+）
+	INPUT
+	SIF RESULT >= 1
+		FLAG:あなた経験人数／パイズリ = RESULT
+	
+CASE "あなた経験人数／キス"
+	PRINTL Enter the number of kissing partners（1+）
+	INPUT
+	SIF RESULT >= 1
+		FLAG:あなた経験人数／キス = RESULT
+ENDSELECT
+
+
+
+

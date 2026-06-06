@@ -1,0 +1,18 @@
+﻿
+;Ｎ感度がＢ感度を下回らないように補正をかける
+@NIPPLE_SENSITIVE_FIX
+#DIM SENSITIVE_BEFORE_N
+
+;Ｎ感度がＢ感度以上なら帰る
+SIF ABL:Ｎ感度 >= ABL:Ｂ感度
+	RETURN
+SENSITIVE_BEFORE_N = ABL:Ｎ感度
+ABL:Ｎ感度 = ABL:Ｂ感度
+
+;キャラメイク中でないならメッセージ
+SIF !FLAG:キャラメイク中
+	CALL PRINTL_WORD_COLOR,@"【Ｎ感度+{ABL:Ｎ感度 -SENSITIVE_BEFORE}→{ABL:Ｎ感度}\%】","桃"
+
+
+
+

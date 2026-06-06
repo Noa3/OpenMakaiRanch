@@ -1,0 +1,49 @@
+﻿
+;夜の行動
+@NIGHT_PHASE
+
+;ここでも可不可計算と居場所確認する必要ある
+CALL CHARA_WHEREABOUTS_ALL
+CALL SCHEDULE_POSSIBLE
+CALL MANYL(5)
+
+;日付など出してちょいわかりやすく
+CALL SHOW_DATE
+PRINTL
+DRAWLINE
+PRINTL The ranch has closed for the night. What do you want to do before you sleep?
+PRINTLC [ 0] Train a slave
+PRINTLC [ 1] Go to bed early
+IF FLAG:事務作業量
+	PRINTFORMLC [ 2] Do some paperwork：{FLAG:事務作業量}／20 
+ELSE
+	CALL PRINTLC_WORD_COLOR("　All paperwork is done","灰")
+ENDIF
+INPUT
+SELECTCASE RESULT
+CASE 0
+	SAVE_TARGET = 0
+	CALL TRAIN_SLAVE_SELECT_ALL
+	SIF CSTR:0:スケジュール != "調教"
+		RESTART
+	
+CASE 2
+	SIF !FLAG:事務作業量
+		RESTART
+	CSTR:0:スケジュール = 事務
+ENDSELECT
+
+;スケジュールごとにそれぞれ実行
+DRAWLINE
+CALL SLEEP_ROOM
+CALL SLEEP_CAGE
+CALL WORK_FINANCE_NIGHT
+
+;BEGIN TRAINをしている場合ターンエンド処理を調教終了のほうで行う　飛ぶのでSIFでおＫ
+SIF CSTR:0:スケジュール == "調教"
+	BEGIN TRAIN
+
+;ターンエンド処理に1日終了処理もあるのでこれでOK
+CALL MAIN_TURNEND
+;SHOPへ戻る
+

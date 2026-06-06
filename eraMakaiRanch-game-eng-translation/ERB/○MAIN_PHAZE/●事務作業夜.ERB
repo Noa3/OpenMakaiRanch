@@ -1,0 +1,29 @@
+﻿
+;事務作業夜
+@WORK_FINANCE_NIGHT
+
+;とりあえずあなただけ
+TARGET = 0
+SIF CSTR:スケジュール != "事務"
+	RETURN
+
+PRINTFORML %CALLNAME% decides to do some paperwork before heading to bed...
+;体力が足りないとダメ
+IF BASE:体力 <= 100
+	PRINTFORM ... The moment %CALLNAME% sits down at his desk, he passes out from exhaustion...
+ELSE
+	FLAG:事務作業量 = LIMIT(FLAG:事務作業量 -(ABL:事務 /2),0,20)
+	PRINTFORM %CALLNAME_DIGIT()% Administrative Workload-{ABL:事務 /2} 
+ENDIF
+CALL EXP_UP("事務")
+CALL ABL_UP
+EXP:実行回数／事務 ++
+EXP:区間実行回数／事務 ++
+PRINTL
+HEAL_PRINT_DONE = 0
+CALL WORK_SLEEP_HEAL
+PRINTW
+DRAWLINE
+
+
+

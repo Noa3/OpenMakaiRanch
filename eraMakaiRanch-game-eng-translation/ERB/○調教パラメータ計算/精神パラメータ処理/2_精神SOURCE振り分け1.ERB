@@ -1,0 +1,61 @@
+﻿
+;②他SOURCEから精神SOURCEの振り分け
+@MIND_SOURCE_SORT
+#DIM MIND_FIX
+
+SOURCE:被虐快楽経験 += SOURCE:マゾヒズム
+SOURCE:奉仕経験 += (SOURCE:習得 *BASE:好感度 /1000)
+SOURCE:恐怖 += SOURCE:視覚恐怖
+SOURCE:恭順 += SOURCE:情愛
+SOURCE:授乳愛情経験 += SOURCE:授乳
+
+;授乳→搾乳中毒+母性<10・陥落未満で不快
+MIND_FIX = LIMIT(ABL:搾乳中毒 +ABL:母性,0,10)
+IF MIND_FIX < 10 && !＃陥落状態／陥落以上＃
+	MIND_FIX = 10 -MIND_FIX
+	DAMAGE = SOURCE:授乳 *MIND_FIX /5
+	SOURCE:不快 += DAMAGE
+	SIF !TFLAG:幼稚母性補正
+		SOURCE:授乳愛情経験 /= MIND_FIX
+ENDIF
+
+;異形授乳
+;搾乳中毒+触手中毒が10以上→恭順・愛情　<10→恐怖・不快
+MIND_FIX = LIMIT(ABL:搾乳中毒 +ABL:触手中毒,0,30)
+IF MIND_FIX >= 10
+	LOVE = SOURCE:異形授乳 *MIND_FIX /5
+	SOURCE:恭順 += LOVE
+	SOURCE:授乳愛情経験 += LOVE
+ELSE
+	MIND_FIX = 10 -MIND_FIX
+	DAMAGE = SOURCE:異形授乳 *MIND_FIX /5
+	SOURCE:恐怖 += DAMAGE
+	SOURCE:不快 += DAMAGE
+ENDIF
+
+;異形恐怖→マゾっ気+触手中毒<15で恐怖・不快
+MIND_FIX = ABL:マゾっ気 +ABL:触手中毒
+IF MIND_FIX < 15
+	MIND_FIX = 15 -MIND_FIX
+	DAMAGE = SOURCE:異形恐怖 *MIND_FIX /5
+	SOURCE:恐怖 += DAMAGE
+	SOURCE:不快 += DAMAGE
+ENDIF
+
+;出産恐怖
+;隷属→恭順　していない→負の感情
+;恋慕なら緩和
+IF !＃陥落状態／隷属＃
+	SIF ＃陥落状態／恋慕以上＃
+		SOURCE:出産恐怖 /= 3
+	SOURCE:恐怖 += SOURCE:出産恐怖
+	SOURCE:不快 += SOURCE:出産恐怖
+	SOURCE:反感 += SOURCE:出産恐怖
+	SOURCE:失意 += (SOURCE:出産恐怖 *2)
+ELSE
+	SOURCE:恭順 += (SOURCE:出産恐怖 /2)
+ENDIF
+
+
+
+

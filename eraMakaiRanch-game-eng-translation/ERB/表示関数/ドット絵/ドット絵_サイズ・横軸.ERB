@@ -1,0 +1,51 @@
+﻿
+;ドット絵サイズ・横軸調整
+;ARG→1だと着替え画面用調整
+@PRINT_PORTRAIT_SIZE(ARG)
+
+;表示サイズ(フォントサイズ19の環境で10なら等倍)
+PY_1 = {0}
+
+;着替え画面から来た場合に横軸をずらす
+IF !ARG
+	PY_2 = {FLAG:ドット絵／横軸調整}
+	PY_2_2 = {FLAG:ドット絵／横軸調整 -FLAG:ドット絵／サイズ *4 /10}
+ELSE
+	PY_2 = {FLAG:ドット絵／横軸調整 +FLAG:ドット絵／着替え画面追加横軸調整}
+	PY_2_2 = {FLAG:ドット絵／横軸調整 +FLAG:ドット絵／着替え画面追加横軸調整 -FLAG:ドット絵／サイズ *4 /10}
+ENDIF
+PY_3 = {FLAG:ドット絵／サイズ *5945 /1000}
+PY_3_2 = {FLAG:ドット絵／サイズ *5945 /3500}
+PY_3_3 = {FLAG:ドット絵／サイズ *5945 /6900}
+PY_3_4 = {FLAG:ドット絵／サイズ *5945 /2330}
+
+;子供の髪位置
+PY_1_2 = {FLAG:ドット絵／サイズ *74 /100}
+
+
+
+;子供／大人の位置調整
+@PRINT_PORTRAIT_HEIGHT_FIX
+
+;低身長ドット絵判定して髪位置を調整
+IF CFLAG:身長 < FLAG:ドット絵／低身長適用上限数値 || CSTR:状態／あなたの子 == "成長中"
+	PY_FIX = %PY_1_2%
+ELSE
+	PY_FIX = %PY_1%
+ENDIF
+
+;体型
+IF CFLAG:身長 < FLAG:ドット絵／低身長適用上限数値 || CSTR:状態／あなたの子 == "成長中"
+	PRTCHR_1 = 子供
+ELSE
+	PRTCHR_1 = 標準
+ENDIF
+PRT:0 = <nonbutton pos='%PY_2%'><img src='%PRTCHR_1%_%CSTR:カテゴリ／肌の色%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+
+
+
+
+
+
+
+

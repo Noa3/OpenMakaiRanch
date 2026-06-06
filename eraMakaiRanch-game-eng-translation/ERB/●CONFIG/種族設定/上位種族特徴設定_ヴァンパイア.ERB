@@ -1,0 +1,110 @@
+﻿
+;ヴァンパイア
+@TRIBE_FEATURE_CONFIG_VAMPIRE
+
+CLEARLINE LINECOUNT
+PRINTL Modifying【Vampire】
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL Fixed：Always Has Mana・【Makai Adaptation】
+PRINTLC [ 0] Skin Tends Towards【Fair】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,0),1)
+PRINTLC [ 1] Hair Color Is【Silver】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,1),1)
+PRINTLC [ 2] Doubled Mana Capacity
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,2),1)
+PRINTLC [ 3] 【Fast Recovery】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,3),1)
+PRINTLC [ 4] 【Drug Resistant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,4),1)
+PRINTLC [ 5] 【Hated By Animals】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,5),1)
+PRINTLC [ 6] 【Sunlight Adverse】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,6),1)
+PRINTLC [ 7] Physical Strength＋400
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,7),1)
+PRINTL
+PRINTLC [10] 【High Pain Tolerance】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,10),1)
+PRINTLC [11] 【Subversive】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,11),1)
+PRINTLC [12] 【Light Eater】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,12),1)
+PRINTLC [13] 【Prideful】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,13),1)
+PRINTLC [14] 【Arrogant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,14),1)
+PRINTLC [15] 【Charismatic】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,15),1)
+PRINTLC [16] 【Sadistic】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,16),1)
+PRINTLC [17] 【Dignified】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ヴァンパイア,17),1)
+CALL PRINTL_ALIGN
+CALL PRINT_SLAVE_CONFIG_FOOTER(16)
+SELECTCASE INPUT_NUM
+CASE 0
+	PRINTL If【Standard】、【Brown】、【Tanned】, replaced with【Fair】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 1
+	PRINTL Fix hair color to【Silver】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 2
+	PRINTL Doubles Mana Capacity after base calculations.
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 3
+	PRINTL Add the【Fast Recovery】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 4
+	PRINTL Add the【Drug Resistant】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 5
+	PRINTL Add the【Hated By Animals】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 6
+	PRINTL Add the【Sunlight Adverse】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 7
+	PRINTL Strength is increased by 400 after base calculations
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 10
+	PRINTL Add the【High Pain Tolerance】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 11
+	PRINTL Add the【Subversive】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 12
+	PRINTL Add the【Light Eater】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 13
+	PRINTL Add the【Prideful】trait
+	PRINTL ※Mutually exclusive with【Arrogant】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／ヴァンパイア,13) && GETBIT(FLAG:種族設定／ヴァンパイア,14)
+		CLEARBIT FLAG:種族設定／ヴァンパイア,14
+CASE 14
+	PRINTL Add the【Arrogant】trait
+	PRINTL ※Mutually exclusive with【Prideful】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／ヴァンパイア,13) && GETBIT(FLAG:種族設定／ヴァンパイア,14)
+		CLEARBIT FLAG:種族設定／ヴァンパイア,13
+CASE 15
+	PRINTL Add the【Charismatic】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 16
+	PRINTL Add the【Sadistic】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 17
+	PRINTL Add the【Dignified】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ヴァンパイア"),INPUT_NUM)
+CASE 98
+	PRINTL Restore【Vampire】Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRIBE_FEATURE_CONFIG_VAMPIRE
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

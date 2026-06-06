@@ -1,0 +1,221 @@
+﻿
+;奴隷候補デフォルト
+@DEFAULT_CONFIG_SLAVE_BODY
+
+VARSET FLAG,0,3000,3500
+CALL DEFAULT_CONFIG_SLAVE_BODY_MINI
+FLAG:子供扱い時割合適用項目BIT = 0b1111
+CALL DEFAULT_TENDENCY_CONFIG_ALL
+CALL DEFAULT_VIRGIN_REROLL
+
+
+
+;簡易部分のみ
+@DEFAULT_CONFIG_SLAVE_BODY_MINI
+
+VARSET FLAG,0,3000,3050
+FLAG:日本っぽいジョブの日本名率 = 80
+FLAG:日本っぽいジョブの黒髪率 = 50
+FLAG:子供扱い身長範囲 = 2
+FLAG:メガネ率 = 10
+
+
+
+;非処女時再抽選回数デフォルト
+@DEFAULT_VIRGIN_REROLL
+
+FLAG:非処女時再抽選回数／高身分 = 3
+FLAG:非処女時再抽選回数／上位種族 = 1
+FLAG:非処女時再抽選回数／天界種族 = 3
+
+
+
+;割合設定デフォルト全部
+@DEFAULT_TENDENCY_CONFIG_ALL
+
+CALL DEFAULT_TENDENCY_CONFIG_HEIGHT
+CALL DEFAULT_TENDENCY_CONFIG_NIPPLE_COLOR
+CALL DEFAULT_TENDENCY_CONFIG_NIPPLE_COLOR_DARKSKIN
+CALL DEFAULT_TENDENCY_CONFIG_SKIN_COLOR
+
+;大人用
+CALL DEFAULT_TENDENCY_CONFIG_BUST
+CALL DEFAULT_TENDENCY_CONFIG_SHAPE
+CALL DEFAULT_TENDENCY_CONFIG_VARGIN
+CALL DEFAULT_TENDENCY_CONFIG_UNDERHAIR
+
+;子供用
+CALL DEFAULT_TENDENCY_CONFIG_CHILD_BUST
+CALL DEFAULT_TENDENCY_CONFIG_CHILD_SHAPE
+CALL DEFAULT_TENDENCY_CONFIG_CHILD_VARGIN
+CALL DEFAULT_TENDENCY_CONFIG_CHILD_UNDERHAIR
+
+
+
+;身長割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_HEIGHT
+
+FLAG:候補割合／身長／幼児体型 = 0
+FLAG:候補割合／身長／子供体型 = 5
+FLAG:候補割合／身長／小柄 = 10
+FLAG:候補割合／身長／低身長 = 20
+FLAG:候補割合／身長／標準 = 100
+FLAG:候補割合／身長／高身長 = 20
+FLAG:候補割合／身長／大柄 = 0
+FLAG_REF = 3100
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;乳首の色割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_NIPPLE_COLOR
+
+FLAG:候補割合／乳首の色／ピンク = 30
+FLAG:候補割合／乳首の色／ディープピンク = 20
+FLAG:候補割合／乳首の色／ホットピンク = 20
+FLAG:候補割合／乳首の色／チェリーピンク = 5
+FLAG:候補割合／乳首の色／ライトピンク = 20
+FLAG:候補割合／乳首の色／ルビーレッド = 5
+FLAG_REF = 3150
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;褐色系用乳首の色
+@DEFAULT_TENDENCY_CONFIG_NIPPLE_COLOR_DARKSKIN
+
+FLAG:候補割合／乳首の色／褐色肌／ピンク = 30
+FLAG:候補割合／乳首の色／褐色肌／ディープピンク = 20
+FLAG:候補割合／乳首の色／褐色肌／ホットピンク = 20
+FLAG:候補割合／乳首の色／褐色肌／チェリーピンク = 5
+FLAG:候補割合／乳首の色／褐色肌／ライトピンク = 20
+FLAG:候補割合／乳首の色／褐色肌／ルビーレッド = 5
+FLAG_REF = 3170
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;肌の色割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_SKIN_COLOR
+
+FLAG:候補割合／肌の色／アルビノ = 5
+FLAG:候補割合／肌の色／美白 = 5
+FLAG:候補割合／肌の色／色白 = 10
+FLAG:候補割合／肌の色／標準 = 100
+FLAG:候補割合／肌の色／褐色 = 10
+FLAG:候補割合／肌の色／小麦色 = 5
+FLAG_REF = 3160
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+
+;大人扱い時
+;バストサイズ割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_BUST
+
+FLAG:候補割合／バストサイズ／絶壁 = 3
+FLAG:候補割合／バストサイズ／貧乳 = 10
+FLAG:候補割合／バストサイズ／並乳 = 20
+FLAG:候補割合／バストサイズ／巨乳 = 50
+FLAG:候補割合／バストサイズ／豊乳 = 10
+FLAG:候補割合／バストサイズ／爆乳 = 10
+
+;リセットにも使うので0を入れる
+FLAG:候補割合／バストサイズ／神乳 = 0
+FLAG:候補割合／バストサイズ／魔乳 = 0
+FLAG_REF = 3110
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;体型割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_SHAPE
+
+FLAG:候補割合／体型／スレンダー = 5
+FLAG:候補割合／体型／痩せ型 = 10
+FLAG:候補割合／体型／標準体型 = 50
+FLAG:候補割合／体型／グラマー = 5
+FLAG:候補割合／体型／豊満 = 2
+FLAG:候補割合／体型／ムチムチ = 0
+FLAG:候補割合／体型／ぽっちゃり = 0
+FLAG:候補割合／体型／筋肉質 = 0
+FLAG_REF = 3120
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;性経験割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_VARGIN
+
+FLAG:候補割合／性経験／無垢 = 1
+FLAG:候補割合／性経験／生娘 = 100
+FLAG:候補割合／性経験／処女 = 30
+FLAG:候補割合／性経験／一応処女 = 10
+FLAG:候補割合／性経験／非処女 = 20
+FLAG:候補割合／性経験／アブノーマル = 5
+FLAG:候補割合／性経験／ビッチ = 2
+FLAG:候補割合／性経験／肉便器 = 1
+FLAG_REF = 3130
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;陰毛割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_UNDERHAIR
+
+FLAG:候補割合／陰毛／パイパン = 10
+FLAG:候補割合／陰毛／産毛 = 10
+FLAG:候補割合／陰毛／薄め = 20
+FLAG:候補割合／陰毛／標準 = 40
+FLAG:候補割合／陰毛／濃いめ = 5
+FLAG:候補割合／陰毛／剛毛 = 0
+FLAG:候補割合／陰毛／密林 = 0
+FLAG_REF = 3140
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+
+
+;ここから子供扱い時に使うほう
+;バストサイズ割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_CHILD_BUST
+
+FLAG:子供候補割合／バストサイズ／絶壁 = 10
+FLAG:子供候補割合／バストサイズ／貧乳 = 30
+FLAG:子供候補割合／バストサイズ／並乳 = 20
+FLAG:子供候補割合／バストサイズ／巨乳 = 10
+FLAG:子供候補割合／バストサイズ／豊乳 = 5
+FLAG:子供候補割合／バストサイズ／爆乳 = 2
+FLAG:子供候補割合／バストサイズ／神乳 = 0
+FLAG:子供候補割合／バストサイズ／魔乳 = 0
+FLAG_REF = 3200
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;体型割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_CHILD_SHAPE
+
+FLAG:子供候補割合／体型／スレンダー = 10
+FLAG:子供候補割合／体型／痩せ型 = 10
+FLAG:子供候補割合／体型／標準体型 = 30
+FLAG:子供候補割合／体型／グラマー = 2
+FLAG:子供候補割合／体型／豊満 = 0
+FLAG:子供候補割合／体型／ムチムチ = 0
+FLAG:子供候補割合／体型／ぽっちゃり = 0
+FLAG:子供候補割合／体型／筋肉質 = 0
+FLAG_REF = 3210
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;性経験割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_CHILD_VARGIN
+
+FLAG:子供候補割合／性経験／無垢 = 5
+FLAG:子供候補割合／性経験／生娘 = 100
+FLAG:子供候補割合／性経験／処女 = 20
+FLAG:子供候補割合／性経験／一応処女 = 5
+FLAG:子供候補割合／性経験／非処女 = 5
+FLAG:子供候補割合／性経験／アブノーマル = 0
+FLAG:子供候補割合／性経験／ビッチ = 0
+FLAG:子供候補割合／性経験／肉便器 = 1
+FLAG_REF = 3220
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+;陰毛割合デフォルト
+@DEFAULT_TENDENCY_CONFIG_CHILD_UNDERHAIR
+
+FLAG:子供候補割合／陰毛／パイパン = 30
+FLAG:子供候補割合／陰毛／産毛 = 30
+FLAG:子供候補割合／陰毛／薄め = 20
+FLAG:子供候補割合／陰毛／標準 = 5
+FLAG:子供候補割合／陰毛／濃いめ = 5
+FLAG:子供候補割合／陰毛／剛毛 = 0
+FLAG:子供候補割合／陰毛／密林 = 0
+FLAG_REF = 3230
+FLAG:(FLAG_REF +9) = SUMARRAY(FLAG,FLAG_REF,FLAG_REF +9)
+
+

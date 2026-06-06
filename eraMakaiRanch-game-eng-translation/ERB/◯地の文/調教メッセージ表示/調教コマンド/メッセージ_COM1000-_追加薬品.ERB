@@ -1,0 +1,24 @@
+﻿
+@COM1000_MESSAGE
+;母乳分泌促進薬
+
+PRINTFORML You are supporting %CALLNAME%'s %SLANG_B()% and injecting a drug into her nipple...
+PRINTFORML （Number of Breast Milk Stimulant -1  → {ITEM:母乳分泌促進薬}コ）
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTFORML %CALLNAME% feels a strange sensation in her %SAVESTR:表記／乳房%...
+CALL PRINTW_WORD_COLOR,@"・If this training makes her climax through her nipples or %SAVESTR:表記／乳房%, she will develop the 【Lactation Trait】","桃"
+
+
+
+@COM1001_MESSAGE
+;魔力母乳分泌促進薬
+
+PRINTFORML You hold %CALLNAME%'s %SLANG_B()%, and inject the drug into her nipples...
+PRINTFORML （Mana-Infused Breast Milk Stimulant-1 → {ITEM:魔力母乳分泌促進薬}）
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTFORML %CALLNAME% feels something is strange with her %SAVESTR:表記／乳房%...
+CALL PRINTW_WORD_COLOR,@"・If you cause her to cum from her %SAVESTR:表記／乳房% or nipples during this training, she will start【Lactating】","桃"
+
+

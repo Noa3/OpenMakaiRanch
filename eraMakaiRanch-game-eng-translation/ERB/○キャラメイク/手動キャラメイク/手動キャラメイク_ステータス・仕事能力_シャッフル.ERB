@@ -1,0 +1,168 @@
+﻿
+;ステータス・仕事能力の変更シャッフル
+;ARGS→CHANGE_STATE
+@SELF_CHARA_MAKE_STATUS_INPUT_SHUFFLE(ARGS)
+
+SELECTCASE ARGS
+CASE "レベル"
+	;RAND幅自体をランダムに
+	SELECTCASE RAND:100
+	CASE IS < 50
+		MAXBASE:レベル = 10 +RAND:40
+	CASE IS < 80
+		MAXBASE:レベル = 10 +RAND:90
+	CASE IS < 90
+		MAXBASE:レベル = 10 +RAND:140
+	CASEELSE
+		MAXBASE:レベル = 10 +RAND:250
+	ENDSELECT
+	BASE:レベル = MAXBASE:レベル
+	CFLAG:ランク = MAXBASE:レベル /10
+	SIF !CFLAG:霊力固定
+		CALL SLAVE_EP_CALC
+	SIF !CFLAG:魔力固定
+		CALL SLAVE_MP_CALC
+	CALL SLAVE_BATTLE_POWER_CALC(1)
+	
+CASE "非戦闘職"
+	;ONOFFなので同じ
+	PRINTL [非戦闘職]に設定するとレベルが1に固定され、敵との戦闘を行えません。
+	PRINTL （霊力・魔力を固定している場合リセットされます）
+	PRINTLC [ 0] 【非戦闘職】OFF
+	PRINTLC [ 1] 【非戦闘職】ON
+	INPUT
+	IF RESULT
+		CFLAG:非戦闘職 = 1
+		MAXBASE:レベル = 1
+		BASE:レベル = MAXBASE:レベル
+		CFLAG:ランク = 0
+		BASE:回復回数 = 0
+		BASE:大技回数 = 0
+		CFLAG:霊力固定 = 0
+		CFLAG:魔力固定 = 0
+		CALL SLAVE_EP_CALC
+		CALL SLAVE_MP_CALC
+		CALL SLAVE_BATTLE_POWER_CALC(1)
+	ELSE
+		CFLAG:非戦闘職 = 0
+	ENDIF
+	
+CASE "体力"
+	MAXBASE:体力 = 800 +RAND:2000
+	MAXBASE:体力 -= (MAXBASE:体力 %50)
+	BASE:体力 = MAXBASE:体力
+	
+CASE "気力"
+	MAXBASE:気力 = 800 +RAND:2000
+	MAXBASE:気力 -= (MAXBASE:気力 %50)
+	BASE:気力 = MAXBASE:気力
+
+CASE "霊力再計算"
+	IF CFLAG:霊力固定
+		PRINTL [霊力固定]フラグをOFFにし、再計算しますか？
+		CALL ASK_YN
+		SIF RESULT
+			RETURN
+	ENDIF
+	CFLAG:霊力固定 = 0
+	CALL SLAVE_EP_CALC
+
+CASE "霊力固定"
+	;なし
+	
+CASE "魔力量"
+	CFLAG:魔力量 = RAND:13
+	SIF !RAND:4
+		CFLAG:魔力量 = 0
+	CALL SLAVE_MP_CALC
+	CALL SLAVE_BATTLE_POWER_CALC(1)
+
+CASE "魔力再計算"
+	IF CFLAG:魔力固定
+		PRINTL [魔力固定]フラグをOFFにし、再計算しますか？
+		CALL ASK_YN
+		SIF RESULT
+			RETURN
+	ENDIF
+	CFLAG:魔力固定 = 0
+	CALL SLAVE_MP_CALC
+
+CASE "魔力固定"
+CASE "戦闘力再計算"
+	CALL SLAVE_BATTLE_POWER_CALC(1)
+
+
+;2ページ目
+CASE "回復回数"
+	BASE:回復回数 = RAND:6
+	
+CASE "大技回数"
+	BASE:大技回数 = RAND:6
+	
+CASE "同行仲間"
+	CFLAG:仲間規模 = RAND:3
+	CFLAG:仲間ランク = CFLAG:ランク
+	CALL GROUP_BATTLE_POWER_CALC
+	
+CASE "仲間ランク"
+	CFLAG:仲間ランク = RAND:13
+	CALL GROUP_BATTLE_POWER_CALC
+
+CASE "仲間戦闘力再計算"
+	CALL GROUP_BATTLE_POWER_CALC
+
+
+;3ページ目
+CASE "酪農ABL"
+	ABL:酪農 = RAND:12
+		
+CASE "事務ABL"
+	ABL:事務 = RAND:12
+		
+CASE "掃除ABL"
+	IF TALENT:掃除下手
+		PRINTW 【掃除下手】の場合、初期掃除Lvは0固定です。
+		RETURN
+	ENDIF
+	ABL:掃除 = RAND:12
+	
+CASE "料理ABL"
+	IF TALENT:料理下手
+		PRINTW 【料理下手】の場合、初期料理Lvは0固定です。
+		RETURN
+	ENDIF
+	ABL:料理 = RAND:12
+		
+CASE "薬学ABL"
+	ABL:薬学 = RAND:12
+	SIF ABL:薬学 < 5
+		TALENT:調合知識 = 0
+		
+CASE "接客ABL"
+	IF TALENT:接客下手
+		PRINTW 【接客下手】の場合、初期接客Lvは0固定です。
+		RETURN
+	ENDIF
+	ABL:接客 = RAND:12
+
+CASE "掃除下手"
+	INVERTBIT TALENT:掃除下手,0
+	
+	;ONにするにせよOFFにせよLv0
+	ABL:掃除 = 0
+	
+CASE "料理下手"
+	INVERTBIT TALENT:料理下手,0
+	ABL:料理 = 0
+	
+CASE "接客下手"
+	INVERTBIT TALENT:接客下手,0
+	ABL:接客 = 0
+	
+CASE "調合知識"
+	INVERTBIT TALENT:調合知識,0
+ENDSELECT
+
+
+
+

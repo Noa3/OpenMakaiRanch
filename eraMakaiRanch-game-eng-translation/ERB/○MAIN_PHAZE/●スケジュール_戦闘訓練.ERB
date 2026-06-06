@@ -1,0 +1,36 @@
+﻿
+;戦闘訓練
+@WORK_TRAINING
+
+;今のとこあなたしか来ない場所
+SIF CSTR:0:スケジュール != "訓練"
+	RETURN
+TARGET = 0
+PRINTL 　　　《 Training 》
+
+;体力が足りないとダメ
+IF !BASE:体力
+	PRINTFORM %CALLNAME% is too tired, and falls asleep...
+	HEAL_PRINT_DONE = 0
+	CALL FALL_ASLEEP
+ELSE
+	;実行回数で効率が上がっていくようにする
+	PRINTFORML %CALLNAME% trains in accordance to the advice of the mercenaries.
+	HEAL = LIMIT(EXP:実行回数／戦闘訓練 +1,1,30)
+	COST = LIMIT(300 -EXP:実行回数／戦闘訓練 *5,100,300)
+	CALL HP_COST(COST,1)
+	BASE:戦闘適性 = LIMIT(BASE:戦闘適性 +HEAL,1,100)
+	
+	;最大値を入れる
+	SIF MAXBASE:戦闘適性 < BASE:戦闘適性
+		MAXBASE:戦闘適性 = BASE:戦闘適性
+	PRINTFORM %CALLNAME_DIGIT()% HP-{COST} Fitness+{HEAL} → {BASE:戦闘適性}\% 
+	CALL EP_HEAL(HEAL)
+ENDIF
+PRINTL
+EXP:実行回数／戦闘訓練 ++
+EXP:区間実行回数／戦闘訓練 ++
+PRINTW
+DRAWLINE
+
+

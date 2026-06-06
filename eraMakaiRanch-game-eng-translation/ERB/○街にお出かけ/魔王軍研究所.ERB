@@ -1,0 +1,104 @@
+﻿
+;魔王軍研究所に霊力を渡す
+@TOWN_INSTITUTE
+#DIM DYNAMIC SELECT_NUM
+
+CALL ITEM_SHOP_BUDGET_MONEY_JUDGE
+CLEARLINE LINECOUNT
+CALL SHOW_RESOURCE_INSTITUTE
+PRINTL Extracted Spiritual Energy can be given to the Institute in exchange for Contribution Points and other useful items.
+PRINTL Development of large magical training tools such as ＜Spirit Energy Extractor＞ can be requested as well.
+PRINTL
+CALL INSTITUTE_LIST
+DRAWLINE
+CALL ITEM_DETAIL_INSTITUTE(SELECT_NUM)
+CALL PRINTL_ALIGN
+CALL EP_DEVELOP_JUDGE(SELECT_NUM)
+DRAWLINE
+CALL RIGHT_RETURN_BUTTON
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	;購入処理→SELECT_NUMで変化
+	CALL TOWN_INSTITUTE_BUY(SELECT_NUM)
+CASE 99
+	RETURN
+CASE 10 TO 10 +INSTITUTE_LIST_NUM
+	SELECT_NUM = RESULT
+ENDSELECT
+RESTART
+
+
+
+;購入処理
+;ARG→選択項目
+@TOWN_INSTITUTE_BUY(ARG)
+#DIM MAX_TRADE
+
+SELECTCASE ARG
+CASE 10
+	;桁合わせしない
+	MAX_TRADE = LIMIT(MONEY:貯蔵霊力 /EP_CONTRIBUTION_PT,1,CHARA_MAKE_COST)
+	PRINTFORML How many Contribution Points to exchange for?（MAX：%TOSTR(MAX_TRADE,"#,0")%pt）
+	PRINTLC [ 0] Cancel
+	PRINTFORMLC [{MAX_TRADE}] Maximum Exchange
+	PRINTL
+	PRINTL Or enter a numerical value
+	INPUT
+	IF RESULT > 0 && RESULT <= MAX_TRADE
+		MONEY:貢献PT += RESULT
+		MONEY:貯蔵霊力 -= (RESULT *EP_CONTRIBUTION_PT)
+		PRINTFORMW %TOSTR(RESULT,"#,0")%pt　Exchanged
+	ENDIF
+	
+CASE 11
+	PRINTL Exchange for ＜Slave Candidate Change Ticket＞? 
+	PRINTL ※Due to the high price, please confirm
+	CALL ASK_YN
+	SIF RESULT
+		RETURN
+	MONEY:貯蔵霊力 -= ITEMPRICE:奴隷候補設定変更チケット
+	ITEM:奴隷候補設定変更チケット ++
+	PRINTW ＜Slave Candidate Change Ticket＞ exchanged
+	
+CASE 12
+	CALL INSTITUTE_BUY_ITEM_COMMON("霊力抽出装置")
+	MONEY:貯蔵霊力 -= (ITEMPRICE:霊力抽出装置 /2)
+	
+CASE 13
+	CALL INSTITUTE_BUY_ITEM_COMMON("魔力枷")
+	MONEY:貯蔵魔力 -= (ITEMPRICE:魔力枷 /2)
+	
+CASE 14
+	CALL INSTITUTE_BUY_ITEM_COMMON("魔力補給装置")
+	MONEY:貯蔵霊力 -= (ITEMPRICE:魔力補給装置 /2)
+	
+CASE 15
+	ITEM:魔改造魔力貯蔵器 ++
+	MONEY:貯蔵魔力 = 0
+	PRINTL ＜Demonified Mana Reservoir＞ modified
+	CALL MAGIC_STORAGE
+	
+CASE 16
+	CALL INSTITUTE_BUY_ITEM_COMMON("小型霊力抽出装置")
+ENDSELECT
+
+
+
+
+;代金+アイテム増加処理
+;ARGS→アイテム名
+@INSTITUTE_BUY_ITEM_COMMON(ARGS)
+
+IF FLAG:買い物／経費計上
+	MONEY:経費計上 += ITEMPRICE:ARGS
+ELSE
+	MONEY -= ITEMPRICE:ARGS
+ENDIF
+ITEM:ARGS ++
+CALL PRINTW_WORD_COLOR,@"＜%ARGS%＞ manufactured","水色"
+
+
+
+

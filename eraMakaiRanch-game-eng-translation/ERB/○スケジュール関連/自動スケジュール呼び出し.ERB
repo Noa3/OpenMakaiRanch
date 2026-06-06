@@ -1,0 +1,170 @@
+﻿
+;自動スケジュール、時間帯からスケジュール呼び出し
+@AUTO_SCHEDULE_CONFORM
+#DIMS SCHEDULE_REF
+
+;夜なら就寝にしておく
+IF TIME >= 3
+	IF EQUIP:自室
+		CSTR:スケジュール／予定 = 自室就寝
+	ELSEIF CSTR:スケジュール != "体内凌辱"
+		CSTR:スケジュール／予定 = 小屋就寝
+	ENDIF
+	RETURN
+ENDIF
+
+;CSTR:自動スケジュール／月→350
+;曜日を足して呼ぶスケジュール参照
+CSTR_REF = 350
+SCHEDULE_REF = %CSTR:(CSTR_REF +DAY:曜日)%
+
+;時間帯や牧場の状態で予定スケジュールを入れる
+CALL AUTO_SCHEDULE_CONFORM_TIME(SCHEDULE_REF)
+
+
+
+;時間帯や牧場の状態で予定スケジュールを入れる
+;ARGS→スケジュールカテゴリ
+@AUTO_SCHEDULE_CONFORM_TIME(ARGS)
+
+;自動スケジュール無視の場所にいたら飛ばす
+SELECTCASE CSTR:居場所
+CASE "牛舎"
+	CSTR:スケジュール／予定 = 牛舎
+	RETURN
+
+CASE "体内"
+	CSTR:スケジュール／予定 = 体内凌辱
+	RETURN
+ENDSELECT
+
+;搾乳優先の場合で母乳量基準以上なら搾乳
+IF BASE:母乳容量 < FLAG:搾乳休憩母乳量 && GETBIT(CFLAG:スケジュール／搾乳優先BIT,TIME)
+	CSTR:スケジュール／予定 = 搾乳
+	RETURN
+ENDIF
+
+;時間帯→カテゴリ判定
+SELECTCASE TIME
+CASE 0,2
+	SELECTCASE ARGS
+	CASE "酪農／朝夕","調合・酪農","戦闘訓練・酪農"
+		CSTR:スケジュール／予定 = 酪農
+	
+	CASE "搾乳／朝夕"
+		CSTR:スケジュール／予定 = 搾乳
+	
+	CASE "霊力抽出／朝夕"
+		CSTR:スケジュール／予定 = 抽出
+
+	CASE "触手責め搾乳／朝夕"
+		CSTR:スケジュール／予定 = 触手責め搾乳
+	ENDSELECT
+CASE 1
+	SELECTCASE ARGS
+	CASE "酪農／朝夕","搾乳／朝夕","霊力抽出／朝夕","触手責め搾乳／朝夕"
+		CSTR:スケジュール／予定 = 自由
+	
+	CASE "調合・酪農"
+		CSTR:スケジュール／予定 = 調剤
+	
+	CASE "戦闘訓練・酪農"
+		CSTR:スケジュール／予定 = 訓練
+	ENDSELECT
+ENDSELECT
+
+;時間帯無視・その他
+SELECTCASE ARGS
+CASE "休日"
+	CSTR:スケジュール／予定 = 自由
+
+CASE "酪農／終日"
+	CSTR:スケジュール／予定 = 酪農
+
+CASE "事務／即消化"
+	IF !FLAG:事務作業量
+		CSTR:スケジュール／予定 = 酪農
+	ELSE
+		CSTR:スケジュール／予定 = 事務
+	ENDIF
+
+CASE "事務／溜めて消化"
+	IF FLAG:事務作業量 < FLAG:事務作業量MAX /2
+		CSTR:スケジュール／予定 = 酪農
+	ELSE
+		CSTR:スケジュール／予定 = 事務
+	ENDIF
+
+CASE "調合／終日"
+	CSTR:スケジュール／予定 = 調剤
+
+CASE "搾乳／終日"
+	CSTR:スケジュール／予定 = 搾乳
+
+CASE "霊力抽出／終日"
+	CSTR:スケジュール／予定 = 抽出
+
+CASE "触手責め搾乳／終日"
+	CSTR:スケジュール／予定 = 触手責め搾乳
+
+CASE "戦闘訓練／終日"
+	CSTR:スケジュール／予定 = 訓練
+
+;いろいろ見るその他
+CASE "大浴場掃除→酪農"
+	;大浴場の掃除が終わってなければ掃除、他は酪農
+	IF FLAG:大浴場掃除完了度 < 100
+		CSTR:スケジュール／予定 = 大浴場掃除
+	ELSE
+		CSTR:スケジュール／予定 = 酪農
+	ENDIF
+	
+CASE "大浴場掃除→自由"
+	;大浴場の掃除が終わってなければ掃除、他は自由
+	IF FLAG:大浴場掃除完了度 < 100
+		CSTR:スケジュール／予定 = 大浴場掃除
+	ELSE
+		CSTR:スケジュール／予定 = 自由
+	ENDIF
+
+CASE "戦闘訓練／昼から"
+	;朝は休憩
+	IF !TIME
+		CSTR:スケジュール／予定 = 自由
+	ELSE
+		CSTR:スケジュール／予定 = 訓練
+	ENDIF
+
+CASE "搾乳→抽出"
+	;搾乳→搾乳→抽出
+	IF TIME == 2
+		CSTR:スケジュール／予定 = 抽出
+	ELSE
+		CSTR:スケジュール／予定 = 搾乳
+	ENDIF
+
+CASE "カスタムＡ"
+	CALL AUTO_SCHEDULE_CONFORM_TIME_CUSTOM(0)
+CASE "カスタムＢ"
+	CALL AUTO_SCHEDULE_CONFORM_TIME_CUSTOM(1)
+CASE "カスタムＣ"
+	CALL AUTO_SCHEDULE_CONFORM_TIME_CUSTOM(2)
+
+ENDSELECT
+
+;自由／待機の補正
+CALL AUTO_SCHEDULE_REST_FIX
+
+
+
+
+;カスタム用呼び出し
+;ARG→ＡＢＣ
+@AUTO_SCHEDULE_CONFORM_TIME_CUSTOM(ARG)
+
+;CSTR:自動スケジュール／カスタムＡ／朝→360
+;時間帯とＡＢＣで呼ぶ番号を取得
+CSTR_NUM = 360 +ARG *3 +TIME
+CSTR:スケジュール／予定 = %CSTR:CSTR_NUM%
+
+

@@ -1,0 +1,140 @@
+﻿
+;建築処理　時間跨ぎ処理をオミットしたので単純化できたかも
+;ARG→INPUT
+;ARG:1→牛舎増築時に使用：牛舎番号
+;ARGS→建築物
+@BUILD_COMMON(ARG,ARG:1,ARGS)
+
+;茶番
+CALL BUILD_FIRST_CONTACT
+SELECTCASE ARGS
+CASE "牛舎建築"
+	CALL BUILD_RESULT_COWSHED(ARG)
+	
+CASE "牛舎増築"
+	CALL BUILD_RESULT_COWSHED_EXTENTION(ARG,ARG:1)
+	
+CASE "事務所増築"
+	CALL BUILD_RESULT_OFFICE_EXTENTION(ARG)
+
+;あとアイテム増加なので共通化
+;↑もアイテムにすれば共通化できるかも
+CASEELSE
+	CALL BUILD_RESULT_ITEM(ARG,ARGS)
+ENDSELECT
+
+;日付増加コンフィグONなら増加+日付再計算
+IF FLAG:イベントによる日付の経過
+	DAY += ESTATE_DAY:ARG
+	PRINTFORML ＜{ESTATE_DAY:ARG} days have passed＞
+	CALL DATE_CALC
+ENDIF
+PRINTW
+
+;購入した場合マイルストーンの不動産部分をチェック
+CALL MILESTONE_CHECK_ESTATE
+
+
+
+;牛舎建築
+;ARG→INPUT
+@BUILD_RESULT_COWSHED(ARG)
+
+;ローン増加・資金減少
+CALL ITEM_LOAN_BUY(ITEMPRICE:牛舎)
+
+;FLAG:第1牛舎増築段階→500
+FLAG_REF = 490
+ITEM:牛舎 ++
+FLAG:(FLAG_REF +ITEM:牛舎 *10) ++
+CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(COWSHED_NAME:(ITEM:牛舎))% Constructed","水色"
+
+
+
+;牛舎増築
+;ARG:1→増築する牛舎番号
+@BUILD_RESULT_COWSHED_EXTENTION(ARG,ARG:1)
+
+CALL ITEM_LOAN_BUY(ESTATE_COWSHED_EXTENSION)
+
+;3番牛舎を指定→3*10してFLAG:520を+1する
+;FLAG:第1牛舎増築段階→500
+FLAG_REF = 490
+FLAG:(FLAG_REF +ARG:1 *10) ++
+CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(COWSHED_NAME:(ARG:1))% Expansion Complete！","水色"
+
+
+
+;事務所増築
+@BUILD_RESULT_OFFICE_EXTENTION(ARG)
+
+CALL ITEM_LOAN_BUY(ITEMPRICE:事務所増築)
+ITEM:事務所増築 ++
+FLAG:個室数／合計 += 4
+FLAG:個室数／空室 += 4
+CALL PRINTL_WORD_COLOR,@"Office Annex Complete！","水色"
+
+
+
+;アイテム増加
+;ARG→INPUT
+;ARGS→建築物
+@BUILD_RESULT_ITEM(ARG,ARGS)
+
+CALL ITEM_LOAN_BUY(ITEMPRICE:ARGS)
+ITEM:ARGS ++
+CALL BUILD_RESULT_ITEM_MESSAGE(ARGS)
+
+
+
+
+;建築物でメッセージ変更
+@BUILD_RESULT_ITEM_MESSAGE(ARGS)
+
+SETCOLOR 0x50C0FF
+SELECTCASE ARGS
+CASE "家族風呂"
+	PRINTFORML  ＜Family Baths＞ Constructed！
+CASE "大浴場"
+	PRINTFORML  ＜Bathhouse＞ Constructed！
+CASE "奴隷寮"
+	PRINTFORML  "Built the ＜Slave Dormitory＞!"
+CASE "奴隷寮増築"
+	PRINTFORML  "Expanded the ＜Slave Dormitory＞!"
+CASE "システムキッチン"
+	PRINTFORML  "Renovated to a ＜Built-in Kitchen＞!"
+CASE "ペット小屋"
+	PRINTFORML  "Expanded the ＜Pet House＞!"
+ENDSELECT
+RESETCOLOR
+
+
+
+;初対面茶番
+@BUILD_FIRST_CONTACT
+
+;面識あれば帰る
+SIF GETBIT(＃面識／フドウ＃)
+	RETURN
+PRINTFORML As you think about the construction scheduled to start today, 
+PRINTFORML you spot a giant figure coming towards %SAVESTR:牧場名%...
+;CALL YOUR_COMMENT,@"＞As usual, it's big..."
+PRINTL ？？？　「Eh... Had we met before?」
+;CALL YOUR_COMMENT,@"＞Nope, I just know you on my end. Mr Kenchi... Is it?"
+PRINTL Kenchi 「Just [Kenchi] is fine. Everyone calls me that anyways.」
+PRINTL 「Greetings, I'm [Makkaido Construction]'s East Branch Manager [Kenchi]... My regards...」
+PRINTL The huge branch manager bends down and delicately offered you his business card.
+;CALL YOUR_COMMENT,@"＞Nice to meet you, I'm the owner of this ranch."
+PRINTL Although you had heard of him before, it's your first time meeting him in the flesh.
+PRINTL You're convinced of his skill.
+PRINTL With such a large body,「Makaian Infrastructure」can be built in no time at all.
+PRINTL
+PRINTL Kenchi　「Fudou-san already told me the details, so you can go about your business like usual」
+PRINTL 「Our motto is "Prompt, Courteous, and Unintrusive" after all」
+PRINTL 
+PRINTL With that, he promptly puts on a huge helmet, and starts unloading the lumber from his truck into a pile.
+PRINTL Despite his large frame, he's a surprisingly careful worker.
+PRINTW
+SETBIT ＃面識／フドウ＃
+
+

@@ -1,0 +1,61 @@
+﻿
+;事務作業
+@WORK_FINANCE
+#DIM FIRST_WORKLOAD
+
+WORKER = CMATCH(CSTR:スケジュール,"事務")
+SIF !WORKER
+	RETURN
+PRINTL 　　　《 Clerical Work 》
+FIRST_WORKLOAD = FLAG:事務作業量
+CALL WORKER_ABL_SET("事務")
+CALL RANDOM_CHARA_SCHEDULE_COMMON("事務")
+FLAG:事務作業量 = LIMIT(FLAG:事務作業量,0,20)
+
+;前後の事務作業量表示
+PRINTFORML Amount of Office Work：{FIRST_WORKLOAD} → {FLAG:事務作業量}
+CALL SCHEDULE_ABL_MARK_BULK(0,"事務")
+PRINTW
+DRAWLINE
+
+
+
+;抽選したキャラの仕事表示
+@WORK_FINANCE_ENTRANCE
+
+IF !EXP:実行回数／事務
+	KOJO_TYPE = 初回
+ELSE
+	KOJO_TYPE = 通常
+ENDIF
+CALL WORK_FINANCE_BEGIN_MESSAGE
+CALL WORK_FINANCE_ABL_MESSAGE
+CALL WORK_FINANCE_RUN
+FLAG:前回表示キャラID／事務 = CFLAG:ID
+
+
+
+;実行内容
+@WORK_FINANCE_RUN
+
+;夜に作業は別関数に飛ばすので考えなくて大丈夫
+;体力が足りないとダメ
+IF !BASE:体力
+	PRINTFORML %CALLNAME% is too tired, and falls asleep after finished working...
+	HEAL_PRINT_DONE = 0
+	CALL FALL_ASLEEP
+	RETURN
+ENDIF
+CALL HP_COST(100,1)
+FLAG:事務作業量 -= ABL:事務
+PRINTFORM %CALLNAME_DIGIT()% HP-{COST} Administrative Workload-{ABL:事務,2} 
+CALL EXP_UP("事務")
+CALL WORK_LOVE_UP
+CALL SCHEDULE_AFTER_CATTLE_MIND_MINUS
+CALL MIND_PALAM_AFTER_PRINT(1)
+EXP:実行回数／事務 ++
+EXP:区間実行回数／事務 ++
+CFLAG:行動済み = 1
+
+
+

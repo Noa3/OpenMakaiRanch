@@ -1,0 +1,210 @@
+﻿
+;1ページ
+@SELF_CHARA_MAKE_SENSITIVE_1
+
+PRINTL 　《 感度・性癖 》
+CALL HALFLINE
+PRINTLC [ 0] ＡSensitivity
+PRINTFORML ：{ABL:Ａ感度,3}\%
+PRINTLC [ 1] ＢSensitivity
+PRINTFORML ：{ABL:Ｂ感度,3}\%
+PRINTLC [ 2] ＣSensitivity
+PRINTFORML ：{ABL:Ｃ感度,3}\%
+PRINTLC [ 3] ＶSensitivity
+PRINTFORML ：{ABL:Ｖ感度,3}\%
+PRINTLC [ 4] ＮSensitivity
+PRINTFORML ：{ABL:Ｎ感度,3}\%
+PRINTL
+PRINTLC [10] Maternal
+PRINTFORML ：Lv{ABL:母性,2}
+PRINTLC [11] Technique
+PRINTFORML ：Lv{ABL:技巧,2}
+PRINTLC [12] Service
+PRINTFORML ：Lv{ABL:奉仕精神,2}
+PRINTLC [13] Masochism
+PRINTFORML ：Lv{ABL:マゾっ気,2}
+PRINTLC [14] Lesbian
+PRINTFORML ：Lv{ABL:レズっ気,2}
+
+
+
+@SELF_CHARA_MAKE_SENSITIVE_2
+
+PRINTL 　《 性素質 》
+CALL HALFLINE
+PRINTL 　《 調教関連素質（一部） 》
+PRINTFORMLC [ 0] 【%TALENTS_ENG("母性本能")%】
+CALL PRINT_ONOFF(TALENT:母性本能,1)
+PRINTFORMLC [ 1] 【%TALENTS_ENG("隷属願望")%】
+CALL PRINT_ONOFF(TALENT:隷属願望,1)
+PRINTFORMLC [ 2] 【%TALENTS_ENG("サド")%】
+CALL PRINT_ONOFF(TALENT:サド,1)
+PRINTFORMLC [ 3] 【%TALENTS_ENG("性知識乏しい")%】
+CALL PRINT_ONOFF(TALENT:性知識乏しい,1)
+PRINTFORMLC [ 4] 【%TALENTS_ENG("幼稚")%】
+CALL PRINT_ONOFF(TALENT:幼稚,1)
+PRINTFORMLC [ 5] 【%TALENTS_ENG("猫舌")%】
+CALL PRINT_ONOFF(TALENT:猫舌,1)
+PRINTFORMLC [ 6] 【%TALENTS_ENG("ギザ歯")%】
+CALL PRINT_ONOFF(TALENT:ギザ歯,1)
+PRINTL
+PRINTL 　《 Lewd Despositions 》
+PRINTFORMLC [10] 【%TALENTS_ENG("名器")%】
+CALL PRINT_ONOFF(TALENT:名器,1)
+PRINTFORMLC [11] 【%TALENTS_ENG("Ａ名器")%】
+CALL PRINT_ONOFF(TALENT:Ａ名器,1)
+PRINTFORMLC [12] 【%TALENTS_ENG("おくちまんこ")%】
+CALL PRINT_ONOFF(TALENT:おくちまんこ,1)
+IF ABL:バストサイズ >= BUSTSIZE_巨乳
+	PRINTFORMLC [13] 【%TALENTS_ENG("極上乳圧")%】
+	CALL PRINT_ONOFF(TALENT:極上乳圧,1)
+ELSE
+	CALL PRINTL_WORD_COLOR,@"<13> 【極上乳圧】…【巨乳】以上限定","灰"
+ENDIF
+
+
+
+@SELF_CHARA_MAKE_SENSITIVE_3
+
+PRINTL 　《 Sexual Experience 》
+CALL HALFLINE
+PRINTLC [ 0] Sexual Experience
+PRINTFORML ：【%SEXP_ENG(CSTR:性経験)%】
+PRINTLC [ 1] 【Virginity Barrier】
+CALL PRINT_ONOFF(TALENT:処女結界,1)
+IF TALENT:処女結界
+	CALL PRINTL_WORD_COLOR("　Virgin","水色")
+	CALL PRINTL_WORD_COLOR("　Ａ Virgin","水色")
+ELSE
+	PRINTLC [ 2] Ｖ Virgin
+	CALL PRINT_ONOFF(TALENT:処女,1)
+	PRINTLC [ 3] Ａ Virgin
+	CALL PRINT_ONOFF(TALENT:Ａ処女,1)
+ENDIF
+PRINTLC [ 4] Ｍ Virgin
+CALL PRINT_ONOFF(TALENT:Ｍ処女,1)
+PRINTLC [ 5] Paizuri Virgin
+CALL PRINT_ONOFF(TALENT:パイズリ未経験,1)
+PRINTLC [ 6] Kiss Experience
+CALL PRINT_ONOFF(TALENT:キス未経験,1)
+IF MARK:母乳体質
+	PRINTLC [ 7] Breastfeeding Experience
+	CALL PRINT_ONOFF(TALENT:授乳未経験,1)
+ELSE
+	CALL PRINTL_WORD_COLOR("　Lactation Experience","灰")
+ENDIF
+PRINTL
+
+
+
+@SELF_CHARA_MAKE_SENSITIVE_4
+
+PRINTL 　《 初経験・経験人数 》
+CALL HALFLINE
+
+;シャッフルだと不可
+IF SELF_CHARA_MAKE_RANDOM
+	CALL PRINT_VIRGIN_DETAIL
+	CALL PRINTL_WORD_COLOR("シャッフル不可","黄")
+	RETURN
+ENDIF
+
+PRINTL 　《 First Partners 》
+IF TALENT:処女
+	CALL PRINTL_WORD_COLOR("　First Ｖ Partner","灰")
+ELSE
+	PRINTLC [ 0] First Ｖ Partner
+	PRINT ：
+	SIF CSTR:初経験／Ｖ == ""
+		PRINT （Unknown）
+	PRINTFORML %SEX_PARTNER_ENG(CSTR:初経験／Ｖ)%
+ENDIF
+IF TALENT:Ａ処女
+	CALL PRINTL_WORD_COLOR("　First Ａ Partner","灰")
+ELSE
+	PRINTLC [ 1] First Ａ Partner
+	PRINT ：
+	SIF CSTR:初経験／Ａ == ""
+		PRINT （Unknown）
+	PRINTFORML %SEX_PARTNER_ENG(CSTR:初経験／Ａ)%
+ENDIF
+IF TALENT:Ｍ処女
+	CALL PRINTL_WORD_COLOR("　First ＭSex Partner","灰")
+ELSE
+	PRINTLC [ 2] First ＭSex Partner
+	PRINT ：
+	SIF CSTR:初経験／Ｍセックス == ""
+		PRINT （Unknown）
+	PRINTFORML %SEX_PARTNER_ENG(CSTR:初経験／Ｍセックス)%
+ENDIF
+IF TALENT:パイズリ未経験
+	CALL PRINTL_WORD_COLOR("　First Paizuri Partner","灰")
+ELSE
+	PRINTLC [ 3] First Paizuri Partner
+	PRINT ：
+	SIF CSTR:初経験／パイズリ == ""
+		PRINT （Unknown）
+	PRINTFORML %SEX_PARTNER_ENG(CSTR:初経験／パイズリ)%
+ENDIF
+IF TALENT:キス未経験
+	CALL PRINTL_WORD_COLOR("　First Kiss","灰")
+ELSE
+	PRINTLC [ 4] First Kiss
+	PRINT ：
+	SIF CSTR:初経験／キス == ""
+		PRINT （Unknown）
+	PRINTFORML %SEX_PARTNER_ENG(CSTR:初経験／キス)%
+ENDIF
+IF TALENT:授乳未経験
+	CALL PRINTL_WORD_COLOR("　First Breastfeeding Partner","灰")
+ELSE
+	PRINTLC [ 5] First Breastfeeding Partner
+	PRINT ：
+	SIF CSTR:初経験／授乳 == ""
+		PRINT （Unknown）
+	PRINTFORML %SEX_PARTNER_ENG(CSTR:初経験／授乳)%
+ENDIF
+PRINTL [ 6] Batch Set First Partner
+PRINTL
+PRINTL 　《 Body Count 》
+IF TALENT:処女
+	CALL PRINTL_WORD_COLOR("　Ｖ Experience Partners","灰")
+ELSE
+	PRINTLC [10] Ｖ Experience Partners
+	PRINTFORML ：{EXP:地上経験人数／ニンゲン／Ｖセックス}
+ENDIF
+IF TALENT:Ａ処女
+	CALL PRINTL_WORD_COLOR("　Ａ Experience Partners","灰")
+ELSE
+	PRINTLC [11] Ａ Experience Partners
+	PRINTFORML ：{EXP:地上経験人数／ニンゲン／Ａセックス}
+ENDIF
+IF TALENT:Ｍ処女
+	CALL PRINTL_WORD_COLOR("　Ｍ Experience Partners","灰")
+ELSE
+	PRINTLC [12] Ｍ Experience Partners
+	PRINTFORML ：{EXP:地上経験人数／ニンゲン／Ｍセックス}
+ENDIF
+IF TALENT:パイズリ未経験
+	CALL PRINTL_WORD_COLOR("　Paizuri Partners","灰")
+ELSE
+	PRINTLC [13] Paizuri Partners
+	PRINTFORML ：{EXP:地上経験人数／ニンゲン／パイズリ}
+ENDIF
+IF TALENT:キス未経験
+	CALL PRINTL_WORD_COLOR("　Kiss Partners","灰")
+ELSE
+	PRINTLC [14] Kiss Partners
+	PRINTFORML ：{EXP:地上経験人数／ニンゲン／キス}
+ENDIF
+IF TALENT:授乳未経験
+	CALL PRINTL_WORD_COLOR("　Breastfeeding Partners","灰")
+ELSE
+	PRINTLC [15] Breastfeeding Partners
+	PRINTFORML ：{EXP:地上経験人数／ニンゲン／授乳}
+ENDIF
+PRINTL [16] Batch Set Body Count
+
+
+
+

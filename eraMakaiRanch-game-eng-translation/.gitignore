@@ -1,0 +1,13 @@
+/.project
+#*.config
+/sav
+/dat
+*.sav
+/debug
+*.log
+*.bak
+*.orig
+*.url
+*.lnk
+/.vscode
+Thumbs.db

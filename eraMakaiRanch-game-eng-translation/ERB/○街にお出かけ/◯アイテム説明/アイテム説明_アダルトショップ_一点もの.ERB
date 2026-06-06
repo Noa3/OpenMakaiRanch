@@ -1,0 +1,161 @@
+﻿
+;アダルトショップPAGE2
+@ITEM_SHOP_ADULT_DETAIL_DEVICE
+
+;アイテム名・価格
+PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:SELECT_ITEM)% 》%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%G 
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "バイブ"
+CASE "バイブ"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tool command【Vibrator】
+	PRINTL
+	PRINTFORML A device that, when inserted into the slave's %SAVESTR:表記／膣%, vibrates using magical power when switched on.
+	PRINTL 【Virginity loss】 occurs.
+	PRINTL While it's similar to normal insertion, it can be quite painful if not lubricated, so a little care is required.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL The world view is one where resentment is already at maximum since the slave has been used for interspecies intercourse with demons, so it seems unlikely that the slave will resist much.
+		PRINTFORML While it's just an image, since the virginity was already taken, it's assumed the slave would probably be penetrated by %SAVESTR:表記／ペニス% anyway.
+		PRINTL Therefore, this might not be used much.
+	ENDIF
+	
+CASE "アナルバイブ"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tool command【Anal vibrator】
+	PRINTL
+	PRINTFORML A device that, when inserted into the slave's %SAVESTR:表記／アナル%, vibrates using magical power when switched on.
+	PRINTL 【A virginity loss】 occurs.
+	PRINTFORML As with normal insertion, it can be quite painful if not lubricated, and the %SAVESTR:表記／アナル% generally does not self-lubricate, so care is needed.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTFORML It seems the difference is that the anal vibrator is thinner (but this is just a casual guess, as I'm not too interested in it).
+	ENDIF
+	
+CASE "乳首ローター"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tool command【Nipple rotor】
+	PRINTL
+	PRINTL A device that clamps the slave's nipples and vibrates using magical power when switched on. Two units are attached to both nipples.
+	PRINTL It's a clip type, so it won't come off even if the slave starts lactating.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTFORML The distinct feature of this variant is that it attaches a milker and squeezes milk directly from the %SAVESTR:表記／乳房%, which adds to the excitement. This may be why it's not used much.
+	ENDIF
+	
+CASE "クリローター"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tool command【Clit Rotor】
+	PRINTL
+	PRINTFORML A device that attaches to the slave's %SAVESTR:表記／陰核% and vibrates using magical power when switched on.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL Since it increases the basic multiplier for clitoral stimulation, attaching this might be useful to rack up orgasm counts.
+	ENDIF
+	
+CASE "乳首吸引器"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Pain tool command【Nipple Pumps】
+	PRINTL
+	PRINTL A device that, after air is removed from the inside, attaches to the slave's nipples and pulls to create a powerful suction. Two units are attached to both nipples.
+	PRINTFORML After lactating to a certain extent, the %SAVESTR:表記／母乳% will overflow, causing the device to come off.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL It looks quite painful, and since its concept contradicts the nature of this variant, the conditions for releasing it seem quite opposite.
+		PRINTL This might not be used much.
+	ENDIF
+	
+CASE "クリ吸引器"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Pain tool command【Clit Pump】
+	PRINTL
+	PRINTFORML A device that, after air is removed from the inside, attaches to the slave's %SAVESTR:表記／陰核% and pulls to create a powerful suction.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL This seems painful. I'm not fond of painful things, so I hope someone will update this.
+	ENDIF
+	
+CASE "アイマスク"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tool command【Eye mask】
+	PRINTL
+	PRINTL A device that covers the slave's vision.
+	PRINTL When vision is blocked, the slave's [Fear] and [Masochistic pleasure experience] will increase more easily,
+	PRINTL And if the slave is also in a restrained state, a bonus is added to their overall sensitivity based on their masochistic tendencies.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL It might be easier to break the spirit of weaker-willed slaves.
+	ENDIF
+	
+CASE "口枷"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tool command【Mouth gag】
+	PRINTL
+	PRINTL A device that covers the slave's mouth.
+	PRINTL When the mouth is covered, the dialogue becomes specific to this condition.
+	IF FLAG:ジョーク表示
+		PRINTL
+	ENDIF
+	
+CASE "ボールギャグ"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tool command【Ball gag】
+	PRINTL
+	PRINTL A device that covers the slave's mouth.
+	PRINTL When the mouth is covered, the dialogue becomes specific to this condition.
+	PRINTL Increases masochistic pleasure experience and humiliation slightly more than【Mouth gag】.
+	IF FLAG:ジョーク表示
+		PRINTL
+	ENDIF
+	
+CASE "強制開口器"
+	PRINTL ＜アンロック＞
+	PRINTL During training: Tool command [Forced Mouth Opener]
+	PRINTL
+	PRINTL A device that keeps the slave's mouth open at all times.
+	PRINTL Currently, it changes to the same type of speech as when the mouth is blocked.
+	PRINTL Unlike [Mouth Gag] and [Ball Gag], it allows M insertion in this state.
+	IF FLAG:ジョーク表示
+		PRINTL
+	ENDIF
+	
+CASE "ＳＭ用荒縄"
+	PRINTL ＜アンロック＞
+	PRINTL During training: Restraint command [Rope Restraints]
+	PRINTL
+	PRINTL Rope used to restrain the slave's hands and feet.
+	PRINTL With instructions on how to tie it, it's safe for beginners.
+	PRINTL It looks painful but is designed with safety in mind, making it comfortable for the slave.
+	PRINTL Unlike other restraint equipment, it's possible to walk if one puts in the effort,
+	PRINTL and its variety allows for various positions other than riding.
+	IF FLAG:ジョーク表示
+		PRINTL
+	ENDIF
+	
+CASE "バイブ予備"
+	PRINTL ＜Unlock＞
+	PRINTL During training between slaves: Use of the vibrator when not a virgin
+	PRINTL
+	PRINTL When training a fallen slave, they will be able to use a vibrator.
+	PRINTFORML You have your own that you might use for training, so it is called 'spare' to avoid interference.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL Training between slaves will be organized later.
+	ENDIF
+	
+CASE "アナルバイブ予備"
+	PRINTL ＜Unlock＞
+	PRINTL During training between slaves: Use of the anal vibrator when not a virgin
+	PRINTL
+	PRINTL When training a fallen slave, they will be able to use the anal vibrator.
+	PRINTFORML You have your own that you might use for training, so it is called 'spare' to avoid interference.
+	
+CASE "クリローター予備"
+	PRINTL ＜Unlock＞
+	PRINTL During training between slaves: Use of the clit rotor
+	PRINTL
+	PRINTL When training a fallen slave, they will be able to use the clit rotor.
+	PRINTFORML You have your own that you might use for training, so it is called 'spare' to avoid interference.
+ENDSELECT
+
+

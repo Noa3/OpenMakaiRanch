@@ -1,0 +1,52 @@
+﻿
+;牧場の名前
+@NEWGAME_RANCH_NAME_BEFORE
+
+;STR:牧場名→5850
+STR_REF = 5850
+STR_MAX = 50
+CALL NEWGAME_RANCH_NAME
+
+
+
+@NEWGAME_RANCH_NAME
+
+CLEARLINE LINECOUNT
+PRINTL You can change the farm name by combining words.
+PRINTFORML Current:＜%SAVESTR:牧場名%＞
+PRINTL Since new settings are appended to the existing ones, please reset first if you want to make changes.
+DRAWLINE
+BR = 0
+FOR LOCAL,STR_REF,STR_REF +STR_MAX
+	SIF STR:LOCAL == ""
+		CONTINUE
+	SIF LOCAL == STR_REF +10
+		PRINTL
+	CALL BR_PLUS(3)
+	PRINTFORMLC [{LOCAL -STR_REF,3}] %STR:LOCAL%
+NEXT
+CALL PRINTL_ALIGN(-5)
+DRAWLINE
+PRINTLC [80] （Manual Input）
+PRINTLC [81] （Reset）
+IF SAVESTR:牧場名 == ""
+	CALL PRINTL_WORD_COLOR,@"Please enter the farm name.","灰"
+ELSE
+	PRINTL [99] Confirm
+ENDIF
+BINPUT
+SELECTCASE RESULT
+CASE 80
+	PRINTL Please enter it. (It will be added to the end of the current text.)
+	INPUTS
+	SAVESTR:牧場名 += RESULTS
+CASE 81
+	SAVESTR:牧場名 =
+CASE 99
+	RETURN
+CASEELSE
+	SAVESTR:牧場名 += STR:(RESULT +STR_REF)
+ENDSELECT
+RESTART
+
+

@@ -1,0 +1,64 @@
+﻿
+;仕事着
+@ITEM_DETAIL_CLOTHE_WORK
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "作業着"
+	;PRINTL ＜仕事効果＞
+	;PRINTL 【酪農】【事務】【調剤】【掃除】【接客】可能　【酪農】時効率＋1
+	;PRINTL ＜脱衣処理＞
+	;PRINTL 胸元露出型・前開き脱衣・着衣挿入☓
+	;PRINTL
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 丈夫、収納性よし、汚れに強い、水に強い、と現場で働くヒトのマストアイテム。
+	PRINTL これを渡しておけばいろいろ仕事を任せられるので多めに買っておくのがおすすめです。
+
+CASE "布の服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 特に何かの職業で使うと決まっているわけでもない、一般的な布製の衣服。
+	PRINTL 魔界人と地上人の美的センスはさほど変わらないようで、人気のデザインはどちらの世界でも似ている。
+
+CASE "オーバーオール"
+	CALL JACKET_DETAIL_COMMON("横乳露出")
+	PRINTL つなぎ、とも呼ばれるサスペンダーで支える作業着。他の衣服の上から着る。
+	PRINTFORML 作業着との違いは横から手を挿れて%SAVESTR:表記／乳房%を揉むことができるか程度。
+	IF FLAG:ジョーク表示
+		PRINTL つまりとても重要な違いということ。
+	ENDIF
+
+CASE "白衣"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 医療関係など衛生が大事な仕事をするヒトの制服。
+	PRINTL ナース服との差別化のために女性用もズボンタイプになっています。
+
+CASE "エプロン"
+	CALL JACKET_DETAIL_COMMON("横乳露出")
+	PRINTL 料理をする時に着ける前掛け。料理をする際に必要になる。
+
+CASE "ワンピース"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 上下一体になった、スカート形状のゆったりとした衣服。
+	IF FLAG:ジョーク表示
+		PRINTL 別にありったけの夢をかき集めたりはしない。
+	ENDIF
+
+CASE "ネグリジェ"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 就寝時に着る上下一体の衣服。
+
+
+;ここから拡張
+CASE "メイド服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL ハウスキーパーの仕事をするヒトの制服。一般的なものは黒を基調に白のアクセントが入っている。
+	PRINTL スカート丈が長いので、着衣挿入をするには少々手間になるが可能。
+	
+CASE "ギャルソンエプロン"
+	CALL JACKET_DETAIL_COMMON("全露出")
+	PRINTL 料理をする時に着ける前掛け。料理をする際に必要になる。
+	PRINTL 腰だけのタイプなので、普通は他にちゃんとした服を着た上で着けるはずのもの。
+
+ENDSELECT
+
+
+

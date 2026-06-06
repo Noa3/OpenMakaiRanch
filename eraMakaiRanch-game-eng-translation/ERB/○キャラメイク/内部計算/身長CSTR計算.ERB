@@ -1,0 +1,73 @@
+﻿
+;手動で身長数値入れた場合のCSTR計算
+;ARG→身長の下限値を無視
+@HEIGHT_CSTR_CALC(ARG)
+
+;オトコの場合オトコ用へ
+IF TALENT:オトコ
+	CALL HEIGHT_CSTR_CALC_MALE(ARG)
+	RETURN
+ENDIF
+SELECTCASE CFLAG:身長
+CASE 0 TO HEIGHT_MAX_妖精体型
+	;下限に満たない場合は身長計算し直してもう1度
+	;身長下限無視フラグがONの場合は妖精体型にする
+	IF ARG
+		CSTR:身長 = 妖精体型
+	ELSE
+		CFLAG:身長 = RAND:(HEIGHT_MAX_高身長 -HEIGHT_MAX_幼児体型) +HEIGHT_MAX_幼児体型
+		RESTART
+	ENDIF
+CASE IS <= HEIGHT_MAX_幼児体型
+	CSTR:身長 = 幼児体型
+CASE IS <= HEIGHT_MAX_子供体型
+	CSTR:身長 = 子供体型
+CASE IS <= HEIGHT_MAX_小柄
+	CSTR:身長 = 小柄
+CASE IS <= HEIGHT_MAX_低身長
+	CSTR:身長 = 低身長
+CASE IS <= HEIGHT_MAX_標準
+	CSTR:身長 = 標準
+CASE IS <= HEIGHT_MAX_高身長
+	CSTR:身長 = 高身長
+CASE IS <= HEIGHT_MAX_大柄
+	CSTR:身長 = 大柄
+CASEELSE
+	CSTR:身長 = 巨躯
+ENDSELECT
+
+
+
+;オトコ用
+@HEIGHT_CSTR_CALC_MALE(ARG)
+
+SELECTCASE CFLAG:身長
+CASE 0 TO HEIGHT_MAX_妖精体型
+	IF ARG
+		CSTR:身長 = 妖精体型
+	ELSE
+		CFLAG:身長 = RAND:(MALE_HEIGHT_MAX_高身長 -HEIGHT_MAX_幼児体型) +HEIGHT_MAX_幼児体型
+		RESTART
+	ENDIF
+CASE IS <= HEIGHT_MAX_幼児体型
+	CSTR:身長 = 幼児体型
+CASE IS <= HEIGHT_MAX_子供体型
+	CSTR:身長 = 子供体型
+CASE IS <= HEIGHT_MAX_小柄
+	CSTR:身長 = 小柄
+CASE IS <= MALE_HEIGHT_MAX_低身長
+	CSTR:身長 = 低身長
+CASE IS <= MALE_HEIGHT_MAX_標準
+	CSTR:身長 = 標準
+CASE IS <= MALE_HEIGHT_MAX_高身長
+	CSTR:身長 = 高身長
+CASE IS <= MALE_HEIGHT_MAX_大柄
+	CSTR:身長 = 大柄
+CASEELSE
+	CSTR:身長 = 巨躯
+ENDSELECT
+
+
+
+
+

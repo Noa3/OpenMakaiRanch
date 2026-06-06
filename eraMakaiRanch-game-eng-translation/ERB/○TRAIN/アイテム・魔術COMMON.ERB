@@ -1,0 +1,207 @@
+﻿
+;アイテム・特殊魔術入り口
+@TRAIN_ITEM_COMMON
+
+;時間経過ないものまとめ
+CALL TRAIN_ITEM_LOTION
+CALL TRAIN_ITEM_COMDOM
+CALL TRAIN_ITEM_BIYAKU
+CALL TRAIN_MAGIC_COMMON
+PRINTL [99] Cancel
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	CALL COM290
+CASE 1
+	CALL COM291
+CASE 2
+	CALL COM292
+CASE 3
+	CALL COM252
+CASE 4
+	CALL COM895
+CASE 10
+	CALL COM251
+CASE 11
+	CALL COM550
+CASE 12
+	CALL COM253
+CASE 20
+	CALL COM505
+CASE 21
+	CALL COM504
+	SIF !RESULT
+		RETURN
+CASE 22
+	CALL COM503
+CASE 30
+	CALL COM580
+CASE 99
+	RETURN
+ENDSELECT
+WAIT
+RETURN 1
+
+
+
+
+
+;ローション
+@TRAIN_ITEM_LOTION
+
+IF !ITEM:ローション
+	CALL PRINTL_WORD_COLOR,@"No ＜Lotion＞","灰"
+	RETURN
+ENDIF
+PRINTFORML ＜Lotion＞　Owned：{ITEM:ローション}
+IF TALENT:処女結界
+	CALL PRINTL_WORD_COLOR,@"You can't touch her %SAVESTR:表記／膣% because of the 【Virginity Barrier】","灰"
+ELSEIF !TFLAG:Ｖ露出
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／膣% exposure required","黄"
+ELSEIF TFLAG:Ｖ装備
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／膣% penetrated","黄"
+	IF TFLAG:Ｖローション
+		CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／膣% lotion alraedy applied","灰"
+	ELSE
+		PRINTFORML [ 0] %SAVESTR:表記／膣%
+	ENDIF
+ENDIF
+
+IF TFLAG:Ａローション
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／アナル% lotion alraedy applied","灰"
+ELSEIF !TFLAG:Ａ露出
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／アナル% exposure required","黄"
+ELSEIF TFLAG:Ａ装備
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／アナル% penetrated","黄"
+ELSE
+	PRINTFORML [ 1] %SAVESTR:表記／アナル%
+ENDIF
+
+IF TFLAG:Ｂローション
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／乳房% lotion alraedy applied","灰"
+ELSE
+	PRINTFORML [ 2] %SAVESTR:表記／乳房%
+ENDIF
+PRINTL
+
+
+
+;コンドーム
+@TRAIN_ITEM_COMDOM
+
+IF !ITEM:コンドーム
+	CALL PRINTL_WORD_COLOR,@"No ＜Condom＞","灰"
+	RETURN
+ELSEIF TFLAG:Ｐ使用BIT
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／ペニス% in use","黄"
+	RETURN
+ENDIF
+
+IF TEQUIP:0:コンドーム
+	PRINTFORML [ 4] Remove ＜Condom＞
+ELSE
+	PRINTFORML [ 3] Use ＜Condom＞　Owned：{ITEM:コンドーム}
+ENDIF
+PRINTL
+
+
+
+;媚薬
+@TRAIN_ITEM_BIYAKU
+
+IF TFLAG:媚薬使用中
+	CALL PRINTL_WORD_COLOR,@"＜Aphrodisiac＞ alraedy applied","桃"
+ELSEIF !ITEM:媚薬
+	CALL PRINTL_WORD_COLOR,@"No ＜Aphrodisiac＞","灰"
+ELSEIF TFLAG:Ｍ装備
+	CALL PRINTL_WORD_COLOR,@"Mouth penetrated","黄"
+ELSEIF TFLAG:搾乳器
+	CALL PRINTL_WORD_COLOR,@"Can't extract %SAVESTR:表記／母乳% for sale while using ＜Aphrodisiac＞","黄"
+ELSE
+	PRINTFORML [10] ＜Aphrodisiac＞　Owned：{ITEM:媚薬}
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"媚薬粘液")
+IF TFLAG:媚薬粘液使用中
+	CLEARLINE 1
+	CALL PRINTL_WORD_COLOR,@"＜Aphrodisiac Slime＞ alraedy applied","桃"
+ELSEIF !ITEM:媚薬粘液
+	CALL PRINTL_WORD_COLOR,@" 　　＜Aphrodisiac Slime＞","灰"
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP for＜Aphrodisiac Slime＞ （%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSEIF TFLAG:Ｍ装備
+	;CALL PRINTL_WORD_COLOR,@"口塞ぎ中","黄"
+	;上と同じ
+	PRINTL
+	
+ELSEIF TFLAG:搾乳器
+	CALL PRINTL_WORD_COLOR,@"Can't extract %SAVESTR:表記／母乳% for sale while using Aphrodisiac Slime","黄"
+ELSE
+	PRINTFORML [11] ＜Aphrodisiac Slime＞：%VALUE_DIGIT(COST)%MP
+ENDIF
+
+;精力剤追加
+IF !ITEM:精力剤
+	CALL PRINTL_WORD_COLOR,@"No ＜Vigor Tonic＞","灰"
+ELSEIF ITEM:絶倫
+	CALL PRINTL_WORD_COLOR,@"【Peerless】","黄"
+ELSEIF BASE:0:精力 >= MAXBASE:0:精力
+	CALL PRINTL_WORD_COLOR,@"MAX Vigor","黄"
+ELSE
+	PRINTFORML [12] ＜Vigor Tonic＞　Owned：{ITEM:精力剤}
+ENDIF
+PRINTL
+
+
+
+;魔術いろいろ
+@TRAIN_MAGIC_COMMON
+
+PRINTFORML %CALLNAME:0%'s Mana：%VALUE_DIGIT(BASE:0:魔力)%MP 
+
+;時間圧縮中ならOK
+COST = MAGIC_USE_MP:GETNUM(ITEM,"時間圧縮")
+IF TFLAG:時間圧縮中
+	PRINTFORML [20] Release【Time Compression】
+ELSEIF !ITEM:時間圧縮
+	CALL PRINTL_WORD_COLOR(" 　　【Time Compression】","灰")
+ELSEIF BASE:0:魔力 < COST *(TFLAG:時間圧縮有効ターン数 +1)
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP for【Time Compression】（%VALUE_DIGIT(COST *(TFLAG:時間圧縮有効ターン数 +1))%MP Required）","灰"
+ELSE
+	PRINTFORML [20] 【Time Compression】：%VALUE_DIGIT(COST *(TFLAG:時間圧縮有効ターン数 +1))%MP／Turn
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"ペニス変化")
+IF !ITEM:ペニス変化
+	CALL PRINTL_WORD_COLOR,@" 　　【Penis Transformation】(%CALLNAME:PLAYER%)","灰"
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP for【Penis Transformation】（%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSE
+	PRINTFORML [21] 【Penis Transformation】(%CALLNAME:PLAYER%)：%VALUE_DIGIT(COST)%MP
+ENDIF
+
+COST = MAGIC_USE_MP:GETNUM(ITEM,"苦痛快楽変換")
+IF !ITEM:苦痛快楽変換
+	CALL PRINTL_WORD_COLOR,@" 　　【Pain-Pleasure Transformation】","灰"
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP for【Pain-Pleasure Transformation】（%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSE
+	PRINTFORML [22] 【Pain-Pleasure Transformation】：%VALUE_DIGIT(COST)%MP
+ENDIF
+
+;これ以下はアル・アジフ必要
+COST = MAGIC_USE_MP:GETNUM(ITEM,"洗脳")
+IF !ITEM:洗脳
+	CALL PRINTL_WORD_COLOR(" 　　【Brainwashing】","灰")
+ELSEIF BASE:0:魔力 < COST
+	CALL PRINTL_WORD_COLOR,@"Insufficient MP for【Brainwashing】（%VALUE_DIGIT(COST)%MP Required）","灰"
+ELSEIF !(CFLAG:無抵抗 || TFLAG:拘束BIT || !BASE:体力)
+	CALL PRINTL_WORD_COLOR("Resistant slaves must be either restrained or at 0 HP to use【Brainwashing】","黄")
+ELSE
+	PRINTFORML [30] 【Brainwashing】：%VALUE_DIGIT(COST)%MP
+ENDIF
+PRINTL
+
+
+

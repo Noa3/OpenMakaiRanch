@@ -1,0 +1,106 @@
+﻿
+;拘束
+;ARG→拘束番号
+;ARG:1→調教終了時にPRINTWせず返す
+@TRAIN_BIND_RUN(ARG,ARG:1)
+
+;元々と同じ選択肢、-1だとおわり　解除は通す
+;TFLAG:拘束BIT→80
+SIF ARG < 0 || (!ARG && !TFLAG:拘束BIT)
+	RETURN
+
+;キャンセルされないように修正
+IF ARG
+	SIF GETBIT(TFLAG:拘束BIT,ARG -1)
+		RETURN
+ENDIF
+
+;三角木馬用
+IF GETBIT(＃拘束／三角木馬＃)
+	TFLAG:Ｃ装備 = 0
+	TFLAG:Ｖ装備 = 0
+ENDIF
+
+;一旦解除→ARG -1をSETBIT
+TFLAG:拘束BIT = 0
+SIF ARG
+	SETBIT TFLAG:拘束BIT,ARG -1
+SELECTCASE ARG
+CASE 0
+	;解除
+	PRINTFORML %CALLNAME%'s restraints are removed...
+	CALL KOJO_PRINT("調教コマンド","拘束解除")
+
+CASE 1	;立ち柱
+	PRINTFORML Rope is used to tie %CALLNAME% to a pillar in the training stable...
+	;CALL KOJO_PRINT("調教コマンド","拘束","立ち柱")
+
+CASE 2	;座り柱
+	PRINTFORML %CALLNAME% sits on the floor of the training stable, and is tied to a pillar with her arms raised...
+	;CALL KOJO_PRINT("調教コマンド","拘束","座り柱")
+
+CASE 3	;まんぐり
+	PRINTFORML %CALLNAME%'s limbs are restrained behind her head, with her pussy sticking out...
+	CALL KOJO_PRINT("調教コマンド","拘束","まんぐり")
+
+CASE 4	;搾乳台
+	PRINTFORML %CALLNAME%'s hands and neck are fixed to the frame, and she is restrained with her %SLANG_B()% sticking out...
+	;CALL KOJO_PRINT("調教コマンド","拘束","搾乳台")
+	CALL KOJO_PRINT("調教コマンド","拘束","晒し台")
+
+CASE 5	;吊るし
+	PRINTFORML %CALLNAME% is hung up with her arms and legs outstretched as as she's restrained with chains hanging down from the ceiling...
+	CALL KOJO_PRINT("調教コマンド","拘束","吊るし")
+
+CASE 6	;十字架
+	PRINTFORML %CALLNAME%'s arms and legs are pulled through restraints, fixing her to a cross...
+	;CALL KOJO_PRINT("調教コマンド","拘束","十字架")
+
+CASE 7	;Ｘ字
+	PRINTFORML %CALLNAME%'s limbs are pulled through restraints, fixing her in an X shape with her legs spread open...
+	;CALL KOJO_PRINT("調教コマンド","拘束","Ｘ字")
+
+CASE 8	;手枷屈脚
+	PRINTFORML Heavy shackles are attached to %CALLNAME%'s arms, and she is restrained with her butt sticking out...
+	;CALL KOJO_PRINT("調教コマンド","拘束","手枷屈脚")
+
+CASE 9	;ハーネス
+	PRINTFORML %CALLNAME% is restrained with a harness, and suspended from the ceiling with chains...
+	;CALL KOJO_PRINT("調教コマンド","拘束","ハーネス")
+
+CASE 10	;ベッド仰向け
+	PRINTFORML %CALLNAME%'s limbs are tied to the bed, forcing her to lie on her back with her legs spread...
+	;CALL KOJO_PRINT("調教コマンド","拘束","ベッド仰向け")
+
+CASE 11	;ベッドうつ伏せ
+	PRINTFORML %CALLNAME%'s limbs are tied to the bed, forcing her to lie face down with her legs spread...
+	;CALL KOJO_PRINT("調教コマンド","拘束","ベッドうつ伏せ")
+
+CASE 12	;荒縄
+	PRINTFORML %CALLNAME% is tied up with rope...
+	CALL KOJO_PRINT("調教コマンド","拘束","荒縄拘束")
+
+CASE 13	;亀甲縛り
+	PRINTFORML %CALLNAME%'s whole body was tied up in tortoise shell bondage....
+	CALL KOJO_PRINT("調教コマンド","拘束","荒縄拘束")
+	;CALL KOJO_PRINT("調教コマンド","拘束","亀甲縛り")
+
+CASE 14	;触手
+	PRINTFORML %CALLNAME%'s body is entangled by %CALLNAME:0%'s tentacles...
+	CALL KOJO_PRINT("調教コマンド","拘束","触手拘束")
+
+CASE 15	;下半身埋め壁乳
+	PRINTFORML %CALLNAME%'s body and arms are completely imobilized, her %SLANG_B()% sticking out...
+	;CALL KOJO_PRINT("調教コマンド","拘束","壁乳")
+
+CASE 16	;三角木馬
+	;一人で抵抗する相手を普通に乗せるのは無理そうなので吊り下げ方式に
+	PRINTFORML After attaching the chain-linked handcuffs hanging from the ceiling to %CALLNAME% and binding her legs, she was suspended and then lowered onto the triangular wooden horse to straddle it...
+	;CALL KOJO_PRINT("調教コマンド","拘束","三角木馬")
+	TFLAG:Ｃ装備 = 1
+	TFLAG:Ｖ装備 = 1
+ENDSELECT
+PRINTW
+PREVCOM = 0
+
+

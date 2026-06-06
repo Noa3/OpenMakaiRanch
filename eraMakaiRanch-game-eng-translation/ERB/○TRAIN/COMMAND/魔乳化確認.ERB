@@ -1,0 +1,18 @@
+﻿
+;超乳寸前の場合確認
+@BUSTUP_HUGE_BUST_COMFIRM
+
+SIF ABL:バストサイズ != BUSTSIZE_超乳 -1
+	RETURN
+CALL MANYL(3)
+CALL PRINTL_WORD_COLOR,@"If %SAVESTR:表記／乳房% becomes any larger, she will no longer be able to live as a human. Do you really want to proceed?","黄"
+CALL ASK_YN
+
+;いいえ→1で返す
+SIF RESULT
+	RETURN 1
+
+
+
+
+

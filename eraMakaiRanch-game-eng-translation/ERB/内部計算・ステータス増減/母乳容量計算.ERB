@@ -1,0 +1,161 @@
+﻿
+;赤ちゃんが1回に飲む量は離乳食の直前くらいだと200cc前後だそうです
+;1日に無理なく出る量に変更したのに合わせて最低保障1000ccということにする
+;時間経過でMAX化するようになったため500cc最低保障
+@MILKTANK_CALC
+#DIM NOW_TANK,5
+
+;母乳体質でないなら帰る
+SIF !MARK:母乳体質
+	RETURN
+
+;現在のMAXを記録
+NOW_TANK:0 = MAXBASE:母乳容量
+NOW_TANK:1 = MAXBASE:母乳生産力
+NOW_TANK:2 = MAXBASE:基礎噴乳量
+
+;それぞれ計算
+CALL MILKTANK_CALC_CAPACITY
+CALL MILKTANK_CALC_PRODUCT
+CALL MILKTANK_CALC_SPOUT
+
+;倍率コンフィグ
+CALL DIFFICULTY_CONFIG_APPLY("母乳容量・生産力")
+
+;減った状態から増加した場合に合わせて増加分回復する
+HEAL = MAXBASE:母乳容量 -NOW_TANK:0
+BASE:母乳容量 = LIMIT(BASE:母乳容量 +HEAL,0,MAXBASE:母乳容量)
+HEAL = MAXBASE:母乳生産力 -NOW_TANK:1
+BASE:母乳生産力 = LIMIT(BASE:母乳生産力 +HEAL,0,MAXBASE:母乳生産力)
+BASE:基礎噴乳量 = MAXBASE:基礎噴乳量
+
+;キャラメイク中はMAXにする
+IF FLAG:キャラメイク中
+	BASE:母乳容量 = MAXBASE:母乳容量
+	BASE:母乳生産力 = MAXBASE:母乳生産力
+	RETURN
+ENDIF
+EXIST = 0
+IF MAXBASE:母乳容量 > NOW_TANK:0
+	CALL PRINT_WORD_COLOR,@"Milk Capacity Increase：{NOW_TANK:0}%MILK_COUNTING()% → {MAXBASE:母乳容量}%MILK_COUNTING()% ","桃"
+	EXIST = 1
+ENDIF
+IF MAXBASE:母乳生産力 > NOW_TANK:1
+	CALL PRINT_WORD_COLOR,@"Milk Productivity Increase：{NOW_TANK:1}%MILK_COUNTING()% → {MAXBASE:母乳生産力}%MILK_COUNTING()% ","桃"
+	EXIST = 1
+ENDIF
+IF MAXBASE:基礎噴乳量 > NOW_TANK:2
+	CALL PRINT_WORD_COLOR,@"Base Milk Ejection Increase：{NOW_TANK:2}%MILK_COUNTING()% → {MAXBASE:基礎噴乳量}%MILK_COUNTING()% ","桃"
+	EXIST = 1
+ENDIF
+
+;刻印じゃないけどこのほうが都合がいい
+SIF !EXIST
+	RETURN
+PRINTL
+TFLAG:刻印入手 = 1
+SIF !MARK:絶頂魔力回復淫紋
+	RETURN
+CALL HEARTCB(0xD02830)
+CALL PRINT_WORD_COLOR,@"The【Mana Recovering Climax Crest】allows an infinite production of milk","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+
+
+
+;母乳容量
+@MILKTANK_CALC_CAPACITY
+#DIM TANK
+#DIM TANKPLUS
+
+;バストサイズが一定以上から上がり幅をさらに増加させたい
+;+100 巨乳以上で+200 爆乳+300 超乳+500
+TANKPLUS = 0
+SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+	TANKPLUS += ((ABL:バストサイズ +1 -BUSTSIZE_巨乳) *100)
+SIF ABL:バストサイズ >= BUSTSIZE_爆乳
+	TANKPLUS += ((ABL:バストサイズ +1 -BUSTSIZE_爆乳) *100)
+SIF ABL:バストサイズ > BUSTSIZE_超乳
+	TANKPLUS += ((ABL:バストサイズ +1 -BUSTSIZE_超乳) *200)
+TANK = ABL:バストサイズ *100 +TANKPLUS +500
+TANK *= CFLAG:母乳容量補正値
+TANK /= 100
+
+;バストサイズのみで補正する
+;刻印付きなら激増：IFにしてあんまり高くなりすぎないように
+IF MARK:ミルクサーバー
+	TIMES TANK,3.00
+ELSEIF MARK:ホルスタイン
+	TIMES TANK,2.00
+ELSEIF MARK:ミルクタンク
+	TIMES TANK,1.50
+ENDIF
+
+;奉仕刻印で+20%
+SIF MARK:ご奉仕雌奴隷
+	TIMES TANK,1.20
+
+;1桁目切り捨て
+TANK -= (TANK %10)
+
+;補正で割っても500は確保すること
+MAXBASE:母乳容量 = LIMIT(TANK,500,MILKTANK_MAX)
+
+
+
+;母乳生産力
+;最低保障：母乳容量の倍＝1000cc
+@MILKTANK_CALC_PRODUCT
+#DIM TANK
+
+;[母乳生産力]1Lvにつき+10%
+;母性・搾乳中毒の補正は刻印時のみにする
+FIX = 100 +ABL:母乳生産力 *10
+TANK = MAXBASE:母乳容量 *2 *FIX
+
+;刻印補正
+IF MARK:みんなのママ
+	TIMES TANK,2.00
+ELSEIF MARK:母性本能開花
+	TIMES TANK,1.60
+ELSEIF MARK:母性的
+	TIMES TANK,1.30
+ENDIF
+IF MARK:搾乳家畜
+	TIMES TANK,2.00
+ELSEIF MARK:搾乳奴隷
+	TIMES TANK,1.60
+ELSEIF MARK:搾乳中毒
+	TIMES TANK,1.30
+ENDIF
+TANK /= 100
+TANK -= (TANK %10)
+MAXBASE:母乳生産力 = LIMIT(TANK,1000,MILKTANK_MAX)
+
+
+
+;基礎噴乳量
+@MILKTANK_CALC_SPOUT
+#DIM TANK
+#DIM TANKPLUS
+
+;搾乳責めされた時絶頂しなくても噴乳する基礎値
+;おっぱいがでかいほど多くなる
+TANKPLUS = 0
+SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+	TANKPLUS += ((ABL:バストサイズ +1 -BUSTSIZE_巨乳) *10)
+SIF ABL:バストサイズ >= BUSTSIZE_爆乳
+	TANKPLUS += ((ABL:バストサイズ +1 -BUSTSIZE_爆乳) *10)
+SIF ABL:バストサイズ > BUSTSIZE_超乳
+	TANKPLUS += ((ABL:バストサイズ +1 -BUSTSIZE_超乳) *20)
+TANK = ABL:バストサイズ *10 +TANKPLUS +30
+IF MARK:ミルクサーバー
+	TIMES TANK,2.00
+ELSEIF MARK:ホルスタイン
+	TIMES TANK,1.60
+ELSEIF MARK:ミルクタンク
+	TIMES TANK,1.30
+ENDIF
+TANK -= (TANK %10)
+MAXBASE:基礎噴乳量 = LIMIT(TANK,50,MILKTANK_MAX)
+

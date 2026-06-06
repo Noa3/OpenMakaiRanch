@@ -1,0 +1,768 @@
+﻿;This file reserved for English body-part description
+;from TohoK
+;--------------------------------------------------------
+;BODYPART is meant as a replacement for STR_BODY, which I consider to be unsalvageable
+;STR_BODY in no way resembles the Japanese version,
+;ARGS:0 is the body part
+;ARG:0 is the character
+;ARG:1 is a capitalization flag
+;ARGS:1 is target finding helper instructions
+;--------------------------------------------------------
+@BODYPART(ARGS:0, ARG:0, ARG:1 = 0, ARGS:1 = "")
+#FUNCTIONS
+#DIMS CONST VALIDPARTS = "Chest", "Nipple", "Nipples", "Ass", "Asscheeks", "Asscheek", "Vagina", "Anus", "Urethra", "Waist", "Hips", "Labia", "Clit", "Body", "Legs", "Thighs", "Ankles", "Leg", "Thigh", "Ankle", "Mouth", "Lips", "Throat", "Armpit", "Armpits"
+#DIMS OUTPUT
+#DIM DYNAMIC nAdditional, 10
+
+SIF ARGS:0 == ""
+	RETURNF
+
+SPLIT ARGS:0, ":", LOCALS
+SIF RESULT == 1
+	SPLIT ARGS, "：", LOCALS
+IF RESULT > 1
+	ARGS:0 =
+	FOR LOCAL:0, 0, RESULT
+		FOR LOCAL:1, 0, VARSIZE("VALIDPARTS")
+			IF LOCALS:(LOCAL:0) == VALIDPARTS:(LOCAL:1)
+				IF ARGS:0 == ""
+					ARGS:0 = %LOCALS:(LOCAL:0)%
+				ELSE
+					ARGS:0 = %ARGS:0%:%LOCALS:(LOCAL:0)%
+				ENDIF
+			ENDIF
+		NEXT
+	NEXT
+	ARGS:0 = %SPLIT_G(ARGS:0)%
+ENDIF
+
+OUTPUT =
+SELECTCASE ARGS:0
+
+;Chest
+CASE "Chest"
+    SIF GETBIT(STAIN:(ARG:0):乳房, 6)
+        OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("dripping :splattered :spattered :covered :painted ")%
+    IF MARK:(ARG:0):淫乳
+        SIF RAND:100 < 90
+            OUTPUT = %OUTPUT%%SPLIT_G("lewd :perverted :indecent :obscene ")%
+    ENDIF
+
+    IF CSTR:(ARG:0):身長 == "子供体型" || CSTR:(ARG:0):身長 == "幼児体型"
+        SELECTCASE GET_BUSTSIZE(ARG:0)
+        CASE -2
+            OUTPUT = %OUTPUT%%SPLIT_G("tiny :washboard :flat :childish :undeveloped ")%
+        CASE -1
+            OUTPUT = %OUTPUT%%SPLIT_G("cute :small :puffy :childish :developing :budding ")%
+        CASE 0
+            OUTPUT = %OUTPUT%%SPLIT_G("rounded :shapely :perky :supple :developed :ripened ")%
+        CASE 1
+            OUTPUT = %OUTPUT%%SPLIT_G("rounded :shapely :big :pillowy :heavy :ample :full :overdeveloped :mature ")%
+        CASE 2,3
+            OUTPUT = %OUTPUT%%SPLIT_G("bountiful :large :copious :plump :pillowy :heavy :impressive :substantial :abnormally large :overgrown :very mature ")%
+        CASEELSE
+            OUTPUT = %OUTPUT%%SPLIT_G("bountiful :giant :huge :massive :humongous :enormous :colossal :bulging :absurdly large :overgrown :very mature ")%
+        ENDSELECT
+    ELSE
+        SELECTCASE GET_BUSTSIZE(ARG:0)
+        CASE -2 ; flat
+            OUTPUT = %OUTPUT%%SPLIT_G("tiny :washboard :flat :modest :insignificant :non-existent ")%
+        CASE -1 ; small
+            OUTPUT = %OUTPUT%%SPLIT_G("cute :small :puffy :modest :childish ")%
+        CASE 0 ; normal
+            OUTPUT = %OUTPUT%%SPLIT_G("rounded :perky :shapely :perky :supple :average ")%
+        CASE 1 ; large
+            OUTPUT = %OUTPUT%%SPLIT_G("rounded :large :shapely :big :pillowy :heavy :ample :full ")%
+        CASE 2 ; huge
+            OUTPUT = %OUTPUT%%SPLIT_G("bountiful :huge :copious :plump :pillowy :heavy :impressive :substantial ")%
+        CASE 3 ; enormous
+            OUTPUT = %OUTPUT%%SPLIT_G("bountiful :giant :massive :humongous :enormous :colossal :bulging :absurdly large ")%
+        CASEELSE ; gigantic/otherworldly
+            OUTPUT = %OUTPUT%%SPLIT_R("massive :humongous :colossal :bulging :swollen :overfilled :cumbersome :tremendous :spacious :gigantic ")%
+        ENDSELECT
+    ENDIF
+    
+    IF MARK:(ARG:0):母乳体質
+        IF IS_BOIN(ARG:0)
+            OUTPUT = %OUTPUT%%SPLIT_G("milky :engorged :cow-like :bovine :distended :lactating ")%
+        ELSE
+            OUTPUT = %OUTPUT%%SPLIT_G("milky :engorged :swollen :lactating ")%
+        ENDIF
+    ENDIF
+    OUTPUT = %SPLIT_G(OUTPUT)%
+    IF MARK:ミルクタンク && RAND:100 < 30
+	    OUTPUT = %OUTPUT%%SPLIT_G("milktanks")%
+    ELSEIF MARK:(ARG:0):母乳体質
+		OUTPUT = %OUTPUT%%SPLIT_G("breasts:tits:udders")%
+	ELSE
+		OUTPUT = %OUTPUT%%SPLIT_G("breasts:tits:boobs")%
+	ENDIF
+
+;Nipple
+CASE "Nipple", "Nipples"
+
+    SIF GETBIT(STAIN:(ARG:0):乳首, 6)
+        OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("dripping :covered :painted :splattered :spattered")%
+    IF (PALAM:(ARG:0):Ｖ潤滑  + PALAM:(ARG:0):Ａ潤滑) >= 10000
+        OUTPUT = %OUTPUT%%SPLIT_G("stiff :pointed :erect :hard :swollen ")%
+    ELSEIF (PALAM:(ARG:0):Ｖ潤滑  + PALAM:(ARG:0):Ａ潤滑) >= 5000
+        OUTPUT = %OUTPUT%%SPLIT_G("perky :swelling ")%
+    ENDIF
+    SIF MARK:(ARG:0):母乳体質
+        OUTPUT = %OUTPUT%%SPLIT_G("lactating :milk-laden :moist ")%
+    IF CSTR:(ARG:0):身長 == "子供体型" || CSTR:(ARG:0):身長 == "幼児体型"
+        IF IS_BOIN(ARG:0) || MARK:(ARG:0):淫乳
+            OUTPUT = %OUTPUT%%SPLIT_G("overgrown :pronounced :developed ")%
+        ELSEIF GET_BUSTSIZE(ARG:0) == -2
+            OUTPUT = %OUTPUT%%SPLIT_G("tiny :small :childish :undeveloped ")%
+        ELSE
+            OUTPUT = %OUTPUT%%SPLIT_G("small :puffy :developing ")%
+        ENDIF
+    ELSEIF IS_BOIN(ARG:0) || MARK:(ARG:0):淫乳
+        OUTPUT = %OUTPUT%%SPLIT_G("large :pronounced :huge :developed ")%
+    ELSEIF GET_BUSTSIZE(ARG:0) == -1
+        OUTPUT = %OUTPUT%%SPLIT_G("small :puffy :petite ")%
+    ENDIF
+    IF MARK:(ARG:0):淫乳
+        OUTPUT = %OUTPUT%%SPLIT_G("lewd :obscene :elongated :cow-like ")%
+    ELSE
+        OUTPUT = %OUTPUT%%SPLIT_G("rounded :tender :soft ")%
+    ENDIF
+    OUTPUT = %SPLIT_G(OUTPUT)%
+	IF MARK:(ARG:0):淫乳 || MARK:(ARG:0):母乳体質
+		OUTPUT = %OUTPUT%%SPLIT_G("nipple:teat")%
+	ELSE
+		OUTPUT = %OUTPUT%%SPLIT_G("nipple")%
+	ENDIF
+	SIF ARGS:0 == "Nipples"
+		OUTPUT = %OUTPUT%s
+
+;Ass
+CASE "Ass"
+
+    SIF GETBIT(STAIN:(ARG:0):尻, 6)
+        OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("dripping :covered :painted :splattered :spattered")%
+    SIF TALENT:(ARG:0):Ａ名器
+        OUTPUT = %OUTPUT%%SPLIT_G("perfect :flawless :exquisite :lovely ")%
+    IF CSTR:(ARG:0):身長 == "子供体型" || CSTR:(ARG:0):身長 == "幼児体型"
+        IF CSTR:(ARG:0):体型 == "ムチムチ" || CSTR:(ARG:0):体型 == "太り気味" || CSTR:(ARG:0):体型 == "肥満" || CSTR:(ARG:0):体型 == "豊満"
+            OUTPUT = %OUTPUT%%SPLIT_G("overdeveloped :overly mature :unexpectedly large ")%
+        ELSE
+            OUTPUT = %OUTPUT%%SPLIT_G("developing :undeveloped :immature ")%
+        ENDIF
+    ENDIF
+    ;weight
+    SELECTCASE CSTR:(ARG:0):体型
+    CASE "細身"
+        OUTPUT = %OUTPUT%%SPLIT_G("bony :flat :skinny ")%
+    CASE "痩せ型", "スレンダー"
+        OUTPUT = %OUTPUT%%SPLIT_G("skinny :tight :firm ")%
+    CASE "標準体型"
+        OUTPUT = %OUTPUT%%SPLIT_G("tight :firm :toned ")%
+    CASE "グラマー"
+        OUTPUT = %OUTPUT%%SPLIT_G("toned :plump :firm :squishy ")%
+    CASE "豊満"
+        OUTPUT = %OUTPUT%%SPLIT_G("soft :plump :meaty :squishy ")%
+    CASE "ムチムチ"
+        OUTPUT = %OUTPUT%%SPLIT_G("chubby :plump :meaty :squishy ")%
+    CASEELSE ; "太り気味", "肥満"
+        OUTPUT = %OUTPUT%%SPLIT_G("weighty :squishy :toned :fat :chunky ")%
+    ENDSELECT
+    ;hip size
+    SELECTCASE CSTR:(ARG:0):体型 ; base off of size instead
+        CASE "幼児体型", "子供体型"
+            OUTPUT = %OUTPUT%%SPLIT_G("compact :tiny :small ")%
+        CASE "小柄", "低身長"
+            OUTPUT = %OUTPUT%%SPLIT_G("compact :small :slim ")%
+        CASE "標準"
+            OUTPUT = %OUTPUT%%SPLIT_G("moderately sized :rounded ")%
+        CASE "高身長"
+            OUTPUT = %OUTPUT%%SPLIT_G("big :sizable :heavy ")%
+        CASE "大柄"
+            OUTPUT = %OUTPUT%%SPLIT_G("large :sizable :copious :heavy :substantial ")%
+        CASEELSE
+            OUTPUT = %OUTPUT%%SPLIT_G("giant :huge :massive :humongous :enormous :colossal ")%
+    ENDSELECT
+    OUTPUT = %SPLIT_G(OUTPUT)%
+	IF CSTR:(ARG:0):身長 == "子供体型" || CSTR:(ARG:0):身長 == "幼児体型"
+		OUTPUT = %OUTPUT%%SPLIT_G("ass:butt:tush")%
+	ELSE
+		OUTPUT = %OUTPUT%%SPLIT_G("ass:butt:backside")%
+	ENDIF
+
+;Vagina
+CASE "Vagina"
+
+    SIF MARK:(ARG:0):膣内射精中毒
+        OUTPUT = %OUTPUT%%SPLIT_G("cum hungry :ravenous :thirsty :semen addicted :needy ")%
+    SIF GETBIT(STAIN:(ARG:0):膣, 6)
+        OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("filled :packed :stuffed :dripping :leaking ")%
+    SIF TALENT:(ARG:0):名器
+        OUTPUT = %OUTPUT%%SPLIT_G("perfect :flawless :exquisite :lovely ")%
+    IF TALENT:(ARG:0):処女 == 1
+        OUTPUT = %OUTPUT%%SPLIT_G("virgin :virginal :unused ")%:
+    ELSE
+        SELECTCASE EXP:(ARG:0):膣内射精経験
+            CASE IS < 1000
+                OUTPUT = %OUTPUT%%SPLIT_G("inexperienced :barely used :untrained :near-virgin :barely tried ")%
+            CASE IS < 3000
+                OUTPUT = %OUTPUT%%SPLIT_G("tight :tense :stiff :narrow :closed :firm ")%
+            CASE IS < 10000
+                OUTPUT = %OUTPUT%%SPLIT_G("fresh :raw :ready for use :inviting :neat ")%
+            CASEELSE
+                OUTPUT = %OUTPUT%%SPLIT_G("experienced :matured :well-trained :full-fledged :ripened ")%
+        ENDSELECT
+    ENDIF
+    IF CSTR:(ARG:0):身長 == "子供体型" || CSTR:(ARG:0):身長 == "幼児体型"
+        IF RAND:3
+            IF ABL:(ARG:0):Ｖ感覚 <= 3
+                OUTPUT = %OUTPUT%%SPLIT_G("childish :immature :undeveloped ")%:
+            ELSEIF ABL:(ARG:0):Ｖ感覚 <= 6
+                OUTPUT = %OUTPUT%%SPLIT_G("adult-like :maturing :developing :precocious ")%:
+            ELSE
+                OUTPUT = %OUTPUT%%SPLIT_G("adult-like :mature :developed :obscene ")%:
+            ENDIF
+        ENDIF
+    ELSE
+        IF RAND:3
+            IF ABL:(ARG:0):Ｖ感覚 <= 3
+                OUTPUT = %OUTPUT%%SPLIT_G("girlish :youthful :tender ")%
+            ELSEIF ABL:(ARG:0):Ｖ感覚 <= 6
+                OUTPUT = %OUTPUT%%SPLIT_G("womanly :mature :developed ")%
+            ELSE
+                OUTPUT = %OUTPUT%%SPLIT_G("obscene :seasoned :developed ")%
+            ENDIF
+        ENDIF
+    ENDIF
+    SIF TFLAG:媚薬使用中 ; aphrodisiacs
+        OUTPUT = %OUTPUT%%SPLIT_G("boiling hot :burning :inflamed ")%
+    IF PALAM:(ARG:0):Ｖ潤滑 >= 5000
+        IF PALAM:(ARG:0):Ｖ潤滑 < 10000
+            OUTPUT = %OUTPUT%%SPLIT_G("wet :soaked :drenched :excited ")%
+        ELSEIF PALAM:(ARG:0):Ｖ潤滑 < 30000
+            OUTPUT = %OUTPUT%%SPLIT_G("wet :soaked :drenched :excited ")%
+        ELSE
+            OUTPUT = %OUTPUT%%SPLIT_G("slimy :drooling :slavering :sloppy ")%
+        ENDIF
+    ENDIF
+    SIF MARK:(ARG:0):淫壺 || ABL:(ARG:0):Ｖ感覚 >= 7
+        OUTPUT = %OUTPUT%%SPLIT_G("indecent :nympho :lewd :depraved :naughty :perverted :lustful")%
+    OUTPUT = %SPLIT_G(OUTPUT)%
+    IF CSTR:(ARG:0):身長 == "子供体型" || CSTR:(ARG:0):身長 == "幼児体型"
+        OUTPUT = %OUTPUT%%SPLIT_G("pussy:slit:mound:cunny")%
+    ELSE
+        OUTPUT = %OUTPUT%%SPLIT_G("vagina:pussy:cunt:slit")%
+    ENDIF
+
+;Anus
+CASE "Anus"
+    
+    SIF MARK:(ARG:0):尻穴射精中毒
+        OUTPUT = %OUTPUT%%SPLIT_G("cum hungry :ravenous :thirsty :semen addicted :needy ")%
+    SIF GETBIT(STAIN:(ARG:0):アナル, 6)
+        OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("filled :dripping :leaking :packed :stuffed ")%
+    IF TALENT:(ARG:0):Ａ処女 == 1
+        OUTPUT = %OUTPUT%%SPLIT_G("virgin :virginal :unused ")%
+    ELSE
+        SELECTCASE EXP:(ARG:0):尻穴射精経験  ; values may need a re-jig depending on how easy it is to actuall reach these
+            CASE IS < 1000
+                OUTPUT = %OUTPUT%%SPLIT_G("inexperienced :barely used :untrained :near-virgin :barely tried ")%
+            CASE IS < 3000
+                OUTPUT = %OUTPUT%%SPLIT_G("tight :tense :stiff :narrow :closed :firm ")%
+            CASE IS < 10000
+                OUTPUT = %OUTPUT%%SPLIT_G("fresh :raw :ready for use :inviting :neat ")%
+            CASEELSE
+                OUTPUT = %OUTPUT%%SPLIT_G("experienced :matured :well-trained :full-fledged :ripened ")%
+        ENDSELECT
+    ENDIF
+    IF CSTR:(ARG:0):身長 == "子供体型" || CSTR:(ARG:0):身長 == "幼児体型"
+        IF RAND:3
+            IF ABL:(ARG:0):Ａ感覚 <= 3
+                OUTPUT = %OUTPUT%%SPLIT_G("pink :childish :undeveloped ")%
+            ELSEIF ABL:(ARG:0):Ａ感覚 <= 6
+                OUTPUT = %OUTPUT%%SPLIT_G("rosy :youthful :developing ")%
+            ELSE
+                OUTPUT = %OUTPUT%%SPLIT_G("darkened :mature :developed ")%
+            ENDIF
+        ENDIF
+    ELSE
+        IF RAND:3
+            IF ABL:(ARG:0):Ａ感覚 <= 3
+                OUTPUT = %OUTPUT%%SPLIT_G("pink :youthful :tender ")%
+            ELSEIF ABL:(ARG:0):Ａ感覚 <= 6
+                OUTPUT = %OUTPUT%%SPLIT_G("rosy :mature :developing ")%
+            ELSE
+                OUTPUT = %OUTPUT%%SPLIT_G("darkened :seasoned :developed ")%
+            ENDIF
+        ENDIF
+    ENDIF
+    SIF MARK:(ARG:0):淫尻 || ABL:(ARG:0):Ａ感覚 >= 7
+        OUTPUT = %OUTPUT%%SPLIT_G("indecent :nympho :lewd :depraved :naughty :perverted :lustful")%
+    OUTPUT = %SPLIT_G(OUTPUT)%
+	IF MARK:(ARG:0):淫尻 || ABL:(ARG:0):Ａ感覚 >= 7
+		OUTPUT = %OUTPUT%%SPLIT_G("anus:ass-pussy:butt-pussy")%
+	ELSE
+		OUTPUT = %OUTPUT%%SPLIT_G("anus:asshole:butthole:rectum")%
+	ENDIF
+
+;Clit
+CASE "Clit"
+    IF ABL:(ARG:0):Ｃ感覚 <= 3
+        OUTPUT = %OUTPUT%%SPLIT_G("inexperienced :untrained ")%
+    ELSEIF ABL:(ARG:0):Ｃ感覚 >= 7
+        OUTPUT = %OUTPUT%%SPLIT_G("experienced :well-trained ")%
+    ENDIF
+    IF MARK:(ARG:0):淫核
+        OUTPUT = %OUTPUT%%SPLIT_G("indecent :elongated :lewd :obscene ")%
+    ELSEIF CSTR:(ARG:0):身長 == "子供体型" || CSTR:(ARG:0):身長 == "幼児体型"
+        OUTPUT = %OUTPUT%%SPLIT_G("childish :immature :small ")%
+    ENDIF
+    SIF ((PALAM:(ARG:0):Ｖ潤滑  + PALAM:(ARG:0):Ａ潤滑) >= 5000) || TFLAG:媚薬使用中
+        OUTPUT = %OUTPUT%%SPLIT_G("engorged :erect :stiff :swollen ")%
+    OUTPUT = %SPLIT_G(OUTPUT)%
+	OUTPUT = %OUTPUT%%SPLIT_G("clitoris:clit")%
+
+;;Cheeks
+;CASE "Asscheeks", "Asscheek"
+;	IF !RAND:3
+;		SELECTCASE CUM_CUR_AMOUNT:(ARG:0):11
+;		CASE IS >= 15
+;			OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("dripping :covered :painted ")%:
+;		CASE IS >= 1
+;			OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("dripping :splattered :spattered ")%:
+;		ENDSELECT
+;	ENDIF
+;	IF TALENT:(ARG:0):体型 > 0 ;TALENT:(ARG:0):豊尻
+;		OUTPUT = %OUTPUT%%SPLIT_G("copious :swollen :weighty :bursting :meaty ")%
+;	ELSEIF TALENT:(ARG:0):体格 == -2
+;		OUTPUT = %OUTPUT%%SPLIT_G("small :undeveloped :compact ")%
+;	ELSEIF TALENT:(ARG:0):美尻
+;		OUTPUT = %OUTPUT%%SPLIT_G("lovely :firm :tight :flawless :nicely shaped ")%
+;	ELSE
+;		OUTPUT = %OUTPUT%%SPLIT_G("plump :soft :well-rounded ")%
+;	ENDIF
+;	OUTPUT = %SPLIT_G(OUTPUT)%
+;	OUTPUT = %OUTPUT%%SPLIT_G("asscheek:buttcheek:buttock")%
+;	SIF ARGS:0 == "Asscheeks"
+;		OUTPUT = %OUTPUT%s
+;
+;;Urethra
+;CASE "Urethra"
+;	IF RAND:3
+;		IF RAND:3
+;			SELECTCASE CUM_CUR_AMOUNT:(ARG:0):2
+;			CASE IS >= 15
+;				OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("filled :packed :stuffed ")%:
+;			CASE IS >= 1
+;				OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("filled :dripping :leaking ")%:
+;			ENDSELECT
+;			OUTPUT = %OUTPUT%%BODYSENS(ABL:(ARG:0):Ｕ感 + TALENT:(ARG:0):Ｕ敏感 * 5 - TALENT:(ARG:0):Ｕ鈍感 * 5 + GETBIT(TALENT:(ARG:0):淫乱系, 素質_淫乱_尿道狂い) * 15)%:
+;		ENDIF
+;		OUTPUT = %OUTPUT%%SPLIT_R("delicate :hypersensitive ")%:
+;		SIF EXP:(ARG:0):Ｕ性交経験 == 0
+;			OUTPUT = %OUTPUT%%SPLIT_R("virgin :untrained :unmolested ")%:
+;
+;		; IF IS_CHILD(ARG:0)
+;			; SELECTCASE ABL:(ARG:0):尿道名器度
+;				; CASE IS < 40
+;					; OUTPUT = %OUTPUT%%SPLIT_R("small :childish :undeveloped ")%:
+;				; CASE IS < 80
+;					; OUTPUT = %OUTPUT%%SPLIT_R("rosy :youthful :developing ")%:
+;			; CASEELSE
+;				; OUTPUT = %OUTPUT%%SPLIT_R("darkened :experienced :developed ")%:
+;			; ENDSELECT
+;		; ELSE
+;			; SELECTCASE ABL:(ARG:0):尿道名器度
+;				; CASE IS < 40
+;					; OUTPUT = %OUTPUT%%SPLIT_R("small :tiny :tender ")%:
+;				; CASE IS < 80
+;					; OUTPUT = %OUTPUT%%SPLIT_R("rosy :experienced :developing ")%:
+;			; CASEELSE
+;				; OUTPUT = %OUTPUT%%SPLIT_R("darkened :seasoned :developed ")%:
+;			; ENDSELECT
+;		; ENDIF
+;		SIF IS_CHILDISH(ARG:0, "body")
+;			OUTPUT = %OUTPUT%%SPLIT_R("small :childish :immature ")%:
+;		SIF GETBIT(TALENT:(ARG:0):淫乱系, 素質_淫乱_尿道狂い)
+;			OUTPUT = %OUTPUT%%SPLIT_R("indecent :nympho :lewd ")%:
+;		SIF TALENT:(ARG:0):おもらし癖
+;			OUTPUT = %OUTPUT%%SPLIT_R("somewhat loose :incontinent ")%:
+;		SIF TALENT:(ARG:0):Ｕ敏感
+;			OUTPUT = %OUTPUT%%SPLIT_R("erogenous ")%:
+;		SIF TALENT:(ARG:0):Ｕ鈍感
+;			OUTPUT = %OUTPUT%%SPLIT_R("dull ")%:
+;		;OUTPUT = %OUTPUT%%BODYTIGHT(ABL:(ARG:0):尿道拡張)%:
+;		OUTPUT = %SPLIT_R(OUTPUT)%
+;	ENDIF
+;	IF GETBIT(TALENT:(ARG:0):淫乱系, 素質_淫乱_尿道狂い)
+;		OUTPUT = %OUTPUT%%SPLIT_R("urethra:urethra:urethral pussy:urethral fuckhole")%
+;	ELSE
+;		OUTPUT = %OUTPUT%%SPLIT_R("urethra:urethra:urethra:urethral opening:pee hole")%
+;	ENDIF
+;
+;;Waist
+;CASE "Waist", "Hips"
+;	IF RAND:3
+;		IF !IS_MALE(ARG:0)
+;			IF TALENT:(ARG:0):体格 == -2
+;				OUTPUT = %OUTPUT%%SPLIT_G("tiny :small :prepubescent ")%
+;			ELSEIF TALENT:(ARG:0):体格 == -1
+;				OUTPUT = %OUTPUT%%SPLIT_G("slim :slender :thin ")%
+;			ELSEIF TALENT:(ARG:0):美尻
+;				OUTPUT = %OUTPUT%%SPLIT_G("toned :tight :trim ")%
+;			ELSE
+;				OUTPUT = %OUTPUT%%SPLIT_G("shapely :curvy :healthy ")%
+;			ENDIF
+;		ELSE
+;			IF TALENT:(ARG:0):体格 == -2
+;				OUTPUT = %OUTPUT%%SPLIT_G("tiny :small :prepubescent ")%
+;			ELSEIF TALENT:(ARG:0):体格 == -1
+;				OUTPUT = %OUTPUT%%SPLIT_G("slim :slender :thin ")%
+;			ELSEIF TALENT:(ARG:0):美尻
+;				OUTPUT = %OUTPUT%%SPLIT_G("toned :muscular :trim ")%
+;			ENDIF
+;		ENDIF
+;	ENDIF
+;	SELECTCASE ARGS:0
+;	CASE "Waist"
+;		OUTPUT = %OUTPUT%waist
+;	CASE "Hips"
+;		OUTPUT = %OUTPUT%hips
+;	ENDSELECT
+;	IF TALENT:(ARG:0):体格 >= 0 && !IS_MALE(ARG:0) && !RAND:3
+;		SELECTCASE ARGS:0
+;		CASE "Waist"
+;			OUTPUT = %SPLIT_G("strong waist:thight waist")%
+;		CASE "Hips"
+;			OUTPUT = %SPLIT_G("child bearing hips:wide hips")%
+;		ENDSELECT
+;	ENDIF
+;
+;;Labia
+;CASE "Labia"
+;	IF RAND:3
+;		SIF CUM_CUR_AMOUNT:(ARG:0):1 >= 15
+;			OUTPUT = %SPLIT_G("semen :jizz :cum :sperm :cream ")%%SPLIT_G("covered :dripping ")%:
+;		SIF IS_PIERCED(ARG:0, ピアス_ラビア)
+;			OUTPUT = %OUTPUT%%SPLIT_G("pierced ")%:
+;		IF PALAM:(ARG:0):潤滑 >= PALAMLV:7
+;			IF TALENT:(ARG:0):Ｖ締まり >= 500
+;				OUTPUT = %OUTPUT%%SPLIT_G("wet :slick :blushing ")%:
+;			ELSEIF TALENT:(ARG:0):Ｖ締まり >= 200
+;				OUTPUT = %OUTPUT%%SPLIT_G("wet :slimy :swollen ")%:
+;			ELSE
+;				OUTPUT = %OUTPUT%%SPLIT_G("slimy :swollen :engorged ")%:
+;			ENDIF
+;		ENDIF
+;		IF TALENT:(ARG:0):体格 == -2
+;			IF TALENT:(ARG:0):Ｖ締まり >= 500
+;				OUTPUT = %OUTPUT%%SPLIT_G("childish :immature :small :undeveloped :pink ")%
+;			ELSEIF TALENT:(ARG:0):Ｖ締まり >= 200
+;				OUTPUT = %OUTPUT%%SPLIT_G("youthful :maturing :noticeable :developing :rosy ")%
+;			ELSE
+;				OUTPUT = %OUTPUT%%SPLIT_G("adult-like :enlarged :prominent :developed :darkened ")%
+;			ENDIF
+;		ELSE
+;			IF TALENT:(ARG:0):Ｖ締まり >= 500
+;				OUTPUT = %OUTPUT%%SPLIT_G("girlish :petite :small :undeveloped :pink ")%
+;			ELSEIF TALENT:(ARG:0):Ｖ締まり >= 200
+;				OUTPUT = %OUTPUT%%SPLIT_G("womanly :mature :noticeable :developed :rosy ")%
+;			ELSE
+;				OUTPUT = %OUTPUT%%SPLIT_G("enlarged :meaty :prominent :dangling :darkened ")%
+;			ENDIF
+;		ENDIF
+;		OUTPUT = %SPLIT_G(OUTPUT)%
+;	ENDIF
+;	OUTPUT = %OUTPUT%%SPLIT_G("labia:pussy lips:genitals:folds")%
+;
+
+;;Body
+;CASE "Body"
+;	IF RAND:3
+;		IF !IS_MALE(ARG:0)
+;			IF TALENT:(ARG:0):体格 == -2
+;				IF TALENT:(ARG:0):魅惑 && !IS_BIND(ARG:0) && !GROUPMATCH(1, TALENT:(ARG:0):妊娠, TALENT:(ARG:0):触手妊娠, TALENT:(ARG:0):Ａ触手妊娠)
+;					OUTPUT = %OUTPUT%%SPLIT_G("enticingly :sexy :erotic ::")%
+;					OUTPUT = %OUTPUT%%SPLIT_G("small :immature :childish :tiny :nymphish ")%
+;				ELSE
+;					OUTPUT = %OUTPUT%%SPLIT_G("small :immature :childish :tiny ")%
+;				ENDIF
+;			ELSEIF IS_BOIN(ARG:0)
+;				OUTPUT = %OUTPUT%%SPLIT_G("well-rounded :voluptuous :seductive :curvaceous :shapely ")%
+;			ELSEIF TALENT:(ARG:0):魅惑
+;				OUTPUT = %OUTPUT%%SPLIT_G("sexy :seductive :lovely :erotic :alluring :captivating :enticing ")%
+;			ELSEIF TALENT:(ARG:0):体格 == -1
+;				OUTPUT = %OUTPUT%%SPLIT_G("small :petite :slender :dainty ")%
+;			ELSEIF TALENT:(ARG:0):体格 >= 1
+;				OUTPUT = %OUTPUT%%SPLIT_R("tall :big :lanky :towering ")%
+;			ENDIF
+;		ELSE
+;			IF TALENT:(ARG:0):体格 == -2
+;				OUTPUT = %OUTPUT%%SPLIT_G("small :immature :childish :petite ")%
+;			ELSEIF TALENT:(ARG:0):魅惑
+;				OUTPUT = %OUTPUT%%SPLIT_G("sexy :toned :alluring :handsome ")%
+;			ELSEIF TALENT:(ARG:0):体格 == -1
+;				OUTPUT = %OUTPUT%%SPLIT_G("small :petite :slender ")%
+;			ELSEIF TALENT:(ARG:0):体格 >= 1
+;				OUTPUT = %OUTPUT%%SPLIT_R("tall :big :lanky :towering ")%
+;			ENDIF
+;		ENDIF
+;	ENDIF
+;	IF GROUPMATCH(1, TALENT:(ARG:0):妊娠, TALENT:(ARG:0):触手妊娠, TALENT:(ARG:0):Ａ触手妊娠) && RAND:3
+;		IF IS_BIND(ARG:0)
+;			OUTPUT = %SPLIT_G("bound pregnant :restrained pregnant :immobile pregnant ")%
+;		ELSEIF CFLAG:(ARG:0):行動不能状態 == 1 && RAND:3
+;			OUTPUT = %SPLIT_G("heavily pregnant :massively pregnant ")%
+;		ELSE
+;			OUTPUT = %OUTPUT%%SPLIT_G("pregnant ")%
+;		ENDIF
+;	ELSEIF IS_BIND(ARG:0)
+;		OUTPUT = %OUTPUT%%SPLIT_G("bound :restrained :immobile ")%
+;	ENDIF
+;	OUTPUT = %OUTPUT%body
+;
+;;Legs
+;CASE "Legs", "Thighs", "Ankles", "Leg", "Thigh", "Ankle"
+;	IF TALENT:(ARG:0):体格 == -2
+;		OUTPUT = %SPLIT_G("small :tiny :little ::")%
+;	ELSEIF TALENT:(ARG:0):体格 == -1
+;		OUTPUT = %SPLIT_G("thin :slender :lithe ::")%
+;	ELSEIF TALENT:(ARG:0):体型 > 0 ;weight   ;TALENT:(ARG:0):豊尻
+;		OUTPUT = %SPLIT_G("thick :meaty :chubby ::")%
+;	ELSEIF TALENT:(ARG:0):美脚
+;		OUTPUT = %SPLIT_G("toned :trim :compact ::")%
+;	ENDIF
+;	SELECTCASE ARGS:0
+;	CASE "Legs"
+;		OUTPUT = %OUTPUT%legs
+;	CASE "Thighs"
+;		OUTPUT = %OUTPUT%thighs
+;	CASE "Ankles"
+;		OUTPUT = %OUTPUT%ankles
+;	CASE "Leg"
+;		OUTPUT = %OUTPUT%leg
+;	CASE "Thigh"
+;		OUTPUT = %OUTPUT%thigh
+;	CASE "Ankle"
+;		OUTPUT = %OUTPUT%ankle
+;	ENDSELECT
+;
+;;Mouth
+;CASE "Mouth", "Lips", "Throat"
+;	IF RAND:3
+;		SIF CUM_CUR_AMOUNT:(ARG:0):4 >= 15 && ARGS:0 != "Lips"
+;			OUTPUT = %OUTPUT%%G_SEMEN()% %SPLIT_G("filled :packed :stuffed ")%:
+;		IF RAND:3
+;			OUTPUT = %OUTPUT%%BODYSENS(ABL:(ARG:0):Ｍ感 + TALENT:(ARG:0):Ｍ敏感 * 5 - TALENT:(ARG:0):Ｍ鈍感 * 5 + GETBIT(TALENT:(ARG:0):淫乱系, 素質_淫乱_蕩唇) * 15)%:
+;			IF ABL:(ARG:0):Ｍ感 <= 3
+;				OUTPUT = %OUTPUT%%SPLIT_G("inexperienced :untrained ")%:
+;			ELSEIF ABL:(ARG:0):Ｍ感 >= 8
+;				OUTPUT = %OUTPUT%%SPLIT_G("experienced :well-trained ")%:
+;			ENDIF
+;		ENDIF
+;		SIF GETBIT(TALENT:(ARG:0):淫乱系, 素質_淫乱_蕩唇)
+;			OUTPUT = %OUTPUT%%SPLIT_G("erogenous :lewd :obscene ")%:
+;	ENDIF
+;	SIF (TALENT:(ARG:0):体格 < 0) && ARGS:0 == "Mouth"
+;		OUTPUT = %OUTPUT%%SPLIT_G("cute :small :tiny :childish ")%:
+;
+;	OUTPUT = %SPLIT_G(OUTPUT)%
+;	SELECTCASE ARGS:0
+;	CASE "Mouth"
+;		OUTPUT = %OUTPUT%mouth
+;	CASE "Lips"
+;		OUTPUT = %OUTPUT%lips
+;	CASE "Throat"
+;		OUTPUT = %OUTPUT%throat
+;	ENDSELECT
+
+;CASE "Armpit", "Armpits"
+;	IF RAND:3
+;		SIF CUM_CUR_AMOUNT:(ARG:0):射精部位_腋 >= 15
+;			OUTPUT = %OUTPUT%%SEMEN()%-%SPLIT_R("dripping :covered :painted :splattered :spattered ")%:
+;
+;		SIF (PALAM:ARG:欲情 >= 10000 && !RAND:3) || PALAM:ARG:欲情 >= 30000
+;			OUTPUT = %OUTPUT%%SPLIT_R("sweaty :moist :wet :glistening :slick ")%:
+;		;IF CHECK_CLO("腋露出", ARG) == 0
+;		;	SIF PALAM:ARG:欲情 >= 10000
+;		;		OUTPUT = %OUTPUT%%"sweat-stained "%:
+;		;ENDIF
+;	ELSE
+;		SIF IS_CHILDISH(ARG:0) && RAND:2
+;			OUTPUT = %OUTPUT%%SPLIT_R("small :childish :petite ")%:
+;		SIF IS_CHILDISH(ARG:0, "body")
+;			OUTPUT = %OUTPUT%%SPLIT_R("small :tiny :cute ")%:
+;		SIF IS_TRAP(ARG:0) && !RAND:3
+;			OUTPUT = %OUTPUT%%SPLIT_R("feminine :girly ")%:
+;		SIF WAKI_TECH_BONUS(ARG:0)
+;			OUTPUT = %OUTPUT%%SPLIT_R("wonderful shrine maiden :miko's :sacred ")%:
+;	ENDIF
+;	;hair status
+;	SELECTCASE TALENT:ARG:腋毛現在値
+;		;smooth/shaved
+;		CASE 0 TO 1
+;			IF RAND:3 == 0 && TALENT:ARG:腋毛現在値 == 腋毛_うっすら
+;				IF !RAND:3
+;					nAdditional = 1
+;					OUTPUT = %OUTPUT%clean :
+;				ELSE
+;					OUTPUT = %OUTPUT%%SPLIT_R("clean :well-groomed :smoothly shaved :shaved :depilated :manicured ")%:
+;				ENDIF
+;			ELSEIF (TALENT:ARG:魅惑 || TALENT:ARG:謎の魅力 || IS_CHILDISH(ARG:0, "body")) && RAND:3 == 0
+;				OUTPUT = %OUTPUT%%SPLIT_R("spotless :perfect ")%:
+;			ELSEIF RAND:2
+;				OUTPUT = %OUTPUT%%SPLIT_R("charming :seductive :attractive :appealing :clean :pretty ")%:
+;			ELSE
+;				OUTPUT = %OUTPUT%%SPLIT_R("smooth :hairless :sleek :soft ")%:
+;			ENDIF
+;		;stubbly
+;		CASE 4, 5
+;			IF TALENT:ARG:腋毛現在値 == 腋毛_ふんわり
+;				IF !RAND:3
+;					nAdditional = 2
+;				ELSE
+;					OUTPUT = %OUTPUT%%SPLIT_R(@"stubbly :dotty :%SPLIT_R("slightly:somewhat")% unmaintained :bristly ")%:
+;				ENDIF
+;			ELSE
+;				IF !RAND:3
+;					nAdditional = 3
+;				ELSE
+;					OUTPUT = %OUTPUT%%SPLIT_R("fuzzy :nearly hairless :slightly hairy :somewhat coarse ")%:
+;				ENDIF
+;			ENDIF
+;	;いっぱい
+;	CASEELSE
+;		OUTPUT = %OUTPUT%%SPLIT_R("hairy :bushy :unshaved :shaggy ")%:
+;	ENDSELECT
+;
+;	OUTPUT = %SPLIT_R(OUTPUT)%
+;	SELECTCASE ARGS:0
+;	CASE "Armpit"
+;		OUTPUT = %OUTPUT%%SPLIT_R("armpit:underarm")%
+;	CASE "Armpits"
+;		OUTPUT = %OUTPUT%%SPLIT_R("armpits:underarms")%
+;	ENDSELECT
+;
+;	;SIF COND("腋毛", ARG) <= 3 && CHECK_CLO("腋露出", ARG) && RAND:3 == 0
+;	;	OUTPUT = %OUTPUT% pocket
+;
+;	SELECTCASE nAdditional
+;		CASE 1
+;			OUTPUT = %OUTPUT% %SPLIT_R("free of any unwanted hair:full of smoothness")%
+;		CASE 2
+;			OUTPUT = %OUTPUT% %SPLIT_R(@"with visible %SPLIT_R("stubbles:bristles")%:with leftover scruffy hair:with sloppy unshaven hair")%
+;		CASE 3
+;			OUTPUT = %OUTPUT% %SPLIT_R("with just a bit of hair:covered with thin peach fuzz")%
+;	ENDSELECT
+ENDSELECT
+
+RETURNF OUTPUT
+
+;--------------------------------------------------------
+;BODYSENS repeated functionality
+;may later expand upon
+;--------------------------------------------------------
+@BODYSENS(ARG:0)
+#FUNCTIONS
+
+SELECTCASE ARG:0
+CASE IS > 30
+	LOCALS:0 =%SPLIT_G("hypersensitive ")%
+CASE IS > 20
+	LOCALS:0 = %SPLIT_G("highly ")%
+	LOCALS:0 = %SPLIT_G("reactive :receptive :sensitive ")%
+CASE IS > 10
+	LOCALS:0 = %SPLIT_G("very ")%
+	LOCALS:0 = %SPLIT_G("reactive :receptive :sensitive ")%
+CASE IS > 4
+	LOCALS:0 = %SPLIT_G("reactive :receptive :sensitive ")%
+CASEELSE
+	LOCALS:0 =
+ENDSELECT
+
+RETURNF LOCALS:0
+
+;--------------------------------------------------------
+;BODYTIGHT
+;takes reverse interpolated tightness %
+;returns tightness descriptor
+;--------------------------------------------------------
+@BODYTIGHT(ARG:0)
+#FUNCTIONS
+
+SELECTCASE ARG:0
+CASE IS >= 90
+	LOCALS:0 = %SPLIT_G("tightly shut :very narrow :tiny ")%
+CASE IS >= 80
+	LOCALS:0 = %SPLIT_G("intensely tight :very narrow :small ")%
+CASE IS >= 70
+	LOCALS:0 = %SPLIT_G("very tight :narrow :small ")%
+CASE IS >= 60
+	LOCALS:0 = %SPLIT_G("tight :narrow :elastic ")%
+CASE IS >= 50
+	LOCALS:0 = %SPLIT_G("comfortable :soft :elastic ")%
+CASE IS >= 40
+	LOCALS:0 = %SPLIT_G("loose :soft :relaxed ")%
+CASE IS >= 30
+	LOCALS:0 = %SPLIT_G("very loose :broken-in :relaxed ")%
+CASE IS >= 20
+	LOCALS:0 = %SPLIT_G("gaping :broken-in :spacious ")%
+CASE IS >= 10
+	LOCALS:0 = %SPLIT_G("wide open :worn-out :spacious ")%
+CASEELSE
+	LOCALS:0 = %SPLIT_G("wrecked :worn-out :cavernous ")%
+ENDSELECT
+
+RETURNF LOCALS:0
+
+@G_SEMEN()
+#FUNCTIONS
+RETURNF SPLIT_G("semen:jizz:cum:sperm:spunk:seed")
+
+;--------------------------------------------------------
+;a bit more elaborate function
+;ARG reserved for future use for checking chara talent
+;ARG:1 for additional description
+;ARG:2 for capitalization
+;--------------------------------------------------------
+@SEMEN(ARG = -1, ARG:1, ARG:2)
+#FUNCTIONS
+LOCALS =
+IF ARG:1
+	SELECTCASE RAND:26
+		CASE 1 TO 5
+			LOCALS += "warm"
+		CASE 6 TO 11
+			LOCALS += "hot"
+		CASE 12 TO 16
+			LOCALS += "sticky"
+		CASE 16 TO 19
+			LOCALS += "thick"
+		CASEELSE
+			LOCALS += @"%SPLIT_R("white:viscous:cloudy:slimy:::")%"
+	ENDSELECT
+	;putting a space
+	SIF LOCALS != ""
+		LOCALS += " "
+	IF ARG >= 0
+		;SIF GETBIT(TALENT:淫乱系, 素質_淫乱_濃厚精液) && !RAND:3
+		;	LOCALS = %SPLIT_R("incredibly :very :massively ::::")%%SPLIT_R("fertile:virile:rich")%
+		SIF TALENT:ARG:童貞 && !RAND:3
+			LOCALS = %SPLIT_R("virgin ")%
+	ENDIF
+ENDIF
+
+SELECTCASE RAND:13
+CASE 0 TO 4
+	LOCALS += "semen"
+CASE 5 TO 9
+	LOCALS += "cum"
+CASEELSE
+	LOCALS += @"%SPLIT_R("spunk:seed:sperm:jizz:baby juice:baby batter")%"
+ENDSELECT
+
+IF !ARG:2
+	RETURNF LOCALS
+ELSE
+	RETURNF CAPITALIZE(LOCALS)
+ENDIF

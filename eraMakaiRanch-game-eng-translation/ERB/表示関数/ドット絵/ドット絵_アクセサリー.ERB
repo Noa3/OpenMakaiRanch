@@ -1,0 +1,108 @@
+﻿
+;アクセサリー
+@PRINT_PORTRAIT_ACCESSORY
+
+CALL PRINT_PORTRAIT_ACCESSORY_EYE
+CALL PRINT_PORTRAIT_ACCESSORY_HEAD
+CALL PRINT_PORTRAIT_ACCESSORY_ARM
+CALL PRINT_PORTRAIT_ACCESSORY_LEG
+CALL PRINT_PORTRAIT_ACCESSORY_NECK
+CALL PRINT_PORTRAIT_ACCESSORY_JACKET
+
+
+
+
+
+;アクセサリ(眼)
+@PRINT_PORTRAIT_ACCESSORY_EYE
+
+SIF TFLAG:一時的脱衣／眼 || !EQUIP:装備中ID／眼
+	RETURN
+SELECTCASE ITEMNAME:(EQUIP:装備中ID／眼)
+CASE "メガネ"
+	SPRITECREATED @"%CSTR:(EQUIP:装備中ID／眼)%メガネ"
+	IF RESULT
+		PRT:12 = <nonbutton pos='%PY_2%'><img src='%CSTR:(EQUIP:装備中ID／眼)%メガネ' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+	ELSE
+		PRT:12 = <nonbutton pos='%PY_2%'><img src='メガネ' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+	ENDIF
+CASE "伊達メガネ"
+	SPRITECREATED @"%CSTR:(EQUIP:装備中ID／眼)%伊達メガネ"
+	IF RESULT
+		PRT:12 = <nonbutton pos='%PY_2%'><img src='%CSTR:(EQUIP:装備中ID／眼)%伊達メガネ' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+	ELSE
+		PRT:12 = <nonbutton pos='%PY_2%'><img src='伊達メガネ' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+	ENDIF
+ENDSELECT
+
+
+
+;アクセサリ(頭)
+@PRINT_PORTRAIT_ACCESSORY_HEAD
+
+SPRITECREATED @"%ITEMNAME:(EQUIP:装備中ID／頭)%"
+SIF !RESULT || TFLAG:一時的脱衣／頭 || !EQUIP:装備中ID／頭
+	RETURN
+SPRITECREATED @"%CSTR:(EQUIP:装備中ID／頭)%%ITEMNAME:(EQUIP:装備中ID／頭)%"
+PRT:11 = <nonbutton pos='%PY_2%'><img src='%CSTR:(EQUIP:装備中ID／頭)%%ITEMNAME:(EQUIP:装備中ID／頭)%' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+SIF !RESULT
+	PRT:11 = <nonbutton pos='%PY_2%'><img src='%ITEMNAME:(EQUIP:装備中ID／頭)%' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+
+
+
+;アクセサリー(腕)
+@PRINT_PORTRAIT_ACCESSORY_ARM
+
+SPRITECREATED @"%ITEMNAME:(EQUIP:装備中ID／腕)%_%PRTCHR_1%_%PRTCHR_2%"
+SIF !RESULT || TFLAG:一時的脱衣／腕 || !EQUIP:装備中ID／腕
+	RETURN
+SPRITECREATED @"%CSTR:(EQUIP:装備中ID／腕)%%ITEMNAME:(EQUIP:装備中ID／腕)%_%PRTCHR_1%_%PRTCHR_2%"
+PRT:16 = <nonbutton pos='%PY_2%'><img src='%CSTR:(EQUIP:装備中ID／腕)%%ITEMNAME:(EQUIP:装備中ID／腕)%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+SIF !RESULT
+	PRT:16 = <nonbutton pos='%PY_2%'><img src='%ITEMNAME:(EQUIP:装備中ID／腕)%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+
+
+
+;アクセサリー(脚)
+@PRINT_PORTRAIT_ACCESSORY_LEG
+
+SPRITECREATED @"%ITEMNAME:(EQUIP:装備中ID／脚)%_%PRTCHR_1%_%PRTCHR_2%"
+SIF !RESULT || TFLAG:一時的脱衣／脚 || !EQUIP:装備中ID／脚
+	RETURN
+SPRITECREATED @"%CSTR:(EQUIP:装備中ID／脚)%%ITEMNAME:(EQUIP:装備中ID／脚)%_%PRTCHR_1%_%PRTCHR_2%"
+PRT:17 = <nonbutton pos='%PY_2%'><img src='%CSTR:(EQUIP:装備中ID／脚)%%ITEMNAME:(EQUIP:装備中ID／脚)%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+SIF !RESULT
+	PRT:17 = <nonbutton pos='%PY_2%'><img src='%ITEMNAME:(EQUIP:装備中ID／脚)%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+
+
+
+;アクセサリ(首)
+@PRINT_PORTRAIT_ACCESSORY_NECK
+
+SPRITECREATED @"%ITEMNAME:(EQUIP:装備中ID／首)%"
+SIF !RESULT || TFLAG:一時的脱衣／首 || !EQUIP:装備中ID／首
+	RETURN
+SPRITECREATED @"%CSTR:(EQUIP:装備中ID／首)%%ITEMNAME:(EQUIP:装備中ID／首)%"
+PRT:18 = <nonbutton pos='%PY_2%'><img src='%CSTR:(EQUIP:装備中ID／首)%%ITEMNAME:(EQUIP:装備中ID／首)%' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+SIF !RESULT
+	PRT:18 = <nonbutton pos='%PY_2%'><img src='%ITEMNAME:(EQUIP:装備中ID／首)%' height='%PY_3%' ypos = '%PY_FIX%'></nonbutton>
+
+
+
+;上着
+@PRINT_PORTRAIT_ACCESSORY_JACKET
+
+SPRITECREATED @"%ITEMNAME:(EQUIP:装備中ID／上着)%_%PRTCHR_1%_%PRTCHR_2%"
+SIF !RESULT || TFLAG:一時的脱衣／上着 || !EQUIP:装備中ID／上着
+	RETURN
+SPRITECREATED @"%CSTR:(EQUIP:装備中ID／上着)%%ITEMNAME:(EQUIP:装備中ID／上着)%_%PRTCHR_1%_%PRTCHR_2%"
+PRT:15 = <nonbutton pos='%PY_2%'><img src='%CSTR:(EQUIP:装備中ID／上着)%%ITEMNAME:(EQUIP:装備中ID／上着)%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+SIF !RESULT
+	PRT:15 = <nonbutton pos='%PY_2%'><img src='%ITEMNAME:(EQUIP:装備中ID／上着)%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+
+
+
+
+
+
+

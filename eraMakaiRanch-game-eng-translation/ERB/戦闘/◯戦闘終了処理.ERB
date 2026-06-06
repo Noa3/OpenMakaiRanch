@@ -1,0 +1,110 @@
+﻿
+;ニンゲンの勝利処理
+@TARGET_WIN
+
+CALL TARGET_WIN_MESSAGE
+
+;20%以下にされたら退却目的に切り替え
+SIF BASE:戦闘力 < MAXBASE:戦闘力 /5
+	CALL PURPOSE_CHANGE("退却")
+PRINTW
+CALL MERCENARY_RESET
+
+;仮に犠牲逃走で勝っても合流は不可能
+SIF TFLAG:犠牲逃走
+	CALL TARGET_ESCAPE_WIN
+
+;疲労蓄積
+DAMAGE = TURN *2 +RAND:5 +10
+BASE:疲労度 = LIMIT(BASE:疲労度 +DAMAGE,0,MAXBASE:疲労度)
+PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()% Fatigue：{BASE:疲労度}
+
+;回数残ってる+HP60%以下か仲間HP60%以下で回復
+SIF !BASE:回復回数
+	RETURN
+IF BASE:戦闘力 < MAXBASE:戦闘力 *60 /100
+	CALL TARGET_SPECIAL_HEAL_SELF
+	
+ELSEIF BASE:仲間戦闘力1 < MAXBASE:仲間戦闘力1 *60 /100 && BASE:仲間戦闘力1
+	CALL TARGET_SPECIAL_HEAL_GROUP
+ENDIF
+
+
+
+;ニンゲンの敗北時処理
+@TARGET_DEFEAT
+
+CALL TARGET_DEFEAT_MESSAGE
+CALL ARMOR_STRIP
+CSTR:陥落状態 = 反抗
+IF CFLAG:追跡者 == 1
+	CFLAG:追跡対象 = 2
+	CALL PRINTL_WORD_COLOR,@"%PRINT_MONSTER()% surrounds %CALLNAME%, looking at her with lewd expressions...","黄"
+	PRINTW
+	CALL RINKAN_SLAVE
+ELSE
+	CFLAG:追跡対象 = 3
+ENDIF
+CALL PURPOSE_CHANGE("逃走")
+
+
+
+;鎧がある場合の処理
+@ARMOR_STRIP
+
+;なければ終了
+SIF !EQUIP:装備中ID／鎧
+	RETURN
+
+;ひとまず解除だけ
+EQUIP:(EQUIP:装備中ID／鎧) = 0
+EQUIP:装備中ID／鎧 = 0
+PRINTFORML %CALLNAME%'s armor is removed.
+
+
+
+;仲間捕獲可能な場合は提携先に送る
+@GROUP_CAPTURE
+#DIM MAX_SLAVE
+#DIM SEND_SLAVE
+
+SIF !FLAG:仲間捕獲可能
+	RETURN
+
+;FLAG:事業提携先奴隷数／ニンゲン搾乳牧場→740
+;STR:ニンゲン搾乳牧場→8200
+FLAG_REF = 740
+STR_REF = 8200
+
+;マイルストーンにより送付先みる　今1つだけ
+MAX_SLAVE = 20 +FLAG:魔界レベル／酪農業 *5
+SEND_SLAVE = LIMIT(MAX_SLAVE -FLAG:(FLAG_REF),0,10)
+
+;送るのに必要なのは*30固定
+COST = MAGIC_USE_MP:GETNUM(ITEM,"個人用転移門") *30
+PRINTFORML %STR:(STR_REF)%：奴隷{FLAG:(FLAG_REF)}／{MAX_SLAVE}匹（現在数／最大数）
+IF !SEND_SLAVE
+	PRINTW 奴隷数が最大のため送ることができません。
+ELSEIF BASE:0:魔力 >= COST
+	{
+	PRINTFORML ＜個人用転移門＞のための%VALUE_DIGIT(COST)%MPを使用することで、
+	軍隊のメスを搾乳奴隷として{SEND_SLAVE}匹送ることができます。
+	}
+	PRINTFORML 奴隷として送りますか？（現在MP：%VALUE_DIGIT(BASE:0:魔力)%）
+	CALL ASK_YN
+	IF !RESULT
+		BASE:0:魔力 -= COST
+		FLAG:(FLAG_REF) += SEND_SLAVE
+		PRINTFORMW ＜個人用転移門＞を使い、%STR:(STR_REF)%にニンゲンのメスを{SEND_SLAVE}匹送りました。
+	ENDIF
+ELSE
+	{
+	PRINTFORMW %CALLNAME:0%の魔力が足りないため送ることができません。
+	（%VALUE_DIGIT(BASE:0:魔力)%／%VALUE_DIGIT(COST)%：現在値／必要量）
+	}
+ENDIF
+
+
+
+
+

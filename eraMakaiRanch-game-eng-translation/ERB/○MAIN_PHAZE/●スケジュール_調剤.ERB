@@ -1,0 +1,155 @@
+﻿
+;調剤
+@WORK_PHARMACY
+#DIM FIRST_WORKLOAD
+
+WORKER = CMATCH(CSTR:スケジュール,"調剤")
+SIF !WORKER
+	RETURN
+PRINTL 　　　《 Mix Drugs 》
+FIRST_WORKLOAD = MONEY:調合進行度
+CALL WORKER_ABL_SET("調剤")
+
+;調合知識があるか
+CALL EXIST_KNOWLEDGE_CHECK
+SIF RESULT
+	RETURN
+
+;調合薬品選択
+CALL CHOOSE_PHARMACY
+CALL RANDOM_CHARA_SCHEDULE_COMMON("調剤")
+CALL SCHEDULE_ABL_MARK_BULK(0,"調剤")
+
+;完成度チェック
+CALL PHARMACY_TASK_CHECK
+SIF !RESULT
+	PRINTW
+DRAWLINE
+
+
+
+
+;調合知識があるか
+@EXIST_KNOWLEDGE_CHECK
+
+EXIST = 0
+
+;メンバー内で調合知識が1人でもあるか
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール != "調剤"
+		CONTINUE
+	SIF TALENT:調合知識
+		EXIST = 1
+NEXT
+IF !EXIST
+	PRINTFORML You order medicine to be mixed, but no progress was made as nobody had the【Mixing Knowledge】to know what to do...
+	PRINTW
+	DRAWLINE
+	RETURN 1
+ENDIF
+
+
+
+;抽選したキャラの仕事表示
+@WORK_PHARMACY_ENTRANCE
+
+IF !EXP:実行回数／調剤
+	KOJO_TYPE = 初回
+ELSE
+	KOJO_TYPE = 通常
+ENDIF
+CALL WORK_PHARMACY_BEGIN_MESSAGE
+CALL WORK_PHARMACY_ABL_MESSAGE
+CALL WORK_PHARMACY_RUN
+FLAG:前回表示キャラID／調剤 = CFLAG:ID
+
+
+
+;実行内容
+@WORK_PHARMACY_RUN
+#DIM OUTCOME
+
+;体力が足りないとダメ
+IF !BASE:体力
+	PRINTFORML %CALLNAME% is too tired, and falls asleep...
+	HEAL_PRINT_DONE = 0
+	CALL FALL_ASLEEP
+	RETURN
+ENDIF
+CALL HP_COST(200,1)
+OUTCOME = 500 +ABL:薬学 *200
+CALL RANDOM_FIX(OUTCOME,10,"調合進行度")
+OUTCOME += FIX
+MONEY:調合進行度 += OUTCOME
+PRINTFORM %CALLNAME_DIGIT()% HP-{COST} Progress+{OUTCOME} 
+CALL EXP_UP("薬学")
+CALL WORK_LOVE_UP
+CALL MIND_PALAM_AFTER_PRINT(1)
+EXP:実行回数／調剤 ++
+EXP:区間実行回数／調剤 ++
+CFLAG:行動済み = 1
+
+
+
+;調合薬品選択
+@CHOOSE_PHARMACY
+
+SIF FLAG:調合中薬品ID
+	RETURN
+
+;ITEM:母乳分泌促進薬→350
+ITEM_REF = 350
+ITEM_MAX = 20
+PRINTL What do you want to make？
+FOR LOCAL,ITEM_REF,ITEM_REF +ITEM_MAX
+	;360以降は高度薬学台
+	IF LOCAL == 360
+		IF !ITEM:高度薬学台
+			CALL PRINTL_WORD_COLOR,@"Fast-acting drugs need an ＜Advanced Pharmaceutical Workbench＞","黄"
+			BREAK
+		ELSE
+			PRINTL
+		ENDIF
+	ENDIF
+	
+	;価格設定されていれば表示
+	SIF !ITEMPRICE:LOCAL
+		CONTINUE
+	
+	;必要進行度はITEMPRICEの倍にしとく
+	PRINTFORML [{LOCAL -ITEM_REF,3}] %ITEMNAME:LOCAL,20%：Required Labor… %VALUE_DIGIT(ITEMPRICE:LOCAL *2)% 
+NEXT
+BINPUT
+FLAG:調合中薬品ID = RESULT +ITEM_REF
+MONEY:調合進行度 = 0
+
+
+
+
+;完成度チェック
+@PHARMACY_TASK_CHECK
+#DIM TASK
+#DIM GET_ITEM
+
+TASK = ITEMPRICE:(FLAG:調合中薬品ID) *2
+PRINTFORML Progress：%VALUE_DIGIT(MONEY:調合進行度)%／%VALUE_DIGIT(TASK)% 
+SIF MONEY:調合進行度 < TASK
+	RETURN
+
+;進行度が必要値超えたら完了
+GET_ITEM = MONEY:調合進行度 /TASK
+ITEM:(FLAG:調合中薬品ID) += GET_ITEM
+MONEY:調合進行度 -= (TASK *GET_ITEM)
+CALL PRINTL_WORD_COLOR,@"{GET_ITEM} 【%ITEMS_ENG(ITEMNAME:(FLAG:調合中薬品ID))%】created！","水色"
+PRINTFORML Continue mixing %ITEMS_ENG(ITEMNAME:(FLAG:調合中薬品ID))%？　Progress：%VALUE_DIGIT(MONEY:調合進行度)%／%VALUE_DIGIT(TASK)% 
+PRINTL （Progress will be reset if changed）
+CALL ASK_YN
+IF RESULT
+	FLAG:調合中薬品ID = 0
+	MONEY:調合進行度 = 0
+ENDIF
+RETURN 1
+
+
+

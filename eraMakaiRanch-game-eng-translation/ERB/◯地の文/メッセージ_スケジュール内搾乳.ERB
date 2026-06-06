@@ -1,0 +1,64 @@
+﻿
+;搾乳量メッセージ
+@PRINT_MILK_VOLUME
+
+IF TFLAG:体内凌辱中 && !MARK:母乳体質
+	PRINTFORML The movement of the tentacles tormenting %CALLNAME% subsided for the moment...
+ELSEIF EX:噴乳 >= 5000
+	PRINTFORM Extracting plenty of %SLANG_MILK()% from %CALLNAME%'s %SLANG_B()%...
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSEIF EX:噴乳 >= 2000
+	PRINTFORM Extracting a large amount of %SLANG_MILK()% from %CALLNAME%'s %SLANG_B()%...
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSEIF EX:噴乳
+	PRINTFORM Extracting %SLANG_MILK()% from %CALLNAME%'s %SLANG_B()%...
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSE
+	PRINTFORML No %SLANG_MILK()% could be extracted from %CALLNAME%...
+ENDIF
+
+
+
+;搾乳継続メッセージ
+;ARGS→搾るもの
+@LACTATION_CONTINUE_MESSAGE(ARGS)
+
+SETCOLOR 0xFF70FF
+
+;体内凌辱の場合母乳体質でなくても来ることがあるよ
+IF TFLAG:体内凌辱中 && !MARK:母乳体質 && RAND:100 < 40
+	PRINTFORM 　%CALLNAME% continues to endure unbearable pleasure inside your body...
+ELSEIF NOWEX:Ｂ絶頂 && RAND:100 < 20
+	PRINTFORM 　No matter how many times %CALLNAME% climaxes, the %LACTATION_SRC_ENG(ARGS)% doesn't stop...
+
+;母乳出ない場合追加
+ELSEIF !MARK:母乳体質
+	PRINTFORM 　Even as no more %SAVESTR:表記／母乳% flows from %CALLNAME%, the %LACTATION_SRC_ENG(ARGS)% continues to tease her %SLANG_B()%...
+ELSEIF !BASE:母乳容量
+	IF TFLAG:抽出中 && BASE:霊力
+		PRINTFORM 　%CALLNAME%'s spiritual energy merges with her %SLANG_MILK()% as it's eagerly drawn into the %LACTATION_SRC_ENG(ARGS)%...
+	ELSEIF MARK:魔力母乳体質 && BASE:魔力
+		PRINTFORM 　%CALLNAME%'s magical power infuses her %SLANG_MILK()% as it's deeply absorbed by the %LACTATION_SRC_ENG(ARGS)%...
+	ELSEIF !BASE:母乳生産力
+		PRINTFORM 　Even though %CALLNAME%'s %SLANG_MILK()% has run dry, the %LACTATION_SRC_ENG(ARGS)% relentlessly continues...
+	ELSE
+		PRINTFORM 　The %LACTATION_SRC_ENG(ARGS)% strains to draw out every drop of %SLANG_MILK()% beyond %CALLNAME%'s limit from her %SLANG_B()%...
+	ENDIF
+ELSEIF RAND:100 < 20
+	PRINTFORM 　More %SLANG_MILK()% could still be extracted from %CALLNAME%'s %SLANG_B()%...
+ELSEIF RAND:100 < 20
+	PRINTFORM 　The %LACTATION_SRC_ENG(ARGS)% insistently seeks more %SLANG_MILK()% from %CALLNAME%'s %SLANG_B()%...
+ELSEIF MARK:魔力母乳体質 && BASE:魔力 && RAND:100 < 20
+	PRINTFORM 　%CALLNAME%'s magic channels into %SLANG_MILK()% as it flows from her %SLANG_B()%...
+ELSEIF MARK:絶頂魔力回復淫紋 && RAND:100 < 50
+	PRINTFORM 　%CALLNAME%'s %SLANG_B()% can endlessly yield %SLANG_MILK()%...
+ELSE
+	PRINT 　The milking continues...
+ENDIF
+CALL HEARTCB(0xD02830)
+PRINTW
+RESETCOLOR
+

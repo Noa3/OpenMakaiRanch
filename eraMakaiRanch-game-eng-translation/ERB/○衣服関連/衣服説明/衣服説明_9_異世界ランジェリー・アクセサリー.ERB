@@ -1,0 +1,56 @@
+﻿
+;異世界ランジェリー・アクセサリー
+@ITEM_DETAIL_CLOTHE_OTHER_WORLD_LINGERIE
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "ねこブラ"
+	CALL LINGERIE_DETAIL_COMMON("上","","ズリ穴","膨乳時破損")
+	PRINTFORML %SAVESTR:表記／乳房%を包み込み保持する女性用下着で、
+	PRINTFORML %SAVESTR:表記／乳房%の谷間部分がねこの顔の形にくり抜かれている。
+	PRINTL かわいらしいデザインだが、男がこれをプレゼントする目的なんて大半「着衣パイズリしたい」くらいしかない。
+
+CASE "スポーツブラ"
+	CALL LINGERIE_DETAIL_COMMON("上","","","膨乳時破損")
+	PRINTFORML %SAVESTR:表記／乳房%を包み込み保持する女性用下着で、
+	PRINTFORML 激しく動いても%SAVESTR:表記／乳房%の揺れを抑えるように留め具がない、布が厚めなどの工夫がされている。
+
+CASE "縞パン"
+	CALL LINGERIE_DETAIL_COMMON("下")
+	PRINTL 股間を保護する女性用下着で、ストライプ柄のタイプ。
+
+CASE "Ｔバック"
+	CALL LINGERIE_DETAIL_COMMON("下","","極小")
+	PRINTL 股間を保護する女性用下着で、股間さえ守れていればOKくらいの気持ちで後ろの布面積が非常に少なく、
+	PRINTL お尻が丸見えになっている。
+
+CASE "Ｃストリング"
+	CALL LINGERIE_DETAIL_COMMON("下","","シール")
+	PRINTL 股間の大事な部分だけが隠れるように挟み込む女性用下着。
+	PRINTL 布面積としては前貼りとほぼ同じ。
+
+CASE "キャミソール"
+	CALL LINGERIE_DETAIL_COMMON("上")
+	PRINTL 肩紐で吊り下げるタイプの女性用下着。
+	
+CASE "レオタード"
+	CALL LINGERIE_DETAIL_COMMON("上下")
+	PRINTFORML %SAVESTR:表記／乳房%から股間まで一体の女性用下着。
+	PRINTL 全て繋がっているため着にくいし脱がしにくい。
+
+CASE "スリングショット"
+	CALL LINGERIE_DETAIL_COMMON("上下","Ｂ露出")
+	PRINTL 上下セットの水着なのだが、かなり布面積が少なく上は乳首しか隠せていない。
+	PRINTL 単なる紐よりかはマシだが、パッと見紐と大差ない。
+
+CASE "スクール水着"
+	CALL LINGERIE_DETAIL_COMMON("上下")
+	PRINTL 異世界の教育機関で水泳科目を行う際に着る、お腹も隠れているタイプの水着。
+	
+CASE "バニーつけみみ"
+	CALL ACCESSORY_DETAIL_COMMON("頭")
+	PRINTL うさぎの長い耳を模したつけみみ。
+	PRINTL バニースーツを着る際につけることが多いらしい。
+	
+ENDSELECT
+
+

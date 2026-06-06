@@ -1,0 +1,48 @@
+﻿
+;排他素質の消去
+@EXCLUSIVE_TALENT
+
+;TALENTを50刻みにしたので対になる素質がある場合消す処理ができる
+;TALENT:痛みに強い→100
+FOR LOCAL,100,150
+	SIF !TALENT:LOCAL || !TALENT:(LOCAL +50)
+		CONTINUE
+	
+	;半々でどっちかにする
+	IF !RAND:2
+		TALENT:LOCAL = 0
+	ELSE
+		TALENT:(LOCAL +50) = 0
+	ENDIF
+NEXT
+
+;TALENT:教え上手→200
+FOR LOCAL,200,210
+	SIF !TALENT:LOCAL || !TALENT:(LOCAL +50)
+		CONTINUE
+	IF !RAND:2
+		TALENT:LOCAL = 0
+	ELSE
+		TALENT:(LOCAL +50) = 0
+	ENDIF
+NEXT
+
+;TALENT:プライド高い→300
+FOR LOCAL,300,350
+	SIF !TALENT:LOCAL || !TALENT:(LOCAL +50)
+		CONTINUE
+	IF !RAND:2
+		TALENT:LOCAL = 0
+	ELSE
+		TALENT:(LOCAL +50) = 0
+	ENDIF
+NEXT
+
+;プライド高い・低い・高慢・卑屈はどれかだけ
+IF TALENT:高慢 || TALENT:卑屈
+	TALENT:プライド高い = 0
+	TALENT:プライド低い = 0
+ENDIF
+
+;好き嫌いは嫌いの時-1にする
+

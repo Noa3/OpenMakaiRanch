@@ -1,0 +1,91 @@
+﻿
+;自動スケジュールのリスト
+@AUTO_SCHEDULE_LIST
+
+DRAWLINE
+PRINTL [ 10] Holiday
+CALL AUTO_SCHEDULE_LIST_WORK
+CALL AUTO_SCHEDULE_LIST_TRAIN
+PRINTL
+
+;恋慕以上・従業員(またはあなた)ならカスタムを組めるようにする
+IF ((＃陥落状態／恋慕以上＃ || CSTR:状態／あなたの子 == "成長後") && CFLAG:スケジュール設定可能／業務) || TALENT:オーナー
+	PRINTLC [400] Custom Ａ
+	PRINTLC [401] Custom Ｂ
+	PRINTL [402] Custom Ｃ
+ENDIF
+
+
+
+;業務リスト
+@AUTO_SCHEDULE_LIST_WORK
+
+IF !CFLAG:スケジュール設定可能／業務
+	CALL PRINTL_WORD_COLOR("　Can't Set Schedule","灰")
+	RETURN
+ENDIF
+PRINTFORMLC [100] Dairy／All day <Lv{ABL:酪農,2}> 
+PRINTL [101] Dairy／Morning+Evening 
+
+;事務は恋慕以上にした
+IF ＃陥落状態／恋慕以上＃ || CSTR:状態／あなたの子 == "成長後" || TALENT:オーナー
+	PRINTFORMLC [102] Clerk／Immediate <Lv{ABL:事務,2}> 
+	PRINTL [103] Clerk／Accumulated 
+ELSE
+	CALL PRINTL_WORD_COLOR("Administration","灰")
+ENDIF
+
+CALL MILESTONE_UNLOCK_CHECK("調合","L")
+IF RESULT
+	PRINTFORMLC [104] Mix drugs／All day <Lv{ABL:薬学,2}> 
+	PRINTL [105] Mix drugs and Dairy
+ENDIF
+
+CALL MILESTONE_UNLOCK_CHECK("大浴場掃除","L")
+IF RESULT
+	PRINTFORMLC [106] Clean Bath→Dairy <Lv{ABL:掃除,2}> 
+	PRINTL [107] Clean Bath→Free time 
+ENDIF
+IF !TARGET
+	CALL MILESTONE_UNLOCK_CHECK("自分で戦う","L")
+	IF RESULT
+		PRINTLC [109] Combat Training / All Day 
+		PRINTLC [110] Combat Training and Dairy
+		PRINTL [111] Combat Training / From Noon
+	ENDIF
+ENDIF
+
+
+
+;調教リスト
+@AUTO_SCHEDULE_LIST_TRAIN
+
+IF !CFLAG:スケジュール設定可能／調教
+	CALL PRINTL_WORD_COLOR("　Training settings cannot be configured","灰")
+	RETURN
+ENDIF
+IF MARK:母乳体質
+	PRINTLC [200] Milking / All Day
+	PRINTL [201] Milking / Morning+Evening
+	
+	IF !ITEM:霊力抽出装置
+		CALL PRINTL_WORD_COLOR("　Schedule extraction not unlocked","灰")
+	ELSEIF !BASE:霊力 && !MAXBASE:魔力
+		CALL PRINTL_WORD_COLOR("　No power available for extraction","灰")
+	ELSE
+		PRINTLC [202] Extraction / All Day
+		PRINTLC [203] Extraction / Morning+Evening
+		PRINTL [204] Milking → Extraction
+	ENDIF
+	IF FLAG:触手出産合計 >= 10
+		PRINTLC [205] Tentacle Milking / All Day
+		PRINTL [206] Tentacle Milking / Morning+Evening
+	ELSE
+		CALL PRINTL_WORD_COLOR("Insufficient number of birth tentacles","灰")
+	ENDIF
+ELSE
+	CALL PRINTL_WORD_COLOR("Milking / Extraction","灰")
+ENDIF
+
+
+

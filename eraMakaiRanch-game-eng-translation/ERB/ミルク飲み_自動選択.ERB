@@ -1,0 +1,139 @@
+﻿
+;保管中ミルク飲み自動選択肢
+@DRINK_MILK_AUTO_SELECT
+
+CALL MANYL(5)
+PRINTL Set whether to automatically decide when drinking stored milk in the morning or after a bath.
+PRINTL
+PRINTL [ 0] Show options every time (Default)
+PRINTL [ 1] Random every time
+PRINTL [ 2] Never drink
+PRINTL [ 3] Always drink the milk of the specified slave (choose if unable to drink)
+BINPUT
+SELECTCASE RESULT
+CASE 3
+	CALL DRINK_MILK_AUTO_SELECT_CHARA
+CASEELSE
+	FLAG:自動選択／保管ミルク = RESULT *-1
+ENDSELECT
+
+
+
+;自動選択／保管ミルク
+;ARG→個人スケジュールor奴隷とお風呂上がり時
+@DRINK_COLD_MILK_AUTO(ARG)
+
+VARSET RANDOM_NO_BOX
+VARSET BOX_COUNT
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	SIF CFLAG:出荷予定母乳量 < CUP_MILK
+		CONTINUE
+	;条件満たした場合BOX入れ
+	RANDOM_NO_BOX:BOX_COUNT = TARGET
+	BOX_COUNT ++
+NEXT
+IF BOX_COUNT
+	SELECTCASE FLAG:自動選択／保管ミルク
+	CASE 0
+		;選択
+		IF ARG
+			CALL DRINK_COLD_MILK_SELECT
+		ELSE
+			PRINTFORMLC [ 0] Drink cold %SAVESTR:表記／母乳%
+			PRINTL [ 1] Not This Time
+			BINPUT
+			SIF !RESULT
+				CALL DRINK_COLD_MILK_SELECT
+		ENDIF
+	
+	CASE -1
+		;ランダム
+		TARGET = RANDOM_NO_BOX:RAND(BOX_COUNT)
+		CALL DRINK_COLD_MILK
+	CASE -2
+		;飲まない
+	
+	CASEELSE
+		;指定
+		FINDCHARA CFLAG:ID,FLAG:自動選択／保管ミルク,1
+		TARGET = RESULT
+		IF CFLAG:出荷予定母乳量 < CUP_MILK
+			CALL DRINK_COLD_MILK_SELECT
+		ELSE
+			CALL DRINK_COLD_MILK
+		ENDIF
+	ENDSELECT
+ELSE
+	PRINTFORML The chilled %SAVESTR:表記／母乳% was not available, so you couldn't drink it.
+	WAIT_ON ++
+ENDIF
+TARGET = -1
+
+
+
+@DRINK_MILK_AUTO_SELECT_CHARA
+#DIM DYNAMIC PAGE
+
+PAGE_MAX = (CHARANUM -2)/20 +1
+SIF PAGE < 1
+	PAGE = 1
+CLEARLINE LINECOUNT
+PRINTFORML Please select the specified slave.
+PRINTL
+FOR TARGET_COUNT,1,21
+	SIF TARGET_COUNT +(PAGE -1)*20 >= CHARANUM
+		BREAK
+	TARGET = TARGET_COUNT +(PAGE -1)*20
+	
+	;奴隷がどこにいても関係なく出荷用に保管しているミルクを見る
+	IF !MARK:母乳体質
+		SETCOLOR 0x606060
+		PRINTFORM <{TARGET +100}> %CALLNAME_DIGIT()%
+	ELSE
+		PRINTFORM [{TARGET +100}] %CALLNAME_DIGIT()%
+	ENDIF
+	CALL PRINT_POST_C
+	IF CSTR:状態／あなたの子 == "成長中"
+		PRINT 　【Infant】
+		RESETCOLOR
+	ELSE
+		CALL TABLE_STATUS_BUST
+		IF !MARK:母乳体質
+			CALL PRINT_WORD_COLOR,@"　not【Lactating】","灰"
+		ELSE
+			CALL PRINT_MILK_NAME
+		ENDIF
+	ENDIF
+	PRINTL
+NEXT
+CALL PRINTL_ALIGN(-5)
+CALL PRINT_NOW_PAGE(PAGE,1)
+CALL RIGHT_RETURN_BUTTON(0,"キャンセル")
+BINPUT
+SELECTCASE RESULT
+CASE 80
+	PAGE --
+	SIF PAGE < 1
+		PAGE = PAGE_MAX
+CASE 81
+	PAGE ++
+	SIF PAGE > PAGE_MAX
+		PAGE = 1
+CASE 99
+	TARGET = -1
+	RETURN
+
+CASEELSE
+	TARGET = RESULT -100
+	SIF !MARK:母乳体質
+		RESTART
+	FLAG:自動選択／保管ミルク = CFLAG:ID
+	TARGET = -1
+	RETURN
+ENDSELECT
+RESTART
+
+
+

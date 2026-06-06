@@ -1,0 +1,82 @@
+﻿;**********************************************************
+;Hip(ヒップ)の淫語
+;**********************************************************
+@SLANG_H(ARG)
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+SLANGWORD =
+
+IF GETBIT(FLAG:スラング接頭語／尻,1) && GROUPMATCH(CSTR:体型,"ムチムチ","豊満","グラマー") && RAND:100 < 10 && !EXIST
+	;くどすぎないようにEXISTで次を止める
+	SLANGWORD += "plump "
+	EXIST ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／尻,2) && GROUPMATCH(CSTR:体型,"ムチムチ","豊満","グラマー") && RAND:100 < 10 && !EXIST
+	SLANGWORD += "well-padded "
+	EXIST ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／尻,3) && GROUPMATCH(CSTR:体型,"ムチムチ","豊満") && RAND:100 < 10 && !EXIST
+	SLANGWORD += "chubby "
+	EXIST ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／尻,0) && GROUPMATCH(CSTR:体型,"ムチムチ","豊満","グラマー") && RAND:100 < 30 && !EXIST
+	SLANGWORD += "voluptuous "
+	EXIST ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／尻,4) && GROUPMATCH(CSTR:体型,"痩せ型") && RAND:100 < 15 && !EXIST
+	SLANGWORD += "slim "
+	EXIST ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／尻,5) && GROUPMATCH(CSTR:体型,"スレンダー") && RAND:100 < 15 && !EXIST
+	SLANGWORD += "toned "
+	EXIST ++
+ENDIF
+EXIST = 0
+
+SIF GETBIT(FLAG:スラング接頭語／尻,6) && GROUPMATCH(CSTR:体型,"ムチムチ","豊満") && RAND:100 < 15 && !EXIST
+	SLANGWORD += "fertile "
+
+IF GETBIT(FLAG:スラング接頭語／尻,9) && !GROUPMATCH(CSTR:体型,"痩せ型") && RAND:100 < 10 && !EXIST
+	SLANGWORD += "rounded "
+	EXIST ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／尻,7) && GROUPMATCH(CSTR:体型,"ムチムチ","豊満","グラマー") && RAND:100 < 20 && !EXIST
+	SLANGWORD += "big "
+	EXIST ++
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／尻,8) && GROUPMATCH(CSTR:体型,"痩せ型","スレンダー") && RAND:100 < 20 && !EXIST
+	SLANGWORD += "small "
+	EXIST ++
+ENDIF
+EXIST = 0
+
+IF !GROUPMATCH(CSTR:体型,"痩せ型")
+	IF GETBIT(FLAG:スラング接頭語／尻,10) && RAND:100 < 20
+		SLANGWORD += "fresh "
+	ELSEIF GETBIT(FLAG:スラング接頭語／尻,11) && RAND:100 < 20
+		SLANGWORD += "soft "
+	ELSEIF GETBIT(FLAG:スラング接頭語／尻,12) && RAND:100 < 20
+		SLANGWORD += "shapely "
+	ENDIF
+ENDIF
+
+IF GETBIT(FLAG:スラング表示／尻,0) && RAND:100 < 50
+	SLANGWORD += "butt"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／尻,1) && RAND:100 < 30
+	SLANGWORD += "peach butt"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／尻,2) && RAND:100 < 30
+	SLANGWORD += "rear"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／尻,3) && RAND:100 < 30
+	SLANGWORD += "hip"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／尻,4)
+	SLANGWORD += "ass"
+	RETURNF SLANGWORD
+ENDIF
+RESTART
+

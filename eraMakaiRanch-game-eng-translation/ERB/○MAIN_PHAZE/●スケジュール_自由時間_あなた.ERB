@@ -1,0 +1,45 @@
+﻿
+;あなたが自由時間の場合の行動選択
+@MASTER_FREE_TIME_SELECT
+
+TARGET = 0
+SIF CSTR:スケジュール != "自由"
+	RETURN
+
+PRINTL 　　　《 Free Time 》
+;HP30%未満だと休憩にしておわり
+IF BASE:体力 < MAXBASE:体力 *30 /100
+	PRINTFORMW %CALLNAME% was tired, so he decided to rest in his room…
+	CSTR:スケジュール = 休憩
+	RETURN
+ENDIF
+PRINTFORML What does %CALLNAME% do in his free time?
+PRINTL
+PRINTL [ 0] Rest in own room
+
+;ITEM:堕天馬→100　選択肢を1から始めるので-1
+ITEM_REF = 100 -1
+PRINTL
+FOR LOCAL,1,11
+	ANIMAL = %ITEMNAME:(ITEM_REF +LOCAL)%
+	SIF ANIMAL == ""
+		CONTINUE
+	
+	;分けないとエラー出す
+	SIF !ITEM:ANIMAL
+		CONTINUE
+	PRINTFORML [{LOCAL,2}] Spend time with %PET_NAME_REF(ANIMAL)%
+NEXT
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	PRINTFORMW %CALLNAME% decided to rest in his room…
+	CSTR:スケジュール = 休憩
+CASE 1 TO 10
+	CALL MASTER_PLAY_ANIMAL_SELECT(RESULT -1)
+	CSTR:スケジュール = 行動済み
+ENDSELECT
+DRAWLINE
+
+
+

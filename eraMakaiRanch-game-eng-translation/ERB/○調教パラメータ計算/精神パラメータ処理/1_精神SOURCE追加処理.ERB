@@ -1,0 +1,256 @@
+﻿
+;①責めでの精神SOURCE追加処理
+@MIND_SOURCE_PLUS
+#DIM MIND_FIX
+
+;噴乳量による乳牛堕ち
+;計算式に合わせるように多めに
+LOVE = (NOWEX:噴乳 +NOWEX:不足ミルク /2) *(10 +ABL:搾乳中毒) *3
+
+;体内凌辱中は半減しとく
+SIF TFLAG:体内凌辱中
+	LOVE /= 2
+SOURCE:乳牛 += LOVE
+
+;搾乳中毒>=5で屈服増加
+MIND_FIX = LIMIT(ABL:搾乳中毒 -5,0,20)
+SOURCE:屈服 += (LOVE *MIND_FIX /10)
+
+;おっぱい責めされているときTALENTにより恭順・恥辱
+IF SOURCE:Ｂ快楽 || SOURCE:Ｎ快楽
+	SIF TALENT:乳責め嫌悪
+		SOURCE:恥辱 += 2000
+	SIF TALENT:乳自慢
+		SOURCE:恭順 += 1000
+	SIF MARK:乳房劣等感解消
+		SOURCE:恭順 += 1000
+	SIF MARK:乳責め嫌悪解消
+		SOURCE:恭順 += 3000
+ENDIF
+
+;ちんぽ使用中の感情SOURCE
+CALL MIND_SOURCE_PLUS_PENIS
+
+;露出時追加
+SIF TFLAG:Ｎ露出
+	SOURCE:恥辱 += 1000
+SIF TFLAG:Ｖ露出
+	SOURCE:恥辱 += 1000
+
+;責められているとき中毒Lvによって恭順にかかる
+SIF TFLAG:搾乳責め
+	SOURCE:恭順 += (ABL:搾乳中毒 *200)
+SIF TFLAG:乳吸い
+	SOURCE:恭順 += (ABL:母性 *200)
+SIF SOURCE:マゾヒズム
+	SOURCE:恭順 += (ABL:マゾっ気 *200)
+SIF SOURCE:射精回数
+	SOURCE:恭順 += (ABL:精液中毒 *500)
+
+;絶頂で淫欲追加
+LOVE = NOWEX:総絶頂 *300
+SIF LOVE > 1000
+	LOVE = 1000 +(LOVE -1000) /10
+SOURCE:淫欲 += LOVE
+
+;恥じらい→搾乳中毒がなければ噴乳で恐怖増加
+IF TALENT:恥じらい && ABL:搾乳中毒 < 10
+	DAMAGE = NOWEX:噴乳 +NOWEX:不足ミルク /2
+	SOURCE:恐怖 += (DAMAGE *5)
+ENDIF
+
+;弱気→拘束中でマゾっ気なければ恐怖増加
+SIF TALENT:弱気 && ABL:マゾっ気 < 10 && TFLAG:拘束BIT
+	SOURCE:恐怖 += 1000
+
+;目隠しでも追加増加
+SIF TALENT:弱気 && ABL:マゾっ気 < 10 && TFLAG:目隠し
+	SOURCE:恐怖 += 1500
+
+;膨乳時
+;乳牛堕ち→淫欲・恭順　していない→負の感情
+IF SOURCE:膨乳段階
+	IF !CFLAG:乳牛
+		SOURCE:恐怖 += (SOURCE:膨乳段階 *2000)
+		SOURCE:不快 += (SOURCE:膨乳段階 *1000)
+		SOURCE:反感 += (SOURCE:膨乳段階 *2000)
+		SOURCE:失意 += (SOURCE:膨乳段階 *3000)
+	ELSE
+		SOURCE:淫欲 += (SOURCE:膨乳段階 *2000)
+		SOURCE:恭順 += (SOURCE:膨乳段階 *1000)
+	ENDIF
+	SIF MARK:淫乳
+		SOURCE:淫欲 += (SOURCE:膨乳段階 *2000)
+ENDIF
+
+
+
+;ちんぽ使用中の感情SOURCE
+@MIND_SOURCE_PLUS_PENIS
+
+;使用中でないならおわり
+SIF !TFLAG:Ｐ使用BIT
+	RETURN
+
+;好感度0で乳牛堕ちもしていない→TALENTでいろいろ振り分け
+SIF BASE:好感度 || CFLAG:乳牛
+	RETURN
+
+;共通
+SIF TALENT:プライド高い
+	SOURCE:反感 += 2000
+SIF TALENT:高慢
+	SOURCE:反感 += 3000
+SIF TALENT:気丈
+	SOURCE:反感 += 2000
+IF TALENT:清楚
+	SOURCE:屈服 += 1000
+	SOURCE:恥辱 += 2000
+ENDIF
+IF TALENT:貞操観念
+	SOURCE:反感 += 2000
+	SOURCE:恥辱 += 1000
+	SOURCE:屈服 += 1000
+	SOURCE:失意 += 1000
+ENDIF
+
+SIF TALENT:プライド低い
+	SOURCE:屈服 += 2000
+SIF TALENT:卑屈
+	SOURCE:屈服 += 3000
+SIF TALENT:弱気
+	SOURCE:屈服 += 3000
+SIF TALENT:恥じらい
+	SOURCE:恥辱 += 2000
+SIF TALENT:悲観的
+	SOURCE:失意 += 2000
+
+SIF TALENT:気品
+	SOURCE:不快 += 2000
+
+;各部位
+;おまんこ
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	SIF TALENT:プライド高い
+		SOURCE:恥辱 += 1000
+	SIF TALENT:高慢
+		SOURCE:恥辱 += 2000
+	SIF TALENT:清楚
+		SOURCE:恥辱 += 2000
+	IF TALENT:貞操観念
+		SOURCE:反感 += 2000
+		SOURCE:恥辱 += 2000
+		SOURCE:屈服 += 2000
+		SOURCE:失意 += 2000
+	ENDIF
+	
+	SIF TALENT:恥じらい
+		SOURCE:屈服 += 2000
+	SIF TALENT:悲観的
+		SOURCE:失意 += 2000
+	
+	;膣内射精時追加
+	IF TFLAG:膣内精液
+		SIF TALENT:清楚
+			SOURCE:屈服 += 3000
+		IF TALENT:貞操観念
+			SOURCE:恥辱 += 3000
+			SOURCE:屈服 += 3000
+			SOURCE:失意 += 7000
+		ENDIF
+		SIF TALENT:恥じらい
+			SOURCE:屈服 += 3000
+		SIF TALENT:悲観的
+			SOURCE:失意 += 4000
+	ENDIF
+ENDIF
+
+;アナル
+IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	SIF TALENT:プライド高い
+		SOURCE:屈服 += 2000
+	SIF TALENT:高慢
+		SOURCE:屈服 += 3000
+	SIF TALENT:気丈
+		SOURCE:屈服 += 2000
+	SIF TALENT:反抗的
+		SOURCE:屈服 += 4000
+	SIF TALENT:清楚
+		SOURCE:屈服 += 1000
+	
+	;尻穴射精時追加
+	IF TFLAG:尻穴精液
+		SIF TALENT:プライド高い
+			SOURCE:屈服 += 1000
+		SIF TALENT:高慢
+			SOURCE:屈服 += 1000
+		SIF TALENT:反抗的
+			SOURCE:屈服 += 2000
+		SIF TALENT:清楚
+			SOURCE:屈服 += 1000
+	ENDIF
+ENDIF
+
+;パイズリ
+IF GETBIT(＃Ｐ使用／パイズリ＃)
+	SIF TALENT:清楚
+		SOURCE:屈服 += 2000
+	SIF TALENT:恥じらい
+		SOURCE:屈服 += 2000
+	SIF TALENT:乳自慢
+		SOURCE:屈服 += 2000
+	IF TALENT:乳責め嫌悪
+		SOURCE:恥辱 += 2000
+		SOURCE:屈服 += 2000
+		SOURCE:失意 += 5000
+	ENDIF
+	
+	;パイズリ射精時追加
+	IF TFLAG:乳内精液
+		SIF TALENT:乳自慢
+			SOURCE:恭順 += 2000
+		IF TALENT:乳責め嫌悪
+			SOURCE:恥辱 += 2000
+			SOURCE:屈服 += 5000
+			SOURCE:失意 += 5000
+		ENDIF
+	ENDIF
+ENDIF
+
+;おくち
+IF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	SIF TALENT:プライド高い
+		SOURCE:屈服 += 1000
+	SIF TALENT:高慢
+		SOURCE:屈服 += 2000
+	SIF TALENT:清楚
+		SOURCE:屈服 += 2000
+	SIF TALENT:反抗的
+		SOURCE:屈服 += 2000
+	SIF TALENT:恥じらい
+		SOURCE:屈服 += 2000
+	
+	;口内射精時追加
+	IF TFLAG:口内精液
+		SIF TALENT:プライド高い
+			SOURCE:屈服 += 1000
+		SIF TALENT:高慢
+			SOURCE:屈服 += 1000
+		SIF TALENT:清楚
+			SOURCE:屈服 += 1000
+		SIF TALENT:反抗的
+			SOURCE:屈服 += 1000
+		SIF TALENT:恥じらい
+			SOURCE:屈服 += 1000
+		SIF TALENT:汚臭敏感
+			SOURCE:屈服 += 2000
+	ENDIF
+ENDIF
+
+
+
+
+
+
+
+

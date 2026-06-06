@@ -1,0 +1,193 @@
+﻿
+;奴隷候補の素質＿性格補正
+@RANDOM_SLAVE_TALENT_PERSONALITY
+
+SELECTCASE CSTR:性格
+CASE "強気"
+	TALENT:献身的 = 0
+	TALENT:反抗的 = 1
+	SIF RAND:100 < 20
+		TALENT:気丈 = 1
+	SIF RAND:100 < 20
+		TALENT:生意気 = 1
+	SIF RAND:100 < 50
+		TALENT:プライド高い = 1
+	SIF RAND:100 < 10
+		TALENT:自制心 = 1
+	SIF RAND:100 < 20
+		TALENT:献身的 = 0
+	SIF RAND:100 < 20
+		TALENT:恥薄い = 1
+
+CASE "弱気"
+	TALENT:臆病 = 1
+	SIF RAND:100 < 30
+		TALENT:素直 = 1
+	SIF RAND:100 < 30
+		TALENT:悲観的 = 1
+	SIF RAND:100 < 20
+		TALENT:大人しい = 1
+	SIF RAND:100 < 20
+		TALENT:プライド低い = 1
+	SIF RAND:100 < 20
+		TALENT:献身的 = 1
+	SIF RAND:100 < 20
+		TALENT:謙虚 = 1
+	SIF RAND:100 < 20
+		TALENT:恥薄い = 1
+
+CASE "生意気"
+	TALENT:生意気 = 1
+	SIF RAND:100 < 20
+		TALENT:反抗的 = 1
+	SIF RAND:100 < 10
+		TALENT:プライド高い = 1
+	SIF RAND:100 < 30
+		TALENT:快感の否定 = 1
+	SIF RAND:100 < 70
+		TALENT:献身的 = 0
+
+CASE "生真面目"
+	TALENT:自制心 = 1
+	TALENT:保守的 = 1
+	SIF RAND:100 < 30
+		TALENT:快感の否定 = 1
+	SIF RAND:100 < 50
+		TALENT:貞操観念 = 1
+	SIF RAND:100 < 50
+		TALENT:恥じらい = 1
+
+CASE "大人しい"
+	TALENT:大人しい = 1
+	TALENT:保守的 = 1
+	SIF RAND:100 < 30
+		TALENT:臆病 = 1
+	SIF RAND:100 < 10
+		TALENT:無関心 = 1
+	SIF RAND:100 < 20
+		TALENT:貞操観念 = 1
+	SIF RAND:100 < 20
+		TALENT:快感に素直 = 1
+	SIF RAND:100 < 10
+		TALENT:気品 = 1
+	SIF RAND:100 < 10
+		TALENT:清楚 = 1
+	SIF RAND:100 < 50
+		TALENT:恥じらい = 1
+
+CASE "能天気"
+	TALENT:楽観的 = 1
+	SIF RAND:100 < 10
+		TALENT:素直 = 1
+	SIF RAND:100 < 10
+		TALENT:プライド低い = 1
+	SIF RAND:100 < 10
+		TALENT:好奇心 = 1
+	SIF RAND:100 < 10
+		TALENT:目立ちたがり = 1
+	SIF RAND:100 < 50
+		TALENT:恥薄い = 1
+	SIF RAND:100 < 20
+		TALENT:快感に素直 = 1
+	SIF RAND:100 < 10
+		TALENT:清楚 = 1
+
+CASE "世間知らず"
+	TALENT:素直 = 1
+	TALENT:好奇心 = 1
+	SIF RAND:100 < 50
+		TALENT:貞操無頓着 = 1
+	SIF RAND:100 < 50
+		TALENT:快感に素直 = 1
+	SIF RAND:100 < 10
+		TALENT:恥じらい = 1
+	SIF RAND:100 < 20
+		TALENT:清楚 = 1
+
+CASE "高潔"
+	TALENT:気丈 = 1
+	TALENT:自制心 = 1
+	TALENT:一線越えない = 1
+	TALENT:貞操観念 = 1
+	TALENT:貞操無頓着 = 0
+	SIF RAND:100 < 20
+		TALENT:気品 = 1
+		
+CASE "清楚"
+	TALENT:清楚 = 1
+	TALENT:恥じらい = 1
+	TALENT:恥薄い = 0
+	SIF RAND:100 < 20
+		TALENT:気品 = 1
+	SIF RAND:100 < 20
+		TALENT:気丈 = 1
+	SIF RAND:100 < 10
+		TALENT:好奇心 = 1
+	SIF RAND:100 < 10
+		TALENT:臆病 = 1
+
+CASE "好色"
+	TALENT:自制心 = 0
+	TALENT:一線越えない = 0
+	TALENT:貞操観念 = 0
+	TALENT:貞操無頓着 = 1
+	TALENT:恥じらい = 0
+	TALENT:性知識乏しい = 0
+	
+	;10%でレズ
+	SELECTCASE RAND:100
+	CASE 0 TO 89
+		TALENT:男好き = 1
+	CASE 90 TO 95
+		TALENT:女好き = 1
+	CASEELSE
+		;筋金入りのレズ
+		TALENT:男好き = 0
+		TALENT:女好き = 1
+	ENDSELECT
+
+CASE "温厚"
+	TALENT:一線越えない = 1
+	SIF RAND:100 < 20
+		TALENT:気品 = 1
+	SIF RAND:100 < 20
+		TALENT:気丈 = 1
+	SIF RAND:100 < 20
+		TALENT:素直 = 1
+	SIF RAND:100 < 20
+		TALENT:プライド低い = 1
+
+CASE "無口"
+	TALENT:大人しい = 1
+	IF RAND:100 < 20
+		TALENT:反抗的 = 1
+	ELSEIF RAND:100 < 20
+		TALENT:素直 = 1
+	ENDIF
+	SIF RAND:100 < 40
+		TALENT:無関心 = 1
+
+ENDSELECT
+
+;貴族とかそのへんはだいたいプライド高い
+;貴族だけど貴族嫌い、とかあってもまあ別にいいか
+SELECTCASE CSTR:身分
+CASE "貴族"
+	IF RAND:100 < 70
+		TALENT:プライド高い = 1
+	ELSEIF RAND:100 < 50
+		TALENT:高慢 = 1
+	ENDIF
+CASE "王族"
+	IF RAND:100 < 80
+		TALENT:プライド高い = 1
+	ELSEIF RAND:100 < 80
+		TALENT:高慢 = 1
+	ENDIF
+ENDSELECT
+
+;天界種族で天界族嫌いは消しておこう
+SIF TALENT:天界種族 && TALENT:天界族好き < 0
+	TALENT:天界族好き = 0
+
+

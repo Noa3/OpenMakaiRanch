@@ -1,0 +1,92 @@
+﻿
+;専用イベントサンプル　本当にただのサンプルなのでスカスカ
+;[CFLAG:専用設定／イベント]でgrep検索かければどこで使うものかわかる　かも（まだスカスカ）
+;いろんなシチュで専用イベント処理を使いたい場合↑で検索して参考にして勝手に書き足していいのよ
+
+; ======================================
+;口上と同じとこに書いてもいいんだけど視認性が悪そうなので分けたほうがいいかな？くらいのもの
+;口上はいろんな人が作ってくれるとうれしいななので口上作者欄やライセンス欄も置いておくね
+
+;専用イベント書き方サンプル
+;対応識別名_出典作品名：スレイ_era魔界牧場
+;口上作者：polt
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：
+;↑加筆したら書いてね
+; ======================================
+
+;専用イベント使用フラグON/OFFするために必要
+;関数が存在すればOKなので中身はいらない　むしろないほうがいい
+@EX_EVENT_EXIST_スレイ_era魔界牧場
+
+
+
+;例として識別名：[スレイ]、出典作品名：[era魔界牧場]の場合はこう
+;例として調教開始時の特殊処理
+@EX_TRAIN_BEFORE_スレイ_era魔界牧場
+
+;ここに処理を書いていく
+;この場合「スレイちゃんのみ適用される、調教開始時に専用イベント発生させて恋慕にする処理」だよ
+;専用とはいえ口上処理を逐一呼び出すほうが口上表示色とかエスケープシーケンスとか使えて便利だよ
+
+;恋慕のとき飛ばさないと何回も発生しちゃうじゃん…
+SIF ＃陥落状態／恋慕以上＃
+	RETURN
+
+;口上の関係で先にやる
+CSTR:陥落状態 = 恋慕
+CFLAG:無抵抗 = 1
+CALL DROP_OUT_MIND
+MAXBASE:好感度 = BASE_FALLINLOVE_FAV -1
+BASE:好感度 ++
+
+;口上表示がそもそもOFFだと変になるのでその対応　専用口上がない場合も変になる
+IF !FLAG:口上表示 || !CFLAG:口上表示 || !CFLAG:専用設定／イベント
+	PRINTFORMW %CALLNAME%を呼び出すと、%CALLNAME%はおずおずと口を開いた…
+	PRINTFORML 魔界に来て途方に暮れていたところを%CALLNAME:0%に拾ってもらえた感謝、そして…
+	PRINTFORML %CALLNAME:0%が『男のヒト』として好き、ということを伝えられた。
+ELSE
+	CALL KOJO_PRINT("恋慕化EX","1")
+	PRINTFORMW %CALLNAME%を呼び出すと、%CALLNAME%はおずおずと口を開いた…
+	CALL KOJO_PRINT("恋慕化EX","2")
+	CALL KOJO_PRINT("恋慕化EX","3")
+	PRINTW
+	CALL KOJO_PRINT("恋慕化EX","4")
+	CALL KOJO_PRINT("恋慕化EX","5")
+	CALL KOJO_PRINT("恋慕化EX","6")
+	PRINTW
+	CALL KOJO_PRINT("恋慕化EX","7")
+	CALL KOJO_PRINT("恋慕化EX","8")
+	PRINTL
+	PRINTLC [0] Pat Head
+	PRINTLC [1] Kiss
+	INPUT
+	IF RESULT
+		KISS_PLAYER = %CALLNAME:0%
+		SOURCE:キス = 1
+		CALL LOST_VARGIN
+		CALL LOST_VARGIN_PLAYER
+		CALL KOJO_PRINT("恋慕化EX","キス1")
+		CALL LOST_VARGIN_MIND_DAMAGE
+		SIF !EXP:経験回数／あなた／キス
+			FLAG:あなた経験人数／キス ++
+		EXP:経験回数／あなた／キス ++
+		SOURCE:キス = 0
+	ELSE
+		CALL KOJO_PRINT("恋慕化EX","頭撫で1")
+		CALL KOJO_PRINT("恋慕化EX","頭撫で2")
+		CALL KOJO_PRINT("恋慕化EX","頭撫で3")
+	ENDIF
+	CALL KOJO_PRINT("恋慕化EX","9")
+ENDIF
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%は【恋慕】になりました。","桃"
+PRINTW
+;最後に専用イベント発生フラグをONにすることで固有イベントを通ったよ判定する
+FLAG:専用イベント発生 = 1
+
+
+
+
+

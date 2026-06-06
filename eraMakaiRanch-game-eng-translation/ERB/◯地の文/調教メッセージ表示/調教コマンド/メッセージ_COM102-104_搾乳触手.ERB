@@ -1,0 +1,103 @@
+﻿
+@COM102_MESSAGE
+;乳包み花弁搾乳触手
+
+PRINTFORML Two tentacles grew from your body and were smoothly displayed in front of %CALLNAME%...
+PRINTL The tips of the tentacles split into four parts, with countless folds wriggling inside, and a small hole in the center expanding and contracting,
+PRINTL with mucus dripping down like drool...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"焦らし")
+CALL LACTATION_TENTACLE_EQUIP_MESSAGE
+PRINTFORM After teasing for a while, the milking tentacles latched onto her %SLANG_B()%, and 
+IF BASE:母乳容量
+	PRINTFORM began to knead and suck out %SLANG_MILK()%...
+ELSE
+	PRINTFORM began to suck %SLANG_N()% violently...
+ENDIF
+PRINTL
+
+
+
+@COM103_MESSAGE
+;透明カップ搾乳触手
+
+PRINTFORML Two tentacles grew from your body and were smoothly displayed in front of %CALLNAME%...
+PRINTL At the tips of the tentacles were transparent cups large enough to cover the areolas, 
+PRINTL and thin tentacles wriggled from the base of the cups, targeting their prey...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"焦らし")
+CALL LACTATION_TENTACLE_EQUIP_MESSAGE
+PRINTFORML After teasing for a while, the milking tentacles attached to her %SLANG_B()%, and 
+PRINTFORM while sucking, thin tentacles wrapped around her %SLANG_N()% 
+IF BASE:母乳容量
+	PRINTFORM and began to play and extract %SLANG_MILK()%...
+ELSE
+	PRINT and began to play with it...
+ENDIF
+PRINTL
+
+
+
+@COM104_MESSAGE
+;搾乳ワーム触手
+
+PRINTFORML Two tentacles grew from your body and were smoothly displayed in front of %CALLNAME%...
+PRINTFORML The tips of the tentacles were shaped like eyes, with a large mouth licking its lips...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"焦らし")
+CALL LACTATION_TENTACLE_EQUIP_MESSAGE
+PRINTFORML After teasing for a while, the milking tentacles latched onto her %SLANG_B()%, and 
+IF BASE:母乳容量
+	PRINTFORM began to suck %SLANG_MILK()% with a gulping sound...
+ELSE
+	PRINTFORM began to suck on her %SLANG_N()%...
+ENDIF
+PRINTL
+
+
+
+;搾乳触手装備前共通メッセージ
+@LACTATION_TENTACLE_EQUIP_MESSAGE
+
+PRINTFORM %CALLNAME% understands that 
+IF BASE:母乳容量
+	SELECTCASE RAND:3
+	CASE 0
+		PRINTFORM she will experience the ultimate milking pleasure with these tentacles
+	CASE 1
+		PRINTFORM her %SLANG_MILK()% will be completely drained by the emerging tentacles
+	CASE 2
+		PRINTFORM the tentacles are targeting her %SLANG_B()%
+	ENDSELECT
+ELSE
+	PRINTFORM the tentacles are targeting her %SLANG_B()%
+ENDIF
+IF CFLAG:乳牛 || MARK:搾乳中毒 || ＃陥落状態／恋慕以上＃
+	PRINTL , 
+ELSE
+	PRINTL , but 
+ENDIF
+IF CFLAG:乳牛
+	PRINTFORM just by looking at it, %CALLNAME% has already started leaking %SLANG_MILK()% and love juices...
+ELSEIF MARK:搾乳中毒
+	PRINTFORM just imagining what is about to happen makes %SLANG_B()% throb...
+ELSEIF ＃陥落状態／恋慕以上＃
+	PRINTFORM %CALLNAME% is at your mercy...
+ELSEIF TFLAG:拘束BIT
+	PRINT In a restrained state, there is no escape, 
+	IF ABL:バストサイズ >= BUSTSIZE_巨乳
+		PRINTFORM even if she try to resist, it will only seem like she is trying to entice them with her swaying %SLANG_B()%...
+	ELSE
+		PRINTFORM she can only watch as the tentacles approach her %SLANG_B()%...
+	ENDIF
+ELSEIF !BASE:体力
+	PRINT Her stamina is already at its limit, and there's no escape...
+ELSE
+	PRINTL
+	PRINTFORM In the narrow training room, there is no place to escape, and her arms trying to cover her exposed %SAVESTR:表記／乳房% are entangled by the tentacles,
+	PRINTFORM who approach her defenseless %SLANG_B()%...
+ENDIF
+IF FLAG:搾乳触手焦らし
+	PRINTW
+ELSE
+	PRINTL
+ENDIF
+
+

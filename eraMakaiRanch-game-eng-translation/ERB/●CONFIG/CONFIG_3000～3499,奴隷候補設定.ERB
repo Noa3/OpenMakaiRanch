@@ -1,0 +1,177 @@
+﻿
+;奴隷候補設定一覧
+@LIST_CONFIG_SLAVE_BODY
+
+PRINTL --- 《 Slave Candidate Setting 》 ---
+ALIGNMENT LEFT
+DRAWLINE
+CALL PRINTL_WORD_COLOR("This setting can only be changed by ・Game Initialization・Developer Mode・＜Slave Candidate Change Ticket＞.","黄")
+CALL CONFIG_CHANGE_FLAG_CHECK(1)
+FLAG_REF = 3000
+FOR LOCAL,0,50
+	SIF FLAGNAME:(LOCAL +FLAG_REF) == ""
+		CONTINUE
+	CALL PRINT_CONFIG_SLAVE_BODY(LOCAL)
+NEXT
+PRINTL
+PRINTL [70] Distribution of physical features
+PRINTL [71] Virginity Reroll
+
+
+
+;ARG→LOCAL　FLAG_REFを足すことでフラグ番号
+@PRINT_CONFIG_SLAVE_BODY(ARG)
+
+FLAG_NAME = %FLAGNAME:(ARG +FLAG_REF)%
+SELECTCASE FLAG_NAME
+CASE "銀髪派"
+	LOCALS = Change【White Hair】to【Silver Hair】
+	PRINTFORM [{ARG,2}] %LOCALS,32%
+	CALL PRINT_ONOFF(FLAG:FLAG_NAME)
+	
+CASE "現実的な髪色率","日本っぽいジョブの日本名率","日本っぽいジョブの黒髪率"
+	IF !FLAG:FLAG_NAME
+		PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：No Preference
+	ELSE
+		PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：{FLAG:FLAG_NAME}\%
+	ENDIF
+
+;Doesn't use this system (Ramdom Name Priority)
+;CASE "ランダムネーム優先設定"
+;	PRINTFORM [{ARG,2}] %FLAG_NAME,32%：
+;	SELECTCASE FLAG:FLAG_NAME
+;	CASE 0
+;		PRINT 優先なし
+;	CASE 1
+;		PRINT 日本系
+;	CASE 2
+;		PRINT イギリス系
+;	CASE 3
+;		PRINT フランス系
+;	CASE 4
+;		PRINT ドイツ系
+;	CASE 5
+;		PRINT イタリア系
+;	CASE 6
+;		PRINT ロシア系
+;	CASE 7
+;		PRINT ファンタジー系
+;	ENDSELECT
+
+CASE "メガネ率"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：{FLAG:FLAG_NAME}\%
+
+CASE "高身長時の外見年齢補正"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：+{FLAG:FLAG_NAME} years
+ENDSELECT
+PRINTL
+
+
+
+;ARG→INPUT
+@CHANGE_CONFIG_SLAVE_BODY(ARG)
+
+SELECTCASE ARG
+CASE 70	;身体特徴割合
+	CALL TENDENCY_CONFIG_COMMON
+CASE 71	;非処女時再抽選
+	CALL NON_VIRGIN_REROLL_CONFIG
+CASEELSE
+	CALL CHANGE_CONFIG_SLAVE_BODY_NAME(ARG)
+ENDSELECT
+
+
+
+@CHANGE_CONFIG_SLAVE_BODY_NAME(ARG)
+
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+CALL CHANGE_CONFIG_INVERTBIT
+SIF RESULT
+	RETURN
+SELECTCASE FLAG_NAME
+CASE "銀髪派"
+	PRINTL Automatically change「White Hair」to「Silver Hair」during character creation?
+	PRINTL
+	PRINTL [ 0] Keep As Is (Default)
+	PRINTL [ 1] Change to【Silver Hair】
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+		
+CASE "現実的な髪色率"
+	PRINTL Set the probability of getting a realistic hair color when randomizing a character.
+	PRINTL (Note: Even when set to 0, color is randomly determined, so realistic color may still appear)
+	PRINTL
+	PRINTLC [  0] Full Random (Default) 
+	PRINTL [100] Random between「Black・Golden・Brown」
+	PRINTL Alternatively, enter value from 0~100.
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 100
+		FLAG:FLAG_NUM = RESULT
+
+; This system is disabled on english side. Only Japanese, English, Chinese name is used.
+CASE "ランダムネーム優先設定"
+	PRINTL キャラメイクでの名前初期設定をどの系統から選ぶか設定します。
+	PRINTL
+	PRINTLC [ 0] 優先なし (Default)
+	PRINTLC [ 1] 日本系
+	PRINTLC [ 2] イギリス系
+	PRINTLC [ 3] フランス系
+	PRINTLC [ 4] ドイツ系
+	PRINTLC [ 5] イタリア系
+	PRINTLC [ 6] ロシア系
+	PRINTL [ 7] ファンタジー系
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+		
+CASE "日本っぽいジョブの日本名率"
+	PRINTL キャラメイク時に【巫女】【くのいち】などの日本っぽいジョブが選ばれた場合に
+	PRINTL 優先的に日本名をつける確率を設定します。（0でもランダム決定されるので出なくなる訳ではありません）
+	PRINTL [ランダムネーム優先設定]の後に上書き判定されます。
+	PRINTL
+	PRINTLC [  0] No preference
+	PRINTLC [ 80] Occasionally, non-Japanese names are also desirable (Default)
+	PRINTL [100] Always prefer Japanese names
+	PRINTL Alternatively, enter value from 0~100.
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 100
+		FLAG:FLAG_NUM = RESULT
+		
+CASE "日本っぽいジョブの黒髪率"
+	PRINTL During character recreation, for Japanese-type roles such as 【Miko】and【Kunoichi】
+	PRINTL Set the likelihood of【Black Hair】to appear. (Black Hair can still appear with 0)
+	PRINTL Override Order：(Low)[Realistic Hair Probability]→This→[Racial Appearance](High)
+	PRINTL
+	PRINTLC [  0] No preference
+	PRINTLC [ 50] Black hair for half of the time (Default) 
+	PRINTL [100] Black hair is the best
+	PRINTL Alternatively, enter value from 0~100.
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 100
+		FLAG:FLAG_NUM = RESULT
+
+CASE "メガネ率"
+	PRINTL Set the likelihood that characters will wear spectacles during the shuffle phase of character creation.
+	PRINTL (Currently, there is no particular status significance to this choice; it is purely cosmetic, 
+	PRINTL as non-prescription glasses are also available as an accessory. Please select according to your preference.)
+	PRINTL ・For certain scholarly professions, the probability of wearing glasses will be 1.5 times the rate set here.
+	PRINTL
+	PRINTLC [  0] Never
+	PRINTLC [ 10] Occasionally (Default)
+	PRINTL [100] Always
+	PRINTL Alternatively, enter value from 0~100.
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 100
+		FLAG:FLAG_NUM = RESULT
+
+CASE "高身長時の外見年齢補正"
+	PRINTL Set increase to apparent age if height is【Tall】or more.
+	PRINTL
+	PRINTL [ 0] No change (Default)
+	PRINTFORML Or enter value from 0 to {VISUAL_AGE_ADULT_MAX -VISUAL_AGE_CHILD_MAX -1}（range of appearing as adult）.
+	INPUT
+	SIF RESULT >= 0 && RESULT <= VISUAL_AGE_ADULT_MAX -VISUAL_AGE_CHILD_MAX -1
+		FLAG:FLAG_NUM = RESULT
+ENDSELECT
+
+

@@ -1,0 +1,104 @@
+﻿
+;母乳スラング設定
+@SLANG_CONFIG_MILK
+
+CLEARLINE LINECOUNT
+PRINTL Select slang options for breast milk.
+DRAWLINE
+PRINTLC [ 0] 「Mother's Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／母乳,0),1)
+PRINTLC [ 1] 「Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／母乳,1),1)
+PRINTLC [ 2] 「Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／母乳,2),1)
+PRINTLC [ 3] 「Dairy Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／母乳,3),1)
+PRINTLC [ 4] 「Breast Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／母乳,4),1)
+PRINTL
+PRINTL 　《 Prefix Setting 》
+PRINTLC [10] 《Nutrition》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／母乳,0),0)
+PRINTL 　（「Nutritious」or 「Nutrient-Rich」, at Milk Richness level 1 or higher）
+PRINTLC [11] 《Milk Richness》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／母乳,1),0)
+PRINTL 　（「Richness」 grade、at Milk Richness level 1 or higher）
+PRINTLC [12] 「Delicious」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／母乳,2),0)
+PRINTL 　（at Milk Richness level 1 or higher）
+PRINTLC [13] 「creamy」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／母乳,3),0)
+PRINTL 　（at Milk Richness level 2 or higher）
+PRINTLC [14] 「High Grade」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／母乳,4),0)
+PRINTL 　（at Milk Richness level 4 or higher）
+PRINTLC [15] 「Natural」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／母乳,5),0)
+PRINTL 　（without any physical modifications）
+PRINTLC [16] 「Royal」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／母乳,6),0)
+PRINTL 　（for origin [Royalty]）
+PRINTLC [17] 「ＪＳ」／「ＪＣ」／「ＪＫ」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／母乳,7),0)
+PRINTL 　（For characters with this talent）
+PRINTL
+PRINTL 　《 Special Substitutions 》
+PRINTLC [20] Priority for Special Substitutions
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／母乳,0),0)
+PRINTL 　give Priority to cases that meet the conditions for special substitution 
+PRINTLC [21] 「Virgin Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／母乳,1),0)
+PRINTL 　（from virgins）
+PRINTLC [22] 「Virgin Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／母乳,2),0)
+PRINTL 　（from virgins）
+PRINTLC [23] 「Mana-infused Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／母乳,3),0)
+PRINTL 　（with 【Mana-Infused Milk】＋ at least 1 mana）
+PRINTLC [24] 「Loli Milk」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／母乳,4),0)
+PRINTL 　（for milk from child sized）
+PRINTLC [29] 《Configured name for Milk》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／母乳,9),0)
+PRINTFORML 　（Current setting: %SAVESTR:表記／母乳%）
+PRINTLC [30] 《Configured name for Mana-infused Milk》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／母乳,10),0)
+PRINTFORML 　（Current setting: %SAVESTR:表記／魔力母乳%）
+CALL SLANG_CONFIG_FOOTER
+INPUT
+SELECTCASE RESULT
+CASE 0 TO 4
+	INVERTBIT FLAG:スラング表示／母乳,RESULT
+CASE 10 TO 17
+	INVERTBIT FLAG:スラング接頭語／母乳,(RESULT -10)
+CASE 20 TO 24
+	INVERTBIT FLAG:スラング置換／母乳,(RESULT -20)
+CASE 29,30
+	INVERTBIT FLAG:スラング置換／母乳,(RESULT -20)
+CASE 80
+	FLAG:スラング表示／母乳 = 65535
+CASE 81
+	FLAG:スラング接頭語／母乳 = 65535
+CASE 82
+	FLAG:スラング置換／母乳 = 65535
+CASE 90
+	FLAG:スラング表示／母乳 = 0
+CASE 91
+	FLAG:スラング接頭語／母乳 = 0
+CASE 92
+	FLAG:スラング置換／母乳 = 0
+CASE 98
+	PRINTL Reset slang options for breast milk to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG_MILK
+CASE 99
+	IF !FLAG:スラング表示／母乳
+		PRINTW At least one slang option must be selected.
+	ELSE
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+

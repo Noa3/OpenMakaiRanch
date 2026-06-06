@@ -1,0 +1,46 @@
+パッチの目的
+	連続してキャラのステータスを見ることができるように
+	
+やったこと
+	１：SHOPを経由して個人スケジュールから飛んだ場合、就業可能＞就業不可能、またはその逆順に
+		SHOPでの羅列順通りに次のキャラが見られます（捕獲前または輸送中を除く）
+		また、牛舎も除きます
+	２：SHOPを経由して全奴隷一覧から飛んだ場合、番号順にすべての奴隷のステータスを見られます
+		（捕獲前、輸送中、牛舎の中身もすべて）
+	
+	
+		
+当て方
+	era魔界牧場0.511のERBフォルダにコピー＆ペースト
+	
+作者…P's
+License
+	This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+		
+Ver.2.0 2022/3/15
+	バグの修正に係るコードの大幅な見直し
+	隣接キャラ変更.ERBのファイルが小さくなります
+	
+	いじったファイル
+		隣接キャラ変更
+Ver.1.1 2022/1/29
+	特定条件下でのバグ修正
+	隣接キャラ変更.ERBのファイルが小さくなります
+	License追記、特に変更はないはずです
+	それ以外に変更はありません
+	
+	いじったファイル
+		隣接キャラ変更
+Ver.1 2022/1/23
+	
+	いじったファイル
+		CFLAG.CSV
+		●SHOP.ERB
+		個人スケジュール表示・変更.ERB
+		全奴隷一覧.ERB
+		○標的キャラステータス.ERB
+		○標的キャラ行動選択.ERB
+	
+	新規作成
+		隣接キャラ変更
+		キャラ表示箇所

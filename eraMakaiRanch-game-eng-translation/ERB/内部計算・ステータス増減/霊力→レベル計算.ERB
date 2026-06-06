@@ -1,0 +1,56 @@
+﻿
+;霊力量からレベルを計算
+;キャラ回しから来ると思うのでCOUNT不可
+@EP_LEVEL_CALC
+
+;10000未満ならLv1
+STATUS = 10000
+FOR LOCAL,1,1000
+	;10000超えたらLv2にアップ
+	SIF BASE:霊力 < STATUS
+		BREAK
+	
+	;(レベル-1)*500が次に上がるのに必要な霊力
+	STATUS += (LOCAL *500)
+	
+	;これを霊力<STになるまで繰り返し
+NEXT
+
+;BREAK後に-1
+LOCAL --
+
+;結果のLvを返す
+RETURN LOCAL
+
+
+
+;レベルから霊力量を計算
+@LEVEL_EP_CALC
+
+;10000までLv1
+STATUS = 10000
+
+FOR LOCAL,1,1000
+	;レベルになるまでSTATUSを増加
+	SIF BASE:レベル <= LOCAL
+		BREAK
+	
+	;(レベル-1)*500が次に上がるのに必要な霊力
+	STATUS += (LOCAL *500)
+NEXT
+LOCAL --
+
+;ランダム性
+IF BASE:レベル < 2
+	STATUS -= RAND:9900 + 1
+ELSE
+	STATUS -= RAND:((LOCAL-1) * 500) + 1
+ENDIF
+STATUS -= (STATUS %100)
+
+;一応結果の霊力を返す
+RETURN STATUS
+
+
+
+

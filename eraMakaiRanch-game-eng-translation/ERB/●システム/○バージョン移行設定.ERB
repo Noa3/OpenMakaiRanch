@@ -1,0 +1,182 @@
+﻿
+;バージョンをチェックして足りないフラグを追記する
+@VERSION_CHECK
+
+;フラグ互換性ないバージョンからは強制的にNG+に飛ばす
+;旧データの[セーブデータのバージョン]→FLAG:34
+;旧データで[魔王軍戦力]に使ったので数値がでかい！クソ！
+;じゃあもう10000あった気がするので10000以上でも行こう
+IF FLAG:セーブデータのバージョン < 1000 || FLAG:セーブデータのバージョン >= 10000
+	CALL PRINTW_WORD_COLOR,@"旧バージョンのセーブデータを読み込んだため、一部ステータスを引き継ぐ「強くてニューゲーム」を開始します。","水色"
+	CALL NEWGAMEPLUS_BEFORE_FLAG_SET
+	RESETDATA
+	ADDCHARA 0
+	SIF GAMEBASE_DEFAULTCHARA >= 0
+		ADDCHARA GAMEBASE_DEFAULTCHARA
+	BEGIN FIRST
+	RETURN
+ENDIF
+
+PRINTW 古いバージョンからの移行のため、一部フラグを書き換えます。
+CALL MANYL(5)
+
+;メモ：フラグとかの番号は数字で呼ぶとバグが起きにくくてよい
+;こんなふうにアプデごとに追加すればだいぶ書き換えるまでは使えるかも
+;古いものは別関数に移してしまう
+SIF FLAG:セーブデータのバージョン < 1011
+	CALL OLD_UPDATE
+
+IF FLAG:セーブデータのバージョン < 1020
+	;ペットの好感度MAX値が設定されてない場合があるので設定
+	ITEM_REF = 100
+	BASE_REF = 60
+	FOR TARGET_COUNT,0,CHARANUM
+		TARGET = TARGET_COUNT
+		FOR LOCAL,0,20
+			SIF !ITEM:(ITEM_REF +LOCAL) || MAXBASE:(BASE_REF +LOCAL)
+				CONTINUE
+			MAXBASE:(BASE_REF +LOCAL) = 10000
+		
+			;あなたがペットなつき度0の場合があるので9000へ（下がらないはずなのでこれでいいはず）
+			SIF !TARGET && !BASE:(BASE_REF +LOCAL)
+				BASE:(BASE_REF +LOCAL) = 9000
+		NEXT
+	NEXT
+	FLAG:2 = 20
+	
+	PRINTL ver1.020
+	PRINTL 複数パッチ取り込み
+	PRINTL 【洗脳】時に＜ハーブティー＞使用不可に仕様変更
+	PRINTL 「ボーイッシュ口上1」「慇懃口上1」＜スリングショット＞ドット絵取り込み
+	PRINTL ＜牛柄スリングショット＞を乳牛コスプレ枠に追加
+	PRINTL
+	PRINTL キャラの詳細ステータス表示を整理
+	PRINTL 牧場情報に目次追加・整理
+	PRINTL ほか少し修正
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1021
+	PRINTL ver1.021
+	PRINTL 痛みでの快楽減少に対して1/4の最低保証を追加
+	PRINTL サイズ差処理で異常な痛みの値になる場合があったので大幅に低減
+ENDIF
+
+
+IF FLAG:セーブデータのバージョン < 1030
+	;調教選択肢をデフォルトに
+	FLAG:210 = 0b01010001111
+	
+	;調教前選択肢に「毎回選ぶ」がなくなった対応
+	FLAG:2400 = LIMIT(FLAG:2400 -1,0,10)
+	FLAG:2401 = LIMIT(FLAG:2401 -1,0,10)
+	
+	;Ｖ・Ａサイズ確認
+	SETBIT FLAG:2370,5
+	SETBIT FLAG:2370,6
+	
+	FOR TARGET_COUNT,0,CHARANUM
+		TARGET = TARGET_COUNT
+		
+		;一括リセット対応に番号変更
+		;CHANGE_PLAN使えばいいか
+		VARSET CHANGE_PLAN
+		FOR LOCAL,0,100
+			CHANGE_PLAN:LOCAL = TALENT:LOCAL
+		NEXT
+		
+		;自動処理から「毎回選ぶ」を消したので-1のとき0へ
+		SIF CFLAG:540 < 0
+			CFLAG:540 = 0
+		SIF CFLAG:541 < 0
+			CFLAG:541 = 0
+		
+		;56～66が変更してる
+		VARSET TALENT,0,56,70
+		TALENT:56 = CHANGE_PLAN:60
+		TALENT:57 = CHANGE_PLAN:66
+		
+		TALENT:70 = CHANGE_PLAN:56
+		TALENT:71 = CHANGE_PLAN:57
+		TALENT:72 = CHANGE_PLAN:58
+		TALENT:73 = CHANGE_PLAN:61
+		TALENT:74 = CHANGE_PLAN:62
+		TALENT:75 = CHANGE_PLAN:63
+		TALENT:76 = CHANGE_PLAN:64
+		TALENT:77 = CHANGE_PLAN:65
+	NEXT
+	PRINTL ver1.030
+	PRINTL 複数パッチ取り込み
+	PRINTL 搾乳絶頂経験SOURCEが想定より多すぎたので修正　ごめんね
+	PRINTL
+	PRINTL 調教前の脱衣、拘束を1画面で実行するように変更+この画面でもローション、媚薬を使えるように
+	PRINTL （調教開始後は工事中です）
+	PRINTL この変更により調教開始前コンフィグの「毎回選ぶ」がなくなりました
+	PRINTL
+	PRINTL 調教中のコマンド表示形式を責め部位・使用具でON/OFF切り替えする形式に変更
+	PRINTL 2つor3つONにする必要があるコマンドもあります
+	PRINTL （ex.正常位→Ｖ責め・ペニスの2つがONの場合表示）
+	PRINTL
+	PRINTL 触手魔術＜触手分泌液増量＞追加
+	PRINTL アビリティ＜豊穣＞＜濃厚母乳マッサージ＞＜ミルクタンクマッサージ＞追加
+	PRINTL 上記アビリティ取得後、調教中コマンド[育乳マッサージ][濃厚母乳マッサージ][ミルクタンクマッサージ]追加
+	PRINTL ほかバグ修正、調整
+	PRINTL ・一部TALENT番号を変更したため、番号で指定している場合はご注意ください
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1031
+	PRINTL ver1.031
+	PRINTL 複数パッチ取り込み
+	PRINTL 
+	PRINTL 調教コマンド選択肢→触手コマンド系列は触手ONなら表示されるように変更
+	PRINTL 取り外し系は使用可能なら表示されるように変更
+	PRINTL 搾乳バリアントだしＮ責めONのみで搾乳器系表示されるように変更
+	PRINTL 
+	PRINTL 「デフォルト拘束状態」コンフィグを1つずらすのを忘れてしまったため、
+	PRINTL 既に直しているか判別不可能なので個々で確認お願いします　ごめんね
+	PRINTL 
+	PRINTL 豊穣適用される蓄積値を「2000+バストサイズ数値*800」に調整
+	PRINTL ＜触手変化＞ないのに＜触手目隠し＞が使えるバグ修正
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1040
+	PRINTL ver1.040
+	PRINTL 
+	PRINTL 現在verからの＜強くてニューゲーム＞を実装
+	PRINTL ・追加分「奴隷を【隷属】させる」マイルストーンの達成で開放されます
+	PRINTL 淫紋魔術＜絶頂体力回復淫紋＞追加
+	PRINTL アイテム＜精力剤＞追加
+	PRINTL ＜触手受胎＞の個人単位での有効／無効切り替え追加
+	PRINTL 
+	PRINTL 調教カテゴリに「特殊」追加・レイアウト調整
+	PRINTL 【洗脳触手】の時間経過を撤廃
+	PRINTL 魔界レベル増加の必要金額減少
+	PRINTL →【アダルトショップ】の開店を早めた
+	PRINTL 外出時に露出状態の場合NGが出る→メッセージ+一時的に作業着を着て外出に変更
+	PRINTL ほかバグ修正、調整
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1041
+	PRINTL ver1.041
+	PRINTL 
+	PRINTL 調教開始時に「このキャラのデフォルトに設定」すると次回に1つずれるの修正
+	PRINTL 調教開始前でのCLEARLINE数箇所減らした
+	PRINTL 調教時間無限オプション・時間圧縮永続オプションor永続化取得中に最初の1回だけメッセージ出すように追加
+ENDIF
+
+PRINTL
+PRINTL アップデートの詳細は[更新履歴.txt]をご覧下さい。
+TARGET = -1
+FLAG:セーブデータのバージョン = GAMEBASE_VERSION
+DRAWLINE
+
+IF !ITEM:奴隷候補設定変更チケット
+	ITEM:奴隷候補設定変更チケット ++
+	CALL PRINT_WORD_COLOR("＜Slave Candidate Change Ticket＞","黄")
+	PRINTL obtained。
+ENDIF
+
+PRINTLC [ 0] OK
+INPUT
+
+
+

@@ -1,0 +1,15 @@
+﻿
+;ランダムで補正をかける
+;ARG　補正元　ARG:1　補正%　ARGS:パラメータ名称（エラーメッセージで使用）
+@RANDOM_FIX(ARG,ARG:1,ARGS)
+
+IF ARG < 0
+	PRINTFORML ※%ARGS%がマイナスの値を取っています　このメッセージが出た場合バグ報告してもらえると助かります
+	FIX = 0
+ELSE
+	FIX = RAND:(ARG +1) *ARG:1 /100
+ENDIF
+
+
+
+

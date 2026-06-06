@@ -1,0 +1,196 @@
+﻿
+;スケジュール実行できるか判定
+;選べないはずのもの設定されてるのはここでいちいち書くの面倒だしいいや（バグだったら報告もらえるとうれしい）
+;ARG→実行不可のメッセージ出す
+@SCHEDULE_JUDGE(ARG)
+
+JUDGE_NG = 0
+CALL SCHEDULE_JUDGE_FINANCE(ARG)
+CALL SCHEDULE_JUDGE_LIBRARY(ARG)
+CALL SCHEDULE_JUDGE_DRAIN(ARG)
+CALL SCHEDULE_JUDGE_PHARMACY(ARG)
+CALL SCHEDULE_JUDGE_VORE_SEX(ARG)
+CALL SCHEDULE_JUDGE_T_LACTATION(ARG)
+CALL SCHEDULE_JUDGE_LACTATION_M(ARG)
+CALL SCHEDULE_JUDGE_LACTATION(ARG)
+
+;この下は実際に実行する場合（できない場合）
+SIF !ARG
+	RETURN
+
+;+-で止めるか分岐
+IF JUDGE_NG > 0
+	PRINTW
+	RETURN 1
+ELSEIF JUDGE_NG < 0
+	RETURN 1
+ENDIF
+
+
+
+;事務作業が20溜まっていると誰かいないとダメ
+@SCHEDULE_JUDGE_FINANCE(ARG)
+
+SIF FLAG:事務作業量 < 20
+	RETURN
+
+;スケジュール設定中従業員の事務ABLを足していく、0は戦力外
+WORK_POEWR = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール == "事務"
+		WORK_POEWR += ABL:事務
+NEXT
+SIF WORK_POEWR
+	RETURN
+JUDGE_NG ++
+SIF !ARG
+	RETURN
+CALL PRINTL_WORD_COLOR("！Someone needs to handle the accumulated paperwork！","黄")
+
+
+
+;魔力あるか
+@SCHEDULE_JUDGE_LIBRARY(ARG)
+
+SIF CSTR:0:スケジュール != "図書館" || BASE:0:魔力 >= MAGIC_USE_MP:GETNUM(ITEM,"個人用転移門")
+	RETURN
+JUDGE_NG ++
+SIF !ARG
+	RETURN
+CALL PRINTL_WORD_COLOR("！＜個人用転移門＞に使う%CALLNAME:0%の魔力が足りません。","黄")
+
+
+
+;霊力抽出装置が足りてるか見る
+@SCHEDULE_JUDGE_DRAIN(ARG)
+
+CATTLE_COUNT = CMATCH(CSTR:スケジュール,"抽出")
+SIF CATTLE_COUNT <= ITEM:霊力抽出装置
+	RETURN
+JUDGE_NG ++
+SIF !ARG
+	RETURN
+CALL PRINT_WORD_COLOR("！Not enough ＜Spirit Energy Extractors＞！","黄")
+PRINTFORML Needed：{CATTLE_COUNT} Owned：{ITEM:霊力抽出装置} 
+
+
+
+;調剤には【調合知識】必要
+@SCHEDULE_JUDGE_PHARMACY(ARG)
+
+WORKER = CMATCH(CSTR:スケジュール,"調剤")
+SIF !WORKER
+	RETURN
+WORK_POEWR = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	IF CSTR:スケジュール == "調剤" && TALENT:調合知識
+		WORK_POEWR = 1
+		BREAK
+	ENDIF
+NEXT
+SIF WORK_POEWR
+	RETURN
+JUDGE_NG ++
+SIF !ARG
+	RETURN
+CALL PRINTL_WORD_COLOR("！At least one person with【Mixing Knowledge】is required to start making drugs！","黄")
+
+
+
+;触手責め搾乳は人数×10の触手が必要
+@SCHEDULE_JUDGE_T_LACTATION(ARG)
+
+CATTLE_COUNT = CMATCH(CSTR:スケジュール,"触手責め搾乳")
+SIF CATTLE_COUNT *10 <= FLAG:触手出産合計
+	RETURN
+JUDGE_NG ++
+SIF !ARG
+	RETURN
+CALL PRINTL_WORD_COLOR("！触手の数不足で【触手責め搾乳】ができません。","黄")
+PRINTFORML 必要数：一人につき触手10匹　現在の触手の数：{FLAG:触手出産合計} 
+
+
+
+;体内凌辱+レベル分の人数まで
+@SCHEDULE_JUDGE_VORE_SEX(ARG)
+#DIM VORE_SLAVE,4
+
+;入ってる人数+入れる予定の人数-解放予定人数
+VARSET VORE_SLAVE
+VORE_SLAVE:1 = CMATCH(CSTR:スケジュール,"体内凌辱準備")
+VORE_SLAVE:2 = CMATCH(CSTR:スケジュール,"体内凌辱")
+VORE_SLAVE:3 = CMATCH(CSTR:スケジュール,"解放準備")
+VORE_SLAVE:0 = VORE_SLAVE:1 +VORE_SLAVE:2 -VORE_SLAVE:3
+SIF VORE_SLAVE <= ITEM:体内凌辱 +ITEM:体内容量増加
+	RETURN
+JUDGE_NG ++
+SIF !ARG
+	RETURN
+CALL PRINT_WORD_COLOR("！体内凌辱可能な人数を超えています。","黄")
+PRINTFORML 予定人数：{VORE_SLAVE} 容量：{ITEM:体内凌辱 +ITEM:体内容量増加} 
+
+
+
+;搾乳器の数が搾乳人数(あなたが調教ならそれもカウント)分必要
+@SCHEDULE_JUDGE_LACTATION_M(ARG)
+
+CATTLE_COUNT = CMATCH(CSTR:スケジュール,"搾乳") +(CSTR:0:スケジュール == "調教" ? 1 # 0) -ITEM:家畜用搾乳器
+SIF CATTLE_COUNT <= 0 || !ARG
+	RETURN
+
+;もうキャンセル判定出てるなら選択肢は出ない
+IF JUDGE_NG
+	CALL PRINTL_WORD_COLOR("！家畜用搾乳器の数が足りません。","黄")
+ELSE
+	CALL PRINTL_WORD_COLOR("！家畜用搾乳器の数が足りません。買い足して実行しますか？","黄")
+	PRINTFORML あと{CATTLE_COUNT}つ必要です：計%VALUE_DIGIT(ITEMPRICE:家畜用搾乳器 *CATTLE_COUNT)%G
+	CALL ASK_YN
+	
+	;選択肢を使った場合止めずにキャンセル
+	IF RESULT
+		JUDGE_NG = -1
+	ELSE
+		MONEY -= ITEMPRICE:家畜用搾乳器 *CATTLE_COUNT
+		ITEM:家畜用搾乳器 += CATTLE_COUNT
+		PRINTFORMW %VALUE_DIGIT(ITEMPRICE:家畜用搾乳器 *CATTLE_COUNT)%Gで家畜用搾乳器を{CATTLE_COUNT}つ購入しました。
+	ENDIF
+ENDIF
+
+
+
+;家畜の世話は警告出すことにする
+;いない時に警告出るので強制キャンセルだと詰みになる可能性がなくはない→詰まないように工夫
+@SCHEDULE_JUDGE_LACTATION(ARG)
+
+WORK_POEWR = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール == "酪農"
+		WORK_POEWR += ABL:酪農
+NEXT
+
+;最低3必要
+SIF WORK_POEWR >= 3
+	RETURN
+
+;もうキャンセル判定出てるなら選択肢は出ない
+IF JUDGE_NG
+	SIF !ARG
+		RETURN
+	CALL PRINTL_WORD_COLOR("！Total DairyLv not high enough to take care of the cattle！","黄")
+ELSE
+	IF !ARG
+		JUDGE_NG = -1
+		RETURN
+	ENDIF
+	CALL PRINTL_WORD_COLOR("！Total DairyLv not high enough to take care of the cattle！ Proceed Anyways?","黄")
+	CALL ASK_YN
+	
+	;選択肢を使った場合止めずにキャンセル
+	SIF RESULT
+		JUDGE_NG = -1
+ENDIF
+
+

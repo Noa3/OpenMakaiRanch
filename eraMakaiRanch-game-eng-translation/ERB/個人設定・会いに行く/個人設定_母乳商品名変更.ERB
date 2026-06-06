@@ -1,0 +1,132 @@
+﻿
+;母乳に商品名をつける
+@MILK_PRODUCT_NAME_CHANGE
+#DIMS MILKWORD
+#DIMS SAMPLE1 = "＜Name＞'s Special"
+;#DIMS SAMPLE2 = "＜ミルク＞"
+
+CLEARLINE LINECOUNT
+CALL SHOW_SLAVE_STATE
+PRINTFORML Create a product name for %CALLNAME%'s breast milk.（The price won't change）
+PRINTL
+IF CSTR:母乳商品名濃度自動 != ""
+	MILKWORD =
+	PRINTFORM %CALLNAME_DIGIT()%'s Special 
+	SELECTCASE ABL:母乳濃度
+	CASE 1
+		MILKWORD += "Thick "
+	CASE 2
+		MILKWORD += "Fine "
+	CASE 3
+		MILKWORD += "Rich "
+	CASE 4
+		MILKWORD += "Potent "
+	CASE 5
+		MILKWORD += "Premium "
+	ENDSELECT
+	MILKWORD += CSTR:母乳商品名濃度自動
+	SETCOLOR 0xFF70FF
+	PRINTFORM %MILKWORD,24,LEFT%
+	RESETCOLOR
+ELSEIF CSTR:母乳商品名自由記述 != ""
+	SETCOLOR 0xFF70FF
+	PRINTFORM %CSTR:母乳商品名自由記述,(FLAG:キャラ名前欄幅 +28)%
+	RESETCOLOR
+ELSE
+	CALL PRINT_SELL_MILK_SAMPLE
+ENDIF
+PRINTL  +Shipment Volume
+CALL PRINTL_WORD_COLOR("　↑Current Name↑　　↓Default (For comparison)↓","灰")
+;PRINTL 　↑現在の設定↑　　↓比較用デフォルト設定↓
+PRINTFORML %SAMPLE1,20%%SAVESTR:表記／母乳,24,LEFT% +Shipment Volume
+PRINTL
+PRINTL [ 0] Default（Auto） 
+PRINTL [ 1] <Name>＋<Special>＋<Richness>＋<Custom Description> 
+PRINTL [ 2] Custom Name
+PRINTL [ 3] Move Custom 1 Space To The Left
+CALL PRINTL_ALIGN
+DRAWLINE
+PRINTL [99] Complete
+INPUT
+SELECTCASE RESULT
+CASE 0
+	CSTR:母乳商品名濃度自動 =
+	CSTR:母乳商品名自由記述 =
+CASE 1
+	PRINTL <名前>+<特製>+<母乳濃度>+<自由記述> の自由記述部分を入力してください。
+	PRINTL （全角10文字までに設定すると出荷画面で他の奴隷と表示が並びます）
+	INPUTS
+	IF RESULTS != ""
+		CSTR:母乳商品名濃度自動 = %RESULTS%
+		CSTR:母乳商品名自由記述 =
+	ENDIF
+CASE 2
+	PRINTL 商品名を自由記述してください。
+	PRINTL （全角22文字までに設定すると出荷画面で他の奴隷と表示が並びます）
+	INPUTS
+	IF RESULTS != ""
+		CSTR:母乳商品名濃度自動 =
+		CSTR:母乳商品名自由記述 = %RESULTS%
+	ENDIF
+CASE 3
+	SIF CSTR:母乳商品名自由記述 != ""
+		CSTR:母乳商品名自由記述 += "　"
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+@PRINT_SELL_MILK_SAMPLE
+#DIMS MILKWORD
+
+PRINTFORM %CALLNAME_DIGIT()%'s Special
+MILKWORD =
+
+SELECTCASE ABL:母乳濃度
+CASE 1
+	MILKWORD += " Thick"
+CASE 2
+	MILKWORD += " Fine"
+CASE 3
+	MILKWORD += " Rich"
+CASE 4
+	MILKWORD += " Potent"
+CASE 5
+	MILKWORD += " Premium"
+ENDSELECT
+SIF !EXP:肉体改造
+	MILKWORD += " All-Natural"
+SIF TALENT:処女
+	MILKWORD += " Virgin"
+SIF GROUPMATCH(CSTR:身長,"小柄","子供体型") && TALENT:巨乳
+	MILKWORD += " Oppai Loli"
+SIF GROUPMATCH(CSTR:身長,"幼児体型","子供体型") && ABL:バストサイズ < BUSTSIZE_並乳
+	MILKWORD += " Loli"
+SIF CFLAG:上位種族 || TALENT:天界種族
+	MILKWORD += @" %RACE_ENG(CSTR:種族)%"
+SIF CSTR:初期値／身分 == "王族"
+	MILKWORD += " Royal"
+SIF CSTR:初期値／身分 == "貴族"
+	MILKWORD += " Aristocratic"
+	
+;CSV取り込みキャラ用の素質
+SIF TALENT:ＪＳ
+	MILKWORD += " ＪＳ"
+SIF TALENT:ＪＣ
+	MILKWORD += " ＪＣ"
+SIF TALENT:ＪＫ
+	MILKWORD += " ＪＫ"
+
+MILKWORD += " "
+IF MARK:魔力母乳体質
+	MILKWORD += SAVESTR:表記／魔力母乳
+ELSE
+	MILKWORD += SAVESTR:表記／母乳
+ENDIF
+
+SETCOLOR 0xFF70FF
+PRINTFORM %MILKWORD,24,LEFT%
+RESETCOLOR
+

@@ -1,0 +1,44 @@
+﻿
+;ブラシ触手引っ込める処理
+@REMOVE_BRUSH
+
+;コマンドでブラシ触手を選んだ場合は飛ばす
+SIF SOURCE:ブラシ触手コマンド && TFLAG:調教中
+	RETURN
+
+;各部位に触手以外の責めが入ったらブラシ触手を引っ込める
+;他の装備が入った場合も引っ込める
+;TEQUIP:ブラシ触手Ａ→150
+;TFLAG:Ａ装備→60
+;SOURCE:Ａ快楽／あなた責め→100
+;SOURCE:Ａ快楽／レズ調教→110
+;SOURCE:Ａ快楽／器具→120
+
+EQUIP_REF = 150
+FLAG_REF = 60
+SOURCE_REF:0 = 100
+SOURCE_REF:1 = 110
+SOURCE_REF:2 = 120
+FOR LOCAL,0,5
+	SIF !TEQUIP:(LOCAL +EQUIP_REF)
+		CONTINUE
+	
+	;尻撫でのみ→Ａブラシ解除しない
+	SIF SELECTCOM == 16 && LOCAL == 0 && !SOURCE:(LOCAL +10) && !TFLAG:(LOCAL +FLAG_REF)
+		CONTINUE
+	
+	;お腹撫でのみ→Ｖブラシ解除しない
+	SIF SELECTCOM == 19 && LOCAL == 3 && !SOURCE:(LOCAL +10) && !TFLAG:(LOCAL +FLAG_REF)
+		CONTINUE
+	
+	{
+	SIF SOURCE:LOCAL || SOURCE:(LOCAL +SOURCE_REF) || SOURCE:(LOCAL +SOURCE_REF:1) 
+	|| SOURCE:(LOCAL +SOURCE_REF:2) || TFLAG:(LOCAL +FLAG_REF)
+	}
+		TEQUIP:(LOCAL +EQUIP_REF) = 0
+NEXT
+
+;全部位から外したらブラシ触手フラグもOFF
+SIF !MATCH(TEQUIP,1,150,155)
+	TEQUIP:ブラシ触手 = 0
+

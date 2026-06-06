@@ -1,0 +1,79 @@
+﻿
+;奴隷候補の種族設定共通部
+;ARG→種族番号
+@PRINT_SLAVE_CONFIG_FOOTER(ARG)
+
+;FLAG:外見反映率／人間→2700
+;FLAG:体質反映率／人間→2730
+;FLAG:性格反映率／人間→2760
+FLAG_REF:0 = 2700
+FLAG_REF:1 = 2730
+FLAG_REF:2 = 2760
+DRAWLINE
+PRINTFORMLC [70] Affects Appearance   ：{FLAG:(FLAG_REF:0 +ARG)}\%
+PRINTFORMLC [71] Affects Constitution ：{FLAG:(FLAG_REF:1 +ARG)}\%
+PRINTFORMLC [72] Affects Personality  ：{FLAG:(FLAG_REF:2 +ARG)}\%
+PRINTL
+PRINTFORM [82] Fast ON／OFF Toggle
+CALL PRINT_ONOFF(FLAG:ON／OFF項目の詳細を飛ばして反転,1)
+
+IF !FLAG:奴隷候補設定可能
+	IF ITEM:奴隷候補設定変更チケット
+		PRINTLC [90] Use ＜Slave Candidate Change Ticket＞
+	ELSE
+		CALL PRINTLC_WORD_COLOR("　No ＜Slave Candidate Change Ticket＞","灰")
+	ENDIF
+ELSE
+	PRINTLC [98] Restore to Defaults
+ENDIF
+PRINTLC 　
+PRINTLC [99] Done
+PRINTL
+BINPUT
+PRINTL
+INPUT_NUM = RESULT
+
+;90のときだけ設定可能フラグのON判定する
+IF INPUT_NUM == 90
+	SIF FLAG:奴隷候補設定可能 || !ITEM:奴隷候補設定変更チケット
+		RETURN
+	PRINTL Use ＜Slave Candidate Change Ticket＞?
+	CALL PRINTL_WORD_COLOR("Settings can be changed until the next slave candidate is selected.","黄")
+	CALL ASK_YN
+	IF !RESULT
+		FLAG:奴隷候補設定変更チケット使用中 = 1
+		ITEM:奴隷候補設定変更チケット --
+		PRINTW ＜Slave Candidate Change Ticket＞ used
+	ENDIF
+ENDIF
+
+;設定不可ならINPUT_NUMを強制的に99に置き換え
+SIF !FLAG:奴隷候補設定可能
+	INPUT_NUM = 99
+SELECTCASE INPUT_NUM
+CASE 70
+	PRINTL Set probability of reflecting racial features such as body type・hair（0～100）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 100
+		FLAG:(FLAG_REF:0 +ARG) = RESULT
+
+CASE 71
+	PRINTL Set probability of reflecting racial traits such as Mana・【Makai Adaptation】（0～100）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 100
+		FLAG:(FLAG_REF:1 +ARG) = RESULT
+
+CASE 72
+	PRINTL Set probability that personality is racially affected.（0～100）
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 100
+		FLAG:(FLAG_REF:2 +ARG) = RESULT
+
+CASE 82
+	PRINTL For all toggable options, no explaination for [ON] will be given.
+	CALL ASK_ONOFF
+	FLAG:ON／OFF項目の詳細を飛ばして反転 = RESULT
+ENDSELECT
+
+;他は元関数にINPUT_NUMで判定させる
+

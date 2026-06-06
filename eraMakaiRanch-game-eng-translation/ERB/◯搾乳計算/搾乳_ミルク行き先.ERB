@@ -1,0 +1,132 @@
+﻿
+;搾ったミルクの行き先
+@LACTATION_MILK_COLLECT_DEVICE
+
+IF TFLAG:搾乳器
+	CALL LACTATION_MILKING_MACHINE
+ELSEIF TFLAG:搾乳触手
+	CALL LACTATION_MILKING_TENTACLE
+ELSEIF TFLAG:乳吸い
+	CALL LACTATION_MILKING_SUCKLING
+ELSEIF TFLAG:料理搾乳
+	CALL LACTATION_MILKING_COOKING
+ELSE
+	;口上用に勝手に噴いた場合のSOURCEを1にしておく（利便性）
+	SOURCE:母乳漏れ = 1
+ENDIF
+
+
+
+;搾乳器での搾乳ミルク溜め
+@LACTATION_MILKING_MACHINE
+
+;抽出中なら出荷予定ではなく抽出分へ
+IF TFLAG:抽出中
+	EX:抽出ミルク += NOWEX:噴乳
+ELSE
+	;魔力母乳と素の母乳で分け　ないことになった
+	CFLAG:出荷予定母乳量 += NOWEX:噴乳
+	EX:搾乳器ミルク += NOWEX:噴乳
+ENDIF
+
+
+
+;触手搾乳
+@LACTATION_MILKING_TENTACLE
+
+EX:触手搾乳ミルク += NOWEX:噴乳
+SIF !PLAYER
+	CFLAG:あなたに吸われた母乳合計 += NOWEX:噴乳
+
+;飲んだ分/5の体力回復
+FIX = 100 +ABL:母乳濃度 *50
+HEAL = NOWEX:噴乳 *FIX /500
+SOURCE:調教者体力回復 += HEAL
+
+
+
+;直飲み
+@LACTATION_MILKING_SUCKLING
+
+;調教外責めの場合十分飲んだら搾乳器にする
+;PLAYER > 0なら奴隷同士
+IF PLAYER > 0
+	IF !TFLAG:調教中 && TFLAG:吸飲ミルク > CFLAG:PLAYER:身長 && !TFLAG:スケジュール外Ｈ
+		CFLAG:出荷予定母乳量 += NOWEX:噴乳
+		EX:搾乳器ミルク += NOWEX:噴乳
+		RETURN
+	ENDIF
+ENDIF
+NOWEX:直飲みミルク += NOWEX:噴乳
+EX:直飲みミルク += NOWEX:噴乳
+TFLAG:吸飲ミルク += NOWEX:噴乳
+SIF !PLAYER
+	CFLAG:あなたに吸われた母乳合計 += NOWEX:噴乳
+SIF PLAYER > 0 && CSTR:PLAYER:状態／あなたの子 == "成長中"
+	CALL LACTATION_MILKING_SUCKLING_C
+;飲んだ分/5の体力回復
+FIX = 100 +ABL:母乳濃度 *50
+HEAL = NOWEX:噴乳 *FIX /500
+SOURCE:調教者体力回復 += HEAL
+
+
+
+;料理搾乳
+@LACTATION_MILKING_COOKING
+
+EX:料理用ミルク += NOWEX:噴乳
+
+
+;成長中の娘が直飲み
+@LACTATION_MILKING_SUCKLING_C
+
+;霊力増加
+FIX:1 = NOWEX:噴乳 *2
+FIX = 100
+SIF GETBIT(＃個人有効／エナジードレイン効率＃) && GETBIT(＃有効／エナジードレイン効率＃)
+	FIX += (ITEM:エナジードレイン効率 *ENERGY_DRAIN_FIX)
+SIF GETBIT(＃個人有効／濃厚ミルクドレイン＃) && GETBIT(＃有効／濃厚ミルクドレイン＃) && ITEM:濃厚ミルクドレイン
+	FIX += (ABL:母乳濃度 *DENCE_MILK_FIX)
+FIX:1 *= FIX
+FIX:1 /= 100
+SIF TFLAG:多臓器活性薬使用中
+	FIX:1 *= MAX(3,MAXBASE:霊力 *(ABL:母乳濃度 *2 +1) /90000)
+SIF CFLAG:PLAYER:母親ID == CFLAG:ID
+	FIX:1 *= 2
+FIX:1 = LIMIT(FIX:1,0,MAXBASE:霊力)
+
+IF MAXBASE:PLAYER:霊力 /4 > MAXBASE:霊力
+	FIX:1 /= 4
+ELSEIF MAXBASE:PLAYER:霊力 > MAXBASE:霊力
+	FIX:1 /= 2
+ENDIF
+SIF MAXBASE:PLAYER:霊力 < BASE:PLAYER:霊力 + FIX:1
+	MAXBASE:PLAYER:霊力 = BASE:PLAYER:霊力 + FIX:1
+BASE:PLAYER:霊力 = LIMIT(BASE:PLAYER:霊力 + FIX:1,0,MAXBASE:PLAYER:霊力)
+
+;魔力増加
+FIX:1 = NOWEX:噴乳
+FIX = 100
+SIF GETBIT(＃個人有効／魔力吸収効率＃) && GETBIT(＃有効／魔力吸収効率＃)
+	FIX += (ITEM:魔力吸収効率 *MAGIC_DRAIN_FIX)
+SIF GETBIT(＃個人有効／濃厚ミルクドレイン＃) && GETBIT(＃有効／濃厚ミルクドレイン＃) && ITEM:濃厚ミルクドレイン
+	FIX += (ABL:母乳濃度 *DENCE_MILK_FIX)
+FIX:1 *= FIX
+FIX:1 /= 100
+SIF TFLAG:多臓器活性薬使用中
+	FIX:1 *= MAX(3,MAXBASE:魔力 *(ABL:母乳濃度 +1) /20000)
+SIF CFLAG:PLAYER:母親ID == CFLAG:ID
+	FIX:1 *= 2
+FIX:1 = LIMIT(FIX:1,0,MAXBASE:魔力)
+
+FIX:2 = FIX:1
+IF MAXBASE:PLAYER:魔力 /4 > MAXBASE:魔力
+	FIX:1 /= 4
+ELSEIF MAXBASE:PLAYER:魔力 > MAXBASE:魔力
+	FIX:1 /= 2
+ENDIF
+MAXBASE:PLAYER:魔力 += FIX:1
+BASE:PLAYER:魔力 = LIMIT(BASE:PLAYER:魔力 + FIX:2,0,MAXBASE:PLAYER:魔力)
+
+
+

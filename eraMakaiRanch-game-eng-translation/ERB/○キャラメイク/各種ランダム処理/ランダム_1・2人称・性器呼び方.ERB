@@ -1,0 +1,123 @@
+﻿
+;奴隷候補の1・2人称・性器呼び方
+@RANDOM_SLAVE_CALLPERSON
+
+;性器呼び方を一旦ランダム
+CALL RANDOM_GENITAL_CALL
+
+CFLAG:一人称が名前 = 0
+
+;性格で分岐
+SELECTCASE CSTR:性格
+CASE "強気"
+	CSTR:一人称 = I
+	CSTR:あなた呼び方／陥落前 = you bastard
+	
+	;さらに種族で変化
+	SIF GROUPMATCH(CSTR:種族,"竜人","仙人","ヴァンパイア","妖狐") && RAND:100 < 50
+		CSTR:一人称 = I
+		
+	;ペニス呼び方に補正
+	SIF GROUPMATCH(CSTR:性器呼び方／ペニス,"男の人の","ちんちん","おちんちん")
+		CSTR:性器呼び方／ペニス = ペニス
+	SIF GROUPMATCH(CSTR:性器呼び方／膣,"おまんこ","おまた")
+		CSTR:性器呼び方／膣 = 膣穴
+		
+CASE "生意気"
+	CSTR:一人称 = I
+	CSTR:あなた呼び方／陥落前 = you
+	SIF GROUPMATCH(CSTR:種族,"竜人","仙人","ヴァンパイア","妖狐") && RAND:100 < 50
+		CSTR:一人称 = I
+		
+CASE "清楚","高潔"
+	CSTR:一人称 = I
+	CSTR:あなた呼び方／陥落前 = you
+	SIF RAND:100 < 30
+		CSTR:性器呼び方／ペニス = 男の人の
+	SIF RAND:100 < 30
+		CSTR:性器呼び方／ペニス = 男性器
+	
+CASE "弱気"
+	CSTR:一人称 = %CALLNAME%
+	CSTR:あなた呼び方／陥落前 = you
+	CFLAG:一人称が名前 = 1
+	
+CASEELSE
+	CSTR:一人称 = I
+	CSTR:あなた呼び方／陥落前 = you
+	
+ENDSELECT
+
+IF TALENT:性知識乏しい
+	CSTR:性器呼び方／ペニス = おちんちん
+	CSTR:性器呼び方／膣 = おまた
+	CSTR:性器呼び方／アナル = 後ろの穴
+ENDIF
+
+;陥落後は一旦「ご主人様」と呼ぶように設定
+CSTR:あなた呼び方／陥落後 = Master
+
+;服従時の呼び方は服従時に○○と呼べ、とするようにしよう
+
+
+
+;性器呼び方入口
+@RANDOM_GENITAL_CALL
+
+CALL RANDOM_PENIS_CALL
+CALL RANDOM_VAGINA_CALL
+CALL RANDOM_ANAL_CALL
+
+
+
+;ペニス呼び方
+@RANDOM_PENIS_CALL
+
+;1500～,ペニス呼び方前半
+STR_REF = 1500
+STR_MAX = 19
+LAST_SHUFFLE_S = %CSTR:性器呼び方／ペニス%
+CALL STR_REF_SHUFFLE(STR_REF)
+IF SHUFFLE_COUNT < 10 && LAST_SHUFFLE_S == RESULTS
+	SHUFFLE_COUNT ++
+	RESTART
+ENDIF
+SHUFFLE_COUNT = 0
+CSTR:性器呼び方／ペニス = %RESULTS%
+
+
+
+;膣呼び方
+@RANDOM_VAGINA_CALL
+
+;1600～,膣呼び方前半
+STR_REF = 1600
+STR_MAX = 19
+LAST_SHUFFLE_S = %CSTR:性器呼び方／膣%
+CALL STR_REF_SHUFFLE(STR_REF)
+IF SHUFFLE_COUNT < 10 && LAST_SHUFFLE_S == RESULTS
+	SHUFFLE_COUNT ++
+	RESTART
+ENDIF
+SHUFFLE_COUNT = 0
+CSTR:性器呼び方／膣 = %RESULTS%
+
+
+
+;アナル呼び方
+@RANDOM_ANAL_CALL
+
+;1700～,アナル呼び名前半
+STR_REF = 1700
+STR_MAX = 19
+LAST_SHUFFLE_S = %CSTR:性器呼び方／アナル%
+CALL STR_REF_SHUFFLE(STR_REF)
+IF SHUFFLE_COUNT < 10 && LAST_SHUFFLE_S == RESULTS
+	SHUFFLE_COUNT ++
+	RESTART
+ENDIF
+SHUFFLE_COUNT = 0
+CSTR:性器呼び方／アナル = %RESULTS%
+
+
+

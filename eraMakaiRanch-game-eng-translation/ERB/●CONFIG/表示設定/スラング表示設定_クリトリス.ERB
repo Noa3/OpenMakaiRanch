@@ -1,0 +1,80 @@
+﻿
+;クリスラング設定
+@SLANG_CONFIG_CLITORIS
+
+CLEARLINE LINECOUNT
+PRINTL Select slang options for clitoris.
+DRAWLINE
+PRINTLC [ 0] 「clitoris」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／クリトリス,0),1)
+PRINTLC [ 1] 「nymph」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／クリトリス,1),1)
+PRINTLC [ 2] 「nipple」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／クリトリス,2),1)
+PRINTLC [ 3] 「pearl」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／クリトリス,3),1)
+PRINTLC [ 4] 「bud」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／クリトリス,4),1)
+PRINTLC [ 5] 「clit」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／クリトリス,5),1)
+PRINTLC [ 6] 「sweet spot」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／クリトリス,6),1)
+PRINTLC [ 7] 「girl's bud」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／クリトリス,7),1)
+PRINTL
+PRINTL 　《 Prefix Setting 》
+PRINTLC [10] 「lewd」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／クリトリス,0),0)
+PRINTL 　（With Lewd Clit）
+PRINTLC [11] 「young」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／クリトリス,1),0)
+PRINTL 　（When Child Sized）
+PRINTL
+PRINTL 　《 Special Substitutions 》
+PRINTLC [20] Priority for Special Substitutions
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／クリトリス,0),0)
+PRINTL 　give Priority to cases that meet the conditions for special substitution 
+PRINTLC [21] 「clitoris」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／クリトリス,1),0)
+PRINTL 　（With Lewd Clit）
+PRINTLC [29] 《 Custom Replacement 》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／クリトリス,9),0)
+PRINTFORML 　（Current Setting：%SAVESTR:表記／陰核%）
+CALL SLANG_CONFIG_FOOTER
+INPUT
+SELECTCASE RESULT
+CASE 0 TO 7
+	INVERTBIT FLAG:スラング表示／クリトリス,RESULT
+CASE 10 TO 11
+	INVERTBIT FLAG:スラング接頭語／クリトリス,(RESULT -10)
+CASE 20 TO 21
+	INVERTBIT FLAG:スラング置換／クリトリス,(RESULT -20)
+CASE 29
+	INVERTBIT FLAG:スラング置換／クリトリス,(RESULT -20)
+CASE 80
+	FLAG:スラング表示／クリトリス = 65535
+CASE 81
+	FLAG:スラング接頭語／クリトリス = 65535
+CASE 82
+	FLAG:スラング置換／クリトリス = 65535
+CASE 90
+	FLAG:スラング表示／クリトリス = 0
+CASE 91
+	FLAG:スラング接頭語／クリトリス = 0
+CASE 92
+	FLAG:スラング置換／クリトリス = 0
+CASE 98
+	PRINTL Reset slang options for clitoris to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG_CLITORIS
+CASE 99
+	IF !FLAG:スラング表示／クリトリス
+		PRINTW At least one slang option must be selected.
+	ELSE
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+

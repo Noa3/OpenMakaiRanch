@@ -1,0 +1,27 @@
+﻿
+;雇った傭兵のキャンセル
+@DISMISSAL_MERCENARY
+
+SIF !CFLAG:追跡者
+	RETURN
+SELECTCASE CFLAG:追跡者
+CASE 1
+	PRINTFORML {CFLAG:追跡人数} Goblin Army \@ CFLAG:追跡人数 > 1 ? Troops # Troop \@ are after %CALLNAME%.
+CASE 2
+	PRINTFORML {CFLAG:追跡人数} Rookie \@ CFLAG:追跡人数 > 1 ? Mercenaries # Mercenary \@ are after %CALLNAME%.
+CASE 3
+	PRINTFORML {CFLAG:追跡人数} Veteran \@ CFLAG:追跡人数 > 1 ? Mercenaries # Mercenary \@ are after %CALLNAME%.
+CASE 4
+	PRINTFORML {CFLAG:追跡人数} Oni \@ CFLAG:追跡人数 > 1 ? Mercenaries # Mercenary \@ are after %CALLNAME%.
+ENDSELECT
+PRINTL Cancel the request? (Paid Funds Nonrefundable)
+CALL ASK_YN
+SIF RESULT
+	RETURN
+
+;FLAG:傭兵バイト標的ID／ゴブリン→440
+FLAG_REF = 439
+FLAG:(FLAG_REF +CFLAG:追跡者) = 0
+CFLAG:追跡者 = 0
+CFLAG:追跡人数 = 0
+

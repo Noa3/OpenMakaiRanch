@@ -1,0 +1,158 @@
+﻿
+;入力目次
+;ARG→PAGE
+;ARG:1→INPUT_NUM
+@PLAYER_DATA_CONFIG_INPUT(ARG,ARG:1)
+
+;ページ+INPUT_NUMでINPUT_NUMを上書き
+;INPUT_NUMで変更箇所を指定する
+INPUT_NUM = (ARG -1) *100 +ARG:1
+SELECTCASE INPUT_NUM
+CASE 0
+	CHANGE_STATE = 名前
+CASE 1
+	CHANGE_STATE = フルネーム
+CASE 2
+	CHANGE_STATE = 一人称
+CASE 3
+	CHANGE_STATE = 口調
+CASE 4
+	CHANGE_STATE = カラーコード／口上
+CASE 5
+	CHANGE_STATE = 種族
+CASE 10
+	CHANGE_STATE = 身長
+CASE 11
+	CHANGE_STATE = 二本角
+CASE 12
+	CHANGE_STATE = メガネ
+CASE 13
+	CHANGE_STATE = 外見年齢
+
+
+;女あなたの場合だけ
+CASE 14
+	CHANGE_STATE = バストサイズ
+CASE 15
+	CHANGE_STATE = 乳弾力
+
+
+;外見追加
+CASE 100
+	CHANGE_STATE = 髪色
+CASE 101
+	CHANGE_STATE = 髪特徴
+CASE 102
+	CHANGE_STATE = 髪型
+CASE 103
+	CHANGE_STATE = ヘアスタイル一括
+CASE 104
+	CHANGE_STATE = カラーコード／髪
+CASE 105
+	CHANGE_STATE = 体型
+CASE 106
+	CHANGE_STATE = 肌の色
+CASE 107
+	CHANGE_STATE = 陰毛
+CASE 108
+	CHANGE_STATE = 乳首の色
+CASE 109
+	CHANGE_STATE = カラーコード／乳首
+CASE 110
+	CHANGE_STATE = 右目の色
+CASE 111
+	CHANGE_STATE = カラーコード／右目
+CASE 112
+	CHANGE_STATE = 左目の色
+CASE 113
+	CHANGE_STATE = カラーコード／左目
+CASE 114
+	CHANGE_STATE = 瞳の形
+CASE 115
+	CHANGE_STATE = 目の特徴
+
+
+;性経験
+CASE 200
+	CHANGE_STATE = 童貞
+CASE 201
+	CHANGE_STATE = Ａ童貞
+CASE 202
+	CHANGE_STATE = Ｍ童貞
+CASE 203
+	CHANGE_STATE = パイズリ未経験
+CASE 204
+	CHANGE_STATE = キス未経験
+CASE 210
+	CHANGE_STATE = 初経験／Ｖ
+CASE 211
+	CHANGE_STATE = 初経験／Ａ
+CASE 212
+	CHANGE_STATE = 初経験／Ｍセックス
+CASE 213
+	CHANGE_STATE = 初経験／パイズリ
+CASE 214
+	CHANGE_STATE = 初経験／キス
+CASE 220
+	CHANGE_STATE = あなた経験人数／Ｖ
+CASE 221
+	CHANGE_STATE = あなた経験人数／Ａ
+CASE 222
+	CHANGE_STATE = あなた経験人数／Ｍ
+CASE 223
+	CHANGE_STATE = あなた経験人数／パイズリ
+CASE 224
+	CHANGE_STATE = あなた経験人数／キス
+ENDSELECT
+
+;SELF_CHARA_MAKE_RANDOMが有効かどうかで呼ぶ関数変更
+IF SELF_CHARA_MAKE_RANDOM
+	CALL PLAYER_DATA_CONFIG_INPUT_SHUFFLE(CHANGE_STATE)
+ELSE
+	CALL PLAYER_DATA_CONFIG_INPUT_MANUAL(CHANGE_STATE)
+ENDIF
+
+
+
+;未経験リセット
+@SELECT_VIRGIN_RESET_PLAYER
+
+IF TALENT:童貞
+	CSTR:初経験／Ｖ =
+	FLAG:あなた経験人数／Ｖ = 0
+ELSEIF !FLAG:あなた経験人数／Ｖ
+	FLAG:あなた経験人数／Ｖ ++
+ENDIF
+IF TALENT:Ａ童貞
+	CSTR:初経験／Ａ =
+	FLAG:あなた経験人数／Ａ = 0
+ELSEIF !FLAG:あなた経験人数／Ａ
+	FLAG:あなた経験人数／Ａ ++
+ENDIF
+IF TALENT:Ｍ童貞
+	CSTR:初経験／Ｍセックス =
+	FLAG:あなた経験人数／Ｍ = 0
+ELSEIF !FLAG:あなた経験人数／Ｍ
+	FLAG:あなた経験人数／Ｍ ++
+ENDIF
+IF TALENT:パイズリ未経験
+	CSTR:初経験／パイズリ =
+	FLAG:あなた経験人数／パイズリ = 0
+ELSEIF !FLAG:あなた経験人数／パイズリ
+	FLAG:あなた経験人数／パイズリ ++
+ENDIF
+IF TALENT:キス未経験
+	CSTR:初経験／キス =
+	FLAG:あなた経験人数／キス = 0
+ELSEIF !FLAG:あなた経験人数／キス
+	FLAG:あなた経験人数／キス ++
+ENDIF
+IF TALENT:授乳未経験
+	CSTR:初経験／授乳 =
+	FLAG:あなた経験人数／授乳 = 0
+ELSEIF !FLAG:あなた経験人数／授乳
+	FLAG:あなた経験人数／授乳 ++
+ENDIF
+
+
+

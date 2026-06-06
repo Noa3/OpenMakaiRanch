@@ -1,0 +1,23 @@
+﻿
+;チュートリアル用
+@TUTORIAL_TIPS_SHOP
+
+;まだ【母乳体質】がいないなら調教すればいいやで誘導
+IF !CMATCH(MARK:母乳体質,1)
+	CALL PRINTL_WORD_COLOR("Select the Miko/Sister you brought with you from「Training Target」and select 「Execute Schedule」to begin training.","水色")
+	CALL PRINTL_WORD_COLOR("Someone needs to do the「Dairy」work, so let Surei do it（default）.","水色")
+	RETURN
+
+;まだ出荷してないなら昼まで待てばいいやで
+ELSEIF !FLAG:母乳合計出荷量
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／母乳% squeezed from【Lactating】slaves is shipped during the「settlement」phase in the morning.","水色"
+	CALL PRINTL_WORD_COLOR("Let's do some training and dairy farming and wait until midday.","水色")
+	RETURN
+ENDIF
+
+
+
+
+
+
+

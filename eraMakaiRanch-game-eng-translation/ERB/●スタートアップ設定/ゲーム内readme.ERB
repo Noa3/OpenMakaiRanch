@@ -1,0 +1,42 @@
+﻿
+;説明書
+@README
+
+CALL MANYL(5)
+DRAWLINE
+ALIGNMENT CENTER
+PRINTL ---Instructions---
+PRINTL 
+PRINTL This variant and games created with eramaker or Emuera are rated R-18.
+PRINTL Playing is prohibited for those under 18 years of age.
+PRINTL Additionally, those who cannot distinguish between reality and fiction,
+PRINTL those who cannot distinguish between the original work and its fan creations,
+PRINTL and those who cannot tolerate fictional scenarios where women suffer are also prohibited from playing.
+PRINTL 
+PRINTL This game is a work of fiction and has no relation to any real persons, organizations, or locations.
+PRINTL The author assumes no responsibility for any negative consequences that may arise from playing this game.
+PRINTL 
+PRINTL [ 0] I understand and agree to the above
+PRINTL
+PRINTL [ 1] I do not agree
+ALIGNMENT LEFT
+BINPUT
+IF RESULT
+	PRINTL The game will be terminated.
+	QUIT
+ENDIF
+
+CALL MANYL(5)
+;PRINTL 当バリアントをダウンロードしていただきありがとうございます。
+;PRINTL
+PRINTL A brief overview of this variant is as follows：
+PRINTL ・You're a Makaian running a ranch
+PRINTL ・Following your friend's strange proposal, you are given a female Overworlder
+PRINTL ・Combat strength = [Energy] and can extracted by [Milking]
+PRINTL ・Somehow, you'll need to increase the amount of female livestock
+PRINTL ・You can earn money by [Shipping] breast milk, and you can [Energy Drain] slaves to become stronger
+PRINTL 　Use your accumulated resources to capture even more powerful ningen to turn them into livestock, 
+PRINTL 　subjugate and turn into employees, or love them
+PRINTW
+
+

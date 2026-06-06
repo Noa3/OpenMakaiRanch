@@ -1,0 +1,123 @@
+
+;イージーモード設定
+@EASYMODE_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL ＜イージーモード＞の設定を行います。
+CALL PRINTL_WORD_COLOR("《 Easy Mode Settings 》can only be changed before the game starts or in Developer Mode.","黄")
+PRINTL If any item on this screen is ON and not [DEVELOP] or [CUSTOM], the difficulty display will be [EASY].
+CALL PRINT_DIFFICULTY
+DRAWLINE
+FLAG_REF = 3600
+FOR LOCAL,0,70
+	SIF FLAGNAME:(LOCAL +FLAG_REF) == ""
+		CONTINUE
+	CALL PRINT_CONFIG_EASYMODE(LOCAL)
+NEXT
+PRINTL
+PRINTL [70] Random Character Common Sensitivies Settings
+PRINTL [71] Command Limitations Removal Settings
+PRINTL [72] Easy Start Kit (Effective Only at Game Start)
+
+CALL PRINTL_ALIGN(-5)
+CALL ON_OFF_BUTTON_FOOTER
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 82
+	PRINTL For all toggleable options, no explanation for [ON] will be given.
+	CALL ASK_ONOFF
+	FLAG:ON／OFF項目の詳細を飛ばして反転 = RESULT
+CASE 98
+	;日付が1日目以降かつ開発者モード以外の場合RETURN
+	SIF !FLAG:開発者モード && DAY
+		RETURN
+	PRINTL Do you want to reset all <Easy Mode> settings to OFF?
+	CALL ASK_YN
+	SIF !RESULT
+		VARSET FLAG,0,3600,3700
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_EASYMODE_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;ARG→LOCAL　FLAG_REFを足すことでフラグ番号
+@PRINT_CONFIG_EASYMODE(ARG)
+
+FLAG_NAME = %FLAGNAME:(ARG +FLAG_REF)%
+SELECTCASE FLAG_NAME
+CASEELSE
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%
+	CALL PRINT_ONOFF(FLAG:FLAG_NAME)
+ENDSELECT
+PRINTL
+
+
+
+;ARG→INPUT
+@CHANGE_EASYMODE_CONFIG(ARG)
+
+;下でRETURNがあるので確認のためここが先
+SELECTCASE ARG
+CASE 70	;ランダムキャラ共通弱点部位設定
+	CALL EASYMODE_SENSITIVE_WEEK_CONFIG
+CASE 71	;各種回数制限撤廃設定
+	CALL EASYMODE_LIMIT_BREAK_CONFIG
+CASE 72	;楽々スタートキット（ゲーム開始時のみ有効）
+	CALL EASYMODE_GIFTSET_CONFIG
+CASEELSE
+	CALL CHANGE_EASYMODE_CONFIG_NAME(ARG)
+ENDSELECT
+
+
+
+@CHANGE_EASYMODE_CONFIG_NAME(ARG)
+
+SIF !FLAG:開発者モード && DAY
+	RETURN
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+CALL CHANGE_CONFIG_INVERTBIT
+SIF RESULT
+	RETURN
+SELECTCASE FLAG_NAME
+CASE "奴隷候補全員先天的母乳体質"
+	PRINTL Random characters will always have【Innate Lactation】
+	PRINTL
+	CALL ASK_ONOFF
+	FLAG:FLAG_NUM = RESULT
+
+CASE "母乳需要無限"
+	PRINTL The breast milk demand value for each character will be infinite.
+	PRINTL
+	CALL ASK_ONOFF
+	FLAG:FLAG_NUM = RESULT
+
+CASE "魔界入りニンゲンで渋滞"
+	PRINTL When Ningen enter Makai, one person will be guaranteed for each purpose.
+	PRINTL
+	CALL ASK_ONOFF
+	FLAG:FLAG_NUM = RESULT
+
+CASE "貢献pt消費ゼロ"
+	PRINTL Require 0 ＜Contribution Points＞ for reshuffling slave candidates, manual character creation, importing, etc
+	PRINTL
+	CALL ASK_ONOFF
+	FLAG:FLAG_NUM = RESULT
+
+CASE "納税免除"
+	PRINTL You will no longer need to pay taxes at settlement. (However, donations are required to increase the Makai Realm level.)
+	PRINTL
+	CALL ASK_ONOFF
+	FLAG:FLAG_NUM = RESULT
+ENDSELECT
+
+
+
+
+
+

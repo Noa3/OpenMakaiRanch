@@ -1,0 +1,83 @@
+﻿
+;部屋数とかを計算する
+@CALC_PEOPLE_FLAG
+
+SAVE_TARGET = TARGET
+
+;奴隷の人数
+FLAG:奴隷人数 = CMATCH(CFLAG:追跡対象,0) -1
+FLAG:追跡中人数 = CHARANUM -FLAG:奴隷人数 -1
+
+;部屋の数
+FLAG:個室数／使用中 = CMATCH(EQUIP:個室,1)
+FLAG:個室数／空室 = FLAG:個室数／合計 -FLAG:個室数／使用中
+
+;寮の使用人数合計
+FLAG:奴隷寮／使用人数 = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CFLAG:寮番号
+		FLAG:奴隷寮／使用人数 ++
+NEXT
+
+;服従していない奴隷の分魔力枷から引く
+FLAG:魔力枷使用可能数 = ITEM:魔力枷 -CMATCH(CSTR:陥落状態,"反抗")
+TARGET = SAVE_TARGET
+
+
+
+;キャラ居場所の整理
+;全員まとめてやる場合
+@CHARA_WHEREABOUTS_ALL
+
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;キャラごとの整理関数を呼ぶ
+	CALL CHARA_WHEREABOUTS_TARGET
+NEXT
+
+
+
+;キャラごとの整理関数
+;自室割り当て変更とかのときキャラごとに呼ぶ
+@CHARA_WHEREABOUTS_TARGET
+
+;夜なら抽出継続フラグOFF
+SIF TIME >= 3
+	CFLAG:抽出継続 = 0
+
+;あなたは固定
+IF !TARGET
+	IF CSTR:スケジュール == "行動済み"
+		CSTR:居場所 = 行動済み
+	ELSE
+		CSTR:居場所 = 事務所
+	ENDIF
+
+;体内ならそのまま
+ELSEIF CSTR:居場所 == "体内"
+
+ELSEIF CFLAG:追跡対象
+	CSTR:居場所 = 牧場外
+ELSEIF GROUPMATCH(CSTR:スケジュール,"体内凌辱","解放準備")
+	CSTR:居場所 = 体内
+ELSEIF CFLAG:牛舎番号
+	CSTR:居場所 = 牛舎
+
+;あなたの補佐状態もそのうち作りたいなって
+ELSEIF CSTR:スケジュール == "侍従"
+	IF CSTR:0:スケジュール == "行動済み"
+		CSTR:居場所 = 行動済み
+	ELSE
+		CSTR:居場所 = 事務所
+	ENDIF
+ELSEIF EQUIP:個室
+	CSTR:居場所 = 自室
+ELSEIF CFLAG:寮番号
+	CSTR:居場所 = 奴隷寮
+ELSE
+	CSTR:居場所 = 家畜小屋
+ENDIF
+
+

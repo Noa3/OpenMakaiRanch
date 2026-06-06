@@ -1,0 +1,28 @@
+﻿
+;レズ経験処理
+@LESBIAN_EXP_CALC
+
+;両方女じゃないならおわり
+SIF PLAYER < 0
+	RETURN
+SIF TALENT:PLAYER:オトコ
+	RETURN
+
+;調教対象
+;300 +イった回数*500 +調教者のレズっ気*200 +吸われたミルク
+SOURCE:レズ調教経験 = 300 +NOWEX:総絶頂 *500 +ABL:PLAYER:レズっ気 *200 +NOWEX:直飲みミルク
+
+;スケジュールかつ女あなたの場合繰り返すので1/4くらいにしとく
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !PLAYER
+	SOURCE:レズ調教経験 /= 4
+
+;調教者
+;500 +対象レズっ気*100 +吸ったミルク
+SOURCE:PLAYER:レズ調教経験 = 500 +ABL:レズっ気 *100 +NOWEX:直飲みミルク
+
+;女あなたは相手が多くて一気に上がりすぎるので1/10
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !PLAYER
+	SOURCE:レズ調教経験 /= 10
+
+
+

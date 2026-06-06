@@ -1,0 +1,127 @@
+﻿
+;エナジードレイン追加地の文
+@TRAIN_ENERGY_DRAIN_MESSAGE
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+
+;抽出・エナドレしてないならおわり
+SIF !TFLAG:抽出中 && !SOURCE:霊力吸収量
+	RETURN
+CALL TRAIN_ENERGY_DRAIN_ECSTASY_MESSAGE
+CALL KOJO_PRINT("抽出")
+
+
+
+;絶頂回数メッセージ
+@TRAIN_ENERGY_DRAIN_ECSTASY_MESSAGE
+#DIM HEART_NUM
+
+;おっぱいで10回以上絶頂してないとおわり
+SIF NOWEX:Ｂ絶頂 +NOWEX:Ｎ絶頂 < 10
+	RETURN
+SELECTCASE RAND:3
+CASE 0
+	IF ABL:搾乳中毒 >= 10
+		CALL PRINT_WORD_COLOR,@"%CALLNAME% knows that her spirit power is being drained by the milking, but her body, now accustomed to its pleasures, can no longer resist....","桃"
+	ELSE
+		CALL PRINT_WORD_COLOR,@"%CALLNAME% knows that her spirit power is being drained by the milking, but she cannot resist the relentless pleasure it brings...","桃"
+	ENDIF
+CASE 1
+	CALL PRINT_WORD_COLOR,@"As the cost of the pleasure of milking, %CALLNAME% has her spirit power continuously drained from her %SLANG_B()%...","桃"
+CASE 2
+	CALL PRINT_WORD_COLOR,@"As %CALLNAME% repeatedly climaxes from her %SLANG_B()%, her spirit power is being drawn out through %SLANG_MILK()%...","桃"
+ENDSELECT
+HEART_NUM = LIMIT(NOWEX:噴乳 /1000,0,4)
+CALL HEARTCB(0xD02830,(1 +HEART_NUM))
+PRINTL
+
+
+
+;レベルドレイン地の文
+;ARG→レベルドレイン適用時改行
+;ARG:1→NOW_LEVEL
+@LEVEL_DRAIN_MESSAGE(ARG,ARG:1)
+
+SIF !LINEISEMPTY()
+	PRINTL
+IF !EXP:レベルドレイン
+	CALL KOJO_PRINT("繰り返しイベント","レベルドレイン","初回")
+ELSE
+	CALL KOJO_PRINT("繰り返しイベント","レベルドレイン","通常")
+ENDIF
+SETCOLOR 0xEE10EE
+SELECTCASE RAND:5
+CASE 0
+	PRINTFORM From %CALLNAME%'s %SLANG_B()%, Spirit Energy is sucked out along with her %SLANG_MILK()%... 
+CASE 1
+	PRINTFORM From %CALLNAME%'s %SLANG_B()%, Spirit Energy is absorbed through her %SLANG_MILK()%...
+CASE 2
+	PRINTFORM From %CALLNAME%'s %SLANG_B()%, Spirit Energy is squeezed out along with her %SLANG_MILK()%...
+CASE 3
+	PRINTFORM From %CALLNAME%'s %SLANG_B()%, Spirit Energy is extracted alongside her %SLANG_MILK()%...
+CASE 4
+	PRINTFORM From %CALLNAME%'s %SLANG_B()%, Spirit Energy is drained out alongside her %SLANG_MILK()%...
+ENDSELECT
+CALL HEARTCB(0xD02830)
+PRINTL
+PRINTFORM 　Level Drain　Lv{BASE:レベル} → Lv{ARG:1} 
+SIF ARG
+	PRINTL
+
+
+
+;吸い尽くし地の文
+;魔力はまた回復するので調教中以外はメッセージ飛ばすことにした
+@SLAVE_ENERGY_EMPTY_MESSAGE
+
+IF SOURCE:霊力吸収量 && !BASE:霊力 && !EXP:霊力ゼロ
+	SIF !LINEISEMPTY()
+		PRINTL
+	PRINTFORM %CALLNAME%'s Spirit Energy has been squeezed out...  
+ENDIF
+IF SOURCE:魔力吸収量 && !BASE:魔力 && TFLAG:調教中
+	SIF !LINEISEMPTY()
+		PRINTL
+	PRINTFORM %CALLNAME%'s Mana has been squeezed out... 
+ENDIF
+
+
+
+;吸い尽くしメッセージ
+;ARG→レベルドレイン適用時改行　2ならスケジュールから来た場合
+@SLAVE_ENERGY_ZERO(ARG)
+
+;霊力0でないならおわり
+SIF BASE:霊力
+	RETURN
+
+;スケジュールから来て元々0なら飛ばす
+SIF ARG == 2 && !EP_BEFORE
+	RETURN
+
+;スケジュール結果以外で霊力吸収ないなら飛ばす
+SIF ARG != 2 && !SOURCE:霊力吸収量
+	RETURN
+IF EXP:霊力ゼロ || CFLAG:非戦闘職
+	PRINT 【0 EP】
+	SIF ARG
+		PRINTL
+ELSE
+	SIF !LINEISEMPTY()
+		PRINTL
+	CALL KOJO_PRINT("繰り返しイベント","レベルドレイン","霊力0")
+	ALIGNMENT CENTER
+	SETCOLOR 0xEE10EE
+	PRINTFORML %CALLNAME%'s Spirit Energy has been fully drained, and she can no longer put up a fight.
+	PRINTFORM She is now nothing more than a helpless female 
+	SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+		PRINTFORM with %SAVESTR:表記／母乳% filled %SLANG_B()%
+	PRINT ...
+	CALL HEARTCB(0xD02830)
+	PRINTL
+	ALIGNMENT LEFT
+ENDIF
+
+
+

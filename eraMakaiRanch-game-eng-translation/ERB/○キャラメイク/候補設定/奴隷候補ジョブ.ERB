@@ -1,0 +1,112 @@
+﻿
+;ジョブの決定
+@RANDOM_LIST_JOB(ARG)
+
+;目的別に呼ぶリストが変わる
+SELECTCASE LIST_PURPOSE:ARG
+
+;0～5：水晶・植物・名声・奪還・事故・侵略　それぞれSTR対応リストを呼ぶ
+CASE 0 TO 5
+	STR_MAX = 19
+	STR_REF = 4000 +LIST_PURPOSE:ARG *100
+	CALL STR_REF_SHUFFLE(STR_REF)
+	LIST_JOB:ARG = %RESULTS%
+	
+	;3：奪還だとごくまれに姫騎士
+	SIF LIST_PURPOSE:ARG == 3 && !RAND:70
+		LIST_JOB:ARG = 姫騎士
+
+;6：結界付き
+CASE 6
+	SELECTCASE RAND:100
+	CASE 0 TO 44
+		LIST_JOB:ARG = バトルシスター
+	CASE 45 TO 89
+		LIST_JOB:ARG = 退魔巫女
+	
+	;初回のジョブ以外もたまーに出る
+	CASE 90,91,92
+		LIST_JOB:ARG = プリースト
+	CASE 93,94,95
+		LIST_JOB:ARG = 魔法少女
+	CASE 96,97
+		LIST_JOB:ARG = 陰陽師
+	CASE 98,99
+		LIST_JOB:ARG = 聖騎士
+	ENDSELECT
+
+;7：競売所
+CASE 7
+	STR_MAX = 19
+	STR_REF = 4000 +LIST_PURPOSE:ARG *100 -100
+	CALL STR_REF_SHUFFLE(STR_REF)
+	LIST_JOB:ARG = %RESULTS%
+	
+	;王族確率にかかった場合王族ジョブに変更
+	IF RAND:100 < RANDOM_LIST_ROYAL
+		SELECTCASE RAND:4
+		CASE 0
+			LIST_JOB:ARG = 姫君
+		CASE 1
+			LIST_JOB:ARG = 姫騎士
+		CASE 2
+			LIST_JOB:ARG = 姫巫女
+		CASE 3
+			LIST_JOB:ARG = 聖女
+		ENDSELECT
+	ENDIF
+
+;8：上位種族と9：天界種族→種族によって変える
+CASE 8,9
+	CALL RANDOM_LIST_JOB_SPECIAL(ARG)
+ENDSELECT
+
+
+
+;上位・天界種族用ジョブランダム
+@RANDOM_LIST_JOB_SPECIAL(ARG)
+
+;ぶっちゃけ基本なし
+SELECTCASE LIST_TRIBE:ARG
+CASE "仙人"
+	;たまに薬師
+	SIF RAND:100 < 5
+		LIST_JOB:ARG = 薬師
+		
+	;ごくたまに陰陽師
+	SIF RAND:100 < 3
+		LIST_JOB:ARG = 陰陽師
+
+CASE "妖狐"
+	;ごくたまに陰陽師
+	SIF RAND:100 < 3
+		LIST_JOB:ARG = 陰陽師
+	
+CASE "竜人"
+	;たまに勇者
+	SIF RAND:100 < 5
+		LIST_JOB:ARG = 勇者
+	
+CASE "天人"
+	;たまにワルキューレ
+	SIF RAND:100 < 10
+		LIST_JOB:ARG = ワルキューレ
+		
+	;まれに勇者
+	SIF RAND:100 < 3
+		LIST_JOB:ARG = 勇者
+	
+CASE "ヴァンパイア","ダンピール"
+	;たまに死霊術士
+	SIF RAND:100 < 5
+		LIST_JOB:ARG = 死霊術士
+		
+	;たまにお姫様
+	SIF RAND:100 < 5
+		LIST_JOB:ARG = 姫君
+
+ENDSELECT
+
+
+
+

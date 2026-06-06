@@ -1,0 +1,253 @@
+﻿
+@COM900
+;ピストン
+
+CALL PISTON_SOURCE
+RETURN 1
+
+
+
+@COM901
+;乳揉み吸い
+
+CALL BUST_RUB_SOURCE_COMMON
+CALL NIPPLE_SUCK_SOURCE_COMMON
+SOURCE:授乳 += 1000
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM902
+;母乳吸い尽くし
+
+CALL BUST_RUB_SOURCE_COMMON
+CALL NIPPLE_SUCK_SOURCE_COMMON
+SOURCE:Ｎ快楽／あなた責め += 1000
+SOURCE:屈辱 += 1000
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM903
+;直飲み触手複合搾乳
+
+CALL BUST_RUB_SOURCE_COMMON
+CALL NIPPLE_SUCK_SOURCE_COMMON
+CALL LACTATION_TENTACLE_SOURCE_COMMON
+SOURCE:Ｂ快楽／触手 += 1500
+SOURCE:経過時間 = 1
+RETURN 1
+
+
+
+@COM904
+;ペニス躾（呼び方変更）
+
+;Ｖ挿入かＡ挿入
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	PRINTFORML Change calling of %SAVESTR:表記／ペニス%／%SAVESTR:表記／膣%?
+	PRINTFORML [ 0] Change %SAVESTR:表記／ペニス%（Currently：%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス)%）
+	PRINTL
+	PRINTFORML [ 1] Change %SAVESTR:表記／膣%（Currently：%VAGINA_CALL_ENG(CSTR:性器呼び方／膣)%）
+	PRINTL
+	PRINTL [99] キャンセル
+ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	PRINTFORML Change calling of %SAVESTR:表記／ペニス%／%SAVESTR:表記／アナル%?
+	PRINTFORML [ 0] Change %SAVESTR:表記／ペニス%（Currently：%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス)%）
+	PRINTL
+	PRINTFORML [ 2] Change %SAVESTR:表記／アナル%（Currently：%ANUS_CALL_ENG(CSTR:性器呼び方／アナル)%）
+	PRINTL
+	PRINTL [99] Cancel
+ELSE
+	;一応
+	RETURN
+ENDIF
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL CHANGE_PERSONAL_CALL("ペニス呼び方")
+	
+	;RETURN 1してきた→キャンセル
+	SIF RESULT
+		RETURN
+	CALL KOJO_PRINT("Change of Penis Name")
+
+CASE 1
+	CALL CHANGE_PERSONAL_CALL("膣呼び方")
+	SIF RESULT
+		RETURN
+	CALL KOJO_PRINT("Change of Vagina Name")
+	
+CASE 2
+	CALL CHANGE_PERSONAL_CALL("アナル呼び方")
+	SIF RESULT
+		RETURN
+	CALL KOJO_PRINT("Change of Anus Name")
+
+CASEELSE
+	RETURN
+ENDSELECT
+CALL PISTON_SOURCE
+RETURN 1
+
+
+
+;霊力注入
+@COM905
+#DIM GIVE_EP
+#DIM WANT_EP
+
+;霊力の1%　1000～10000まで　大量は10万
+GIVE_EP = BASE:0:霊力 /100
+GIVE_EP -= (GIVE_EP %10)
+GIVE_EP = LIMIT(GIVE_EP,1000,10000)
+PRINTFORML Pour Spirit Energy infused semen into %CALLNAME%.
+PRINTL ・Every 100EP will increase slave's HP by 10
+PRINTL ・If her Spirit Energy is low, it will restore the amount given.
+PRINTL
+SIF BASE:0:体力 <= 1500
+	SETCOLOR 0xFFFF70
+PRINTFORM 　%CALLNAME:0%　HP：{BASE:0:体力,4} 
+RESETCOLOR
+CALL PRINT_COLORBAR(BASE:0:体力,MAXBASE:0:体力,8,BARCOLORSET("青緑"),RESULT:1)
+PRINTFORM 　%CALLNAME:0%s Spirit Energy：%VALUE_DIGIT(BASE:0:霊力)%／%VALUE_DIGIT(MAXBASE:0:霊力)%EP 
+CALL PRINT_COLORBAR(BASE:0:霊力,MAXBASE:0:霊力,8,BARCOLORSET(""),RESULT:1)
+PRINTL
+IF !EXP:霊力ゼロ
+	CALL PRINTL_WORD_COLOR("　Spirit Energy was never extracted, cannot infuse","灰")
+ELSEIF !＃陥落状態／隷属＃
+	CALL PRINTL_WORD_COLOR("　Only【Love Slave】can accumulate Spirit Energy this way","灰")
+ELSE
+	IF BASE:霊力 >= MAXBASE:霊力
+		PRINTFORML ・Spirit Energy Capacity increases by 1／4 of infused（Upper limit equal to %CALLNAME:0%'s）
+		PRINTL （Not including cases where spirit energy is reduced during extraction）
+		PRINTL
+	ENDIF
+	IF MAXBASE:体力 >= HP_MAX
+		CALL PRINTL_WORD_COLOR,@"※%CALLNAME%'s maximum HP cannot be increased any further","灰"
+	ELSE
+		WANT_EP = MAXBASE:体力 *50 -CFLAG:霊力蓄積量
+		PRINTFORML ・Infuse %VALUE_DIGIT(WANT_EP)%EP to increase %CALLNAME%'s maximum HP
+	ENDIF
+ENDIF
+PRINTL
+PRINTFORML [ 0] Inject A Moderate Amount（（%VALUE_DIGIT(GIVE_EP)%EP）
+PRINTFORML [ 1] Inject A Copious Amount（%VALUE_DIGIT(GIVE_EP *10)%EP）
+PRINTL [99] Cancel
+INPUT
+IF RESULT == 0
+	SOURCE:注ぎ込み霊力量 = GIVE_EP
+ELSEIF RESULT == 1
+	GIVE_EP *= 10
+	SOURCE:大量注ぎ込み = 1
+	SOURCE:注ぎ込み霊力量 = GIVE_EP
+ELSE
+	RETURN
+ENDIF
+CALL PISTON_SOURCE
+RETURN 1
+
+
+
+;魔力注入
+@COM906
+#DIM GIVE_MP
+#DIM WANT_MP
+
+;魔力の1%　1000～50000まで　大量は50万
+GIVE_MP = BASE:0:魔力 /100
+GIVE_MP -= (GIVE_MP %10)
+GIVE_MP = LIMIT(GIVE_MP,1000,50000)
+PRINTFORML Pour Mana-infused semen into %CALLNAME%.
+PRINTL ・If her Mana is low, will restore the amount given.
+PRINTL
+SIF BASE:0:体力 <= 1500
+	SETCOLOR 0xFFFF70
+PRINTFORM 　%CALLNAME:0%　HP：{BASE:0:体力,4} 
+RESETCOLOR
+CALL PRINT_COLORBAR(BASE:0:体力,MAXBASE:0:体力,8,BARCOLORSET("青緑"),RESULT:1)
+PRINTFORM 　%CALLNAME:0%s Mana：%VALUE_DIGIT(BASE:0:魔力)%／%VALUE_DIGIT(MAXBASE:0:魔力)%MP 
+CALL PRINT_COLORBAR(BASE:0:魔力,MAXBASE:0:魔力,8,BARCOLORSET("濃紫"),RESULT:1)
+PRINTL
+IF !＃陥落状態／隷属＃
+	CALL PRINTL_WORD_COLOR("Only【Love Slave】can accumulate Mana this way","灰")
+ELSEIF !MAXBASE:魔力
+	WANT_MP = MP_OCCUR_VALUE -CFLAG:魔力蓄積量
+	PRINTFORML ・Infusing%VALUE_DIGIT(WANT_MP)%MP will unlock Mana for %CALLNAME%
+ELSEIF BASE:魔力 >= MAXBASE:魔力 *8 /10
+	SOURCE:魔力上限増加可能 = 1
+	PRINTFORML ・Mana Capacity increases by 1／5 of Mana infused（Upper limit equal to %CALLNAME:0%'s）
+	PRINTL (If magic power reduction occurs due to spraying milk, it may not increase.)
+	PRINTL
+ELSE
+	WANT_MP = MAXBASE:魔力 /2
+	PRINTFORML ・Infuse %VALUE_DIGIT(WANT_MP)%MP or more to increase %CALLNAME%'s Mana Capacity
+ENDIF
+PRINTL
+PRINTFORML [ 0] Infuse a Moderate Amount（%VALUE_DIGIT(GIVE_MP)%MP）
+PRINTFORML [ 1] Infuse a Copious Amount（%VALUE_DIGIT(GIVE_MP *10)%MP）
+PRINTL [99] Cancel
+INPUT
+IF RESULT == 0
+	SOURCE:注ぎ込み魔力量 = GIVE_MP
+ELSEIF RESULT == 1
+	GIVE_MP *= 10
+	SOURCE:大量注ぎ込み = 1
+	SOURCE:注ぎ込み魔力量 = GIVE_MP
+ELSE
+	RETURN
+ENDIF
+CALL PISTON_SOURCE
+RETURN 1
+
+
+
+;奉仕させる
+@COM907
+
+IF GROUPMATCH(PREVCOM,34,44,51,53,55,57,58,907) || (!TFLAG:拘束BIT && TFLAG:奉仕可能 && PREVCOM == 50)
+	CLEARLINE 1
+ELSE
+	CALL SERVICE_JUDGE
+	SIF !RESULT
+		RETURN
+ENDIF
+LOSEBASE:体力 += 20
+LOSEBASE:気力 += 50
+SOURCE:習得 = 5000
+SOURCE:恥辱 = 3000
+SOURCE:情愛 = 3000
+SOURCE:情愛 += (ABL:奉仕精神 *500)
+SOURCE:屈辱 = 2000
+SOURCE:不潔 = 2000
+SOURCE:支配 = 1000
+SOURCE:経過時間 = 1
+SOURCE:選択コマンド口上非表示 = 1
+RETURN 1
+
+
+
+@COM910
+;魔力吸い尽くし
+
+PRINTFORML You can drain all %CALLNAME%'s magic power, it will remove 【Mana-Infused Milk】, and turn it into 【Lactating】
+PRINTL Do you want to execute it?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+CALL NIPPLE_SUCK_SOURCE_COMMON
+LOSEBASE:体力 += 80
+LOSEBASE:気力 += 250
+SOURCE:Ｂ快楽／あなた責め += 1000
+SOURCE:Ｎ快楽／あなた責め += 5000
+SOURCE:経過時間 = 1
+SOURCE:魔力吸い尽くし = 1
+
+;少し吸うために母乳を+500
+BASE:母乳容量 = LIMIT(BASE:母乳容量,500,MAXBASE:母乳容量)
+BASE:母乳生産力 = LIMIT(BASE:母乳生産力,500,MAXBASE:母乳生産力)
+RETURN 1
+
+

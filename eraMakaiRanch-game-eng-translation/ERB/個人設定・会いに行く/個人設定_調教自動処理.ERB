@@ -1,0 +1,337 @@
+﻿
+;調教自動処理個人設定
+@SLAVE_CONFIG_TRAIN_AUTO
+
+CLEARLINE LINECOUNT
+CALL SHOW_SLAVE_STATE
+PRINTL ・Settings here take precedence over common settings.
+CALL SLAVE_CONFIG_TRAIN_AUTO_CHOICE
+CALL PRINTL_ALIGN
+DRAWLINE
+PRINTLC [98] Restore Default
+PRINTLC 　
+PRINTL [99] Done
+INPUT
+PRINTL
+SIF RESULT == 99
+	RETURN
+CALL SLAVE_CONFIG_TRAIN_AUTO_CHANGE(RESULT)
+RESTART
+
+
+
+;選択肢表示
+@SLAVE_CONFIG_TRAIN_AUTO_CHOICE
+#DIMS SUBJECT
+#DIM USE_ITEM
+
+PRINTL 　《 Start Of Training 》
+SUBJECT = Stripping
+
+;ver1.030で「毎回選ぶ」がなくなった
+;STR:デフォルト脱衣状態→8130
+STR_REF = 8130
+PRINTFORM [ 0] %SUBJECT,16%：
+SELECTCASE CFLAG:個別設定／調教開始自動処理／脱衣
+CASE 0
+	CALL PRINTL_WORD_COLOR("Use Common Setting","灰")
+CASEELSE
+	PRINTFORML %STRIP_SELECT_ENG(STR:(STR_REF - 1 +CFLAG:個別設定／調教開始自動処理／脱衣))%
+ENDSELECT
+
+;STR:拘束中→3930
+STR_REF = 3930
+SUBJECT = Restrains:
+PRINTFORM [ 1] %SUBJECT,16%：
+SELECTCASE CFLAG:個別設定／調教開始自動処理／拘束
+CASE 0
+	CALL PRINTL_WORD_COLOR("Use Common Setting","灰")
+CASE 1
+	PRINTL Not Restrained
+CASEELSE
+	;選べないはずなので必要アイテムは出さない
+	PRINTFORML %RESTRAINTS_ENG(STR:(STR_REF +CFLAG:個別設定／調教開始自動処理／拘束 -2))%
+ENDSELECT
+
+SUBJECT = ローション
+USE_ITEM = CFLAG:個別設定／調教開始自動処理／ローション
+PRINTFORM [ 2] %SUBJECT,16%：
+IF !GETBIT(USE_ITEM,0)
+	CALL PRINTL_WORD_COLOR("Follows overall configuration","灰")
+ELSE
+	USE_ITEM = USE_ITEM >> 1
+	IF !USE_ITEM
+		PRINTL Do not use
+	ELSE
+		SIF GETBIT(USE_ITEM,0)
+			PRINT Ｖ
+		SIF GETBIT(USE_ITEM,1)
+			PRINT Ａ
+		SIF GETBIT(USE_ITEM,2)
+			PRINT Ｂ
+		PRINTL Use
+	ENDIF
+ENDIF
+
+SUBJECT = 媚薬
+PRINTFORM [ 3] %SUBJECT,16%：
+SELECTCASE CFLAG:個別設定／調教開始自動処理／媚薬
+CASE 0
+	CALL PRINTL_WORD_COLOR("Follows overall configuration","灰")
+CASE 1
+    PRINTL Do not use
+CASE 2
+    PRINTL Using ＜Aphrodisiac＞
+CASE 3
+    PRINTL Using ＜Aphrodisiac Slime＞
+ENDSELECT
+
+PRINTL
+PRINTL 　《 Ejaculation 》
+SUBJECT = Paizuri
+PRINTFORM [10] %SUBJECT,16%：
+SELECTCASE CFLAG:個別設定／射精箇所／パイズリ
+CASE -1
+	PRINTL Always Ask
+CASE 0
+	CALL PRINTL_WORD_COLOR("Use Common Setting","灰")
+CASE 1
+	PRINTL In-Between Breasts
+CASE 2
+	PRINTL On Breasts
+CASE 3
+	PRINTL On Face
+ENDSELECT
+
+;縦ズリは豊乳以上
+IF ABL:バストサイズ >= BUSTSIZE_豊乳
+	SUBJECT = Horizontal Paizuri
+	PRINTFORM [11] %SUBJECT,16%：
+	SELECTCASE CFLAG:個別設定／射精箇所／縦パイズリ
+	CASE -1
+		PRINTL Always Ask
+	CASE 0
+		CALL PRINTL_WORD_COLOR("Use Common Setting","灰")
+	CASE 1
+		PRINTL In-Between Breasts
+	CASE 2
+		PRINTL On Breasts
+	CASE 3
+		PRINTL On Face
+	ENDSELECT
+ELSE
+	CALL PRINTL_WORD_COLOR("　 Horizontal Paizuri Is Only Possible For B Size【Huge】Or Above","灰")
+ENDIF
+
+SUBJECT = Blowjob
+PRINTFORM [12] %SUBJECT,16%：
+SELECTCASE CFLAG:個別設定／射精箇所／フェラチオ
+CASE -1
+	PRINTL Always Ask
+CASE 0
+	CALL PRINTL_WORD_COLOR("Use Common Setting","灰")
+CASE 1
+	PRINTL In Mouth
+CASE 2
+	PRINTL On Face
+ENDSELECT
+
+SUBJECT = Facefuck
+PRINTFORM [13] %SUBJECT,16%：
+SELECTCASE CFLAG:個別設定／射精箇所／イラマチオ
+CASE -1
+	PRINTL Always Ask
+CASE 0
+	CALL PRINTL_WORD_COLOR("Use Common Setting","灰")
+CASE 1
+	PRINTL In Mouth
+CASE 2
+	PRINTL On Face
+ENDSELECT
+
+SUBJECT = Ｖ Sex
+PRINTFORM [14] %SUBJECT,16%：
+SELECTCASE CFLAG:個別設定／射精箇所／Ｖセックス
+CASE -1
+	PRINTL Always Ask
+CASE 0
+	CALL PRINTL_WORD_COLOR("Use Common Setting","灰")
+CASE 1
+	PRINTL In Pussy
+CASE 2
+	PRINTL Outside
+ENDSELECT
+
+SUBJECT = Ａ Sex
+PRINTFORM [15] %SUBJECT,16%：
+SELECTCASE CFLAG:個別設定／射精箇所／Ａセックス
+CASE -1
+	PRINTL Always Ask
+CASE 0
+	CALL PRINTL_WORD_COLOR("Use Common Setting","灰")
+CASE 1
+	PRINTL In Ass
+CASE 2
+	PRINTL Outside
+ENDSELECT
+
+
+
+;変更部分
+;ARG→INPUT
+@SLAVE_CONFIG_TRAIN_AUTO_CHANGE(ARG)
+
+SELECTCASE ARG
+CASE 0
+	;STR:デフォルト脱衣状態→8130
+	STR_REF = 8130
+	PRINTL Set State Of Slaves Clothes At Start Of Training.
+	PRINTL
+	PRINTL [ 0] Use Common Setting
+	FOR LOCAL,0,7
+		PRINTFORM [{(LOCAL + 1),2}] %STRIP_SELECT_ENG(STR:(STR_REF +LOCAL))%
+		PRINTL
+		IF LOCAL == 2 && !CFLAG:無抵抗
+			CALL PRINTL_WORD_COLOR("　【Resistance】Prevents Stripping","灰")
+			BREAK
+		ENDIF
+	NEXT
+	BINPUT
+	CFLAG:個別設定／調教開始自動処理／脱衣 = RESULT
+
+CASE 1
+	;別関数使う
+	PRINTL Set Restraints At Start Of Training
+	CALL BIND_CHOICE("個人設定")
+	SIF RESULT >= 0
+		CFLAG:個別設定／調教開始自動処理／拘束 = RESULT
+CASE 2
+	CALL SLAVE_CONFIG_TRAIN_AUTO_CHANGE_LOTION
+CASE 3
+	PRINTL Set whether to use ＜Aphrodisiac＞ or ＜Aphrodisiac Slime＞ at the start of training.
+	PRINTL ※Will not be used if there are no items / magic not learned or insufficient magic power
+	PRINTL
+	PRINTL [ 0] Follows overall configuration
+	PRINTL [ 1] Do not use
+	PRINTL [ 2] Using ＜Aphrodisiac＞
+	PRINTL [ 3] Using ＜Aphrodisiac Slime＞
+	BINPUT
+	CFLAG:個別設定／調教開始自動処理／媚薬 = RESULT
+
+CASE 10
+	PRINTL Choose Paizuri Ejaculation Target.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] Use Common Setting
+	IF ABL:バストサイズ >= BUSTSIZE_並乳
+		PRINTL [ 2] In-Between Breasts
+	ELSE
+		CALL PRINTL_WORD_COLOR("　 Ejaculating Between Breasts Is Only Possible For B Size【Average】Or Above","灰")
+	ENDIF
+	PRINTL [ 3] On Breasts
+	PRINTL [ 4] On Face
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 4 && !(RESULT == 2 && ABL:バストサイズ < BUSTSIZE_並乳)
+		CFLAG:個別設定／射精箇所／パイズリ = RESULT -1
+
+CASE 11
+	;豊乳未満ならおわり
+	SIF ABL:バストサイズ < BUSTSIZE_豊乳
+		RETURN
+	PRINTL Choose Horizontal Paizuri Ejaculation Target.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] Use Common Setting
+	PRINTL [ 2] In-Between Breasts
+	PRINTL [ 3] On Breasts
+	PRINTL [ 4] On Face
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 4
+		CFLAG:個別設定／射精箇所／縦パイズリ = RESULT -1
+
+CASE 12
+	PRINTL Choose Blowjob Ejaculation Target.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] Use Common Setting
+	PRINTL [ 2] In Mouth
+	PRINTL [ 3] On Face
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 3
+		CFLAG:個別設定／射精箇所／フェラチオ = RESULT -1
+
+CASE 13
+	PRINTL Choose Facefuck Ejaculation Target.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] Use Common Setting
+	PRINTL [ 2] In Mouth
+	PRINTL [ 3] On Face
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 3
+		CFLAG:個別設定／射精箇所／イラマチオ = RESULT -1
+
+CASE 14
+	PRINTL Choose V Sex Ejaculation Target.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] Use Common Setting
+	PRINTL [ 2] In Pussy
+	PRINTL [ 3] Outside
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 3
+		CFLAG:個別設定／射精箇所／Ｖセックス = RESULT -1
+
+CASE 15
+	PRINTL Choose A Sex Ejaculation Target.
+	PRINTL
+	PRINTL [ 0] Always Ask
+	PRINTL [ 1] Use Common Setting
+	PRINTL [ 2] In Ass
+	PRINTL [ 3] Outside
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 3
+		CFLAG:個別設定／射精箇所／Ａセックス = RESULT -1
+
+CASE 98
+	PRINTL Reset All To ＜Use Common Setting＞？
+	CALL ASK_YN
+	SIF !RESULT
+		VARSET CFLAG,0,540,550
+	
+ENDSELECT
+
+
+
+;ローション使用
+@SLAVE_CONFIG_TRAIN_AUTO_CHANGE_LOTION
+
+CLEARLINE LINECOUNT
+PRINTL Set whether to automatically use ＜Lotion＞ at the start of training.
+PRINTL ※Will be used if in an exposed state; if there are insufficient items, priority will be given from the top.
+PRINTL
+LOCALS = 全体コンフィグに準拠
+PRINTFORMLC [ 0] %LOCALS,12%
+CALL PRINT_ONOFF(!GETBIT(CFLAG:個別設定／調教開始自動処理／ローション,0),1)
+IF GETBIT(CFLAG:個別設定／調教開始自動処理／ローション,0)
+	PRINTFORMLC [ 1] %SAVESTR:表記／膣,12%
+	CALL PRINT_ONOFF(GETBIT(CFLAG:個別設定／調教開始自動処理／ローション,1),1)
+	PRINTFORMLC [ 2] %SAVESTR:表記／アナル,12%
+	CALL PRINT_ONOFF(GETBIT(CFLAG:個別設定／調教開始自動処理／ローション,2),1)
+	PRINTFORMLC [ 3] %SAVESTR:表記／乳房,12%
+	CALL PRINT_ONOFF(GETBIT(CFLAG:個別設定／調教開始自動処理／ローション,3),1)
+ELSE
+	CALL PRINTL_WORD_COLOR,@"< 1> %SAVESTR:表記／膣,12%","灰"
+	CALL PRINTL_WORD_COLOR,@"< 2> %SAVESTR:表記／アナル,12%","灰"
+	CALL PRINTL_WORD_COLOR,@"< 3> %SAVESTR:表記／乳房,12%","灰"
+ENDIF
+PRINTL [ 99] Return
+BINPUT
+SELECTCASE RESULT
+CASE 99
+	RETURN
+CASEELSE
+	INVERTBIT CFLAG:個別設定／調教開始自動処理／ローション,RESULT
+ENDSELECT
+RESTART
+

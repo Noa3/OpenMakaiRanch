@@ -1,0 +1,71 @@
+﻿
+;身分
+@RANDOM_LIST_POSITION(ARG)
+
+;目的別
+SELECTCASE LIST_PURPOSE:ARG
+
+;水晶・植物・名声→たまに貴族
+CASE 0,1,2
+	SIF RAND:100 < 3
+		LIST_POSITION:ARG = 貴族
+
+;奪還→たまに貴族+教官の立場のことがある
+CASE 3
+	SIF RAND:100 < 3
+		LIST_POSITION:ARG = 貴族
+	IF RAND:100 < 10
+		LIST_POSITION:ARG = 教官
+		
+		;教官の場合ランク+1
+		LIST_RANK:ARG ++
+	ENDIF
+
+;事故→たまーに貴族
+CASE 4
+	SIF !RAND:70
+		LIST_POSITION:ARG = 貴族
+
+;侵略→高い身分がわりと多め
+CASE 5
+	;特定ジョブ以外
+	IF RAND:100 < 10 && !GROUPMATCH(LIST_JOB:ARG,"勇者","聖女","軍師","武将")
+		LIST_POSITION:ARG = 教官
+		LIST_RANK:ARG ++
+	ENDIF
+	SIF RAND:100 < 20
+		LIST_POSITION:ARG = 貴族
+	
+	;武将・軍師は貴族率上げる
+	SIF RAND:100 < 40 && GROUPMATCH(LIST_JOB:ARG,"軍師","武将")
+		LIST_POSITION:ARG = 貴族
+	
+;結界付き→教官率ほどほど
+CASE 6
+	IF RAND:100 < 10
+		LIST_POSITION:ARG = 教官
+		LIST_RANK:ARG ++
+	ENDIF
+
+;競売所→貴族にする　あとで王族上書き処理がある
+CASE 7
+	LIST_POSITION:ARG = 貴族
+
+;上位種族
+CASE 8
+	;ヴァンパイアとダンピールは貴族制度なんかありそう
+	;妖狐も人に取り入ってるイメージじゃない
+	SIF GROUPMATCH(LIST_TRIBE:ARG,"ヴァンパイア","ダンピール","妖狐") && RAND:100 < 20
+		LIST_POSITION:ARG = 貴族
+
+;天界種族
+CASE 9
+	;神格入れはLIST_DIVINITYに任せた
+ENDSELECT
+
+;お姫様用ジョブは王族で上書き
+SIF GROUPMATCH(LIST_JOB:ARG,"姫君","姫騎士","姫巫女","聖女")
+	LIST_POSITION:ARG = 王族
+
+
+

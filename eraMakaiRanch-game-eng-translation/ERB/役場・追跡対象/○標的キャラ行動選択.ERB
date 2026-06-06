@@ -1,0 +1,55 @@
+﻿
+;ギルドから標的のステータス表示
+@TARGET_STATUS
+
+CALL GUILD_STATUS_DETAIL(2)
+
+;この画面から傭兵アルバイト雇用に進む
+IF CFLAG:追跡対象 == 1
+	IF CFLAG:追跡者
+		PRINTL [ 0] Recall Mercenaries 
+	ELSE
+		PRINTL [ 1] Hire Mercenaries 
+		
+		;テレポートがあれば自分で戦いに行く追加
+		IF !ITEM:テレポート
+			CALL PRINTL_WORD_COLOR,@"　If ＜Teleport＞ has been learned, %CALLNAME:0% can personally join in","灰"
+		ELSEIF CSTR:0:スケジュール == "行動済み"
+			CALL PRINTL_WORD_COLOR,@"　can personally join in","灰"
+		ELSEIF BASE:0:魔力 < MAGIC_USE_MP:GETNUM(ITEM,"テレポート")
+			CALL PRINTL_WORD_COLOR,@"　%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"テレポート"))%MP is required to use ＜Teleport＞","灰"
+		ELSE
+			PRINTFORML [ 2] %CALLNAME:0% Joins The Battle
+		ENDIF
+	ENDIF
+ELSEIF CFLAG:追跡対象 == 2
+	PRINTL [ 3] Claim Slave
+ELSEIF CFLAG:追跡対象 == 3
+	PRINTL In Transit 
+ENDIF
+PRINTL
+
+;もう捕まえた状態以外なら諦めることも可能
+SIF !GROUPMATCH(CFLAG:追跡対象,2,3)
+	PRINTL [ 8] Stop Targeting
+PRINTL [99] Cancel
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	CALL DISMISSAL_MERCENARY
+CASE 1
+	CALL EMPLOYMENT_MERCENARY
+CASE 2
+	CALL MASTER_BATTLE_CONFIRM
+CASE 3
+	CALL SLAVE_RECEIVE_TOWN
+CASE 8
+	PRINTFORML Are you sure you want to give up on capturing %CALLNAME%?
+	CALL PRINTL_WORD_COLOR("You'll never be able to find them again. Got it?","黄")
+	CALL ASK_YN
+	SIF !RESULT
+		CALL TARGET_CHARA_DELETE
+ENDSELECT
+
+

@@ -1,0 +1,161 @@
+﻿
+;傭兵アルバイトに気付く周り地の文
+;戦闘準備
+@MONSTER_BATTLE_PREPARE_MESSAGE
+
+PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()% \@ BASE:仲間戦闘力1 ? notice # notices \@ %PRINT_MONSTER()% and \@ BASE:仲間戦闘力1 ? ready their weapons # readies her weapon \@.
+
+
+;隠れる
+@MONSTER_HIDE_MESSAGE
+
+CALL KOJO_PRINT("スケジュール","追跡","潜伏")
+PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()% hides to avoid being detected by %PRINT_MONSTER()%...
+
+
+;不意打ち直前
+@MONSTER_UNNOTICE_MESSAGE
+
+PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()% \@ BASE:仲間戦闘力1 ? are # is \@ unaware of %PRINT_MONSTER()% chasing \@ BASE:仲間戦闘力1 ? them # her \@!
+
+
+
+;傭兵と遭遇
+@CHASE_SLAVE_ENCOUNT_MESSAGE
+
+IF TFLAG:潜伏
+	CALL PRINTL_WORD_COLOR,@"Despite hiding, %PRINT_MONSTER()% finds %CALLNAME%%PRINT_EXIST_GROUP()%!","黄"
+	CALL KOJO_PRINT("スケジュール","追跡","潜伏失敗")
+ELSEIF TFLAG:不意打ち
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME%%PRINT_EXIST_GROUP()% \@ BASE:仲間戦闘力1 ? are # is \@ ambushed by the %PRINT_MONSTER()%!","黄"
+ELSE
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME%%PRINT_EXIST_GROUP()% and %PRINT_MONSTER()% are ready to fight!！","黄"
+ENDIF
+
+
+;戦闘開始前
+;ARGS→状態
+@BATTLE_BEFORE_MESSAGE(ARGS)
+
+SELECTCASE ARGS
+CASE "プライド高い"
+	CALL KOJO_PRINT("戦闘","戦闘開始")
+	PRINTFORML Perhaps due to %CALLNAME%'s pride, even though she stands no chance of winning,
+	PRINTFORML she still readies a makeshift weapon...
+CASE "人任せ"
+	CALL KOJO_PRINT("戦闘","人任せ")
+	PRINTFORML %CALLNAME% hides behind a companion...
+CASE "降参"
+	CALL KOJO_PRINT("戦闘","降参")
+	PRINTFORML Incapable of fighting, %CALLNAME% surrenders in fright...
+	FORCEWAIT
+ENDSELECT
+
+
+;あなた戦闘開始前
+@MASTER_BATTLE_MAIN_BEFORE_MESSAGE
+
+PRINTFORMW %CALLNAME%%PRINT_EXIST_GROUP()%のだいたいの居場所はわかっているので、まず近くに転移してみることにした。
+PRINTL ………
+PRINTFORML 魔界を行く%CALLNAME%%PRINT_EXIST_GROUP()%の目の前に魔法陣が現れ、%CALLNAME:BATTLE_CHARA%が姿を現した！
+CALL KOJO_PRINT("スケジュール","追跡","見つかった")
+PRINTW …自分が思っていたよりテレポートは正確なようだ。
+
+
+
+;ニンゲン勝利時
+@TARGET_WIN_MESSAGE
+
+;BATTLE_CHARAでメッセージ変更
+IF BATTLE_CHARA >= 0
+	PRINTFORML %CALLNAME:BATTLE_CHARA%は%CALLNAME%%PRINT_EXIST_GROUP()%に敗北しました…
+ELSE
+	PRINTFORML %CALLNAME%%PRINT_EXIST_GROUP()% wins against %PRINT_MONSTER()%!
+ENDIF
+CALL KOJO_PRINT("戦闘","勝利")
+
+
+;傭兵アルバイト勝利時
+@TARGET_DEFEAT_MESSAGE
+
+;降参した場合ここは飛ばす
+IF !TFLAG:降参
+	PRINTFORML %PRINT_MONSTER()% defeats %CALLNAME%!
+	CALL KOJO_PRINT("戦闘","敗北")
+ENDIF
+PRINTFORMW %PRINT_MONSTER()% capture %CALLNAME%
+
+
+;あなた勝利
+@MASTER_BATTLE_WIN_MESSAGE
+
+;降参した場合ここは飛ばす
+IF !TFLAG:降参
+	PRINTFORML %CALLNAME:BATTLE_CHARA%は%CALLNAME%に勝利した！
+	CALL KOJO_PRINT("戦闘","敗北")
+ENDIF
+PRINTFORML %CALLNAME:BATTLE_CHARA%が%CALLNAME%を捕獲しました。
+
+;直で役場に帰って手続きしてそのまま持ち帰る
+IF !BATTLE_CHARA
+	PRINTL さっそく町役場に帰還し、手続きを済ませてそのまま持ち帰ることにした。
+ELSE
+	PRINTFORML %CALLNAME:0%は%CALLNAME:BATTLE_CHARA%と一緒に町役場に帰還し、手続きを済ませてそのまま持ち帰ることにした。
+	SIF TFLAG:降参
+		RETURN
+	PRINTFORM %CALLNAME:BATTLE_CHARA%は
+	SELECTCASE BASE:BATTLE_CHARA:戦闘適性
+		CASE IS <= 20
+			PRINTL 早く帰りたいようだ…
+		CASEELSE
+			PRINTL どこか誇らしげだ…
+	ENDSELECT
+ENDIF
+
+
+;あなた負け
+@PLAYER_DEFEAT_MESSAGE
+
+PRINTFORML %CALLNAME:BATTLE_CHARA%は個人用転移門で町役場に帰還しました。
+PRINTL 医者に診てもらい、外傷の残るような怪我はないようだがひどく疲れてしまった。
+PRINTFORMW %CALLNAME:BATTLE_CHARA% 【HP0】
+
+
+
+;しんがり逃し
+@UNIT_ESCAPE_BATTLE_MESSAGE
+
+CALL KOJO_PRINT("戦闘","しんがり")
+CALL PRINTL_WORD_COLOR,@"全滅の危機を防ぐため、仲間たちが壁となり%CALLNAME%を逃した！","黄"
+
+
+;しんがりに魔物側勝利
+@TARGET_ESCAPE_DEFEAT_MESSAGE
+
+PRINTFORMW %PRINT_MONSTER()% defeats %CALLNAME%'s companions!
+PRINTFORML But while deaing with them, %CALLNAME% seems to have escaped.
+PRINTFORML %CALLNAME% is hoping to regroup with her companions...
+
+
+;しんがりに魔物側敗北
+@TARGET_ESCAPE_WIN_MESSAGE
+
+CALL KOJO_PRINT("戦闘","仲間全滅勝利")
+SETCOLOR 0xE02020
+PRINTL ...
+PRINTFORML Despite winning, %CALLNAME%'s companions couldn't regroup with %CALLNAME%,
+PRINTFORML and fell prey to demonic beasts...
+RESETCOLOR
+PRINTFORML Unaware,	 %CALLNAME% still hopes to be able to regroup with her companions...
+
+
+
+
+
+
+
+
+
+
+
+

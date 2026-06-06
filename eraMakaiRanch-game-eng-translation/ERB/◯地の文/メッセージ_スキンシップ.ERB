@@ -1,0 +1,50 @@
+﻿
+;頭撫で（複雑になってもいいよう関数分け）
+@VISIT_STROKING_HEAD_MESSAGE
+
+PRINTFORML You gently pat %CALLNAME%'s head...
+CALL KOJO_PRINT("訪問","頭撫で")
+IF CFLAG:崩壊
+	PRINTFORML %CALLNAME% stares at you will dull eyes...
+	
+ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+	PRINTFORML %CALLNAME%'s face flushes red and she starts heavily breathing,
+	PRINTFORML as she wonders what's to come...
+	
+ELSEIF ＃陥落状態／恋慕以上＃ || GROUPMATCH(CSTR:状態／あなたの子,"成長中","成長後")
+	PRINTFORML %CALLNAME% narrows her eyes in pleasure...
+ELSEIF ＃陥落状態／陥落以上＃
+	PRINTFORML %CALLNAME% quietly enjoys the sensation...
+ELSEIF ＃陥落状態／屈服以上＃
+	PRINTFORML %CALLNAME% is conflicted. She doesn't want this, but it feels quite good...
+ELSE
+	PRINTFORML %CALLNAME% doesn't seem to enjoy it...
+ENDIF
+
+
+
+;キス
+@VISIT_KISS_MESSAGE
+
+PRINTFORML You kiss %CALLNAME%...
+CALL KOJO_PRINT("訪問","キス")
+
+;後半
+@VISIT_KISS_AFTER_MESSAGE
+
+IF CFLAG:崩壊
+	PRINTFORML %CALLNAME% stares at you will dull eyes...
+	
+ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+	PRINTFORML You give %CALLNAME% a deep kiss, thoroughly entwinning your tongues as she pants heavily...
+ELSEIF ＃陥落状態／恋慕以上＃
+	PRINTFORML Even after you pull away, %CALLNAME% leans in, wanting more
+ELSEIF ＃陥落状態／陥落以上＃
+	PRINTFORML %CALLNAME% doesn't seem to hate it...
+ELSE
+	PRINTFORML %CALLNAME% recoils in disgust...
+ENDIF
+
+
+
+

@@ -1,0 +1,28 @@
+﻿
+;USERCOMから飛ばす用
+;拘束入り口
+@TRAIN_BIND_COMMON
+
+;ペニス、搾乳器、搾乳触手、ほか触手使用中→おわり
+SIF TFLAG:Ｐ使用BIT || TFLAG:搾乳器 || MATCH(TEQUIP,1,100,200)
+	RETURN
+
+;拘束状態の表示
+;STR:拘束中→3930
+STR_REF = 3930
+EXIST = 0
+PRINT Currently：
+
+;LOCALのBIT番号がONになってるかを見る
+FOR LOCAL,0,20
+	SIF !GETBIT(TFLAG:拘束BIT,LOCAL)
+		CONTINUE
+	PRINTFORML 【%RESTRAINTS_ENG(STR:(STR_REF +LOCAL))% restraints】
+	EXIST ++
+	BREAK
+NEXT
+SIF !EXIST
+	PRINTL ＜No Restraints＞
+CALL BIND_CHOICE("調教中")
+CALL TRAIN_BIND_RUN(RESULT)
+

@@ -1,0 +1,100 @@
+﻿
+;魔力母乳での魔力減少
+@LACTATION_MAGIC_DRAIN
+
+;魔力母乳体質なら問答無用に減少
+;魔力ないならおわり
+SIF !MARK:魔力母乳体質 || !BASE:魔力
+	RETURN
+
+;基礎：噴乳量
+SOURCE:魔力吸収量 = NOWEX:噴乳
+
+;あなたか娘の乳吸いor触手搾乳中+有効BIT状態なら濃度・レベルで増加
+IF PLAYER >= 0
+	IF ((!PLAYER || (CSTR:PLAYER:状態／あなたの子 != "" && TFLAG:吸飲ミルク - NOWEX:噴乳 <= CFLAG:PLAYER:身長)) && TFLAG:乳吸い) || TFLAG:搾乳触手
+		FIX = 100
+		SIF GETBIT(＃個人有効／魔力吸収効率＃) && GETBIT(＃有効／魔力吸収効率＃)
+			FIX += (ITEM:魔力吸収効率 *MAGIC_DRAIN_FIX)
+		SIF GETBIT(＃個人有効／濃厚ミルクドレイン＃) && GETBIT(＃有効／濃厚ミルクドレイン＃) && ITEM:濃厚ミルクドレイン
+			FIX += (ABL:母乳濃度 *DENCE_MILK_FIX)
+		SOURCE:魔力吸収量 *= FIX
+		SOURCE:魔力吸収量 /= 100
+	ENDIF
+ENDIF
+SIF TFLAG:多臓器活性薬使用中
+	SOURCE:魔力吸収量 *= MAX(3,MAXBASE:魔力 *(ABL:母乳濃度 +1) /20000)
+			;SIF TFLAG:搾乳触手 && ITEM:乳腺用触手管
+			;	SOURCE:魔力吸収量 *= 2
+			;SIF TFLAG:搾乳触手 && ITEM:乳腺改造粘液
+			;	SOURCE:魔力吸収量 *= 2
+			;SIF GETBIT(＃拘束／触手＃) && ITEM:血中魔力強化媚液
+			;	SOURCE:魔力吸収量 *= 3
+SOURCE:魔力吸収量 = LIMIT(SOURCE:魔力吸収量,0,BASE:魔力)
+
+;飲むか飲まないか判定
+IF TFLAG:搾乳触手 || TFLAG:乳吸い
+	BASE:魔力 -= SOURCE:魔力吸収量
+	
+	;あなたじゃなくても魔力を吸える
+	IF PLAYER > 0 && (TFLAG:吸飲ミルク -NOWEX:噴乳 <= CFLAG:PLAYER:身長)
+		IF CSTR:PLAYER:状態／あなたの子 != ""
+			CALL LACTATION_MAGIC_DRAIN_MASTER
+		ELSE
+			BASE:PLAYER:魔力 = LIMIT(BASE:PLAYER:魔力 +SOURCE:魔力吸収量,0,MAXBASE:PLAYER:魔力)
+		ENDIF
+	ELSEIF !PLAYER
+		;あなたが吸収
+		CALL LACTATION_MAGIC_DRAIN_MASTER
+	ENDIF
+	
+;霊力抽出中で貯蔵器があると自動的に魔力を貯める
+ELSEIF TFLAG:抽出中 && FLAG:貯蔵魔力上限値
+	BASE:魔力 -= SOURCE:魔力吸収量
+	SIF MONEY:貯蔵魔力 < FLAG:貯蔵魔力上限値
+		MONEY:貯蔵魔力 = LIMIT(MONEY:貯蔵魔力 +SOURCE:魔力吸収量,0,FLAG:貯蔵魔力上限値)
+ELSE
+	BASE:魔力 -= SOURCE:魔力吸収量
+ENDIF
+
+;絶頂魔力回復淫紋だと即時全回復か100000にする
+IF MARK:絶頂魔力回復淫紋
+	BASE:魔力 = MAX(INFINITY_MILK_TANK,MAXBASE:魔力)
+	BASE:母乳容量 = MAX(INFINITY_MILK_TANK,MAXBASE:母乳容量)
+	BASE:母乳生産力 = MAX(INFINITY_MILK_TANK,MAXBASE:母乳生産力)
+ENDIF
+
+;母乳容量を魔力の値まで即座に回復
+BASE:母乳容量 = LIMIT(BASE:母乳容量,0,BASE:魔力)
+
+
+
+;あなたか娘が吸収　吸収可能な分まで
+@LACTATION_MAGIC_DRAIN_MASTER
+#DIM OVER_MP
+
+SOURCE:プレイヤー増加魔力量 = LIMIT(SOURCE:魔力吸収量,0,BASE:吸収可能魔力)
+
+;霊力と同様に増加量減少
+;魔術AP換算のため元値を保存しておく
+SOURCE:プレイヤー増加魔力量／減衰前 = SOURCE:プレイヤー増加魔力量
+IF MAXBASE:PLAYER:魔力 /4 > MAXBASE:魔力
+	SOURCE:プレイヤー増加魔力量 /= 4
+ELSEIF MAXBASE:PLAYER:魔力 > MAXBASE:魔力
+	SOURCE:プレイヤー増加魔力量 /= 2
+ENDIF
+MAXBASE:PLAYER:魔力 += SOURCE:プレイヤー増加魔力量
+
+;あなたが吸った時だけ吸収可能魔力が減少
+BASE:吸収可能魔力 = LIMIT(BASE:吸収可能魔力 -SOURCE:魔力吸収量,0,MAXBASE:魔力)
+
+;体内凌辱中は余った分を持ち越しておく
+IF CSTR:スケジュール == "体内凌辱"
+	OVER_MP = SOURCE:魔力吸収量 -(MAXBASE:PLAYER:魔力 -BASE:PLAYER:魔力)
+	SIF OVER_MP > 0
+		FLAG:体内凌辱持ち越し魔力 += OVER_MP
+ENDIF
+BASE:PLAYER:魔力 = LIMIT(BASE:PLAYER:魔力 +SOURCE:魔力吸収量,0,MAXBASE:PLAYER:魔力)
+
+
+

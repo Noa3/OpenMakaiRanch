@@ -1,0 +1,50 @@
+﻿
+@COM901_MESSAGE
+;乳揉み吸い
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML While keeping your mouth on %CALLNAME%'s %BUST_CLOTHES()% %SLANG_N()%, 
+CALL TRAIN_BUST_LUB_WHILE_MESSAGE()
+CALL TRAIN_MILK_SUCK_MESSAGE
+
+
+
+@COM902_MESSAGE
+;母乳吸い尽くし
+
+CALL TRAIN_INSERT_MESSAGE
+IF MARK:母乳体質
+	PRINTFORM With a forceful intent to drain %CALLNAME%'s %SLANG_MILK()%, you sucked her %SLANG_N()% to the fullest...
+ELSE
+	PRINTFORM You forcefully sucked her %SLANG_N()% with all your might, extracting %SAVESTR:表記／母乳% from %CALLNAME%...
+ENDIF
+PRINTL
+
+
+
+@COM903_MESSAGE
+;直飲み触手複合搾乳
+
+PRINTFORML A tentacle that emerged slickly from your body gets closer to %CALLNAME%'s %BUST_CLOTHES()% %SLANG_STAIN("Ｂ")%%SLANG_B()%...
+PRINTFORM As it lifts one of her %SLANG_B()%, the tentacle opens it's tip and then 
+IF MARK:母乳体質
+	PRINTFORML latches onto her %SLANG_B()%, hungrily drawing out every drop of its %SLANG_MILK()%...
+ELSE
+	PRINTFORML latches onto %SLANG_B()%, performing an intricate sucking motion that humans cannot replicate...
+ENDIF
+PRINTFORML As the tentacle worked on one of her %SAVESTR:表記／乳房%, your hands closed around the other, 
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORM and while fondling and kissing her %SLANG_N()%, 
+CALL TRAIN_MILK_SUCK_MESSAGE
+
+
+
+@COM910_MESSAGE
+;魔力吸い尽くし
+
+PRINTFORML Your hand tightened around %CALLNAME%'s %SLANG_B()% as you enveloped her %SLANG_N()% with your mouth...
+PRINTFORML The last traces of %CALLNAME%'s magical power gradually flowed into you…
+
+
+
+

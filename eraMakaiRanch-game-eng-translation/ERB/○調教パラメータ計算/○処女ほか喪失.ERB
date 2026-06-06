@@ -1,0 +1,228 @@
+﻿
+;処女喪失
+;[挿入]はあなたちんぽにのみ使うことにする
+@LOST_VARGIN
+
+CALL BREAK_VARGIN_BARRIER
+CALL LOST_VARGIN_V
+SIF SOURCE:処女結界破壊
+	CALL PRINTL_WORD_COLOR("【Virginity Barrier Destroyed】","赤")
+CALL LOST_VARGIN_A
+CALL LOST_VARGIN_M
+CALL LOST_VARGIN_KISS
+CALL LOST_VARGIN_PAIZURI
+
+
+
+;あなた童貞卒業処理
+@LOST_VARGIN_PLAYER
+
+CALL LOST_VARGIN_PLAYER_V
+CALL LOST_VARGIN_PLAYER_A
+CALL LOST_VARGIN_PLAYER_M
+CALL LOST_VARGIN_PLAYER_PAIZURI
+CALL LOST_VARGIN_PLAYER_KISS
+
+
+
+;処女結界破壊処理
+@BREAK_VARGIN_BARRIER
+
+SIF !TALENT:処女結界 || !TFLAG:Ｖ装備
+	RETURN
+CALL KOJO_PRINT("イベント","処女結界破壊")
+TALENT:処女結界 = 0
+MARK:処女結界破壊 = 1
+SOURCE:処女結界破壊 = 1
+
+
+
+;Ｖ
+@LOST_VARGIN_V
+
+SIF !TALENT:処女 || !TFLAG:Ｖ装備 || GETBIT(＃拘束／三角木馬＃)
+	RETURN
+CALL KOJO_PRINT("イベント","処女喪失直前")
+CALL LOST_VARGIN_V_MESSAGE
+CALL KOJO_PRINT("イベント","処女喪失直後")
+SETBIT ＃調教中初経験／セックス＃
+TALENT:処女 = 0
+CSTR:初経験／Ｖ = %V_PENIS%
+SOURCE:処女喪失 = 1
+SOURCE:Ｖ痛み += 10000
+SOURCE:屈辱 += 10000
+SOURCE:支配 += 10000
+SOURCE:情愛 += 10000
+
+
+
+;Ａ
+@LOST_VARGIN_A
+
+SIF !TALENT:Ａ処女 || !TFLAG:Ａ装備
+	RETURN
+CALL KOJO_PRINT("イベント","Ａ処女喪失直前")
+CALL LOST_VARGIN_A_MESSAGE
+CALL KOJO_PRINT("イベント","Ａ処女喪失直後")
+SETBIT ＃調教中初経験／Ａセックス＃
+TALENT:Ａ処女 = 0
+CSTR:初経験／Ａ = %A_PENIS%
+SOURCE:Ａ処女喪失 = 1
+;こちらは膜ない＆サイズ補正で痛みあるのでここはなしでよさそう
+;SOURCE:Ａ痛み += 10000
+SOURCE:屈辱 += 10000
+SOURCE:支配 += 10000
+SOURCE:情愛 += 10000
+
+
+
+;初Ｍセックス
+@LOST_VARGIN_M
+
+SIF !TALENT:Ｍ処女 || (!GETBIT(＃Ｐ使用／Ｍ挿入＃) && !TFLAG:イラマチオペニス)
+	RETURN
+CALL LOST_VARGIN_M_MESSAGE
+CALL KOJO_PRINT("イベント","初Ｍセックス")
+TALENT:Ｍ処女 = 0
+SOURCE:屈辱 += 10000
+SOURCE:支配 += 10000
+SOURCE:情愛 += 7000
+SETBIT ＃調教中初経験／Ｍセックス＃
+SOURCE:Ｍ処女喪失 = 1
+CSTR:初経験／Ｍセックス = %M_PENIS%
+
+
+
+;初キス
+@LOST_VARGIN_KISS
+
+SIF !TALENT:キス未経験 || !SOURCE:キス
+	RETURN
+CALL LOST_VARGIN_KISS_MESSAGE
+CALL KOJO_PRINT("イベント","初キス")
+SOURCE:初キス = 1
+SOURCE:屈辱 += 10000
+SOURCE:支配 += 5000
+SOURCE:情愛 += 10000
+TALENT:キス未経験 = 0
+SETBIT ＃調教中初経験／キス＃
+CSTR:初経験／キス = %KISS_PLAYER%
+
+
+
+;初パイズリ
+@LOST_VARGIN_PAIZURI
+
+SIF !TALENT:パイズリ未経験 || (!GETBIT(＃Ｐ使用／パイズリ＃) && !TFLAG:パイズリペニス)
+	RETURN
+CALL LOST_VARGIN_PAIZURI_MESSAGE
+CALL KOJO_PRINT("イベント","初パイズリ")
+TALENT:パイズリ未経験 = 0
+SOURCE:屈辱 += 5000
+SOURCE:支配 += 5000
+SOURCE:情愛 += 10000
+SETBIT ＃調教中初経験／パイズリ＃
+SOURCE:初パイズリ = 1
+CSTR:初経験／パイズリ = %PAIZURI_PENIS%
+
+
+
+;初授乳
+@LOST_VARGIN_MILK
+
+;搾乳触手か乳吸いのとき・噴乳してないときおわり
+SIF !TALENT:授乳未経験 || !(TFLAG:搾乳触手 || TFLAG:乳吸い) || !NOWEX:噴乳
+	RETURN
+CALL LOST_VARGIN_MILK_MESSAGE
+CALL KOJO_PRINT("イベント","初授乳")
+TALENT:授乳未経験 = 0
+SOURCE:屈辱 += 5000
+SOURCE:支配 += 5000
+SOURCE:情愛 += (ABL:母性 *1000)
+SETBIT ＃調教中初経験／授乳＃
+IF (!FLAG:あなたの触手もあなた扱い || PLAYER) && TFLAG:搾乳触手
+	CSTR:初経験／授乳 = 触手
+ELSE
+	CSTR:初経験／授乳 = %MILK_SUCK_PLAYER%
+ENDIF
+
+
+
+
+;ここからあなた用
+;童貞卒業処理
+@LOST_VARGIN_PLAYER_V
+
+SIF PLAYER || !TALENT:0:童貞 || !GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	RETURN
+CALL LOST_VARGIN_PLAYER_V_MESSAGE
+TALENT:0:童貞 = 0
+CSTR:0:初経験／Ｖ = %CALLNAME%
+CALL KOJO_PRINT("イベント","あなた童貞卒業")
+
+
+
+;Ａ童貞卒業
+@LOST_VARGIN_PLAYER_A
+
+SIF PLAYER || !TALENT:0:Ａ童貞 || !GETBIT(＃Ｐ使用／Ａ挿入＃)
+	RETURN
+CALL LOST_VARGIN_PLAYER_A_MESSAGE
+TALENT:0:Ａ童貞 = 0
+CSTR:0:初経験／Ａ = %CALLNAME%
+CALL KOJO_PRINT("イベント","あなたＡ童貞卒業")
+
+
+
+;あなた初Ｍセックス
+@LOST_VARGIN_PLAYER_M
+
+SIF PLAYER || !TALENT:0:Ｍ童貞 || !GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	RETURN
+CALL LOST_VARGIN_PLAYER_M_MESSAGE
+CALL KOJO_PRINT("イベント","あなた初Ｍセックス")
+TALENT:0:Ｍ童貞 = 0
+CSTR:0:初経験／Ｍセックス = %CALLNAME%
+
+
+
+;あなた初キス
+@LOST_VARGIN_PLAYER_KISS
+
+SIF PLAYER || !TALENT:0:キス未経験 || !SOURCE:キス
+	RETURN
+CALL LOST_VARGIN_PLAYER_KISS_MESSAGE
+CALL KOJO_PRINT("イベント","あなた初キス")
+TALENT:0:キス未経験 = 0
+CSTR:0:初経験／キス = %CALLNAME%
+
+
+
+;あなた初パイズリ
+@LOST_VARGIN_PLAYER_PAIZURI
+
+SIF PLAYER || !TALENT:0:パイズリ未経験 || !GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN
+CALL LOST_VARGIN_PLAYER_PAIZURI_MESSAGE
+CALL KOJO_PRINT("イベント","あなた初パイズリ")
+TALENT:0:パイズリ未経験 = 0
+CSTR:0:初経験／パイズリ = %CALLNAME%
+
+
+
+;あなた初乳吸い
+@LOST_VARGIN_PLAYER_MILK
+
+SIF PLAYER || !TALENT:0:授乳未経験
+	RETURN
+
+;乳吸いのときだけ記録する
+SIF !TFLAG:乳吸い || !NOWEX:噴乳
+	RETURN
+CALL LOST_VARGIN_PLAYER_MILK_MESSAGE
+CALL KOJO_PRINT("イベント","あなた初授乳")
+TALENT:0:授乳未経験 = 0
+CSTR:0:初経験／授乳 = %CALLNAME%
+
+
+

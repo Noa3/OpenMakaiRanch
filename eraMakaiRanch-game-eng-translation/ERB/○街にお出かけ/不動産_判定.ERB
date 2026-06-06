@@ -1,0 +1,112 @@
+﻿
+;建築判定
+;ARG→選択項目
+@ESTATE_JUDGE(ARG)
+
+;非対応IDならそのまま帰る
+IF ARG < 10 || ARG > 10 +ESTATE_LIST_NUM
+	PRINTL
+	RETURN
+ENDIF
+SELECTCASE ARG
+CASE 10
+	COST = ITEMPRICE:牛舎
+	IF ITEM:牛舎 >= ESTATE_COWSHED_LIMIT
+		CALL PRINTL_WORD_COLOR("　Max Built","水色")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Construct")
+	ENDIF
+
+CASE 11
+	COST = ESTATE_COWSHED_EXTENSION
+	IF !ITEM:牛舎
+		CALL PRINTL_WORD_COLOR("　＜Cowshed＞ not built","灰")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Select Cowshed To Expand")
+	ENDIF
+
+CASE 12
+	COST = ITEMPRICE:事務所増築
+	IF ITEM:事務所増築 >= ESTATE_OFFICE_LIMIT
+		CALL PRINTL_WORD_COLOR("　Expansion at current limit","水色")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Expand")
+	ENDIF
+	
+CASE 13
+	COST = ITEMPRICE:家族風呂
+	IF ITEM:家族風呂
+		CALL PRINTL_WORD_COLOR("　Already Modified","水色")
+	ELSEIF !ITEM:事務所増築
+		CALL PRINTL_WORD_COLOR("　＜Office＞ must be expanded first","灰")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Modify")
+	ENDIF
+
+CASE 14
+	COST = ITEMPRICE:大浴場
+	IF ITEM:大浴場
+		CALL PRINTL_WORD_COLOR("　Already Built","水色")
+	ELSEIF !ITEM:家族風呂
+		CALL PRINTL_WORD_COLOR("　Requires ＜Family Bath＞","灰")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Construct")
+	ENDIF
+
+CASE 15
+	COST = ITEMPRICE:ペット小屋
+	IF ITEM:ペット小屋 >= ESTATE_PETHOUSE_LIMIT
+		CALL PRINTL_WORD_COLOR("　Expansion at current limit","水色")
+	ELSEIF !ITEM:事務所増築
+		CALL PRINTL_WORD_COLOR("　＜Office＞ must be expanded first","灰")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Expand")
+	ENDIF
+
+CASE 16
+	COST = ITEMPRICE:奴隷寮
+	IF ITEM:奴隷寮
+		CALL PRINTL_WORD_COLOR("　Already Built","水色")
+	ELSEIF !ITEM:事務所増築
+		CALL PRINTL_WORD_COLOR("　＜Office＞ must be expanded first","灰")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Construct")
+	ENDIF
+
+CASE 17
+	COST = ITEMPRICE:奴隷寮増築
+	IF !ITEM:奴隷寮
+		CALL PRINTL_WORD_COLOR("You need to build the <Slave Dormitory> first", "灰")
+	ELSEIF ITEM:奴隷寮増築 >= ESTATE_DORMITORY_LIMIT
+		CALL PRINTL_WORD_COLOR("Already at maximum expansion", "水色")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Expand")
+	ENDIF
+	
+CASE 18
+	COST = ITEMPRICE:システムキッチン
+	IF ITEM:システムキッチン
+		CALL PRINTL_WORD_COLOR("　Already Modified","水色")
+	ELSEIF !ITEM:事務所増築
+		CALL PRINTL_WORD_COLOR("　＜Office＞ must be expanded first","灰")
+	ELSE
+		CALL ESTATE_JUDGE_MONEY_CHECK("Modify")
+	ENDIF
+ENDSELECT
+
+
+
+;資金判定になったときの建築可能チェック
+;ARGS→OKの場合の文面
+@ESTATE_JUDGE_MONEY_CHECK(ARGS)
+
+IF CAN_LOAN_MONEY +MONEY < COST
+	PRINTFORMLC 　Not enough with loan limit + current funds: %VALUE_DIGIT(COST)%G  
+ELSE
+	PRINTFORMLC [  0] %ARGS% (Loan auto-priority): %VALUE_DIGIT(COST)%G
+ENDIF
+PRINTFORML （%VALUE_DIGIT(MONEY)%G owned / %VALUE_DIGIT(CAN_LOAN_MONEY)%G available for loan
+
+
+
+

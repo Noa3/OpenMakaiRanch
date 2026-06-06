@@ -1,0 +1,68 @@
+﻿
+;霊力注入地の文
+@POWER_INJECTION_EP_MESSAGE
+
+SIF !LINEISEMPTY()
+	PRINTL
+PRINTFORML %CALLNAME% 霊力+%VALUE_DIGIT(SOURCE:注ぎ込み霊力量)%EP
+
+
+
+;最大霊力の増加
+@SLAVE_MAX_EP_UP_MESSAGE(ARG)
+;ARG→MAX_UP_EP
+
+CALL PRINT_WORD_COLOR,@"You release your Spiritual power, embuing %CALLNAME% with your dense makaian demonic energy","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s maximum Spiritual power+%VALUE_DIGIT(ARG)% → %VALUE_DIGIT(MAXBASE:霊力)%EP","水色"
+
+
+
+;奴隷が霊力注ぎ込まれてのレベルアップ
+;ARG→NOW_LEVEL
+@SLAVE_LEVELUP_MESSAGE(ARG)
+
+CALL PRINTL_WORD_COLOR,@"LvUP！　%CALLNAME% Lv{BASE:レベル} → {ARG}","水色"
+
+
+
+;奴隷の体力増加
+@SLAVE_HP_UP_MESSAGE
+
+CALL PRINT_WORD_COLOR,@"Being infused with your spiritual power, %CALLNAME%'s stamina increases...","桃"
+CALL HEARTCB(0xD02830)
+PRINTFORML 　最大体力+50 → {MAXBASE:体力}
+
+
+
+
+
+;魔力注入地の文
+@POWER_INJECTION_MP_MESSAGE
+
+SIF !LINEISEMPTY()
+	PRINTL
+PRINTFORML %CALLNAME%'s Magic power+%VALUE_DIGIT(SOURCE:注ぎ込み魔力量)%MP
+
+
+
+;魔力のない奴隷に魔力を注ぎ込む
+@SLAVE_MP_INJECTION_MESSAGE
+
+CALL PRINT_WORD_COLOR,@"You release your Magical power, embuing %CALLNAME% with your dense makaian magical energy...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+CALL PRINTL_WORD_COLOR,@"The infused magical power has slightly imbued %CALLNAME% with magic! → Magic+{MAXBASE:魔力}","水色"
+
+
+
+;最大魔力増加
+;ARG→MAX_UP_MP
+@SLAVE_MAX_MP_UP_MESSAGE(ARG)
+
+CALL PRINT_WORD_COLOR,@"Being infused with your magical power, %CALLNAME% is embued with your dense makaian magical energy...","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s maximum Magic power+%VALUE_DIGIT(ARG)% → %VALUE_DIGIT(MAXBASE:魔力)%MP","水色"
+

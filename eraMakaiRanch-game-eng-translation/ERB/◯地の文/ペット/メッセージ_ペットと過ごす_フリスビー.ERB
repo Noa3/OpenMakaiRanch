@@ -1,0 +1,82 @@
+﻿
+;ペットとフリスビー遊び：地の文
+;TARGET,ANIMAL,PET_NAME指定済み
+@PET_COMMU_MESSAGE_PLAY_FRISBEE
+
+FLAG_NAME = なつき度／%ANIMAL%
+IF TALENT:動物に好かれる || BASE:FLAG_NAME >= 8000
+	CALL PET_COMMU_MESSAGE_PLAY_FRISBEE_LOVE
+	
+	;投げる回数が多いのでむしろ懐かれてる場合のが体力消費が多い
+	DAMAGE = 150
+ELSEIF !TALENT:動物に嫌われる || BASE:FLAG_NAME >= 5000
+	CALL PET_COMMU_MESSAGE_PLAY_FRISBEE_LOW
+	DAMAGE = 120
+ELSE
+	CALL PET_COMMU_MESSAGE_PLAY_FRISBEE_HATE
+	DAMAGE = 50
+ENDIF
+
+
+
+;【動物に好かれる】orなつき時
+@PET_COMMU_MESSAGE_PLAY_FRISBEE_LOVE
+
+PRINTFORML %CALLNAME%はフリスビーを使って%PET_NAME%と遊ぶことにした。
+PRINTFORML フリスビーを飛ばすと、%PET_NAME%は大はしゃぎで追いかけていく！
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	PRINTFORML 助走をつけて飛び跳ね器用に咥えると、%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+CASE "オルトロス"
+	PRINTFORML 2つの頭で器用に咥えると、%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+CASEELSE
+	PRINTFORML 小さな腕を伸ばして器用に掴むと、それを咥え%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+ENDSELECT
+PRINTL もう1度と催促するように目を輝かせている。
+PRINTL ………
+PRINTFORML 何度もフリスビーを投げては取ってきてを繰り返し、%PET_NAME%は大満足したようだ。
+
+
+
+;【動物に嫌われる】ではないor嫌われるけどなつき程々
+@PET_COMMU_MESSAGE_PLAY_FRISBEE_LOW
+
+PRINTFORML %CALLNAME%はフリスビーを使って%PET_NAME%と遊ぶことにした。
+PRINTFORML フリスビーを飛ばすと、%PET_NAME%は楽しそうに追いかけていく！
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	PRINTFORML 助走をつけて飛び跳ね器用に咥えると、%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+CASE "オルトロス"
+	PRINTFORML 2つの頭で器用に咥えると、%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+CASEELSE
+	PRINTFORML 小さな腕を伸ばして器用に掴むと、それを咥え%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+ENDSELECT
+PRINTL もう1度やってほしそうに尻尾を振っている。
+PRINTL ………
+PRINTFORML 何度かフリスビーを投げては取ってきてを繰り返し、%PET_NAME%は満足したようだ。
+
+
+
+;【動物に嫌われる】
+@PET_COMMU_MESSAGE_PLAY_FRISBEE_HATE
+
+PRINTFORML %CALLNAME%はフリスビーを使って%PET_NAME%と遊ぼうと試みた…
+PRINTFORML %PET_NAME%は「まあ付き合ってやるか」という表情をしている…
+PRINTFORML それでもフリスビーを飛ばすと、%PET_NAME%はなかなか楽しそうに追いかけていく！
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	PRINTFORML 助走をつけて飛び跳ね器用に咥えると、%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+CASE "オルトロス"
+	PRINTFORML 2つの頭で器用に咥えると、%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+CASEELSE
+	PRINTFORML 小さな腕を伸ばして器用に掴むと、それを咥え%CALLNAME%の元に駆けてきてフリスビーを差し出した。
+ENDSELECT
+PRINTL もう1度やってほしそうに尻尾を振っている。
+PRINTL ………
+PRINTFORML 数回フリスビー遊びをし、%PET_NAME%は満足したようだ。
+
+
+
+
+
+

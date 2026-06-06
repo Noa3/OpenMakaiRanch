@@ -1,0 +1,126 @@
+﻿;**********************************************************
+;母乳の淫語
+;**********************************************************
+@SLANG_MILK(ARG)
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+SLANGWORD =
+
+IF GETBIT(FLAG:スラング接頭語／母乳,0) && ABL:母乳濃度
+	SELECTCASE RAND:10
+	CASE 0
+		SLANGWORD += "nutritious "
+	CASE 1
+		SLANGWORD += "nutrient-rich "
+	CASE 2
+		SLANGWORD += "nourishing "
+	ENDSELECT
+ENDIF
+SIF GETBIT(FLAG:スラング接頭語／母乳,2) && ABL:母乳濃度 && RAND:100 < 15
+	SLANGWORD += "delicious "
+SIF GETBIT(FLAG:スラング接頭語／母乳,4) && ABL:母乳濃度 >= 4 && RAND:100 < 15
+	SLANGWORD += "high grade "
+SIF GETBIT(FLAG:スラング接頭語／母乳,5) && !EXP:肉体改造 && RAND:100 < 30
+	SLANGWORD += "natural "
+SIF GETBIT(FLAG:スラング接頭語／母乳,6) && CSTR:初期値／身分 == "王族" && RAND:100 < 30
+	SLANGWORD += "royal "
+IF GETBIT(FLAG:スラング接頭語／母乳,1) && ABL:母乳濃度
+	SELECTCASE ABL:母乳濃度
+	CASE 1
+		SIF RAND:100 < 70
+			SLANGWORD += "Thick "
+	CASE 2
+		SIF RAND:100 < 70
+			SLANGWORD += "Fine "
+	CASE 3
+		SIF RAND:100 < 70
+			SLANGWORD += "Rich "
+	CASE 4
+		SIF RAND:100 < 70
+			SLANGWORD += "Potent "
+	CASE 5
+		SIF RAND:100 < 70
+			SLANGWORD += "Premium "
+	ENDSELECT
+ENDIF
+SIF GETBIT(FLAG:スラング接頭語／母乳,3) && ABL:母乳濃度 >= 2 && RAND:100 < 10
+	SLANGWORD += "creamy "
+
+;フレーバーミルク判定
+IF CSTR:フレーバーミルク != ""
+	SLANGWORD += CSTR:フレーバーミルク
+	RETURNF SLANGWORD
+ENDIF
+
+;母乳スラングの場合のみ魔力母乳時の置換がある
+IF GETBIT(FLAG:スラング置換／母乳,10) && MARK:魔力母乳体質
+	EXIST ++
+	SIF RAND:100 < 50
+		RETURNF SAVESTR:表記／魔力母乳
+ENDIF
+IF GETBIT(FLAG:スラング置換／母乳,9)
+	EXIST ++
+	SIF RAND:100 < 50
+		RETURNF SAVESTR:表記／母乳
+ENDIF
+IF GETBIT(FLAG:スラング置換／母乳,4) && CFLAG:身長 < FLAG:スラング／子供扱い上限身長数値
+	EXIST ++
+	IF RAND:100 < 50
+		SLANGWORD += "loli milk"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング接頭語／母乳,7)
+	IF TALENT:ＪＳ && RAND:100 < 50
+		SLANGWORD += "ＪＳ "
+	ELSEIF TALENT:ＪＣ && RAND:100 < 50
+		SLANGWORD += "ＪＣ "
+	ELSEIF TALENT:ＪＫ && RAND:100 < 50
+		SLANGWORD += "ＪＫ "
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／母乳,3) && MARK:魔力母乳体質 && BASE:魔力
+	EXIST ++
+	IF RAND:100 < 50
+		SLANGWORD += "mana-infused milk"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／母乳,2) && TALENT:処女
+	EXIST ++
+	IF RAND:100 < 50
+		SLANGWORD += "virgin milk"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／母乳,1) && TALENT:処女
+	EXIST ++
+	IF RAND:100 < 50
+		SLANGWORD += "virgin milk"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+SIF GETBIT(FLAG:スラング置換／母乳,0) && EXIST
+	RESTART
+
+IF GETBIT(FLAG:スラング表示／母乳,0) && RAND:100 < 50
+	SLANGWORD += "mother's milk"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／母乳,2) && RAND:100 < 50
+	SLANGWORD += "milk"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／母乳,4) && RAND:100 < 50
+	SLANGWORD += "breast milk"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／母乳,1) && RAND:100 < 30
+	SLANGWORD += "milk"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／母乳,3)
+	SLANGWORD += "dairy milk"
+	RETURNF SLANGWORD
+ENDIF
+RESTART
+
+

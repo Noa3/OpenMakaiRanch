@@ -1,0 +1,133 @@
+﻿
+;母乳料理なら搾乳する
+@DINNER_LACTATION
+
+SIF !MILK_DINNER
+	RETURN
+
+;搾乳するのでリセット必要
+CALL RESET_TRAIN_PALAM
+;TFLAG:スケジュール外Ｈ = 1
+PLAYER = MASTER
+
+;脱衣地の文入れ
+CALL AJUST_STRIP_FLAG
+SOURCE:脱衣メッセージ表示 = 1
+SOURCE:自主脱衣 = 1
+
+;搾乳前地の文
+CALL DINNER_LACTATION_BEFORE_MESSAGE
+
+;脱衣
+IF TFLAG:授乳スリット
+	CALL OPEN_NIPPLE_SLIT
+ELSEIF !TFLAG:Ｎ露出
+	CALL TRAIN_CLOTHE_STRIP("一括","上半脱ぎ")
+ENDIF
+PRINTW
+
+;搾乳アシスト判定
+CALL DINNER_LACTATION_ASSIST_CHECK
+
+;搾乳開始地の文
+CALL DINNER_LACTATION_BEGIN_MESSAGE
+
+;搾乳
+CALL DINNER_LACTATION_RUN
+
+;搾乳後地の文
+CALL DINNER_LACTATION_AFTER_MESSAGE
+EXP:母乳料理 ++
+
+
+
+;搾乳アシスト判定
+@DINNER_LACTATION_ASSIST_CHECK
+
+;手伝ってあげるか任せるか
+;CFLAGでデフォルト設定していればそれに合わせる
+LACTATION_ASSIST = 0
+SELECTCASE CFLAG:母乳料理／搾乳アシスト
+CASE 0
+	PRINTFORML Would you like to help with %CALLNAME%'s milking?
+	CALL ASK_YN_DEFAULT(1)
+	SIF !RESULT
+		LACTATION_ASSIST = 1
+	
+	;デフォルトセット
+	IF DEFAULT_SET
+		IF LACTATION_ASSIST
+			CFLAG:母乳料理／搾乳アシスト = 1
+		ELSE
+			CFLAG:母乳料理／搾乳アシスト = -1
+		ENDIF
+	ENDIF
+CASE 1
+	LACTATION_ASSIST = 1
+;CASE -1
+ENDSELECT
+
+
+
+;料理用の搾乳
+@DINNER_LACTATION_RUN
+
+;WHILEで作ろうとしたけど回数でメッセージ変えようとするとFORがちょうどいい
+;30回でダメだったらなんか変だ
+TFLAG:ループ中メッセージ表示 = 1
+FOR LOCAL,0,30
+	CALL DINNER_LACTATION_RUN_SOURCE
+	SIF !LOCAL
+		CALL PRINT_IMAGE("調教実行")
+	SIF LOCAL <= 1
+		CALL ONOMATOPOEIA("乳揉み")
+	SIF EX:噴乳
+		CALL ONOMATOPOEIA("搾乳器")
+	SIF LOCAL >= 2
+		TFLAG:ループ中メッセージ表示 = 0
+	CALL SOURCE_CHECK
+	
+	;貯まる量の可視化
+	PRINTFORM 　　＜Milking Amount%TOSTR(EX:料理用ミルク,"#,0")%／%TOSTR(DISH_NEED_MILK,"#,0")%%MILK_COUNTING()%＞
+	
+	;必要量溜まったらおわり
+	IF DISH_NEED_MILK <= EX:料理用ミルク
+		PRINTL 【Required Amount Achieved】
+		RETURN
+	ENDIF
+	
+	;母乳尽きたか30回でダメだと終わっておく
+	IF LOCAL == 29 || !BASE:母乳生産力
+		PRINTFORML 　　＜Unable to produce the required amount of %SAVESTR:表記／母乳%. Switching to the regular menu...＞
+		MILK_DINNER = 0
+		RETURN
+	ENDIF
+	PRINTW
+NEXT
+
+
+
+;料理用ミルク搾乳SOURCE
+@DINNER_LACTATION_RUN_SOURCE
+
+;自分でやるかあなたが手伝うかで変化
+IF LACTATION_ASSIST
+	PLAYER = MASTER
+	SOURCE:Ｂ快楽／あなた責め = 1000
+	SOURCE:Ｎ快楽／あなた責め = 2000
+	SOURCE:恥辱 = 500
+	SOURCE:情愛 = 1000
+	SOURCE:屈辱 = 2000
+	SOURCE:支配 = 500
+	SOURCE:調教者習得 = 100
+ELSE
+	PLAYER = -1
+	SOURCE:Ｂ快楽 = 300
+	SOURCE:Ｎ快楽 = 1000
+	SOURCE:恥辱 = 200
+	SOURCE:屈辱 = 500
+ENDIF
+TFLAG:搾乳責め = 1
+TFLAG:料理搾乳 = 1
+
+

@@ -1,0 +1,93 @@
+﻿
+;調教コマンドによる汚れ追加・交換
+@COMMAND_STAIN_PLUS
+
+SELECTCASE SELECTCOM
+
+;10～,手コマンド
+CASE 10,11,17,18
+	;奴隷の胸／あなたの手で汚れ移動
+	CALL SWAP_STAIN("乳房","手")
+
+CASE 12
+	CALL SWAP_STAIN("乳首","手")
+
+CASE 13
+	CALL SWAP_STAIN("陰核","手")
+
+CASE 14
+	CALL SWAP_STAIN("膣","手")
+
+CASE 15
+	CALL SWAP_STAIN("アナル","手")
+
+CASE 16
+	CALL SWAP_STAIN("尻","手")
+
+;20～,口コマンド
+CASE 20
+	CALL SWAP_STAIN("乳首","口")
+
+CASE 21,901,902
+	CALL SWAP_STAIN("乳首","口")
+	CALL SWAP_STAIN("乳房","手")
+
+CASE 22
+	CALL SWAP_STAIN("口","口")
+
+CASE 23
+	CALL SWAP_STAIN("陰核","口")
+
+CASE 24
+	CALL SWAP_STAIN("膣","口")
+
+CASE 25
+	CALL SWAP_STAIN("アナル","口")
+
+CASE 26
+	CALL SWAP_STAIN("乳房","口")
+
+CASE 27
+	CALL SWAP_STAIN("耳","口")
+
+CASE 28
+	CALL SWAP_STAIN("腋","口")
+
+CASE 29
+	CALL SWAP_STAIN("顔","口")
+
+;肉体改造エキス
+CASE 544,545,547
+	CALL SET_STAIN_TARGET("乳房","触手粘液")
+
+CASE 548
+	CALL SET_STAIN_TARGET("乳房","触手粘液")
+	CALL SET_STAIN_TARGET("乳首","母乳")
+
+CASE 603
+	CALL SET_STAIN_TARGET("乳首","母乳")
+
+CASE 820
+	CALL SET_STAIN_TARGET("アナル","触手粘液")
+
+CASE 821,824
+	CALL SET_STAIN_TARGET("乳房","触手粘液")
+	CALL SET_STAIN_TARGET("乳首","触手粘液")
+
+CASE 822
+	CALL SET_STAIN_TARGET("陰核","触手粘液")
+
+CASE 823
+	CALL SET_STAIN_TARGET("膣","触手粘液")
+
+CASE 903
+	CALL SWAP_STAIN("乳首","口")
+	CALL SWAP_STAIN("乳房","手")
+	CALL SET_STAIN_TARGET("乳房","触手粘液")
+	CALL SET_STAIN_TARGET("乳首","触手粘液")
+ENDSELECT
+
+
+
+
+

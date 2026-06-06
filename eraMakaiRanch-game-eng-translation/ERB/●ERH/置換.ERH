@@ -1,0 +1,103 @@
+﻿
+;()まみれで可読性がお排泄物になるため置換する
+;BIT管理に使ったり
+
+;装備中衣服の状態
+#DEFINE ＃着用衣服／所持＃ 			GETBIT(EQUIP:(EQUIP:装備中ID／衣服),0)
+#DEFINE ＃着用衣服／胸破け＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),1)
+#DEFINE ＃着用衣服／股間破け＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),2)
+#DEFINE ＃着用衣服／横乳露出＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),3)
+#DEFINE ＃着用衣服／ズリ穴＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),4)
+#DEFINE ＃着用衣服／谷間露出＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),5)
+#DEFINE ＃着用衣服／乳暖簾＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),6)
+#DEFINE ＃着用衣服／前掛け＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),7)
+#DEFINE ＃着用衣服／乳出し＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),8)
+#DEFINE ＃着用衣服／股間出し＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),9)
+#DEFINE ＃着用衣服／授乳スリット＃ 	GETBIT(EQUIP:(EQUIP:装備中ID／衣服),10)
+#DEFINE ＃着用衣服／下乳露出＃ 		GETBIT(EQUIP:(EQUIP:装備中ID／衣服),11)
+
+#DEFINE ＃着用衣服／名称＃ 		ITEMNAME:(EQUIP:装備中ID／衣服)
+#DEFINE ＃着用下着上／名称＃ 	ITEMNAME:(EQUIP:装備中ID／下着上)
+#DEFINE ＃着用下着下／名称＃ 	ITEMNAME:(EQUIP:装備中ID／下着下)
+#DEFINE ＃着用上着／名称＃ 		ITEMNAME:(EQUIP:装備中ID／上着)
+#DEFINE ＃着用頭装備／名称＃ 	ITEMNAME:(EQUIP:装備中ID／頭)
+
+#DEFINE ＃着用衣服／色柄＃ 			CSTR:(EQUIP:装備中ID／衣服)
+#DEFINE ＃着用下着上／色柄＃ 		CSTR:(EQUIP:装備中ID／下着上)
+#DEFINE ＃着用下着下／色柄＃ 		CSTR:(EQUIP:装備中ID／下着下)
+#DEFINE ＃着用眼装備／色柄＃ 		CSTR:(EQUIP:装備中ID／眼)
+#DEFINE ＃着用頭装備／色柄＃ 		CSTR:(EQUIP:装備中ID／頭)
+#DEFINE ＃着用腕装備／色柄＃ 		CSTR:(EQUIP:装備中ID／腕)
+#DEFINE ＃着用脚装備／色柄＃ 		CSTR:(EQUIP:装備中ID／脚)
+#DEFINE ＃着用首装備／色柄＃ 		CSTR:(EQUIP:装備中ID／首)
+#DEFINE ＃着用上着／色柄＃ 			CSTR:(EQUIP:装備中ID／上着)
+#DEFINE ＃着用鎧／色柄＃ 			CSTR:(EQUIP:装備中ID／鎧)
+
+;選択した衣服の状態
+#DEFINE ＃選択衣服／所持＃ 			GETBIT(EQUIP:ARG,0)
+#DEFINE ＃選択衣服／胸破け＃ 		GETBIT(EQUIP:ARG,1)
+#DEFINE ＃選択衣服／股間破け＃ 		GETBIT(EQUIP:ARG,2)
+#DEFINE ＃選択衣服／横乳露出＃ 		GETBIT(EQUIP:ARG,3)
+#DEFINE ＃選択衣服／ズリ穴＃ 		GETBIT(EQUIP:ARG,4)
+#DEFINE ＃選択衣服／谷間露出＃	 	GETBIT(EQUIP:ARG,5)
+#DEFINE ＃選択衣服／乳暖簾＃ 		GETBIT(EQUIP:ARG,6)
+#DEFINE ＃選択衣服／前掛け＃ 		GETBIT(EQUIP:ARG,7)
+#DEFINE ＃選択衣服／乳出し＃ 		GETBIT(EQUIP:ARG,8)
+#DEFINE ＃選択衣服／股間出し＃ 		GETBIT(EQUIP:ARG,9)
+#DEFINE ＃選択衣服／授乳スリット＃ 	GETBIT(EQUIP:ARG,10)
+
+#DEFINE ＃選択衣服／名称＃ 		ITEMNAME:ARG
+#DEFINE ＃選択下着上／名称＃ 	ITEMNAME:ARG
+#DEFINE ＃選択下着下／名称＃ 	ITEMNAME:ARG
+#DEFINE ＃選択上着／名称＃ 		ITEMNAME:ARG
+
+
+;天気
+#DEFINE ＃悪天候＃				"雨","大雨","強風","豪雨","大雪","吹雪"
+
+
+;仕事スケジュールまとめて
+#DEFINE ＃業務スケジュール＃	"酪農","事務","調剤","調教","大浴場掃除"
+#DEFINE ＃調教スケジュール＃	"搾乳","抽出","体内凌辱"
+
+
+;膨乳時に破損するブラ
+{
+#DEFINE ＃膨乳破損ブラ＃	"ブラ","フロントホックブラ","授乳スリットブラ","乳首露出ブラ",
+"眼帯ブラ","ねこブラ","スポーツブラ","ビスチェ"
+}
+
+;破損する衣服
+{
+#DEFINE ＃膨乳破損衣服＃	"ワンピース","ローブ","修道服","戦闘用シスター服","ビキニアーマー",
+"天界のローブ","ブルマ体操着","シャツ＆ジーンズ","囚人服","ゴスロリ衣装","バニースーツ","セーラー服","チャイナドレス",
+"アオザイ","ブレザー制服"
+}
+
+
+;反抗・拒絶・屈服・陥落・恋慕・隷属を並べなくていいように
+#DEFINE ＃陥落状態／拒絶以上＃		GROUPMATCH(CSTR:陥落状態,"拒絶","屈服","陥落","恋慕","隷属")
+#DEFINE ＃陥落状態／屈服以上＃		GROUPMATCH(CSTR:陥落状態,"屈服","陥落","恋慕","隷属")
+#DEFINE ＃陥落状態／陥落以上＃		GROUPMATCH(CSTR:陥落状態,"陥落","恋慕","隷属")
+#DEFINE ＃陥落状態／恋慕以上＃		GROUPMATCH(CSTR:陥落状態,"恋慕","隷属")
+
+;一応揃え
+#DEFINE ＃陥落状態／隷属＃			GROUPMATCH(CSTR:陥落状態,"隷属")
+
+
+
+
+
+;旧調教コマンド切替
+;ちゃんと収めようとするとこんなぐちゃぐちゃな書き方
+#DEFINE ＃旧コマンド切替／無効／手・口＃		FLAG:表示調教コマンド切替 && FLAG:表示調教コマンド切替 != 1
+#DEFINE ＃旧コマンド切替／無効／ペニス＃		FLAG:表示調教コマンド切替 && FLAG:表示調教コマンド切替 != 2
+#DEFINE ＃旧コマンド切替／無効／道具・魔術＃	FLAG:表示調教コマンド切替 && FLAG:表示調教コマンド切替 != 3
+#DEFINE ＃旧コマンド切替／無効／触手＃			FLAG:表示調教コマンド切替 && FLAG:表示調教コマンド切替 != 4
+#DEFINE ＃旧コマンド切替／無効／苦痛＃			FLAG:表示調教コマンド切替 && FLAG:表示調教コマンド切替 != 5
+
+
+
+
+
+

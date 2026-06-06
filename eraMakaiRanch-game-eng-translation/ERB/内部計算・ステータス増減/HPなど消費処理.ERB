@@ -1,0 +1,36 @@
+﻿
+;HP減少
+;ARG→消費量
+;ARG:1→表示スキップ
+;ARG:2→改行
+;COST持っていくので後の処理で使える
+;HPがマイナスの場合処理たぶん使わないのでここで揃えちゃった
+@HP_COST(ARG,ARG:1,ARG:2)
+
+COST = ARG
+BASE:体力 = LIMIT(BASE:体力 -COST,0,MAXBASE:体力)
+SIF !ARG:1
+	PRINTFORM HP-{COST} 
+SIF ARG:2
+	PRINTL
+
+
+
+;あなたHP減少
+;ARG→消費量
+;ARG:1→表示スキップ
+;ARG:2→改行
+@PLAYER_HP_COST(ARG,ARG:1,ARG:2)
+
+COST = ARG
+BASE:0:体力 = LIMIT(BASE:0:体力 -COST,0,MAXBASE:0:体力)
+SIF !ARG:1
+	PRINTFORM HP-{COST} 
+SIF ARG:2
+	PRINTL
+
+
+
+
+
+

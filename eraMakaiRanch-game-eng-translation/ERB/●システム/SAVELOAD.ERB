@@ -1,0 +1,188 @@
+﻿;[ライセンス]パブリックドメイン
+;本ファイルに係る著作権を放棄する。
+;本ファイルに係る著作人格権は行使しない。
+;2009/3/28 MinorShift(Emuera作者)
+
+;独自のセーブ・ロードシステムの例（Emuera  ver 1.50以降対象）
+;LOADGAMEの代わりにCALL LOADGAME_EX、SAVEGAMEの代わりにCALL SAVEGAME_EXを実行してください。
+;実際に使用するには旧来の@SAVEINFOに合わせて@SAVEINFO_EXを編集する必要があります。
+;使用している命令の詳細についてはEmueraの拡張文法.txtを参照してください。
+;
+
+@SAVEGAME_EX
+
+CALL MANYL(3)
+;セーブする前に、プレイ時間反映
+TIME:1 += GETMILLISECOND() /1000 -TIME:2
+TIME:2 = GETMILLISECOND() /1000
+PRINTL Which slot to save to?
+CALL PRINT_SAVEDATA
+PRINTL
+PRINTL [100] Cancel
+INPUT
+INPUT_NUM = RESULT
+PRINTL
+IF INPUT_NUM == 100
+	RETURN
+
+;ページ切り替え
+ELSEIF SAVENOS() > 20 && INPUT_NUM == 90
+	GLOBAL:セーブデータ読み込みページ ++
+	
+	;最大ページより多いなら0にする
+	SIF GLOBAL:セーブデータ読み込みページ >= SAVEPAGE
+		GLOBAL:セーブデータ読み込みページ = 0
+	
+	;GLOBALに保存
+	SAVEGLOBAL
+	RESTART
+ELSEIF (INPUT_NUM < 0 || INPUT_NUM >= SAVENOS())
+	RESTART
+ELSE
+	CHKDATA INPUT_NUM
+	
+	;RESULT == 1は"ファイルが存在しない"
+	IF !RESULT
+		PRINTL Existing data detected. Overwrite?
+		PRINTL [0] Yes
+		PRINTL
+		PRINTL [1] No
+		INPUT
+		SIF RESULT
+			RESTART
+	ENDIF
+	CALL SAVEINFO_EX
+	SAVEDATA INPUT_NUM,RESULTS
+ENDIF
+
+
+
+@LOADGAME_EX
+
+CALL MANYL(3)
+PRINTL Which slot to load from?
+CALL PRINT_SAVEDATA
+PRINTL
+PRINTL 　《 Autosave 》
+CHKDATA 99
+PRINTFORML [99] %RESULTS:0%
+PRINTL [100] Cancel
+INPUT
+INPUT_NUM = RESULT
+IF INPUT_NUM == 100
+	RETURN
+ELSEIF SAVENOS() > 20 && INPUT_NUM == 90
+	GLOBAL:セーブデータ読み込みページ ++
+	SIF GLOBAL:セーブデータ読み込みページ >= SAVEPAGE
+		GLOBAL:セーブデータ読み込みページ = 0
+	SAVEGLOBAL
+	RESTART
+ELSEIF (INPUT_NUM < 0 || INPUT_NUM >= SAVENOS()) && INPUT_NUM != 99
+	RESTART
+ELSE
+	CHKDATA INPUT_NUM
+	;RESULT == 0ならロード可能
+	SIF RESULT != 0
+		RESTART
+	LOADDATA INPUT_NUM
+ENDIF
+
+
+
+@PRINT_SAVEDATA
+
+;GLOBALのセーブファイルページを見るためにLOAD
+LOADGLOBAL
+
+;セーブデータが20以下の時はページを0に戻す
+SIF SAVENOS() <= 20
+	GLOBAL:セーブデータ読み込みページ = 0
+
+;画面が止まって見えないように行ごと表示
+;セーブデータ数増加に対応
+REDRAW 1
+FOR LOCAL,GLOBAL:セーブデータ読み込みページ *20,(GLOBAL:セーブデータ読み込みページ +1)*20
+	;セーブデータ数より多くは読み込みしない
+	SIF LOCAL >= SAVENOS()
+		BREAK
+	CHKDATA LOCAL
+	PRINTFORM [{LOCAL,2}] 
+	IF RESULT
+		CALL PRINTL_WORD_COLOR("EMPTY","灰")
+	ELSE
+		PRINTFORML %RESULTS%
+	ENDIF
+NEXT
+
+;セーブデータを20以上使う設定にしている場合は拡張ボタン表示
+SAVEPAGE = (SAVENOS() -1)/20  +1
+SIF SAVEPAGE >= 2
+	PRINTFORML [90] Next Page（{GLOBAL:セーブデータ読み込みページ +1}／{SAVEPAGE}）
+
+;行ごと表示を直す
+REDRAW 0
+RETURN
+
+
+
+@SAVEINFO_EX
+#DIMS MODE
+
+;セーブデータ用表示呼び出し
+CALL SAVEDATA_DISPLAY_CALC
+RETURN
+
+
+
+@TITLE_LOADGAME
+;タイトル画面のロードでも独自のロード画面を使う場合、@TITLE_LOADGAMEを定義する
+;@TITLE_LOADGAMEが定義されていると、標準のロード画面の代わりにTITLE_LOADGAMEが呼ばれる。
+CALL LOADGAME_EX
+RETURN
+;RETURNするとタイトルへ戻る。
+
+
+
+@SYSTEM_AUTOSAVE
+;オートセーブの処理を独自に行う場合、@SYSTEM_AUTOSAVEを定義する
+;@SYSTEM_AUTOSAVEが定義されていると、標準のオートセーブの代わりにSYSTEM_AUTOSAVEが呼ばれる。
+CALL AUTO_SAVE
+
+
+
+;独自のオートセーブ処理
+@AUTO_SAVE
+CALL SAVEINFO_EX
+SAVEDATA 99,RESULTS
+
+
+
+@EVENTLOAD
+
+;ロードしたときのPC時間をTIME:2に保存
+TIME:2 = GETMILLISECOND() /1000
+
+;ぱにめーしょん設定　多分いらないけど
+IF FLAG:509
+	LOCAL = ANIME_CONFIG("FORCE",2)
+ELSE
+	LOCAL = ANIME_CONFIG("FORCE",0)
+ENDIF
+
+;セーブデータのアプデ
+SIF FLAG:セーブデータのバージョン < GAMEBASE_VERSION || FLAG:セーブデータのバージョン >= 10000
+	CALL VERSION_CHECK
+
+; English Version check
+CALL TR_UPDATE
+
+;実質定数のセット
+CALL LOAD_CONST_SET
+
+;SAVESTRが保存されてなかったりするので対応
+IF SAVESTR:表記／乳房 == ""
+	FOR LOCAL,0,10
+		SAVESTR:LOCAL = %GLOBALS:LOCAL%
+	NEXT
+ENDIF
+

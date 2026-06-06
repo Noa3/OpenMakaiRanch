@@ -1,0 +1,87 @@
+﻿
+;アイテム説明と購入数
+;ARG→選択項目
+@ITEM_DETAIL_INSTITUTE(ARG)
+
+;対応IDでないなら汎用出して帰る
+;ここでは選択項目による
+IF ARG < 10 || ARG > 10 +INSTITUTE_LIST_NUM
+	PRINTL  　《 Item Decription Displayed Here 》
+	RETURN
+ENDIF
+
+SELECTCASE ARG
+CASE 10
+	PRINTFORML Convert To Contribution Points：　Owned：%VALUE_DIGIT(MONEY:貢献PT)%pt
+	PRINTFORML Rate：{EP_CONTRIBUTION_PT}EP→1 Contribution Point
+	PRINTL
+	PRINTL You can obtain ＜Contribution Points＞ by giving your stored spiritual power for research.
+
+CASE 11
+	PRINTFORML ＜%ITEMS_ENG("奴隷候補設定変更チケット")%＞　Owned：{ITEM:奴隷候補設定変更チケット} sheets
+	PRINTFORML Required Spirit Energy：%VALUE_DIGIT(ITEMPRICE:奴隷候補設定変更チケット)%EP
+	PRINTL
+	PRINTL You can exchange a mysterious ticket to change the tendencies of humans living on the surface.
+	PRINTL However, it requires a large amount of stored spirit energy.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL To be honest, no one at the lab, including Eugene, understands how it works.
+		PRINTL From a meta perspective, it's hard to integrate this concept into the world setting.
+	ENDIF
+
+CASE 12
+	PRINTFORML ＜%ITEMS_ENG("霊力抽出装置")%＞　Owned: {ITEM:霊力抽出装置} units
+	PRINTFORML 　Spirit Energy: %VALUE_DIGIT(ITEMPRICE:霊力抽出装置 /2)%EP
+	PRINTFORML 　        Funds: %VALUE_DIGIT(ITEMPRICE:霊力抽出装置)%G
+	PRINTL
+	PRINTL With an additional extractor, you can perform simultaneous extraction on one more slave.
+
+CASE 13
+	PRINTFORML ＜%ITEMS_ENG("魔力枷")%＞　Owned: {ITEM:魔力枷} units
+	PRINTFORML 　         Mana: %VALUE_DIGIT(ITEMPRICE:魔力枷 /2)%MP
+	PRINTFORML 　        Funds: %VALUE_DIGIT(ITEMPRICE:魔力枷)%G
+	PRINTL
+	PRINTL Adds one Mana Shackles, increasing the number of non-subjugated slaves you can manage.
+
+CASE 14
+	PRINTFORML ＜%ITEMS_ENG("魔力補給装置")%＞
+	PRINTFORML 　Spirit Energy: %VALUE_DIGIT(ITEMPRICE:魔力補給装置)%EP
+	PRINTFORML 　        Funds: %VALUE_DIGIT(ITEMPRICE:魔力補給装置)%G
+	PRINTL
+	PRINTL A device for infusing stored Mana into living beings.
+	PRINTFORML Allows %CALLNAME:0% to replenish Mana from the Mana reservoir.
+	PRINTL Note: The maximum Mana does not increase during replenishment.
+	PRINTL Available from the main menu under [Information] → [Ranch Info] → [Mana Replenishment].
+
+CASE 15
+	PRINTFORML ＜%ITEMS_ENG("魔改造魔力貯蔵器")%＞
+	PRINTFORML 　Mana: %VALUE_DIGIT(MAGIC_TANK_LARGE_CAPACITY)%MP
+	PRINTFORML ＜%ITEMS_ENG("大容量魔力貯蔵器")%＞ required.
+	PRINTL
+	PRINTL Using the mana from a fully filled high-capacity mana storage, allows for further massive mana storage.
+	IF FLAG:ジョーク表示
+		PRINTL This is the result of everyone at the lab, including Eugene, having too much fun.
+		PRINTL It's likely unnecessary to store this much mana.
+	ENDIF
+
+CASE 16
+	PRINTFORML ＜%ITEMS_ENG("小型霊力抽出装置")%＞
+	PRINTFORML 　        Funds: %VALUE_DIGIT(ITEMPRICE:小型霊力抽出装置)%G
+	PRINTL
+	PRINTFORML This device attaches to a slave's %SAVESTR:表記／乳房% like a milking machine, extracting
+	PRINTFORML %SAVESTR:表記／母乳% along with spirit energy.
+	PRINTL It's compact and can be used during training sessions.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL Since it's provided at the start of the game, it's unlikely you'll need to create one.
+	ENDIF
+ENDSELECT
+
+
+;作るかもしれない
+;CASE "触手霊力抽出装置"
+	;PRINTFORML Convert a Spirit Energy Extracter into a tentacle variant using %CALLNAME:0%'s Mana.
+	;PRINTL Numerous tentacles will torment every part of a slave's body, causing her to madly orgasm as 
+	;PRINTL her breast milk and Spirit Energy is extracted.
+
+

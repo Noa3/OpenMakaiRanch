@@ -1,0 +1,265 @@
+﻿
+;奴隷候補の服装
+@RANDOM_SLAVE_CLOTHE
+
+VARSET EQUIP
+VARSET CSTR,"",1000,2000
+CALL RANDOM_SLAVE_CLOTHE_BASE
+CALL RANDOM_SLAVE_CLOTHE_ARMOR
+CALL RANDOM_SLAVE_CLOTHE_LINGERIE
+CALL RANDOM_SLAVE_CLOTHE_ACCESSORY
+CALL CHARA_EQUIP_REGISTER
+CALL RANDOM_SLAVE_CLOTHE_COLOR
+CALL RANDOM_SLAVE_LINGERIE_COLOR
+CALL RANDOM_SLAVE_ACCESSORY_COLOR
+
+
+
+;ベース衣服
+@RANDOM_SLAVE_CLOTHE_BASE
+
+;基本的にジョブにより決定
+SELECTCASE CSTR:ジョブ
+
+;たまにビキニアーマーのジョブ
+CASE "冒険者","弓士","剣士","兵士","ワルキューレ"
+	SIF RAND:100 < 10
+		EQUIP:ビキニアーマー ++
+
+;確率高め
+CASE "剣闘士","戦士"
+	SIF RAND:100 < 50
+		EQUIP:ビキニアーマー ++
+{
+CASE "プリースト","治癒士","呪術士","錬金術師","白魔術士","黒魔術士","賢者","死霊術士","時魔道士","魔女",
+"学者","軍師","カーディナル","ビショップ","大魔導師"
+}
+	EQUIP:ローブ ++
+CASE "聖女","姫君"
+	EQUIP:ドレス ++
+CASE "巫女","姫巫女"
+	EQUIP:巫女服 ++
+CASE "退魔巫女"
+	EQUIP:戦闘用巫女服 ++
+CASE "シャーマン","陰陽師"
+	EQUIP:法衣 ++
+CASE "牛飼い","羊飼い"
+	EQUIP:作業着 ++
+	SIF RAND:100 < 20
+		EQUIP:オーバーオール ++
+CASE "料理人"
+	EQUIP:布の服 ++
+	EQUIP:エプロン ++
+CASE "くのいち"
+	EQUIP:忍装束 ++
+CASE "メイド"
+	EQUIP:メイド服 ++
+CASE "バトルメイド"
+	EQUIP:戦闘用メイド服 ++
+CASE "シスター"
+	EQUIP:修道服 ++
+CASE "バトルシスター"
+	EQUIP:戦闘用シスター服 ++
+CASE "踊り子"
+	EQUIP:踊り子の衣装 ++
+CASE "姫騎士"
+	EQUIP:バトルドレス ++
+ENDSELECT
+
+;種族・身分で上書きする場合
+;種族による上書き
+SELECTCASE CSTR:種族
+CASE "ヴァンパイア"
+	IF RAND:100 < 30
+		VARSET EQUIP
+		EQUIP:コート ++
+		EQUIP:布の服 ++
+	ENDIF
+	IF RAND:100 < 30
+		VARSET EQUIP
+		EQUIP:ドレス ++
+	ENDIF
+CASE "天人","女神"
+	;ジョブないはずなので100%でいいか
+	VARSET EQUIP
+	EQUIP:ローブ ++
+ENDSELECT
+
+;身分による上書き
+;装備判定ない場合は100%
+SELECTCASE CSTR:身分
+CASE "貴族"
+	IF RAND:100 < 30 || !SUMARRAY(EQUIP)
+		VARSET EQUIP
+		EQUIP:貴族服 ++
+	ENDIF
+CASE "王族"
+	IF RAND:100 < 30 || !SUMARRAY(EQUIP)
+		VARSET EQUIP
+		EQUIP:ドレス ++
+	ENDIF
+ENDSELECT
+
+;ここまでEQUIPがない場合布の服
+SIF !SUMARRAY(EQUIP)
+	EQUIP:布の服 ++
+
+
+
+;鎧の有無
+@RANDOM_SLAVE_CLOTHE_ARMOR
+
+;ビキニアーマーなら飛ばす
+SIF EQUIP:ビキニアーマー
+	RETURN
+SELECTCASE CSTR:ジョブ
+
+;たまに軽鎧
+CASE "冒険者","旅人","騎士","弓士","剣闘士","自警団員","兵士","魔法戦士"
+	SIF RAND:100 < 20
+		EQUIP:軽鎧 ++
+
+;確率高め
+CASE "騎士","剣士","聖騎士","ワルキューレ"
+	SIF RAND:100 < 60
+		EQUIP:軽鎧 ++
+
+;100%
+CASE "戦士","騎士団長","パラディン"
+	EQUIP:軽鎧 ++
+CASE "武将"
+	EQUIP:甲冑 ++
+CASE "重装兵"
+	EQUIP:重鎧 ++
+
+;バリエーションあり
+CASE "サムライ"
+	SELECTCASE RAND:100
+	CASE 0 TO 9
+		EQUIP:甲冑 ++
+	CASE 10 TO 39
+		EQUIP:軽鎧 ++
+	ENDSELECT
+
+CASE "暗黒騎士","ブラックナイト"
+	SELECTCASE RAND:100
+	CASE 0 TO 29
+		EQUIP:重鎧 ++
+	CASEELSE
+		EQUIP:軽鎧 ++
+	ENDSELECT
+ENDSELECT
+
+
+
+;下着
+@RANDOM_SLAVE_CLOTHE_LINGERIE
+
+;衣服によって決定　だいたい基本ブラ・ショーツ
+IF EQUIP:巫女服 || EQUIP:戦闘用巫女服 || EQUIP:法衣 || EQUIP:忍装束 || EQUIP:甲冑
+	EQUIP:さらし ++
+	EQUIP:前貼り ++
+ELSEIF EQUIP:貴族服 || EQUIP:ドレス
+	EQUIP:ビスチェ ++
+	EQUIP:ショーツ ++
+
+;下着不可の衣服
+ELSEIF EQUIP:ビキニアーマー || EQUIP:踊り子の衣装
+
+ELSE
+	EQUIP:ブラ ++
+	EQUIP:ショーツ ++
+ENDIF
+
+
+
+;アクセサリー
+@RANDOM_SLAVE_CLOTHE_ACCESSORY
+#DIM SELECT_FIX
+
+;メガネ率に補正かけるジョブ
+IF GROUPMATCH(CSTR:ジョブ,"薬師","錬金術師","学者","賢者","カーディナル","軍師")
+	;5割増しくらいがいい気がする
+	SELECT_FIX = FLAG:メガネ率
+	TIMES SELECT_FIX,1.50
+	SIF RAND:100 < SELECT_FIX
+		EQUIP:メガネ ++
+ELSE
+	;メガネ率コンフィグを参照
+	SIF RAND:100 < FLAG:メガネ率
+		EQUIP:メガネ ++
+ENDIF
+
+;頭アクセサリーちょっとややこしい
+CALL RANDOM_SLAVE_CLOTHE_ACCESSORY_HEAD
+
+;チョーカーの条件特になし
+SIF RAND:100 < 10
+	EQUIP:チョーカー ++
+
+;グローブとソックス
+IF EQUIP:メイド服 || EQUIP:戦闘用メイド服 || EQUIP:貴族服 || EQUIP:ドレス
+	;グローブはないこともある
+	SIF RAND:100 < 90
+		EQUIP:グローブ ++
+	
+	;メイド服などはガーターベルトの場合あり
+	IF RAND:100 < 30
+		EQUIP:ガーターベルト ++
+	ELSE
+		EQUIP:ソックス ++
+	ENDIF
+
+;つけない衣服
+ELSEIF EQUIP:作業着 || EQUIP:オーバーオール || EQUIP:ビキニアーマー || EQUIP:踊り子の衣装
+
+;他
+ELSE
+	IF RAND:100 < 30
+		SIF RAND:100 < 80
+			EQUIP:グローブ ++
+		EQUIP:ソックス ++
+	ENDIF
+ENDIF
+
+;マント・ケープをつけるのそんなにないかも
+IF EQUIP:布の服 || EQUIP:ローブ || EQUIP:貴族服
+	SELECTCASE RAND:100
+	CASE 0 TO 9
+		EQUIP:ケープ ++
+	CASE 10 TO 24
+		EQUIP:マント ++
+	ENDSELECT
+ENDIF
+
+
+
+;頭アクセサリー
+@RANDOM_SLAVE_CLOTHE_ACCESSORY_HEAD
+
+;シスター
+IF GROUPMATCH(CSTR:ジョブ,"シスター","バトルシスター")
+	SIF RAND:100 < 90
+		EQUIP:シスターヴェール ++
+	SIF RAND:100 < 50
+		EQUIP:チョーカー ++
+	RETURN
+ENDIF
+
+;王族だとティアラだったりする
+IF CSTR:身分 == "王族"
+	IF RAND:100 < 30
+		EQUIP:ティアラ ++
+		RETURN
+	ENDIF
+ENDIF
+
+;ここまで通ったらリボン、カチューシャ、なしの3択
+SELECTCASE RAND:100
+CASE 0 TO 19
+	EQUIP:リボン ++
+CASE 20 TO 39
+	EQUIP:カチューシャ ++
+ENDSELECT
+
+

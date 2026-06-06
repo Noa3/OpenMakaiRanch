@@ -1,0 +1,95 @@
+﻿
+;膣スラング設定
+@SLANG_CONFIG_VAGINA
+
+CLEARLINE LINECOUNT
+PRINTL Select slang options for vagina.
+PRINTLC [ 0] 「Vagina」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／膣,0),1)
+PRINTLC [ 1] 「Pussy」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／膣,1),1)
+PRINTLC [ 2] 「Hole」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／膣,2),1)
+PRINTLC [ 3] 「Cunt」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／膣,3),1)
+PRINTLC [ 4] 「Meat Hole」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／膣,4),1)
+PRINTLC [ 5] 「Genitalia」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／膣,5),1)
+PRINTLC [ 6] 「Lower Lips」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／膣,6),1)
+PRINTL
+PRINTL 　《 Prefix Setting 》
+PRINTLC [10] 「Lewd」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／膣,0),0)
+PRINTL 　（for lewd pussy）
+PRINTLC [11] 「Obscene」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／膣,1),0)
+PRINTL 　（for lewd pussy）
+PRINTLC [12] 「Immature」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／膣,2),0)
+PRINTL 　（when child sized）
+PRINTL
+PRINTL 　《 Special Substitutions 》
+PRINTLC [20] Priority for Special Substitutions
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／膣,0),0)
+PRINTL 　　give Priority to cases that meet the conditions for special substitution
+PRINTLC [21] 「Childish Pussy」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／膣,1),0)
+PRINTL （when loli sized）
+PRINTLC [22] 「Loli Pussy」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／膣,2),0)
+PRINTL 　（when loli sized）
+PRINTLC [23] 「Exquisite Pussy」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／膣,3),0)
+PRINTL 　（with Exquisite Pussy talent）
+PRINTLC [24] 「Semen Sucking Pussy」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／膣,4),0)
+PRINTL 　（with Semen Sucking Pussy mark）
+PRINTLC [25] 「dick holster」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／膣,5),0)
+PRINTL 　（for lewd pussy）
+PRINTLC [26] 「cock hole」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／膣,6),0)
+PRINTL 　（for lewd pussy）
+PRINTLC [29] 《 Custom Replacement 》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／膣,9),0)
+PRINTFORML （Current Setting: %SAVESTR:表記／膣%）
+CALL SLANG_CONFIG_FOOTER
+INPUT
+SELECTCASE RESULT
+CASE 0 TO 6
+	INVERTBIT FLAG:スラング表示／膣,RESULT
+CASE 10 TO 12
+	INVERTBIT FLAG:スラング接頭語／膣,(RESULT -10)
+CASE 20 TO 26
+	INVERTBIT FLAG:スラング置換／膣,(RESULT -20)
+CASE 29
+	INVERTBIT FLAG:スラング置換／膣,(RESULT -20)
+CASE 80
+	FLAG:スラング表示／膣 = 65535
+CASE 81
+	FLAG:スラング接頭語／膣 = 65535
+CASE 82
+	FLAG:スラング置換／膣 = 65535
+CASE 90
+	FLAG:スラング表示／膣 = 0
+CASE 91
+	FLAG:スラング接頭語／膣 = 0
+CASE 92
+	FLAG:スラング置換／膣 = 0
+CASE 98
+	PRINTL Reset slang options for vagina to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG_VAGINA
+CASE 99
+	IF !FLAG:スラング表示／膣
+		PRINTW At least one slang option must be selected.
+	ELSE
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+

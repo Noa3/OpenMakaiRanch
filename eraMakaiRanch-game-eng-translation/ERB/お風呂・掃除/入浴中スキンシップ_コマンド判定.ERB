@@ -1,0 +1,39 @@
+﻿
+;入浴中スキンシップのコマンド判定
+@BATHLOOM_COMMAND_CHECK
+
+PRINTL [ 0] Headpats
+PRINTL [ 1] Kiss
+IF CSTR:状態／あなたの子 == "成長中"
+	CALL PRINTL_WORD_COLOR("You can't touch your daughter while she's growing up.","灰")
+ELSE
+	PRINTFORML [ 2] Massage %SAVESTR:表記／乳房%
+ENDIF
+PRINTL [ 3] Wash Body
+IF !PLAYER_PENIS
+	;処女結界破壊は基本調教だけ（キャンセル処理がめんどい）
+ELSEIF CSTR:状態／あなたの子 == "成長中"
+	CALL PRINTL_WORD_COLOR("You can't touch your daughter while she's growing up.","灰")
+ELSEIF TALENT:処女結界
+	CALL PRINTL_WORD_COLOR("　  【Virginity Barrier】prevents insertion","灰")
+ELSEIF !BASE:PLAYER:精力
+	CALL PRINTL_WORD_COLOR,@"　%CALLNAME:PLAYER% is low on Vigor","灰"
+ELSE
+	PRINTL [ 4] Insert
+ENDIF
+PRINTL
+
+;虚脱か反抗だとダメ
+IF CFLAG:虚脱
+	CALL PRINTL_WORD_COLOR("     Blocked by【Exhaustion】","灰")
+ELSEIF !＃陥落状態／拒絶以上＃
+	CALL PRINTL_WORD_COLOR("     Blocked by【Rebellious】","灰")
+ELSE
+	PRINTL [10] Get Washed
+ENDIF
+IF CSTR:状態／あなたの子 == "成長中"
+	CALL PRINTL_WORD_COLOR("You can't touch your daughter while she's growing up.","灰")
+ELSE
+	PRINTL [11] Suck Breasts
+ENDIF
+

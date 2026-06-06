@@ -1,0 +1,88 @@
+﻿
+;母乳生産力表示
+;魔力母乳と霊力母乳と母乳体質で変える？
+;ARG:0　カラーバーONOFF　1：表示
+;ARG:1　MAXのONOFF　1：表示
+;ARG:2　奴隷を並べる時に揃える　1：揃える
+;ARG:3　ピンク表示　1：ON
+;ARG:4  1：Extra linebreak for alignment (EN change)
+
+@PRINT_MILKTANK(ARG:0,ARG:1,ARG:2,ARG:3,ARG:4)
+#DIMS MILKWORD
+#DIM PADDING_EN = 7
+
+;母乳体質でないか成長途中の子なら帰る
+SIF !MARK:母乳体質 || CSTR:状態／あなたの子 == "成長中"
+	RETURN
+
+;永久魔力母乳の場合ARG:1とARG:3対応部分が自動でON
+SIF ARG:3 || MARK:絶頂魔力回復淫紋
+	SETCOLOR 0xFF70FF
+MILKWORD = 【
+
+;濃度表示
+SIF MARK:絶頂魔力回復淫紋
+	MILKWORD += "Endless "
+SELECTCASE ABL:母乳濃度
+CASE 1
+	MILKWORD += "Thick "
+CASE 2
+	MILKWORD += "Fine "
+CASE 3
+	MILKWORD += "Rich "
+CASE 4
+	MILKWORD += "Potent "
+CASE 5
+	MILKWORD += "Premium "
+ENDSELECT
+
+;魔力母乳か　絶頂回復か
+SIF MARK:魔力母乳体質
+	MILKWORD += "Mana-Infused "
+MILKWORD += "Milk】"
+IF ARG:2
+	PRINTFORM %MILKWORD,30,LEFT%
+ELSE
+	PRINTFORM %MILKWORD%
+ENDIF
+RESETCOLOR
+
+;調整
+IF MARK:絶頂魔力回復淫紋
+	PRINT  
+
+	;カラーバー分スペース
+	IF ARG:2
+		IF !ABL:母乳濃度
+			PRINT
+		ELSE
+			PRINT
+		ENDIF
+	ENDIF
+	RETURN
+ENDIF
+
+LOCALS:0 = %TOSTR(BASE:母乳生産力,"#,0")%
+LOCALS:1 = %TOSTR(MAXBASE:母乳生産力,"#,0")%
+
+;alignment fix
+IF ARG:4
+	PRINTL
+	PRINT                     　
+	PADDING_EN = 0
+ENDIF
+
+;絶頂魔力回復淫紋ならここに来ないので大丈夫
+IF ARG:1
+	PRINTFORM %LOCALS:0,PADDING_EN%／%LOCALS:1,PADDING_EN%%MILK_COUNTING()% 
+ELSE
+	PRINTFORM %LOCALS:0,PADDING_EN%%MILK_COUNTING()% 
+ENDIF
+
+;カラーバー
+IF MARK:母乳体質 && MAXBASE:母乳生産力 && ARG:0
+	CALL PRINT_COLORBAR(BASE:母乳生産力,MAXBASE:母乳生産力,8,BARCOLORSET("白"),RESULT:1)
+	PRINT  
+ENDIF
+
+

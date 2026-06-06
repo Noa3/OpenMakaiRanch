@@ -1,0 +1,23 @@
+﻿
+;あなたと一緒に仕事すると嫌悪感↓または好感度↑
+;仕事ができない場合そもそもここに来ない
+@WORK_LOVE_UP
+
+;あなたに好感度はないよ
+SIF !TARGET
+	RETURN
+	
+;あなたと一緒の場合だけ
+SIF CSTR:スケジュール != CSTR:0:スケジュール
+	RETURN
+
+IF BASE:嫌悪感
+	CALL MIND_BASE_DIRECT_MINUS("嫌悪感",100 +RAND:50)
+ELSE
+	CALL MIND_BASE_DIRECT_PLUS("好感度",30 +RAND:30)
+ENDIF
+
+;陥落→嫌悪感0
+SIF !BASE:嫌悪感 && !＃陥落状態／陥落以上＃
+	CALL CAPITULATION_FALLING
+

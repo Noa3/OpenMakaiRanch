@@ -1,0 +1,163 @@
+﻿
+;おっぱい吸わせて
+@VISIT_BREAST_FEEDING
+
+;先に露出フラグの判定通す
+CALL AJUST_STRIP_FLAG
+PRINTFORML You ask %CALLNAME% to let you suck her %SAVESTR:表記／母乳%.
+CALL KOJO_PRINT("おっぱい吸わせて","開始")
+CALL BREAST_FEEDING_MESSAGE_BEFORE
+SOURCE:脱衣メッセージ表示 = 1
+SIF !CFLAG:崩壊 && (＃陥落状態／屈服以上＃)
+	SOURCE:自主脱衣 = 1
+TFLAG:Ｐ引き抜き後WAITスキップ = 1
+
+;状態により変える
+IF TFLAG:授乳スリット
+	CALL OPEN_NIPPLE_SLIT
+ELSEIF !TFLAG:Ｎ露出
+	CALL TRAIN_CLOTHE_STRIP("一括","上半脱ぎ")
+ENDIF
+CALL BREAST_FEEDING_MESSAGE_ACTION
+MILK_SUCK_PLAYER = %CALLNAME:0%
+FOR LOCAL,0,3
+	CALL BREAST_FEEDING_SOURCE
+	SIF !LOCAL
+		CALL PRINT_IMAGE("調教実行")
+	CALL ONOMATOPOEIA("乳吸い")
+	CALL SOURCE_CHECK
+	TFLAG:スキンシップ回数 ++
+	PRINTL
+	
+	IF !BASE:0:精力
+		WAIT_SKIP = 1
+		CALL COM890
+		WAIT_SKIP = 0
+		PRINTW
+	ENDIF
+
+	;LOCAL<2の時継続選択肢
+	SIF LOCAL < 2
+		CALL BREAST_FEEDING_CHOICE
+	
+	;RETURN1でおわり
+	SIF RESULT
+		BREAK
+	
+	;ちんぽ挿れててまだ射精してない+LOCAL=2の場合射精するまでピストンへ
+	SIF TFLAG:Ｐ使用BIT && LOCAL == 2
+		CALL EJACULATION_PISTON
+NEXT
+IF EX:噴乳
+	PRINTFORML You enjoy %CALLNAME%'s %SLANG_MILK()%...
+ELSE
+	PRINTFORML You want to suck %CALLNAME%'s %SLANG_MILK()%, but nothing comes out...
+ENDIF
+CALL KOJO_PRINT("おっぱい吸わせて","終了")
+CALL BREAST_FEEDING_MESSAGE_AFTER
+CFLAG:時刻制限／授乳 = 1
+CFLAG:時刻制限／Ｈ = 1
+SELECTCOM = 0
+
+
+
+;SOURCE
+@BREAST_FEEDING_SOURCE
+
+LOSEBASE:体力 += 10
+LOSEBASE:気力 += 20
+SOURCE:Ｂ快楽／あなた責め = 500
+SOURCE:Ｎ快楽／あなた責め = 2000
+SOURCE:恥辱 = 2000
+SOURCE:情愛 = 5000
+SOURCE:屈辱 = 2000
+SOURCE:不潔 = 500
+SOURCE:支配 = 2000
+SOURCE:授乳 = 2000
+SOURCE:調教者習得 = 100
+TFLAG:搾乳責め = 1
+TFLAG:乳吸い = 1
+
+;ドレイン有効か処理　エナジードレイン適用外ならOFF
+SIF ITEM:搾乳エナジードレイン && GETBIT(＃個人有効／搾乳エナジードレイン＃) && GETBIT(＃有効／搾乳エナジードレイン＃)
+	TFLAG:エナジードレイン = 1
+
+
+
+;乳吸い継続選択肢
+@BREAST_FEEDING_CHOICE
+
+IF !BASE:母乳生産力
+	PRINTFORML It seems like %CALLNAME% has reached her limit...
+	RETURN 1
+ENDIF
+PRINTLC [ 0] Suck more
+IF PLAYER_PENIS && !TALENT:処女結界 && !GETBIT(＃Ｐ使用／Ｖ挿入＃) && BASE:0:精力
+	LOCAL = ABL:0:ペニスサイズ - ABL:Ｖサイズ - ABL:Ｖ拡張
+	SIF LOCAL > 20 || (ABL:0:ペニスサイズ - ABL:初期値／Ｖサイズ * 3 > 0 && LOCAL > 0)
+		SETCOLOR BARCOLORSET("薄赤")
+	PRINTFORMLC [ 1] Penetrate %SAVESTR:表記／膣% to exchange milk
+	RESETCOLOR
+ENDIF
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃) && ITEM:霊力注入 && BASE:0:霊力 >= 10000 && BASE:0:精力
+	PRINTLC [ 2] Pour Spirit Energy infused semen into her
+ENDIF
+PRINTLC [ 9] You drank enough
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	PRINTFORML You drink more of %CALLNAME%'s %SLANG_MILK()%...
+CASE 1
+	CALL VISIT_BREAST_FEEDING_MILK_SWAP
+CASE 2
+	PRINTFORML Let's pour Spirit Energy infused semen into %CALLNAME%...
+	PRINTL
+	CALL COM905
+	IF RESULT
+		CFLAG:時刻制限／霊力注入 = 1
+		SELECTCOM = 905
+		CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+		EXP:(SELECTCOM +1000) ++
+	ELSE
+		PRINTL You stop pouring your Spirit Energy infused semen into her...
+	ENDIF
+CASEELSE
+	RETURN 1
+ENDSELECT
+PRINTL
+
+
+
+;ミルク交換
+@VISIT_BREAST_FEEDING_MILK_SWAP
+
+;もうＶ挿入してたら帰る　ここで処女結界破壊はできないことにする
+SIF GETBIT(＃Ｐ使用／Ｖ挿入＃) || TALENT:処女結界
+	RETURN
+PRINTFORML Let's pour some milk into %CALLNAME% as well...
+
+;下も脱がす
+SIF !TFLAG:Ｖ露出
+	CALL TRAIN_CLOTHE_STRIP("一括","下半脱ぎ")
+V_PENIS = %CALLNAME:0%
+CALL COM30
+
+;処女喪失の確認でRETURN 1してきていない場合はキャンセルする
+;待てよやっぱやめた、になるけどまあ仕方ない
+IF !RESULT
+	PRINTW You decide not to penetrate her...
+	RETURN
+ENDIF
+LOSEBASE:体力 += 20
+LOSEBASE:気力 += 30
+TFLAG:Ｖ装備 = 1
+SETBIT ＃Ｐ使用／Ｖ挿入＃
+CALL LOST_VARGIN
+CALL LOST_VARGIN_PLAYER
+SELECTCOM = 30
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+EXP:(SELECTCOM +1000) ++
+PRINTW
+
+
+

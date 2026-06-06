@@ -1,0 +1,30 @@
+﻿
+;調教開始の地の文
+@TRAIN_BEGIN_MESSAGE
+
+IF CFLAG:乳牛 || CFLAG:洗脳
+	PRINTFORML %CALLNAME% is obedient, but can't wait for her training, her love juice dripping...
+ELSEIF CFLAG:崩壊
+	PRINTFORML Seeing %CALLNAME:0%, tears flow from %CALLNAME%'s lightless eyes...
+ELSE
+	SELECTCASE CSTR:陥落状態
+	CASE "隷属"
+		PRINTFORML %CALLNAME% is obedient, but can't wait for her training, her love juice dripping...
+	CASE "恋慕"
+		PRINTFORML %CALLNAME% smiles happily, accepting %CALLNAME:0%'s training...
+	CASE "陥落"
+		PRINTFORML She says she wants it over quickly, but %CALLNAME% seems to be looking forward to it...
+	CASEELSE
+		IF TALENT:無関心 || TALENT:感情乏しい
+			PRINTFORML %CALLNAME% stares at you blankly...
+		ELSEIF ＃陥落状態／屈服以上＃ || TALENT:臆病 || TALENT:悲観的
+			PRINTFORML %CALLNAME% is trembling with fear...
+		ELSEIF !＃陥落状態／拒絶以上＃
+			PRINTFORML %CALLNAME% tells herself that she'll never give in...
+		ELSE
+			PRINTFORML %CALLNAME% glares at %CALLNAME:0%...
+		ENDIF
+	ENDSELECT
+ENDIF
+
+

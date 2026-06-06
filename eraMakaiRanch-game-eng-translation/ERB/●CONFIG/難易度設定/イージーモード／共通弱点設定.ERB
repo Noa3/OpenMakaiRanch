@@ -1,0 +1,47 @@
+﻿
+;ランダムキャラ共通弱点部位設定
+@EASYMODE_SENSITIVE_WEEK_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL The default sensitivity for random character body parts is fixed at 200%.
+PRINTL ・When B sensitivity is set to 200%, N sensitivity will also be automatically increased.
+DRAWLINE
+
+;STR:感度・感覚用部位→3920
+STR_REF = 3920
+FOR LOCAL,0,5
+	PRINTFORM [{LOCAL,2}] %ABL_ENG(STR:(STR_REF +LOCAL))%Sens
+	CALL PRINT_ONOFF(GETBIT(FLAG:ランダムキャラ共通弱点部位BIT,LOCAL),1)
+NEXT
+CALL PRINTL_ALIGN(-5)
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+PRINTL
+SIF !FLAG:開発者モード && DAY
+	RETURN
+SELECTCASE RESULT
+CASE 98
+	PRINTL Do you want to reset the common Sensitivities settings for random characters to default?
+	CALL ASK_YN
+	SIF !RESULT
+		FLAG:ランダムキャラ共通弱点部位BIT = 0
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_SENSITIVE_WEEK_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_SENSITIVE_WEEK_CONFIG(ARG)
+
+;ひっくり返すだけ
+INVERTBIT FLAG:ランダムキャラ共通弱点部位BIT,ARG
+
+;Ｂ弱点のときＮ弱点固定
+SIF GETBIT(＃全員Ｂ弱点＃)
+	SETBIT ＃全員Ｎ弱点＃
+

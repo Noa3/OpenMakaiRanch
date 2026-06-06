@@ -1,0 +1,126 @@
+﻿
+;女神
+@TRIBE_FEATURE_CONFIG_GODDESS
+
+CLEARLINE LINECOUNT
+PRINTL Modifying【Goddess】
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL Fixed：Always Has Mana・【Celestial】
+PRINTLC [ 0] Skin Tends Towards【Fair】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,0),1)
+PRINTLC [ 1] Always【Virgin】・【ＡVirgin】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,1),1)
+PRINTLC [ 2] Always【Virginity Barrier】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,2),1)
+PRINTLC [ 3] If【Virgin】,【Virtuous】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,3),1)
+PRINTLC [ 4] 【Loved By Animals】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,4),1)
+PRINTLC [ 5] 【Fast Recovery】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,5),1)
+PRINTLC [ 6] 【Makai Adaptation】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,6),1)
+PRINTLC [ 7] 【Drug Resistant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,7),1)
+PRINTL
+PRINTLC [10] 【Dignified】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,10),1)
+PRINTLC [11] 【High Pain Tolerance】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,11),1)
+PRINTLC [12] 【Composed】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,12),1)
+PRINTLC [13] 【Reserved】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,13),1)
+PRINTLC [14] 【Prideful】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,14),1)
+PRINTLC [15] 【Arrogant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,15),1)
+PRINTLC [16] 【Self-Conscious】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,16),1)
+PRINTLC [17] 【Righteous】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,17),1)
+PRINTLC [18] 【Devoted】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,18),1)
+PRINTLC [19] 【Charismatic】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／女神,19),1)
+CALL PRINTL_ALIGN
+CALL PRINT_SLAVE_CONFIG_FOOTER(20)
+SELECTCASE INPUT_NUM
+CASE 0
+	PRINTL If【Standard】、【Brown】、【Tanned】, replaced with【Fair】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 1
+	PRINTL Adds the【Virgin】・【ＡVirgin】traits
+	PRINTL ※Mutually exclusive with【Virginity Barrier】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／女神,1) && GETBIT(FLAG:種族設定／女神,2)
+		CLEARBIT FLAG:種族設定／女神,2
+CASE 2
+	PRINTL Adds【Virginity Barrier】（and【Virgin】）traits
+	PRINTL ※Mutually exclusive with Virginity option
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／女神,1) && GETBIT(FLAG:種族設定／女神,2)
+		CLEARBIT FLAG:種族設定／女神,1
+CASE 3
+	PRINTL If【Virgin】, adds【Virtuous】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 4
+	PRINTL Add the【Loved By Animals】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 5
+	PRINTL Add the【Fast Recovery】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 6
+	PRINTL Add the【Makai Adaptation】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 7
+	PRINTL Add the【Drug Resistant】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 10
+	PRINTL Add the【Dignified】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 11
+	PRINTL Add the【High Pain Tolerance】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 12
+	PRINTL Add the【Composed】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 13
+	PRINTL Add the【Reserved】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 14
+	PRINTL Add the【Prideful】trait
+	PRINTL ※Mutually exclusive with【Arrogant】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／女神,14) && GETBIT(FLAG:種族設定／女神,15)
+		CLEARBIT FLAG:種族設定／女神,15
+CASE 15
+	PRINTL Add the【Arrogant】trait
+	PRINTL ※Mutually exclusive with【Prideful】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／女神,14) && GETBIT(FLAG:種族設定／女神,15)
+		CLEARBIT FLAG:種族設定／女神,14
+CASE 16
+	PRINTL Add the【Self-Conscious】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 17
+	PRINTL Add the【Righteous】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 18
+	PRINTL Add the【Devoted】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 19
+	PRINTL Add the【Charismatic】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／女神"),INPUT_NUM)
+CASE 98
+	PRINTL Restore【Goddess】Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRIBE_FEATURE_CONFIG_GODDESS
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

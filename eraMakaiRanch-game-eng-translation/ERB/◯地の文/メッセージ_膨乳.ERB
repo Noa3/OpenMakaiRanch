@@ -1,0 +1,76 @@
+﻿
+;膨乳時の地の文
+;ARGS→バストサイズor基本増加
+@BUSTUP_MESSAGE(ARGS)
+
+SETCOLOR 0xFF70FF
+SELECTCASE ARGS
+CASE "基本増加"
+	{
+	PRINTFORML 　　%CALLNAME%'s %SAVESTR:表記／乳房% has increased in size! 
+	Bust Size: %PRINT_BUSTSIZE(ABL:バストサイズ -1)% → %PRINT_BUSTSIZE(ABL:バストサイズ)%
+	}
+	CALL KOJO_PRINT("肉体改造","膨乳")
+	
+	;下の共通部分を楽にするためここでおわり
+	RESETCOLOR
+	RETURN
+
+CASE "貧乳"
+	;キャラクリからオープニング終了までは表示しない、というのが不要になった
+	CALL HEARTCB(0xD02830,2)
+	PRINTFORM %CALLNAME%'s %SAVESTR:表記／乳房% has slightly grown from its previous flat state
+
+CASE "並乳"
+	CALL HEARTCB(0xD02830,2)
+	PRINTFORM %CALLNAME%'s %SAVESTR:表記／乳房% has slightly expanded and reached a 【Normal Size】
+
+CASE "巨乳"
+	CALL HEARTCB(0xD02830,2)
+	PRINTFORM %CALLNAME%'s %SAVESTR:表記／乳房% has grown to an eye-catching 【Large Size】
+
+CASE "豊乳"
+	CALL HEARTCB(0xD02830,2)
+	PRINTFORM %CALLNAME%'s %SAVESTR:表記／乳房% has become so full that it is almost overflowing, reaching a 【Huge Size】
+
+CASE "爆乳"
+	CALL HEARTCB(0xD02830,2)
+	PRINTFORM %CALLNAME%'s %SAVESTR:表記／乳房% has become so large that it can no longer be supported, reaching a 【Enormous Size】
+
+CASE "神乳"
+	CALL HEARTCB(0xD02830,2)
+	PRINTFORM %CALLNAME%'s %SAVESTR:表記／乳房% has grown to an almost god-like size, reaching a 【Divine Size】
+
+CASE "魔乳"
+	CALL HEARTCB(0xD02830,2)
+	PRINTFORM %CALLNAME%'s %SAVESTR:表記／乳房% has attained such mass that it's difficult to even stand, reaching a 【Magical Size】
+
+CASE "超乳"
+	PRINTFORML %CALLNAME%'s %SAVESTR:表記／乳房% has grown even larger, now so big that it can't be reached or properly moved...
+	CALL KOJO_PRINT("Event","Super Breast Expansion")
+	
+	;口上表示通すので改めてメッセージ色
+	SETCOLOR 0xFF70FF
+	IF CFLAG:乳牛
+		PRINTFORML %CALLNAME% looked at her incredibly enlarged %SAVESTR:表記／乳房% and, 
+		PRINTFORML contemplating the thought of being able to have even more breast milk extracted than ever before, had an ecstatic expression...
+	ELSE
+		PRINTFORML %CALLNAME% looked at her unbelievably enlarged %SAVESTR:表記／乳房% and showed a look of despair...
+	ENDIF
+	PRINTL
+	CALL HEARTCB(0xD02830,2)
+	PRINTFORM %CALLNAME%'s %SAVESTR:表記／乳房% has reached 【Supreme Size】. She can now only live as a 【Livestock】...
+
+CASEELSE
+	RETURN
+ENDSELECT
+
+;共通部分
+CALL HEARTCB(0xD02830,2)
+PRINTL
+PRINTW
+RESETCOLOR
+
+
+
+

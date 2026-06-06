@@ -1,0 +1,76 @@
+﻿
+;魔物の攻撃
+@MONSTER_ATTACK
+
+;フラグをリセット
+TFLAG:ダメージ口上表示 = 0
+PRINTFORM %PRINT_MONSTER()% Attacks!  
+FOR LOCAL,0,TFLAG:バイト攻撃回数
+	;ダメージ計算
+	CALL MONSTER_ATTACK_DAMAGE_CALC
+	
+	;仲間がいる場合肩代わり
+	IF BASE:仲間戦闘力1
+		CALL MONSTER_ATTACK_GROUP(LOCAL)
+	ELSE
+		;ターゲットを逃した場合ここで終了
+		SIF TFLAG:犠牲逃走
+			RETURN
+		CALL MONSTER_ATTACK_TARGET(LOCAL)
+	ENDIF
+	
+	;倒したらループ終了
+	SIF !BASE:戦闘力
+		RETURN
+NEXT
+PRINTW
+
+
+
+;相手の仲間に攻撃
+;ARG→攻撃回数
+@MONSTER_ATTACK_GROUP(ARG)
+
+SIF ARG
+	PRINT CHASE! 
+
+;仲間のクリティカル判定計算
+CALL CRITICAL_CALC_GROUP
+
+;ATTACK_RATEから防御判定
+CALL CRITICAL_CHECK_DEFFENSE
+PRINTFORML %CALLNAME%'s companions take %VALUE_DIGIT(DAMAGE)% Damage!  
+
+;防御判定で色変えしてるのでリセット
+RESETCOLOR
+BASE:仲間戦闘力1 = LIMIT(BASE:仲間戦闘力1 -DAMAGE,0,MAXBASE:仲間戦闘力1)
+
+;護衛を倒したらメッセージ
+IF !BASE:仲間戦闘力1
+	PRINTFORML %CALLNAME%'s companions are wiped out!
+	CALL KOJO_PRINT("戦闘","仲間全滅")
+ENDIF
+
+
+
+;ターゲットに攻撃
+;ARG→攻撃回数
+@MONSTER_ATTACK_TARGET(ARG)
+
+SIF ARG
+	PRINT CHASE! 
+
+;本人ランクからクリティカル判定計算
+CALL CRITICAL_CALC_TARGET
+CALL CRITICAL_CHECK_DEFFENSE
+PRINTFORML %CALLNAME% takes %VALUE_DIGIT(DAMAGE)% Damage!  
+RESETCOLOR
+BASE:戦闘力 = LIMIT(BASE:戦闘力 -DAMAGE,0,MAXBASE:戦闘力)
+SIF !TFLAG:ダメージ口上表示
+	CALL KOJO_PRINT("戦闘","被撃")
+TFLAG:ダメージ口上表示 = 1
+
+;攻撃受けるたびに疲労度蓄積
+BASE:疲労度 += 1
+
+

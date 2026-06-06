@@ -1,0 +1,44 @@
+﻿
+;処女結界で保護されているか
+@VARGIN_BARRIER_BREAK_FLAG
+
+;処女結界でないなら当然0
+SIF !TALENT:処女結界
+	RETURN
+
+;隷属なら当然OK
+IF ＃陥落状態／隷属＃
+	CALL PRINT_WORD_COLOR,@"%CALLNAME% has voluntarily removed her【Virginity Barrier】, \nwaiting in anticipation for the moment %CALLNAME:0% decides to take her virginity...","桃"
+	CALL HEARTCB(0xD02830)
+
+;洗脳なら抵抗しない
+ELSEIF CFLAG:洗脳
+	CALL PRINTL_WORD_COLOR,@"Having brainwashed %CALLNAME%, %CALLNAME:0%'s %SAVESTR:表記／ペニス% can now easily break her【Virginity Barrier】...","桃"
+
+;恋慕ならOK
+ELSEIF ＃陥落状態／恋慕以上＃
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% wants to dedicate her virgintiy to %CALLNAME:0%...","桃"
+
+;心も乳牛ならもう処女なんてどうでもいい
+ELSEIF CFLAG:乳牛
+	CALL PRINTL_WORD_COLOR,@"Having accepted her role as a dairy cow, %CALLNAME% removes her【Virginity Barrier】...","桃"
+
+;崩壊なら抵抗できない
+ELSEIF CFLAG:崩壊
+	CALL PRINTL_WORD_COLOR,@"The mindbroken %CALLNAME% no longer has the energy to maintain the【Virginity Barrier】...","桃"
+
+;最大霊力の半分を切っている場合破壊可能
+ELSEIF BASE:霊力 <= MAXBASE:霊力 /2
+	CALL PRINTL_WORD_COLOR,@"The loss of Spirit Energy has weakened the seal, and %CALLNAME:0%'s %SAVESTR:表記／ペニス% can now easily break %CALLNAME%'s【Virginity Barrier】...","桃"
+
+;結界有効して帰る
+ELSE
+	;調教の最初はメッセージ
+	SIF !TFLAG:処女結界有効
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s %SAVESTR:表記／膣% is protected by a【Virginity Barrier】","水色"
+	TFLAG:処女結界有効 = 1
+	RETURN
+ENDIF
+TFLAG:処女結界有効 = 0
+
+

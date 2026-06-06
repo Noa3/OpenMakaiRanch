@@ -1,0 +1,155 @@
+﻿
+@COM544_MESSAGE
+;母乳体質化エキス
+
+PRINTFORML The tentacle that crawled out from your body wrapped around %CALLNAME%'s %SLANG_B()%,
+PRINTFORML and when the needle from the end of one tentacle pierced %CALLNAME%'s nipple, it began injecting the essence...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"母乳体質化エキス"))%MP)
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTL ...The effects of the essence become apparent immediately...!
+
+
+
+@COM545_MESSAGE
+;魔力母乳体質化エキス
+
+PRINTFORML The tentacle that crawled out from your body wrapped around %CALLNAME%'s %SLANG_B()%,
+PRINTFORML and when the needle from the end of one tentacle pierced %CALLNAME%'s nipple, it began injecting the essence...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"魔力母乳体質化エキス"))%MP)
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTL ...The effects of the essence become apparent immediately...!
+
+
+
+@COM546_MESSAGE
+;膨乳改造エキス
+
+PRINTFORML The tentacle that crawled out from your body wrapped around %CALLNAME%'s neck,
+PRINTFORML and when the needle from the end of one tentacle pierced %CALLNAME%'s neck, it began injecting the essence...
+PRINTFORML (Magic consumption - -%VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"膨乳改造エキス"))%MP)
+CALL KOJO_PRINT("調教コマンド","注射","首筋")
+PRINTW
+PRINTL ...The effects of the essence become apparent immediately...!
+PRINTFORML %CALLNAME%'s %SLANG_B()% is gradually increasing in size!
+
+
+
+@COM547_MESSAGE
+;淫乳改造エキス
+
+PRINTFORML The tentacle that crawled out from your body wrapped around %CALLNAME%'s %SLANG_B()%,
+PRINTFORML and additional injecting tentacles gathered and began injecting the essence into %SLANG_B()%...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"淫乳改造エキス"))%MP)
+CALL KOJO_PRINT("調教コマンド","注射","Ｂ")
+PRINTW
+PRINTL ...The effects of the essence become apparent immediately...!
+
+
+
+;追加でＢ感度増加
+;ARG→NO_BUSTUP
+;ARG:1→SENSITIVE_PLUS
+@COM547_BUST_SENSITIVE_UP_MESSAGE(ARG,ARG:1)
+
+;膨乳したなら「さらに」表示
+SIF ARG
+	PRINT さらに
+PRINTFORM Due to the essence, %CALLNAME%'s %SLANG_B()% are becoming warm...
+CALL HEARTCB(0xD02830)
+PRINTL
+CALL KOJO_PRINT("肉体改造","Ｂ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【Ｂ感度{ABL:Ｂ感度 -ARG:1}→{ABL:Ｂ感度}\%】","桃"
+CALL NIPPLE_SENSITIVE_FIX
+PRINTW
+
+
+
+@COM548_MESSAGE
+;母乳濃厚化エキス
+
+PRINTFORML The tentacle that crawled out from your body wrapped around %CALLNAME%'s %SLANG_B()%,
+PRINTFORML and when the needle from the end of one tentacle pierced %CALLNAME%'s nipple, it began injecting the essence...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"母乳濃厚化エキス"))%MP)
+CALL KOJO_PRINT("調教コマンド","注射","Ｎ")
+PRINTW
+PRINTL ...The effects of the essence become apparent immediately...!
+PRINTFORML The %SLANG_MILK()% squirting from %CALLNAME%'s %SLANG_N()% is becoming thicker...!
+CALL KOJO_PRINT("肉体改造","母乳濃厚化")
+PRINTW
+
+
+
+@COM820_MESSAGE
+;感度上昇粘液A
+
+PRINTFORML The tentacle that crawled out from your body approached %CALLNAME%'s %SLANG_A()% and dripped a special slime generously...
+PRINTFORML Furthermore, brush-like ridged tentacles started to rub against her %SLANG_A()% soaking it with slime...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"感度上昇粘液"))%MP)
+CALL KOJO_PRINT("調教コマンド","感度上昇粘液","Ａ")
+PRINTW
+PRINTFORML ...now %CALLNAME%'s %SLANG_A()% is throbbing, and her breathing becomes heavy...!
+CALL KOJO_PRINT("肉体改造","Ａ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【Ａ感度+{ABL:Ａ感度 -SENSITIVE_BEFORE}→{ABL:Ａ感度}\%】","桃"
+PRINTW
+
+
+
+@COM821_MESSAGE
+;感度上昇粘液B
+
+PRINTFORML The tentacle that crawled out from your body approached %CALLNAME%'s %SLANG_B()% and dripped a special slime generously...
+PRINTFORML Furthermore, brush-like ridged tentacles began to rub against her %SLANG_B()%, soaking it with slime...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"感度上昇粘液"))%MP)
+CALL KOJO_PRINT("調教コマンド","感度上昇粘液","Ｂ")
+PRINTW
+PRINTFORML ...now %CALLNAME%'s %SLANG_B()% are throbbing, and her breathing becomes heavy...!
+CALL KOJO_PRINT("肉体改造","Ｂ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【Ｂ感度+{ABL:Ｂ感度 -SENSITIVE_BEFORE}→{ABL:Ｂ感度}\%】","桃"
+
+
+
+@COM822_MESSAGE
+;感度上昇粘液C
+
+PRINTFORML The tentacle that crawled out from your body approached %CALLNAME%'s %SLANG_C()% and dripped a special slime generously...
+PRINTFORML Furthermore, brush-like ridged tentacles began to rub against her %SLANG_C()%, soaking it with slime...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"感度上昇粘液"))%MP)
+CALL KOJO_PRINT("調教コマンド","感度上昇粘液","Ｃ")
+PRINTW
+PRINTFORML ...now %CALLNAME%'s %SLANG_C()% is throbbing, and her breathing becomes heavy...!
+CALL KOJO_PRINT("肉体改造","Ｃ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【Ｃ感度+{ABL:Ｃ感度 -SENSITIVE_BEFORE}→{ABL:Ｃ感度}\%】","桃"
+PRINTW
+
+
+
+@COM823_MESSAGE
+;感度上昇粘液V
+
+PRINTFORML The tentacle that crawled out from your body approached %CALLNAME%'s %SLANG_V()% and dripped a special slime generously...
+PRINTFORML Furthermore, brush-like ridged tentacle sbegan to rub against her %SLANG_V()%, soaking it with slime...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"感度上昇粘液"))%MP)
+CALL KOJO_PRINT("調教コマンド","感度上昇粘液","Ｖ")
+PRINTW
+PRINTFORML ...now %CALLNAME%'s %SLANG_V()% is throbbing, and her breathing becomes heavy...!
+CALL KOJO_PRINT("肉体改造","Ｖ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【Ｖ感度+{ABL:Ｖ感度 -SENSITIVE_BEFORE}→{ABL:Ｖ感度}\%】","桃"
+PRINTW
+
+
+
+@COM824_MESSAGE
+;感度上昇粘液N
+
+PRINTFORML The tentacle that crawled out from your body approached %CALLNAME%'s %SLANG_N()% and dripped a special slime generously...
+PRINTFORML Furthermore, brush-like ridged tentacles began to rub against her %SLANG_N()% and its surroundings, soaking them with slime...
+PRINTFORML (Magic consumption - %VALUE_DIGIT(MAGIC_USE_MP:GETNUM(ITEM,"感度上昇粘液"))%MP)
+CALL KOJO_PRINT("調教コマンド","感度上昇粘液","Ｎ")
+PRINTW
+PRINTFORML ...now %CALLNAME%'s %SLANG_N()% are throbbing, and her breathing becomes heavy...!
+CALL KOJO_PRINT("肉体改造","Ｎ感度上昇")
+CALL PRINTL_WORD_COLOR,@"【Ｎ感度+{ABL:Ｎ感度 -SENSITIVE_BEFORE}→{ABL:Ｎ感度}\%】","桃"
+PRINTW
+

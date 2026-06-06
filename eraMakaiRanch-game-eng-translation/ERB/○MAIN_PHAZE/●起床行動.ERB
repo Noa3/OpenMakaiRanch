@@ -1,0 +1,24 @@
+﻿
+;起きた直後の行動
+@MORNING_ACT
+
+;拡張するかもしれない
+PRINTFORML Morning has arrived... Today's weather is【%WEATHER_ENG(SAVESTR:天気／今日)%】
+
+;豊穣値処理追加
+CALL BUST_GROW_CHECK
+PRINTL
+TARGET = 0
+WAIT_ON = 0
+PRINTFORML Having changed, %CALLNAME% prepare breakfast for the pets.
+
+;ペットの朝ごはん
+CALL PET_BREAKFAST
+
+;朝のミルク
+PRINTFORML %CALLNAME% also started eating breakfast.
+CALL DRINK_COLD_MILK_AUTO
+SIF WAIT_ON
+	PRINTW
+
+

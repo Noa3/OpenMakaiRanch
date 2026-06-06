@@ -1,0 +1,64 @@
+﻿
+;ダークエルフ
+@TRIBE_FEATURE_CONFIG_DARKELF
+
+CLEARLINE LINECOUNT
+PRINTL Modifying【Dark Elf】
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL Fixed：【Elf Ears】
+PRINTLC [ 0] Height Tends Towards【Tall】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダークエルフ,0),1)
+PRINTLC [ 1] Skin Tends Towards【Brown】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダークエルフ,1),1)
+PRINTLC [ 2] Body Tends Towards【Slender】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダークエルフ,2),1)
+PRINTLC [ 3] Body Tends Towards【Plump】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダークエルフ,3),1)
+PRINTLC [ 4] Hair Color Is【Silver】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダークエルフ,4),1)
+PRINTLC [ 5] Non-Magicians Also Have Mana
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダークエルフ,5),1)
+PRINTLC [ 6] Physical Strength－200
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／ダークエルフ,6),1)
+CALL PRINTL_ALIGN
+CALL PRINT_SLAVE_CONFIG_FOOTER(2)
+SELECTCASE INPUT_NUM
+CASE 0
+	PRINTL IF【Average】・【Short】・【Petite】, replaced with【Tall】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダークエルフ"),INPUT_NUM)
+CASE 1
+	PRINTL If【Standard】、【Fair】、【Pale】、【Albino】, replaced with【Brown】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダークエルフ"),INPUT_NUM)
+CASE 2
+	PRINTL Body figure limited to【Slender】and【Skinny】
+	PRINTL ※Mutually exclusive with【Plump】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダークエルフ"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／ダークエルフ,2) && GETBIT(FLAG:種族設定／ダークエルフ,3)
+		CLEARBIT FLAG:種族設定／ダークエルフ,3
+CASE 3
+	PRINTL Body figure limited to【Plump】and【Chubby】
+	PRINTL ※Mutually exclusive with【Slender】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダークエルフ"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／ダークエルフ,2) && GETBIT(FLAG:種族設定／ダークエルフ,3)
+		CLEARBIT FLAG:種族設定／ダークエルフ,2
+CASE 4
+	PRINTL Fix hair color to【Silver】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダークエルフ"),INPUT_NUM)
+CASE 5
+	PRINTL Even non-magic job holders possess Mana
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダークエルフ"),INPUT_NUM)
+CASE 6
+	PRINTL Strength is decreased by 200 after base calculations
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／ダークエルフ"),INPUT_NUM)
+CASE 98
+	PRINTL Restore【Dark Elf】Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRIBE_FEATURE_CONFIG_DARKELF
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

@@ -1,0 +1,96 @@
+﻿
+;Ｖ・Ａ挿入判定を一部まとめたもの
+;ARGS→コマンド名
+;ARG→1だとアナル
+@SEX_COMMAND_JUDGE(ARGS,ARG)
+
+;共通判定を先に回すことにした
+SIF !ARG && !GETBIT(＃コマンド有効／Ｖセックス＃)
+	RETURN 0
+SIF ARG && !GETBIT(＃コマンド有効／Ａセックス＃)
+	RETURN 0
+
+;拘束による体位制限
+SELECTCASE ARGS
+CASE "正常位"
+	SIF GETBIT(＃体位制限／正常位＃)
+		RETURN 0
+CASE "後背位"
+	SIF GETBIT(＃体位制限／後背位＃)
+		RETURN 0
+CASE "対面座位"
+	SIF GETBIT(＃体位制限／対面座位＃)
+		RETURN 0
+CASE "背面座位"
+	SIF GETBIT(＃体位制限／背面座位＃)
+		RETURN 0
+CASE "対面立位"
+	SIF GETBIT(＃体位制限／対面立位＃)
+		RETURN 0
+	
+	;非拘束だと体力ないとダメ
+	SIF !TFLAG:拘束BIT && !BASE:体力
+		RETURN 0
+CASE "背面立位"
+	SIF GETBIT(＃体位制限／背面立位＃)
+		RETURN 0
+	SIF !TFLAG:拘束BIT && !BASE:体力
+		RETURN 0
+
+CASE "騎乗位"
+	;騎乗位は体力1以上必要、拘束中だとダメ
+	SIF !BASE:体力 || TFLAG:拘束BIT
+		RETURN 0
+
+CASE "強制騎乗位"
+	;触手拘束orハーネス拘束
+	;今触手だけ
+	SIF !GETBIT(＃拘束／触手＃)
+		RETURN 0
+CASE "素股"
+	SIF GETBIT(＃体位制限／素股＃)
+		RETURN 0
+ENDSELECT
+RETURN 1
+
+
+
+;搾乳器判定まとめ
+;ARGS→コマンド
+@LACTATION_MACHINE_COMMAND_JUDGE(ARGS)
+
+SIF !GETBIT(＃コマンド有効／搾乳器＃)
+	RETURN 0
+
+;対応アイテム所持の必要あり
+;道具コマンドの必要を撤廃
+SIF !ITEM:ARGS
+	RETURN 0
+RETURN 1
+
+
+
+;搾乳触手判定まとめ
+;ARGS→コマンド
+@LACTATION_TENTACLE_COMMAND_JUDGE(ARGS)
+
+SIF !GETBIT(＃コマンド有効／搾乳触手＃)
+	RETURN 0
+
+;対応アイテム所持の必要あり
+SIF !ITEM:ARGS
+	RETURN 0
+RETURN 1
+
+
+
+
+
+
+
+
+
+
+
+
+

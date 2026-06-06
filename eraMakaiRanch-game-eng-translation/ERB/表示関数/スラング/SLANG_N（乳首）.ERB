@@ -1,0 +1,95 @@
+﻿
+;さほど数はないと思ったけど淫乳対応できるし使わせてもらおう
+;**********************************************************
+;Nipple(ニップル)の淫語
+;**********************************************************
+@SLANG_N(ARG)
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+SLANGWORD =
+
+SIF GETBIT(FLAG:スラング接頭語／乳首,0) && RAND:100 < 20
+	SLANGWORD += @"%NIPPLE_COLOR_ENG(CSTR:乳首の色)% "
+SIF GETBIT(FLAG:スラング接頭語／乳首,3) && ABL:Ｎ感度 >= 150 && RAND:100 < 20
+	SLANGWORD += "sensitive "
+SIF GETBIT(FLAG:スラング接頭語／乳首,2) && MARK:淫乳 && RAND:100 < 20
+	SLANGWORD += "obscene "
+SIF GETBIT(FLAG:スラング接頭語／乳首,1) && MARK:淫乳 && RAND:100 < 80
+	SLANGWORD += "lewd "
+
+IF GETBIT(FLAG:スラング置換／乳首,2)
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD =
+		SIF GETBIT(FLAG:スラング接頭語／乳首,1) && MARK:淫乳 && RAND:100 < 80
+			SLANGWORD += "lewd "
+		IF TALENT:超乳
+			SLANGWORD += BUST_ENG("超乳")
+		ELSEIF TALENT:魔乳
+			SLANGWORD += BUST_ENG("魔乳")
+		ELSEIF TALENT:神乳
+			SLANGWORD += BUST_ENG("神乳")
+		ELSEIF TALENT:爆乳
+			SLANGWORD += BUST_ENG("爆乳")
+		ELSEIF TALENT:豊乳
+			SLANGWORD += BUST_ENG("豊乳")
+		ELSEIF TALENT:巨乳
+			SLANGWORD += BUST_ENG("巨乳")
+		ELSE
+			SLANGWORD += "breasts"
+		ENDIF
+		SLANGWORD += " tips"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+IF GETBIT(FLAG:スラング置換／乳首,1)
+	EXIST ++
+	IF RAND:100 < 30
+		SLANGWORD =
+		SIF GETBIT(FLAG:スラング接頭語／乳首,1) && MARK:淫乳 && RAND:100 < 80
+			SLANGWORD += "lewd "
+		IF TALENT:超乳
+			SLANGWORD += BUST_ENG("超乳")
+		ELSEIF TALENT:魔乳
+			SLANGWORD += BUST_ENG("魔乳")
+		ELSEIF TALENT:神乳
+			SLANGWORD += BUST_ENG("神乳")
+		ELSEIF TALENT:爆乳
+			SLANGWORD += BUST_ENG("爆乳")
+		ELSEIF TALENT:豊乳
+			SLANGWORD += BUST_ENG("豊乳")
+		ELSEIF TALENT:巨乳
+			SLANGWORD += BUST_ENG("巨乳")
+		ELSE
+			SLANGWORD += "breasts"
+		ENDIF
+		SLANGWORD += "' nubs"
+		RETURNF SLANGWORD
+	ENDIF
+ENDIF
+SIF GETBIT(FLAG:スラング置換／乳首,0) && EXIST
+	RESTART
+
+IF GETBIT(FLAG:スラング表示／乳首,0) && RAND:100 < 50
+	SLANGWORD += "nipples"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳首,1) && RAND:100 < 30
+	SLANGWORD += "teats"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳首,4) && RAND:100 < 30
+	SLANGWORD += "nubs"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳首,2) && RAND:100 < 30
+	SLANGWORD += "nips"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳首,3) && RAND:100 < 30
+	SLANGWORD += "milk makers"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／乳首,5)
+	SLANGWORD += "buds"
+	RETURNF SLANGWORD
+ENDIF
+RESTART
+

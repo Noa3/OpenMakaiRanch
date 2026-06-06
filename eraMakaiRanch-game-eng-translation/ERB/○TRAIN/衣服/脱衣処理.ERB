@@ -1,0 +1,190 @@
+﻿
+;調教時の衣服脱がし処理
+;ARGS→脱がせる部位　ARGS:1→脱衣形式　ARG→アクセサリー時の取り外し部位
+@TRAIN_CLOTHE_STRIP(ARGS,ARGS:1,ARG)
+
+;前回コマンドをリセット
+PREVCOM = 0
+
+;壁乳拘束だと下半身系、下半身含め系NG
+{
+SIF GETBIT(＃拘束／下半身埋め壁乳＃) && GROUPMATCH(ARGS:1,"下半脱ぎ","下破き","下脱衣","一括半脱ぎ","一括破き",
+"脱衣","全半脱ぎ","全脱衣")
+}
+	RETURN
+
+SELECTCASE ARGS
+CASE "衣服"
+	SELECTCASE ARGS:1
+	CASE "上半脱ぎ"
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		CALL STRIP_MESSAGE_CLOTHE_BUST
+		SETBIT ＃半脱ぎ／衣服上＃
+		SETBIT ＃半脱ぎ／上着＃
+	CASE "下半脱ぎ"
+		CALL STRIP_MESSAGE_CLOTHE_VAGINA
+		SETBIT ＃半脱ぎ／衣服下＃
+	
+	CASE "上破き"
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		CALL BREAK_MESSAGE_CLOTHE_BUST
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),1
+		SETBIT ＃半脱ぎ／上着＃
+	CASE "下破き"
+		CALL BREAK_MESSAGE_CLOTHE_VAGINA
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),2
+	
+	CASE "一括半脱ぎ"
+		;両方できる場合じゃないとここ来ない
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		CALL STRIP_MESSAGE_CLOTHE_BUST
+		CALL STRIP_MESSAGE_CLOTHE_VAGINA
+		SETBIT ＃半脱ぎ／衣服上＃
+		SETBIT ＃半脱ぎ／衣服下＃
+		SETBIT ＃半脱ぎ／上着＃
+	
+	CASE "一括破き"
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		CALL BREAK_MESSAGE_CLOTHE_BUST
+		CALL BREAK_MESSAGE_CLOTHE_VAGINA
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),1
+		SETBIT EQUIP:(EQUIP:装備中ID／衣服),2
+		SETBIT ＃半脱ぎ／上着＃
+	
+	CASE "脱衣"
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		CALL STRIP_MESSAGE_CLOTHE_ALL
+		TFLAG:一時的脱衣／衣服 = 1
+		SETBIT ＃半脱ぎ／上着＃
+	ENDSELECT
+	CALL AJUST_STRIP_FLAG
+
+CASE "下着"
+	SELECTCASE ARGS:1
+	CASE "上脱衣"
+		CALL STRIP_MESSAGE_LINGERIE_BUST
+		TFLAG:一時的脱衣／下着上 = 1
+	CASE "下脱衣"
+		CALL STRIP_MESSAGE_LINGERIE_VAGINA
+		TFLAG:一時的脱衣／下着下 = 1
+		SIF GROUPMATCH(＃着用下着下／名称＃,"レオタード","スクール水着","触手服")
+			TFLAG:一時的脱衣／下着上 = 1
+	CASE "上半脱ぎ"
+		CALL STRIP_MESSAGE_LINGERIE_BUST_HALF
+		SETBIT ＃半脱ぎ／下着上＃
+	CASE "下半脱ぎ"
+		CALL STRIP_MESSAGE_LINGERIE_VAGINA_HALF
+		SETBIT ＃半脱ぎ／下着下＃
+	
+	CASE "一括半脱ぎ"
+		CALL STRIP_MESSAGE_LINGERIE_BUST_HALF
+		CALL STRIP_MESSAGE_LINGERIE_VAGINA_HALF
+		SETBIT ＃半脱ぎ／下着下＃
+		SETBIT ＃半脱ぎ／下着上＃
+		
+	CASE "脱衣"
+		CALL STRIP_MESSAGE_LINGERIE_ALL
+		TFLAG:一時的脱衣／下着上 = 1
+		TFLAG:一時的脱衣／下着下 = 1
+	ENDSELECT
+	CALL AJUST_STRIP_FLAG
+
+CASE "一括"
+	SELECTCASE ARGS:1
+	CASE "上半脱ぎ"
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		CALL STRIP_MESSAGE_CLOTHE_BUST
+		CALL STRIP_MESSAGE_LINGERIE_BUST_HALF
+		SETBIT ＃半脱ぎ／衣服上＃
+		SETBIT ＃半脱ぎ／下着上＃
+		SETBIT ＃半脱ぎ／上着＃
+	
+	CASE "下半脱ぎ"
+		CALL STRIP_MESSAGE_CLOTHE_VAGINA
+		CALL STRIP_MESSAGE_LINGERIE_VAGINA_HALF
+		SETBIT ＃半脱ぎ／衣服下＃
+		SETBIT ＃半脱ぎ／下着下＃
+	
+	CASE "全半脱ぎ"
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		CALL STRIP_MESSAGE_CLOTHE_BUST
+		CALL STRIP_MESSAGE_CLOTHE_VAGINA
+		CALL STRIP_MESSAGE_LINGERIE_BUST_HALF
+		CALL STRIP_MESSAGE_LINGERIE_VAGINA_HALF
+		SETBIT ＃半脱ぎ／衣服上＃
+		SETBIT ＃半脱ぎ／下着上＃
+		SETBIT ＃半脱ぎ／衣服下＃
+		SETBIT ＃半脱ぎ／下着下＃
+		SETBIT ＃半脱ぎ／上着＃
+	
+	CASE "全脱衣"
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		CALL STRIP_MESSAGE_CLOTHE_ALL
+		CALL STRIP_MESSAGE_LINGERIE_ALL
+		TFLAG:一時的脱衣／衣服 = 1
+		TFLAG:一時的脱衣／下着上 = 1
+		TFLAG:一時的脱衣／下着下 = 1
+		SETBIT ＃半脱ぎ／上着＃
+	ENDSELECT
+	CALL AJUST_STRIP_FLAG
+
+CASE "アクセサリー"
+	FLAG_REF = 120
+	
+	;ARGSで一括指定の場合と違う場合
+	IF ARGS:1 == "一括外し"
+		;アクセサリー装備してるか見てないならおわり
+		SIF !SUMARRAY(EQUIP,10,20)
+			RETURN
+		PRINTFORML All of %CALLNAME%'s accessories are removed.
+		FOR LOCAL,10,20
+			SIF GETBIT(＃拘束／下半身埋め壁乳＃) && LOCAL == 13
+				CONTINUE
+			SIF EQUIP:LOCAL
+				TFLAG:(LOCAL +FLAG_REF) = 1
+		NEXT
+	ELSE
+		;ARGが取り外し部位
+		;装備中ID／眼→10　一時的脱衣／眼→130
+		PRINTFORML Removes %CALLNAME%'s %ITEMS_ENG(ITEMNAME:(EQUIP:ARG))%.
+		TFLAG:(ARG +FLAG_REF) = 1
+	ENDIF
+
+CASE "上着"
+	SELECTCASE ARGS:1
+	CASE "半脱ぎ"
+		CALL STRIP_MESSAGE_CLOTHE_JACKET
+		SETBIT ＃半脱ぎ／上着＃
+	ENDSELECT
+ENDSELECT
+
+
+
+;授乳スリット開き処理
+@OPEN_NIPPLE_SLIT
+
+;乳首つまみは例外処理
+SIF !TFLAG:授乳スリット || SELECTCOM != 12
+	RETURN
+
+;授乳スリットは処理に一工夫して使い回す
+;自分で開くか
+IF SOURCE:自主脱衣
+    PRINTFORML %CALLNAME% opened the slit near her nipple and exposed her %SLANG_N()%...
+ELSEIF !TFLAG:授乳スリット
+    IF ＃着用衣服／谷間露出＃
+        PRINTFORM %CALLNAME% slipped her hand into the cleavage of her outfit, searching for her nipple...
+    ELSE
+        PRINTFORM %CALLNAME% slipped her hand through the side of her outfit, searching for her nipple...
+    ENDIF
+    PRINTFORML %CALLNAME% opened the slit near her nipple and exposed her %SLANG_N()%...
+    TFLAG:授乳スリット = 1
+ELSE
+    PRINTFORML %CALLNAME% opened the slit near her nipple and exposed her %SLANG_N()%...
+ENDIF
+TFLAG:授乳スリット開放 = 1
+TFLAG:Ｎ露出 = 1
+SOURCE:Ｎ露出地の文表示 = 1
+CALL AJUST_STRIP_FLAG
+
+

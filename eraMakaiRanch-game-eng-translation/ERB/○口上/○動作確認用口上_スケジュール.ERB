@@ -1,0 +1,278 @@
+﻿
+;動作確認用口上
+;ほんとに動作確認用なのでえっちも何もあったもんじゃない
+;この口上だけ「候補全部表示する」処理をするよ
+;全部埋めるのは大変だと思うのでないと寂しいポイントをつけとく
+;なきゃなくても大丈夫なとこもまあまああるよ　趣味だね
+
+; ======================================
+
+;動作確認用口上
+;口上識別名：動作確認用口上
+;↑口上を作ったら[Str.csv]の6100～に口上識別名を書いてね
+;口上作者：polt
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：
+;↑加筆も何もない
+; ======================================
+
+;ARGS:0　シチュ指定　ARGS:1,2　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_動作確認用口上_SCHEDULE(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+;ここに来てる場合ARGS:0は"スケジュール"固定
+;スケジュール実行時に初仕事かランダム選択でキャラ1人の口上出す
+;めちゃくちゃ多くなってきたのでここもファイル分けようかな…　分けた
+;重要度中くらい？そんなに細かく分けなくてもいいような気はする
+SELECTCASE ARGS:1
+CASE "酪農"
+	;初経験か否かの分岐など→初回・通常で分けることにしたよ
+	SELECTCASE ARGS:2
+	CASE "初回"
+		;おっぱい搾られたことがある場合
+		IF CFLAG:総搾乳量
+			IF ABL:酪農 >= 8
+				CALL MESSAGE_BOX,@"「test_この奴隷が初めて[酪農]の仕事をする時、本人が搾乳されたことがあり、[酪農]Lvが8以上の場合の口上です」"
+			ELSE
+				CALL MESSAGE_BOX,@"「test_この奴隷が初めて[酪農]の仕事をする時、本人が搾乳されたことがあり、[酪農]Lvが8未満の場合の口上です」"
+			ENDIF
+		ELSE
+			IF ABL:酪農 >= 8
+				CALL MESSAGE_BOX,@"「test_この奴隷が初めて[酪農]の仕事をする時、本人が搾乳されたことがなく、[酪農]Lvが8以上の場合の口上です」"
+			ELSE
+				CALL MESSAGE_BOX,@"「test_この奴隷が初めて[酪農]の仕事をする時、本人が搾乳されたことがなく、[酪農]Lvが8未満の場合の口上です」"
+			ENDIF
+		ENDIF
+	CASE "通常"
+		;朝か夕
+		IF TIME == 0 || TIME == 2
+			CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、朝か夕方→乳牛の搾乳をする場合の口上です」"
+			SIF CFLAG:あなたに吸われた母乳合計 >= 100000
+				CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、朝か夕方→乳牛の搾乳をする場合、%CALLNAME:0%に累計100000cc以上母乳を吸われたことがある場合の口上です」"
+			SIF ABL:搾乳中毒 >= 10
+				CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、朝か夕方→乳牛の搾乳をする場合、【搾乳中毒】Lv10以上の場合の口上です」"
+		;昼→放牧中なので搾乳はない
+		ELSE
+			IF SAVESTR:天気／今日 == "快晴"
+				CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、昼→乳牛が放牧中、かつ魔界の天気が晴れの場合の口上です」"
+				CALL MESSAGE_BOX,@"「test_珍しい条件の場合、RETURN命令を入れることで下を候補に入れずに確定や高確率で表示させることができます」"
+				RETURN
+			ENDIF
+			CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、昼→乳牛が放牧中の口上です」"
+		ENDIF
+		IF FLAG:乳牛健康度 >= 80
+			CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、魔界乳牛の健康度が80以上の場合の時間帯共通の口上です」"
+		ELSEIF FLAG:乳牛健康度 < 50
+			CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、魔界乳牛の健康度が50未満の場合の時間帯共通の口上です」"
+		ENDIF
+		SIF !CFLAG:非戦闘職
+			CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、【非戦闘職】ではない場合の時間帯共通の口上です」"
+		SIF CFLAG:非戦闘職
+			CALL MESSAGE_BOX,@"「test_[酪農]の仕事が2回目以降の時で、【非戦闘職】の場合の時間帯共通の口上です」"
+	ENDSELECT
+	
+CASE "事務"
+	SELECTCASE ARGS:2
+	CASE "初回"
+		IF ABL:事務 >= 8
+			CALL MESSAGE_BOX,@"「test_この奴隷が初めて[事務]の仕事をする時、[事務]Lvが8以上の場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_この奴隷が初めて[事務]の仕事をする時、[事務]Lvが8未満の場合の口上です」"
+		ENDIF
+	CASE "通常"
+		IF ABL:事務 >= 8
+			CALL MESSAGE_BOX,@"「test_[事務]の仕事が2回目以降の時で、[事務]Lvが8以上の場合の口上です」"
+		ELSEIF ABL:事務 >= 4
+			CALL MESSAGE_BOX,@"「test_[事務]の仕事が2回目以降の時で、[事務]Lvが4～7の場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_[事務]の仕事が2回目以降の時で、[事務]Lvが4未満の場合の口上です」"
+		ENDIF
+		SIF FLAG:事務作業量 >= 20
+			CALL MESSAGE_BOX,@"「test_[事務]の仕事が2回目以降の時で、[事務作業量]が20以上溜まっていた場合の口上です」"
+		IF CSTR:スケジュール == CSTR:0:スケジュール
+			CALL MESSAGE_BOX,@"「test_[事務]の仕事が2回目以降の時で、%CALLNAME:0%も事務を行っている場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_[事務]の仕事が2回目以降の時で、%CALLNAME:0%は事務以外のスケジュールの場合の口上です」"
+		ENDIF
+	ENDSELECT
+	
+CASE "調剤"
+	SELECTCASE ARGS:2
+	CASE "初回"
+		IF TALENT:調合知識
+			CALL MESSAGE_BOX,@"「test_この奴隷が初めて[調剤]の仕事をする時、素質【調合知識】を持っている場合の口上です」"
+		ELSEIF ABL:薬学 >= 8
+			CALL MESSAGE_BOX,@"「test_この奴隷が初めて[調剤]の仕事をする時、素質【調合知識】がなく[薬学]Lvが8以上の場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_この奴隷が初めて[調剤]の仕事をする時、素質【調合知識】がなく[薬学]Lvが8未満の場合の口上です」"
+		ENDIF
+	CASE "通常"
+		SIF TALENT:調合知識
+			CALL MESSAGE_BOX,@"「test_[調剤]の仕事が2回目以降の時で、素質【調合知識】を持っている場合の口上です」"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「test_[調剤]の仕事が2回目以降の時で、【乳牛】【恋慕】【隷属】【洗脳】のいずれかの場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_[調剤]の仕事が2回目以降の時で、【乳牛】【恋慕】【隷属】【洗脳】ではない場合の口上です」"
+			CALL MESSAGE_BOX,@"「test_仕事を任せる関係上、【陥落】か【屈服】の場合になります」"
+		ENDIF
+	ENDSELECT
+	
+CASE "搾乳"
+	SELECTCASE ARGS:2
+	CASE "実行前"
+		SELECTCASE ARGS:3
+		CASE "初回"
+			IF EXP:搾乳器
+				CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールを初めて実行し、他の調教などで機械搾乳された経験がある場合の搾乳実行前の口上です」"
+			ELSE
+				CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールを初めて実行し、他の調教などで機械搾乳された経験がない場合の搾乳実行前の口上です」"
+			ENDIF
+		CASE "通常"
+			IF TALENT:魔乳
+				IF CSTR:0:スケジュール == "酪農"
+					CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールが2回目以降の時で、%CALLNAME:0%のスケジュールが[酪農]、奴隷が【超乳】の場合の搾乳実行前の口上です」"
+				ELSE
+					CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールが2回目以降の時で、%CALLNAME:0%のスケジュールが[酪農]以外、奴隷が【超乳】の場合の搾乳実行前の口上です」"
+				ENDIF
+			ELSE
+				IF CSTR:0:スケジュール == "酪農"
+					CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールが2回目以降の時で、%CALLNAME:0%のスケジュールが[酪農]、奴隷が【超乳】以外の場合の搾乳実行前の口上です」"
+				ELSE
+					CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールが2回目以降の時で、%CALLNAME:0%のスケジュールが[酪農]以外、奴隷が【超乳】以外の場合の搾乳実行前の口上です」"
+				ENDIF
+			ENDIF
+		ENDSELECT
+	CASE "実行後"
+		IF EX:噴乳 >= 10000
+			CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールの搾乳実行後、搾乳量が10000cc以上だった場合の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールの搾乳実行後、搾乳量が10000cc未満だった場合の口上です」"
+		ENDIF
+		SIF !BASE:母乳生産力
+			CALL MESSAGE_BOX,@"「test_[搾乳]のスケジュールの搾乳実行後、母乳生産力が0になった場合の口上です」"
+	ENDSELECT
+	
+;スケジュール→抽出　抽出口上とはまた別になってるよ
+CASE "抽出"
+	SELECTCASE ARGS:2
+	CASE "実行前"
+		SELECTCASE ARGS:3
+		CASE "初回"
+			CALL MESSAGE_BOX,@"「test_[抽出]のスケジュールを初めて実行した時の搾乳実行前の口上です」"
+		CASE "通常"
+			;継続中かどうかで変化させる
+			IF CFLAG:抽出継続
+				CALL MESSAGE_BOX,@"「test_[抽出]のスケジュールが2回目以降の時で、前の時間帯も[抽出]していた場合の搾乳実行前の口上です」"
+			ELSE
+				CALL MESSAGE_BOX,@"「test_[抽出]のスケジュールが2回目以降の時で、現在が朝、または前の時間帯が[抽出]以外の場合の搾乳実行前の口上です」"
+			ENDIF
+		ENDSELECT
+	CASE "実行後"
+		CALL MESSAGE_BOX,@"「test_[抽出]スケジュール時の搾乳実行後の口上です」"
+	ENDSELECT
+	
+CASE "体内凌辱"
+	SELECTCASE ARGS:2
+	CASE "取り込み開始"
+		SELECTCASE ARGS:3
+		CASE "初回"
+			IF ＃陥落状態／隷属＃ || MARK:触手の苗床
+				CALL MESSAGE_BOX,@"「test_[体内凌辱]のスケジュールを初めて実行した時、【隷属】状態か刻印【触手の苗床】を持つ場合の体内取り込み開始の口上です」"
+			ELSE
+				CALL MESSAGE_BOX,@"「test_[体内凌辱]のスケジュールを初めて実行した時、【隷属】状態でも刻印【触手の苗床】でもない場合の体内取り込み開始の口上です」"
+			ENDIF
+		CASE "通常"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]のスケジュールが2回目以降の場合の体内取り込み開始の口上です」"
+		ENDSELECT
+	CASE "実行前"
+		SELECTCASE ARGS:3
+		CASE "初回"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]のスケジュールを初めて実行した時の体内凌辱開始前の口上です」"
+		CASE "通常"
+			IF CFLAG:体内凌辱継続
+				CALL MESSAGE_BOX,@"「test_[体内凌辱]のスケジュールが2回目以降で、前の時間帯から体内凌辱が継続されている場合の体内凌辱実行前の口上です」"
+			ELSE
+				CALL MESSAGE_BOX,@"「test_[体内凌辱]のスケジュールが2回目以降で、今の時間帯から体内凌辱を再開する場合の体内凌辱実行前の口上です」"
+			ENDIF
+		ENDSELECT
+	CASE "実行後"
+		SELECTCASE ARGS:3
+		CASE "初回"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]のスケジュールを初めて実行した時の体内凌辱実行後の口上です」"
+		CASE "通常"
+			CALL MESSAGE_BOX,@"「test_[体内凌辱]のスケジュールが2回目以降の体内凌辱実行後の口上です」"
+		ENDSELECT
+	ENDSELECT
+
+;調教に関しては1人を対象なので毎回出るよ
+CASE "調教"
+	SELECTCASE ARGS:2
+	CASE "調教開始"
+		IF !EXP:実行回数／あなた調教
+			CALL MESSAGE_BOX,@"「test_初めて%CALLNAME:0%に調教される時の調教前の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%に2回目以降の調教をされる時の調教前の口上です」"
+		ENDIF
+		SIF (MARK:恐怖刻印 || MARK:苦痛刻印) && !TALENT:プライド高い && !TALENT:高慢
+			CALL MESSAGE_BOX,@"「test_刻印【恐怖刻印】または【苦痛刻印】を持ち、素質【プライド高い】と【高慢】を持っていない場合の調教前の口上です」"
+	
+	CASE "調教終了"
+		;TFLAG:コマンド実行回数 とかBASE:体力 を参照するとまだ余裕があるかとか判別できそう
+		IF TFLAG:コマンド実行回数 < 3
+			CALL MESSAGE_BOX,@"「test_調教コマンド回数が3回未満で終了した時の調教後の口上です」"
+			SIF !BASE:体力
+				CALL MESSAGE_BOX,@"「test_調教コマンド回数が3回未満で終了した時、奴隷の体力が0の場合の調教後の口上です」"
+		ELSEIF TFLAG:コマンド実行回数 >= 20
+			CALL MESSAGE_BOX,@"「test_調教コマンド回数が20回以上で終了した時の調教後の口上です」"
+			SIF !BASE:体力
+				CALL MESSAGE_BOX,@"「test_調教コマンド回数が20回以上で終了した時、奴隷の体力が0の場合の調教後の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_調教コマンド回数が3～19回で終了した時の調教後の口上です」"
+			SIF !BASE:体力
+				CALL MESSAGE_BOX,@"「test_調教コマンド回数が3～19回で終了し、奴隷の体力が0の場合の調教後の口上です」"
+		ENDIF
+	
+	CASE "夜調教後自室へ"
+		CALL MESSAGE_BOX,@"「test_夜に%CALLNAME%を調教し、調教が終了して%CALLNAME%が自室に帰る時の口上です」"
+	CASE "体内凌辱から出す"
+		CALL MESSAGE_BOX,@"「test_%CALLNAME%を調教するために%CALLNAME:0%の体内から出した時の口上です」"
+	CASE "体内凌辱から調教開始"
+		CALL MESSAGE_BOX,@"「test_%CALLNAME%を調教するために%CALLNAME:0%の体内から出し、調教を開始する時の口上です」"
+	CASE "再度体内凌辱"
+		CALL MESSAGE_BOX,@"「test_調教するために%CALLNAME:0%の体内から出した%CALLNAME%を、調教終了時に再度体内凌辱に戻す時の口上です」"
+	ENDSELECT
+
+CASE "魔界探索"
+	SELECTCASE ARGS:2
+	CASE "睡眠"
+		CALL MESSAGE_BOX,@"「test_捕獲していない状態・追跡者に捕捉されていない状態で夜の時間帯になった時の口上です」"
+	CASEELSE
+		CALL MESSAGE_BOX,@"「test_捕獲していない状態・追跡者に捕捉されていない状態で魔界を探索している時の口上です」"
+	ENDSELECT
+
+CASE "追跡"
+	SELECTCASE ARGS:2
+	CASE "潜伏"
+		CALL MESSAGE_BOX,@"「test_索敵値50\%以上で追跡者から隠れる条件を満たしている場合の口上です」"
+		CALL MESSAGE_BOX,@"「test_『仲間がいない』かつ『疲労80\%以上』or『戦闘力10000以下』or『仲間がいたけど倒された』場合です」"
+	CASE "潜伏失敗"
+		CALL MESSAGE_BOX,@"「test_追跡者から隠れたが見つかった時の口上です」"
+	CASE "潜伏成功"
+		CALL MESSAGE_BOX,@"「test_追跡者から隠れてやり過ごした時の口上です」"
+	CASE "追跡者捕捉"
+		CALL MESSAGE_BOX,@"「test_追跡者から隠れることなく見つかった時の口上です」"
+	ENDSELECT
+	
+CASE "（製作中）"
+	;他のスケジュールもそのうち作ります
+	SELECTCASE ARGS:2
+	CASE "初回"
+	
+	CASE "通常"
+	
+	ENDSELECT
+ENDSELECT
+
+
+

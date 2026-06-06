@@ -1,0 +1,110 @@
+﻿
+;魔力補給選択肢
+@RANCH_STATUS_MPCHARGER
+#DIM MPCHARGER
+
+IF ITEM:魔力補給装置
+	;手数料として魔力量を増やす（とりあえず二倍にする）
+	MPCHARGER = (MAXBASE:0:魔力 -BASE:0:魔力)*2
+	IF !MPCHARGER
+		CALL PRINTL_WORD_COLOR,@"　Mana Doesn't Need Replenishment","灰"
+	ELSEIF MONEY:貯蔵魔力 < 100
+		CALL PRINTL_WORD_COLOR,@"　貯蔵魔力不足","灰"
+	ELSEIF MONEY:貯蔵魔力 >= MPCHARGER
+		PRINTFORML [ 3] Consume %VALUE_DIGIT(MPCHARGER)% stored MP, restoring %CALLNAME:0%'s Mana
+	ELSE
+		;貯蔵魔力が0ではないけど足りてない
+		MPCHARGER = MONEY:貯蔵魔力
+		PRINTFORML [ 3] Consume %VALUE_DIGIT(MPCHARGER)% stored MP, restoring %CALLNAME:0%'s Mana
+	ENDIF
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　＜Mana Infusion Device＞ needed","灰"
+ENDIF
+
+
+
+;外出手段デフォルト
+@CONFIRM_SHOPPING_MOVE
+
+PRINT [ 4] Transportation:
+SELECTCASE FLAG:外出手段デフォルト
+CASE 0
+	PRINTL Always Ask (Default)
+CASE 1
+	PRINTFORML %PET_NAME_REF("堕天馬")%
+CASE 2
+	PRINTFORML %PET_NAME_REF("オルトロス")%
+CASE 3
+	PRINTFORML %PET_NAME_REF("魔界ハムスター")%
+CASE 10
+	PRINTL 個人用転移門
+ENDSELECT
+
+
+
+;選択後
+;ARG→RESULT
+@RANCH_SETTING(ARG)
+#DIM MPCHARGER
+
+SELECTCASE ARG
+CASE 0
+	CALL DRINK_MILK_AUTO_SELECT
+
+CASE 1
+	PRINTL Save funds by powering batteries through the [Mana Reservoir]?
+	PRINTFORML （Additional Uses：Drug Production, Mana Restoration）
+	CALL ASK_YN
+	IF !RESULT
+		FLAG:魔力バッテリー経費使用 = 1
+	ELSE
+		FLAG:魔力バッテリー経費使用 = 0
+	ENDIF
+	
+CASE 2
+	PRINTFORML Cancel production of %ITEMS_ENG(ITEMNAME:(FLAG:調合中薬品ID))%?（Progress will be reset）
+	CALL ASK_YN
+	IF !RESULT
+		MONEY:調合進行度 = 0
+		FLAG:調合中薬品ID = 0
+	ENDIF
+	
+CASE 3
+	PRINTFORML %CALLNAME:0%に魔力を補給しますか？
+	CALL ASK_YN
+	SIF RESULT
+		RETURN
+	
+	;ここでもう1度計算
+	MPCHARGER = (MAXBASE:0:魔力 -BASE:0:魔力)*2
+	SIF MONEY:貯蔵魔力 < MPCHARGER
+		MPCHARGER = MONEY:貯蔵魔力
+	PRINTFORM %VALUE_DIGIT(MPCHARGER)% Stored MP Consumed → 
+	MONEY:貯蔵魔力 -= MPCHARGER
+	
+	;あなたに補給する量を正常に戻す（手数料を変更する場合ココも変える）
+	MPCHARGER /= 2
+	BASE:0:魔力 += MPCHARGER
+	PRINTFORMW %CALLNAME:0%'s Mana：%VALUE_DIGIT(MPCHARGER)%MP restored
+	
+CASE 4
+	CALL SHOPPING_MOVE_DEFAULT_SELECT
+ENDSELECT
+
+
+
+;外出手段デフォルトを選択
+@SHOPPING_MOVE_DEFAULT_SELECT
+
+CALL MANYL(3)
+PRINTL デフォルトの街への移動方法を選択してください。
+PRINTL [ 0] Always Ask
+CALL SHOPPING_MOVE_LIST("設定")
+PRINTL [99] Cancel
+BINPUT
+SIF RESULT != 99
+	FLAG:外出手段デフォルト = RESULT
+
+
+
+

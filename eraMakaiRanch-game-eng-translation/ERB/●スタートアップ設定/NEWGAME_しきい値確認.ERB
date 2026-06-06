@@ -1,0 +1,43 @@
+﻿
+;しきい値まとめて確認
+@NEWGAME_CONFIRM_THRESHOLD
+
+CALL MANYL(5)
+PRINTL 　《 Height Threshold 》Measured in mm
+PRINTFORML 【Inchling】～{HEIGHT_MAX_妖精体型}
+PRINTFORML   【Infant】{HEIGHT_MAX_妖精体型 +1}～{HEIGHT_MAX_幼児体型}
+PRINTFORML    【Child】{HEIGHT_MAX_幼児体型 +1}～{HEIGHT_MAX_子供体型}
+PRINTFORML   【Petite】{HEIGHT_MAX_子供体型 +1}～{HEIGHT_MAX_小柄}
+PRINTFORMLC   【Short】{HEIGHT_MAX_小柄 +1}～{HEIGHT_MAX_低身長}
+PRINTFORML ＜Male＞：{HEIGHT_MAX_小柄 +1}～{MALE_HEIGHT_MAX_低身長}
+PRINTFORMLC 【Average】{HEIGHT_MAX_低身長 +1}～{HEIGHT_MAX_標準}
+PRINTFORML ＜Male＞：{MALE_HEIGHT_MAX_低身長 +1}～{MALE_HEIGHT_MAX_標準}
+PRINTFORMLC    【Tall】{HEIGHT_MAX_標準 +1}～{HEIGHT_MAX_高身長}
+PRINTFORML ＜Male＞：{MALE_HEIGHT_MAX_標準 +1}～{MALE_HEIGHT_MAX_高身長}
+PRINTFORMLC   【Large】{HEIGHT_MAX_高身長 +1}～{HEIGHT_MAX_大柄}
+PRINTFORML ＜Male＞：{MALE_HEIGHT_MAX_高身長 +1}～{MALE_HEIGHT_MAX_大柄}
+PRINTL
+
+PRINTL 　《 Breast Threshold 》
+PRINTFORML     【Flat】{BUSTSIZE_絶壁}(%PRINT_BUSTSIZE(BUSTSIZE_絶壁)%)
+PRINTFORML    【Small】{BUSTSIZE_貧乳}(%PRINT_BUSTSIZE(BUSTSIZE_貧乳)%)～
+PRINTFORML  【Average】{BUSTSIZE_並乳}(%PRINT_BUSTSIZE(BUSTSIZE_並乳)%)～
+PRINTFORML    【Large】{BUSTSIZE_巨乳}(%PRINT_BUSTSIZE(BUSTSIZE_巨乳)%)～
+PRINTFORML     【Huge】{BUSTSIZE_豊乳}(%PRINT_BUSTSIZE(BUSTSIZE_豊乳)%)～
+PRINTFORML 【Enormous】{BUSTSIZE_爆乳}(%PRINT_BUSTSIZE(BUSTSIZE_爆乳)%)～
+PRINTFORML   【Divine】{BUSTSIZE_神乳}(%PRINT_BUSTSIZE(BUSTSIZE_神乳)%)～
+PRINTFORML  【Magical】{BUSTSIZE_魔乳}(%PRINT_BUSTSIZE(BUSTSIZE_魔乳)%)～
+PRINTFORML  【Supreme】{BUSTSIZE_超乳}(%PRINT_BUSTSIZE(BUSTSIZE_超乳)%)～（Upper Limit {BUSTSIZE_MAX}(%PRINT_BUSTSIZE(BUSTSIZE_MAX)%)）
+PRINTL
+
+PRINTL 　《 Apparent Age Threshold 》
+PRINTFORML 【Child Treatment Minimum】：{VISUAL_AGE_MIN} years old
+PRINTFORML 【Child Treatment Maximum】：{VISUAL_AGE_CHILD_MAX} years old（Adult Minimum：{VISUAL_AGE_CHILD_MAX +1} years old）
+PRINTFORML 　　【Adult Maximum】：{VISUAL_AGE_ADULT_MAX} years old
+PRINTL
+PRINTL Threshold settings have been moved to the constants file. If you want to make changes,
+PRINTL open the file "しきい値定数.ERH" in the "●ERH" folder within the "ERB" folder using a text editor,
+PRINTL and directly edit the values.
+CALL PRINTL_WORD_COLOR,@"Be sure to make changes to the threshold constants before starting the game. After making the changes, restart the game and start a new game.","黄"
+WAIT
+

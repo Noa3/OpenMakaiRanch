@@ -1,0 +1,876 @@
+﻿
+;無口口上を参考にしました。
+;『強気なツンデレ少女』がコンセプト
+;オリジナルで頂いた彩華口上を元に固有名詞部分など取り除いたものです
+; ======================================
+;口上はいろんな人が作ってくれるとうれしいななので口上作者欄やライセンス欄も置いておくね
+
+;口上識別名：強気1
+;↑口上を作ったら[Str.csv]の6100～に口上識別名を書いてね
+;口上作者：953
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：polt、953
+;↑加筆したら書いてね
+; ======================================
+
+;ARGS:0　シチュ指定　ARGS:1～　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_強気1_TRAIN(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+SELECTCASE ARGS:1
+CASE "乳揉み","育乳マッサージ","濃厚母乳マッサージ","ミルクタンクマッサージ"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("My")% breasts belong entirely to %MASTER_CALL()%♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Mmm♥ Show %SELF_CALL_ENG("my")% breasts lots of love♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「No♥ %SELF_CALL_ENG("My")% breasts are being used as you please♥」"
+		ELSEIF TALENT:恥じらい && TFLAG:Ｎ露出
+			CALL MESSAGE_BOX,@"「Stop! Don't touch %SELF_CALL_ENG("my")% breasts!」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Don't touch! Don't touch %SELF_CALL_ENG("my")% breasts!」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「You can do whatever you like with %SELF_CALL_ENG("my")% breasts♥」"
+		CALL MESSAGE_BOX,@"「Ahh♥ It feels so good to have my breasts massaged♥」"
+		CALL MESSAGE_BOX,@"「I love it when %MASTER_CALL()% massages them♥ I love it so much♥♥」"
+		
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「Love them♥♥ Show lots of love to %SELF_CALL_ENG("my")% big breasts♥♥♥」"
+		SIF ABL:バストサイズ < BUSTSIZE_並乳
+			CALL MESSAGE_BOX,@"「Ahh♥ Yes♥ Squeeze them more♥♥♥」"
+		SIF EX:Ｂ絶頂 >= 100
+			CALL MESSAGE_BOX,@"「If you keep squeezing♥ %SELF_CALL_ENG("I")% might climax just from my breasts♥♥♥」"
+	
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Mmm♥ Take your time and enjoy them♥♥」"
+		CALL MESSAGE_BOX,@"「I love having my breasts massaged...♥ Please, give them all your love♥♥♥」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("My")% big breasts♥ Squeeze them a lot♥♥♥」"
+		SIF ABL:Ｂ感度 >= 150
+			CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("My")% sensitive breasts♥ Make them feel even better♥♥♥」"
+		
+	ELSEIF ＃陥落状態／陥落以上＃
+		CALL MESSAGE_BOX,@"「Oh♥ Are you going to tease my breasts again? Ah♥」"
+		CALL MESSAGE_BOX,@"「Tease my chest♥ It's...fun♥ Ooh♥」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「No♥ Don't squeeze %SELF_CALL_ENG("my")% breasts♥」"
+		SIF ABL:Ｂ感度 >= 150
+			CALL MESSAGE_BOX,@"「Ah♥ They're sensitive♥ Even though they're sensitive♥♥♥」"
+	
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Don't make toys of them♥ Don't treat my breasts like toys♥」"
+		CALL MESSAGE_BOX,@"「What's...so fun about this!?」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「Stop it♥ Don't make toys out of my breasts♥ Please stop♥」"
+		SIF ABL:Ｂ感度 >= 150
+			CALL MESSAGE_BOX,@"「Why tease such sensitive places♥ Ahh♥」"
+	
+	ELSE
+		CALL MESSAGE_BOX,@"「I don't feel anything from this!」"
+		SIF !EX:総絶頂
+			CALL MESSAGE_BOX,@"「Ugh, I...I won't give in!」"
+		SIF TFLAG:目隠し
+			CALL MESSAGE_BOX,@"「You can't do anything without a blindfold, can you!」"
+		SIF TFLAG:拘束BIT
+			CALL MESSAGE_BOX,@"「Tying up a girl, you're the worst!」"
+	ENDIF
+	
+CASE "乳搾り"
+	IF MARK:母乳体質
+		IF ABL:搾乳中毒 >= 10
+			CALL MESSAGE_BOX,@"「Ahh♥♥♥ It feels so good♥♥♥ I'm losing it♥♥♥\n Having my breasts milked♥♥♥ is driving me crazy♥♥♥」"
+			CALL MESSAGE_BOX,@"「Ahhhh♥♥♥ My breasts are tingling♥♥♥\n I'm going insane from the climax♥♥♥ I'm losing it♥♥♥」"
+			CALL MESSAGE_BOX,@"「Hyaaah♥♥♥ I can't take it anymore♥♥♥ My mind's going blank♥♥♥\n Milking climax is making me lose it♥♥♥」"
+			CALL MESSAGE_BOX,@"「Nooo♥♥♥ I can't stop climaxing♥♥♥ I'm at my limit♥♥♥\n My head's sparking♥♥♥ The climax is overwhelming♥♥♥」"
+		ENDIF
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%♥♥♥ Please milk me completely♥♥♥」"
+			CALL MESSAGE_BOX,@"「I can't hold back anymore♥♥♥ Milk me♥♥♥ Milk me fully♥♥♥」"
+			CALL MESSAGE_BOX,@"「Breast milk♥♥ I want to release a lot♥♥♥ Milk me♥♥♥」"
+			CALL MESSAGE_BOX,@"「Ahh♥♥♥ Make a toy of me more♥♥♥ I want to climax from milking♥♥♥」"
+			SIF ABL:バストサイズ >= BUSTSIZE_爆乳
+				CALL MESSAGE_BOX,@"「Breast fruits♥♥ Squeeze them more♥♥♥ Make them a mess♥♥♥」"
+			SIF EX:Ｂ絶頂 >= 100
+				CALL MESSAGE_BOX,@"「Nooo♥ If you milk me again♥♥ I'll climax from the milk♥♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「You can milk me even harder♥♥」"
+			CALL MESSAGE_BOX,@"「Ahh♥♥ Breast milking feels so good♥♥♥」"
+			CALL MESSAGE_BOX,@"「Oh, being stroked♥♥ It's tingling♥♥♥」"
+			SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+				CALL MESSAGE_BOX,@"「My bigger breasts can release so much♥♥♥ I can release lots of milk♥♥♥」"
+			SIF ABL:Ｂ感度 >= 150
+				CALL MESSAGE_BOX,@"「My sensitive spots♥♥♥ They're tingling♥♥♥」"
+		ELSEIF ＃陥落状態／陥落以上＃
+			CALL MESSAGE_BOX,@"「Stop playing♥ Don't mess with my chest♥」"
+			CALL MESSAGE_BOX,@"「Don't tease♥ Stop teasing my chest♥」"
+			CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("I'm")% not a cow♥ %SELF_CALL_ENG("I'm")% not livestock♥」"
+			SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+				CALL MESSAGE_BOX,@"「Ugh♥ You're teasing my breasts, and it's not like I'm enjoying it♥」"
+			SIF ABL:Ｂ感度 >= 150
+				CALL MESSAGE_BOX,@"「No♥ I'm not feeling it♥ I'm not feeling anyth...ah♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Stop! Don't! It hurts!」"
+			CALL MESSAGE_BOX,@"「Hurry and finish! Just get it over with!」"
+			SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+				CALL MESSAGE_BOX,@"「Just because they're big doesn't mean you can be rough! Ugh♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「It hurts! It's only painful!」"
+			CALL MESSAGE_BOX,@"「Ugh! How humiliating!」"
+			SIF !EX:総絶頂
+				CALL MESSAGE_BOX,@"「Ugh! I... I don't feel anything!」"
+			SIF TFLAG:目隠し
+				CALL MESSAGE_BOX,@"「Using a blindfold is the lowest!」"
+			SIF TFLAG:拘束BIT
+				CALL MESSAGE_BOX,@"「Don't take advantage just because I'm tied up!」"
+		ENDIF
+	ENDIF
+
+	CASE "乳首つまみ"
+	IF ABL:Ｎ感度 >= 200 || ABL:Ｎ感覚 >= 10
+		CALL MESSAGE_BOX,@"「No♥ It feels so good when you rub it♥ Nooo♥ I'm going to come, I'm going to come, I'm going to cooome♥ 」"
+		CALL MESSAGE_BOX,@"「That spot is so sensitive♥ Nooo♥ I'm going to lose it♥ Reaching ecstasy♥ 」"
+		SIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「Ahh♥♥♥ That spot is so sensitive♥♥♥ Don't tease me there♥♥♥ 」"
+	ENDIF
+	
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「My nipple♥♥ It's so weak♥♥♥ Don't tease it♥♥♥ Don't tease me♥♥♥ 」"
+		CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("My")% nipple♥♥ It's so sensitive♥♥♥ Feels so good♥♥♥ 」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Ahh♥♥♥ Yes, right there♥♥♥ That feels so good♥♥♥ 」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Not there, please♥♥♥ 」"
+	ELSE
+		CALL MESSAGE_BOX,@"「Stop! Not there, please!」"
+	ENDIF
+
+CASE "Ｃ愛撫"
+	SIF ABL:Ｃ感度 >= 200 || ABL:Ｃ感覚 >= 10
+		CALL MESSAGE_BOX,@"「Rub my little bean♥♥♥ Feels so good♥♥♥ Keep going♥♥♥ 」"
+		
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「My little bean♥ Rub it more♥♥♥ Make me feel good♥♥♥ 」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「That spot is so weak♥ Ahh♥♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「It tingles♥♥♥ Stop, stop♥♥♥ 」"
+	ELSE
+		CALL MESSAGE_BOX,@"「That spot is so sensitive! No! It's a special place!」"
+	ENDIF
+
+CASE "Ｖ指挿れ"
+	SIF ABL:Ｖ感度 >= 200 || ABL:Ｖ感覚 >= 10
+		CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%......♥ More... make my %VAGINA_CALL()% all wet♥♥♥ Make me feel so good♥♥♥ 」"
+		
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「Rubbing it♥♥ My %VAGINA_CALL()% is getting rubbed♥♥♥ Overflowing with nectar♥♥♥ 」"
+		CALL MESSAGE_BOX,@"「Ahhh♥♥♥ %MASTER_CALL()%'s fingers♥♥♥ In and out of my %VAGINA_CALL()%♥♥♥ 」"
+		CALL MESSAGE_BOX,@"「My %VAGINA_CALL()% can't take it♥ Preparing to accept %MASTER_CALL()%♥♥♥\n Getting ready for a seed-filled encounter♥♥♥ 」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「My %VAGINA_CALL()% is making sounds♥ It's so wet♥♥♥」"
+		CALL MESSAGE_BOX,@"「That spot is weak♥ My %VAGINA_CALL()% is twitching♥♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Nngh...... Can't give in to this...... but it feels♥ Can't resist♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「That's a precious place... Girls shouldn't be touched there!」"
+	ENDIF
+
+CASE "Ａ指挿れ"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「All of %MASTER_CALL()%'s♥ I belong to %MASTER_CALL()%♥♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「It's filthy♥ I feel it, somehow♥ 」"
+		ELSE
+			CALL MESSAGE_BOX,@"「No! Stop! It hurts! It hurts, please!」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF PALAM:Ａ潤滑 >= 5000
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("My")% body... it's been remade for pleasure♥ 」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「If %MASTER_CALL()% desires...♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Nnngh... ahh... haa♥ haaahn♥」"
+		ENDIF
+	ELSE
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Ahh♥ haaah♥ Feeling this way♥ %SELF_CALL_ENG("I")% have become such a pervert♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「No, stop! I'll go crazy! I'll... go... crazy!」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Ah, nngh... Never... forgive this! Never forgive!」"
+			CALL MESSAGE_BOX,@"「Ugh... so cruel! Demon! You'll get what's coming... hic!」"
+		ENDIF
+	ENDIF
+
+CASE "尻撫で"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「My butt♥ Don't touch it so much♥ It feels too good♥ 」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Ugh! You... pervert!」"
+		ENDIF
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		SIF ABL:Ａ感度 >= 200 || ABL:Ａ感覚 >= 10
+			CALL MESSAGE_BOX,@"「Ahh♥ I can't hold back anymore♥ My %ANAL_CALL()% is throbbing♥♥」"
+		CALL MESSAGE_BOX,@"「Stop rubbing it all over♥ It feels so strange♥♥」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Ahh♥ As much as you want, %MASTER_CALL()%♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Don't play with my butt like that! Nn♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「Ugh! Pervert!」"
+	ENDIF
+	
+CASE "乳撫で"
+	IF !EXP:(SELECTCOM+1000)
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Stroke my breasts♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Ahh...♥ No♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Don't touch me with those dirty hands!」"
+		ENDIF
+		RETURN
+		
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+		CALL MESSAGE_BOX,@"「More♥ Keep stroking♥」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Ahh...♥ So gentle♥」"
+		CALL MESSAGE_BOX,@"「It feels so good... just from being stroked...♥」"
+ 	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Are you having fun touching me that much?」"
+		SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+			CALL MESSAGE_BOX,@"「It's because they're big... Don't treat them like toys!」"
+		SIF ABL:バストサイズ < BUSTSIZE_並乳
+			CALL MESSAGE_BOX,@"「Don't touch me so much!」"
+	
+	ELSE
+		CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("My")% chest is not a toy!」"
+		SIF !EX:総絶頂
+			CALL MESSAGE_BOX,@"「I'm... not feeling anything!」"
+		SIF TFLAG:目隠し
+			CALL MESSAGE_BOX,@"「Uh... no! I'm not feeling it!」"
+		SIF TFLAG:拘束BIT
+			CALL MESSAGE_BOX,@"「You have to tie me up because you can't do anything otherwise!」"
+	ENDIF
+	
+CASE "くすぐり"
+	IF !EXP:(SELECTCOM+1000)
+		CALL MESSAGE_BOX,@"「Fufu ♥ Stop ♥ Stop it ♥ I'm ticklish ♥」"
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Kufufu ♥ Right there ♥ So weak ♥ Stop it ♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「No ♥ No, I said ♥」"
+	ENDIF
+	
+CASE "乳吸い","乳首しゃぶり","乳揉み吸い","母乳吸い尽くし","直飲み触手複合搾乳"
+	IF !EXP:(SELECTCOM+1000)
+		IF MARK:母乳体質
+			IF CFLAG:乳牛
+				CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("I")% belong to %MASTER_CALL()% ♥ Do as you please ♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「You really want to suck on my breasts that much ♥ Go ahead ♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「Don't make such loud sucking sounds ♥」"
+			ELSE
+				CALL MESSAGE_BOX,@"「Stop! Don't humiliate me!」"
+			ENDIF
+		ELSE
+			IF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+				CALL MESSAGE_BOX,@"「Even though there's no milk ♥ Nn ♥ Ah ♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「There's no milk...」"
+			ELSE
+				CALL MESSAGE_BOX,@"「Ah... filthy!」"
+			ENDIF
+		ENDIF
+		RETURN
+	ENDIF
+	IF MARK:母乳体質
+		IF BASE:母乳容量
+			IF ABL:搾乳中毒 >= 10
+				CALL MESSAGE_BOX,@"「Ahh ♥ It's coming out ♥ It feels so good ♥♥♥」"
+				CALL MESSAGE_BOX,@"「Ahh ♥♥♥ It's squirting out ♥♥」"
+				CALL MESSAGE_BOX,@"「I'm going crazy ♥♥♥ Milking me makes me...♥♥♥」"
+			ENDIF
+			IF EX:Ｎ絶頂 >= 50
+				CALL MESSAGE_BOX,@"「Ah ♥ It feels good ♥♥♥」"
+				CALL MESSAGE_BOX,@"「Don't suck so hard ♥♥♥ The milk will squirt out ♥♥♥」"
+				CALL MESSAGE_BOX,@"「Can't take it ♥♥♥ I'm going to keep climaxing ♥♥♥」"
+			ENDIF
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+				CALL MESSAGE_BOX,@"「Fufu ♥ You're such a baby ♥」"
+				CALL MESSAGE_BOX,@"「Take it easy, %MASTER_CALL()% ♥ Drink all the milk you want... ♥」"
+				CALL MESSAGE_BOX,@"「Drink lots ♥ Take all my milk ♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_爆乳
+					CALL MESSAGE_BOX,@"「There's plenty of milk because they're big ♥」"
+				SIF ABL:バストサイズ < BUSTSIZE_並乳
+					CALL MESSAGE_BOX,@"「I don't have much, but I'll do my best to give you some ♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「Ah ♥ Like a baby ♥」"
+				CALL MESSAGE_BOX,@"「Drink all of %SELF_CALL_ENG("my")% milk ♥」"
+				CALL MESSAGE_BOX,@"「Take your time ♥ I'm not going anywhere ♥」"
+				CALL MESSAGE_BOX,@"「Good boy ♥ Good boy ♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+					CALL MESSAGE_BOX,@"「I want you to drink plenty from my big breasts ♥」"
+				SIF ABL:バストサイズ < BUSTSIZE_並乳
+					CALL MESSAGE_BOX,@"「They're small, but the quality is good ♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「No, don't suck my breasts...！」"
+				CALL MESSAGE_BOX,@"「No! If you suck like that... Mmm ♥」"
+				CALL MESSAGE_BOX,@"「Ah ♥ I'm not enjoying this ♥」"
+				SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+					CALL MESSAGE_BOX,@"「Just because they're big... Mm ♥」"
+				SIF ABL:バストサイズ < BUSTSIZE_並乳
+					CALL MESSAGE_BOX,@"「S-sucking so desperately... don't you feel any shame!?」"
+			ELSE
+				CALL MESSAGE_BOX,@"「Don't suck! Don't, no ♥」"
+				CALL MESSAGE_BOX,@"「Breast milk is for babies!」"
+				CALL MESSAGE_BOX,@"「Disgusting! Disgusting!」"
+				SIF ABL:バストサイズ >= BUSTSIZE_豊乳
+					CALL MESSAGE_BOX,@"「Just because they're big... Mm ♥」"
+				SIF ABL:バストサイズ < BUSTSIZE_並乳
+					CALL MESSAGE_BOX,@"「S-sucking so desperately... don't you feel any shame!?」"
+			ENDIF
+		ELSE
+			IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+				CALL MESSAGE_BOX,@"「Ah ♥♥ There's no more ♥♥♥」"
+			ELSEIF ＃陥落状態／恋慕以上＃
+				CALL MESSAGE_BOX,@"「There's no milk ♥ None ♥」"
+			ELSEIF ＃陥落状態／屈服以上＃
+				CALL MESSAGE_BOX,@"「There's no more! Please, stop!」"
+			ELSE
+				CALL MESSAGE_BOX,@"「I'm at my limit! No! There's no more!」"
+			ENDIF
+		ENDIF
+	ELSE
+		IF ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「Come on... ♥ There's no milk ♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「There's no milk! Stop!」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Even if you keep sucking... it's pointless!」"
+		ENDIF
+	ENDIF
+	
+CASE "キス"
+	SIF TALENT:キス未経験
+		RETURN
+		
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+	CALL MESSAGE_BOX,@"「Mmm♥ Mwah♥ Smooch-pah♥ Haa♥ Haa♥ 」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Mwah♥ Smooch...♥ ...A kiss like lovers with %MASTER_CALL()%...♥」"
+	ELSEIF ＃陥落状態／陥落以上＃
+		CALL MESSAGE_BOX,@"「Mmm...♥ Pwah, no, I'm not excited or anything...♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Ungh! Mm~......Pwah! Haa...haa...! Are you satisfied now!?」"
+	ELSE
+		CALL MESSAGE_BOX,@"「Mm!? Pwah... Even if you do this, my heart won't break!」"
+	ENDIF
+	
+CASE "Ｃ舐め"
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Clitoris♥♥ Licking there makes me feel sooo♥♥♥ much♥♥♥」"
+		CALL MESSAGE_BOX,@"「With each lick♥♥ My body shivers♥♥ Can't help but tremble♥♥♥ 」"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%♥♥♥ It feels good♥ Yes♥ Right there♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Stop it♥ Don't lick me there~♥♥ Oohhh♥♥♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「Ugh♥ Mm♥ I'm...not feeling it! Eek♥」"
+	ENDIF
+
+CASE "Ｖ舐め"
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「%VAGINA_CALL()%♥♥ It feels so good♥♥♥ %SWEET_MASTER_CALL()%♥♥♥」"
+		CALL MESSAGE_BOX,@"「%SWEET_MASTER_CALL()%♥♥ Lick me more♥ Keep licking♥♥♥」"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%♥♥♥ It's so good♥ Sweet nectar flowing♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Not there♥ Stop♥ Aahhh♥♥♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「Not there♥ Ugh♥ It's dirty♥ That's where I pee from♥」"
+	ENDIF
+
+CASE "Ａ舐め"
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「%ANAL_CALL()%♥♥ Getting licked on %ANAL_CALL()%♥♥♥ It's making me feel it♥♥♥」"
+		CALL MESSAGE_BOX,@"「My %ANAL_CALL()% is twitching♥♥ Being licked by %MASTER_CALL()%♥ Getting all excited♥♥♥」"
+		CALL MESSAGE_BOX,@"「%MASTER_CALL()%♥♥♥ But that's dirty♥♥♥ Ahhh♥♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Ohhh♥♥♥ So embarrassing♥ Stop it♥ It's dirty there♥♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「Stop it! It feels gross! Ugh♥ Mm♥」"
+	ENDIF
+
+CASE "乳舐め"
+CASE "耳舐め"
+CASE "腋舐め"
+CASE "頬舐め"
+
+CASE "正常位","後背位","対面座位","背面座位","騎乗位","対面立位","背面立位","強制騎乗位"
+	CALL KOJO_GENERAL_強気1_TRAIN_INSIDE("Ｖセックス",ARGS:2)
+
+CASE "Ａ正常位","Ａ後背位","Ａ対面座位","Ａ背面座位","Ａ騎乗位","Ａ対面立位","Ａ背面立位","強制Ａ騎乗位"
+	CALL KOJO_GENERAL_強気1_TRAIN_INSIDE("Ａセックス",ARGS:2)
+	
+CASE "素股"
+CASE "フェラチオ"
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Mmm♥♥ Smooch-pah♥ How is it♥ Am I doing it well? %SWEET_MASTER_CALL()%♥♥♥」"
+		CALL MESSAGE_BOX,@"「Smooch-pah♥ Nibble♥ Haa♥ Ahh♥ Your %PENIS_CALL()% is twitching, so cute♥♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Ooh♥ Nibble♥ Haa♥ Kuhah...haa...♥ It feels weird......」"
+	ELSE
+		CALL MESSAGE_BOX,@"(Ugh...it smells...feels weird...)"
+	ENDIF
+
+CASE "イラマチオ"
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Oohhh~♥♥ Huff♥♥ Haa haa♥ Don't be so rough %SWEET_MASTER_CALL()%♥♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Oooh~♥ Huff~♥ Pwah♥ I can't handle this! Oooohhh♥ 」"
+	ELSE
+		CALL MESSAGE_BOX,@"「Mm! Ugh! Mm~ Haa...haa...stop it! Ugh!」"
+	ENDIF
+
+CASE "パイズリ"
+CASE "強制パイズリ"
+CASE "縦パイズリ"
+CASE "強制縦パイズリ"
+CASE "手コキ"
+
+CASE "家畜用搾乳器"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "魔動快楽搾乳器"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手快楽搾乳器"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "小型霊力抽出装置"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+
+CASE "触手乳揉み"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手乳搾り"
+	SELECTCASE ARGS:2
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "乳包み花弁搾乳触手"
+	SELECTCASE ARGS:2
+	CASE "焦らし"
+		IF !EXP:(SELECTCOM+1000)
+		CALL MESSAGE_BOX,@"「So what are you going to do!? No way! My breasts! Hii♥ Uwaaa♥♥♥」"
+			RETURN
+		ENDIF
+		IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃ || CFLAG:洗脳
+			CALL MESSAGE_BOX,@"「Ah ha♥ %SELF_CALL_ENG("My")% breasts are going to be turned into a toy♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Kuh! I'm not feeling anything like this♥」"
+		ENDIF
+	CASE "取り外し"
+	
+	CASE "継続"
+		CALL MESSAGE_BOX,@"「Higyuuu♥♥ Don't touch my breasts♥ Don't squish them♥♥♥」"
+	
+	CASEELSE
+		CALL MESSAGE_BOX,@"「I'm going to cum♥♥♥ It's too strong♥♥♥ My head is going blank♥♥♥♥♥」"
+	
+	ENDSELECT
+	
+CASE "透明カップ搾乳触手"
+	SELECTCASE ARGS:2
+	CASE "焦らし"
+	
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "搾乳ワーム触手"
+	SELECTCASE ARGS:2
+	CASE "焦らし"
+	
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手Ｖ挿入"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手Ａ挿入"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手強制パイズリ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手フェラチオ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手イラマチオ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "ブラシ触手"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "Ａ"
+	
+	CASE "Ｂ"
+	
+	CASE "Ｃ"
+	
+	CASE "Ｖ"
+	
+	CASE "Ｎ"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手拘束"
+CASE "触手目隠し"
+CASE "触手クリ吸い"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "触手耳姦"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+	
+;CASE "ローション"
+CASE "Ｖローション"
+CASE "Ａローション"
+CASE "Ｂローション"
+CASE "バイブ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+
+	CASE "継続"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Ohooooo♥ Inside my %VAGINA_CALL()%♥ The vibrations are amazing♥」"
+			CALL MESSAGE_BOX,@"「Aaaa♥ My %VAGINA_CALL()% is feeling it♥ Hyaa♥」"
+			CALL MESSAGE_BOX,@"「Amazing♥ %VAGINA_CALL()% feels incredible♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Pull it out♥ I can't take it♥ Pull it out♥♥」"
+			CALL MESSAGE_BOX,@"「I can't do it♥ Please forgive me♥ Enough already♥ Please forgive me♥♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Ah♥ I'm not feeling anything♥ So♥ Pull it out♥ Pull it out now♥」"
+			CALL MESSAGE_BOX,@"「Guuh! No! It doesn't feel good♥ Stop it♥ Pull it out now♥」"
+		ENDIF
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "アナルバイブ"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Aaaah♥ It's going wild inside my %ANAL_CALL()%♥ Aheee♥」"
+			CALL MESSAGE_BOX,@"「Vibe♥ It's moving around in my %ANAL_CALL()%♥ I'm feeling it♥」"
+			CALL MESSAGE_BOX,@"「With the vibe stuck inside my %ANAL_CALL()%♥ I feel so shameless〜〜〜♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Pull it out♥ Pull this out from my butt♥ Quickly pull it out♥♥」"
+			CALL MESSAGE_BOX,@"「Please don't move it♥ My butt will go crazy♥ It's going to get loose♥♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「It hurts! It hurts! This! Ah♥ Pull it out for me♥」"
+			CALL MESSAGE_BOX,@"「Guuh! It's painful! My stomach hurts! Pull it out♥ Pull this out for me♥」"
+		ENDIF
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "乳首ローター"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Kuuuu♥ My nipple feels amazing♥ Fuaaaaa♥」"
+			CALL MESSAGE_BOX,@"「Trembling ♥ Nipples vibrating ♥ Nnnn ♥♥♥」"
+			CALL MESSAGE_BOX,@"「I'm feeling it♥ It's like an electric current running through♥ Ahh♥♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Take it off♥ I'm going to go crazy♥ Take it off♥♥」"
+			CALL MESSAGE_BOX,@"「My nipples are being teased♥ Uwaaaaa♥ Kuuuuuuuu♥♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Stop it! The vibrations on my nipples! Kuu♥ It's too amazing♥」"
+			CALL MESSAGE_BOX,@"「Auuuu! It's tingling! My nipples! Don't tease meee♥ Kuuuu♥」"
+		ENDIF
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "クリローター"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「My clitoris feels amazing♥ My body is twitching♥♥♥」"
+			CALL MESSAGE_BOX,@"「Aaaah♥ It's becoming a habit♥ My clitoris♥ Like my nipples♥♥♥」"
+			CALL MESSAGE_BOX,@"「Nhooo♥ My clitoris♥ This is incredible♥♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「I can't do it♥ If this continues♥ I'll go crazy♥♥」"
+			CALL MESSAGE_BOX,@"「Stop it♥ I'm feeling too much♥ Hiiiii♥♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Please forgive me! Not there! Please don't move it♥ Because I'm weak♥」"
+			CALL MESSAGE_BOX,@"「It's too tight! The vibrations are too intense! Hii♥ I can't endure it♥」"
+		ENDIF
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "乳首吸引器"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "クリ吸引器"
+	SELECTCASE ARGS:2
+	CASE "取り外し"
+	
+	CASE "継続"
+	
+	CASEELSE
+	
+	ENDSELECT
+	
+CASE "アイマスク"
+CASE "口枷"
+CASE "ボールギャグ"
+
+CASE "媚薬"
+	IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「Drugs♥ I love it♥♥♥」"
+		CALL MESSAGE_BOX,@"「Please give me a drug that makes me feel good♥♥♥」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「Please don't!♥ If you use that♥ I'll go crazy♥ Ahhhhh♥♥♥」"
+		CALL MESSAGE_BOX,@"「I'll lose my mind♥ I'll become depraved♥♥♥」"
+	ELSE
+		CALL MESSAGE_BOX,@"「Please don't! Don't use that strange drug! Ah♥ Kuu♥」"
+		CALL MESSAGE_BOX,@"「My body is hot! A strange feeling is swelling! What is this♥ What's happening♥」"
+	ENDIF
+
+
+CASE "強制開口器"
+
+CASE "淫紋付与"
+	SELECTCASE ARGS:2
+	CASE "付与中"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Aah♥ Please don't!♥ Ahhhh♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Noooo! Please stop!♥ What is this♥ Nya! What's going on♥♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Waaah! What are you doing!♥ Ah♥ Kuu♥ Ah♥ Aaaah♥♥♥」"
+		ENDIF
+
+	CASE "完了"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Ahh♥ Now I can feel you more with this♥ %MASTER_CALL()%♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Aah♥ This is a lie♥ My body feels great♥ Nnnnn♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「...With something like this, %SELF_CALL_ENG("I'm")%... bending♥ Hiiiii♥♥♥」"
+		ENDIF
+
+ENDSELECT
+
+CASE "洗脳触手"
+	SELECTCASE ARGS:2
+	CASE "開始"
+		CALL MESSAGE_BOX,@"「No matter what happens, I will never lose───\n　Ugh! Eek!? O-ohh♥ Ah♥ Ah♥ Aahh♥ 」"
+		CALL MESSAGE_BOX,@"「What's that♥ What is this♥ Milking♥ Breastfeeding♥ Sucking♥ I don't know♥ I want to know♥」"
+		CALL MESSAGE_BOX,@"「I will be changed♥ %SELF_CALL_ENG("I'm")% not %SELF_CALL_ENG("me")% anymore,\n　Ah♥ Ah♥ Aahh...... Aah...... Aahh♥♥♥」"
+
+	CASE "完了"
+		CALL MESSAGE_BOX,@"「...%SELF_CALL_ENG("I")%? %SELF_CALL_ENG("I'm")% a female slave♥ A loyal female slave to %MASTER_CALL()%♥♥♥」"
+		CALL MESSAGE_BOX,@"「Being milked by %MASTER_CALL()% and serving is %SELF_CALL_ENG("my")% role♥♥♥」"
+			
+	CASE "解除"
+		CALL MESSAGE_BOX,@"「%SELF_CALL_ENG("My")% head is foggy...... What was done to me？」"
+
+	CASEELSE
+
+	ENDSELECT
+
+CASE "絶頂魔力回復淫紋付与"
+	SELECTCASE ARGS:2
+	CASE "付与中"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Higyaaaaa♥ Aahh aahh aahh♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Aahh♥ Eekiiiii♥♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「I can't take this♥ I can't handle this♥♥ This is breaking me♥」"
+		ENDIF
+
+	CASE "完了"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Ooh♥ Ooh♥ Ohh♥♥♥ Heh♥ Heh♥♥ Hehehe♥♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「I'm a dairy cow now♥♥♥ I'm a milking machine now♥♥♥ I've become livestock♥♥♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「Let me go♥ I want to be free♥ I'm breaking down♥ I'm breaking apart♥♥♥」"
+		ENDIF
+	CASEELSE
+
+	ENDSELECT
+
+CASE "目隠し取り外し"
+CASE "口枷取り外し"
+CASE "Ｖペニス引き抜き"
+CASE "Ａペニス引き抜き"
+CASE "搾乳器取り外し"
+CASE "搾乳触手取り外し"
+CASE "胸汚れ拭き取り"
+
+CASE "Ａ注射"
+CASE "Ｂ注射"
+CASE "Ｃ注射"
+CASE "Ｖ注射"
+CASE "Ｎ注射"
+CASE "首筋注射"
+
+ENDSELECT
+
+
+
+@KOJO_GENERAL_強気1_TRAIN_INSIDE(ARGS:1,ARGS:2)
+
+SELECTCASE ARGS:1
+CASE "Ｖセックス"
+SIF SOURCE:処女喪失
+	RETURN
+
+	SELECTCASE ARGS:2
+	CASE "継続"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「It's in my %VAGINA_CALL()%'s deepest part♥♥ It's tapping♥♥ It's kissing it♥♥」"
+		ELSEIF ＃陥落状態／恋慕以上＃
+			CALL MESSAGE_BOX,@"「Ufu♥♥ Hit me more with your %PENIS_CALL()%♥ Love me lots♥♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Kuu♥ I'm not feeling it♥ I'm not feeling anything♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「I can't believe this...... I will never forgive you! I won't forgive—hiiaaa♥」"
+		ENDIF
+
+	CASE "実行"
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			CALL MESSAGE_BOX,@"「%PENIS_CALL()% is thrusting deep♥ A lot♥ %SELF_CALL_ENG("My")% %VAGINA_CALL()%♥ So much♥」"
+		ELSEIF ＃陥落状態／屈服以上＃
+			CALL MESSAGE_BOX,@"「Ahhh♥ That felt good! Kufuuh♥」"
+		ELSE
+			CALL MESSAGE_BOX,@"「It hurts! Please stop this......♥」"
+		ENDIF
+	
+	ENDSELECT
+ENDSELECT
+
+

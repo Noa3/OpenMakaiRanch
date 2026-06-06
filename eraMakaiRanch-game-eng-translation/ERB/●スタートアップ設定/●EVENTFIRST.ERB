@@ -1,0 +1,38 @@
+﻿
+;ニューゲーム時の処理
+@EVENTFIRST
+
+EN_VERSION = 107
+
+;オートセーブがある場合上書きしちゃうよ警告
+CHKDATA 99
+IF !RESULT
+	PRINTL Autosave data found.
+	CALL PRINTL_WORD_COLOR("After receiving the slave, autosave will be overwritten. Understood?","黄")
+	PRINTL
+	PRINTLC [ 0] OK
+	PRINTL [ 1] Return to Title
+	INPUT
+	IF RESULT
+		RESETDATA
+		CLEARLINE LINECOUNT
+		JUMP SYSTEM_TITLE
+	ENDIF
+ENDIF
+;CALL README EULAs are for nerds
+
+;ゲーム開始直後のセッティング
+CALL NEWGAME_FLAG_SET
+
+;ゲーム開始前コンフィグ・牧場状態変更
+CALL NEWGAME_RANCH_SETTING
+
+;オープニング→内部で見るか聞く
+CALL PROLOGUE
+
+;初期設定の反映
+CALL SET_START_FLAG
+CALL MANYL(10)
+BEGIN SHOP
+
+

@@ -1,0 +1,97 @@
+﻿
+;装備がある部分のIDを入れる
+@CHARA_EQUIP_REGISTER
+#DIMS CLOTHE_CATEGORY
+
+;DAT読み込み時は～20のほうがある
+FOR LOCAL,0,20
+	SIF EQUIP:LOCAL
+		EQUIP:(EQUIP:LOCAL) = 1
+NEXT
+FOR LOCAL,1000,2000
+	SIF !EQUIP:LOCAL
+		CONTINUE
+	
+	;カテゴリ分類関数を作った
+	CALL CLOTHE_CATEGORY_CHECK(ITEMNAME:LOCAL)
+	SELECTCASE RESULTS
+	
+	CASE "衣服"
+		EQUIP:装備中ID／衣服 = LOCAL
+		
+		;読み込み時に色柄も入れる
+		CSTR:LOCAL = %CSTR:初期装備色柄／衣服%
+		
+		;衣服のみ改造も入れる
+		CALL CSV_CLOTHE_STRIP_CHECK(LOCAL)
+		
+	CASE "下着上下","下着上下／極小"
+		EQUIP:装備中ID／下着上 = LOCAL
+		EQUIP:装備中ID／下着下 = LOCAL
+		CSTR:LOCAL = %CSTR:初期装備色柄／下着上%
+		
+	;他カテゴリはDIMS使ってまとめて入れる
+	{
+	CASE "鎧","下着上","下着上／極小","下着上／シール","下着下","下着下／極小","下着下／シール",
+	"眼","頭","腕","脚","首","上着"
+	}
+		;極小とシールは上書き必要
+		IF GROUPMATCH(RESULTS,"下着上／極小","下着上／シール")
+			RESULTS = 下着上
+		ELSEIF GROUPMATCH(RESULTS,"下着下／極小","下着下／シール")
+			RESULTS = 下着下
+		ENDIF
+		CLOTHE_CATEGORY = 装備中ID／%RESULTS%
+		CLOTHE_COLOR = 初期装備色柄／%RESULTS%
+		EQUIP:CLOTHE_CATEGORY = LOCAL
+		CSTR:LOCAL = %CSTR:CLOTHE_COLOR%
+	ENDSELECT
+NEXT
+
+
+
+;衣服の露出状態セット
+;ARG→LOCAL＝装備ID
+@CSV_CLOTHE_STRIP_CHECK(ARG)
+
+SIF EQUIP:初期衣服露出／横乳
+	SETBIT EQUIP:ARG,3
+SIF EQUIP:初期衣服露出／ズリ穴
+	SETBIT EQUIP:ARG,4
+SIF EQUIP:初期衣服露出／谷間露出
+	SETBIT EQUIP:ARG,5
+SIF EQUIP:初期衣服露出／乳暖簾
+	SETBIT EQUIP:ARG,6
+SIF EQUIP:初期衣服露出／前掛け
+	SETBIT EQUIP:ARG,7
+SIF EQUIP:初期衣服露出／乳出し
+	SETBIT EQUIP:ARG,8
+SIF EQUIP:初期衣服露出／股間出し
+	SETBIT EQUIP:ARG,9
+SIF EQUIP:初期衣服露出／授乳スリット
+	SETBIT EQUIP:ARG,10
+
+;上位露出の場合下を消しておくよ
+;横乳とズリ穴は併用可能
+;谷間を優先させておく
+IF ＃着用衣服／乳出し＃
+	CLEARBIT EQUIP:ARG,3
+	CLEARBIT EQUIP:ARG,4
+	CLEARBIT EQUIP:ARG,5
+	CLEARBIT EQUIP:ARG,6
+	CLEARBIT EQUIP:ARG,10
+ELSEIF ＃着用衣服／乳暖簾＃
+	CLEARBIT EQUIP:ARG,3
+	CLEARBIT EQUIP:ARG,4
+	CLEARBIT EQUIP:ARG,5
+	CLEARBIT EQUIP:ARG,10
+ELSEIF ＃着用衣服／谷間露出＃
+	CLEARBIT EQUIP:ARG,3
+	CLEARBIT EQUIP:ARG,4
+ENDIF
+SIF ＃着用衣服／股間出し＃
+	CLEARBIT EQUIP:ARG,7
+
+
+
+

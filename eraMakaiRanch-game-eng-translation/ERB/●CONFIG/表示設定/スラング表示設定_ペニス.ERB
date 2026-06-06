@@ -1,0 +1,95 @@
+﻿
+;新規追加
+;ペニススラング設定
+@SLANG_CONFIG_PENIS
+
+CLEARLINE LINECOUNT
+PRINTL Select slang options for penis.
+DRAWLINE
+PRINTLC [ 0] 「penis」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,0),1)
+PRINTLC [ 1] 「cock」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,1),1)
+PRINTLC [ 2] 「phallus」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,2),1)
+PRINTLC [ 3] 「shaft」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,3),1)
+PRINTLC [ 4] 「manhood」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,4),1)
+PRINTLC [ 5] 「little buddy」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,5),1)
+PRINTLC [ 6] 「dick」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,6),1)
+PRINTLC [ 7] 「hard cock」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,7),1)
+PRINTLC [ 8] 「meat stick」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング表示／ペニス,8),1)
+PRINTL
+PRINTL 　《 Prefix Setting 》
+PRINTL 　（拡張したらあなた／竿役の状態で条件付けの予定）
+PRINTLC [10] 「erect」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／ペニス,0),1)
+PRINTLC [11] 「heated」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／ペニス,1),1)
+PRINTLC [12] 「rock-hard」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／ペニス,2),1)
+PRINTLC [13] 「throbbing」
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング接頭語／ペニス,3),1)
+PRINTL
+PRINTL 　《 Special Substitutions 》
+PRINTLC [20] Priority for Special Substitutions
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／ペニス,0),0)
+PRINTL 　give Priority to cases that meet the conditions for special substitution 
+PRINTLC [29] 《 Custom Replacement 》
+CALL PRINT_ONOFF(GETBIT(FLAG:スラング置換／ペニス,9),0)
+PRINTFORML 　（Current Setting：%SAVESTR:表記／ペニス%）
+CALL SLANG_CONFIG_FOOTER
+INPUT
+SELECTCASE RESULT
+CASE 0 TO 8
+	INVERTBIT FLAG:スラング表示／ペニス,RESULT
+CASE 10 TO 13
+	INVERTBIT FLAG:スラング接頭語／ペニス,(RESULT -10)
+CASE 20
+	INVERTBIT FLAG:スラング置換／ペニス,(RESULT -20)
+CASE 29
+	INVERTBIT FLAG:スラング置換／ペニス,(RESULT -20)
+CASE 80
+	FLAG:スラング表示／ペニス = 65535
+CASE 81
+	FLAG:スラング接頭語／ペニス = 65535
+CASE 82
+	FLAG:スラング置換／ペニス = 65535
+CASE 90
+	FLAG:スラング表示／ペニス = 0
+CASE 91
+	FLAG:スラング接頭語／ペニス = 0
+CASE 92
+	FLAG:スラング置換／ペニス = 0
+CASE 98
+	PRINTL Reset slang options for penis to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_SLANG_CONFIG_PENIS
+CASE 99
+	IF !FLAG:スラング表示／ペニス
+		PRINTW At least one slang option must be selected.
+	ELSE
+		RETURN
+	ENDIF
+ENDSELECT
+RESTART
+
+
+;ボツ
+;PRINTLC [ 9] 「マラ」
+;PRINTLC [10] 「息子」
+;PRINTLC [11] 「雄キノコ」
+;PRINTLC [12] 「剛直」
+;PRINTLC [13] 「肉槍」
+;PRINTLC [14] 「孕ませ棒」
+;PRINTLC [15] 「欲棒」
+;PRINTLC [16] 「デカマラ」
+
+
+

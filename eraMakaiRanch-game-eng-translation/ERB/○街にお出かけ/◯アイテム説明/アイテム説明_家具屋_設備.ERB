@@ -1,0 +1,85 @@
+﻿
+;家具屋今のとこ1ページ
+@ITEM_SHOP_FURNITURE_DETAIL_DEVICE
+
+;アイテム名・価格
+PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:SELECT_ITEM)% 》%VALUE_DIGIT(ITEMPRICE:SELECT_ITEM)%G 
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "手枷"
+	PRINTL <Unlock>
+	PRINTL Training: <Shackles>
+	PRINTL
+	PRINTL A restraint that locks the slave's hands, taking away their freedom.
+	PRINTL Due to its considerable weight, the restrained arms must be lowered, forcing the slave into a kneeling position.
+	PRINTL As a result, the slave's buttocks stick out.
+
+CASE "吊るし鎖"
+	PRINTL <Unlock>
+	PRINTL Training: <Hanging Chains>
+	PRINTL
+	PRINTL A restraint with handcuffs attached to a chain hanging from the ceiling.
+	PRINTL By attaching the handcuffs to the slave and pulling up the chain, the arms are raised, and the slave is left suspended.
+	PRINTL
+	PRINTL Adjusting the height just enough for the toes to barely touch the ground provides the right balance of restraint and freedom.
+
+CASE "調教用搾乳台"
+	PRINTL <Unlock>
+	PRINTL Training: <Milking Table Restraint>
+	PRINTL
+	PRINTFORML A restraint that fixes the neck and hands in a framed structure, emphasizing %SAVESTR:表記／乳房%.
+	PRINTFORML It forces the slave into a humiliating position, perfect for milking and extracting %SAVESTR:表記／母乳%.
+
+CASE "十字架拘束台"
+	PRINTL <Unlock>
+	PRINTL Training: <Crucifix Restraint>
+	PRINTL
+	PRINTL A cross-shaped restraint that secures both arms horizontally and both legs at three points.
+	PRINTL The appearance resembles that of a sacrificial ritual.
+
+CASE "Ｘ字拘束台"
+	PRINTL <Unlock>
+	PRINTL Training: <X-Frame Restraint Stand>
+	PRINTL
+	PRINTL A restraint that spreads the limbs widely and fixes them at four points, forcing the body into an "X" shape.
+	PRINTL Spinning in this position could disorient the slave, making it a true form of torture.
+
+CASE "拘束ベッド"
+	PRINTL <Unlock>
+	PRINTL Training: <Restraint Bed> <Bed Prone Restraint>
+	PRINTL
+	PRINTL A bed with shackles attached to four chains to restrain the slave's limbs.
+	PRINTL Despite being a bed, Kaguya put in extra effort to make it soft and comfortable, though it has no real purpose in training.
+
+CASE "吊るしハーネス"
+	PRINTL <Unlock>
+	PRINTL Training: <Hanging Harness> *<Restraint Skill> also required
+	PRINTL
+	PRINTL A restraint that suspends from the ceiling with handcuffs, leg cuffs, and a harness for the torso and thighs.
+	PRINTL It allows the slave to be moved freely in various positions, making nearly any position possible.
+	PRINTL The harness is sturdy and ensures safety, and with handles, it could even be used as a plaything.
+
+CASE "壁乳拘束台"
+	PRINTL <Unlock>
+	PRINTL Training: <Wall Mount>
+	PRINTL
+	PRINTFORML A restraint that completely fixes the slave's torso and arms, leaving only the head and %SAVESTR:表記／乳房% exposed from the wall.
+	PRINTFORML It puts the slave in a humiliating position, perfect for extracting %SAVESTR:表記／母乳%.
+	PRINTL
+	PRINTFORML Since the lower body is hidden, insertion into %SAVESTR:表記／膣% or %SAVESTR:表記／アナル% is impossible.
+	PRINTL (Tentacles can still be inserted)
+
+CASE "三角木馬"
+	PRINTL <Unlock>
+	PRINTL Training: <Wooden Horse>
+	PRINTL
+	PRINTL Originally designed for torture, the triangular-shaped seat.
+	PRINTFORML The slave's groin is pressed into the seat by their own weight, causing discomfort and stimulating %SAVESTR:表記／陰核% and %SAVESTR:表記／膣%.
+	PRINTL This device is not a restraint by itself, but the slave is bound with ropes to prevent them from dismounting, making it a form of restraint.
+	PRINTL It is not designed for torture, so it has been modified to ensure no injury occurs.
+	PRINTL
+	PRINTFORML During restraint, insertion or stimulation of %SAVESTR:表記／陰核% or %SAVESTR:表記／膣% is impossible.
+	;↓は蛇足かな？
+	;PRINTFORML 前傾姿勢気味に跨らせるので%SAVESTR:表記／アナル%への責めは可能。
+ENDSELECT
+
+

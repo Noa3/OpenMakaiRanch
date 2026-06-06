@@ -1,0 +1,327 @@
+﻿
+;痛み追加処理
+@INSART_ADD_PAIN
+
+;潤滑追加してから痛み処理
+IF SOURCE:Ｖ潤滑追加
+	CALL RANDOM_FIX(SOURCE:Ｖ潤滑追加,10,"Ｖ潤滑追加")
+	SOURCE:Ｖ潤滑追加 += FIX
+	PALAM:Ｖ潤滑 += SOURCE:Ｖ潤滑追加
+ENDIF
+IF SOURCE:Ａ潤滑追加
+	CALL RANDOM_FIX(SOURCE:Ａ潤滑追加,10,"Ａ潤滑追加")
+	SOURCE:Ａ潤滑追加 += FIX
+	PALAM:Ａ潤滑 += SOURCE:Ａ潤滑追加
+ENDIF
+
+;Ｖ・Ａにブラシ触手以外が入っていると痛み追加
+CALL INSART_ADD_PAIN_V
+CALL INSART_ADD_PAIN_A
+
+;部位痛みをマゾっ気・部位感覚で軽減→苦痛SOURCE追加
+CALL PAIN_MITIGATION_CALC
+
+
+
+;Ｖ・Ａにブラシ触手以外が入っていると痛み追加
+@INSART_ADD_PAIN_V
+
+SIF !TFLAG:Ｖ装備 || TEQUIP:ブラシ触手Ｖ || GETBIT(＃拘束／三角木馬＃)
+	RETURN
+DAMAGE = 20000 -PALAM:Ｖ潤滑
+
+;潤滑で軽減
+SELECTCASE PALAM:Ｖ潤滑
+CASE IS < 5000
+CASE IS < 10000
+	DAMAGE /= 2
+CASE IS < 20000
+	DAMAGE /= 5
+ENDSELECT
+
+;名器なら1/5
+SIF TALENT:名器
+	DAMAGE /= 5
+
+SIF DAMAGE > 0
+	SOURCE:Ｖ痛み += DAMAGE
+
+
+
+@INSART_ADD_PAIN_A
+
+SIF !TFLAG:Ａ装備 || TEQUIP:ブラシ触手Ａ
+	RETURN
+DAMAGE = 25000 -PALAM:Ａ潤滑
+SELECTCASE PALAM:Ａ潤滑
+CASE IS < 5000
+CASE IS < 10000
+	DAMAGE /= 2
+CASE IS < 20000
+	DAMAGE /= 5
+ENDSELECT
+SIF TALENT:Ａ名器
+	DAMAGE /= 5
+SIF DAMAGE > 0
+	SOURCE:Ａ痛み += DAMAGE
+
+
+
+;部位痛みをマゾっ気・部位感覚で軽減→苦痛SOURCE追加
+@PAIN_MITIGATION_CALC
+
+;SOURCE:Ａ痛み→190
+;ABL:Ａ感覚→0
+SOURCE_REF = 190
+
+IF TFLAG:苦痛快楽変換中
+	FOR LOCAL,0,5
+		SOURCE:(120 + LOCAL) += SOURCE:(SOURCE_REF + LOCAL) / 40
+		SOURCE:(SOURCE_REF + LOCAL) = 0
+	NEXT
+	SOURCE:淫欲 += SOURCE:非性感帯痛み
+	SOURCE:非性感帯痛み = 0
+	RETURN
+ENDIF
+
+FOR LOCAL,0,5
+	SIF !SOURCE:(SOURCE_REF +LOCAL)
+		CONTINUE
+	
+	;マゾ+部位感覚で軽減率
+	{
+	FIX = LIMIT(ABL:マゾっ気 *2 +ABL:LOCAL +MARK:被虐中毒 *10
+	+MARK:ドＭ *10 +MARK:雌豚 *20 +MARK:マゾメス淫紋 *30,0,100)
+	}
+	
+	;FIXが50%以上のときはマゾヒズム追加
+	SIF FIX >= 50
+		SOURCE:マゾヒズム += (SOURCE:(SOURCE_REF +LOCAL) /2)
+	
+	;FIX%(軽減分)を快楽へ(補正とかかからないよう器具快楽)
+	SOURCE:(120 + LOCAL) += SOURCE:(SOURCE_REF + LOCAL) * FIX / 4000
+	
+	;(100 -FIX)%に軽減
+	SOURCE:(SOURCE_REF +LOCAL) *= (100 -FIX)
+	SOURCE:(SOURCE_REF +LOCAL) /= 100
+	
+	;1/5を苦痛に入れる
+	SOURCE:苦痛 += (SOURCE:(SOURCE_REF +LOCAL) /5)
+NEXT
+
+;他部位はマゾっ気のみ判定
+FIX = LIMIT(ABL:マゾっ気 *2 +MARK:被虐中毒 *10 +MARK:ドＭ *10 +MARK:雌豚 *20 +MARK:マゾメス淫紋 *30,0,100)
+SIF FIX >= 50
+	SOURCE:マゾヒズム += (SOURCE:非性感帯痛み /2)
+SOURCE:非性感帯痛み *= (100 -FIX)
+SOURCE:非性感帯痛み /= 100
+SOURCE:苦痛 += SOURCE:非性感帯痛み
+
+
+
+;Ｖ拡張とそれによる痛み追加
+@EXPANSION_V
+
+VARSET FIX
+;調教者なしの場合かつ触手服だとあなたのサイズに合わせようとする
+IF PLAYER < 0 && ＃着用下着下／名称＃ == "触手服"
+	FIX:6 = 1
+	PLAYER = 0
+ENDIF
+
+SIF PLAYER < 0
+	RETURN
+SIF !GETBIT(＃Ｐ使用／Ｖ挿入＃) && (!SOURCE:Ｖ快楽／あなた責め || TRAINNAME:SELECTCOM == "お腹撫で") && !SOURCE:Ｖ快楽／触手 && !SOURCE:Ｖ快楽／器具
+	RETURN
+
+;FIX:8と9にＶサイズとＶ拡張を記録
+FIX:8 = ABL:Ｖサイズ
+FIX:9 = ABL:Ｖ拡張
+
+IF PLAYER_PENIS
+	DAMAGE = ABL:PLAYER:ペニスサイズ - ABL:Ｖサイズ - ABL:Ｖ拡張
+	FIX = ABL:PLAYER:ペニスサイズ - ABL:初期値／Ｖサイズ * 3
+	FIX:2 = ABL:PLAYER:ペニスサイズ - ABL:Ｖサイズ
+	FIX:3 = ABL:初期値／Ｖサイズ * 3 - ABL:Ｖサイズ - ABL:Ｖ拡張
+ELSE
+	;生えてない場合は身長150cmの最低値を基準に
+	DAMAGE = 45 - ABL:Ｖサイズ - ABL:Ｖ拡張
+ENDIF
+IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+	;サイズ差それなりだけど拡張限界かどうかの判定
+	SIF DAMAGE > 10 && DAMAGE < 21 && FIX > 0
+		FIX:4 = 1
+	SIF GROUPMATCH(TRAINNAME:SELECTCOM,"ピストン","奉仕させる","正常位","後背位","対面座位","背面座位","騎乗位","対面立位","背面立位","強制騎乗位")
+		FIX:5 = 1
+	IF DAMAGE > 0
+		;サイズ差がありすぎるとABL:サイズが増える＝緩くなる
+		LOCAL = DAMAGE
+		IF DAMAGE > 20  || FIX:4
+			LOCAL -= 11
+			SIF !FIX:5
+				LOCAL -= (LOCAL - 10) / 2
+			SOURCE:Ｖ痛み += MIN(LOCAL * LOCAL,LOCAL * 30) * 500 + 2000
+			SIF FIX:4
+				LOCAL = 10
+			LOCAL = LIMIT(LOCAL * LOCAL / 100 + (RAND:100 < LOCAL * LOCAL % 100 ? 1 # 0),1,LOCAL / 3)
+			SIF ABL:Ｖ拡張
+				ABL:Ｖ拡張 -= LIMIT(LOCAL / 2,0,ABL:Ｖ拡張)
+			ABL:Ｖサイズ += LOCAL
+			LOCAL = 20
+			SIF !FIX:5
+				LOCAL = 10
+		
+		;サイズ差そこそこだけど拡張限界
+		ELSEIF FIX > 0
+			SIF !FIX:5
+				LOCAL -= LOCAL / 2
+			IF RAND:10 < LOCAL
+				ABL:Ｖサイズ ++
+				SIF RAND:20 < LOCAL && ABL:Ｖ拡張
+					ABL:Ｖ拡張 --
+			ENDIF
+			LOCAL += 5
+			SIF !FIX:5
+				LOCAL -= 3
+		ELSEIF FIX:3 > 0
+			SIF !FIX:5
+				LOCAL -= LOCAL / 2
+			ABL:Ｖ拡張 += LOCAL / 10 + (RAND:10 < LOCAL / 2 + 5 ? 1 # 0)
+		ENDIF
+		SOURCE:Ｖ痛み += LOCAL * LOCAL * 25
+		TFLAG:ペニスサイズ差補正 = LIMIT(LOCAL * LOCAL * (-2),-500,0)
+	ELSEIF FIX:2 >= 0
+		TFLAG:ペニスサイズ差補正 = 300
+	ELSE
+		TFLAG:ペニスサイズ差補正 = LIMIT(FIX:2 * FIX:2 * (-1),-500,0)
+	ENDIF
+	IF DAMAGE > -16 && DAMAGE < 1 && FIX:3 > 0 && FIX:5
+		DAMAGE += 15
+		ABL:Ｖ拡張 += (RAND:20 < DAMAGE / 2 + 1 ? 1 # 0)
+	ENDIF
+	SIF ABL:PLAYER:ペニスサイズ > ABL:PLAYER:初期値／ペニスサイズ
+		SOURCE:Ｖ快楽／あなた責め = SOURCE:Ｖ快楽／あなた責め * ABL:PLAYER:ペニスサイズ / ABL:PLAYER:初期値／ペニスサイズ
+	SOURCE:Ｖ快楽／あなた責め = SOURCE:Ｖ快楽／あなた責め * (1000 + TFLAG:ペニスサイズ差補正) / 1000
+
+;ペニス以外ならペニスサイズ-5か初期値／Ｖサイズ*1.5まで少しずつほぐす
+ELSEIF DAMAGE > 5
+	LOCAL = MIN(ABL:初期値／Ｖサイズ * 3 / 2 - ABL:Ｖサイズ - ABL:Ｖ拡張,DAMAGE - 5)
+	SIF LOCAL > 0
+		ABL:Ｖ拡張 += MIN(LOCAL / 10,1) + (RAND:10 < LOCAL / 2 + 4 ? 1 # 0)
+ENDIF
+SIF FIX:6
+	PLAYER = -1
+
+IF FIX:8 != ABL:Ｖサイズ || FIX:9 != ABL:Ｖ拡張
+	PRINTFORM < %CALLNAME% Ｖ Size:
+	IF FIX:9
+		PRINTFORM {FIX:8,3}～{FIX:8 + FIX:9,3}
+	ELSE
+		PRINTFORM {FIX:8,3}
+	ENDIF
+	IF ABL:Ｖ拡張
+		PRINTFORML mm → {ABL:Ｖサイズ,3}～{ABL:Ｖサイズ + ABL:Ｖ拡張,3}mm >
+	ELSE
+		PRINTFORML mm → {ABL:Ｖサイズ,3}mm >
+	ENDIF
+ENDIF
+
+
+;Ａ拡張とそれによる痛み追加
+@EXPANSION_A
+
+VARSET FIX
+IF PLAYER < 0 && ＃着用下着下／名称＃ == "触手服"
+	FIX:6 = 1
+	PLAYER = 0
+ENDIF
+
+SIF PLAYER < 0
+	RETURN
+SIF !GETBIT(＃Ｐ使用／Ａ挿入＃) && !SOURCE:Ａ快楽／あなた責め && !SOURCE:Ａ快楽／触手 && !SOURCE:Ａ快楽／器具
+	RETURN
+
+FIX:8 = ABL:Ａサイズ
+FIX:9 = ABL:Ａ拡張
+
+IF PLAYER_PENIS
+	DAMAGE = ABL:PLAYER:ペニスサイズ - ABL:Ａサイズ - ABL:Ａ拡張
+	FIX = ABL:PLAYER:ペニスサイズ - ABL:初期値／Ａサイズ * 6
+	FIX:2 = ABL:PLAYER:ペニスサイズ - ABL:Ａサイズ
+	FIX:3 = ABL:初期値／Ａサイズ * 6 - ABL:Ａサイズ - ABL:Ａ拡張
+ELSE
+	DAMAGE = 45 - ABL:Ａサイズ - ABL:Ａ拡張
+ENDIF
+IF GETBIT(＃Ｐ使用／Ａ挿入＃)
+	SIF DAMAGE > 10 && DAMAGE < 21 && FIX > 0
+		FIX:4 = 1
+	SIF GROUPMATCH(TRAINNAME:SELECTCOM,"ピストン","奉仕させる","Ａ正常位","Ａ後背位","Ａ対面座位","Ａ背面座位","Ａ騎乗位","Ａ対面立位","Ａ背面立位","強制Ａ騎乗位")
+		FIX:5 = 1
+	IF DAMAGE > 0
+		;サイズ差がありすぎるとABL:サイズが増える＝緩くなる
+		LOCAL = DAMAGE
+		IF DAMAGE > 20  || FIX:4
+			LOCAL -= 11
+			SIF !FIX:5
+				LOCAL -= (LOCAL - 10) / 2
+			SOURCE:Ａ痛み += MIN(LOCAL * LOCAL,LOCAL * 30) * 500 + 2000
+			SIF FIX:4
+				LOCAL = 10
+			LOCAL = LIMIT(LOCAL * LOCAL / 100 + (RAND:100 < LOCAL * LOCAL % 100 ? 1 # 0),1,LOCAL / 3)
+			SIF ABL:Ａ拡張
+				ABL:Ａ拡張 -= LIMIT(LOCAL / 2,0,ABL:Ａ拡張)
+			ABL:Ａサイズ += LOCAL
+			LOCAL = 20
+			SIF !FIX:5
+				LOCAL = 10
+		ELSEIF FIX > 0
+			SIF !FIX:5
+				LOCAL -= LOCAL / 2
+			IF RAND:10 < LOCAL
+				ABL:Ａサイズ ++
+				SIF RAND:20 < LOCAL && ABL:Ａ拡張
+					ABL:Ａ拡張 --
+			ENDIF
+			LOCAL += 5
+			SIF !FIX:5
+				LOCAL -= 3
+		ELSEIF FIX:3 > 0
+			SIF !FIX:5
+				LOCAL -= LOCAL / 2
+			ABL:Ａ拡張 += LOCAL / 10 + (RAND:10 < LOCAL / 2 + 5 ? 1 # 0)
+		ENDIF
+		SOURCE:Ａ痛み += LOCAL * LOCAL * 25
+		TFLAG:ペニスサイズ差補正 = LIMIT(LOCAL * LOCAL * (-2),-500,0)
+	ELSEIF FIX:2 >= 0
+		TFLAG:ペニスサイズ差補正 = 300
+	ELSE
+		TFLAG:ペニスサイズ差補正 = LIMIT(FIX:2 * FIX:2 * (-1),-500,0)
+	ENDIF
+	IF DAMAGE > -16 && DAMAGE < 1 && FIX:3 > 0 && FIX:5
+		DAMAGE += 15
+		ABL:Ａ拡張 += (RAND:20 < DAMAGE / 2 + 1 ? 1 # 0)
+	ENDIF
+	SIF ABL:PLAYER:ペニスサイズ > ABL:PLAYER:初期値／ペニスサイズ
+		SOURCE:Ａ快楽／あなた責め = SOURCE:Ａ快楽／あなた責め * ABL:PLAYER:ペニスサイズ / ABL:PLAYER:初期値／ペニスサイズ
+	SOURCE:Ａ快楽／あなた責め = SOURCE:Ａ快楽／あなた責め * (1000 + TFLAG:ペニスサイズ差補正) / 1000
+ELSEIF DAMAGE > 5
+	LOCAL = MIN(ABL:初期値／Ａサイズ * 3 - ABL:Ａサイズ - ABL:Ａ拡張,DAMAGE - 5)
+	SIF LOCAL > 0
+		ABL:Ａ拡張 += MIN(LOCAL / 10,1) + (RAND:10 < LOCAL / 2 + 4 ? 1 # 0)
+ENDIF
+SIF FIX:6
+	PLAYER = -1
+
+IF FIX:8 != ABL:Ａサイズ || FIX:9 != ABL:Ａ拡張
+	PRINTFORM < %CALLNAME% Ａ Size:
+	IF FIX:9
+		PRINTFORM {FIX:8,3}～{FIX:8 + FIX:9,3}
+	ELSE
+		PRINTFORM {FIX:8,3}
+	ENDIF
+	IF ABL:Ｖ拡張
+		PRINTFORML mm → {ABL:Ａサイズ,3}～{ABL:Ａサイズ + ABL:Ａ拡張,3}mm >
+	ELSE
+		PRINTFORML mm → {ABL:Ａサイズ,3}mm >
+	ENDIF
+ENDIF

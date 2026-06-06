@@ -1,0 +1,137 @@
+﻿
+;処女喪失時の地の文
+@V_LOST_VARGIN_MIND_DAMAGE_MESSAGE
+
+IF TALENT:性知識乏しい
+	IF (＃陥落状態／恋慕以上＃ || CFLAG:乳牛) && V_PENIS == CALLNAME:0
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME% does not understand the meaning of the act,","桃"
+		CALL PRINTL_WORD_COLOR,@"but the feeling of you inside her %SAVESTR:表記／膣% makes her happy...","桃"
+	ELSEIF SOURCE:Ｖ痛み < 5000
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME% does not understand the meaning of the act, but her female instint tells her that it feels good...","桃"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME% does not understand the meaning of the act, and finds it painful and unpleasant...","桃"
+		RETURN
+	ENDIF
+	
+ELSEIF (＃陥落状態／恋慕以上＃ || CFLAG:乳牛) && V_PENIS == CALLNAME:0
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% is happy to offer you her virginity","桃"
+	
+ELSEIF (＃陥落状態／陥落以上＃ || TALENT:チョロイン) && !TALENT:貞操観念 && V_PENIS == CALLNAME:0
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% is willing to give you her virginity...","桃"
+ELSE
+	IF TALENT:貞操観念
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME% cries in despair as %SEX_PARTNER_ENG(V_PENIS)% takes her preciously guarded virginity...","赤"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME% cries as %SEX_PARTNER_ENG(V_PENIS)% takes her preciously guarded virginity...","赤"
+	ENDIF
+	RETURN
+ENDIF
+
+;RETURNしなかったらここ
+SIF TALENT:名器 || ABL:Ｖ感度 >= 200
+	CALL PRINTL_WORD_COLOR,@"The moment %SEX_PARTNER_ENG(V_PENIS)% entered her, she understood what her %VAGINA_CALL_ENG(CSTR:性器呼び方／膣)% was made for...","桃"
+SIF SOURCE:Ｖ痛み >= 5000
+	CALL PRINTL_WORD_COLOR,@"But her face contorts in pain regardless...","桃"
+
+
+
+;初キス時
+@FIRST_KISS_MIND_DAMAGE_MESSAGE
+
+IF (＃陥落状態／恋慕以上＃ || CFLAG:乳牛) && KISS_PLAYER == CALLNAME:0
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% happily offers you her first kiss...","桃"
+	
+ELSEIF (＃陥落状態／陥落以上＃ || TALENT:チョロイン) && !TALENT:貞操観念 && KISS_PLAYER == CALLNAME:0
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% doesn't mind offering you her first kiss..","桃"
+ELSE
+	IF TALENT:乙女心
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME% cries in despair after losing her first kiss to %SEX_PARTNER_ENG(KISS_PLAYER)%...","桃"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"%CALLNAME% cries after losing her first kiss to %SEX_PARTNER_ENG(KISS_PLAYER)%...","桃"
+	ENDIF
+ENDIF
+
+
+
+;母乳体質化
+@LACTATION_MIND_DAMAGE_MESSAGE
+
+SETCOLOR 0xFF70FF
+IF TALENT:性知識乏しい
+	PRINTFORML %CALLNAME% is puzzled by the %SAVESTR:表記／母乳% coming out of her despite not having a child...
+ELSEIF ＃陥落状態／恋慕以上＃
+	PRINTFORML %CALLNAME% is slightly troubled upon seeing %SAVESTR:表記／母乳% come out of her nipples,
+	PRINTFORML but if you wants it, she'll accept it...
+ELSEIF TALENT:乙女心
+	PRINTFORML %CALLNAME% is bewildered seeing %SAVESTR:表記／母乳% come out of her nipples...
+	PRINTFORML Her thinking hasn't caught up with her body's physical changes...
+ELSE
+	PRINTFORML %CALLNAME% is bewildered seeing %SAVESTR:表記／母乳% come out of her nipples...
+	PRINTFORML Her pride was hurt by you toying with her body...
+ENDIF
+RESETCOLOR
+
+
+
+;膨乳
+@BUSTUP_MIND_DAMAGE_MESSAGE
+
+SETCOLOR 0xFF70FF
+IF ABL:バストサイズ > 26
+	PRINTFORM At the sight of her inhumanly large %SAVESTR:表記／乳房%, %CALLNAME%
+ELSEIF ABL:バストサイズ >= BUSTSIZE_爆乳
+	PRINTFORM At the sight of her unnaturally large %SAVESTR:表記／乳房%, %CALLNAME%
+ELSEIF ABL:バストサイズ >= BUSTSIZE_巨乳
+	PRINTFORM At the sight of her bountiful %SAVESTR:表記／乳房%, %CALLNAME%
+ELSE
+	PRINTFORM At the sight of her enlargened %SAVESTR:表記／乳房%, %CALLNAME%
+ENDIF
+IF CFLAG:乳牛
+	PRINTL
+	PRINTFORML thinks now %CALLNAME:0% can squeeze even more %SAVESTR:表記／母乳% from her... 
+	PRINTFORM She gets aroused just thinking about it...
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSEIF ＃陥落状態／隷属＃
+	PRINTFORML thinks now %CALLNAME:0% will give her even more love...
+	PRINTFORM She gets aroused just thinking about it...
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSEIF MARK:搾乳中毒
+	PRINTFORM feels her body tingling at the thought of further milking pleasure...
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSEIF ＃陥落状態／恋慕以上＃
+	IF ABL:バストサイズ > 26
+		PRINTFORML tells herself that such a body is exactly what %CALLNAME:0% wants...
+	ELSE
+		PRINTFORM seems happy getting closer to %CALLNAME:0%'s ideal image of what she should be.
+		CALL HEARTCB(0xD02830)
+		PRINTL
+	ENDIF
+ELSE
+	IF ABL:バストサイズ > 26
+		PRINTL despairs at the sight of losing her dignity as a civilized being...
+	ELSEIF ABL:バストサイズ < BUSTSIZE_爆乳 && TALENT:乳劣等感
+		PRINTL
+		PRINTFORML seems happy that her %SAVESTR:表記／乳房% have gotten bigger despite the situation...
+	ELSE
+		PRINTFORML is terrified at having her %SAVESTR:表記／乳房% be forced to grow...
+	ENDIF
+ENDIF
+RESETCOLOR
+
+
+
+;処女結界破壊
+@BREAK_VIRGIN_BARRIER_MIND_DAMAGE_MESSAGE
+
+PRINTFORML %CALLNAME%'s【Virginity Barrier】has been broken, and she can no longer use the power of Holy Light...
+IF CFLAG:乳牛 || ＃陥落状態／恋慕以上＃
+	PRINTFORML But %CALLNAME% doesn't care anymore now that she belongs to %CALLNAME:0%...
+ELSEIF CFLAG:無抵抗
+	PRINTFORML As %CALLNAME% realized it would happen sooner or later, she accepts it calmly...
+ELSE
+	PRINTFORML Realizing she's now become a helpless female, %CALLNAME% despairs...
+ENDIF
+

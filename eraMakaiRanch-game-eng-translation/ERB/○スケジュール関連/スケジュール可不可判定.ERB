@@ -1,0 +1,64 @@
+﻿
+;業務、調教の可不可判定
+;TARGETはここ来る前に保護しておくこと
+;スケジュール実行かあなたが会いに行かないと変更されないのでそのへんで呼び出そう
+@SCHEDULE_POSSIBLE
+
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	CALL TARGET_SCHEDULE_POSSIBLE
+	CALL TARGET_SCHEDULE_POSSIBLE_TRAIN
+NEXT
+
+
+
+;業務可能フラグの個人判定
+@TARGET_SCHEDULE_POSSIBLE
+
+;まずリセット
+CFLAG:業務可能 = 0
+CFLAG:スケジュール設定可能／業務 = 0
+
+;捕まえてなければNG　家畜→NG　幼子→NG　業務を頼める心境でないとNG（どれか1つでOK）
+;自室なしだと従業員扱いでないのでNG
+{
+SIF CFLAG:追跡対象 || CFLAG:家畜 || !EQUIP:自室 || CSTR:状態／あなたの子 == "成長中" 
+|| (!TALENT:オーナー && !CFLAG:洗脳 && !＃陥落状態／屈服以上＃ && !CFLAG:乳牛)
+}
+	RETURN
+
+;ここまでOKなら設定は可能（自動スケジュールにできる）
+CFLAG:スケジュール設定可能／業務 = 1
+
+;崩壊→NG　虚脱状態→NG　HP0→NG　体内凌辱中→NG
+SIF CFLAG:崩壊 || CFLAG:虚脱 || !BASE:体力 || CSTR:居場所 == "体内"
+	RETURN
+
+;以上に引っかからなければOK
+CFLAG:業務可能 = 1
+
+
+
+;調教可能フラグの個人判定
+@TARGET_SCHEDULE_POSSIBLE_TRAIN
+
+;まずリセット
+CFLAG:調教可能 = 0
+CFLAG:スケジュール設定可能／調教 = 0
+
+;捕まえてないならNG　あなたはNG
+SIF CFLAG:追跡対象 || TALENT:オーナー
+	RETURN
+
+;ここまでOKなら設定は可能
+CFLAG:スケジュール設定可能／調教 = 1
+
+;体内凌辱中はNG
+SIF CSTR:居場所 == "体内"
+	RETURN
+
+;他はOK
+CFLAG:調教可能 = 1
+
+
+

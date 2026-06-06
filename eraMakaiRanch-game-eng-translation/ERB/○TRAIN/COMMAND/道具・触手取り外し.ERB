@@ -1,0 +1,182 @@
+﻿
+;取り外し処理
+;むしろ書く量は増えてるんだけどフォーマット揃えたほうが追加しやすいかなと
+;バラバラになっててむしろ追加しにくい可能性あるか…
+
+@COM100_REMOVE
+;触手乳揉み
+
+TEQUIP:触手乳揉み = 0
+
+
+@COM101_REMOVE
+;触手乳搾り
+
+TEQUIP:触手乳搾り = 0
+
+
+
+@COM105_REMOVE
+;触手Ｖ挿入
+
+TFLAG:Ｖ装備 = 0
+TEQUIP:触手Ｖ挿入 = 0
+
+
+
+@COM106_REMOVE
+;触手Ａ挿入
+
+TFLAG:Ａ装備 = 0
+TEQUIP:触手Ａ挿入 = 0
+
+
+
+@COM107_REMOVE
+;触手強制パイズリ
+
+TEQUIP:触手強制パイズリ = 0
+
+
+
+@COM108_REMOVE
+;触手フェラチオ
+
+TFLAG:Ｍ装備 = 0
+TEQUIP:触手フェラチオ  = 0
+
+;口内に精液ある場合に特定条件で飲み干す
+;隷属・精液中毒+触手中毒>=10・恐怖刻印のどれか
+IF TFLAG:口内精液
+	SIF ＃陥落状態／隷属＃ || ABL:精液中毒 +ABL:触手中毒 >= 10 || MARK:恐怖刻印
+		TFLAG:嚥下精液量 ++
+ENDIF
+
+
+
+@COM109_REMOVE
+;触手イラマチオ
+
+TFLAG:Ｍ装備 = 0
+TEQUIP:触手イラマチオ  = 0
+IF TFLAG:口内精液
+	SIF ＃陥落状態／隷属＃ || ABL:精液中毒 +ABL:触手中毒 >= 10 || MARK:恐怖刻印
+		TFLAG:嚥下精液量 ++
+ENDIF
+
+
+
+@COM112_REMOVE
+;触手目隠し
+
+TEQUIP:触手目隠し = 0
+TFLAG:目隠し = 0
+
+
+
+@COM113_REMOVE
+;触手クリ吸い
+
+TFLAG:Ｃ装備 = 0
+TEQUIP:触手クリ吸い = 0
+
+
+
+@COM114_REMOVE
+;耳姦触手　追加コマンド
+
+TFLAG:Ｅ装備 = 0
+TEQUIP:触手耳姦 = 0
+
+
+@COM115_REMOVE
+;触手強制手コキ　追加コマンド
+
+TEQUIP:触手強制手コキ = 0
+
+
+
+
+
+@COM201_REMOVE
+;バイブ
+
+TFLAG:Ｖ装備 = 0
+TEQUIP:バイブ = 0
+
+
+
+@COM202_REMOVE
+;アナルバイブ
+
+TFLAG:Ａ装備 = 0
+TEQUIP:アナルバイブ = 0
+
+
+
+@COM203_REMOVE
+;乳首ローター
+
+TFLAG:Ｎ装備 = 0
+TEQUIP:乳首ローター = 0
+
+
+
+@COM204_REMOVE
+;クリローター
+
+TFLAG:Ｃ装備 = 0
+TEQUIP:クリローター = 0
+
+
+
+@COM205_REMOVE
+;乳首吸引器
+
+TFLAG:Ｎ装備 = 0
+TEQUIP:乳首吸引器 = 0
+
+
+@COM206_REMOVE
+;クリ吸引器
+
+TFLAG:Ｃ装備 = 0
+TEQUIP:クリ吸引器 = 0
+
+
+
+@COM207_REMOVE
+;アイマスク
+
+TEQUIP:アイマスク = 0
+TFLAG:目隠し = 0
+
+
+
+@COM208_REMOVE
+;口枷
+
+TEQUIP:口枷 = 0
+TFLAG:Ｍ装備 = 0
+
+
+
+@COM209_REMOVE
+;ボールギャグ
+
+TEQUIP:ボールギャグ = 0
+TFLAG:Ｍ装備 = 0
+
+
+
+@COM212_REMOVE
+;強制開口器
+
+TEQUIP:強制開口器 = 0
+TFLAG:Ｍ装備 = 0
+
+
+
+
+
+

@@ -1,0 +1,77 @@
+﻿
+;魔族による追跡
+@CHASE_SLAVE_MONSTER
+
+;先にフラグリセット→TFLAG使うようにしたので
+CALL RESET_TRAIN_PALAM
+
+;夕方のみ発生+確定で戦闘突入するように変更
+;索敵能力は先制攻撃率にのみかかるように変更
+PRINTFORML %PRINT_MONSTER()% are searching for %CALLNAME%%PRINT_EXIST_GROUP()%...
+
+;追跡者別に魔物側ステータスをセット
+CALL CHASE_SLAVE_MONSTER_PALAM_SET(CFLAG:追跡者,CFLAG:追跡人数)
+
+;傭兵アルバイトに気付くかの地の文+不意打ち判定→戦闘開始
+;隠れてもゲーム的なテンポを考えて絶対見つかる
+CALL MONSTER_SEARCH_CALC
+CALL CHASE_SLAVE_ENCOUNT_MESSAGE
+CALL BATTLE_MAIN_BEFORE
+
+
+
+;追跡者によってステータス変更
+;ARG→CFLAG:追跡者　(囲みが多くてARG化)
+;ARG:1→CFLAG:追跡人数
+@CHASE_SLAVE_MONSTER_PALAM_SET(ARG,ARG:1)
+
+;軍事Lvで補正
+TFLAG:バイト戦闘力／最大値 = (MERCENARY_POWER:ARG +MERCENARY_POWER_LVFIX:ARG *FLAG:魔界レベル／軍事) *ARG:1
+TFLAG:バイト攻撃力 = MERCENARY_ATTACK:ARG +MERCENARY_ATTACK_LVFIX:ARG *FLAG:魔界レベル／軍事
+TFLAG:バイト攻撃回数 = ARG:1 *MERCENARY_ATTACK_NUM:ARG
+TFLAG:バイト索敵能力 = MERCENARY_SEARCH:ARG
+
+SELECTCASE ARG
+CASE 1
+	;索敵能力→見つかりにくさ
+	;ゴブリンは多いと見つかりやすい
+	TFLAG:バイト索敵能力 -= (5 *ARG:1)
+CASE 2
+	;ルーキーは攻撃回数増加判定・索敵能力追加
+	TFLAG:バイト攻撃回数 += (ARG:1 *FLAG:魔界レベル／軍事 /MERCENARY_ATTACK_NUM_PLUS)
+	TFLAG:バイト索敵能力 += (FLAG:魔界レベル／軍事 *MERCENARY_SEARCH_FIX)
+ENDSELECT
+
+
+
+;不意打ち判定
+@MONSTER_SEARCH_CALC
+
+;キャラ側の索敵値を計算
+;ランクが高い、仲間ランク+仲間が多いで増加　疲労度で減少
+CFLAG:索敵値 = CFLAG:ランク *2 +CFLAG:仲間ランク *CFLAG:仲間規模 +RAND:10 -BASE:疲労度 /5
+
+;索敵値＞＝魔物索敵能力ならキャラ側が先に見つける
+IF CFLAG:索敵値 >= TFLAG:バイト索敵能力
+	;仲間がいるor戦闘できる+疲労度80%未満で戦闘準備
+	IF BASE:仲間戦闘力1 || (BASE:疲労度 < 80 && BASE:戦闘力 >= 10000)
+		CALL MONSTER_BATTLE_PREPARE_MESSAGE
+		TFLAG:潜伏 = 0
+	
+	;そうではないなら隠れる
+	ELSE
+		CALL MONSTER_HIDE_MESSAGE
+		TFLAG:潜伏 = 1
+	ENDIF
+	TFLAG:不意打ち = 0
+
+;索敵値が足りない場合不意打ち＝バイトの先制攻撃
+ELSE
+	CALL MONSTER_UNNOTICE_MESSAGE
+	TFLAG:不意打ち = 1
+ENDIF
+
+
+
+
+

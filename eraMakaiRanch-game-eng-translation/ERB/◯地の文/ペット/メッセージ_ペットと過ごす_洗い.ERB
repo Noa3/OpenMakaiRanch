@@ -1,0 +1,51 @@
+﻿
+;ペットを洗う：地の文
+;TARGET,ANIMAL,PET_NAME指定済み
+@PET_COMMU_MESSAGE_WASH
+
+FLAG_NAME = なつき度／%ANIMAL%
+IF TALENT:動物に好かれる || BASE:FLAG_NAME >= 8000
+	CALL PET_COMMU_MESSAGE_WASH_LOVE
+	DAMAGE = 150
+ELSEIF !TALENT:動物に嫌われる || BASE:FLAG_NAME >= 5000
+	CALL PET_COMMU_MESSAGE_WASH_LOW
+	DAMAGE = 200
+ELSE
+	CALL PET_COMMU_MESSAGE_WASH_HATE
+	DAMAGE = 300
+ENDIF
+
+
+
+;【動物に好かれる】orなつき時
+@PET_COMMU_MESSAGE_WASH_LOVE
+
+PRINTFORML %CALLNAME%は%PET_NAME%を洗ってあげることにした。
+PRINTFORML %PET_NAME%は目をつぶり、大人しく洗われている…
+PRINTL 体が大きく洗うのが大変だ…
+PRINTL ………
+PRINTFORML %PET_NAME%を洗い終わった！%PET_NAME%は気持ちよさそうだ！
+
+
+
+;【動物に嫌われる】ではないor嫌われるけどなつき程々
+@PET_COMMU_MESSAGE_WASH_LOW
+
+;とりあえず上と同じ
+CALL PET_COMMU_MESSAGE_WASH_LOVE
+
+
+
+;【動物に嫌われる】
+@PET_COMMU_MESSAGE_WASH_HATE
+
+PRINTFORML %CALLNAME%は%PET_NAME%を洗おうと試みた…
+PRINTFORML %PET_NAME%は洗い始めるまでだいぶ嫌がったが、洗い始めてからは大人しくしている…
+PRINTL 体が大きく洗うのが大変だ…
+PRINTL ………
+PRINTFORML %PET_NAME%を洗い終わった！%PET_NAME%は気持ちよさそうだ！
+
+
+
+
+

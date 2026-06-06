@@ -1,0 +1,252 @@
+﻿
+;奴隷候補の処女ランダム
+@RANDOM_SLAVE_VARGIN
+#DIM SHUFFLE_AGAIN_COUNT
+
+IF CHILD_HEIGHT_CHECK(CSTR:身長)
+	;FLAG:子供候補割合／性経験／無垢→3220
+	FLAG_REF = 3220
+ELSE
+	;FLAG:候補割合／性経験／無垢→3130
+	FLAG_REF = 3130
+ENDIF
+STR_REF = 6590
+LAST_SHUFFLE_S = %CSTR:性経験%
+CALL RANDOM_BOX_LOTTERY(9)
+
+;好色かつ性経験ない側ならやり直し　どうしてもループする場合性格シャッフル
+IF CSTR:性格 == "好色" && GROUPMATCH(RESULTS,"無垢","生娘","処女")
+	SHUFFLE_COUNT ++
+	IF SHUFFLE_COUNT >= 10
+		CALL RANDOM_SLAVE_PERSONALITY
+		PRINTFORMW 性格【好色】での再シャッフル回数が10回を超えたため、無限ループ防止のため性格を【%CSTR:性格%】に変更しました。
+		SHUFFLE_COUNT = 0
+	ENDIF
+	RESTART
+ENDIF
+IF SHUFFLE_COUNT < 10 && LAST_SHUFFLE_S == RESULTS
+	SHUFFLE_COUNT ++
+	RESTART
+ENDIF
+
+;身分や種族での再抽選補正　こうすれば上位種族+貴族とかでも一番高い再抽選回数で出してくれるんじゃないかな
+;パッチありがとうございます、[SHUFFLE_AGAIN_COUNT]として再抽選取り込み
+IF TALENT:天界種族
+	IF SHUFFLE_AGAIN_COUNT < FLAG:非処女時再抽選回数／天界種族 && GROUPMATCH(RESULTS,"非処女","アブノーマル","ビッチ","肉便器")
+		SHUFFLE_AGAIN_COUNT ++
+		RESTART
+	ENDIF
+ENDIF
+IF CFLAG:上位種族
+	IF SHUFFLE_AGAIN_COUNT < FLAG:非処女時再抽選回数／上位種族 && GROUPMATCH(RESULTS,"非処女","アブノーマル","ビッチ","肉便器")
+		SHUFFLE_AGAIN_COUNT ++
+		RESTART
+	ENDIF
+ENDIF
+IF GROUPMATCH(CSTR:身分,"貴族","王族")
+	IF SHUFFLE_AGAIN_COUNT < FLAG:非処女時再抽選回数／高身分 && GROUPMATCH(RESULTS,"非処女","アブノーマル","ビッチ","肉便器")
+		SHUFFLE_AGAIN_COUNT ++
+		RESTART
+	ENDIF
+ENDIF
+SHUFFLE_AGAIN_COUNT = 0
+SHUFFLE_COUNT = 0
+CSTR:性経験 = %RESULTS%
+
+;性経験リセット+再設定
+CALL SLAVE_VARGIN_RESETTING
+
+;天界種族の種族設定があれば処女や処女結界を確定させる
+CALL HEAVEN_TRIBE_VARGIN
+
+;ジョブによる処女結界発生
+CALL JOB_VARGIN_BARRIER
+
+;目的6：処分寸前の奴隷は確定処女結界
+SIF CFLAG:魔界入りの目的 == 6
+	CALL VARGIN_BARRIER
+
+;【処女結界】or単純処女+＜非処女＞＜肉便器＞の組み合わせになった場合に置き換え処理
+IF TALENT:処女
+	IF CSTR:性経験 == "非処女"
+		CSTR:性経験 = 貞操死守
+		CALL SLAVE_VARGIN_RESETTING
+	ELSEIF CSTR:性経験 == "肉便器"
+		CSTR:性経験 = 性奴隷
+		CALL SLAVE_VARGIN_RESETTING
+	ENDIF
+ENDIF
+
+;母乳体質の場合先天的か出産経験からか　が性体質ランダムのとこにあるよ
+CALL SLAVE_MILK_BODY_FIX
+
+
+
+;処女結界ON
+@VARGIN_BARRIER
+
+TALENT:処女 = 1
+TALENT:処女結界 = 1
+EXP:地上経験人数／ニンゲン／Ｖセックス = 0
+
+
+
+;単純な処女設定
+@SIMPLE_VARGIN
+
+TALENT:処女 = 1
+TALENT:Ａ処女 = 1
+TALENT:処女結界 = 0
+EXP:地上経験人数／ニンゲン／Ｖセックス = 0
+EXP:地上経験人数／ニンゲン／Ａセックス = 0
+
+
+
+;天界種族の種族判定
+@HEAVEN_TRIBE_VARGIN
+
+SIF !TALENT:天界種族
+	RETURN
+FLAG_NAME = 種族設定／%CSTR:種族%
+TRIBE_FLAG_C = 体質反映率／%CSTR:種族%
+IF GETBIT(FLAG:FLAG_NAME,1) && (RAND:100 < FLAG:TRIBE_FLAG_C)
+	CALL SIMPLE_VARGIN
+ELSEIF GETBIT(FLAG:FLAG_NAME,2) && (RAND:100 < FLAG:TRIBE_FLAG_C)
+	CALL VARGIN_BARRIER
+ENDIF
+
+
+
+@JOB_VARGIN_BARRIER
+
+;処女結界が確率で発動するジョブ
+SELECTCASE CSTR:ジョブ
+CASE "プリースト","ビショップ"
+	SIF RAND:100 < 10
+		CALL VARGIN_BARRIER
+CASE "バトルシスター","退魔巫女"
+	SIF RAND:100 < 30
+		CALL VARGIN_BARRIER
+CASE "魔法少女"
+	SIF RAND:100 < 50
+		CALL VARGIN_BARRIER
+ENDSELECT
+
+
+
+
+
+;性経験リセット+再設定
+@SLAVE_VARGIN_RESETTING
+
+;TALENT:処女→0
+VARSET TALENT,1,0,7
+TALENT:処女結界 = 0
+TALENT:性知識乏しい = 0
+TALENT:性知識豊富 = 0
+
+;経験人数のリセット
+;EXP:地上経験人数／ニンゲン／Ｖセックス→100
+VARSET EXP,0,100,120
+
+;性経験に合わせて初経験有無、経験人数を入れる
+SELECTCASE CSTR:性経験
+CASE "無垢"
+	TALENT:性知識乏しい = 1
+	
+CASE "生娘"
+	
+CASE "処女"
+	EXP:地上経験人数／ニンゲン／キス = 1
+	
+CASE "一応処女"
+	EXP:地上経験人数／ニンゲン／キス = 3 +RAND:8
+	EXP:地上経験人数／ニンゲン／Ｍセックス = 3 +RAND:8
+	SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+		EXP:地上経験人数／ニンゲン／パイズリ = 3 +RAND:8
+	SIF MARK:母乳体質
+		EXP:地上経験人数／ニンゲン／授乳 = RAND:6
+	
+CASE "非処女"
+	EXP:地上経験人数／ニンゲン／Ｖセックス = 1
+	EXP:地上経験人数／ニンゲン／キス = 1
+	SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+		EXP:地上経験人数／ニンゲン／パイズリ = 1
+	SIF MARK:母乳体質
+		EXP:地上経験人数／ニンゲン／授乳 = 1
+	
+;非処女選択+処女結界の場合に置き換え
+CASE "貞操死守"
+	EXP:地上経験人数／ニンゲン／キス = 1
+	SIF ABL:バストサイズ >= BUSTSIZE_巨乳
+		EXP:地上経験人数／ニンゲン／パイズリ = 1
+	SIF MARK:母乳体質
+		EXP:地上経験人数／ニンゲン／授乳 = 1
+		
+CASE "アブノーマル"
+	LOCAL = 1 +RAND:5
+	EXP:地上経験人数／ニンゲン／Ｖセックス = LOCAL
+	EXP:地上経験人数／ニンゲン／Ａセックス = LOCAL
+	EXP:地上経験人数／ニンゲン／Ｍセックス = LOCAL
+	EXP:地上経験人数／ニンゲン／パイズリ = LOCAL
+	EXP:地上経験人数／ニンゲン／キス = LOCAL
+	SIF MARK:母乳体質
+		EXP:地上経験人数／ニンゲン／授乳 = LOCAL
+	
+CASE "ビッチ"
+	TALENT:貞操観念 = 0
+	TALENT:性知識豊富 = 1
+	EXP:地上経験人数／ニンゲン／Ｖセックス = 5 +RAND:26
+	EXP:地上経験人数／ニンゲン／Ａセックス = 5 +RAND:26
+	EXP:地上経験人数／ニンゲン／Ｍセックス = 5 +RAND:26
+	EXP:地上経験人数／ニンゲン／パイズリ = 5 +RAND:26
+	EXP:地上経験人数／ニンゲン／キス = 5 +RAND:26
+	SIF MARK:母乳体質
+		EXP:地上経験人数／ニンゲン／授乳 = 5 +RAND:26
+	
+CASE "肉便器"
+	EXP:地上経験人数／ニンゲン／Ｖセックス = 50 +RAND:251
+	EXP:地上経験人数／ニンゲン／Ａセックス = 50 +RAND:251
+	EXP:地上経験人数／ニンゲン／Ｍセックス = 50 +RAND:251
+	EXP:地上経験人数／ニンゲン／パイズリ = 50 +RAND:251
+	EXP:地上経験人数／ニンゲン／キス = 50 +RAND:251
+	SIF MARK:母乳体質
+		EXP:地上経験人数／ニンゲン／授乳 = 100 +RAND:401
+	
+;肉便器+処女結界
+CASE "性奴隷"
+	EXP:地上経験人数／ニンゲン／Ａセックス = 50 +RAND:251
+	EXP:地上経験人数／ニンゲン／Ｍセックス = 50 +RAND:251
+	EXP:地上経験人数／ニンゲン／パイズリ = 50 +RAND:251
+	EXP:地上経験人数／ニンゲン／キス = 50 +RAND:251
+	SIF MARK:母乳体質
+		EXP:地上経験人数／ニンゲン／授乳 = 100 +RAND:401
+ENDSELECT
+
+;地上での経験人数が入ってたら未経験TALENTを消す
+CALL SLAVE_VARGIN_DELETE
+
+;未経験の場合初経験相手の名前を消す
+CALL SELECT_VIRGIN_RESET
+
+
+
+;地上での経験人数が入ってたら未経験TALENTを消す
+@SLAVE_VARGIN_DELETE
+
+SIF EXP:地上経験人数／ニンゲン／Ｖセックス
+	TALENT:処女 = 0
+SIF EXP:地上経験人数／ニンゲン／Ａセックス
+	TALENT:Ａ処女 = 0
+SIF EXP:地上経験人数／ニンゲン／Ｍセックス
+	TALENT:Ｍ処女 = 0
+SIF EXP:地上経験人数／ニンゲン／パイズリ
+	TALENT:パイズリ未経験 = 0
+SIF EXP:地上経験人数／ニンゲン／キス
+	TALENT:キス未経験 = 0
+SIF EXP:地上経験人数／ニンゲン／授乳
+	TALENT:授乳未経験 = 0
+
+
+
+

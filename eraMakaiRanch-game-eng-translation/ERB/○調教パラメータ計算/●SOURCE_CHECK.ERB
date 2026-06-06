@@ -1,0 +1,150 @@
+﻿
+;感度・開発度チェック
+;この関数直接呼べるのでTRAINじゃない責めからもここを通す
+@SOURCE_CHECK
+
+;調教中で経過時間ない場合汚れ追加・汚れ交換だけして帰る
+IF !SOURCE:経過時間 && TFLAG:調教中
+	CALL COMMAND_STAIN_PLUS
+	CALL TRAIN_STAIN_SETTING
+	RETURN
+ENDIF
+
+;調教コマンド地の文　口上非表示のときはこっちもスキップ
+SIF !SOURCE:選択コマンド口上非表示
+	TRYCALLFORM COM{SELECTCOM}_MESSAGE
+
+;調教コマンド汚れ追加・汚れ交換
+CALL COMMAND_STAIN_PLUS
+
+;コマンド実行時画像表示
+CALL TRAIN_IMAGE_COMMON
+
+;装備効果反映前に整理　調教外は元々リセットするので通さない
+CALL TEQUIP_ADJUST
+
+;装備整理後に処女喪失・童貞卒業処理
+CALL LOST_VARGIN
+CALL LOST_VARGIN_PLAYER
+
+;コマンド後擬音呼び出し
+CALL TRAIN_ONOMATOPOEIA_COMMON
+
+;コマンド後口上呼び出し
+CALL TRAIN_KOJO_COMMON
+
+;TEQUIP継続責めの処理
+CALL TRAIN_EQUIP_SOURCE_COMMON
+
+;体内凌辱中の場合SOURCE一部上書き
+CALL VORE_SEX_LOOP_SOURCE
+
+;幼稚乳吸いの母性処理
+CALL CHILDISH_FIX_CHECK
+
+;アビリティ中の乳揉み追加SOURCE
+CALL BUST_ABILITY_SOURCE_CHECK
+
+;Ｖ・Ａ拡張とそれによる痛み追加
+TFLAG:ペニスサイズ差補正 = 0
+CALL EXPANSION_V
+CALL EXPANSION_A
+
+;ペニス快楽処理　射精処理もこの中
+CALL PENIS_SENSITIVE_CALC
+
+;触手側処理
+CALL T_SENSITIVE_CALC
+
+;-------------------------------------------------
+;痛み追加処理
+CALL INSART_ADD_PAIN
+
+;快楽倍率計算
+CALL SENSITIVE_FIX_CALC
+
+;快楽値の合計計算
+CALL SENSITIVE_SUM_CALC
+
+;絶頂判定　回数だけ
+CALL TRAIN_ECSTASY
+
+;搾乳噴乳処理
+CALL TRAIN_LACTATION
+
+;授乳初経験記録処理　上の処女喪失処理内ではまだ噴乳処理してないので
+CALL LOST_VARGIN_MILK
+CALL LOST_VARGIN_PLAYER_MILK
+
+;精神SOURCE追加処理→振り分け前倍率→振り分け→振り分け後倍率
+CALL MIND_SOURCE_PLUS
+CALL MIND_SOURCE_SORT
+CALL MIND_SOURCE_MULTIPLY
+CALL MIND_EXP_PLUS
+CALL MIND_EXP_MULTIPLY
+
+;レズ経験処理
+CALL LESBIAN_EXP_CALC
+
+;搾乳経験値処理
+CALL LACTATION_MILK_EXP
+
+;経験回数増加処理　搾乳噴乳処理の後
+CALL TIMES_SEX_GAIN
+
+;SOURCE処理前に時間経過処理
+CALL TRAIN_TIME_PROCESS
+
+;-------------------------------------------------
+;SOURCE処理
+CALL SOURCE_UP
+
+;SOURCE処理後の処理
+CALL SOURCE_UP_AFTER_COMMON
+
+;調教中のコマンド実行後処理
+CALL COMMAND_AFTER_COMMON
+
+;調教中の場合メッセージ表示・感情BASEを増減　スケジュール外：[おっぱい吸わせて]とかそのへん
+CALL MIND_PALAM_CHECK
+SIF TFLAG:調教中 || TFLAG:スケジュール外Ｈ
+	PRINTL
+
+;処女喪失などによる心判定
+CALL LOST_VARGIN_MIND_DAMAGE
+
+;SOURCE処理後ステータス増減処理
+;調教外なら最後にまとめてやる
+CALL SOURCE_UP_AFTER_STATUS_UP
+
+;PLAYER変動表示
+CALL PRINT_PLAYER_COMMAND_AFTER_MESSAGE
+
+;スキルポイント蓄積値計算
+CALL GET_SKILL_POINT_CALC
+
+;時間関係メッセージ表示
+CALL SPECIAL_TRAIN_TIME_MESSAGE
+
+;PALAMをLIMIT
+FOR LOCAL,0,50
+	PALAM:LOCAL = LIMIT(PALAM:LOCAL,0,PALAM_MAX)
+NEXT
+
+;処女結界が有効な場合なら破壊可能フラグを確認する
+;洗脳触手使用時も更新確認
+SIF TFLAG:処女結界有効 || SELECTCOM == 580
+	CALL VARGIN_BARRIER_BREAK_FLAG
+
+;SOURCEを初期化しないと調教外に対応できない気がする
+;NOWEXもかもしれない
+
+VARSET SOURCE
+VARSET NOWEX
+
+;PLAYERの刻印・リセット
+CALL PLAYER_SOURCE_UP_AFTER_STATUS_UP
+
+
+
+

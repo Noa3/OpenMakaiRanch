@@ -1,0 +1,32 @@
+﻿
+;天気表示
+;ARG→明日の天気も表示
+@SHOW_WEATHER(ARG)
+
+;行になんかあれば空欄つける
+SIF !LINEISEMPTY()
+	PRINT 　　　
+PRINTFORM Weather：%WEATHER_ENG(SAVESTR:天気／今日)%
+SIF !ARG
+	RETURN
+PRINTFORML 　　　Tomorrow's Forecast：%WEATHER_ENG(SAVESTR:天気／明日)%
+
+
+
+;朝昼夕夜の表示
+@PRINT_TIME_NOW(ARG)
+#FUNCTIONS
+
+SELECTCASE ARG
+CASE 0
+	RETURNF "Morning"
+CASE 1
+	RETURNF "Midday"
+CASE 2
+	RETURNF "Evening"
+CASE 3
+	RETURNF "Night"
+CASEELSE
+	RETURNF "Unknown"
+ENDSELECT
+

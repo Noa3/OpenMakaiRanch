@@ -1,0 +1,81 @@
+﻿
+;服
+@PRINT_PORTRAIT_CLOTHE
+
+SIF TFLAG:一時的脱衣／衣服 || !EQUIP:装備中ID／衣服
+	RETURN
+
+;着用衣服の種類・色カテゴリで呼び出す色を変更
+SPRITECREATED @"%＃着用衣服／名称＃%_%PRTCHR_1%_%PRTCHR_2%"
+IF RESULT
+	CLOTHE_COLOR = %PRINT_PORTRAIT_CLOTHE_COLOR("衣服")%
+	SPRITECREATED @"%＃着用衣服／色柄＃%%＃着用衣服／名称＃%_%PRTCHR_1%_%PRTCHR_2%"
+	IF RESULT
+		PRT:10 = <nonbutton pos='%PY_2%'><img src='%＃着用衣服／色柄＃%%＃着用衣服／名称＃%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+	ELSE
+		PRT:10 = <nonbutton pos='%PY_2%'><img src='%＃着用衣服／名称＃%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+	ENDIF
+	
+;逆バニーは実質裸　これ例外処理してばっかだね
+ELSEIF ＃着用衣服／名称＃ == "逆バニー服"
+
+;非対応衣服の置換形式フラグにより変更
+ELSE
+	SELECTCASE FLAG:ドット絵／非対応衣服の置換形式
+	CASE 0
+	CASE 1
+		SPRITECREATED @"布の服_%PRTCHR_1%_%PRTCHR_2%"
+		IF RESULT
+			;着用衣服の種類・色カテゴリで呼び出す色を変更
+			CLOTHE_COLOR = %PRINT_PORTRAIT_CLOTHE_COLOR("衣服")%
+			SPRITECREATED @"%CLOTHE_COLOR%布の服_%PRTCHR_1%_%PRTCHR_2%"
+			IF RESULT
+				PRT:10 = <nonbutton pos='%PY_2%'><img src='%CLOTHE_COLOR%布の服_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+			ELSE
+				PRT:10 = <nonbutton pos='%PY_2%'><img src='布の服_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+			ENDIF
+		ENDIF
+	CASE 2
+		PRT:10 = <nonbutton pos='%PY_2%'><img src='奴隷のボロ布_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+	ENDSELECT
+ENDIF
+
+
+
+;下着上
+@PRINT_PORTRAIT_LINGERIE_BRA
+
+SPRITECREATED @"%＃着用下着上／名称＃%_%PRTCHR_1%_%PRTCHR_2%"
+
+;半脱ぎでも消す
+SIF !RESULT || TFLAG:一時的脱衣／下着上 || !EQUIP:装備中ID／下着上 || (GETBIT(＃半脱ぎ／下着上＃) && FLAG:ドット絵／下着半脱ぎ表示形式)
+	RETURN
+CLOTHE_COLOR = %PRINT_PORTRAIT_CLOTHE_COLOR("下着上")%
+SPRITECREATED @"%CLOTHE_COLOR%%＃着用下着上／名称＃%_%PRTCHR_1%_%PRTCHR_2%"
+IF RESULT
+	PRT:13 = <nonbutton pos='%PY_2%'><img src='%CLOTHE_COLOR%%＃着用下着上／名称＃%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+ELSE
+	PRT:13 = <nonbutton pos='%PY_2%'><img src='%＃着用下着上／名称＃%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+ENDIF
+
+
+
+;下着下
+@PRINT_PORTRAIT_LINGERIE_SHORTS
+
+SPRITECREATED @"%＃着用下着下／名称＃%_%PRTCHR_1%_%PRTCHR_2%"
+SIF !RESULT || TFLAG:一時的脱衣／下着下 || !EQUIP:装備中ID／下着下 || (GETBIT(＃半脱ぎ／下着下＃) && FLAG:ドット絵／下着半脱ぎ表示形式)
+	RETURN
+
+;上下一体なら上の状態に合わせるのでここ飛ばす
+SIF EQUIP:装備中ID／下着上 == EQUIP:装備中ID／下着下
+	RETURN
+CLOTHE_COLOR = %PRINT_PORTRAIT_CLOTHE_COLOR("下着下")%
+SPRITECREATED @"%CLOTHE_COLOR%%＃着用下着下／名称＃%_%PRTCHR_1%_%PRTCHR_2%"
+IF RESULT
+	PRT:14 = <nonbutton pos='%PY_2%'><img src='%CLOTHE_COLOR%%＃着用下着下／名称＃%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+ELSE
+	PRT:14 = <nonbutton pos='%PY_2%'><img src='%＃着用下着下／名称＃%_%PRTCHR_1%_%PRTCHR_2%' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+ENDIF
+
+

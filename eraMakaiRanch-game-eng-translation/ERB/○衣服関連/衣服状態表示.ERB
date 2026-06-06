@@ -1,0 +1,329 @@
+﻿
+;選択装備の状態含め表示
+;ARG→選択アイテムID
+;ARGS→表示箇所
+@PRINT_SELECT_ITEM_DETAIL(ARG,ARGS)
+#DIMS CLOTHE_CATEGORY
+#DIMS EN_CLOTHE_STRING
+ 
+;ARGが0なら帰る
+SIF !ARG
+	RETURN
+
+;種類取得
+CALL CLOTHE_CATEGORY_CHECK(ITEMNAME:ARG)
+CLOTHE_CATEGORY = %RESULTS%
+
+;一応空欄なら帰る
+SIF CLOTHE_CATEGORY == ""
+	RETURN
+
+;装備一覧でEXISTがあれば｜で区切る
+SIF EXIST && ARGS == "装備一覧"
+	PRINT ｜
+EXIST ++
+
+;衣服の場合だけ状態とか複雑なので別関数
+IF CLOTHE_CATEGORY == "衣服"
+	CALL PRINT_SELECT_ITEM_DETAIL_CLOTHE(ARG,ARGS)
+ELSE
+	;色・柄・形→アイテム名
+	;着替え候補だとPRINTLCする
+	IF CSTR:ARG != "" ; fix spacing
+		EN_CLOTHE_STRING = %CLOTH_DESIGN_ENG(CLOTH_COLOR_ENG(CSTR:ARG))% %CLOTHES_ENG(ITEMNAME:ARG)%
+	ELSE
+		EN_CLOTHE_STRING = %CLOTHES_ENG(ITEMNAME:ARG)%
+	ENDIF
+	SELECTCASE ARGS
+	CASE "着用中"
+		PRINTFORMLC 　Wearing：%EN_CLOTHE_STRING%
+	CASE "所持中"
+		PRINTFORMLC [ 0] Wear own %EN_CLOTHE_STRING%
+	CASEELSE
+		PRINTFORM %EN_CLOTHE_STRING%
+	ENDSELECT
+ENDIF
+
+
+
+;衣服の状態表示
+;ARG→選択アイテムID
+;ARGS→表示箇所
+@PRINT_SELECT_ITEM_DETAIL_CLOTHE(ARG,ARGS)
+#DIMS CLOTHE
+
+;色・柄・形→アイテム名
+SELECTCASE ARGS
+CASE "着用中"
+	CLOTHE = 　Wearing：
+CASE "所持中"
+	CLOTHE '= "[ 0] Wear own "
+CASEELSE
+	CLOTHE =
+ENDSELECT
+
+;色柄
+CLOTHE += CLOTH_DESIGN_ENG(CLOTH_COLOR_ENG(CSTR:ARG))
+SIF CSTR:ARG != ""
+	CLOTHE += " " ; make sure spaced properly
+
+;改造状態
+IF !＃選択衣服／胸破け＃
+	IF ＃選択衣服／乳出し＃
+		CLOTHE += "Bare Breasts "
+	ELSEIF ＃選択衣服／乳暖簾＃
+		CLOTHE += "Breast Curtains "
+	ELSEIF !＃選択衣服／谷間露出＃
+		SIF ＃選択衣服／横乳露出＃
+			CLOTHE += "Sideboob "
+		SIF ＃選択衣服／ズリ穴＃
+			CLOTHE += "Boob Window"
+		SIF ＃選択衣服／授乳スリット＃
+			CLOTHE += "授乳スリット"
+	ENDIF
+ENDIF
+IF !＃選択衣服／股間破け＃
+	IF ＃選択衣服／股間出し＃
+		CLOTHE += "Bare Genitals "
+	ELSEIF ＃選択衣服／前掛け＃
+		CLOTHE += "Aproned "
+	ENDIF
+ENDIF
+
+;アイテム名
+CLOTHE += CLOTHES_ENG(ITEMNAME:ARG)
+
+;露出状態
+IF ＃選択衣服／胸破け＃
+	IF ＃選択衣服／股間破け＃
+		CLOTHE += "【Torn】"
+	ELSE
+		CLOTHE += "【Chest Torn】"
+	ENDIF
+ELSE
+	SIF ＃選択衣服／谷間露出＃
+		CLOTHE += "【Cleavage】"
+	SIF ＃選択衣服／股間破け＃
+		CLOTHE += "【Crotch Torn】"
+ENDIF
+
+;着替え候補だとPRINTLCする
+SELECTCASE ARGS
+CASE "着用中"
+	PRINTFORMLC %CLOTHE%
+CASE "所持中"
+	PRINTFORMLC %CLOTHE%
+CASEELSE
+	PRINTFORM %CLOTHE%
+ENDSELECT
+
+
+
+;服とかの状態を表示
+;ARG→追加改行
+@SHOW_EQUIP(ARG)
+
+;露出フラグを合わせる
+CALL AJUST_STRIP_FLAG
+
+;調教中かセクハラ中はTRAINのほうに飛ばす
+IF TFLAG:調教中 || TFLAG:スケジュール外Ｈ
+	CALL SHOW_EQUIP_TRAIN
+	RETURN
+ENDIF
+
+;改行判定を前のほうから
+EXIST = 0
+CALL PRINT_WORD_COLOR("【Equipment】","黄")
+
+;全裸か判定
+
+IF !EQUIP:装備中ID／鎧 && !EQUIP:装備中ID／衣服 && !EQUIP:装備中ID／下着上 && !EQUIP:装備中ID／下着下
+	CALL PRINTL_WORD_COLOR("＜Naked＞","桃")
+
+;鎧・衣服・下着
+;衣服状態がだいぶ長いと1行に収まらないけどいい改行判定計算方法思いつかない
+ELSE
+	CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:装備中ID／鎧,"装備一覧")
+	CALL LINE_BREAKS
+	CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:装備中ID／衣服,"装備一覧")
+	CALL LINE_BREAKS
+	CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:装備中ID／下着上,"装備一覧")
+	CALL LINE_BREAKS
+	
+	;下着の上下IDが同じ場合は表示しない
+	SIF EQUIP:装備中ID／下着上 != EQUIP:装備中ID／下着下
+		CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:装備中ID／下着下,"装備一覧")
+	CALL LINE_BREAKS
+	CALL PRINT_STRIP_PART
+	CALL LINE_BREAKS
+	CALL LINE_BREAKS(1)
+ENDIF
+
+;アクセサリー
+CALL PRINT_WORD_COLOR("【Decorations】","黄")
+
+;一旦リセット
+EXIST = 0
+FOR LOCAL,10,20
+	SIF !EQUIP:LOCAL
+		CONTINUE
+	CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:LOCAL,"装備一覧")
+	CALL LINE_BREAKS
+NEXT
+
+;家畜管理タグ
+IF EQUIP:家畜管理タグ／身分 || EQUIP:家畜管理タグ／呼び名
+	SIF EXIST
+		PRINT ｜
+	EXIST ++
+	PRINT Livestock Tag
+	CALL LINE_BREAKS
+ENDIF
+IF !EXIST
+	CALL PRINTL_WORD_COLOR,@"＜None＞","灰"
+ELSE
+	CALL LINE_BREAKS(1)
+ENDIF
+SIF ARG
+	PRINTL
+
+
+
+;調教中の装備状態表示
+@SHOW_EQUIP_TRAIN
+
+;今のところあなたは脱がせないので表示しない(プレイヤーのイメージにまかせる感じで)
+SIF !TARGET
+	RETURN
+
+;一時的脱衣のフラグも使って判定する
+;鎧脱がすからいらない　調教にいろいろ制限出るのでずっとそうだと思う
+EXIST = 0
+CALL PRINT_WORD_COLOR("【Equipment】","黄")
+IF !TFLAG:一時的脱衣／衣服 && EQUIP:装備中ID／衣服
+	CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:装備中ID／衣服,"装備一覧")
+	IF GETBIT(＃半脱ぎ／衣服上＃)
+		IF GETBIT(＃半脱ぎ／衣服下＃)
+			PRINT <Partially Dressed>
+		ELSE
+			PRINT <Naked Waist Up>
+		ENDIF
+	ELSEIF GETBIT(＃半脱ぎ／衣服下＃)
+		PRINT <Naked Waist Down>
+	ENDIF
+	CALL LINE_BREAKS
+ENDIF
+IF !TFLAG:一時的脱衣／下着上 && EQUIP:装備中ID／下着上
+	CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:装備中ID／下着上,"装備一覧")
+	SIF GETBIT(＃半脱ぎ／下着上＃)
+		PRINT <Partially Dressed>
+	CALL LINE_BREAKS
+ENDIF
+
+;上下一体の場合対応
+IF EQUIP:装備中ID／下着上 == EQUIP:装備中ID／下着下
+
+ELSEIF !TFLAG:一時的脱衣／下着下 && EQUIP:装備中ID／下着下
+	CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:装備中ID／下着下,"装備一覧")
+	SIF GETBIT(＃半脱ぎ／下着下＃)
+		PRINT <Partially Dressed>
+	CALL LINE_BREAKS
+ENDIF
+
+;露出状態を表示
+;EXIST = 0なら全裸
+IF EXIST
+	CALL PRINT_STRIP_PART
+	CALL LINE_BREAKS
+	CALL LINE_BREAKS(1)
+ELSE
+	CALL PRINTL_WORD_COLOR("＜Naked＞","桃")
+ENDIF
+
+;アクセサリー
+CALL PRINT_WORD_COLOR("【Decorations】","黄")
+EXIST = 0
+FLAG_REF = 120
+FOR LOCAL,10,20
+	SIF !EQUIP:LOCAL
+		CONTINUE
+	
+	;一時的脱衣フラグがあれば表示しない　130～
+	SIF TFLAG:(LOCAL +FLAG_REF)
+		CONTINUE
+	CALL PRINT_SELECT_ITEM_DETAIL(EQUIP:LOCAL,"装備一覧")
+	CALL LINE_BREAKS
+NEXT
+IF EQUIP:家畜管理タグ／身分 || EQUIP:家畜管理タグ／呼び名
+	SIF EXIST
+		PRINT ｜
+	EXIST ++
+	PRINT Livestock Tag
+	CALL LINE_BREAKS
+ENDIF
+IF !EXIST
+	CALL PRINTL_WORD_COLOR,@"＜None＞","灰"
+ELSE
+	CALL LINE_BREAKS(1)
+ENDIF
+
+
+
+;露出部位表示
+@PRINT_STRIP_PART
+#DIMS STRIP_PART
+
+;TFLAG:140～144が露出フラグ
+STRIP_PART =
+
+;上手いことループさせようとしても逆に複雑なので1つずつ
+SIF TFLAG:Ａ露出
+	STRIP_PART += "Ａ"
+SIF TFLAG:Ｂ露出
+	STRIP_PART += "Ｂ"
+SIF TFLAG:Ｃ露出
+	STRIP_PART += "Ｃ"
+SIF TFLAG:Ｖ露出
+	STRIP_PART += "Ｖ"
+SIF TFLAG:Ｎ露出
+	STRIP_PART += "Ｎ"
+
+;なければ帰る
+SIF STRIP_PART == ""
+	RETURN
+CALL PRINT_WORD_COLOR,@"【%STRIP_PART% Exposed】","桃"
+
+
+;表示文字数が多すぎて絵に被りそうな場合に改行
+;ARG→〆の時に1
+@LINE_BREAKS(ARG)
+#DIM LBCHECK
+
+IF !ARG
+	IF !LBCHECK
+		VARSET CANDI_BOX
+		VARSET CANDI_NO_BOX
+	ENDIF
+	HTML_POPPRINTINGSTR
+	CANDI_BOX:LBCHECK = %RESULTS%
+	LOCALS = %HTML_TOPLAINTEXT(CANDI_BOX:LBCHECK)%
+	STRLENS LOCALS
+	CANDI_NO_BOX:LBCHECK = RESULT
+	LBCHECK ++
+ELSEIF LBCHECK
+	LOCAL = 0
+	LOCALS = 
+	REPEAT LBCHECK
+		LOCALS += CANDI_BOX:COUNT
+		LOCAL += CANDI_NO_BOX:COUNT
+		IF LOCAL + CANDI_NO_BOX:(COUNT+1) > 80
+			HTML_PRINT LOCALS
+			LOCAL = 0
+			LOCALS = 
+		ENDIF
+	REND
+	SIF LOCALS != ""
+		HTML_PRINT LOCALS
+	LBCHECK = 0
+ENDIF

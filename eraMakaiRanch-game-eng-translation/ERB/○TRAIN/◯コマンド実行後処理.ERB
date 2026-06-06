@@ -1,0 +1,116 @@
+﻿
+;コマンド後擬音呼び出し
+@TRAIN_ONOMATOPOEIA_COMMON
+
+SIF !TFLAG:調教中
+	RETURN
+
+;地の文→改行→口上あれば出す→調教コマンド実行回数増加
+;パイズリなど継続判定になったのでここからは消えた
+SIF SOURCE:乳揉み
+	CALL ONOMATOPOEIA("乳揉み")
+SIF TFLAG:乳吸い
+	CALL ONOMATOPOEIA("乳吸い")
+SIF SOURCE:舐め擬音表示
+	CALL ONOMATOPOEIA("舐める")
+
+
+
+;コマンド後口上呼び出し
+@TRAIN_KOJO_COMMON
+
+;ARGS:2に「実行」を指定するよう追加
+;だいたいの単発コマンドには影響なく挿入時の視認性向上できる感じ
+;初経験喪失時は出さない
+;コマンド実行時にここでは出さないフラグをつけていたら出さない→ピストン、胸拭き取りなど
+;口が塞がってたりしたら余計に出るのでいる
+;SOURCE:処女喪失→300
+SIF !TFLAG:調教中
+	RETURN
+SIF !MATCH(SOURCE,1,300,305) && !SOURCE:選択コマンド口上非表示
+	CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"実行")
+EXP:(SELECTCOM +1000) ++
+PRINTL
+
+
+
+;コマンド実行時画像表示
+@TRAIN_IMAGE_COMMON
+
+SIF !TFLAG:調教中
+	RETURN
+SELECTCASE TRAINNAME:SELECTCOM
+CASE "パイズリ","縦パイズリ","強制パイズリ","強制縦パイズリ"
+	CALL PRINT_IMAGE("パイズリ")
+CASE "素股","フェラチオ","手コキ","騎乗位","Ａ騎乗位"
+	CALL PRINT_IMAGE("奉仕")
+CASEELSE
+	CALL PRINT_IMAGE("調教実行")
+ENDSELECT
+
+
+
+;時間経過処理
+@TRAIN_TIME_PROCESS
+
+SIF !TFLAG:調教中
+	RETURN
+
+;制限撤廃なら無効
+;メッセージを別関数で追加
+IF GETBIT(＃制限撤廃／調教時間＃)
+
+;時間圧縮中ならターン数増加して有効ターン×必要魔力消費
+ELSEIF TFLAG:時間圧縮中
+	;時間圧縮のほうを撤廃なら無効、永続化しているなら無効
+	IF !GETBIT(＃制限撤廃／時間圧縮＃) && !ITEM:時間圧縮永続化
+		TFLAG:時間圧縮有効ターン数 ++
+		SOURCE:魔力消費量 += MAGIC_USE_MP:GETNUM(ITEM,"時間圧縮") *TFLAG:時間圧縮有効ターン数
+	ENDIF
+ELSE
+	TFLAG:残り時間 --
+ENDIF
+TFLAG:コマンド実行回数 ++
+
+
+
+;SOURCE処理後ステータス増減処理
+;調教外なら最後にまとめてやる
+@SOURCE_UP_AFTER_STATUS_UP
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ
+	RETURN
+CALL ABL_UP
+CALL MARK_GET
+
+;あなたの体力増加・レベルアップ
+CALL MASTER_POWERUP
+
+;霊力・魔力の注入
+CALL POWER_INJECTION
+
+
+
+;PLAYERの刻印・リセット
+;ARG→スケジュールでもABL,MARKを見る
+@PLAYER_SOURCE_UP_AFTER_STATUS_UP(ARG)
+
+SIF PLAYER < 0
+	RETURN
+SAVE_TARGET = TARGET
+TARGET = PLAYER
+
+;スケジュール中ならABL,MARKは最後
+;ARG=1なら自動でやる
+IF TFLAG:調教中 || TFLAG:スケジュール外Ｈ || ARG
+	CALL ABL_UP
+	CALL MARK_GET
+ENDIF
+
+;ここで調教者のリセット
+VARSET SOURCE
+VARSET PALAM
+VARSET NOWEX
+TARGET = SAVE_TARGET
+
+

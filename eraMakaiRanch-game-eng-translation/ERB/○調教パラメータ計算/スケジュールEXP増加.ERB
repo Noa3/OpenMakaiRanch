@@ -1,0 +1,102 @@
+﻿
+;EXP増加
+;ARGS→経験
+@EXP_UP(ARGS)
+#DIM ABL_FIX
+#DIMS EXP_CALL
+
+;作業ABL最大値を最大10でFIXへ
+ABL_FIX = LIMIT(FLAG:作業ABL最大値,0,10)
+SELECTCASE ARGS
+CASE "事務","酪農","掃除","料理","薬学"
+	CALL EXP_UP_CALC(ABL_FIX,ARGS)
+	EXP_CALL = %ARGS%経験
+	EXP:EXP_CALL = LIMIT(EXP:EXP_CALL +EXPUP,0,EXP_MAX)
+	SIF EXP:EXP_CALL < EXP_MAX || GETBIT(＃上限到達後表示／業務経験値＃)
+		CALL PRINT_EXP_UP(ARGS)
+	
+;性経験値：今レズっ気だけ
+CASE "レズ調教経験"
+	;CALL LESBIAN_EXP_UP_CALC
+	EXP:ARGS = LIMIT(EXP:ARGS +EXPUP,0,EXP_MAX)
+	SIF EXP:ARGS < EXP_MAX || GETBIT(＃上限到達後表示／性経験値＃)
+		PRINTFORM %PALAM_ENG(ARGS)%+{EXPUP} 
+ENDSELECT
+
+
+
+;増加量計算
+;ARG→ABL_FIX
+@EXP_UP_CALC(ARG,ARGS)
+
+;ABLが2以上高いキャラが一緒に作業しているなら経験値大幅増加
+IF ARG > ABL:ARGS +1
+	EXPUP = (ARG -ABL:ARGS) *1000
+ELSE
+	EXPUP = 1000
+ENDIF
+
+;LV5までは(100 -15*現在ABL)%のEXPが入る　5以降は(1/現在ABL)のEXP
+IF ABL:ARGS <= 5
+	EXPUP *= (100 -15 *ABL:ARGS)
+	EXPUP /= 100
+ELSE
+	EXPUP /= ABL:ARGS
+ENDIF
+
+;料理のとき基礎値3倍+皿数1につき+20%
+IF ARGS == "料理"
+	FIX = 80 +DISH_QUANTITY *20
+	EXPUP = EXPUP *3 *FIX
+	EXPUP /= 100
+ENDIF
+
+;素質で+-20%
+SIF TALENT:習得早い
+	TIMES EXPUP,1.20
+SIF TALENT:習得遅い
+	TIMES EXPUP,0.80
+
+;料理と掃除はマイナス素質あると1/10、3以上にならない
+IF ARGS == "料理" && TALENT:料理下手
+	EXPUP /= 10
+	SIF ABL:ARGS >= 3
+		EXPUP = 0
+ELSEIF ARGS == "掃除" && TALENT:掃除下手
+	EXPUP /= 10
+	SIF ABL:ARGS >= 3
+		EXPUP = 0
+ENDIF
+
+;作業系EXP入手量コンフィグ
+CALL DIFFICULTY_CONFIG_APPLY("業務EXP獲得量")
+
+;実行回数有効（今は掃除）のとき倍率かけて/2
+SIF ARGS == "掃除" && CFLAG:スケジュール実行回数
+	EXPUP = EXPUP *CFLAG:スケジュール実行回数 /2
+
+;5%補正
+CALL RANDOM_FIX(EXPUP,5,ARGS)
+EXPUP += FIX
+
+
+
+;EXP増加量表示
+@PRINT_EXP_UP(ARGS)
+
+PRINTFORM %ABL_ENG(ARGS)% Experience +{EXPUP}  
+SIF !GETBIT(＃影響要素表示／業務経験値＃)
+	RETURN
+SIF TALENT:習得早い
+	PRINT 【Fast Learner】
+SIF TALENT:習得遅い
+	PRINT 【Slow Learner】
+SIF ARGS == "料理" && TALENT:料理下手
+	PRINT 【Terrible Cook】
+SIF ARGS == "掃除" && TALENT:掃除下手
+	PRINT 【Terrible Cleaner】
+
+
+
+
+

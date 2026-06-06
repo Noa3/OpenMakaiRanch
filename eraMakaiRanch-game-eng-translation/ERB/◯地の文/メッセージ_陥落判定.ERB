@@ -1,0 +1,160 @@
+﻿
+;反抗削除メッセージ
+@CAPITULATION_DELETE_RESIST_MESSAGE
+
+IF !TFLAG:ゴブリン輪姦
+	IF CSTR:スケジュール == "体内凌辱"
+		PRINTFORML Inside the %CALLNAME:0%'s body, %CALLNAME% is made aware of her position
+		PRINTFORML and inability to defy you through intense carnal humiliation.
+		PRINTFORML She begs for forgiveness, not knowing if her cries will even reach you...
+	ELSE
+		PRINTFORML With her dignity trampled, %CALLNAME% decides to stop antagonizing you for now...
+	ENDIF
+ENDIF
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% loses her will to resist...","桃"
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% is no longer【Resistant】","水色"
+
+
+
+;屈服メッセージ
+@CAPITULATION_SUCCUMB_MESSAGE
+
+IF CSTR:スケジュール == "体内凌辱"
+	PRINTFORML Disheartened, %CALLNAME% loses the urge to defy you...
+ELSE
+	PRINTFORML Disheartened, %CALLNAME% pledges loyalty to you...
+ENDIF
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% has 【Submitted】.","水色"
+
+
+
+;陥落メッセージ
+@CAPITULATION_FALLING_MESSAGE
+
+IF CSTR:スケジュール == "体内凌辱"
+	PRINTFORML %CALLNAME% receives pleasures that she would never have experienced if she had not met you.
+	PRINTFORML Realizing「Giving up her dignity will lead to the greatest happiness」, she becomes devoted to you...
+ELSE
+	PRINTFORML %CALLNAME% appears to have had a change of heart, and is now devoted to you...
+ENDIF
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% has【Fallen】","水色"
+
+
+
+;恋慕化メッセージ前
+@CAPITULATION_LOVE_MESSAGE_BEFORE
+
+IF CFLAG:乳牛
+	PRINTFORML %CALLNAME% started speaking with a lustful expression...
+ELSE
+	PRINTFORML %CALLNAME% is fidgeting, trying to say something...
+ENDIF
+IF CSTR:状態／あなたの子 == "成長後"
+	PRINTFORM %CALLNAME% has 
+ELSE
+	IF CSTR:状態／あなたの子 == "調教後"
+		PRINT Since the training began 
+	ELSE
+		PRINT Since coming to the ranch 
+	ENDIF
+	PRINTFORML %CALLNAME% has become unimaginably obedient, 
+	SIF MARK:母乳体質
+		PRINT through milking and 
+	PRINT by your training, 
+ENDIF
+PRINTFORML it seems she has developed feelings for you through these interactions...
+
+
+
+;後
+@CAPITULATION_LOVE_MESSAGE_AFTER
+
+PRINTFORML %CALLNAME% tells you "I like you"...
+SIF !CFLAG:乳牛
+	PRINTFORML %CALLNAME% smiles shyly.
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% has fallen in【Love】","桃"
+
+
+
+;隷属化メッセージ前
+@CAPITULATION_LOVE_SLAVE_MESSAGE_BEFORE
+
+PRINTFORML %CALLNAME% expressed gratitude to you with a lustful expression...
+PRINTFORML %CALLNAME% can no longer control her love for you...
+
+
+
+;後
+@CAPITULATION_LOVE_SLAVE_MESSAGE_AFTER
+
+PRINTFORML %CALLNAME% vowed to dedicate their "everything" to you...
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% has become your【%ROLE_ENG("隷属")%】","桃"
+
+
+;乳牛堕ちメッセージ
+@CAPITULATION_CATTLE_MESSAGE
+
+ALIGNMENT CENTER
+SETCOLOR 0xFF70FF
+IF CSTR:スケジュール == "体内凌辱"
+	PRINTFORML The endless tentacle milking pleasure torture during the internal violation 
+	PRINTFORML is more than enough to make %CALLNAME% abandon her dignity as a civilized being...
+ELSE
+	PRINTFORML Having been treated as a diary cow for so long,
+	PRINTFORML with her %PRINT_BUST()% being continuously milked,
+	PRINTFORML %CALLNAME% has crossed the last line.
+ENDIF
+PRINTFORML Instead of stubbornly protecting her dignity, why not get milked by you instead,
+PRINTFORML and enjoy the pleasure of breast orgasms?
+PRINTFORML She realizes that she would be much, much happier being milked... Living as a dairy cow.
+PRINTFORM %CALLNAME% has become enthralled by the pleasure of being milked, and abandons her dignity as a civilized being...
+CALL HEARTCB(0xD02830)
+PRINTL
+CALL HEARTCB(0xD02830)
+PRINTFORM %CALLNAME% accepts living as a【Dairy Cow】
+CALL HEARTCB(0xD02830)
+RESETCOLOR
+PRINTL
+ALIGNMENT LEFT
+
+
+
+;乳責め嫌悪解消メッセージ
+@CAPITULATION_CATTLE_LOVE_BUST_MESSAGE
+
+SETCOLOR 0xFF70FF
+PRINTFORM %CALLNAME% has been thoroughly trained in milking by you, and has come to love her own %PRINT_BUST()% which you adore...
+CALL HEARTCB(0xD02830)
+PRINTL
+CALL HEARTCB(0xD02830)
+PRINTFORM %CALLNAME% lost【Breast Play Aversion】
+CALL HEARTCB(0xD02830)
+RESETCOLOR
+PRINTL
+
+
+
+;崩壊メッセージ
+@CAPITULATION_MIND_BREAK_MESSAGE
+
+SETCOLOR 0xE02020
+PRINTFORML %CALLNAME%'s heart has totally shattered, her eyes losing their shine. She can no longer articulate her words clearly either...
+PRINTFORML %CALLNAME% has become【Mindbroken】... 
+
+;しばらく赤文字のまま
+	;RESETCOLOR
+
+
+
+;処女結界解除前メッセージ
+@DELETE_VARGIN_BARRIER_MESSAGE_1
+
+PRINTFORML Having decided to dedicate her all to you, %CALLNAME% realizes the best way to show her loyalty.
+PRINTFORML To show that「%CALLNAME% now belongs to %CALLNAME:0%」,
+PRINTFORML she offers up her virginity.
+CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s【Virginity Barrier】has been removed.","桃"
+PRINTW
+
+
+
+

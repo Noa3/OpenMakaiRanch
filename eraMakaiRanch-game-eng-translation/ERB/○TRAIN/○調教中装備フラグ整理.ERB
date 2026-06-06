@@ -1,0 +1,111 @@
+﻿
+;装備の整理
+@TEQUIP_ADJUST
+
+;調教中以外だとここでの補正はしない
+SIF !TFLAG:調教中
+	RETURN
+
+;一旦あなたペニスと奴隷装備をOFFにして戻す
+VARSET TFLAG,0,50,80
+;------------------------------------
+;ちんぽ
+IF MATCH(TEQUIP,1,30,40)
+	TFLAG:Ｖ装備 = 1
+	SETBIT ＃Ｐ使用／Ｖ挿入＃
+ENDIF
+IF MATCH(TEQUIP,1,40,50)
+	TFLAG:Ａ装備 = 1
+	SETBIT ＃Ｐ使用／Ａ挿入＃
+ENDIF
+IF TEQUIP:フェラチオ || TEQUIP:イラマチオ
+	TFLAG:Ｍ装備 = 1
+	SETBIT ＃Ｐ使用／Ｍ挿入＃
+ENDIF
+SIF TEQUIP:パイズリ || TEQUIP:強制パイズリ || TEQUIP:縦パイズリ || TEQUIP:強制縦パイズリ
+	SETBIT ＃Ｐ使用／パイズリ＃
+SIF TEQUIP:素股
+	SETBIT ＃Ｐ使用／素股＃
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	SETBIT ＃Ｐ使用／手コキ＃
+SIF TEQUIP:後背位 || TEQUIP:背面座位 || TEQUIP:背面立位 || TEQUIP:Ａ後背位 || TEQUIP:Ａ背面座位 || TEQUIP:Ａ背面立位
+	TFLAG:背後 = 1
+
+;------------------------------------
+;ブラシ触手は装備判定に入らない
+SIF TEQUIP:触手Ａ挿入 || TEQUIP:アナルバイブ
+	TFLAG:Ａ装備 = 1
+SIF TEQUIP:触手Ｖ挿入 || TEQUIP:バイブ
+	TFLAG:Ｖ装備 = 1
+
+IF TEQUIP:家畜用搾乳器
+	TFLAG:Ｎ装備 = 1
+	TFLAG:搾乳器 = 1
+ENDIF
+IF TEQUIP:魔動快楽搾乳器 || TEQUIP:触手快楽搾乳器
+	TFLAG:Ｎ装備 = 1
+	TFLAG:搾乳器 = 1
+	TFLAG:搾乳責め = 1
+ENDIF
+IF TEQUIP:乳包み花弁搾乳触手 || TEQUIP:透明カップ搾乳触手 || TEQUIP:搾乳ワーム触手 || TEQUIP:吸引搾乳触手
+	TFLAG:Ｎ装備 = 1
+	TFLAG:搾乳触手 = 1
+	TFLAG:搾乳責め = 1
+ENDIF
+SIF TEQUIP:乳首ローター || TEQUIP:乳首吸引器 
+	TFLAG:Ｎ装備 = 1
+
+;霊力抽出装置も該当するけどスケジュール外はここ来ないので不要だよ
+IF TEQUIP:小型霊力抽出装置
+	TFLAG:Ｎ装備 = 1
+	TFLAG:抽出中 = 1
+	TFLAG:搾乳器 = 1
+ENDIF
+
+;------------------------------------
+SIF TEQUIP:触手乳揉み || TEQUIP:触手乳搾り
+	TFLAG:Ｂ装備 = 1
+
+;------------------------------------
+SIF TEQUIP:クリローター || TEQUIP:クリ吸引器 || TEQUIP:触手クリ吸い
+	TFLAG:Ｃ装備 = 1
+
+;------------------------------------
+SIF TEQUIP:触手耳姦
+	TFLAG:Ｅ装備 = 1
+
+;------------------------------------
+SIF TEQUIP:触手目隠し || TEQUIP:アイマスク
+	TFLAG:目隠し = 1
+
+;------------------------------------
+SIF TEQUIP:触手フェラチオ || TEQUIP:触手イラマチオ || TEQUIP:口枷 || TEQUIP:ボールギャグ || TEQUIP:強制開口器
+	TFLAG:Ｍ装備 = 1
+SIF TEQUIP:触手フェラチオ || TEQUIP:触手イラマチオ
+	TFLAG:イラマチオペニス = 1
+
+SIF TEQUIP:触手強制パイズリ
+	TFLAG:パイズリペニス = 1
+
+;------------------------------------
+IF GETBIT(＃拘束／三角木馬＃)
+	TFLAG:Ｃ装備 = 1
+	TFLAG:Ｖ装備 = 1
+ENDIF
+
+;------------------------------------
+;ドレイン有効か処理　搾乳エナジードレイン適用外ならOFF
+{
+SIF (TFLAG:搾乳触手 || TFLAG:乳吸い) && ITEM:搾乳エナジードレイン && 
+GETBIT(＃個人有効／搾乳エナジードレイン＃) && GETBIT(＃有効／搾乳エナジードレイン＃)
+}
+	TFLAG:エナジードレイン = 1
+
+;ブラシ触手引っ込める処理
+CALL REMOVE_BRUSH
+
+;触手を使ってるよ処理　魔力からっぽでの解除に使う
+;脱衣不可の判定にも使う
+SIF MATCH(TEQUIP,1,100,200) || GETBIT(＃拘束／触手＃)
+	TFLAG:触手装備 = 1
+

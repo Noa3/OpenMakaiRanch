@@ -1,0 +1,54 @@
+﻿
+;料理完成・食事
+@DINNER_EAT
+
+;母乳料理の場合母乳商品名をつける
+;Lines rearrange so that it makes sense in ENG
+PRINTFORM 【%DINNER_NAME%
+IF MILK_DINNER
+	PRINT  with generous amount of 
+	CALL PRINT_MILK_NAME(1)
+ENDIF
+PRINTFORML 】is ready!
+
+;回復量計算
+CALL DINNER_HEAL_CALC
+PRINTFORML You and the others enjoyed the dinner...
+
+;食事する設定のキャラはHEAL分回復
+CALL DINNER_HEAL_CHARA(HEAL)
+PRINTW
+
+
+
+;回復量計算
+@DINNER_HEAL_CALC
+
+HEAL = 100 +ABL:料理 *10
+
+;母乳料理なら+10%、濃度Lv1につきさらに+10%
+SIF !MILK_DINNER
+	RETURN
+FIX = 10 +ABL:母乳濃度 *10
+HEAL = HEAL *(100 +FIX)
+HEAL /= 100
+
+
+
+;食事回復
+;ARG→計算したHEAL
+@DINNER_HEAL_CHARA(ARG)
+
+HEAL_PRINT_DONE = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:居場所 == "体内" || CFLAG:追跡対象 || (!EQUIP:自室 && !CFLAG:夕食許可)
+		CONTINUE
+	CALL DINNER_HEAL(ARG)
+	
+	;食事の人数を+1、簡易食事を-1する
+	FLAG:食事人数 ++
+	FLAG:簡易食事人数 --
+NEXT
+
+

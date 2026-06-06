@@ -1,0 +1,72 @@
+
+;自動スケジュールを設定する
+;ARG→INPUT
+;ARG:1→曜日
+@AUTO_SCHEDULE_LIST_SET(ARG,ARG:1)
+#DIMS SCHEDULE
+
+SELECTCASE ARG
+CASE 10
+	 SCHEDULE = 休日
+
+;業務
+CASE 100
+	 SCHEDULE = 酪農／終日
+CASE 101
+	 SCHEDULE = 酪農／朝夕
+CASE 102
+	 SCHEDULE = 事務／即消化
+CASE 103
+	 SCHEDULE = 事務／溜めて消化
+CASE 104
+	 SCHEDULE = 調合／終日
+CASE 105
+	 SCHEDULE = 調合・酪農
+CASE 106
+	 SCHEDULE = 大浴場掃除→酪農
+CASE 107
+	 SCHEDULE = 大浴場掃除→自由
+
+CASE 109
+	 SCHEDULE = 戦闘訓練／終日
+CASE 110
+	 SCHEDULE = 戦闘訓練・酪農
+CASE 111
+	 SCHEDULE = 戦闘訓練／昼から
+
+;調教
+CASE 200
+	 SCHEDULE = 搾乳／終日
+CASE 201
+	 SCHEDULE = 搾乳／朝夕
+CASE 202
+	 SCHEDULE = 霊力抽出／終日
+CASE 203
+	 SCHEDULE = 霊力抽出／朝夕
+CASE 204
+	 SCHEDULE = 搾乳→抽出
+CASE 205
+	 SCHEDULE = 触手責め搾乳／終日
+CASE 206
+	 SCHEDULE = 触手責め搾乳／朝夕
+
+;カスタム
+CASE 400
+	 SCHEDULE = カスタムＡ
+CASE 401
+	 SCHEDULE = カスタムＢ
+CASE 402
+	 SCHEDULE = カスタムＣ
+ENDSELECT
+
+;選択中の曜日にスケジュール入れ
+;CSTR:自動スケジュール／月→350
+FLAG_REF = 350
+
+;99の場合全曜日
+IF ARG:1 == 99
+	VARSET CSTR,SCHEDULE,FLAG_REF,FLAG_REF +7
+	RETURN
+ENDIF
+CSTR:(FLAG_REF +ARG:1) = %SCHEDULE%
+

@@ -1,0 +1,58 @@
+﻿
+;奴隷候補の感度
+;50～150にしてたけど3倍違うのはいくらなんでもまずいかも
+;70～130にしよう　詳細表記しないなら80以下で鈍感、130以上で敏感表示とか？
+@RANDOM_SLAVE_SENSITIVE
+
+;ABL:Ａ感度→10
+FOR LOCAL,10,15
+	ABL:LOCAL = 7 +RAND:7
+	ABL:LOCAL *= 10
+	
+	;Ｂ感度だけおっぱいサイズ補正
+	SIF LOCAL == 11
+		CALL RANDOM_SLAVE_SENSITIVE_BUSTSIZE_FIX
+	ABL:LOCAL = LIMIT(ABL:LOCAL,70,150)
+NEXT
+
+;EASYのオプション付けてる場合強制的に200%
+SIF GETBIT(＃全員Ｂ弱点＃)
+	ABL:Ｂ感度 = 200
+SIF GETBIT(＃全員Ｎ弱点＃)
+	ABL:Ｎ感度 = 200
+SIF GETBIT(＃全員Ｖ弱点＃)
+	ABL:Ｖ感度 = 200
+SIF GETBIT(＃全員Ｃ弱点＃)
+	ABL:Ｃ感度 = 200
+SIF GETBIT(＃全員Ａ弱点＃)
+	ABL:Ａ感度 = 200
+
+;乳首感度は乳房感度を下回らない
+CALL NIPPLE_SENSITIVE_FIX
+
+;全部合計して480未満のとき再シャッフル
+SIF SUMARRAY(ABL,10,15) < 480
+	RESTART
+
+
+
+;おっぱいサイズによりＢ感度に補正
+@RANDOM_SLAVE_SENSITIVE_BUSTSIZE_FIX
+
+IF TALENT:絶壁 || TALENT:貧乳
+	FIX = RAND:3
+	ABL:Ｂ感度 += (FIX *10)
+ELSEIF TALENT:並乳
+
+ELSEIF TALENT:巨乳 || TALENT:豊乳
+	FIX = RAND:2
+	ABL:Ｂ感度 -= (FIX *10)
+ELSEIF TALENT:爆乳
+	FIX = RAND:3
+	ABL:Ｂ感度 -= (FIX *10)
+ELSE
+	FIX = RAND:4
+	ABL:Ｂ感度 -= (FIX *10)
+ENDIF
+
+

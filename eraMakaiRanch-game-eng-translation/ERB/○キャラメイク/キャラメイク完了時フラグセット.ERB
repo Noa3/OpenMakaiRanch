@@ -1,0 +1,19 @@
+﻿
+;キャラメイク終了時の各種フラグをセット
+@CHARA_MAKE_END_FLAGSET
+
+;フラグを戻す
+FLAG:キャラメイク隠蔽有効 = 0
+
+;標的番号をセット→整理によって不要になった
+CALL MANYL(5)
+
+;魔界入りメッセージ
+CALL INVASION_TARGET_CHARA
+
+;結界付き・競売所ならそのまま入手
+SIF GROUPMATCH(CFLAG:魔界入りの目的,6,7)
+	CALL SLAVE_RECEIVE_COMMON
+
+
+

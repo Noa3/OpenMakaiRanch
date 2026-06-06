@@ -1,0 +1,80 @@
+﻿
+;各種マイルストーンのチェック
+;ニンゲンのミルクを出荷
+@MILESTONE_CHECK_800
+
+;母乳総出荷量が1以上で達成
+SIF FLAG:母乳合計出荷量
+	RETURN 1
+
+
+;マイルストーン達成時の報酬
+;魔術師奴隷の標的依頼（ベテラン傭兵への依頼料込み）・＜魔力枷＞入手
+@MILESTONE_REWARD_800
+
+PRINTFORML The %SAVESTR:表記／母乳% that was shipped has been well received, and they asked us to milk more and ship more.
+PRINTL Eugene introduces you to 「Tera」, an acquaintance at the town hall,
+PRINTL to capture a human who appears to have a lot of magical power.
+PRINTL Create character.
+PRINTL [ 0] OK
+INPUT
+CALL CHARA_MAKE_FIXED_SLAVE_SORCEROUS
+
+;TARGETはそのまま
+COST = MERCENARY_REWORD:3
+CFLAG:追跡者 = 3
+CFLAG:追跡人数 = 1
+FLAG:傭兵バイト標的ID／ベテラン = CFLAG:ID
+ITEM:魔力枷 += 1
+PRINTL
+PRINTL The process for capturing is: Go to [Town Hall] → Select tracking target → hire mercenaries.
+PRINTL Because it's a tough job that takes a whole day, they only accept payment in advance.
+PRINTL
+PRINTL One mercenary was hired.
+CALL PRINTL_WORD_COLOR,@"This time it was written off as an expense, but it normally costs %VALUE_DIGIT(COST)%G to hire one veteran.","黄"
+CALL PRINTL_WORD_COLOR,@"Obtained 1x＜Mana Shackles＞.","水色"
+
+
+
+;ミルク1万ml出荷
+@MILESTONE_CHECK_801
+
+SIF FLAG:母乳合計出荷量 >= 10000
+	RETURN 1
+
+
+;＜母乳濃厚化薬＞入手
+@MILESTONE_REWARD_801
+
+ITEM:母乳濃厚化薬 += 3
+PRINTFORML The %SAVESTR:表記／母乳% that was shipped has been well received,
+PRINTL and there seems to be demand for higher quality milk.
+PRINTL Eugene brought a prototype quality-enhancing drug, to try out later.
+CALL PRINTL_WORD_COLOR,@"Obtained 3x＜Breast Milk Enriching Drug＞.","水色"
+PRINTL It can be used as a【Drug】during training。
+
+
+
+;【濃厚母乳】の出荷
+@MILESTONE_CHECK_802
+
+;精算関数でFLAGを入れてる
+SIF GETBIT(＃マイルストーン達成／濃厚母乳出荷＃)
+	RETURN 1
+
+
+;＜膨乳薬＞入手
+@MILESTONE_REWARD_802
+
+ITEM:膨乳薬 += 3
+PRINTFORML The %SAVESTR:表記／母乳% that was shipped has been well received,
+PRINTFORML and the Makai Agricultural Cooperative expressed a desire to distribute it in larger quantities.
+PRINTFORML 「A lot of %SAVESTR:表記／母乳% can be squeezed from huge Breasts」,
+PRINTL so Eugene created a prototype breast-expanding drug.
+PRINTL You can try it later if you want to.
+CALL PRINTL_WORD_COLOR,@"Obtained 3x＜Breast Expansion Drug＞.","水色"
+PRINTL It can be used as a【Drug】during training。
+
+
+
+

@@ -1,0 +1,99 @@
+﻿
+;搾乳待機表示
+@STANDBY_SLAVE_LACTATION_MESSAGE
+
+;あなたがいるかどうかはここで判断
+IF CSTR:0:スケジュール == "酪農"
+	IF CFLAG:崩壊
+		PRINTFORML You approach, but %CALLNAME% lies limp and unmoving, completely spent...
+	ELSEIF CFLAG:虚脱
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+			PRINTFORML %CALLNAME% smiles weakly at you, but is too exhausted to get up...
+		ELSEIF ＃陥落状態／屈服以上＃
+			PRINTFORML %CALLNAME% sees you, realizing escape is pointless, and slumps down, completely drained...
+		ELSE
+			PRINTFORML %CALLNAME% tries to escape when she sees you, but she no longer has the strength to stand...
+		ENDIF
+	ELSEIF CFLAG:乳牛
+		PRINTFORML When you head to the barn, %CALLNAME% grips the wooden frame, leaning forward with a lustful expression, 
+		PRINTFORML eagerly waiting, %SLANG_B()% exposed and swaying...
+	ELSEIF ＃陥落状態／隷属＃ || CFLAG:洗脳
+		PRINTFORML When you appear, %CALLNAME% happily exposes her %SLANG_B()% and gets into the milking position...
+	ELSEIF ＃陥落状態／恋慕以上＃
+		PRINTFORML When you appear, %CALLNAME% blushes, exposes her %SLANG_B()%, and gets into the milking position...
+	ELSEIF ＃陥落状態／拒絶以上＃
+		PRINTFORML When you appear, %CALLNAME% reluctantly stands, grabs the frame, and prepares for milking...
+	ELSE
+		PRINTFORML When you appear, %CALLNAME% steps back, covering her breasts with her arms...
+	ENDIF
+ELSE
+	IF CFLAG:崩壊
+		PRINTFORML Even as the farm slave%PRINT_WORK_GROUP()% approaches to milk %CALLNAME%'s %SLANG_MILK()%, 
+		PRINTFORML %CALLNAME% remains limp and unmoving...
+	;初回
+	ELSEIF !EXP:実行回数／搾乳
+		PRINTFORML When the farm slave%PRINT_WORK_GROUP()% arrives at the barn, %CALLNAME% watches, curious about their purpose...
+		PRINTFORML Upon realizing they've come to milk her %SLANG_MILK()%, 
+	ELSE
+		PRINTFORML Seeing the farm slave%PRINT_WORK_GROUP()% come to milk %CALLNAME%'s %SLANG_MILK()%, 
+
+	ENDIF
+	IF CFLAG:虚脱
+		IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+			PRINTFORML %CALLNAME% shows a smile but lacks the energy to stand up...
+		ELSEIF ＃陥落状態／屈服以上＃
+			PRINTFORML %CALLNAME% makes a slightly displeased face but seems to lack the energy to escape...
+		ELSE
+			PRINTFORML %CALLNAME% tries to flee, but it seems she no longer has the energy to stand up...
+		ENDIF
+	ELSEIF CFLAG:乳牛
+		PRINTFORML %CALLNAME% clutches the wooden frame and leans forward, 
+		PRINTFORML swaying her exposed %SLANG_B()% and eagerly awaiting the time for milking...
+	ELSEIF ＃陥落状態／隷属＃ || CFLAG:洗脳
+		PRINTFORML %CALLNAME% happily exposes her %SLANG_B()% and moves into a position waiting for milking...
+	ELSEIF ＃陥落状態／恋慕以上＃
+		PRINTFORML %CALLNAME% somewhat reluctantly exposes her %SLANG_B()% and moves into a position waiting for milking...
+	ELSEIF ＃陥落状態／拒絶以上＃
+		PRINTFORML %CALLNAME% resignedly stands up, grabs the wooden frame, and assumes a position waiting for milking...
+	ELSE
+		PRINTFORML %CALLNAME% retreats, hiding her %SLANG_B()% with her arms...
+	ENDIF
+ENDIF
+
+;乳首を見られたことがないなら口上
+SIF !EXP:乳首見られ
+	CALL KOJO_PRINT("調教コマンド","脱衣","あなた")
+CALL KOJO_PRINT("スケジュール","搾乳","実行前",KOJO_TYPE)
+PRINTL
+
+
+
+;搾乳開始地の文
+;ARGS→LACTATION_TOOL
+@SLAVE_LACTATION_RUN_MESSAGE(ARGS)
+
+IF CFLAG:崩壊 || CFLAG:虚脱
+	PRINTFORML Raising the exhausted body of %CALLNAME% and securing her neck and arms in the fixation device, 
+	PRINTFORML her %SLANG_B()% are attached to the %TEQUIP_ENG(ARGS)%, and milking begins...
+ELSEIF CFLAG:乳牛
+	SIF BASE:母乳容量
+		PRINT Already beginning to drip, 
+	PRINTFORML her %SLANG_B()% are attached to the %TEQUIP_ENG(ARGS)%, 
+	PRINTFORML and milking of %CALLNAME%'s %SLANG_MILK()% begins...
+ELSEIF CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+	PRINTFORML Her %SLANG_B()% are attached to the %TEQUIP_ENG(ARGS)%, making her tips twitch, 
+	PRINTFORML and milking of %CALLNAME%'s %SLANG_MILK()% begins...
+ELSEIF ＃陥落状態／拒絶以上＃
+	IF ABL:バストサイズ >= BUSTSIZE_巨乳
+		PRINTFORM %CALLNAME%'s shaking 
+	ELSE
+		PRINTFORM %CALLNAME%'s modest 
+	ENDIF
+	PRINTFORML %SLANG_B()% are attached to the %TEQUIP_ENG(ARGS)%, 
+	PRINTFORML and the milking of %CALLNAME%'s %SLANG_MILK()% begins...
+ELSE
+	PRINTFORML Resisting, %CALLNAME% is restrained with handcuffs, forced into a bent position.
+	PRINTFORML Her %SLANG_B()% are attached to the %TEQUIP_ENG(ARGS)%, and milking begins...
+ENDIF
+PRINTW
+

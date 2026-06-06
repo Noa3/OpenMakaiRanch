@@ -1,0 +1,59 @@
+﻿
+;非処女時再抽選設定
+@NON_VIRGIN_REROLL_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL For some characters, reroll sex experience when【Experienced】【Abormal】【Bitch】or【Public Toilet】is rolled.
+PRINTL Configure number of rerolls.（More rerolls make it more likely for the character to be generated as a virgin）
+DRAWLINE
+PRINTFORML [ 0] Aristocrat and Royalty：{FLAG:非処女時再抽選回数／高身分}
+PRINTFORML [ 1] Higher Race           ：{FLAG:非処女時再抽選回数／上位種族}
+PRINTFORML [ 2] Celestial Race        ：{FLAG:非処女時再抽選回数／天界種族}
+
+CALL PRINTL_ALIGN(-10)
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+INPUT_NUM = RESULT
+PRINTL
+SIF !FLAG:奴隷候補設定可能
+	INPUT_NUM = 99
+SELECTCASE INPUT_NUM
+CASE 98
+	PRINTL Restore virginity rerolls to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_VIRGIN_REROLL
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_VIRGIN_REROLL_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_VIRGIN_REROLL_CONFIG(ARG)
+
+;FLAG:非処女時再抽選回数／高身分→3050
+FLAG_REF = 3050
+FLAG_NUM = ARG +FLAG_REF
+
+;あんまCASEいらない
+PRINTL Set the amount of rerolls when not virgin.
+PRINTL
+IF ARG == 1
+	;上位種族
+	PRINTL [ 1] 1 (Default)
+ELSE
+	;高身分・天界種族
+	PRINTL [ 3] 3 (Default)
+ENDIF
+PRINTL or enter a number from 0 to 99.
+INPUT
+SIF RESULT >= 0 && RESULT < 100
+	FLAG:FLAG_NUM = RESULT
+
+
+

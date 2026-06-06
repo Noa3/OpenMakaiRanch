@@ -1,0 +1,237 @@
+﻿
+;人称・性器の呼び方を変更する
+;ARGS→呼び方変更をするCSTR
+@CHANGE_PERSONAL_CALL(ARGS)
+
+SELF_INPUT = 0
+SELECTCASE ARGS
+CASE "一人称"
+	;1800～,一人称
+	STR_REF = 1800
+	PRINTFORML Select how the character refers to themself.（Currently：%CSTR:一人称%）
+	;completly rewritten for translation
+	PRINTFORMLC [  0] I
+	;PRINTFORMLC [  1] We
+	PRINTFORMLC [800] %CALLNAME%
+	PRINTFORMLC [801] %CALLNAME%-chan
+	
+	CALL INPUTBUTTON
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0
+		CSTR:一人称 = I
+		CFLAG:一人称が名前 = 0
+	;CASE 1
+	;	CSTR:一人称 = We
+	;	CFLAG:一人称が名前 = 0
+	CASE 800
+		CSTR:一人称 = %CALLNAME%
+		CFLAG:一人称が名前 = 1
+	CASE 801
+		CSTR:一人称 = %CALLNAME%-chan
+		CFLAG:一人称が名前 = 1
+	
+	;キャンセルで自動補正に行かないようにRETURN
+	CASE 900
+		RETURN
+	CASE 901
+		CALL INPUTS_NOT_EMPTY("Enter how the character refers to themself.")
+		CSTR:一人称 = %RESULTS%
+		CFLAG:一人称が名前 = 0
+		SELF_INPUT = 1
+	ENDSELECT
+	CALL SWEET_PERSON_CALL_SELF
+	
+	;補正確認の共通→スキップ設定かOKでそのまま
+	CALL CHANGE_PERSONAL_CALL_FIX_AFTER(SELF_INPUT,"一人称")
+	IF RESULT
+		CALL INPUTS_NOT_EMPTY("how the character refers to themself after a certain amount of orgasms.")
+		CSTR:一人称／蕩け = %RESULTS%
+	ENDIF
+
+CASE "陥落前のあなた呼び方"
+	;1850～,陥落前二人称
+	STR_REF = 1850
+	PRINTFORML Choose how to call you before falling.（Currently：%CSTR:あなた呼び方／陥落前%）
+	FOR LOCAL,STR_REF,STR_REF +50
+		SIF STR:LOCAL == ""
+			CONTINUE
+		PRINTFORMLC [{LOCAL -STR_REF,3}] %MASTER_ENG(STR:LOCAL)%
+	NEXT
+	CALL INPUTBUTTON
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0 TO 99
+		CSTR:あなた呼び方／陥落前 = %MASTER_ENG(STR:(RESULT +STR_REF))%
+	CASE 900
+		RETURN
+	CASE 901
+		CALL INPUTS_NOT_EMPTY("How to call you before falling")
+		CSTR:あなた呼び方／陥落前 = %RESULTS%
+		SELF_INPUT = 1
+	ENDSELECT
+	CALL SWEET_PERSON_CALL_MASTER
+	CALL CHANGE_PERSONAL_CALL_FIX_AFTER(SELF_INPUT,"あなた呼び方／陥落前")
+	IF RESULT
+		CALL INPUTS_NOT_EMPTY("How to call you before falling, after orgasms exceed a certain amount")
+		CSTR:あなた呼び方／陥落前／蕩け = %RESULTS%
+	ENDIF
+
+CASE "陥落後のあなた呼び方"
+	;子なら専用処理
+	IF CSTR:状態／あなたの子 != ""
+		CALL CHANGE_PERSONAL_C_CALL("あなた呼び方／陥落後")
+		RETURN
+	ENDIF
+	
+	;6300～,あなたの呼ばせ方
+	STR_REF = 6300
+	PRINTFORML Choose how to call you after falling.（Currently：%CSTR:あなた呼び方／陥落後%）
+	FOR LOCAL,STR_REF,STR_REF +100
+		SIF STR:LOCAL == ""
+			CONTINUE
+		PRINTFORMLC [{LOCAL -STR_REF,3}] %MASTER_ENG(STR:LOCAL)%
+	NEXT
+	CALL INPUTBUTTON
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0 TO 99
+		CSTR:あなた呼び方／陥落後 = %MASTER_ENG(STR:(RESULT +STR_REF))%
+	CASE 900
+		RETURN 99
+	CASE 901
+		CALL INPUTS_NOT_EMPTY("How to call you after falling")
+		CSTR:あなた呼び方／陥落後 = %RESULTS%
+		SELF_INPUT = 1
+	ENDSELECT
+	CALL SWEET_PERSON_CALL_MASTER_LOVE
+	CALL CHANGE_PERSONAL_CALL_FIX_AFTER(SELF_INPUT,"あなた呼び方／陥落後")
+	IF RESULT
+		CALL INPUTS_NOT_EMPTY("How to call you after falling, after orgasms exceed a certain amount")
+		CSTR:あなた呼び方／陥落後／蕩け = %RESULTS%
+		CALL INPUTS_NOT_EMPTY("How to call when calling sweetly")
+		CSTR:あなた呼び方／甘え = %RESULTS%
+	ENDIF
+	
+CASE "ペニス呼び方"
+	;1500～,ペニス呼び方前半
+	STR_REF = 1500
+	PRINTFORML Select a term of reference for penis（Currently：%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス)%）
+	STR_MAX = 50
+	
+	;恋慕／乳牛で選択範囲が増加
+	SIF ＃陥落状態／恋慕以上＃ || CFLAG:乳牛
+		STR_MAX = 100
+	FOR LOCAL,STR_REF,STR_REF +STR_MAX
+		SIF STR:LOCAL == ""
+			CONTINUE
+		PRINTFORMLC [{LOCAL -STR_REF,3}] %PENIS_CALL_ENG(STR:LOCAL)%
+	NEXT
+	CALL INPUTBUTTON
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0 TO 99
+		CSTR:性器呼び方／ペニス = %STR:(RESULT +STR_REF)%
+	
+	;調教で来る場合に備えてRETURN 1にする
+	CASE 900
+		RETURN 1
+	CASE 901
+		CALL INPUTS_NOT_EMPTY("Term of reference for penis")
+		CSTR:性器呼び方／ペニス = %RESULTS%
+		SELF_INPUT = 1
+	ENDSELECT
+	CALL SWEET_PENIS_CALL
+	CALL CHANGE_PERSONAL_CALL_FIX_AFTER(SELF_INPUT,"性器呼び方／ペニス")
+	IF RESULT
+		CALL INPUTS_NOT_EMPTY("Term of reference for penis, after orgasms exceed a certain amount")
+		CSTR:性器呼び方／ペニス／蕩け = %RESULTS%
+	ENDIF
+
+CASE "膣呼び方"
+	;1600～,膣呼び方前半
+	STR_REF = 1600
+	PRINTFORML Select a term of reference for %SAVESTR:表記／膣%（Currently: %CSTR:性器呼び方／膣%）
+	STR_MAX = 50
+	SIF ＃陥落状態／恋慕以上＃ || CFLAG:乳牛
+		STR_MAX = 100
+	FOR LOCAL,STR_REF,STR_REF +STR_MAX
+		SIF STR:LOCAL == ""
+			CONTINUE
+		PRINTFORMLC [{LOCAL -STR_REF,3}] %STR:LOCAL%
+	NEXT
+	CALL INPUTBUTTON
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0 TO 99
+		CSTR:性器呼び方／膣 = %STR:(RESULT +STR_REF)%
+	CASE 900
+		RETURN 1
+	CASE 901
+		CALL INPUTS_NOT_EMPTY,@"Term of reference for %SAVESTR:表記／膣%"
+		CSTR:性器呼び方／膣 = %RESULTS%
+		SELF_INPUT = 1
+	ENDSELECT
+	CALL SWEET_VAGINA_CALL
+	CALL CHANGE_PERSONAL_CALL_FIX_AFTER(SELF_INPUT,"性器呼び方／膣")
+	IF RESULT
+		CALL INPUTS_NOT_EMPTY,@"Term of reference for %SAVESTR:表記／膣%, after orgasms exceed a certain amount"
+		CSTR:性器呼び方／膣／蕩け = %RESULTS%
+	ENDIF
+
+CASE "アナル呼び方"
+	;1700～,アナル呼び名前半
+	STR_REF = 1700
+	PRINTFORML Select a term of reference for %SAVESTR:表記／アナル%（Currently: %CSTR:性器呼び方／アナル%）
+	STR_MAX = 50
+	SIF ＃陥落状態／恋慕以上＃ || CFLAG:乳牛
+		STR_MAX = 100
+	FOR LOCAL,STR_REF,STR_REF +STR_MAX
+		SIF STR:LOCAL == ""
+			CONTINUE
+		PRINTFORMLC [{LOCAL -STR_REF,3}] %STR:LOCAL%
+	NEXT
+	CALL INPUTBUTTON
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0 TO 99
+		CSTR:性器呼び方／アナル = %STR:(RESULT +STR_REF)%
+	CASE 900
+		RETURN 1
+	CASE 901
+		CALL INPUTS_NOT_EMPTY,@"Term of reference for %SAVESTR:表記／アナル%"
+		CSTR:性器呼び方／アナル = %RESULTS%
+		SELF_INPUT = 1
+	ENDSELECT
+	CALL SWEET_ANAL_CALL
+	CALL CHANGE_PERSONAL_CALL_FIX_AFTER(SELF_INPUT,"性器呼び方／アナル")
+	IF RESULT
+		CALL INPUTS_NOT_EMPTY,@"Term of reference for %SAVESTR:表記／アナル%, after orgasms exceed a certain amount"
+		CSTR:性器呼び方／アナル／蕩け = %RESULTS%
+	ENDIF
+ENDSELECT
+
+
+
+;手動入力してないかつ、確認しないor手を出す前の娘ならそのままおわり
+;ARG→SELF_INPUT
+;ARGS→呼び方変更をするCSTR
+@CHANGE_PERSONAL_CALL_FIX_AFTER(ARG,ARGS)
+#DIMS SWEET_CALL
+
+SIF (!FLAG:呼び方自動補正確認 || GROUPMATCH(CSTR:状態／あなたの子,"成長中","成長後")) && !ARG
+	RETURN
+SWEET_CALL = %ARGS%／蕩け
+PRINTL
+PRINTL Auto-corrections added
+PRINTFORML After orgasms exceed a certain amount,「%ANUS_CALL_ENG(VAGINA_CALL_ENG(PENIS_CALL_ENG(CSTR:SWEET_CALL)))%」will be used
+
+;陥落後あなた呼び方は甘えも表示
+SIF SWEET_CALL == "あなた呼び方／陥落後／蕩け"
+	PRINTFORML When calling sweetly, it will be「%CSTR:あなた呼び方／甘え%」
+PRINTLC [ 0] OK
+PRINTLC [ 1] Manual Input
+BINPUT
+RETURN RESULT
+
+

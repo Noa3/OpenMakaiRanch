@@ -1,0 +1,36 @@
+﻿
+;奴隷候補の素質／嗜好
+@RANDOM_SLAVE_TALENT_LIKING
+
+;TALENT:牛好き→500
+;好き側を2%くらいにしとく
+;トラウマとかはまだ出ないようにしておく
+;動物は4%くらいで好きにする
+VARSET TALENT,0,500,700
+FOR LOCAL,500,600
+	SIF TALENTNAME:LOCAL == ""
+		CONTINUE
+	
+	;基本2%で好き・1%で苦手
+	SELECTCASE RAND:100
+	CASE 0
+		TALENT:LOCAL = 1
+	CASE 1
+		;性別・身分・種族は1%にする
+		SIF LOCAL < 520 || LOCAL >= 530
+			TALENT:LOCAL = 1
+	CASE 2 TO 3
+		;動物は4%好き
+		SIF LOCAL < 510
+			TALENT:LOCAL = 1
+	CASE 99
+		TALENT:LOCAL = -1
+	ENDSELECT
+NEXT
+
+;魔族好きは特殊な場合以外消す
+SIF TALENT:魔族好き > 0
+	TALENT:魔族好き = 0
+
+
+

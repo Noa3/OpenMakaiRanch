@@ -1,0 +1,74 @@
+﻿
+;汚れでの文章追加
+;→ARGS:部位
+@SLANG_STAIN(ARGS)
+#DIM PART
+#DIMS PART_LOTION
+#DIMS NEW
+#FUNCTIONS
+
+;部位により判定箇所変更　ＢＶＡ以外は今のところいいかな
+SELECTCASE ARGS
+CASE "Ｂ"
+	PART = 1
+CASE "Ｖ"
+	PART = 3
+CASE "Ａ"
+	PART = 0
+CASEELSE
+	RETURNF
+ENDSELECT
+PART_LOTION = %ARGS%
+PART_LOTION += "ローション"
+
+;初期化
+SLANGWORD=
+
+;母乳
+IF GETBIT(STAIN:PART,0)
+	IF ABL:バストサイズ >= BUSTSIZE_豊乳 && RAND:100 < 30
+		IF MARK:ミルクタンク && RAND:100 < 50
+			SLANGWORD += " overflowing"
+		ELSE
+			SLANGWORD += " leaking"
+		ENDIF
+	ENDIF
+	SLANGWORD += @" %SAVESTR:表記／母乳%"
+	
+	;触手粘液・ローション→どっちか
+	IF GETBIT(STAIN:PART,5)
+		SLANGWORD += " and tentacle mucus"
+	ELSEIF TFLAG:PART_LOTION
+		SLANGWORD += " and lotion"
+	ENDIF
+ELSEIF GETBIT(STAIN:PART,1)
+	SLANGWORD += " love juice"
+	IF GETBIT(STAIN:PART,5)
+		SLANGWORD += " and tentacle mucus"
+	ELSEIF TFLAG:PART_LOTION
+		SLANGWORD += " and lotion"
+	ENDIF
+ELSEIF GETBIT(STAIN:PART,5)
+	SLANGWORD += " tentacle mucus"
+	SIF TFLAG:PART_LOTION
+		SLANGWORD += " and lotion"
+ELSEIF TFLAG:PART_LOTION
+	SLANGWORD += " lotion"
+ENDIF
+
+IF SLANGWORD != ""
+	SELECTCASE RAND:3
+	CASE 0
+		NEW = coated with
+	CASE 1
+		NEW = smeared with
+	CASE 2
+		NEW = covered in
+	ENDSELECT
+	NEW += SLANGWORD
+	NEW += " "
+	RETURNF NEW
+ENDIF
+
+
+

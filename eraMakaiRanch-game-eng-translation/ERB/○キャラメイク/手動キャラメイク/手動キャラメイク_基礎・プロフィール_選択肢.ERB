@@ -1,0 +1,120 @@
+﻿
+;1ページ
+@SELF_CHARA_MAKE_PROFILE_1
+
+PRINTL 　《 Basis Profile 》
+CALL HALFLINE
+PRINTLC [ 0] Name
+PRINTFORML ：%CALLNAME%
+CALL NAME_DUPLICATE_CHECK
+PRINTL
+PRINTLC [ 1] Race
+PRINTFORML ：【%RACE_ENG(CSTR:種族)%】
+PRINTLC [ 2] Higher Race
+CALL PRINT_ONOFF(CFLAG:上位種族,1)
+PRINTLC [ 3] Job
+PRINTFORML ：%JOB_ENG(CSTR:ジョブ)%
+
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTLC [ 4] Status
+	PRINTFORML ：%JOB_ENG(CSTR:身分)%
+	PRINTLC [ 5] Affiliation
+	PRINTFORML ：%JOB_ENG(CSTR:所属)%
+ELSE
+	CALL PRINTLC_WORD_COLOR,@"< 4> Status: Manual only","灰"
+	PRINTFORML ：%JOB_ENG(CSTR:身分)%
+	CALL PRINTLC_WORD_COLOR,@"< 5> Affiliation: Manual only","灰"
+	PRINTFORML ：%JOB_ENG(CSTR:所属)%
+ENDIF
+PRINTL [ 6] Clothing
+CALL SHOW_EQUIP(1)
+PRINTL
+PRINTLC [ 7] Purpose For Entering Makai
+PRINT ：
+CALL PRINT_PURPOSE(CFLAG:魔界入りの目的)
+PRINTL
+PRINTLC [10] Height
+PRINTFORM ：%PRINT_HEIGHT()%
+SIF SELF_CHARA_MAKE_RANDOM
+	PRINTFORM （Shuffle for【%HEIGHT_ENG(CSTR:身長)%】）
+PRINTL
+PRINTLC [11] Body Shape
+PRINTFORML ：%FIGURE_ENG(CSTR:体型)%
+PRINTLC [12] Skin Color
+PRINTFORML ：%SKIN_ENG(CSTR:肌の色)%
+PRINTLC [13] Breast Size
+PRINTFORM ：%PRINT_BUSTSIZE(ABL:バストサイズ)%
+CALL PRINT_BUST_C(1,1)
+SIF SELF_CHARA_MAKE_RANDOM
+	PRINTFORM （Shuffle for【%PRINT_BUSTSIZE_TALENT()%】）
+PRINTL
+PRINTLC [14] Sexual Experience
+PRINTFORML ：【%SEXP_ENG(CSTR:性経験)%】
+
+
+
+@SELF_CHARA_MAKE_PROFILE_2
+
+PRINTL 　《 Racial Features 》
+CALL HALFLINE
+PRINTL 　《 Traits 》
+
+;TALENT:魔界種族→50
+;【魔界種族】は付与不可
+TALENT_REF = 50
+FOR LOCAL,1,20
+	SIF TALENTNAME:(LOCAL +TALENT_REF) == ""
+		CONTINUE
+	PRINTFORMLC [{LOCAL,2}] 【%TALENTNAME:(LOCAL +TALENT_REF)%】
+	CALL PRINT_ONOFF(TALENT:(LOCAL +TALENT_REF),1)
+NEXT
+
+
+
+@SELF_CHARA_MAKE_PROFILE_3
+
+PRINTL 　《 Personality・Dialogue・Terms 》
+CALL HALFLINE
+PRINTLC [ 0] Personality
+PRINTFORML ：%PERSONALITY_ENG(CSTR:性格)%
+
+PRINTLC [ 1] Dialogue
+CALL PRINTL_WORD_COLOR,@"System-Wide：\@ FLAG:口上表示 ? ON 　 # OFF　 \@","黄"
+IF CFLAG:口上表示
+	PRINTFORML Current：%DIALOGUE_ENG(CSTR:使用口上)%
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　No Dialogue Set","灰"
+ENDIF
+PRINTL
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTLC [10] 1st Person Pronoun
+	PRINTFORML ：%CSTR:一人称%／%CSTR:一人称／蕩け%
+	PRINTLC [11] How to call you Pre-Fall
+	PRINTFORML ：%CSTR:あなた呼び方／陥落前%／%CSTR:あなた呼び方／陥落前／蕩け%
+	PRINTLC [12] How to call you Post-Fall
+	PRINTFORML ：%CSTR:あなた呼び方／陥落後%／%CSTR:あなた呼び方／陥落後／蕩け%／%CSTR:あなた呼び方／甘え%
+	PRINTFORMLC [13] %SAVESTR:表記／ペニス% Term
+	PRINTFORML ：%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス)%／%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス／蕩け)%
+	PRINTFORMLC [14] %SAVESTR:表記／膣% Term
+	PRINTFORML ：%VAGINA_CALL_ENG(CSTR:性器呼び方／膣)%／%VAGINA_CALL_ENG(CSTR:性器呼び方／膣／蕩け)%
+	PRINTFORMLC [15] %SAVESTR:表記／アナル% Term
+	PRINTFORML ：%ANUS_CALL_ENG(CSTR:性器呼び方／アナル)%／%ANUS_CALL_ENG(CSTR:性器呼び方／アナル／蕩け)%
+ELSE
+	PRINTLC <10> 1st Person Pronoun
+	PRINTFORML ：%CSTR:一人称%／%CSTR:一人称／蕩け%
+	PRINTLC <11> How to call you Pre-Fall
+	PRINTFORML ：%CSTR:あなた呼び方／陥落前%／%CSTR:あなた呼び方／陥落前／蕩け%
+	PRINTLC <12> How to call you Post-Fall
+	PRINTFORML ：%CSTR:あなた呼び方／陥落後%／%CSTR:あなた呼び方／陥落後／蕩け%／%CSTR:あなた呼び方／甘え%
+	PRINTFORMLC <13> %SAVESTR:表記／ペニス% Term
+	PRINTFORML ：%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス)%／%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス／蕩け)%
+	PRINTFORMLC <14> %SAVESTR:表記／膣% Term
+	PRINTFORML ：%VAGINA_CALL_ENG(CSTR:性器呼び方／膣)%／%VAGINA_CALL_ENG(CSTR:性器呼び方／膣／蕩け)%
+	PRINTFORMLC <15> %SAVESTR:表記／アナル% Term
+	PRINTFORML ：%ANUS_CALL_ENG(CSTR:性器呼び方／アナル)%／%ANUS_CALL_ENG(CSTR:性器呼び方／アナル／蕩け)%
+	CALL PRINTL_WORD_COLOR,@"Can only be changed manually","黄"
+ENDIF
+
+
+
+

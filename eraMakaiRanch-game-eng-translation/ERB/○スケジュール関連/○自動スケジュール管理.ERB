@@ -1,0 +1,91 @@
+﻿
+;自動スケジュール
+;「現在できるか」ではなく「体力回復したらできる」も見るので別フラグ使用
+@AUTO_SCHEDULE
+#DIM DYNAMIC WEEK
+
+CLEARLINE LINECOUNT
+CALL SHOW_STATUS_SIMPLE
+PRINTFORML Set up %CALLNAME%'s daily automatic schedule
+PRINTL ・The schedule selected below will be set for the chosen day
+CALL HALFLINE
+
+;STR:曜日→3900
+;CSTR:自動スケジュール／月→350
+STR_REF = 3900
+FLAG_REF = 350
+FOR LOCAL,0,7
+	;設定する曜日に→で印
+	PRINTFORML \@ WEEK == LOCAL ? → # 　 \@[{LOCAL,3}] %DAYS_ENG(STR:(STR_REF +LOCAL))%：%SCHEDULE_PLAN_ENG(CSTR:(FLAG_REF +LOCAL))%
+NEXT
+CALL AUTO_SCHEDULE_LIST
+
+;搾乳優先
+IF MARK:母乳体質
+	PRINTL 　《 Priority Settings for Milking 》
+	PRINT [ 50] Morning
+	CALL PRINT_ONOFF(GETBIT(＃搾乳優先／朝＃))
+	PRINT 　　[ 51] Noon
+	CALL PRINT_ONOFF(GETBIT(＃搾乳優先／昼＃))
+	PRINT 　　[ 52] Evening
+	CALL PRINT_ONOFF(GETBIT(＃搾乳優先／夕＃))
+ENDIF
+CALL PRINTL_ALIGN
+PRINTL [ 60] Apply All Settings
+DRAWLINE
+
+;恋慕以上・従業員(またはあなた)ならカスタムを組めるようにする
+IF ((＃陥落状態／恋慕以上＃ || CSTR:状態／あなたの子 == "成長後") && CFLAG:スケジュール設定可能／業務) || TALENT:オーナー
+	PRINTLC [ 90] Custom Schedule
+ELSE
+	PRINTLC 　
+ENDIF
+PRINTLC [ 98] Tip
+PRINTLC [ 99] Done
+BINPUT
+
+;渡す関数でINPUT_NUMを使いたい
+INPUT_NUM = RESULT
+
+;分割→直接RETURNとかある部分
+SELECTCASE INPUT_NUM
+CASE 0 TO 9
+	WEEK = INPUT_NUM
+CASE 50,51,52
+	INVERTBIT CFLAG:スケジュール／搾乳優先BIT,INPUT_NUM -50
+CASE 60
+	CALL AUTO_SCHEDULE_BULK
+CASE 90
+	CALL AUTO_SCHEDULE_CUSTOM
+CASE 98
+	CALL BROWSE_HINT("自動スケジュール")
+CASE 99
+	;勝手にセットすることにした
+	CALL SCHEDULE_RESET_TARGET
+	RETURN
+CASEELSE
+	CALL AUTO_SCHEDULE_LIST_SET(INPUT_NUM,WEEK)
+	
+	;WEEKを移動する
+	WEEK ++
+	SIF WEEK >= 7
+		WEEK = 0
+ENDSELECT
+RESTART
+
+
+
+;一括設定
+@AUTO_SCHEDULE_BULK
+
+CALL MANYL(3)
+PRINTFORML Set the automatic schedule assignments for %CALLNAME% for all days of the week.
+CALL AUTO_SCHEDULE_LIST
+PRINTL
+PRINTL [ 99] Cancel
+BINPUT
+SIF RESULT == 99
+	RETURN
+CALL AUTO_SCHEDULE_LIST_SET(RESULT,99)
+
+

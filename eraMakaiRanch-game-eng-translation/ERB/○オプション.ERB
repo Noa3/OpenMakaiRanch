@@ -1,0 +1,88 @@
+﻿
+;メイン画面からオプション
+@OPTION
+
+CALL MANYL(5)
+PRINTL [ 0] Config
+PRINTL [ 1] Output Slave Data
+PRINTL
+PRINTL [ 8] Return to Title
+PRINTL [ 9] Debug Menu（Developer Mode Only）
+IF !FLAG:アンロック要素強制オープン
+	PRINTL [10] Open all Milestone Unlocks
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　Forced Unlocks Enabled","黄"
+ENDIF
+PRINTL
+
+;マイルストーンでのアンロック
+IF FLAG:奴隷を【隷属】させる
+	PRINTL [80] New Game+
+ELSE
+	CALL PRINTL_WORD_COLOR,@"<80> New Game+","灰"
+ENDIF
+PRINTL
+PRINTL [90] Omake
+CALL HALFLINE
+PRINTL [99] Cancel
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	CALL GAME_CONFIG
+CASE 1
+	CALL OUTPUT_CHARA_DATA_SELECT
+CASE 8
+	PRINTL Are you sure you want to return to the title screen?
+	CALL ASK_YN
+	IF !RESULT
+		RESETDATA
+		CLEARLINE LINECOUNT
+		JUMP SYSTEM_TITLE
+	ENDIF
+CASE 9
+	CALL DEBUG
+CASE 10
+	CALL ASK_ALL_UNLOCK
+CASE 80
+	CALL NEWGAMEPLUS_SETTING
+CASE 90
+	CALL EXTRA
+ENDSELECT
+
+
+
+;NG+
+@NEWGAMEPLUS_SETTING
+
+PRINTL Start「New Game+」from currently active save data.
+CALL PRINTL_WORD_COLOR,@"It is possible that bugs may occur, so it is recommended to create a backup save.","黄"
+PRINTL
+PRINTL Check transfer settings?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+CALL NEWGAMEPLUS_BEFORE_FLAG_SET
+
+;最終確認
+PRINTL Start 「New Game+」?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+RESETDATA
+ADDCHARA 0
+SIF GAMEBASE_DEFAULTCHARA >= 0
+	ADDCHARA GAMEBASE_DEFAULTCHARA
+BEGIN FIRST
+RETURN
+
+
+
+
+
+
+
+
+
+
+

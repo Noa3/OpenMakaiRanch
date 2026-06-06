@@ -1,0 +1,150 @@
+﻿
+;母乳直飲みによりあなたの魔力を5000以上にする
+@MILESTONE_CHECK_820
+
+SIF MAXBASE:0:魔力 >= 5000
+	RETURN 1
+
+
+;＜ネクロノミコン＞入手
+@MILESTONE_REWARD_820
+ 
+ITEM:ネクロノミコン += 1
+PRINTL Drinking mana-infused milk has given you magical powers of your own.
+PRINTL Mano brings you the ＜Necronomicon＞ he used as a student, saying that he no longer needs it.
+PRINTL Ningen don't recover very well, but Makaians recover within a few days, so it seems fine to use it a lot.
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Necronomicon＞.","水色"
+PRINTL 【Development and Acquisition】→【Magic Acquisition】allows you to spend Magic AP to learn magic.
+
+
+
+;魔術＜搾乳エナジードレイン＞取得
+@MILESTONE_CHECK_821
+
+SIF ITEM:搾乳エナジードレイン
+	RETURN 1
+
+
+;＜触手生物生態図鑑＞入手・【触手魔術】習得解放・触手AP+1
+@MILESTONE_REWARD_821
+
+ITEM:触手生物生態図鑑 += 1
+MONEY:触手AP += 1
+MONEY:触手AP累計値 += 1
+PRINTL You learn ＜Milk Energy Drain＞. This magic that can supposedly steal someone else's spirit energy.
+PRINTL Eugene visits the ranch, giving you an ＜Tentacle Creature Ecology Book＞. He says that learning this magic might be useful.
+PRINTL It describes various tentacle creatures inhabiting Makai, including some that have been bred for use against Ningen.
+PRINTL Maybe you can learn some new magic.
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Tentacle Creature Ecology Book＞.","水色"
+CALL PRINT_WORD_COLOR,@"【Tentacle AP+1】","水色"
+PRINTL 【Development and Acquisition】→【Tentacle Magic Acquisition】allows you to spend Tentacle AP to learn magic.
+PRINTL Using tentacles during training increases <Tentacle AP>, allowing you to learn new magic.
+
+
+
+;搾乳エナジードレインであなたの霊力を5000以上にする
+@MILESTONE_CHECK_822
+
+SIF MAXBASE:0:霊力 >= 5000
+	RETURN 1
+
+
+;＜小型霊力抽出装置＞・＜家庭用魔力貯蔵器＞入手
+@MILESTONE_REWARD_822
+
+ITEM:小型霊力抽出装置 += 1
+ITEM:家庭用魔力貯蔵器 += 1
+PRINTL Using Energy Drain, you really where able to take energy from Ningen.
+CALL RESIDENT_KOJO,@"ユジン","...I see! Really? Wow! This is very interesting!"
+CALL RESIDENT_KOJO,@"ユジン","I'd like to see if I can use it! Can I take a blood sample!?"
+PRINTL
+PRINTLC [ 0] Sure
+PRINTLC [ 1] I'm scared of injections
+INPUT
+SIF RESULT
+	CALL RESIDENT_KOJO,@"ユジン","You're an adult, you can handle it..."
+CALL RESIDENT_KOJO,@"ユジン","......... Okay, thanks! I smell some innovation here...!"
+PRINTL
+PRINTW ～Later～
+CALL RESIDENT_KOJO,@"ユジン","So, through analysis and application, I managed to create a ＜Portable Spirit Energy Extractor＞."
+CALL RESIDENT_KOJO,@"ユジン","If I use this to milk your slave, it should be able to steal her spirit energy just like your energy drain!"
+CALL RESIDENT_KOJO,@"ユジン","And as a side effect, if the slave has mana, then it will be drained as well."
+CALL RESIDENT_KOJO,@"ユジン","Don't forget to check the ＜Domestic Mana Reservoir＞, to confirm if the mana is drained properly."
+CALL RESIDENT_KOJO,@"ユジン","Everything you drain will be automatically seperated and stored, so please try to save up a lot."
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Portable Spirit Energy Extractor＞.","水色"
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Domestic Mana Reservoir＞.","水色"
+PRINTL During training, you can attach the【Portable Spirit Energy Extractor】to a【Lactating】Slave,
+PRINTL allowing it to extract and store spirit energy and mana.
+CALL MAGIC_STORAGE
+
+
+
+;＜小型霊力抽出装置＞で霊力を貯蔵する
+@MILESTONE_CHECK_823
+
+SIF MONEY:貯蔵霊力
+	RETURN 1
+
+
+;＜霊力抽出装置＞入手・スケジュール【抽出】解放・システム【抽出魔力での経費削減】解放
+@MILESTONE_REWARD_823
+
+ITEM:霊力抽出装置 += 1
+PRINTL You managed to extract some spirit energy by using the  ＜Portable Spirit Energy Extractor＞.
+PRINTL When reporting to Eugene, he excitedly begins writing a report, thanks you, and leaves.
+PRINTL
+PRINTW ～Later～
+CALL RESIDENT_KOJO,@"ユジン","So, the large-scale ＜Spirit Energy Extractor＞ was built."
+CALL RESIDENT_KOJO,@"あなた","＞Great."
+CALL RESIDENT_KOJO,@"ユジン","With this guy, you can extract spirit energy just by throwing slaves in and leaving them alone!"
+CALL RESIDENT_KOJO,@"ユジン","...well, the mana consumption is much more intense."
+CALL RESIDENT_KOJO,@"ユジン","Because of that, if you attach this part to the reservoir, you'll be able to use stored mana."
+CALL RESIDENT_KOJO,@"ユジン","You can turn it on and off, so use it however you want."
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Spirit Energy Extractor＞.","水色"
+CALL PRINTL_WORD_COLOR,@"【Schedule】→【Extraction】enabled.","水色"
+CALL PRINTL_WORD_COLOR,@"【Cost reduction with extracted mana】enabled","水色"
+PRINTL 【Management】→【Use Mana Batteries To Reduce Costs】to turn it on or off.
+
+
+
+;霊力を5万貯蔵する
+@MILESTONE_CHECK_824
+
+SIF MONEY:貯蔵霊力 >= 50000
+	RETURN 1
+
+
+;施設【魔王軍研究所】解放
+@MILESTONE_REWARD_824
+PRINTL A lot of spirit has been accumulated. Eugene is also excited.
+PRINTL Apparently, word had reached the Demon King's Fortress headquarters that he was making a significant contribution to the research.
+PRINTL The【Demon King's Army Research Institute】, including it's branch office, is normally off-limits to anyone not directly involved,
+PRINTL but you're told that you are now basically involved and can enter freely.
+PRINTL Apparently, if you bring stored spiritual and magical power to the well-equipped research institute, you can create a variety of useful things.
+CALL PRINTL_WORD_COLOR,@"【Go to town】→【Demon King's Army Research Institute】enabled.","水色"
+
+
+
+;魔力を＜家庭用魔力貯蔵器＞の上限まで貯蔵する
+@MILESTONE_CHECK_825
+
+SIF MONEY:貯蔵魔力 >= MAGIC_TANK_HOMEUSE
+	RETURN 1
+
+
+;＜業務用魔力貯蔵器＞入手
+@MILESTONE_REWARD_825
+
+ITEM:業務用魔力貯蔵器 += 1
+PRINTL The mana extraction is going well, and the domestic reservoir has reached its limit.
+PRINTL Concerned that research would halt due to equipment limitations, Eugene used the research institute budget to purchase a ＜Domestic Mana Reservoir＞.
+PRINTL You wonder whether it is appropriate to deduct something as an expense that is given to you, a private citizen, 
+PRINTL but from the way he talks it seems that everyone at the research institute considers you to be a member of the team as well.
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Industrial Mana Reservoir＞.","水色"
+CALL MAGIC_STORAGE
+PRINTL
+PRINTL He tells you that, if you want an even more high-end model like the ＜High-Capacity Mana Reservoir＞, you'll have to buy it at the home center.
+
+
+
+

@@ -1,0 +1,115 @@
+﻿
+;目次
+@LIST_CONFIG_INDEX
+
+PRINTL --- 《 Index 》 ---
+ALIGNMENT LEFT
+DRAWLINE
+PRINTL [ 1] Display Settings
+PRINTL [ 2] Command Settings
+PRINTL [ 3] System Settings
+PRINTL [ 4] Race Settings
+PRINTL [ 5] Slave Candidate Settings
+PRINTL [ 6] Difficulty Settings
+
+
+
+;飛ばして反転フラグに対応する番号は共通関数
+;FLAG_NUMを指定済み
+@CHANGE_CONFIG_INVERTBIT
+
+;飛ばすフラグがONならINVERT
+SIF !FLAG:ON／OFF項目の詳細を飛ばして反転
+	RETURN
+{
+IF GROUPMATCH(FLAG_NUM,
+2000,2002,2003,2060,2062,2064,2065,2071,2072,2075,2076,
+2302,2303,2502,2503,2504,2505,2506,2507,3000,
+3600,3601,3602,3603,3604,
+3700,3720,3721,3722,3723,3724,3725,3726)
+}
+	INVERTBIT FLAG:FLAG_NUM,0
+	RETURN 1
+ENDIF
+
+
+
+;システムデータのセーブロード・デフォルト
+;ARG→PAGE
+@CONFIG_DEFAULT_SYSTEM_SAVE(ARG)
+
+CALL MANYL(5)
+PRINTL Would you like to reset system data settings to default?
+PRINTL
+PRINTL [0] Save current configuration to system data (all pages)
+PRINTL
+
+;バージョンで見ることに変更
+LOADGLOBAL
+IF GLOBAL:システムデータのバージョン
+	;ゲーム開始前は一括可能
+	IF !DAY
+		PRINTL 《 Current Page 》
+		PRINTLC [10] Load System Data
+		PRINTL [11] Restore Defaults
+		PRINTL
+		PRINTL 《 All Settings 》
+		PRINTLC [20] Load System Data
+		PRINTL [21] Restore Defaults
+	ELSE
+		CALL CONFIG_DEFAULT_SYSTEM_SAVE_PAGE(ARG)
+	ENDIF
+ELSE
+	;多分来ない気がする
+	CALL PRINTL_WORD_COLOR("　You need to save the system data at least once.","灰")
+ENDIF
+PRINTL
+PRINTL [99] Cancel
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL SAVE_GLOBAL_CONFIG
+CASE 10
+	CALL LOAD_GLOBAL_CONFIG(ARG)
+CASE 11
+	CALL SET_DEFAULT_CONFIG(ARG)
+CASE 20
+	CALL LOAD_GLOBAL_CONFIG(0)
+CASE 21
+	CALL SET_DEFAULT_CONFIG(0)
+ENDSELECT
+
+
+
+@CONFIG_DEFAULT_SYSTEM_SAVE_PAGE(ARG)
+
+SELECTCASE ARG
+CASE 1,2,3
+	PRINTL 《 Current Page 》
+	PRINTLC [10] Load System Data
+	PRINTL [11] Restore Defaults
+CASE 4
+	IF FLAG:奴隷候補設定可能
+		PRINTL 《 Current Page 》
+		PRINTLC [10] Load System Data
+		PRINTL [11] Restore Defaults
+	ELSE
+		CALL PRINTL_WORD_COLOR("　To make changes after starting the game, you need a ＜Slave Candidate Change Ticket＞","灰")
+	ENDIF
+CASE 5
+	PRINTL 《 Current Page 》
+	PRINTLC [10] Load System Data
+	PRINTL [11] Restore Defaults
+	SIF !FLAG:奴隷候補設定可能
+		CALL PRINTL_WORD_COLOR("　Since the ＜Slave Candidate Change Ticket＞ hasn't been used, changes will not be applied beyond ＜Body Feature Ratio.＞","黄")
+CASE 6
+	IF FLAG:開発者モード
+		CALL PRINTL_WORD_COLOR("　After the game starts, difficulty settings cannot be changed all at once","灰")
+	ELSE
+		CALL PRINTL_WORD_COLOR("　Difficulty settings can only be changed after the game starts with 【Developer Mode】","灰")
+	ENDIF
+ENDSELECT
+CALL PRINTL_WORD_COLOR("All page items cannot be batch loaded in after game has started","灰")
+
+
+

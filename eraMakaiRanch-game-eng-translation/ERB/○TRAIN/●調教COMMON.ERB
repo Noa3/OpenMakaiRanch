@@ -1,0 +1,320 @@
+﻿
+;あなた調教で来る場所
+@EVENTTRAIN
+
+PLAYER = MASTER
+FINDCHARA CFLAG:ID,CFLAG:0:調教対象ID
+SIF RESULT <= 0
+	RETURN
+TARGET = RESULT
+
+;母乳体質にしたとき自動スケジュールを割り振るために使う
+TFLAG:調教前母乳体質 = MARK:母乳体質
+TFLAG:調教中 = 1
+TFLAG:残り時間 = 10 +ITEM:調教時間増加
+TFLAG:調教前体力 = BASE:体力
+BASE:0:射精 = 0
+SELECTCOM = 0
+PREVCOM = 0
+
+;専用イベントチェック
+FLAG:専用イベント発生 = 0
+SIF CFLAG:専用設定／イベント
+	TRYCALLFORM EX_TRAIN_BEFORE_%CSTR:識別名%_%CSTR:出典作品名%
+
+;子供を始めて調教する場合の処理
+SIF CSTR:状態／あなたの子 == "成長後"
+	CALL CHILD_REBELLION(1)
+
+;専用イベントがなかった場合は基本処理＝口上呼び出し
+IF !FLAG:専用イベント発生
+	;体内凌辱からの場合変化
+	IF FLAG:体内凌辱一時解除
+		CALL VORE_SEX_DIRECT_TRAIN
+	ELSE
+		CALL KOJO_PRINT("スケジュール","調教","調教開始")
+		CALL TRAIN_BEGIN_MESSAGE
+	ENDIF
+ENDIF
+
+;処女結界によって保護されているかのフラグ
+;最初に来るのはONにするため↓と違う
+CALL VARGIN_BARRIER_BREAK_FLAG
+
+;触手服を着ている場合
+CALL BEFORE_TRAIN_T_CLOTHE
+CALL BEFORE_TRAIN_T_CLOTHE_M
+
+;Ｖ潤滑を増加
+CALL BEFORE_TRAIN_LUBRICATION
+
+;調教前に自動で脱衣・拘束の設定
+CALL BEFORE_TRAIN_COMMAND_BEFORE
+
+CALL EN_STAIN_REMOVAL_MOD
+
+;詰み防止しとく
+IF !CMATCH(MARK:母乳体質,1) && !ITEM:魔力母乳分泌促進薬
+	CALL PRINTL_WORD_COLOR("Eugene brought the spare <Mana-Infused Breast Milk Stimulant> for me","水色")
+	ITEM:魔力母乳分泌促進薬 ++
+ENDIF
+
+PRINTFORML Beginning %CALLNAME%'s Training...
+FORCEWAIT
+CLEARLINE LINECOUNT
+
+
+
+@SHOW_STATUS
+
+;PLAYERにちんぽあるか
+CALL PLAYER_PENIS_CHECK
+
+;奉仕可能か見る
+CALL TRAIN_SERVICE_JUDGE
+
+;拘束フラグの処理はまとめた
+;パイズリ中、イラマ中などは体勢的にかなり制約があるよ処理→挿入部位でいい
+CALL SHOW_STATUS_TRAIN
+
+;多少の自動ヒント
+CALL TUTORIAL_TIPS_TRAIN
+
+;拘束中の体位制限
+CALL TRAIN_BIND_FLAG_FIX
+
+;回数制限撤廃チェック
+CALL CHECK_LIMIT_BREAK_CONFIG
+
+;COMABLE前に共通部分チェック
+CALL COMMAND_VALID_JUDGE
+
+CALL DISABLE_COM_ABLE
+
+;この後にCOMABLEを自動で呼び出す
+
+
+
+@SHOW_USERCOM
+
+CALL SHOW_USERCOM_ENG
+
+;コマンド表示を関数に
+CALL USERCOM_SHOW_COMMAND_SWITCH
+
+; all following commands increased by 1000 to prevent conflicts with SHOW_USERCOM_ENG
+;拘束変更不可いくつか
+IF TFLAG:Ｐ使用BIT
+	CALL PRINTLC_WORD_COLOR("　P inserted","灰")
+ELSEIF TFLAG:搾乳器 || TFLAG:搾乳触手
+	CALL PRINTLC_WORD_COLOR("　Getting Milked","灰")
+ELSEIF MATCH(TEQUIP,1,100,200)
+	CALL PRINTLC_WORD_COLOR("　Using Tentacles","灰")
+ELSE
+	PRINTLC [1500] Change Restraints
+ENDIF
+PRINTLC [1501] Change Clothes
+
+;こっちにアイテムとかも移す
+PRINTLC [1502] Items & Magic
+PRINTL
+PRINTLC [1503] Switch Selection Mode
+
+IF MATCH(TEQUIP,1)
+	PRINTLC [1504] Stop Continuous Actions
+ELSE
+	CALL PRINTLC_WORD_COLOR("　No Current Continuous Actions","灰")
+ENDIF
+PRINTL
+
+CALL HALFLINE
+PRINTLC [1800] Status & Config
+PRINTLC [1801] Tips
+IF TFLAG:時間圧縮中
+	PRINTFORMLC [1900] End Training（Time Compressed：{TFLAG:時間圧縮有効ターン数} Turns）
+ELSE
+	PRINTFORMLC [1900] End Training（Time Left：{TFLAG:残り時間}）
+ENDIF
+PRINTL
+
+
+
+@USERCOM
+
+; all numbers increased by 1000 to prevent problems with english usercom
+PRINTL
+SELECTCASE RESULT
+CASE 1400 TO 1419
+	IF FLAG:表示調教コマンド切替
+		FLAG:表示調教コマンド切替 = RESULT - 1399
+	ELSE
+		IF RESULT == 1418
+			FLAG:表示調教コマンドBIT = 0b111111111111111111
+		ELSEIF RESULT == 1419
+			FLAG:表示調教コマンドBIT = 0
+		ELSE
+			INVERTBIT FLAG:表示調教コマンドBIT,RESULT -1400
+		ENDIF
+	ENDIF
+CASE 1500
+	CALL TRAIN_BIND_COMMON
+	RETURN 1
+CASE 1501
+	CALL TRAIN_CLOTHES_COMMON
+	RETURN 1
+CASE 1502
+	CALL TRAIN_ITEM_COMMON
+	RETURN 1
+CASE 1503
+	IF FLAG:表示調教コマンド切替
+		FLAG:表示調教コマンド切替 = 0
+	ELSE
+		FLAG:表示調教コマンド切替 = 1
+	ENDIF
+CASE 1504
+	CALL TRAIN_RELEASE_COMMON
+	RETURN 1
+CASE 1800
+	CALL SHOW_STATUS_DETAIL_TRAIN
+	CLEARLINE LINECOUNT
+	RETURN 1
+CASE 1801
+	CALL BROWSE_HINT("調教")
+CASE 1900
+	PRINTL There's still time left, are you sure you want to end training?
+	CALL ASK_YN
+	SIF !RESULT
+		BEGIN AFTERTRAIN
+	RETURN 1
+CASEELSE
+	CALL USERCOM_ENG(RESULT)
+ENDSELECT
+RETURN 0
+
+
+
+@EVENTCOM
+
+;PRINTL EVENTCOMだよ
+;ここでPENISをとりあえずあなたにする
+V_PENIS = %CALLNAME:0%
+A_PENIS = %CALLNAME:0%
+M_PENIS = %CALLNAME:0%
+PAIZURI_PENIS = %CALLNAME:0%
+KISS_PLAYER = %CALLNAME:0%
+MILK_SUCK_PLAYER = %CALLNAME:0%
+
+;責めフラグ、刻印フラグを一度OFF
+VARSET TFLAG,0,30,40
+
+;あなた調教中は脱衣メッセージ表示常に1
+SOURCE:脱衣メッセージ表示 = 1
+CALL MANYL(5)
+
+
+
+@EVENTCOMEND
+;PRINTW EVENTCOMENDだよ
+
+CALL SECTION_MP_COST
+CALL TEQUIP_ADJUST
+
+;毎回反抗削除とかの判定を入れる
+CALL CAPITULATION_JUDGE
+
+;あなたのHPが0で調教終了
+IF !BASE:0:体力
+	PRINTFORMW 《 %CALLNAME:0% can't continue. Training ended. 》
+	BEGIN AFTERTRAIN
+ENDIF
+
+;時間切れで調教終了
+IF TFLAG:残り時間 <= 0
+	PRINTW 《 Time's up. Training ended. 》
+	BEGIN AFTERTRAIN
+ENDIF
+
+;奉仕終了判定
+CALL TRAIN_SERVICE_END
+PREVCOM = SELECTCOM
+
+
+
+@EVENTEND
+
+;NOWEXだけはリセットかけないと口上が変になりがち
+VARSET NOWEX
+PRINTL
+
+;全部取り外し
+CALL ALL_TEQUIP_REMOVE
+CALL TRAIN_BIND_RUN(0,1)
+VARSET TFLAG,0,30,100
+TFLAG:刻印入手 = 0
+PRINTW Training completed...
+CALL MANYL(3)
+
+EXP:実行回数／あなた調教 ++
+EXP:区間実行回数／あなた調教 ++
+EXP:0:実行回数／あなた調教 ++
+EXP:0:区間実行回数／あなた調教 ++
+
+CALL TRAIN_END_RESULT
+CALL TRAIN_AFTER_SKILL_POINT_CALC
+CALL TRAIN_END_PALAM_CALC
+CALL KOJO_PRINT("スケジュール","調教","調教終了")
+PRINTW
+TFLAG:刻印入手 = 0
+CALL CAPITULATION_JUDGE
+
+;好感度系も追加した陥落判定
+CALL TRAIN_END_CAPITULATION
+
+;スケジュール変更
+CALL AUTO_SCHEDULE_LACTATION
+
+;もしかしてここからBEGIN SHOPでいいかも？　はい
+;BEGIN ABLUP
+
+;一時的脱衣のフラグがある場合に没収したままにするかの処理
+CALL CLOTHE_SEIZURE
+
+;リセットここでもかけないと装備とか残ってますがな
+CALL RESET_TRAIN_PALAM
+CALL MANYL(5)
+DRAWLINE
+
+;BEGIN TRAINするとMAIN_PHASEのターンエンド処理が飛ばされるのでここで改めてやる必要ある
+CALL MAIN_TURNEND
+
+
+
+
+
+;ここから下ないと止まるかと思ったけどそうでもなかったやつ
+@EVENTTURNEND
+;ないと止まる
+PRINTL EVENTTURNENDだよ
+BEGIN SHOP
+
+@SHOW_JUEL
+;ないと止まる
+PRINTL 珠表示だけどたぶん使わないかな
+
+@SHOW_ABLUP_SELECT
+;ないと止まる
+PRINTL ここも空白でいいと思う
+PRINTL [100] 次
+
+@USERABLUP
+;ないと止まる
+PRINTL USERABLUPにいるよ
+IF RESULT == 100
+	BEGIN TURNEND
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+
+

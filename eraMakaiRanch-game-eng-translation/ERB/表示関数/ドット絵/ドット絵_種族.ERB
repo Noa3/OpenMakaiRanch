@@ -1,0 +1,88 @@
+﻿
+;種族特徴
+@PRINT_PORTRAIT_TRIBE
+
+CALL PRINT_PORTRAIT_TRIBE_EAR
+CALL PRINT_PORTRAIT_TRIBE_FORNT
+CALL PRINT_PORTRAIT_TRIBE_BEHIND
+
+
+
+;エルフ耳・ハーフリング耳
+@PRINT_PORTRAIT_TRIBE_EAR
+
+;コンフィグによりシスターヴェール時エルフ耳隠し追加
+;ハーフリングも耳制御に変更、こっちも耳隠す？
+SIF !TFLAG:一時的脱衣／頭 && ＃着用頭装備／名称＃ == "シスターヴェール" && FLAG:ドット絵／頭装備で耳隠し
+	RETURN
+IF TALENT:エルフ耳
+	SPRITECREATED @"%CSTR:カテゴリ／肌の色%_エルフ耳"
+	SIF RESULT
+		PRT:8 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／肌の色%_エルフ耳' height='%PY_3_4%' ypos = '%PY_FIX%'></nonbutton>
+ELSEIF TALENT:ハーフリング耳
+	SPRITECREATED @"%CSTR:カテゴリ／肌の色%_ハーフリング耳"
+	SIF RESULT
+		PRT:8 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／肌の色%_ハーフリング耳' height='%PY_3_4%' ypos = '%PY_FIX%'></nonbutton>
+ENDIF
+
+
+
+;種族(前)
+@PRINT_PORTRAIT_TRIBE_FORNT
+
+SIF !TFLAG:一時的脱衣／頭 && ＃着用頭装備／名称＃ == "シスターヴェール" && FLAG:ドット絵／頭装備で耳隠し
+	RETURN
+IF !TFLAG:一時的脱衣／頭 && ＃着用頭装備／名称＃ == "猫耳カチューシャ"
+	RESULTS = %PRINT_PORTRAIT_CLOTHE_COLOR("頭装備")%
+	CLOTHE_COLOR = %PRINT_PORTRAIT_CATEAR()%
+	SPRITECREATED @"%CLOTHE_COLOR%_猫耳族_前"
+	SIF RESULT
+		PRT:6 = <nonbutton pos='%PY_2%'><img src='%CLOTHE_COLOR%_猫耳族_前' height='%PY_3_4%' ypos = '%PY_FIX%'></nonbutton>
+ELSE
+	SPRITECREATED @"%CSTR:カテゴリ／髪色%_%CSTR:カテゴリ／種族%_前"
+	IF RESULT
+		PRT:6 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／髪色%_%CSTR:カテゴリ／種族%_前' height='%PY_3_4%' ypos = '%PY_FIX%'></nonbutton>
+	ELSE
+		SPRITECREATED @"%CSTR:カテゴリ／肌の色%_%CSTR:カテゴリ／種族%_前"
+		IF RESULT
+			PRT:6 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／肌の色%_%CSTR:カテゴリ／種族%_前' height='%PY_3_4%' ypos = '%PY_FIX%'></nonbutton>
+		ELSE
+			SPRITECREATED @"%CSTR:カテゴリ／種族%_前"
+			SIF RESULT
+				PRT:6 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／種族%_前' height='%PY_3_4%' ypos = '%PY_FIX%'></nonbutton>
+		ENDIF
+	ENDIF
+ENDIF
+
+
+
+;種族(後)
+@PRINT_PORTRAIT_TRIBE_BEHIND
+
+;背後OFFフラグがあれば飛ばす
+;仙人と天界系はちょっと下げたいなとおもったらちょうどよく分かれてた
+;翼人もちょっと下げたいなとなった
+;下げるかどうかCFLAG管理できるようにした
+SIF CFLAG:ドット絵設定／背後特徴OFF
+	RETURN
+SPRITECREATED @"%CSTR:カテゴリ／髪色%_%CSTR:カテゴリ／種族%_後"
+IF RESULT
+	;ここ短縮はできなさそう
+	IF CFLAG:身長 < FLAG:ドット絵／低身長適用上限数値 && CSTR:カテゴリ／種族 == "翼人" && !CFLAG:ドット絵設定／背後高さ調整
+		PRT:5 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／髪色%_%CSTR:カテゴリ／種族%_後' height='%PY_3%' ypos = '%PY_1_2%'></nonbutton>
+	ELSE
+		PRT:5 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／髪色%_%CSTR:カテゴリ／種族%_後' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+	ENDIF
+ELSE
+	SPRITECREATED @"%CSTR:カテゴリ／種族%_後"
+	SIF !RESULT
+		RETURN
+	IF CFLAG:身長 < FLAG:ドット絵／低身長適用上限数値 && !CFLAG:ドット絵設定／背後高さ調整
+		PRT:5 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／種族%_後' height='%PY_3%' ypos = '%PY_1_2%'></nonbutton>
+	ELSE
+		PRT:5 = <nonbutton pos='%PY_2%'><img src='%CSTR:カテゴリ／種族%_後' height='%PY_3%' ypos = '%PY_1%'></nonbutton>
+	ENDIF
+ENDIF
+
+
+

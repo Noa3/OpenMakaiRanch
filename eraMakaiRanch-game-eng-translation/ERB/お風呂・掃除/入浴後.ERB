@@ -1,0 +1,34 @@
+﻿
+;1人風呂上がり
+@SORO_BATHLOOM_AFTER
+
+;風呂上がったメッセージはいいや
+CALL DRINK_COLD_MILK_AUTO
+
+
+
+;奴隷とお風呂上がり
+@PLAY_BATHLOOM_AFTER
+
+PRINTFORML %CALLNAME:0% and %CALLNAME% get out of the bath...
+PRINTL
+PRINTFORMLC [ 0] Dring stored %SAVESTR:表記／母乳%
+
+;通常子供の母乳はダメ
+IF !MARK:母乳体質
+	CALL PRINTLC_WORD_COLOR,@"Not【Lactating】","灰"
+ELSEIF GROUPMATCH(CSTR:状態／あなたの子,"成長中","成長後")
+	CALL PRINTLC_WORD_COLOR,@"通常の子供の%SAVESTR:表記／母乳%は飲めません","灰"
+ELSE
+	PRINTFORMLC [ 1] Drink body temperature %SAVESTR:表記／母乳%
+ENDIF
+PRINTL [ 2] Not This Time
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL DRINK_COLD_MILK_AUTO(1)
+CASE 1
+	CALL VISIT_BREAST_FEEDING
+ENDSELECT
+
+

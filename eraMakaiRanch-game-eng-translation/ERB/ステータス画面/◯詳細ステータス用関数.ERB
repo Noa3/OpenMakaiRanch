@@ -1,0 +1,500 @@
+﻿
+;搾乳記録表示
+@CATTLE_SLAVE_RECORD
+#DIMS PRINTWORD
+
+IF !MARK:母乳体質
+	;前の画面で出してる
+	;CALL PRINTL_WORD_COLOR,@"Not【Lactating】","灰"
+	RETURN
+ENDIF
+
+;表示込みで揃えるのにちょい手間
+PRINT 　　　
+CALL HEARTCB(0xD02830)
+CALL PRINT_WORD_COLOR,@"Records","桃"
+CALL HEARTCB(0xD02830)
+PRINTL
+PRINTWORD = Volume For Next Shipment
+PRINTFORML %PRINTWORD,24%：%VALUE_DIGIT(CFLAG:出荷予定母乳量,"母乳")% 
+PRINTWORD = Highest Shipment in one Day
+PRINTFORML %PRINTWORD,24%：%VALUE_DIGIT(CFLAG:出荷母乳／一日最大量,"母乳")% 
+PRINTWORD = Highest Profit in one Day
+PRINTFORML %PRINTWORD,24%：%VALUE_DIGIT(CFLAG:出荷母乳／一日最大額)%G 
+PRINTL
+PRINTWORD = Total Drank by Master
+PRINTFORML %PRINTWORD,24%：%VALUE_DIGIT(CFLAG:あなたに吸われた母乳合計,"母乳")% 
+PRINTWORD = Total Shipped
+PRINTFORML %PRINTWORD,24%：%VALUE_DIGIT(CFLAG:出荷母乳／合計量,"母乳")% 
+PRINTWORD = Total Profit
+PRINTFORML %PRINTWORD,24%：%VALUE_DIGIT(CFLAG:出荷母乳／合計金額)%G 
+PRINTWORD = Total Milked
+PRINTFORML %PRINTWORD,24%：%VALUE_DIGIT(CFLAG:総搾乳量,"母乳")% 
+
+
+
+;記念日表示
+@PRINT_ANNIVERSARY
+
+;実質スレイちゃん専用
+IF CFLAG:捕獲日 < 0
+	PRINT [Been together for a long time] 
+	
+ELSEIF CFLAG:捕獲日
+	IF CSTR:状態／あなたの子 != ""
+		PRINTFORM Born On：Day {CFLAG:捕獲日}　
+	ELSE
+		PRINTFORM Captured On：Day {CFLAG:捕獲日}　
+	ENDIF
+	IF CFLAG:陥落日
+		PRINTFORM Fallen On：Day {CFLAG:陥落日} 
+	ELSE
+		CALL PRINT_WORD_COLOR,@"Hasn't Fallen","灰"
+	ENDIF
+;捕まえてない場合　ここ来るっけ？　来るようになった
+ELSE
+	PRINT Tracking 
+ENDIF
+CALL MANYL(2)
+
+
+
+;射精記録表示
+@PRINT_EJACULATION
+
+IF !TARGET
+	PRINTL 　《 Ejaculation Count 》
+ELSE
+	PRINTL 　《 Ejaculations Received 》
+ENDIF
+{
+PRINTFORML
+Pussy：%VALUE_DIGIT(EXP:膣内射精回数)%　　Anal：%VALUE_DIGIT(EXP:尻穴射精回数)%　　
+Paizuri：%VALUE_DIGIT(EXP:乳内射精回数)%　　Mouth：%VALUE_DIGIT(EXP:精飲回数)%　　
+Hands：%VALUE_DIGIT(EXP:手淫射精回数)%　　Thighs：%VALUE_DIGIT(EXP:素股射精回数)%　　
+}
+IF TARGET && !FLAG:あなたの触手もあなた扱い
+	PRINTL
+	PRINTL 　《 Tentacle Ejaculations Received 》
+	{
+	PRINTFORML
+	Pussy：%VALUE_DIGIT(EXP:経験回数／異形／膣内射精)%　　Anal：%VALUE_DIGIT(EXP:経験回数／異形／尻穴射精)%　　
+	Paizuri：%VALUE_DIGIT(EXP:経験回数／異形／乳内射精)%　　Mouth：%VALUE_DIGIT(EXP:経験回数／異形／精飲)%　　
+	Hands：%VALUE_DIGIT(EXP:経験回数／異形／手淫射精)%
+	}
+ENDIF
+
+
+
+;自動スケジュールの設定
+@PRINT_AUTO_SCHEDULE_PLAN
+
+IF CFLAG:追跡対象
+	CALL PRINTL_WORD_COLOR,@"Uncaptured, cannot set schedule","灰"
+	RETURN
+ENDIF
+PRINTL 　《 Automatic Schedule 》
+
+;STR:曜日→3900
+;CSTR:自動スケジュール／月→350
+STR_REF = 3900
+CSTR_REF = 350
+FOR LOCAL,0,7
+	PRINTFORML %DAYS_ENG(STR:(STR_REF +LOCAL)),9%：%SCHEDULE_PLAN_ENG(CSTR:(CSTR_REF +LOCAL))%
+NEXT
+PRINTL
+IF MARK:母乳体質
+	PRINTL 　《 Milking Priority Setting 》
+	PRINT Morning
+	CALL PRINT_ONOFF(GETBIT(＃搾乳優先／朝＃))
+	PRINT Midday
+	CALL PRINT_ONOFF(GETBIT(＃搾乳優先／昼＃))
+	PRINT Evening
+	CALL PRINT_ONOFF(GETBIT(＃搾乳優先／夕＃))
+	PRINTL
+ENDIF
+CALL PRINT_AUTO_SCHEDULE_PLAN_CUSTOM
+
+
+
+;カスタム内部表示
+@PRINT_AUTO_SCHEDULE_PLAN_CUSTOM
+
+SIF !＃陥落状態／恋慕以上＃ && TARGET
+	RETURN
+
+;CSTR:自動スケジュール／カスタムＡ／朝→360
+CSTR_REF = 360
+FOR LOCAL,0,9
+	SELECTCASE LOCAL
+	CASE 0
+		PRINT 【Custom Ａ】
+	CASE 3
+		PRINTL
+		PRINT 【Custom Ｂ】
+	CASE 6
+		PRINTL
+		PRINT 【Custom Ｃ】
+	ENDSELECT
+	SELECTCASE LOCAL %3
+	CASE 0
+		PRINT Morning：
+	CASE 1
+		PRINT Midday：
+	CASE 2
+		PRINT Evening：
+	ENDSELECT
+	PRINTFORM %SCHEDULE_ENG(CSTR:(CSTR_REF +LOCAL)),16%　
+NEXT
+CALL MANYL(2)
+IF !TARGET
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% cannot automatically arrange training","灰"
+ELSE
+	CALL PRINT_AUTO_SCHEDULE_CUSTOM_TRAIN_CHARA_ID(0)
+	CALL PRINT_AUTO_SCHEDULE_CUSTOM_TRAIN_CHARA_ID(1)
+	CALL PRINT_AUTO_SCHEDULE_CUSTOM_TRAIN_CHARA_ID(2)
+ENDIF
+
+
+
+;調教対象IDから名前表示
+@PRINT_AUTO_SCHEDULE_CUSTOM_TRAIN_CHARA_ID(ARG)
+#DIMS PATTERN
+
+SELECTCASE ARG
+CASE 0
+	PATTERN = Ａ
+CASE 1
+	PATTERN = Ｂ
+CASE 2
+	PATTERN = Ｃ
+ENDSELECT
+
+;CFLAG:自動スケジュール／調教対象ID／Ａ→520
+;IDのキャラを探す
+FINDCHARA CFLAG:ID,CFLAG:(520 +ARG)
+IF RESULT <= 0
+	PRINTFORMLC Training Target %PATTERN%: Not Set  
+ELSE  
+	PRINTFORMLC Training Target %PATTERN%: %CALLNAME:RESULT%
+ENDIF
+
+
+
+;詳細用母乳表示
+@PRINT_MILKTANK_PLUS
+#DIMS MILKWORD
+
+;豊穣値追加
+IF ABL:バストサイズ >= FLAG:豊穣上限バストサイズ
+	CALL PRINT_WORD_COLOR,@"Max Abundance","黄"
+ELSE
+	LOCALS:0 = %TOSTR(EXP:豊穣値,"#,0")%
+	LOCALS:1 = %TOSTR(BUST_GROW_CALC(),"#,0")%
+	PRINTFORM 　　Abundance Value：%LOCALS:0,7%／%LOCALS:1,7%　 
+	CALL PRINT_COLORBAR(EXP:豊穣値,BUST_GROW_CALC(),8,BARCOLORSET("桃"),RESULT:1)
+ENDIF
+CALL MANYL(2)
+
+;母乳体質でないなら帰る
+IF !MARK:母乳体質
+	CALL PRINTL_WORD_COLOR,@"Not【Lactating】","灰"
+	RETURN
+ENDIF
+
+MILKWORD = 【
+SIF MARK:絶頂魔力回復淫紋
+	MILKWORD += "Endless "
+SELECTCASE ABL:母乳濃度
+CASE 1
+	MILKWORD += "Thick "
+CASE 2
+	MILKWORD += "Fine "
+CASE 3
+	MILKWORD += "Rich "
+CASE 4
+	MILKWORD += "Potent "
+CASE 5
+	MILKWORD += "Premium "
+ENDSELECT
+SIF MARK:魔力母乳体質
+	MILKWORD += "Mana-Infused "
+MILKWORD += "Milk】"
+CALL PRINTL_WORD_COLOR,@"%MILKWORD%","桃"
+
+;商品名
+PRINT Product Name：
+CALL PRINT_MILK_NAME(1)
+PRINTL
+
+;絶頂魔力回復淫紋でも詳細では容量表示する
+;単位合わせしないと変な表示になるのでここは単位固定
+LOCALS:0 = %TOSTR(BASE:母乳容量,"#,0")%
+LOCALS:1 = %TOSTR(MAXBASE:母乳容量,"#,0")%
+PRINTFORM   Milk Capacity：%LOCALS:0,7%／%LOCALS:1,7%%MILK_COUNTING()% 
+CALL PRINT_COLORBAR(BASE:母乳容量,MAXBASE:母乳容量,8,BARCOLORSET("白"),RESULT:1)
+PRINTL
+LOCALS:0 = %TOSTR(BASE:母乳生産力,"#,0")%
+LOCALS:1 = %TOSTR(MAXBASE:母乳生産力,"#,0")%
+PRINTFORM Milk Production：%LOCALS:0,7%／%LOCALS:1,7%%MILK_COUNTING()% 
+CALL PRINT_COLORBAR(BASE:母乳生産力,MAXBASE:母乳生産力,8,BARCOLORSET("白"),RESULT:1)
+PRINTL
+LOCALS:0 = %TOSTR(MAXBASE:基礎噴乳量,"#,0")%
+PRINTFORML Base Milk Ejection：%LOCALS:0,5%%MILK_COUNTING()% 
+
+
+
+;性格・人称表示
+@PRINT_PERSONALITY_CALL_PERSON
+
+IF ORIGINAL_STATUS
+	CALL PRINT_ORIGINAL_PERSONALITY_CALL_PERSON
+	RETURN
+ENDIF
+PRINTFORML Personality       ：%PERSONALITY_ENG(CSTR:性格)%
+PRINTFORML 1st Person Pronoun：%CSTR:一人称%（%CSTR:一人称／蕩け%）
+PRINTL
+PRINTFORML 　　　＜Addressing %CALLNAME:0%＞
+
+;今陥落以上かどうかでグレーアウトしよう
+IF ＃陥落状態／陥落以上＃
+	CALL PRINTL_WORD_COLOR,@"Before Falling：%CSTR:あなた呼び方／陥落前%（%CSTR:あなた呼び方／陥落前／蕩け%）","灰"
+	PRINTFORML After Falling ：%CSTR:あなた呼び方／陥落後%（%CSTR:あなた呼び方／陥落後／蕩け%・%CSTR:あなた呼び方／甘え%）
+ELSE
+	PRINTFORML Before Falling：%CSTR:あなた呼び方／陥落前%（%CSTR:あなた呼び方／陥落前／蕩け%）
+	CALL PRINTL_WORD_COLOR,@"After Falling ：%CSTR:あなた呼び方／陥落後%（%CSTR:あなた呼び方／陥落後／蕩け%・%CSTR:あなた呼び方／甘え%）","灰"
+ENDIF
+PRINTL 　　　＜Genital Terms＞
+PRINTFORML Penis Term：%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス)%（%PENIS_CALL_ENG(CSTR:性器呼び方／ペニス／蕩け)%）
+PRINTFORML Pussy Term：%VAGINA_CALL_ENG(CSTR:性器呼び方／膣)%（%VAGINA_CALL_ENG(CSTR:性器呼び方／膣／蕩け)%）
+PRINTFORML Anus Term ：%ANUS_CALL_ENG(CSTR:性器呼び方／アナル)%（%ANUS_CALL_ENG(CSTR:性器呼び方／アナル／蕩け)%）
+PRINTL
+
+
+
+;レベル・HPSPEPMP
+@PRINT_LEVEL_POWER
+
+IF ORIGINAL_STATUS
+	CALL PRINT_ORIGINAL_LEVEL_POWER
+	RETURN
+ENDIF
+PRINTFORML 　Lv{BASE:レベル} 
+PRINTFORM 　HP：{BASE:体力,4}／{MAXBASE:体力,4} 
+CALL PRINT_COLORBAR(BASE:体力,MAXBASE:体力,8,BARCOLORSET("青緑"),RESULT:1)
+PRINTL
+PRINTFORM 　SP：{BASE:気力,4}／{MAXBASE:気力,4} 
+CALL PRINT_COLORBAR(BASE:気力,MAXBASE:気力,8,BARCOLORSET("青緑"),RESULT:1)
+PRINTL
+PRINTFORMLC Spirit Energy：%VALUE_DIGIT(BASE:霊力)%／%VALUE_DIGIT(MAXBASE:霊力)%EP 
+CALL PRINT_COLORBAR(BASE:霊力,MAXBASE:霊力,8,BARCOLORSET(""),RESULT:1)
+CALL PRINT_REMAINING_EP
+PRINTL
+IF MAXBASE:魔力
+	PRINTFORMLC Mana：%VALUE_DIGIT(BASE:魔力)%／%VALUE_DIGIT(MAXBASE:魔力)%MP 
+	CALL PRINT_COLORBAR(BASE:魔力,MAXBASE:魔力,8,BARCOLORSET("濃紫"),RESULT:1)
+	CALL PRINT_REMAINING_MP
+	PRINTFORM  <{BASE:魔力回復割合,2}\%\/day>
+ELSE
+	CALL PRINT_WORD_COLOR("No Mana","灰")
+ENDIF
+CALL MANYL(2)
+
+
+
+;出典作品表示
+@PRINT_PRODUCT
+
+IF CSTR:識別名 == "" && CSTR:出典作品名 == ""
+	CALL PRINTL_WORD_COLOR,@"No Identifier Name or Source Work Name","灰"
+ELSE
+	PRINTFORML Character Identifier：%CSTR:識別名%　Source：%CSTR:出典作品名%
+ENDIF
+
+
+
+;注入した霊力魔力表示
+@PRINT_INJECTION_POWER
+
+IF !EXP:霊力ゼロ
+	CALL PRINTL_WORD_COLOR,@"Spirit Energy was never extracted, cannot infuse","灰"
+ELSEIF !＃陥落状態／隷属＃
+	CALL PRINTL_WORD_COLOR,@"Only【Love Slave】can be infused","灰"
+ELSEIF MAXBASE:体力 >= HP_MAX
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME%'s HP cannot be further increased","灰"
+ELSE
+	PRINTFORML 　　Accumulated／Required Spirit Energy For Next HP Upgrade：%VALUE_DIGIT(CFLAG:霊力蓄積量)%／%VALUE_DIGIT(MAXBASE:体力 *50)%EP
+ENDIF
+
+IF !＃陥落状態／隷属＃
+	CALL PRINTL_WORD_COLOR,@"Only【Love Slave】can be infused","灰"
+ELSEIF MAXBASE:魔力
+	CALL PRINTL_WORD_COLOR,@"%CALLNAME% already has Mana","灰"
+ELSE
+	PRINTFORML 　　Accumulated／Required Spirit Energy For Next HP Upgrade：%VALUE_DIGIT(CFLAG:魔力蓄積量)%／%VALUE_DIGIT(MP_OCCUR_VALUE)%MP
+ENDIF
+PRINTL
+
+
+
+;奴隷としての経験
+@PRINT_SLAVE_MEMORY(ARG)
+
+PRINTL 　《 Slavery Experience 》
+CALL PRINTL_WORD_COLOR,@"Under Construction","灰"
+SIF ARG
+	PRINTL
+
+
+
+;部屋があるか表示
+@PRINT_EXIST_MYROOM
+
+IF EQUIP:個室
+	CALL PRINTL_WORD_COLOR,@"Private Room Provided","水色"
+ELSEIF CFLAG:寮番号
+	CALL PRINT_WORD_COLOR,@"Slave Dorm Room {CFLAG:寮番号 +100}　","水色"
+	CALL PRINT_SLAVE_DORMITORY_ROOMMATE
+ELSE
+	CALL PRINTL_WORD_COLOR,@"No Room Provided","灰"
+ENDIF
+
+
+
+;スケジュール回数表示
+@PRINT_SCHEDULE_EXPERIENCE
+
+;牧場外ならここもOFFでいいや
+IF CFLAG:追跡対象
+	CALL PRINTL_WORD_COLOR,@"牧場訪問歴なし","灰"
+	RETURN
+ENDIF
+
+;STR:酪農→8000
+;EXP:実行回数／酪農→400
+STR_REF = 8000
+EXP_REF = 400
+PRINTL 　《 Schedule Execution Count 》
+FOR LOCAL,0,50
+	STR_NAME = %STR:(LOCAL +STR_REF)%
+	SIF STR_NAME == ""
+		CONTINUE
+	IF STR_NAME == "からの調教"
+		LOCALS '= @"Training from %CALLNAME:0%"
+		PRINTFORML %LOCALS,25%：{EXP:(EXP_REF +LOCAL),3}　
+	ELSE
+		PRINTFORML %SCHEDULE_ITEMS(STR_NAME),25%：{EXP:(EXP_REF +LOCAL),3}　
+	ENDIF
+NEXT
+PRINTL
+
+
+
+;MASTER用スケジュール回数表示
+@PRINT_SCHEDULE_EXPERIENCE_MASTER
+
+;STR:酪農→8000
+;EXP:実行回数／酪農→400
+STR_REF = 8000
+EXP_REF = 400
+PRINTL 　《 Schedule Execution Count 》
+FOR LOCAL,0,50
+	STR_NAME = %STR:(LOCAL +STR_REF)%
+	SIF GROUPMATCH(STR_NAME,"","搾乳","抽出","レズ調教した","レズ調教された","体内凌辱","被輪姦","触手責め搾乳")
+		CONTINUE
+	IF STR_NAME == "からの調教"
+		LOCALS = Training
+		PRINTFORML %LOCALS,16%：{EXP:(EXP_REF +LOCAL),3}　
+	ELSE
+		PRINTFORML %SCHEDULE_ITEMS(STR_NAME),16%：{EXP:(EXP_REF +LOCAL),3}　
+	ENDIF
+NEXT
+PRINTL
+
+
+
+;ペットなつき度
+@PRINT_PET_FRIENDLY
+
+;牧場に来たことないのになつき度出るのも変か
+IF CFLAG:追跡対象
+	CALL PRINTL_WORD_COLOR,@"Not acquainted with pet","灰"
+	RETURN
+ENDIF
+
+;ペット関係のフラグ番号一斉取得
+CALL GET_PET_FLAG_REF
+PRINTL 　《 Pet Affection 》
+FOR LOCAL,0,10
+	ANIMAL = %ITEMNAME:(ITEM_REF +LOCAL)%
+	IF ANIMAL == ""
+		CONTINUE
+	ELSEIF !ITEM:ANIMAL
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(ANIMAL)%","灰"
+		CONTINUE
+	ENDIF
+	PRINTFORM %PET_NAME_REF(ANIMAL),20%　
+	CALL PRINT_PET_GENDER(FLAG:(FLAG_REF +LOCAL))
+	PRINTFORML 　Affection：{BASE:(BASE_REF +LOCAL) /100,3}\% 
+NEXT
+PRINTL
+
+
+
+;性器サイズ
+@PRINT_GENITAL_SIZE
+
+CALL PRINT_STATUS_PSIZE
+CALL PRINT_STATUS_VSIZE
+CALL PRINT_STATUS_ASIZE
+PRINTL
+
+
+
+;ペニスサイズ表示
+@PRINT_STATUS_PSIZE
+
+CALL TARGET_PENIS_CHECK
+SIF !TARGET_PENIS
+	RETURN
+IF ORIGINAL_STATUS
+	CALL PRINT_ORIGINAL_PSIZE
+	RETURN
+ENDIF
+PRINTFORM Ｐ：{ABL:ペニスサイズ,3}mm 
+
+
+
+;Ｖサイズ表示
+@PRINT_STATUS_VSIZE
+
+SIF TALENT:オトコ
+	RETURN
+IF ORIGINAL_STATUS
+	CALL PRINT_ORIGINAL_VSIZE
+	RETURN
+ENDIF
+IF ABL:Ｖ拡張
+	PRINTFORM Ｖ：{ABL:Ｖサイズ,3}～{ABL:Ｖサイズ + ABL:Ｖ拡張,3}mm　
+ELSE
+	PRINTFORM Ｖ：{ABL:Ｖサイズ,3}mm　　 　
+ENDIF
+
+
+
+;Ａサイズ表示
+@PRINT_STATUS_ASIZE
+
+IF ORIGINAL_STATUS
+	CALL PRINT_ORIGINAL_ASIZE
+	RETURN
+ENDIF
+IF ABL:Ａ拡張
+	PRINTFORM Ａ：{ABL:Ａサイズ,3}～{ABL:Ａサイズ + ABL:Ａ拡張,3}mm　
+ELSE
+	PRINTFORM Ａ：{ABL:Ａサイズ,3}mm　
+ENDIF
+
+
+
+

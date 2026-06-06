@@ -1,0 +1,253 @@
+﻿
+;ジョブ・身分・所属・種族などの元々を参照
+@PRINT_ORIGINAL_AFFILIATION_DATA
+#DIMS AFFILIATION
+
+CALL PRINT_TRIVE
+
+;ここで帰る場合
+SIF CSTR:初期値／ジョブ == "" && CSTR:初期値／身分 == "" && CSTR:初期値／所属 == ""
+	RETURN
+
+AFFILIATION = 【
+EXIST = 0
+IF CSTR:初期値／所属 != ""
+	AFFILIATION += JOB_ENG(CSTR:初期値／所属)
+	EXIST = 1
+ENDIF
+IF CSTR:初期値／身分 != ""
+	AFFILIATION += JOB_ENG(CSTR:初期値／身分)
+	EXIST = 1
+ENDIF
+IF CSTR:初期値／ジョブ != ""
+	SIF EXIST
+		AFFILIATION += "・"
+	AFFILIATION += JOB_ENG(CSTR:初期値／ジョブ)
+ENDIF
+AFFILIATION += "】"
+PRINTFORM %AFFILIATION%
+
+
+
+;元の肩書き
+@PRINT_ORIGINAL_SECOND_NAME
+
+IF CSTR:肩書き == CSTR:初期値／肩書き
+	CALL PRINTL_WORD_COLOR("Original Title Unchanged　","灰")
+ELSE
+	PRINTFORML Original Title：%CSTR:初期値／肩書き%
+ENDIF
+
+
+
+;元のヘアスタイル　変更してる場合だけ表示
+@PRINT_ORIGINAL_HAIR_STYLE
+
+SIF CFLAG:初期値／カラーコード／髪
+	SETCOLOR CFLAG:初期値／カラーコード／髪
+PRINTFORM 【%ADD_SPACE(HAIR_CHAR_ENG(CSTR:髪特徴))%%HAIR_COLOR_ENG(CSTR:髪色)% (%HAIR_STYLE_ENG(CSTR:髪型)%)】
+RESETCOLOR
+SIF !(CSTR:髪色 == CSTR:初期値／髪色 && CSTR:髪特徴 == CSTR:初期値／髪特徴 && CSTR:髪型 == CSTR:初期値／髪型)
+	PRINT <Changed>
+
+
+
+;元の目の色
+@PRINT_ORIGINAL_EYE_COLOR
+
+PRINT Eye Color：
+SIF CFLAG:初期値／カラーコード／右目
+	SETCOLOR CFLAG:初期値／カラーコード／右目
+PRINTFORM %EYE_ENG(CSTR:初期値／右目の色)%
+
+;左が黒の時に対応
+SIF CSTR:初期値／左目の色 != ""
+	RESETCOLOR
+SIF CFLAG:初期値／カラーコード／左目
+	SETCOLOR CFLAG:初期値／カラーコード／左目
+SIF CSTR:初期値／左目の色 != ""
+	PRINTFORM ／%EYE_ENG(CSTR:初期値／左目の色)%
+RESETCOLOR
+IF CSTR:初期値／瞳の形 != ""
+	SIF CFLAG:初期値／カラーコード／右目
+		SETCOLOR CFLAG:初期値／カラーコード／右目
+	PRINTFORM 【%EYE_ENG(CSTR:初期値／瞳の形)%】
+ENDIF
+SIF CSTR:目の特徴 != ""
+	PRINTFORM 【%EYE_ENG(CSTR:目の特徴)%】
+RESETCOLOR
+SIF !(CSTR:右目の色 == CSTR:初期値／右目の色 && CSTR:左目の色 == CSTR:初期値／左目の色 && CSTR:瞳の形 == CSTR:初期値／瞳の形)
+	PRINT <Changed>
+
+
+
+;元のおっぱい
+@PRINT_ORIGINAL_BUST
+
+IF ABL:バストサイズ == ABL:初期値／バストサイズ
+	PRINTFORM Breast Size：%PRINT_BUSTSIZE(ABL:バストサイズ)%
+ELSE
+	PRINTFORM Breast Size：%PRINT_BUSTSIZE(ABL:初期値／バストサイズ)%
+	CALL PRINT_BUSTSIZE_SPECIFY(1,1,ABL:初期値／バストサイズ)
+	PRINTFORM →%PRINT_BUSTSIZE(ABL:バストサイズ)%
+ENDIF
+CALL PRINT_BUST_C(1,1,1)
+
+;バストサイズ不変で弾力が変化ありの場合あるか不明だけど一応
+SIF ABL:バストサイズ == ABL:初期値／バストサイズ && CSTR:乳弾力 != CSTR:初期値／乳弾力
+	PRINTFORM %SAVESTR:表記／乳房% Firmness：%CSTR:初期値／乳弾力% → %CSTR:乳弾力% 
+SETCOLOR CFLAG:初期値／カラーコード／乳首
+PRINTFORM [Nipples：%NIPPLES_ENG(CSTR:初期値／乳首の色)%] 
+RESETCOLOR
+
+;カラーコードでは変更してる判定しなくていいかな
+SIF CSTR:乳首の色 != CSTR:初期値／乳首の色
+	PRINT <Changed>
+PRINTL
+
+
+
+;元々のレベル・HPSPEPMP
+@PRINT_ORIGINAL_LEVEL_POWER
+
+PRINTFORML Lv{MAXBASE:初期値／レベル} → {BASE:レベル}
+PRINTFORML HP           ：{MAXBASE:初期値／体力,4} → {MAXBASE:体力,4} 
+PRINTFORML SP           ：{MAXBASE:初期値／気力,4} → {MAXBASE:気力,4} 
+PRINTFORML Spirit Energy：%VALUE_DIGIT(MAXBASE:初期値／霊力)% → %VALUE_DIGIT(MAXBASE:霊力)%EP 
+PRINTFORML Mana         ：%VALUE_DIGIT(MAXBASE:初期値／魔力)% → %VALUE_DIGIT(MAXBASE:魔力)%MP 
+PRINTL
+
+
+
+;元々の性格・人称
+@PRINT_ORIGINAL_PERSONALITY_CALL_PERSON
+
+PRINTFORM Personality       ：%PERSONALITY_ENG(CSTR:初期値／性格)%
+
+;多分変化しないはずだけどこんなふうになるよ
+SIF CSTR:性格 != CSTR:初期値／性格
+	PRINT <trained>
+PRINTL
+PRINTFORM 1st Person Pronoun：%CSTR:初期値／一人称%（%CSTR:初期値／一人称／蕩け%）
+
+;どれかが変更されてると表示なのでやたら長い
+SIF CSTR:一人称 != CSTR:初期値／一人称 || CSTR:一人称／蕩け != CSTR:初期値／一人称／蕩け
+	PRINT <trained>
+PRINTL
+PRINTL
+PRINTFORML 　　　＜Addressing %CALLNAME:0%＞
+
+;グレーアウトすると大変だけどまあやるか…
+IF ＃陥落状態／陥落以上＃
+	CALL PRINT_WORD_COLOR,@"Before Falling：%CSTR:初期値／あなた呼び方／陥落前%（%CSTR:初期値／あなた呼び方／陥落前／蕩け%）","灰"
+	SIF CSTR:あなた呼び方／陥落前 != CSTR:初期値／あなた呼び方／陥落前 || CSTR:あなた呼び方／陥落前／蕩け != CSTR:初期値／あなた呼び方／陥落前／蕩け
+		PRINT <trained>
+	PRINTL
+	PRINTFORM After Falling ：%CSTR:初期値／あなた呼び方／陥落後%（%CSTR:初期値／あなた呼び方／陥落後／蕩け%・%CSTR:初期値／あなた呼び方／甘え%）
+	SIF CSTR:あなた呼び方／陥落後 != CSTR:初期値／あなた呼び方／陥落後 || CSTR:あなた呼び方／陥落後／蕩け != CSTR:初期値／あなた呼び方／陥落後／蕩け || CSTR:あなた呼び方／甘え != CSTR:初期値／あなた呼び方／甘え
+		PRINT <trained>
+	PRINTL
+ELSE
+	PRINTFORM Before Falling：%CSTR:あなた呼び方／陥落前%（%CSTR:あなた呼び方／陥落前／蕩け%）
+	SIF CSTR:あなた呼び方／陥落前 != CSTR:初期値／あなた呼び方／陥落前 || CSTR:あなた呼び方／陥落前／蕩け != CSTR:初期値／あなた呼び方／陥落前／蕩け
+		PRINT <trained>
+	PRINTL
+	CALL PRINT_WORD_COLOR,@"After Falling ：%CSTR:初期値／あなた呼び方／陥落後%（%CSTR:初期値／あなた呼び方／陥落後／蕩け%・%CSTR:初期値／あなた呼び方／甘え%）","灰"
+	SIF CSTR:あなた呼び方／陥落後 != CSTR:初期値／あなた呼び方／陥落後 || CSTR:あなた呼び方／陥落後／蕩け != CSTR:初期値／あなた呼び方／陥落後／蕩け || CSTR:あなた呼び方／甘え != CSTR:初期値／あなた呼び方／甘え
+		PRINT <trained>
+	PRINTL
+ENDIF
+PRINTL 　　　＜Genital Terms＞
+PRINTFORM Penis Term：%PENIS_CALL_ENG(CSTR:初期値／性器呼び方／ペニス)%（%PENIS_CALL_ENG(CSTR:初期値／性器呼び方／ペニス／蕩け)%）
+SIF CSTR:性器呼び方／ペニス != CSTR:初期値／性器呼び方／ペニス || CSTR:性器呼び方／ペニス／蕩け != CSTR:初期値／性器呼び方／ペニス／蕩け
+	PRINT <trained>
+PRINTL
+PRINTFORM Pussy Term：%VAGINA_CALL_ENG(CSTR:初期値／性器呼び方／膣)%（%(CSTR:初期値／性器呼び方／膣／蕩け)%）
+SIF CSTR:性器呼び方／膣 != CSTR:初期値／性器呼び方／膣 || CSTR:性器呼び方／膣／蕩け != CSTR:初期値／性器呼び方／膣／蕩け
+	PRINT <trained>
+PRINTL
+PRINTFORM Anus Term ：%ANUS_CALL_ENG(CSTR:初期値／性器呼び方／アナル)%（%ANUS_CALL_ENG(CSTR:初期値／性器呼び方／アナル／蕩け)%）
+SIF CSTR:性器呼び方／アナル != CSTR:初期値／性器呼び方／アナル || CSTR:性器呼び方／アナル／蕩け != CSTR:初期値／性器呼び方／アナル／蕩け
+	PRINT <trained>
+PRINTL
+PRINTL
+
+
+;元々の仕事ABLほか
+@ORIGINAL_ABL_WORK_LIST_PLUS
+
+IF TALENT:オトコ
+	PRINTFORML DairyLv     {ABL:初期値／酪農,2} → {ABL:酪農,2}
+	PRINTFORML ClerkLv     {ABL:初期値／事務,2} → {ABL:事務,2}
+	PRINTFORML CleanLv     {ABL:初期値／掃除,2} → {ABL:掃除,2}
+	PRINTFORML CookLv      {ABL:初期値／料理,2} → {ABL:料理,2}
+	PRINTFORML PharmLv     {ABL:初期値／薬学,2} → {ABL:薬学,2}
+	PRINTFORML ReceptLv    {ABL:初期値／接客,2} → {ABL:接客,2}
+	PRINTFORML TechLv      {ABL:初期値／技巧,2} → {ABL:技巧,2}
+ELSE      
+	;段々になる
+	PRINTFORMLC DairyLv     {ABL:初期値／酪農,2} → {ABL:酪農,2}
+	PRINTFORML TechLv      {ABL:初期値／技巧,2} → {ABL:技巧,2}
+	PRINTFORMLC ClerkLv     {ABL:初期値／事務,2} → {ABL:事務,2}
+	PRINTFORML MaternityLv {ABL:初期値／母性,2} → {ABL:母性,2}
+	PRINTFORMLC CleanLv     {ABL:初期値／掃除,2} → {ABL:掃除,2}
+	PRINTFORML ServiceLv   {ABL:初期値／奉仕精神,2} → {ABL:奉仕精神,2}
+	PRINTFORMLC CookLv      {ABL:初期値／料理,2} → {ABL:料理,2}
+	PRINTFORML MasochistLv {ABL:初期値／マゾっ気,2} → {ABL:マゾっ気,2}
+	PRINTFORMLC PharmLv     {ABL:初期値／薬学,2} → {ABL:薬学,2}
+	PRINTFORML LesbLv      {ABL:初期値／レズっ気,2} → {ABL:レズっ気,2}
+	PRINTFORML ReceptLv    {ABL:初期値／接客,2} → {ABL:接客,2}
+ENDIF
+CALL MANYL(2)
+
+
+
+;元々の性器サイズ
+@PRINT_ORIGINAL_PSIZE
+
+PRINTFORM Ｐ：{ABL:初期値／ペニスサイズ,3} → {ABL:ペニスサイズ,3}mm 
+
+
+@PRINT_ORIGINAL_VSIZE
+
+IF ABL:Ｖ拡張
+	PRINTFORM Ｖ：{ABL:初期値／Ｖサイズ,3} → {ABL:Ｖサイズ,3}～{ABL:Ｖサイズ + ABL:Ｖ拡張,3}mm　
+ELSE
+	PRINTFORM Ｖ：{ABL:初期値／Ｖサイズ,3} → {ABL:Ｖサイズ,3}mm　
+ENDIF
+
+
+@PRINT_ORIGINAL_ASIZE
+
+IF ABL:Ａ拡張
+	PRINTFORM Ａ：{ABL:初期値／Ａサイズ,3} → {ABL:Ａサイズ,3}～{ABL:Ａサイズ + ABL:Ａ拡張,3}mm　
+ELSE
+	PRINTFORM Ａ：{ABL:初期値／Ａサイズ,3} → {ABL:Ａサイズ,3}mm　
+ENDIF
+
+
+
+;元々の感覚・感度
+@PRINT_ORIGINAL_SENSITIVE_LIST
+
+CALL SENSITIVE_ORIGINAL("Ｂ")
+CALL SENSITIVE_ORIGINAL("Ｎ")
+CALL SENSITIVE_ORIGINAL("Ｃ")
+CALL SENSITIVE_ORIGINAL("Ｖ")
+CALL SENSITIVE_ORIGINAL("Ａ")
+PRINTFORML Total orgasm count：%TOSTR(EXP:総絶頂回数,"#,0")% 
+PRINTL
+
+
+@SENSITIVE_ORIGINAL(ARGS)
+#DIMS S_ABL,2
+#DIMS S_KANDO,2
+
+S_ABL = %ARGS%感覚
+S_KANDO = %ARGS%感度
+S_ABL:1 = 初期値／%ARGS%感覚
+S_KANDO:1 = 初期値／%ARGS%感度
+CALL PRINTL_WORD_COLOR,@"%ABL_ENG(S_ABL)%Lv{ABL:(S_ABL:1),2} → {ABL:S_ABL,2} <{ABL:(S_KANDO:1),3} → {ABL:S_KANDO,3}\%> ","桃"
+
+
+

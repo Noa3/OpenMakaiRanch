@@ -1,0 +1,33 @@
+﻿;資料表示の目次
+
+@REFERENCE_ENTRANCE
+
+CLEARLINE LINECOUNT
+PRINTL This is a reference room where you can find information about the world of this game.
+PRINTL Please note that this is basically useless for gameplay.
+PRINTL Also note that the setting can be subject to change at your convenience.
+DRAWLINE
+PRINTL [ 0] Shelf on Worldview
+PRINTL [ 1] Shelf on Races
+PRINTL [ 2] Shelf on Makai's Residents
+DRAWLINE
+PRINTL [ 9] Return to Title
+INPUT
+
+SELECTCASE RESULT
+CASE 0
+	CALL REFERENCE_WORLD
+	
+CASE 1
+	CALL REFERENCE_TRIBE
+	
+CASE 2
+	CALL REFERENCE_RESIDENTS
+
+CASE 9
+	RETURN
+	
+ENDSELECT
+RESTART
+
+

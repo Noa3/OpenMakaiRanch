@@ -1,0 +1,179 @@
+﻿
+;おっぱい吸わせてと頼んだ時の反応
+@BREAST_FEEDING_MESSAGE_BEFORE
+
+IF CFLAG:崩壊
+	PRINTFORML %CALLNAME%'s eyes are empty...
+	
+	;先に露出フラグ判定通したのでＮ露出かどうか判断でOK
+	SIF TFLAG:Ｎ露出
+		PRINTFORML %CALLNAME%'s %SLANG_N()% are exposed...
+	
+ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+	IF TFLAG:Ｎ露出
+		PRINTFORML %CALLNAME% offers her %SLANG_B()% with a look of excitement on her face...
+	ELSE
+		PRINTFORML %CALLNAME% starts undressing with a look of excitement on her face...
+	ENDIF
+ELSEIF ＃陥落状態／恋慕以上＃
+	IF TFLAG:Ｎ露出
+		PRINTFORML %CALLNAME% blushes and offers her %SLANG_B()% with a smile on her face...
+	ELSE
+		PRINTFORML %CALLNAME% blushes and starts undressing...
+	ENDIF
+ELSEIF ＃陥落状態／陥落以上＃
+	IF TFLAG:Ｎ露出
+		PRINTFORML %CALLNAME% blushes, but resigns and offers her %SLANG_B()% with a look of resignation...
+	ELSE
+		PRINTFORML %CALLNAME% blushes and starts undressing with a look of resignation...
+	ENDIF
+ELSEIF ＃陥落状態／屈服以上＃
+	IF TFLAG:Ｎ露出
+		PRINTFORML %CALLNAME% dislikes it, but finds it pointless to resist and offers her %SLANG_B()% with a look of resignation...
+	ELSE
+		PRINTFORML %CALLNAME% dislikes it, but finds it pointless to resist and starts undressing with a look of resignation...
+	ENDIF
+ELSE
+	IF TFLAG:Ｎ露出
+		PRINTFORML %CALLNAME% resists by hiding her exposed %SLANG_N()% with her arms...
+		PRINTFORML %CALLNAME% is held down and tied up, exposing her %SLANG_N()%...
+	ELSE
+		PRINTFORML %CALLNAME% resists by hiding her %SLANG_B()% with her arms...
+		PRINTFORML %CALLNAME% is held down and tied up, and her clothes are removed...
+	ENDIF
+ENDIF
+
+
+
+;おっぱい吸い開始
+@BREAST_FEEDING_MESSAGE_ACTION
+
+IF CFLAG:崩壊
+	PRINTFORM %CALLNAME% is completely at your mercy and doesn't resist at all...
+
+ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／隷属＃
+	SETCOLOR 0xFF70FF
+	IF MARK:母乳体質
+		PRINTFORM %CALLNAME% is breathing heavily, as if she can't wait for %CALLNAME:0% to suck her %SAVESTR:表記／母乳% directly...
+	ELSE
+		PRINTFORM %CALLNAME% is breathing heavily, as if she can't wait for %CALLNAME:0% to play with her %SAVESTR:表記／乳房%...
+	ENDIF
+	CALL HEARTCB(0xD02830)
+
+ELSEIF ＃陥落状態／恋慕以上＃
+	SETCOLOR 0xFF70FF
+	IF MARK:母乳体質
+		PRINTFORM %CALLNAME% is looking forward to %CALLNAME:0% drinking her %SAVESTR:表記／母乳%...
+	ELSE
+		PRINTFORM %CALLNAME% is looking forward to %CALLNAME:0% playing with her %SAVESTR:表記／乳房%...
+	ENDIF
+	CALL HEARTCB(0xD02830)
+
+ELSEIF ＃陥落状態／陥落以上＃
+	PRINTFORM %CALLNAME% doesn't seem to dislike it much...
+
+ELSEIF ＃陥落状態／屈服以上＃
+	PRINTFORM %CALLNAME% turns her head away and looks disgusted, but shows no intention of resisting...
+
+ELSE
+	PRINTFORM %CALLNAME%'s face is red as she yells at %CALLNAME:0%...
+ENDIF
+PRINTL
+
+
+;Code re-ordered to get a sentence structure that makes sense in english
+SELECTCASE RAND:5
+CASE 0
+	PRINT You start sucking on 
+CASE 1
+	PRINT You nibble on 
+CASE 2
+	PRINT You suck and fondle 
+CASEELSE
+	PRINT You suck on 
+ENDSELECT
+
+PRINTFORM %CALLNAME%'s %SLANG_B()%
+
+IF BASE:母乳容量 >= 5000 && ABL:バストサイズ >= BUSTSIZE_巨乳
+	SELECTCASE RAND:5
+	CASE 0
+		; shaking as if she wanted me to suck her %SLANG_MILK()%.
+		PRINTFORM . They shake as if she wants you to suck out her %SLANG_MILK()%
+	CASE 1
+		;containing large amounts of %SLANG_MILK()%
+		PRINTFORM . They contain a large amount of %SLANG_MILK()%
+	CASE 2
+		;about to overflow with %SLANG_MILK()%
+		PRINTFORM . They look like they are about to overflow with %SLANG_MILK()%
+	CASEELSE
+		;full of milk (for player)
+		PRINTFORM . They are full of %SLANG_MILK()%
+		SIF BASE:好感度 >= BASE_FIRST_MAX
+			PRINTFORM  for %CALLNAME:0%
+	ENDSELECT
+
+ELSEIF MARK:母乳体質
+	SELECTCASE RAND:3
+	CASE 0
+	; who release the female smell of %SLANG_MILK()%
+		PRINTFORM . They release the sweet smell of %SLANG_MILK()%
+	CASE 1
+	; smelling slightly of %SLANG_MILK()%
+		PRINTFORM , smelling slightly of %SLANG_MILK()%
+	CASEELSE
+	; started dripping %SLANG_MILK()% from their tip
+		PRINTFORM . They start dripping %SLANG_MILK()% from their tip
+	ENDSELECT
+ENDIF
+PRINT ...
+
+CALL HEARTCB(0xD02830)
+PRINTW
+PRINTL
+RESETCOLOR
+
+
+
+;おっぱい吸い終了
+@BREAST_FEEDING_MESSAGE_AFTER
+
+IF CFLAG:乳牛
+	IF BASE:母乳容量
+		PRINTFORM %CALLNAME%'s %SLANG_B()% are still overflowing with %SLANG_MILK()%, begging for more sucking...
+	ELSE
+		PRINTFORM %CALLNAME%'s %SLANG_B()% are twitching and shaking, wanting you to suck more...
+	ENDIF
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSEIF ＃陥落状態／隷属＃ || CFLAG:洗脳
+	IF BASE:母乳容量
+		PRINTFORM %CALLNAME% has a happy, disheveled face. Her %SLANG_MILK()% is overflowing...
+	ELSE
+		PRINTFORM %CALLNAME% has a happy, disheveled face as she moves her %SAVESTR:表記／乳房% up and down...
+	ENDIF
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSEIF CFLAG:崩壊
+	IF EX:総絶頂
+		PRINTFORML %CALLNAME% is shedding tears after cumming from having her milk sucked...
+	ELSE
+		PRINTFORML %CALLNAME% is shedding tears...
+	ENDIF
+ELSEIF ＃陥落状態／恋慕以上＃
+	PRINTFORML %CALLNAME% smiles happily...
+ELSE
+	IF BASE:母乳容量
+		PRINTFORML %CALLNAME% tries to calm her breathing, but %SLANG_MILK()% is still flowing from her %SLANG_B()%...
+	ELSE
+		IF ABL:バストサイズ < BUSTSIZE_巨乳
+			PRINTFORML %CALLNAME% covers her %SLANG_B()% and calms her breathing...
+		ELSE
+			PRINTFORML %CALLNAME% supports her %SLANG_B()% and calms her breathing...
+		ENDIF
+	ENDIF
+ENDIF
+PRINTW
+
+
+

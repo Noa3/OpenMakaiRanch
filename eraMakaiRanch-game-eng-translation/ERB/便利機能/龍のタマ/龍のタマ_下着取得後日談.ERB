@@ -1,0 +1,26 @@
+﻿
+;下着取得後の精算時漫談
+@WISH_GIVE_LINGERIE_AFTER
+
+SELECTCASE SAVESTR:下着取得キャラ
+CASE "マノ"
+	CALL MANYL(5)
+	PRINTL ミルクを集荷し終えたマノさんが、珍しく何か言い淀んでいる…
+	PRINTL
+	PRINTL マノ「あの～、オーナーさん…だいぶ変なことを聞くんですが…」
+	PRINTL 「最近、『下着を消す魔術』とか…そういうの使ったりしましたかね…？」
+	PRINTL
+	PRINTLC [ 0] 龍のことを言う
+	INPUT
+	PRINTL 「へ～そんなことが…　そんなことあったのにこんなことに使っちゃったんですか！？！？」
+	PRINTL 「…ええ、反応でわかったと思いますけど、私が着けてた下着だと思います…急に消えたので…」
+	PRINTL 「いえ、返されても困りますし差し上げますよ…」
+	PRINTL 「次はもっとちゃんとした願い事を叶えてくださいね」
+	PRINTW
+ENDSELECT
+SAVESTR:下着取得キャラ =
+
+
+
+
+

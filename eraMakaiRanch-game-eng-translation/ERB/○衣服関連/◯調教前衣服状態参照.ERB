@@ -1,0 +1,15 @@
+﻿
+;スケジュール共通で調教前の衣服状態を参照して脱衣メッセージを最適化
+@BEFORE_TRAIN_AJUST_STRIP_FLAG
+
+;フラグの上書き→脱衣メッセージ表示
+CALL AJUST_STRIP_FLAG
+SOURCE:脱衣メッセージ表示 = 1
+
+;一旦消去
+SOURCE:Ｂ露出地の文表示 = 0
+SOURCE:Ｎ露出地の文表示 = 0
+SOURCE:Ｖ露出地の文表示 = 0
+
+
+

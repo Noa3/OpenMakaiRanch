@@ -1,0 +1,45 @@
+﻿
+;調教結果表示
+@TRAIN_END_RESULT
+
+PRINTL 《 Training Results 》
+;各絶頂回数表示
+
+SIF EX:総絶頂
+	PRINT Orgasms　
+SETCOLOR 0xFF70FF
+SIF EX:Ｂ絶頂
+	PRINTFORM %SAVESTR:表記／乳房%：{EX:Ｂ絶頂}　
+SIF EX:Ｎ絶頂
+	PRINTFORM Nipples：{EX:Ｎ絶頂}　
+SIF EX:Ｃ絶頂
+	PRINTFORM %SAVESTR:表記／陰核%：{EX:Ｃ絶頂}　
+SIF EX:Ｖ絶頂
+	PRINTFORM %SAVESTR:表記／膣%：{EX:Ｖ絶頂}　
+SIF EX:Ａ絶頂
+	PRINTFORM %SAVESTR:表記／アナル%：{EX:Ａ絶頂}　
+PRINTL
+CALL HEARTCB(0xD02830)
+PRINTFORM Total：{EX:総絶頂}
+CALL HEARTCB(0xD02830)
+
+;全部噴き出してそのままかもなので一応こう
+IF EX:搾乳器ミルク || EX:触手搾乳ミルク || EX:直飲みミルク || EX:抽出ミルク
+	PRINTFORM %CALLNAME%'s Special %PRINT_MILKWORD(1)%：{EX:噴乳}%MILK_COUNTING()%
+	CALL HEARTCB(0xD02830)
+	PRINTL
+	RESETCOLOR
+	PRINT （
+	SIF EX:搾乳器ミルク
+		PRINTFORM Exported：{EX:搾乳器ミルク}%MILK_COUNTING()% 
+	SIF EX:触手搾乳ミルク
+		PRINTFORM Tentacle Milking：{EX:触手搾乳ミルク}%MILK_COUNTING()% 
+	SIF EX:直飲みミルク
+		PRINTFORM Drunken：{EX:直飲みミルク}%MILK_COUNTING()% 
+	SIF EX:抽出ミルク
+		PRINTFORM Extractor Milking：{EX:抽出ミルク}%MILK_COUNTING()% 
+	PRINT ）
+ENDIF
+RESETCOLOR
+CALL MANYL(2)
+

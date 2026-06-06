@@ -1,0 +1,3607 @@
+﻿; Functions for translating strings from Talent.csv are in eng_strings_talent.erb
+; Functions for translating strings from Item.csv and Equip.csv are in eng_strings_item.erb
+; Functions for translating strings from Train.csv are in eng_strings_train.erb
+
+@LIQUIDS_ENG(ARGS) ;Tflag.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "Ｖローション" ; 40
+	RETURNF "ＶLotion"
+CASE "Ａローション" ; 41
+	RETURNF "ＡLotion"
+CASE "Ｂローション" ; 42
+	RETURNF "ＢLotion"
+CASE "膣内精液" ; 210
+	RETURNF "Vaginal Semen"
+CASE "尻穴精液" ; 211
+	RETURNF "Anal Semen"
+CASE "乳内精液" ; 212
+	RETURNF "Breast Semen"
+CASE "口内精液" ; 213
+	RETURNF "Oral Semen"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@RESTRAINTS_LONG_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "立ち柱拘束" ; 3930
+	RETURNF "Standing Pillar Restraints"
+CASE "座り柱拘束" ; 3931
+	RETURNF "Sitting Pillar Restraints"
+CASE "まんぐり拘束" ; 3932
+	RETURNF "Piledriver Restraints"
+CASE "搾乳台拘束" ; 3933
+	RETURNF "Milking Stand Restraints"
+CASE "吊るし拘束" ; 3934
+	RETURNF "Hanging Restraints"
+CASE "十字架拘束" ; 3935
+	RETURNF "Crucifixion Restraints"
+CASE "Ｘ字拘束" ; 3936
+	RETURNF "X-Frame Restraints"
+CASE "手枷屈脚拘束" ; 3937
+	RETURNF "Shackled Restraints"
+CASE "ハーネス拘束" ; 3938
+	RETURNF "Harness Restraints"
+CASE "ベッド仰向け拘束" ; 3939
+	RETURNF "Bed On Back Restraints"
+CASE "ベッドうつ伏せ拘束" ; 3940
+	RETURNF "Bed Face Down Restraints"
+CASE "荒縄拘束" ; 3941
+	RETURNF "Rope Restraints"
+CASE "亀甲縛り拘束" ; 3942
+	RETURNF "Tortoise Bondage Restraints"
+CASE "触手拘束" ; 3943
+	RETURNF "Tentacle Restraints"
+CASE "壁乳拘束" ; 3944
+	RETURNF "Wall Display Restraints"
+CASE "三角木馬拘束" ; 3945
+	RETURNF "Wooden Horse Restraints"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@RESTRAINTS_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "立ち柱" ; 3930
+	RETURNF "Standing Pillar"
+CASE "座り柱" ; 3931
+	RETURNF "Sitting Pillar"
+CASE "まんぐり" ; 3932
+	RETURNF "Piledriver"
+CASE "搾乳台" ; 3933
+	RETURNF "Milking Stand"
+CASE "吊るし" ; 3934
+	RETURNF "Hanging"
+CASE "十字架" ; 3935
+	RETURNF "Crucifixion"
+CASE "Ｘ字" ; 3936
+	RETURNF "X-Frame"
+CASE "手枷屈脚" ; 3937
+	RETURNF "Shackled"
+CASE "ハーネス" ; 3938
+	RETURNF "Harness"
+CASE "ベッド仰向け" ; 3939
+	RETURNF "Bed On Back"
+CASE "ベッドうつ伏せ" ; 3940
+	RETURNF "Bed Face Down"
+CASE "荒縄" ; 3941
+	RETURNF "Rope"
+CASE "亀甲縛り" ; 3942
+	RETURNF "Tortoise Bondage"
+CASE "触手" ; 3943
+	RETURNF "Tentacle"
+CASE "壁乳" ; 3944
+	RETURNF "Wall Display"
+CASE "三角木馬" ; 3945
+	RETURNF "Wooden Horse"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@SCHEDULE_ITEMS(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "酪農" ; 8000
+	RETURNF "Handle Cattle"
+CASE "事務" ; 8001
+	RETURNF "Clerical Work"
+CASE "調剤" ; 8002
+	RETURNF "Mix Drugs"
+CASE "搾乳" ; 8003
+	RETURNF "Milking"
+CASE "抽出" ; 8004
+	RETURNF "Extraction"
+CASE "からの調教" ; 8005 - placeholder
+	RETURNF ""
+CASE "レズ調教した" ; 8006
+	RETURNF "Lesbian Trainings"
+CASE "レズ調教された" ; 8007
+	RETURNF "Lesbian Trained"
+CASE "体内凌辱" ; 8008
+	RETURNF "Internal Violation"
+CASE "料理" ; 8009
+	RETURNF "Cooking"
+;CASE "掃除" ; 8010
+;	RETURNF "Cleaning"
+;CASE "接客" ; 8011
+;	RETURNF "Reception"
+CASE "被輪姦" ; 8012
+	RETURNF "Gang Rape"
+CASE "風呂掃除" ; 8014
+	RETURNF "Bath Cleaning"
+CASE "戦闘訓練" ; 8015
+	RETURNF "Combat Drills"
+
+CASE "触手責め搾乳" ; 8018
+	RETURNF "Tentacle Milking"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@TIME_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "朝" ; 3910
+	RETURNF "Morning"
+CASE "昼" ; 3911
+	RETURNF "Midday"
+CASE "夕" ; 3912
+	RETURNF "Evening"
+CASE "夜" ; 3913
+	RETURNF "Night"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@DAYS_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "月" ; 3900
+	RETURNF "Monday"
+CASE "火" ; 3901
+	RETURNF "Tuesday"
+CASE "水" ; 3902
+	RETURNF "Wednesday"
+CASE "木" ; 3903
+	RETURNF "Thursday"
+CASE "金" ; 3904
+	RETURNF "Friday"
+CASE "土" ; 3905
+	RETURNF "Saturday"
+CASE "日" ; 3906
+	RETURNF "Sunday"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@DAYS_SHORT_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "月" ; 3900
+	RETURNF "Mon"
+CASE "火" ; 3901
+	RETURNF "Tue"
+CASE "水" ; 3902
+	RETURNF "Wed"
+CASE "木" ; 3903
+	RETURNF "Thu"
+CASE "金" ; 3904
+	RETURNF "Fri"
+CASE "土" ; 3905
+	RETURNF "Sat"
+CASE "日" ; 3906
+	RETURNF "Sun"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@LOCATIONS_ENG(ARGS)
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "実験室"
+	RETURNF "Laboratory"
+CASE "事務所"
+	RETURNF "Office"
+CASE "牧場外"
+	RETURNF "Offsite"
+CASE "体内"
+	RETURNF "Internal Violation"
+CASE "牛舎"
+	RETURNF "Cowshed"
+CASE "自室"
+	RETURNF "Private Room"
+;CASE "寮"
+;	RETURNF "Dorms"
+CASE "奴隷寮"
+	RETURNF "Slave Dorms"
+CASE "家畜小屋"
+	RETURNF "Barn"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@REFPARTS_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "乳房" ; 6640
+	RETURNF "Breasts"
+CASE "母乳" ; 6641
+	RETURNF "Milk"
+CASE "魔力母乳" ; 6642
+	RETURNF "Mana-infused Milk"
+CASE "膣" ; 6643
+	RETURNF "Pussy"
+CASE "アナル" ; 6644
+	RETURNF "Ass"
+CASE "ペニス" ; 6645
+	RETURNF "Penis"
+CASE "ペニス触手" ; 6646
+	RETURNF "Tentacle Penis"
+CASE "陰核" ; 6647
+	RETURNF "Clit"
+CASE "精液" ; 6648
+	RETURNF "Semen"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@NAMEPARTS_EN(ARGS) ;Str.csv
+;This is only used for re-naming body parts and fluids.
+;Has to give a selection of synonyms, translation does not need to be accurate.
+#FUNCTIONS
+SELECTCASE ARGS
+	;boobs
+	CASE "おっぱい" ; 2100 (also used as a milk name at 2154)
+		RETURNF "Boobs"
+	CASE "乳房" ; 2101
+		RETURNF "Tits"
+	CASE "胸" ; 2102
+		RETURNF "Breasts"
+	;milk and mana milk (they are basically duplicate lists)
+	CASE "母乳" ; 2150 and 2200
+		RETURNF "Breast Milk"
+	CASE "ミルク" ; 2101 and 2201
+		RETURNF "Milk"
+	CASE "みるく" ; 2152 and 2202
+		RETURNF "Extract"
+	;pussy
+	CASE "おまんこ" ; 2250
+		RETURNF "Pussy"
+	CASE "まんこ" ; 2251
+		RETURNF "Vagina"
+	;ass
+	CASE "アナル" ; 2300
+		RETURNF "Ass"
+	CASE "尻穴" ; 2301
+		RETURNF "Anus"
+	CASE "後ろの穴" ; 2302
+		RETURNF "Asshole"
+	;dick
+	CASE "ペニス" ; 2350
+		RETURNF "Penis"
+	CASE "ちんぽ" ; 2351
+		RETURNF "Cock"
+	CASE "おちんぽ" ; 2352
+		RETURNF "Dick"
+	;clit
+	CASE "陰核" ; 2400
+		RETURNF "Clit"
+	CASE "クリトリス" ; 2401
+		RETURNF "Clitoris"
+	;semen
+	CASE "精液" ; 2450
+		RETURNF "Semen"
+	CASE "ザーメン" ; 2450
+		RETURNF "Spunk"
+	CASE "白濁液" ; 2450
+		RETURNF "Cock Juice"
+	CASE "スペルマ" ; 2450
+		RETURNF "Sperm"
+	CASE "子種" ; 2450
+		RETURNF "Baby Batter"
+	CASE "おちんぽミルク" ; 2450
+		RETURNF "Dick Milk"
+	CASEELSE
+		RETURNF ARGS
+ENDSELECT
+
+
+@SEXP_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "無垢" ; 6590
+	RETURNF "Completely Pure"
+CASE "生娘" ; 6590
+	RETURNF "Innocent Virgin"
+CASE "処女" ; 6591
+	RETURNF "Virgin"
+CASE "一応処女" ; 6592
+	RETURNF "Experienced Virgin"
+CASE "非処女" ; 6593
+	RETURNF "Experienced"
+CASE "アブノーマル" ; 6594
+	RETURNF "Abormal"
+CASE "ビッチ" ; 6595
+	RETURNF "Bitch"
+CASE "肉便器" ; 6596
+	RETURNF "Public Toilet"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@ROLE_ENG(ARGS) ;Cflag.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "家畜" ; 430 		;魔乳　どうやっても業務不可
+	RETURNF "Livestock"
+CASE "乳牛" ; 431 		;乳牛堕ち　こちらは業務可能
+	RETURNF "Dairy Cow"
+CASE "洗脳" ; 432 		;洗脳コマンド使用中
+	RETURNF "Brainwashed"
+CASE "崩壊" ; 433 		;精神力0％　業務不可
+	RETURNF "Mindbroken"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@SCHEDULE_ENG(ARGS)
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "休憩"
+	RETURNF "Resting"
+CASE "待機"
+	RETURNF "Standby"
+CASE "搾乳"
+	RETURNF "Milking"
+CASE "抽出"
+	RETURNF "Extraction"
+CASE "行動済み"
+	RETURNF "Already Acted"
+CASE "自由"
+	RETURNF "Free"
+CASEELSE
+	RETURNF SCHEDULE_ITEMS(ARGS)
+ENDSELECT
+
+
+@SCHEDULE_PLAN_ENG(ARGS) ; strings from AUTO_SCHEDULE_LIST_SET
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "休日" ; 10
+	RETURNF "Holiday"
+
+CASE "酪農／終日" ; 100
+	RETURNF "Dairy／All day"
+CASE "酪農／朝夕" ; 101
+	RETURNF "Dairy／Morning+Evening"
+CASE "事務／即消化" ; 102
+	RETURNF "Clerk／Immediate"
+CASE "事務／溜めて消化" ; 103
+	RETURNF "Clerk／Accumulated"
+CASE "調合／終日" ; 104
+	RETURNF "Mix drugs／All day"
+CASE "調合・酪農" ; 105
+	RETURNF "Mix drugs and Dairy"
+CASE "大浴場掃除→酪農" ; 106
+	RETURNF "Clean Bath→Dairy"
+CASE "大浴場掃除→自由" ; 107
+	RETURNF "Clean Bath→Free time"
+
+CASE "戦闘訓練／終日" ; 109
+	RETURNF "Combat Training / All Day "
+CASE "戦闘訓練・酪農" ; 110
+	RETURNF "Combat Training and Dairy"
+CASE "戦闘訓練／昼から" ; 111
+	RETURNF "Combat Training / From Noon"
+
+CASE "搾乳／終日" ; 200
+	RETURNF "Milking / All Day"
+CASE "搾乳／朝夕" ; 201
+	RETURNF "Milking／Morning+Evening"
+CASE "霊力抽出／終日" ; 202
+	RETURNF "Extraction / All Day"
+CASE "霊力抽出／朝夕" ; 203
+	RETURNF "Extraction / Morning+Evening"
+CASE "搾乳→抽出" ; 204
+	RETURNF "Milking → Extraction"
+CASE "触手責め搾乳／終日" ; 205
+	RETURNF "Tentacle Milking / All Day"
+CASE "触手責め搾乳／朝夕" ; 206
+	RETURNF "Tentacle Milking / Morning+Evening"
+
+CASE "カスタムＡ" ; 400
+	RETURNF "Custom Ａ"
+CASE "カスタムＢ" ; 401
+	RETURNF "Custom Ｂ"
+CASE "カスタムＣ" ; 402
+	RETURNF "Custom Ｃ"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+
+@WEATHER_ENG(ARGS)
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "どんより"
+	RETURNF "Overcast"
+CASE "小雨"
+	RETURNF "Light Rain"
+CASE "雨"
+	RETURNF "Rain"
+CASE "大雨"
+	RETURNF "Heavy Rain"
+CASE "豪雨"
+	RETURNF "Downpour"
+CASE "強風"
+	RETURNF "Strong Winds"
+CASE "快晴"
+	RETURNF "Clear Skies"
+CASE "雪"
+	RETURNF "Snow"
+CASE "大雪"
+	RETURNF "Heavy Snow"
+CASE "吹雪"
+	RETURNF "Blizzard"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@HEIGHT_ENG(ARGS) ; str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "妖精体型"	; not in csv, but used ingame?
+	RETURNF "Inchling"
+CASE "幼児体型" ; 6500
+	RETURNF "Infant"
+CASE "子供体型" ; 6501
+	RETURNF "Child"
+CASE "小柄" ; 6502
+	RETURNF "Petite"
+CASE "低身長" ; 6503
+	RETURNF "Short"
+CASE "標準" ; 6504
+	RETURNF "Average"
+CASE "高身長" ; 6505
+	RETURNF "Tall"
+CASE "大柄" ; 6506
+	RETURNF "Large"
+CASE "巨躯"	; not in csv, but used ingame?
+	RETURNF "Giant"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@FIGURE_ENG(ARGS) ; csv has 2 places for body shape for some reason. index 50 to 55, and index 6560 to 6567
+; Order of there is confusing: Code in SLANG_H implies that this list is mostly ascending in weight, but 痩せ型 is thinner than スレンダー (and Muscular not fitting into the order at all)
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "スレンダー" ; 6560,
+	RETURNF "Slender"
+CASE "痩せ型" ; 6561,
+	RETURNF "Skinny"
+CASE "標準体型" ; 6562,
+	RETURNF "Average"
+CASE "グラマー" ; 6563
+    RETURNF "Curvy"
+CASE "豊満" ; 6564
+    RETURNF "Full-figured"
+CASE "ムチムチ" ; 6565,
+    RETURNF "Thick"
+CASE "ぽっちゃり" ; 5666
+    RETURNF "Chubby"
+CASE "筋肉質" ; 6567
+	RETURNF "Muscular"
+;CASE "細身" ; 56
+;	RETURNF "Thin"
+;CASE "モヤシ" ; 57
+;	RETURNF "Bean Sprout"
+;CASE "肥満" ; 58
+;	RETURNF "Obese"
+;CASE "ガチムチ" ; 59
+;	RETURNF "Beefy"
+;CASE "太り気味" ; 60
+;	RETURNF "Overweight"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@RACE_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "人間" ; 1000
+	RETURNF "Human"
+CASE "エルフ" ; 1001
+	RETURNF "Elf"
+CASE "ハーフリング" ; 1002
+	RETURNF "Halfling"
+CASE "Ｈリング" ; 1002
+	RETURNF "H-ling"
+CASE "精霊" ; 1003
+	RETURNF "Spirit"
+CASE "ハーフエルフ" ; 1004
+	RETURNF "Half-Elf"
+CASE "Ｈエルフ" ; 1004
+	RETURNF "H-Elf"
+CASE "ダークエルフ" ; 1005
+	RETURNF "Dark Elf"
+CASE "Ｄエルフ" ; 1005
+	RETURNF "D Elf"
+CASE "翼人" ; 1006
+	RETURNF "Winged Race"
+CASE "犬耳族" ; 1007
+	RETURNF "Dog-Ear"
+CASE "猫耳族" ; 1008
+	RETURNF "Cat-Ear"
+CASE "兎耳族" ; 1009
+	RETURNF "Rabbit-Ear"
+CASE "狐耳族" ; 1010
+	RETURNF "Fox-Ear"
+CASE "狸耳族" ; 1011
+	RETURNF "Tanuki-Ear"
+CASE "鹿角族" ; 1012
+	RETURNF "Deer-Antler"
+CASE "牛角族" ; 1013
+	RETURNF "Cow-Horn"
+CASE "羊角族" ; 1014
+	RETURNF "Sheep-Horn"
+
+CASE "仙人" ; 1200
+	RETURNF "Hermit"
+CASE "竜人" ; 1201
+	RETURNF "Dragonkin"
+CASE "天使" ; 1202
+	RETURNF "Angel"
+CASE "天人" ; 1203
+	RETURNF "Celestial Maiden"
+CASE "妖怪" ; 1204
+	RETURNF "Yokai"
+CASE "妖狐" ; 1205
+	RETURNF "Fox Spirit"
+CASE "ヴァンパイア" ; 1206
+	RETURNF "Vampire"
+CASE "ダンピール" ; 1207
+	RETURNF "Dhampir"
+CASE "ホムンクルス" ; 1208
+	RETURNF "Homunculus"
+CASE "女神" ; 1209
+	RETURNF "Goddess"
+CASE "魔界人"
+	RETURNF "Makaian"
+CASE "魔族"
+	RETURNF "Demon"
+CASE "人狼"
+	RETURNF "Werewolf"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@EYE_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "黒" ; 150
+	RETURNF "Black"
+CASE "金" ; 151
+	RETURNF "Gold"
+CASE "銀" ; 152
+	RETURNF "Silver"
+CASE "赤" ; 153
+	RETURNF "Red"
+CASE "桃" ; 154
+	RETURNF "Pink"
+CASE "青" ; 155
+	RETURNF "Blue"
+CASE "緑" ; 156
+	RETURNF "Green"
+CASE "茶" ; 157
+	RETURNF "Brown"
+CASE "紫" ; 158
+	RETURNF "Purple"
+CASE "白" ; 159
+	RETURNF "White"
+CASE "橙" ; 160
+	RETURNF "Orange"
+CASE "空" ; 161
+	RETURNF "Azure"
+
+CASE "スター瞳" ; 800
+	RETURNF "Star Pupils"
+CASE "ハート瞳" ; 801
+	RETURNF "Heart Pupils"
+CASE "クロス瞳" ; 802
+	RETURNF "Cross Pupils"
+
+CASE "タレ目" ; 2000
+	RETURNF "Drooping Eyes"
+CASE "ツリ目" ; 2001
+	RETURNF "Almond Eyes"
+CASE "糸目" ; 2002
+	RETURNF "Thin Eyes"
+CASE "ジト目" ; 2003
+	RETURNF "Scornful Eyes"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@HAIR_COLOR_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "黒髪" ; 200
+	RETURNF "Black Hair"
+CASE "金髪" ; 201
+	RETURNF "Golden Hair"
+CASE "栗毛" ; 202
+	RETURNF "Brown Hair"
+CASE "赤髪" ; 203
+	RETURNF "Red Hair"
+CASE "桃髪" ; 204
+	RETURNF "Peachy Hair"
+CASE "青髪" ; 205
+	RETURNF "Blue Hair"
+CASE "緑髪" ; 206
+	RETURNF "Green Hair"
+CASE "銀髪" ; 207
+	RETURNF "Silver Hair"
+CASE "紫髪" ; 208
+	RETURNF "Purple Hair"
+CASE "白髪" ; 209
+	RETURNF "White Hair"
+CASE "橙髪" ; 210
+	RETURNF "Orange Hair"
+CASE "空色髪" ; 211
+	RETURNF "Azure Hair"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@NIPPLE_COLOR_ENG(ARGS) ;SELECT_NIPPLE_COLOR
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "ピンク"
+	RETURNF "Pink"
+CASE "ディープピンク"
+	RETURNF "Deep Pink"
+CASE "ホットピンク"
+	RETURNF "Hot Pink"
+CASE "チェリーピンク"
+	RETURNF "Cherry Pink"
+CASE "ライトピンク"
+	RETURNF "Light Pink"
+CASE "ルビーレッド"
+	RETURNF "Ruby Red"
+CASE "ラセットブラウン"
+	RETURNF "Dark Brown"
+CASE "ブラウン"
+	RETURNF "Brown"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@HAIR_CHAR_ENG(ARGS)  ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "ぱっつん" ; 300
+	RETURNF "Straight Banged"
+CASE "片目隠れ" ; 301
+	RETURNF "One-Eye-Covering" 
+CASE "メカクレ" ; 302
+	RETURNF "Eye-Covering"
+CASE "姫カット" ; 303
+	RETURNF "Hime Cut"
+CASE "インテーク" ; 304
+	RETURNF "Intake-Shaped" 
+CASE "中分け" ; 305
+	RETURNF "Center-Parting" 
+CASE "でこ出し" ; 306
+	RETURNF "Forehead-Exposing" 
+CASE "ストレート" ; 307
+	RETURNF "Straight"
+CASE "ナチュラル" ; 308
+	RETURNF "Natural"
+CASE "横ハネ" ; 309
+	RETURNF "Windswept" 
+CASE "ウェーブ" ; 310
+	RETURNF "Wavy"
+CASE "エアリー" ; 311
+	RETURNF "Airy"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@HAIR_STYLE_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "ロング" ; 500
+	RETURNF "Long"
+CASE "セミロング" ; 501
+	RETURNF "Semi-Long"
+CASE "ショート" ; 502
+	RETURNF "Short"
+CASE "ポニーテール" ; 503
+	RETURNF "Ponytail"
+CASE "ツインテール" ; 504
+	RETURNF "Twintails"
+CASE "サイドテール" ; 505
+	RETURNF "Sidetails"
+CASE "ボブカット" ; 506
+	RETURNF "Bob Cut"
+CASE "ツーサイドアップ" ; 507
+	RETURNF "Side Twintails"
+CASE "ハーフアップ" ; 508
+	RETURNF "Half Up"
+CASE "三つ編み" ; 509
+	RETURNF "Braided"
+
+CASE "ベリーロング" ; 510
+	RETURNF "Very Long"
+CASE "おさげ" ; 511
+	RETURNF "Braids"
+CASE "一本結び" ; 512
+	RETURNF "Single Knot"
+CASE "二つ結び" ; 513
+	RETURNF "Double Pigtails"
+CASE "縦ロール" ; 514
+	RETURNF "Ringlets"
+CASE "バックシニヨン" ; 515
+	RETURNF "Chignon"
+CASE "サイドシニヨン" ; 516
+	RETURNF "Side Chignon"
+CASE "ツインリング" ; 517
+	RETURNF "Twin Rings"
+CASE "ポンパドール" ; 518
+	RETURNF "Pompadour"
+CASE "ワンレングス" ; 519
+	RETURNF "Uniform"
+CASE "フィッシュボーン" ; 520
+	RETURNF "Fishbone"
+CASE "ワンサイドアップ" ; 521
+	RETURNF "One-Side-Up"
+CASE "クラウンブレイド" ; 522
+	RETURNF "Crown Braid"
+CASE "トライテール" ; 523
+	RETURNF "Tri-Tails"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@JOB_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "剣士" ; 7000
+	RETURNF "Swordsman"
+CASE "戦士" ; 7001
+	RETURNF "Warrior"
+CASE "騎士" ; 7002
+	RETURNF "Knight"
+CASE "フェンサー" ; 7003
+	RETURNF "Fencer"
+CASE "ファイター" ; 7004
+	RETURNF "Fighter"
+CASE "ナイト" ; 7005
+	RETURNF "Dragoon"
+CASE "兵士" ; 7006
+	RETURNF "Soldier"
+CASE "剣闘士" ; 7007
+	RETURNF "Gladiator"
+CASE "重装兵" ; 7008
+	RETURNF "Heavy Infantry"
+CASE "ソルジャー" ; 7009
+	RETURNF "Infantry"
+CASE "グラディエーター" ; 7010
+	RETURNF "Duelist"
+CASE "ランサー" ; 7011
+	RETURNF "Lancer"
+CASE "狂戦士" ; 7012
+	RETURNF "Berserker"
+CASE "武闘家" ; 7013
+	RETURNF "Martial Artist"
+CASE "サムライ" ; 7014
+	RETURNF "Samurai"
+CASE "バーサーカー" ; 7015
+	RETURNF "Berserker"
+CASE "モンク" ; 7016
+	RETURNF "Monk"
+CASE "武将" ; 7017
+	RETURNF "Commander"
+CASE "剣聖" ; 7018
+	RETURNF "Sword Saint"
+
+;7050～,遠隔物理系ジョブ
+CASE "弓士" ; 7050
+	RETURNF "Archer"
+CASE "狩人" ; 7051
+	RETURNF "Hunter"
+CASE "狙撃手" ; 7052
+	RETURNF "Sharpshooter"
+CASE "アーチャー" ; 7053
+	RETURNF "Marksman"
+CASE "ハンター" ; 7054
+	RETURNF "Tracker"
+CASE "スナイパー" ; 7055
+	RETURNF "Sniper"
+CASE "砲術士" ; 7056
+	RETURNF "Gunner"
+CASE "レンジャー" ; 7057
+	RETURNF "Ranger"
+CASE "ガンナー" ; 7058
+	RETURNF "Musketeer"
+
+;7100～,魔術士系ジョブ
+CASE "白魔術士" ; 7100
+	RETURNF "White Mage"
+CASE "黒魔術士" ; 7101
+	RETURNF "Black Mage"
+CASE "ウィザード" ; 7102
+	RETURNF "Wizard"
+CASE "メイジ" ; 7103
+	RETURNF "Mage"
+CASE "ソーサレス" ; 7104
+	RETURNF "Sorceress"
+CASE "キャスター" ; 7105
+	RETURNF "Caster"
+CASE "魔女" ; 7106
+	RETURNF "Witch"
+CASE "死霊術士" ; 7107
+	RETURNF "Necromancer"
+CASE "祈祷師" ; 7108
+	RETURNF "Prayer Master"
+CASE "ウィッチ" ; 7109
+	RETURNF "Enchanter"
+CASE "ネクロマンサー" ; 7110
+	RETURNF "Conjurer "
+CASE "シャーマン" ; 7111
+	RETURNF "Shaman"
+CASE "プリースト" ; 7112
+	RETURNF "Priest"
+CASE "呪術士" ; 7113
+	RETURNF "Thaumaturge"
+CASE "陰陽師" ; 7114
+	RETURNF "Onmyoji"
+CASE "ウォーロック" ; 7115
+	RETURNF "Warlock"
+CASE "アコライト" ; 7116
+	RETURNF "Acolyte"
+CASE "ビショップ" ; 7117
+	RETURNF "Bishop"
+CASE "カーディナル" ; 7118
+	RETURNF "Cardinal"
+CASE "時魔導士" ; 7119
+	RETURNF "Time Mage"
+CASE "大魔導師" ; 7120
+	RETURNF "Archmage"
+CASE "賢者" ; 7121
+	RETURNF "Sage"
+CASE "セージ" ; 7122
+	RETURNF "Guru"
+
+;7150～,魔法戦士系ジョブ
+CASE "魔法戦士" ; 7150
+	RETURNF "Spellsword"
+CASE "魔法少女" ; 7151
+	RETURNF "Magical Girl"
+CASE "バトルシスター" ; 7152
+	RETURNF "Battle Sister"
+CASE "退魔巫女" ; 7153
+	RETURNF "Exorcist Miko"
+CASE "退魔師" ; 7154
+	RETURNF "Master ExorcistDemon Hunter"
+CASE "エクソシスト" ; 7155
+	RETURNF "Exorcist"
+CASE "暗黒騎士" ; 7156
+	RETURNF "Dark Knight"
+CASE "聖騎士" ; 7157
+	RETURNF "Holy Knight"
+CASE "ワルキューレ" ; 7158
+	RETURNF "Valkyrie"
+CASE "ブラックナイト" ; 7159
+	RETURNF "Black Knight"
+CASE "パラディン" ; 7160
+	RETURNF "Paladin"
+
+;7200～,遠近両用系ジョブ
+CASE "旅人" ; 7200
+	RETURNF "Traveler"
+CASE "冒険者" ; 7201
+	RETURNF "Adventurer"
+CASE "バトルメイド" ; 7202
+	RETURNF "Battle Maid"
+CASE "山賊" ; 7203
+	RETURNF "Brigand"
+CASE "海賊" ; 7204
+	RETURNF "Sea Bandit"
+CASE "勇者（自称）" ; 7205
+	RETURNF "Hero (Wannabe)"
+CASE "バンデット" ; 7206
+	RETURNF "Bandit"
+CASE "パイレーツ" ; 7207
+	RETURNF "Pirate"
+CASE "勇者" ; 7208
+	RETURNF "Hero"
+CASE "盗賊" ; 7209
+	RETURNF "Robber"
+CASE "シーフ" ; 7210
+	RETURNF "Thief"
+CASE "アマゾネス" ; 7211
+	RETURNF "Amazon"
+CASE "忍者" ; 7212
+	RETURNF "Ninja"
+CASE "アサシン" ; 7213
+	RETURNF "Assassin"
+CASE "くのいち" ; 7214
+	RETURNF "Kunoichi"
+CASE "対魔忍" ; 7215
+	RETURNF "Taimanin"
+CASE "警察" ; 7216
+	RETURNF "Policewoman"
+CASE "保安官" ; 7217
+	RETURNF "Sheriff"
+
+;7250～,道具・支援戦闘系ジョブ
+CASE "薬師" ; 7250
+	RETURNF "Pharmacist"
+CASE "召喚士" ; 7251
+	RETURNF "Summoner"
+CASE "魔獣使い" ; 7252
+	RETURNF "Beastmaster"
+CASE "メディック" ; 7253
+	RETURNF "Medic"
+CASE "サモナー" ; 7254
+	RETURNF "Spirit Caller"
+CASE "テイマー" ; 7255
+	RETURNF "Tamer"
+CASE "錬金術師" ; 7256
+	RETURNF "Alchemist"
+CASE "吟遊詩人" ; 7257
+	RETURNF "Bard"
+CASE "踊り子" ; 7258
+	RETURNF "Dancer"
+CASE "アルケミスト" ; 7259
+	RETURNF "Chemist"
+CASE "ダンサー" ; 7260
+	RETURNF "Performer"
+CASE "ミンストレル" ; 7261
+	RETURNF "Mistrel"
+CASE "軍師" ; 7262
+	RETURNF "Tactician"
+
+;7300～,非戦闘ジョブ
+CASE "メイド" ; 7300
+	RETURNF "Maid"
+CASE "シスター" ; 7301
+	RETURNF "Sister"
+CASE "巫女" ; 7302
+	RETURNF "Miko"
+CASE "商人" ; 7303
+	RETURNF "Merchant"
+CASE "鍛冶士" ; 7304
+	RETURNF "Blacksmith"
+CASE "学者" ; 7305
+	RETURNF "Scholar"
+CASE "料理人" ; 7306
+	RETURNF "Cook"
+CASE "羊飼い" ; 7307
+	RETURNF "Shepherd"
+CASE "牛飼い" ; 7308
+	RETURNF "Cowherd"
+CASE "農家" ; 7309
+	RETURNF "Farmer"
+CASE "機織り" ; 7310
+	RETURNF "Weaver"
+CASE "庭師" ; 7311
+	RETURNF "Gardener"
+CASE "看護師" ; 7312
+	RETURNF "Caregiver"
+CASE "ナース" ; 7313
+	RETURNF "Nurse"
+CASE "医者" ; 7314
+	RETURNF "Doctor"
+CASE "学生" ; 7315
+	RETURNF "Student"
+CASE "女子校生" ; 7316
+	RETURNF "Schoolgirl"
+CASE "アイドル" ; 7317
+	RETURNF "Idol"
+
+;7350～,王族ジョブ
+CASE "聖女" ; 7350
+	RETURNF "Saintess"
+CASE "姫君" ; 7351
+	RETURNF "Hime"
+CASE "姫巫女" ; 7352
+	RETURNF "Princess Miko"
+CASE "姫騎士" ; 7353
+	RETURNF "Princess Knight"
+CASE "プリンセス" ; 7354
+	RETURNF "Princess"
+
+;; todo: deprec
+CASE "旅人" ; 4000
+	RETURNF "Traveler"
+CASE "剣士" ; 4001
+	RETURNF "Swordsman"
+CASE "戦士" ; 4002
+	RETURNF "Warrior"
+CASE "騎士" ; 4003
+	RETURNF "Knight"
+CASE "弓士" ; 4004
+	RETURNF "Archer"
+CASE "剣闘士" ; 4005
+	RETURNF "Gladiator"
+CASE "狩人" ; 4006
+	RETURNF "Hunter"
+CASE "砲術士" ; 4007
+	RETURNF "Gunner"
+CASE "プリースト" ; 4008
+	RETURNF "Priest"
+CASE "盗賊" ; 4009
+	RETURNF "Thief"
+
+CASE "白魔術士" ; 4100
+	RETURNF "White Mage"
+CASE "黒魔術士" ; 4101
+	RETURNF "Black Mage"
+CASE "呪術士" ; 4102
+	RETURNF "Thaumaturge"
+CASE "魔女" ; 4103
+	RETURNF "Witch"
+CASE "死霊術士" ; 4104
+	RETURNF "Necromancer"
+CASE "薬師" ; 4105
+	RETURNF "Pharmacist"
+CASE "錬金術師" ; 4106
+	RETURNF "Alchemist"
+
+CASE "アサシン" ; 4200
+	RETURNF "Assassin"
+CASE "くのいち" ; 4201
+	RETURNF "Kunoichi"
+CASE "サムライ" ; 4202
+	RETURNF "Samurai"
+CASE "バトルシスター" ; 4203
+	RETURNF "Battle Sister"
+CASE "バトルメイド" ; 4204
+	RETURNF "Battle Maid"
+CASE "退魔巫女" ; 4205
+	RETURNF "Exorcist Miko"
+CASE "魔法少女" ; 4206
+	RETURNF "Magical Girl"
+CASE "陰陽師" ; 4207
+	RETURNF "Onmyoji"
+CASE "聖騎士" ; 4208
+	RETURNF "Holy Knight"
+
+CASE "兵士" ; 4300
+	RETURNF "Soldier"
+CASE "冒険者" ; 4301
+	RETURNF "Adventurer"
+CASE "武闘家" ; 4302
+	RETURNF "Martial Artist"
+CASE "狙撃手" ; 4303
+	RETURNF "Marksman"
+CASE "魔法戦士" ; 4304
+	RETURNF "Magic Warrior"
+CASE "暗黒騎士" ; 4305
+	RETURNF "Dark Knight"
+CASE "重装兵" ; 4306
+	RETURNF "Heavy Infantry"
+CASE "勇者（自称）" ; 4307
+	RETURNF "Hero (Wannabe)"
+
+CASE "メイド" ; 4400
+	RETURNF "Maid"
+CASE "シスター" ; 4401
+	RETURNF "Sister"
+CASE "学者" ; 4402
+	RETURNF "Scholar"
+CASE "商人" ; 4403
+	RETURNF "Merchant"
+CASE "鍛冶士" ; 4404
+	RETURNF "Blacksmith"
+CASE "巫女" ; 4405
+	RETURNF "Miko"
+CASE "料理人" ; 4406
+	RETURNF "Cook"
+CASE "羊飼い" ; 4407
+	RETURNF "Shepherd"
+CASE "牛飼い" ; 4408
+	RETURNF "Cowherd"
+CASE "パラディン" ; 4500
+	RETURNF "Paladin"
+CASE "ビショップ" ; 4501
+	RETURNF "Bishop"
+CASE "ワルキューレ" ; 4502
+	RETURNF "Valkyrie"
+CASE "ブラックナイト" ; 4503
+	RETURNF "Black Knight"
+CASE "賢者" ; 4504
+	RETURNF "Sage"
+CASE "カーディナル" ; 4505 
+	RETURNF "Cardinal"
+CASE "時魔導士" ; 4506
+	RETURNF "Time Mage"
+CASE "勇者" ; 4507
+	RETURNF "Hero"
+CASE "武将" ; 4508
+	RETURNF "Commander"
+CASE "大魔導師" ; 4509
+	RETURNF "Archmage"
+CASE "召喚士" ; 4510
+	RETURNF "Summoner"
+CASE "魔獣使い" ; 4511
+	RETURNF "Beastmaster"
+CASE "軍師" ; 4512
+	RETURNF "Tactician"
+CASE "聖女" ; 4513
+	RETURNF "Saintess"
+
+CASE "姫君"
+	RETURNF "Hime"
+CASE "姫巫女"
+	RETURNF "Princess Miko"
+CASE "姫騎士"
+	RETURNF "Princess Knight"
+
+CASE "捨て子"
+	RETURNF "Abandoned Child"
+CASE "酪農家"
+	RETURNF "Dairy Farmer"
+CASE "貴族"
+	RETURNF "Aristocrat"
+CASE "王族"
+	RETURNF "Royalty"
+CASE "教官"
+	RETURNF "Tutor"
+CASE "退魔師"
+	RETURNF "Master Exorcist"
+CASE "イシターの巫女"
+	RETURNF "Ishtar's Priestess"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@SKIN_ENG(ARGS) ;Str.csv ; same strings at index 6850+, in different order?
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "標準" ; 100
+	RETURNF "Standard"
+CASE "色白" ; 101
+	RETURNF "Fair"
+CASE "美白" ; 102
+	RETURNF "Pale"
+CASE "アルビノ" ; 103
+	RETURNF "Albino"
+CASE "褐色" ; 104
+	RETURNF "Brown"
+CASE "小麦色" ; 105
+	RETURNF "Tanned"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@CLOTH_COLOR_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "黒い" ; 6700
+	RETURNF "Black"
+CASE "白い" ; 6701
+	RETURNF "White"
+CASE "赤い" ; 6702
+	RETURNF "Red"
+CASE "青い" ; 6703
+	RETURNF "Blue"
+CASE "黄色い" ; 6704
+	RETURNF "Yellow"
+CASE "ピンクの" ; 6705
+	RETURNF "Pink"
+CASE "緑の" ; 6706
+	RETURNF "Green"
+CASE "紫の" ; 6707
+	RETURNF "Purple"
+CASE "オレンジの" ; 6708
+	RETURNF "Orange"
+CASE "水色の" ; 6709
+	RETURNF "Light Blue"
+CASE "ベージュの" ; 6710
+	RETURNF "Beige"
+CASE "金色" ; 6711
+	RETURNF "Gold"
+CASE "銀色" ; 6712
+	RETURNF "Silver"
+
+CASE "漆黒の" ; 6720
+	RETURNF "Jet Black"
+CASE "純白の" ; 6721
+	RETURNF "Pure White"
+CASE "真紅の" ; 6722
+	RETURNF "Crimson"
+CASE "群青の" ; 6723
+	RETURNF "Ultramarine"
+CASE "萌黄の" ; 6724
+	RETURNF "Light Green"
+CASE "紫紺の" ; 6725
+	RETURNF "Navy Blue"
+CASE "琥珀の" ; 6726
+	RETURNF "Amber"
+
+CASE "黒い" ; 6820
+	RETURNF "Black"
+CASE "白い" ; 6821
+	RETURNF "White"
+CASE "赤い" ; 6822
+	RETURNF "Red"
+CASE "青い" ; 6823
+	RETURNF "Blue"
+CASE "黄色" ; 6824
+	RETURNF "Yellow"
+CASE "桃色" ; 6825
+	RETURNF "Pink"
+CASE "緑色" ; 6826
+	RETURNF "Green"
+CASE "紫色" ; 6827
+	RETURNF "Violet"
+CASE "橙色" ; 6828
+	RETURNF "Orange"
+CASE "水色" ; 6829
+	RETURNF "Light Blue"
+CASE "紺色" ; 6840
+	RETURNF "Navy Blue"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@CLOTH_DESIGN_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+;6740～,柄
+CASE "花柄" ; 6740
+	RETURNF "Floral"
+CASE "チェック柄" ; 6741
+	RETURNF "Checkered"
+CASE "星柄" ; 6742
+	RETURNF "Starry"
+CASE "ハート柄" ; 6743
+	RETURNF "Heart-Patterned"
+CASE "水玉" ; 6744
+	RETURNF "Polka Dot"
+CASE "ストライプ" ; 6745
+	RETURNF "H. Striped"
+CASE "ボーダー" ; 6746
+	RETURNF "V. Striped"
+CASE "迷彩" ; 6747
+	RETURNF "Camoflage"
+CASE "牛柄" ; 6748
+	RETURNF "Cowprint"
+
+;6760～,和服とかの柄
+CASE "市松模様" ; 6760
+	RETURNF "Checkerboard"
+CASE "唐草模様" ; 6761
+	RETURNF "Arabesque"
+CASE "格子柄" ; 6762
+	RETURNF "Plaid"
+CASE "麻の葉模様" ; 6763
+	RETURNF "Asanoha"
+CASE "鮫小紋" ; 6764
+	RETURNF "Shark-Spotted"
+CASE "菊菱" ; 6765
+	RETURNF "Chrysanthemum"
+CASE "花菱" ; 6766
+	RETURNF "Floral Crested"
+CASE "籠目" ; 6767
+	RETURNF "Kagome"
+CASE "矢絣" ; 6768
+	RETURNF "Yagasuri"
+CASE "青海波模様" ; 6769
+	RETURNF "Wave-Patterned"
+
+;6780～,ニップレス
+CASE "ハート" ; 6780
+	RETURNF "Heart"
+CASE "星型" ; 6781
+	RETURNF "Star"
+CASE "十字型" ; 6782
+	RETURNF "Cross"
+CASE "お札" ; 6783
+	RETURNF "Banknote"
+CASE "ねこ" ; 6784
+	RETURNF "Cat"
+CASE "バタフライ" ; 6785
+	RETURNF "Butterfly"
+CASE "ハートタッセル" ; 6786
+	RETURNF "Heart Tassel"
+CASE "星型タッセル" ; 6787
+	RETURNF "Star Tassel"
+
+;6800～,メガネ形状
+CASE "ラウンド" ; 6800
+	RETURNF "Round"
+CASE "スクエア" ; 6801
+	RETURNF "Square"
+CASE "モノクル" ; 6802
+	RETURNF "Monocle"
+CASE "アンダーリム" ; 6803
+	RETURNF "Under-rim"
+CASE "オーバル" ; 6804
+	RETURNF "Oval"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@PERSONALITY_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "強気" ; 3000
+	RETURNF "Confident"
+CASE "弱気" ; 3001
+	RETURNF "Timid"
+CASE "生意気" ; 3002
+	RETURNF "Cheeky"
+CASE "生真面目" ; 3003
+	RETURNF "Serious"
+CASE "大人しい" ; 3004
+	RETURNF "Docile"
+CASE "能天気" ; 3005
+	RETURNF "Frivolous"
+CASE "世間知らず" ; 3006
+	RETURNF "Naive"
+CASE "高潔" ; 3007
+	RETURNF "Noble"
+CASE "清楚" ; 3008
+	RETURNF "Pure"
+CASE "好色" ; 3009
+	RETURNF "Lewd"
+CASE "温厚" ; 3010
+	RETURNF "Gentle"
+CASE "無口" ; 3011
+	RETURNF "Taciturn"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@MARK_ENG(ARGS) ;Mark.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "母乳体質" ; 0
+	RETURNF "Lactating"
+CASE "魔力母乳体質" ; 1
+	RETURNF "Mana-Infused Milk"
+
+CASE "濃厚母乳" ; 10
+	RETURNF "Thick Milk"
+CASE "上質母乳" ; 11
+	RETURNF "Fine Milk"
+CASE "豊潤母乳" ; 12
+	RETURNF "Rich Milk"
+CASE "特濃母乳" ; 13
+	RETURNF "Potent Milk"
+CASE "極上母乳" ; 14
+	RETURNF "Premium Milk"
+
+CASE "ミルクタンク" ; 15
+	RETURNF "Milk Tank"
+CASE "ホルスタイン" ; 16
+	RETURNF "Holstein"
+CASE "ミルクサーバー" ; 17
+	RETURNF "Milk Plant"
+
+CASE "淫乳" ; 20
+	RETURNF "Lewd Breasts"
+CASE "淫核" ; 21
+	RETURNF "Lewd Clit"
+CASE "淫壺" ; 22
+	RETURNF "Lewd Pussy"
+CASE "淫尻" ; 23
+	RETURNF "Lewd Anus"
+
+CASE "快楽刻印" ; 30
+	RETURNF "Pleasure Mark"
+CASE "屈服刻印" ; 31
+	RETURNF "Submission Mark"
+
+CASE "淫紋" ; 40
+	RETURNF "Lewd Crest"
+
+CASE "絶頂体力回復淫紋" ; 51
+	RETURNF "Health Recovering Climax Crest"
+CASE "絶頂魔力回復淫紋" ; 52
+	RETURNF "Mana Recovering Climax Crest"
+
+CASE "母性的" ; 200
+	RETURNF "Maternal"
+CASE "母性本能開花" ; 201
+	RETURNF "Motherly"
+CASE "みんなのママ" ; 202
+	RETURNF "Everyone's Mommy"
+
+CASE "搾乳中毒" ; 205
+	RETURNF "Milking Addict"
+CASE "搾乳奴隷" ; 206
+	RETURNF "Milking Slave"
+CASE "搾乳家畜" ; 207
+	RETURNF "Milk Cow"
+
+CASE "膣内射精中毒" ; 210
+	RETURNF "Ｖ Creampie Addict"
+CASE "搾精おまんこ" ; 211
+	RETURNF "Semen Sucking Pussy"
+CASE "精液便女" ; 212
+	RETURNF "Semen Toilet"
+
+CASE "尻穴射精中毒" ; 215
+	RETURNF "Ａ Creampie Addict"
+CASE "おしりまんこ" ; 216
+	RETURNF "Ass-Pussy"
+CASE "尻穴便器" ; 217
+	RETURNF "Anal Cumdump"
+
+CASE "触手中毒" ; 220
+	RETURNF "Tentacle Addict"
+CASE "触手の虜" ; 221
+	RETURNF "Tentacle Slave"
+CASE "触手の苗床" ; 222
+	RETURNF "Tentacle Seedbed"
+
+CASE "精液中毒" ; 225
+	RETURNF "Semen Addict"
+CASE "精液依存" ; 226
+	RETURNF "Semen Fanatic"
+CASE "精液崇拝" ; 227
+	RETURNF "Semen Worshipper"
+
+CASE "輪姦中毒" ; 230
+	RETURNF "Gangbang Addict"
+CASE "肉便器" ; 231
+	RETURNF "Meat Toilet"
+
+CASE "被虐中毒" ; 235
+	RETURNF "Pain Addict"
+CASE "ドＭ" ; 236
+	RETURNF "Extreme Masochist"
+CASE "雌豚" ; 237
+	RETURNF "Female Pig"
+
+CASE "レズ中毒" ; 240
+	RETURNF "Lesbian Addict"
+CASE "レズ依存" ; 241
+	RETURNF "Lesbian Fanatic"
+CASE "百合姫" ; 242
+	RETURNF "Lily Princess"
+
+CASE "乳内射精中毒" ; 245
+	RETURNF "Ｂ Creampie Addict"
+CASE "おっぱいまんこ" ; 246
+	RETURNF "Breast-Pussy"
+CASE "パイズリオナホ" ; 247
+	RETURNF "Paizuri Onahole"
+
+CASE "精飲中毒" ; 250
+	RETURNF "Swallowing Addict"
+CASE "精飲味覚" ; 251
+	RETURNF "Swallowing Connoisseur"
+
+CASE "テクニシャン" ; 255
+	RETURNF "Sex Technician"
+CASE "床上手" ; 256
+	RETURNF "Sex Adept"
+CASE "匠の技" ; 257
+	RETURNF "Sexpert"
+
+CASE "奉仕中毒" ; 260
+	RETURNF "Service Addiction"
+CASE "ご奉仕上手" ; 261
+	RETURNF "Service Adept"
+CASE "ご奉仕雌奴隷" ; 262
+	RETURNF "Service Slave"
+
+CASE "苦痛刻印" ; 190
+	RETURNF "Pain Mark"
+CASE "恐怖刻印" ; 191
+	RETURNF "Fear Mark"
+CASE "絶望刻印" ; 192
+	RETURNF "Despair Mark"
+
+CASE "処女結界破壊" ; 150
+	RETURNF "Virginity Barrier Destroyed"
+CASE "プライド崩壊" ; 151
+	RETURNF "Collapsed Pride"
+CASE "高慢消滅" ; 152
+	RETURNF "Extinguished Arrogance"
+CASE "気丈崩壊" ; 153
+	RETURNF "No Longer Stubborn"
+CASE "反抗的消滅" ; 154
+	RETURNF "No Longer Defiant"
+CASE "生意気消滅" ; 155
+	RETURNF "No Longer Sassy"
+CASE "楽観的消滅" ; 156
+	RETURNF "Extinguished Optimism"
+CASE "カリスマ崩壊" ; 157
+	RETURNF "Extinguished Charisma"
+CASE "正義の敗北" ; 158
+	RETURNF "Defeated Righteousness"
+
+CASE "自制心崩壊" ; 160
+	RETURNF "Broken Composure"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@PALAM_ENG(ARGS) ;Palam.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "Ａ快楽" ; 0
+	RETURNF "Ａ Pls."
+CASE "Ｂ快楽" ; 1
+	RETURNF "Ｂ Pls."
+CASE "Ｃ快楽" ; 2
+	RETURNF "Ｃ Pls."
+CASE "Ｖ快楽" ; 3
+	RETURNF "Ｖ Pls."
+CASE "Ｎ快楽" ; 4
+	RETURNF "Ｎ Pls."
+
+CASE "Ｖ潤滑" ; 10
+	RETURNF "Ｖ Lub."
+CASE "Ａ潤滑" ; 11
+	RETURNF "Ａ Lub."
+
+CASE "乳牛" ; 30
+	RETURNF "Dairy Cow"
+CASE "淫欲" ; 31
+	RETURNF "Lust"
+CASE "恭順" ; 32
+	RETURNF "Loyalty"
+CASE "屈服"  ; 33
+	RETURNF "Submission"
+
+CASE "苦痛" ; 35
+	RETURNF "Pain"
+CASE "恐怖" ; 36
+	RETURNF "Fear"
+CASE "不快" ;37
+	RETURNF "Discomfort"
+CASE "反感" ; 38
+	RETURNF "Hostil"
+CASE "失意" ; 39
+	RETURNF "Despair"
+
+CASE "豊穣増加" ; 40
+	RETURNF "Abundance Increase"
+CASE "母乳濃度増加" ; 41
+	RETURNF "Milk Richness"
+CASE "母乳生産力増加" ; 42
+	RETURNF "Milk Productivity"
+CASE "授乳愛情経験" ; 43
+	RETURNF "Lactation Exp"
+CASE "習得" ; 44
+	RETURNF "Learning"
+CASE "奉仕経験" ; 45
+	RETURNF "Service Exp"
+
+CASE "膣内射精経験" ; 50
+	RETURNF "Ｖ Creampie Exp"
+CASE "尻穴射精経験" ; 51
+	RETURNF "Ａ Creampie Exp"
+CASE "乳内射精経験" ; 52
+	RETURNF "Ｂ Creampie Exp"
+CASE "精飲経験" ; 53
+	RETURNF "Swallowing Exp"
+CASE "精液経験" ; 54
+	RETURNF "Semen Exp"
+CASE "輪姦経験" ; 55
+	RETURNF "Gangbang Exp"
+CASE "加虐経験" ; 56
+	RETURNF "Sadism Exp"
+CASE "被虐快楽経験" ; 57
+	RETURNF "Masochism Exp"
+CASE "レズ調教経験" ; 58
+	RETURNF "Lesbian Exp"
+CASE "搾乳絶頂経験" ; 59
+	RETURNF "Milking Orgasm Exp"
+CASE "触手絶頂経験"; 60
+	RETURNF "Tentacle Orgasm Exp"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@ABL_ENG(ARGS) ;Abl.csv
+#FUNCTIONS
+SELECTCASE ARGS
+; preConstitution
+CASE "Ａ感覚" ; 0
+	RETURNF "ＡSens"		;A、尻"
+CASE "Ｂ感覚" ; 1
+	RETURNF "ＢSens"	;B、乳房"
+CASE "Ｃ感覚" ; 2
+	RETURNF "ＣSens"		;C、クリ"
+CASE "Ｖ感覚" ; 3
+	RETURNF "ＶSens"		;V、膣"
+CASE "Ｎ感覚" ; 4
+	RETURNF "ＮSens"		;N、乳首"
+; current state
+CASE "Ａ感度" ; 10
+	RETURNF "ＡSensiv"		;感覚は初期0、絶頂回数で増加　こっちは初期でランダム増減する基準100%"
+CASE "Ｂ感度" ; 11
+	RETURNF "ＢSensiv"
+CASE "Ｃ感度" ; 12
+	RETURNF "ＣSensiv"
+CASE "Ｖ感度" ; 13
+	RETURNF "ＶSensiv"
+CASE "Ｎ感度" ; 14
+	RETURNF "ＮSensiv"
+
+CASE "酪農" ; 20
+	RETURNF "Dairy"		;家畜の世話、搾乳の効率
+CASE "事務" ; 21
+	RETURNF "Clerk"		;事務スキル、事務仕事の効率
+CASE "掃除" ; 22
+	RETURNF "Cleaning"	;ハウスキーパー仕事の効率
+CASE "料理" ; 23
+	RETURNF "Cooking"	;料理仕事の効率…効率？"
+CASE "薬学" ; 24
+	RETURNF "Pharmacy"	;調剤効率
+CASE "接客" ; 25
+	RETURNF "Reception"	;接客技能、枠だけ作っておく　ふれあい牛舎に入れた家畜とお楽しみできる牧場見学ツアーをするとか
+
+CASE "バストサイズ" ; 40
+	RETURNF "Breast Size"
+CASE "母乳濃度" ; 41
+	RETURNF "Milk Richness"
+CASE "母乳生産力" ; 42
+	RETURNF "Milk Production"
+CASE "母性" ; 43
+	RETURNF "Maternity"
+CASE "技巧" ; 44
+	RETURNF "Technique"
+CASE "奉仕精神" ; 45
+	RETURNF "Service"
+
+CASE "膣内射精中毒" ; 50
+	RETURNF "Ｖ Creampie Addict"
+CASE "尻穴射精中毒" ; 51
+	RETURNF "Ａ Creampie Addict"
+CASE "乳内射精中毒" ; 52
+	RETURNF "Ｂ Creampie Addict"
+CASE "精飲中毒" ; 53
+	RETURNF "Swallowing Addict"
+CASE "精液中毒" ; 54
+	RETURNF "Semen Addict"
+CASE "輪姦中毒" ; 55
+	RETURNF "Gangbang Addict"
+CASE "サドっ気" ; 56
+	RETURNF "Sadist"
+CASE "マゾっ気" ; 57
+	RETURNF "Masochist"
+CASE "レズっ気" ; 58
+	RETURNF "Lesbian"
+CASE "搾乳中毒" ; 59
+	RETURNF "Milking Addict"
+CASE "触手中毒" ; 60
+	RETURNF "Tentacle Addict"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@TEQUIP_ENG(ARGS) ;Tequip.csv
+#FUNCTIONS
+SELECTCASE ARGS
+;TRAINIDかアイテムIDに連動,
+;--------------------------------------------------,
+;Ｖ挿入,
+CASE "正常位"
+	RETURNF "Missionary"
+CASE "後背位"
+	RETURNF "Doggy Style"
+CASE "対面座位"
+	RETURNF "Sitting"
+CASE "背面座位"
+	RETURNF "Reverse Sitting"
+CASE "騎乗位"
+	RETURNF "Cowgirl"
+CASE "対面立位"
+	RETURNF "Standing"
+CASE "背面立位"
+	RETURNF "Reverse Standing"
+
+;--------------------------------------------------,
+;Ａ挿入,
+CASE "Ａ正常位"
+	RETURNF "Ａ Missionary"
+CASE "Ａ後背位"
+	RETURNF "Ａ Doggy Style"
+CASE "Ａ対面座位"
+	RETURNF "Ａ Sitting"
+CASE "Ａ背面座位"
+	RETURNF "Ａ Reverse Sitting"
+CASE "Ａ騎乗位"
+	RETURNF "Ａ Cowgirl"
+CASE "Ａ対面立位"
+	RETURNF "Ａ Standing"
+CASE "Ａ背面立位"
+	RETURNF "Ａ Reverse Standing"
+
+;--------------------------------------------------,
+;他部位,　たぶんいらない
+CASE "素股"
+	RETURNF "Thighjob"
+CASE "フェラチオ"
+	RETURNF "Blowjob"
+CASE "イラマチオ"
+	RETURNF "Facefuck"
+CASE "パイズリ"
+	RETURNF "Paizuri"
+CASE "強制パイズリ"
+	RETURNF "Forced Paizuri"
+CASE "縦パイズリ"
+	RETURNF "Horizontal Paizuri"
+CASE "強制縦パイズリ"
+	RETURNF "Forced Horizontal Paizuri"
+CASE "手コキ"
+	RETURNF "Handjob"
+
+;----------------------------------------------,
+;道具,
+CASE "家畜用搾乳器"
+	RETURNF "Livestock Milker"
+CASE "魔動快楽搾乳器"
+	RETURNF "Pls. Mana-Powered Milker"
+CASE "触手快楽搾乳器"
+	RETURNF "Pls. Tentacle Milker"
+CASE "小型霊力抽出装置"
+	RETURNF "Portable EP Extractor"
+
+;--------------------------------------------------,
+;100～200:触手,
+CASE "触手乳揉み"
+	RETURNF "Tentacle Breast Massage"
+CASE "触手乳搾り"
+	RETURNF "Tentacle Milking"
+CASE "乳包み花弁搾乳触手"
+	RETURNF "Petal-Tentacle Milking"
+CASE "透明カップ搾乳触手"
+	RETURNF "Cup-Tentacle Milking"
+CASE "搾乳ワーム触手"
+	RETURNF "Worm-Tentacle Milking"
+CASE "触手Ｖ挿入"
+	RETURNF "Ｖ Tentacle Fuck"
+CASE "触手Ａ挿入"
+	RETURNF "Ａ Tentacle Fuck"
+CASE "触手強制パイズリ"
+	RETURNF "Forced Tentacle Paizuri"
+CASE "触手フェラチオ"
+	RETURNF "Tentacle Fellatio"
+CASE "触手イラマチオ"
+	RETURNF "Tentacle Irrumatio"
+CASE "触手目隠し"
+	RETURNF "Tentacle Blindfold"
+CASE "触手クリ吸い"
+	RETURNF "Tentacle Clit Sucking"
+CASE "触手耳姦"
+	RETURNF "Tentacle Ear Rape"
+
+CASE "ブラシ触手Ａ"
+	RETURNF "Ａ Tentacle Brush"
+CASE "ブラシ触手Ｂ"
+	RETURNF "Ｂ Tentacle Brush"
+CASE "ブラシ触手Ｃ"
+	RETURNF "Ｃ Tentacle Brush"
+CASE "ブラシ触手Ｖ"
+	RETURNF "Ｖ Tentacle Brush"
+CASE "ブラシ触手Ｎ"
+	RETURNF "Ｎ Tentacle Brush"
+CASE "ブラシ触手"
+	RETURNF "Tentacle Brush"			;判定用
+
+CASE "触手拘束"
+	RETURNF "Tentacle Restraint"
+
+;--------------------------------------------------,
+
+CASE "バイブ"
+	RETURNF "Vibrator"
+CASE "アナルバイブ"
+	RETURNF "Anal Vibrator"
+CASE "乳首ローター"
+	RETURNF "Nipple Rotor"
+CASE "クリローター"
+	RETURNF "Clit Rotor"
+CASE "乳首吸引器"
+	RETURNF "Nipple Pumps"
+CASE "クリ吸引器"
+	RETURNF "Clit Pump"
+CASE "アイマスク"
+	RETURNF "Blindfold"
+CASE "口枷"
+	RETURNF "O-Ring Gag"
+CASE "ボールギャグ"
+	RETURNF "Ball Gag"
+
+CASE "強制開口器"
+	RETURNF "Open Mouth Gag"
+CASE "コンドーム"
+	RETURNF "Condom"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@BASE_ENG(ARGS) ;base.csv
+#FUNCTIONS
+SELECTCASE ARGS
+	CASE "体力" ; 0
+		RETURNF "Health"
+	CASE "霊力" ; 2
+		RETURNF "Spirit Energy"
+	CASE "魔力" ; 3
+		RETURNF "Mana"
+	CASE "戦闘力" ; 10
+		RETURNF "Combat Strength"
+	CASE "精力" ; 34
+		RETURNF "Vigor"		;0だと勃起しなくなるとか
+	CASE "抵抗心" ; 40
+		RETURNF "Resistance"		;基礎防御
+	CASE "尊厳" ; 41
+		RETURNF "Dignity"	;恥辱などで減る倍率補正"
+	CASE "嫌悪感" ; 42
+		RETURNF "Disgust"		;好感度防御"
+	CASE "理性" ; 43
+		RETURNF "Rationality"		;乳牛堕ち防御"
+	CASE "精神力" ; 44
+		RETURNF "Will"		;20％で屈服、0％で崩壊"
+	CASE "好感度" ; 51
+		RETURNF "Favorability"		;50％で陥落、100％で恋慕、200％で隷属"
+	CASE "乳牛堕ち" ; 52
+		RETURNF "Fall to Dairy Cow"	;100％で乳牛堕ち"
+	CASEELSE
+		RETURNF ARGS
+ENDSELECT
+
+@STAIN_PLACE_ENG(ARGS) ;Stain.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "アナル" ; 0
+	RETURNF "Anus"
+CASE "乳房" ; 1
+	RETURNF "Breasts"
+CASE "陰核" ; 2
+	RETURNF "Clit"
+CASE "膣" ; 3
+	RETURNF "Pussy"
+CASE "乳首" ; 4
+	RETURNF "Nipples"
+CASE "口" ; 5
+	RETURNF "Mouth"
+CASE "手" ; 6
+	RETURNF "Hands"
+CASE "顔" ; 7
+	RETURNF "Face"
+CASE "ペニス" ; 8
+	RETURNF "Penis"
+CASE "尻" ; 9
+	RETURNF "Ass"
+CASE "耳" ; 10
+	RETURNF "Ear"
+CASE "腋" ; 11
+	RETURNF "Armpit"
+CASE "ゴム中ペニス" ; 12
+	RETURNF "Condom"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@STAIN_MAT_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "母乳" ; 6000
+	RETURNF "Milk"
+CASE "愛液" ; 6001
+	RETURNF "Love Juice"
+CASE "アナル汚れ" ; 6002
+	RETURNF "Feces"
+CASE "唾液" ; 6003
+	RETURNF "Saliva"
+CASE "ローション" ; 6004
+	RETURNF "Lotion"
+CASE "触手粘液" ; 6005
+	RETURNF "Tentacle Mucus"
+CASE "精液" ; 6006
+	RETURNF "Semen"
+CASE "ペニス汚れ" ; 6007
+	RETURNF "Smegma"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@STAINS_ENG(ARG)
+#FUNCTIONS
+SELECTCASE ARG
+CASE 6000
+	RETURNF "Milk"
+CASE 6001
+	RETURNF "Love Juice"
+CASE 6002
+	RETURNF "Feces"
+CASE 6003
+	RETURNF "Saliva"
+CASE 6004
+	RETURNF "Lotion"
+CASE 6005
+	RETURNF "Tentacle Mucus"
+CASE 6006
+	RETURNF "Semen"
+CASE 6007
+	RETURNF "Smegma"
+CASEELSE
+	RETURNF TOSTR(ARG)
+ENDSELECT
+
+
+@BODYPARTS_ENG(ARG)
+#FUNCTIONS
+SELECTCASE ARG
+CASE 0
+	RETURNF "Anus"
+CASE 1
+	RETURNF "Chest"
+CASE 2
+	RETURNF "Clit"
+CASE 3
+	RETURNF "Pussy"
+CASE 4
+	RETURNF "Nipples"
+CASE 5
+	RETURNF "Mouth"
+CASE 6
+	RETURNF "Hands"
+CASE 7
+	RETURNF "Face"
+CASE 8
+	RETURNF "Penis"
+CASE 9
+	RETURNF "Ass"
+CASE 10
+	RETURNF "Ear"
+CASE 11
+	RETURNF "Armpit"
+CASEELSE
+	RETURNF TOSTR(ARG)
+ENDSELECT
+
+
+@ABL_SHORT_ENG(ARGS) ;Abl.csv?
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "酪農"
+	RETURNF "Dairy"		;家畜の世話、搾乳の効率"
+CASE "事務"
+	RETURNF "Clerk"		;事務スキル、事務仕事の効率"
+CASE "技巧"
+	RETURNF "Tech"		;調教の効率"
+CASE "掃除"
+	RETURNF "Clean"		;ハウスキーパー仕事の効率"
+CASE "料理"
+	RETURNF "Cook"		;料理仕事の効率…効率？"
+CASE "母性"
+	RETURNF "Maternity"		;上がるほど搾乳の消費HPが軽減+濃厚化にボーナス"
+CASE "恋慕"
+	RETURNF "Adoration"		;あなたへの恋愛感情"
+CASE "薬学"
+	RETURNF "Pharm"	;調剤効率"
+CASE "接客"
+	RETURNF "Recept"		;接客技能、枠だけ作っておく　ふれあい牛舎に入れた家畜とお楽しみできる牧場見学ツアーをするとか"
+CASE "レズっ気"
+	RETURNF "Lesb"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@DIALOGUE_ENG(ARGS) ; from kojo function names (KOJO_GENERAL_INDEX_)
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "SPEECHENG1"
+	RETURNF "English 1"
+CASE "ボーイッシュ1"
+	RETURNF "Boyish 1"
+CASE "慇懃1"
+	RETURNF "Polite 1"
+CASE "非敬語幼め1"
+	RETURNF "Non-polite Childish 1"
+CASE "生真面目1"
+	RETURNF "Serious 1"
+CASE "堅物1"
+	RETURNF "Stubborn 1"
+CASE "無口1"
+	RETURNF "Taciturn 1"
+CASE "強気1"
+	RETURNF "Confident 1"
+CASE "元気っ子1"
+	RETURNF "Energetic 1"
+CASE "気品1"
+	RETURNF "Dignified 1"
+CASE "姉御肌1"
+	RETURNF "Sisterly 1"
+CASE "専用口上ベース"
+	RETURNF "Exclusive Dialogue Base"
+CASE "動作確認用口上"
+	RETURNF "Testing Base"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@EX_ENG(ARGS) ;ex.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "Ａ絶頂"
+	RETURNF "Ａ Orgasms"
+CASE "Ｂ絶頂"
+	RETURNF "Ｂ Orgasms"
+CASE "Ｃ絶頂"
+	RETURNF "Ｃ Orgasms"
+CASE "Ｖ絶頂"
+	RETURNF "Ｖ Orgasms"
+CASE "Ｎ絶頂"
+	RETURNF "Ｎ Orgasms"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@NIPPLES_ENG(ARGS)
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "ピンク"
+	RETURNF "Pink"
+CASE "ディープピンク"
+	RETURNF "Deep Pink"
+CASE "ホットピンク"
+	RETURNF "Hot Pink"
+CASE "チェリーピンク"
+	RETURNF "Cherry Pink"
+CASE "ライトピンク"
+	RETURNF "Light Pink"
+CASE "ルビーレッド"
+	RETURNF "Ruby Red"
+CASE "ラセットブラウン"
+	RETURNF "Dark Brown"
+CASE "ブラウン"
+	RETURNF "Brown"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@MASTER_ENG(ARGS) 
+; Translation is stored in variables starting with CSTR:あなた呼び方/
+; Index 1850+ is used before falling. Index 6300+ is used after falling.
+; TODO: Should we stick to literal translations, or just create our own selection?
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "あなた"; 1850
+	RETURNF "You"
+CASE "貴方"; 1851
+	RETURNF "You"
+CASE "お前"; 1852
+	RETURNF "You"
+CASE "おまえ"; 1853
+	RETURNF "You"
+CASE "貴様"; 1854
+	RETURNF "You Bastard"
+CASE "きさま"; 1855
+	RETURNF "You Bastard"
+CASE "君"; 1856
+	RETURNF "Buddy"
+CASE "きみ"; 1857
+	RETURNF "Buddy"
+CASE "お主"; 1858
+	RETURNF "You"
+CASE "ぬし"; 1859
+	RETURNF "You"
+CASE "魔族"; 1860
+	RETURNF "Demon"
+CASE "魔物"; 1861
+	RETURNF "Monster"
+CASE "オーナーさん"; 1862
+	RETURNF "Owner"
+CASE "牧場主さん"; 1863
+	RETURNF "Farmer"
+CASE "お兄さん"; 1864
+	RETURNF "Brother"
+CASE "お兄ちゃん"; 1865
+	RETURNF "Onii-chan"
+CASE "おじさん"; 1866
+	RETURNF "Old Man"
+
+CASE "ご主人様"
+	RETURNF "Master-sama" ; 6300
+CASE "マスター"
+	RETURNF "Master"
+CASE "オーナー"
+	RETURNF "Owner"
+CASE "あなた様"
+	RETURNF "You"
+CASE "そなた"
+	RETURNF @"%CALLNAME:0%"
+CASE "ダーリン"
+	RETURNF "Darling"
+CASE "お兄ちゃん"
+	RETURNF "Onii-chan"
+CASE "お兄様"
+	RETURNF "Onii-sama"
+CASE "兄様"
+	RETURNF "Nii-sama"
+CASE "にぃに"
+	RETURNF "Big Bro"
+CASE "お父さん"
+	RETURNF "Father"
+CASE "パパ"
+	RETURNF "Papa"
+CASE "主様"
+	RETURNF "Chief"
+CASE "ぬし"
+	RETURNF "Boss"
+CASE "旦那様"
+	RETURNF "Husband"
+CASE "お館様"
+	RETURNF "Dear Master"
+CASE "兄上"
+	RETURNF "Elder Brother"
+CASE "主殿"
+	RETURNF "Lord"
+CASE "閣下"
+	RETURNF "Your Excellency"
+CASE "陛下"
+	RETURNF "Your Majesty"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@PENIS_CALL_ENG(ARGS) ;Str.csv
+; Translation for variables 性器呼び方／ペニス and 性器呼び方／ペニス／蕩け
+#FUNCTIONS
+SELECTCASE ARGS
+; Randomly generated slaves always have a string with Index between 1500 and 1549 in CSTR:性器呼び方／ペニス
+; Most ranomly generated slaves pick a random string in that range, but ones with personality 強気, "清楚" or "高潔", or ones who don't know about sex, have some special rules.
+; Renaming a slave gives always gives options with Index between 1500 and 1549.
+; Index 1500 to 1507
+CASE "ペニス" ; Random girls with Personality "強気" are more likely to use this (replaces "ちんちん",  "おちんちん", "男の人の").
+	RETURNF "Dick" ; It's literally the katakana for "penis", but given the personality rules, this makes more sense in english.
+CASE "ちんちん" ; Random girls with Personality "強気" will use "ペニス" instead of this
+	RETURNF "Penis"
+CASE "おちんちん" ; Random girls that don't know about sex always use this. Random girls with Personality "強気" will use "ペニス" instead of this.
+	RETURNF "Penis"
+CASE "チンポ" 
+	RETURNF "Dick"
+CASE "男根" 
+	RETURNF "Phallus"
+CASE "陰茎" 
+	RETURNF "Penis"
+CASE "男性器" ; Random girls with personality "清楚" or "高潔" have an increased chance to use this
+	RETURNF "Manhood"
+CASE "男の人の" ; Random girls with Personality "強気" will use "ペニス" instead of this. ; Random girls with personality "清楚" or "高潔" have an increased chance to use this
+	RETURNF "That Thing"
+
+; If a slave has fallen (in love or dairy cattle), then Index 1550 to 1599 are given as renaming options as well.
+; Index 1550 to 1557
+CASE "おちんぽ"
+	RETURNF "Dick"
+CASE "おちんぽ様"
+	RETURNF "Great Dick"
+CASE "肉棒"
+	RETURNF "Cock"
+CASE "息子様"
+	RETURNF "Boy"
+CASE "剛直"
+	RETURNF "Rod"
+CASE "魔羅"
+	RETURNF "Shlong"
+CASE "孕ませ棒"
+	RETURNF "Baby Maker"
+CASE "ご立派様"
+	RETURNF "Greatness"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@VAGINA_CALL_ENG(ARGS) ;Str.csv
+; Translation for variables 性器呼び方／膣 and 性器呼び方／膣／蕩け
+#FUNCTIONS
+SELECTCASE ARGS
+; Randomly generated slaves always have a string with Index between 1600 and 1649 in CSTR:性器呼び方／膣
+; Most ranomly generated slaves pick a random string in that range, but ones with personality 強気, or ones who don't know about sex, have some special rules.
+; Renaming a slave gives always gives options with Index between 1600 and 1649.
+; Index 1600 to 1607
+CASE "おまんこ" ; Random girls with Personality "強気" will use "膣穴" instead of this
+	RETURNF "Pussy"
+CASE "マンコ"
+	RETURNF "Pussy"
+CASE "膣穴" ; Random girls with Personality "強気" are more likely to use this (replaces "おまんこ",  "おちんちん", "男の人の").
+	RETURNF "Cunt"
+CASE "膣内"
+	RETURNF "Pussy"
+CASE "膣"
+	RETURNF "Vagina"
+CASE "おまた" ; Random girls that don't know about sex always use this. ; Random girls with Personality "強気" will use "膣穴" instead of this.
+	RETURNF "Crotch" 
+CASE "ヴァギナ"
+	RETURNF "Vagina"
+CASE "女性器"
+	RETURNF "Vagina"
+
+; If a slave has fallen (in love or dairy cattle), then Index 1650 to 1699 are given as renaming options as well.
+; Index 1650 to 1655
+CASE "雌穴"
+	RETURNF "Hole"
+CASE "肉壺"
+	RETURNF "Meat Hole"
+CASE "淫乱おまんこ"
+	RETURNF "Dirty Pussy"
+CASE "精液入れ"
+	RETURNF "Cum Hole"
+CASE "チンポケース"
+	RETURNF "Cock Holster"
+CASE "ペニスケース"
+	RETURNF "Onahole"
+
+; Speciall case that only appears in Chara100 csv
+CASE "あそこ"
+	RETURNF "Pussy"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@ANUS_CALL_ENG(ARGS) ;Str.csv
+; Translation for variables 性器呼び方／アナル and 性器呼び方／アナル／蕩け
+#FUNCTIONS
+SELECTCASE ARGS
+; Randomly generated slaves always have a string with Index between 1500 and 1549 in CSTR:性器呼び方／アナル
+; Most ranomly generated slaves pick a random string in that range, but ones who don't know about sex have special rules.
+; Renaming a slave gives always gives options with Index between 1700 and 1749.
+; Index 1700 to 1708
+CASE "お尻の穴"
+	RETURNF "butthole" 
+CASE "尻の穴"
+	RETURNF "butthole" 
+CASE "尻穴"
+	RETURNF "asshole" 
+CASE "アナル"
+	RETURNF "anus" 
+CASE "肛門"
+	RETURNF "anus" 
+CASE "後ろの穴"
+	RETURNF "butthole" ; Random girls that don't know about sex always use this.
+CASE "不浄の穴"
+	RETURNF "dirty hole" 
+CASE "おしり"
+	RETURNF "butt" 
+CASE "お尻"
+	RETURNF "butt" 
+
+; If a slave has fallen (in love or dairy cattle), then Index 1750 to 1799 are given as renaming options as well.
+; Index 1750
+CASE "ケツマンコ"
+	RETURNF "anal hole"
+
+; Speciall case that only appears in Chara1 csv
+CASE "お尻のあな"
+	RETURNF "anus"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@CHARA_SOURCE_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "era魔界牧場" ;6400
+	RETURNF "EraMakaiRanch"
+CASE "オリジナル" ;6401
+	RETURNF "Original"
+CASE "版権少数枠" ;6402
+	RETURNF "Legally Distinct"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@TENDENCY_EN(ARGS) ;for PRINT_TENDENCY_BUTTON
+#FUNCTIONS
+RETURNF PUBIC_HAIR_ENG(SEXP_ENG(FIGURE_ENG(BUST_ENG_SHORT(SKIN_ENG(HEIGHT_ENG(RACE_ENG(ARGS)))))))
+
+
+
+@CONFIG_FLAGS_ENG(ARGS) ; Flag.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "口上表示" ; 2000
+	RETURNF "Speech Settings"
+CASE "蕩け口上化絶頂回数" ; 2001
+	RETURNF "Orgasm Count For Speech Change"
+CASE "ジョーク表示" ; 2002
+	RETURNF "See Author's Jokes"
+CASE "母乳単位" ;2003
+	RETURNF "Milk Unit"
+CASE "桁数の短縮表示形式" ; 2004
+	RETURNF "Shorthand for Numbers"
+CASE "自動改行合わせの行数" ;2005
+	RETURNF "Lines For Alignment"
+CASE "奴隷候補の未所持強調表示形式" ;2006
+	RETURNF "Highlighting for Slave Candidates"
+CASE "カラーコード／メイン画面強調選択肢" ; 2007
+	RETURNF "Color Code/Main Screen Highlighting"
+
+CASE "搾乳触手焦らし" ;2056
+	RETURNF "Milking Tentacles"
+
+CASE "消費バッテリー表示" ; 2060
+	RETURNF "Battery Consumption Display"
+CASE "スケジュール全員詳細表示" ;2061
+	RETURNF "Detailed Schedule Display"
+
+CASE "休憩時回復表示形式" ;2063
+	RETURNF "Break Recovery Display"
+CASE "心境変更時表示" ;2064
+	RETURNF "Display when state of mind changes"
+
+CASE "キャラ名前欄幅" ;2070
+	RETURNF "Character name field width"
+CASE "％の小数点表示" ; 2071
+	RETURNF "Print percentages with decimal points"
+CASE "身長小数点表示" ;2072
+	RETURNF "Height to the Decimal"
+
+CASE "仕事休憩体力" ;2300
+	RETURNF "Work Breaks"
+CASE "搾乳休憩母乳量" ;2301
+	RETURNF "Milking Breaks"
+CASE "夕食メニューおまかせ" ;2302
+	RETURNF "Auto Dinner Menu Selection"
+CASE "呼び方自動補正確認" ;2303
+	RETURNF "Pronouns Change Confirmation"
+
+CASE "デフォルト脱衣状態／抵抗" ; 2400
+	RETURNF "Default undressing／Resistance"
+CASE "デフォルト脱衣状態／無抵抗" ; 2401
+	RETURNF "Default undressing／No Resistance"
+CASE "デフォルト拘束状態／抵抗" ; 2402
+	RETURNF "Default restraints／Resistance"
+CASE "デフォルト拘束状態／無抵抗" ; 2403
+	RETURNF "Default restraints／No Resistance"
+
+CASE "射精箇所／パイズリ" ; 2410
+	RETURNF "Ejaculation／Paizuri"
+CASE "射精箇所／縦パイズリ" ; 2411
+	RETURNF "Ejaculation／Horizontal Paizuri"
+CASE "射精箇所／フェラチオ" ; 2412
+	RETURNF "Ejaculation／Fellatio"
+CASE "射精箇所／イラマチオ" ; 2413
+	RETURNF "Ejaculation／Irrumatio"
+CASE "射精箇所／Ｖセックス" ; 2414
+	RETURNF "Ejaculation／Vaginal Sex"
+CASE "射精箇所／Ａセックス" ; 2415
+	RETURNF "Ejaculation／Anal Sex"
+
+
+
+
+CASE "膨乳一時停止バストサイズ" ; 2500
+	RETURNF "Bust size for breast expansion stop"
+CASE "豊穣上限バストサイズ" ; 2501
+	RETURNF "Maximum abundance breast expansion"
+CASE "イベントによる日付の経過" ; 2502
+	RETURNF "Date progression from events"
+CASE "あなたの触手もあなた扱い" ; 2503
+	RETURNF "Your Tentacles Are You"
+CASE "体内凌辱で経験回数を増加" ; 2504
+	RETURNF "Increased Internal Violation Statistics"
+CASE "半減／母乳濃度EXP増加値"
+	RETURNF "Half／Milk Richness EXP"
+CASE "ON／OFF項目の詳細を飛ばして反転" ; 2506
+	RETURNF "Fast ON／OFF Toggle"
+CASE "夕食入浴順" ; 2507
+	RETURNF "Dinner/Bathing Order"
+
+
+CASE "候補割合／一般種族／人間" ; 2600
+	RETURNF "Weight/Common Race/Human"
+CASE "候補割合／一般種族／エルフ" ; 2601
+	RETURNF "Weight/Common Race/Elf"
+CASE "候補割合／一般種族／ダークエルフ" ; 2602
+	RETURNF "Weight/Common Race/Dark Elf"
+CASE "候補割合／一般種族／ハーフエルフ" ; 2603
+	RETURNF "Weight/Common Race/Half-Elf"
+CASE "候補割合／一般種族／ハーフリング" ; 2604
+	RETURNF "Weight/Common Race/Halfling"
+CASE "候補割合／一般種族／翼人" ; 2605
+	RETURNF "Weight/Common Race/Winged Race"
+CASE "候補割合／一般種族／犬耳族" ; 2606
+	RETURNF "Weight/Common Race/Dog-Ear"
+CASE "候補割合／一般種族／猫耳族" ; 2607
+	RETURNF "Weight/Common Race/Cat-Ear"
+CASE "候補割合／一般種族／兎耳族" ; 2608
+	RETURNF "Weight/Common Race/Rabbit-Ear"
+CASE "候補割合／一般種族／狐耳族" ; 2609
+	RETURNF "Weight/Common Race/Fox-Ear"
+CASE "候補割合／一般種族／狸耳族" ; 2610
+	RETURNF "Weight/Common Race/Tanuki-Ear"
+CASE "候補割合／一般種族／牛角族" ; 2611
+	RETURNF "Weight/Common Race/Cow-Horn"
+CASE "候補割合／一般種族／羊角族" ; 2612
+	RETURNF "Weight/Common Race/Sheep-Horn"
+CASE "候補割合／一般種族／鹿角族" ; 2613
+	RETURNF "Weight/Common Race/Deer-Antler"
+
+CASE "候補割合／上位種族／仙人" ; 2620
+	RETURNF "Weight/Higher Race/Hermit"
+CASE "候補割合／上位種族／竜人" ; 2621
+	RETURNF "Weight/Higher Race/Dragonkin"
+CASE "候補割合／上位種族／妖狐" ; 2622
+	RETURNF "Weight/Higher Race/Fox Spirit"
+CASE "候補割合／上位種族／ヴァンパイア" ; 2623
+	RETURNF "Weight/Higher Race/Vampire"
+CASE "候補割合／上位種族／ダンピール" ; 2624
+	RETURNF "Weight/Higher Race/Dhampir"
+
+CASE "候補割合／天界種族／天使" ; 2630
+	RETURNF "Weight/Celestial Race/Angel"
+CASE "候補割合／天界種族／天人" ; 2631
+	RETURNF "Weight/Celestial Race/Celestial Maiden"
+CASE "候補割合／天界種族／女神" ; 2632
+	RETURNF "Weight/Celestial Race/Goddess"
+
+CASE "現実的な髪色率" ; 3001
+	RETURNF "Realistic Hair Color Probability"
+
+CASE "日本っぽいジョブの日本名率" ; 3003
+	RETURNF "Japanese Names For Japanese Jobs"
+CASE "日本っぽいジョブの黒髪率" ; 3005
+	RETURNF "Black Hair For Japanese Jobs"
+CASE "メガネ率" ; 3005
+	RETURNF "Probability of Wearing Glasses"
+CASE "高身長時の外見年齢補正" ; 3006
+	RETURNF "Age appearance correction from height"
+
+CASE "奴隷候補全員先天的母乳体質" ; 3600
+	RETURNF "Slave Candidates Innate Lactation"
+CASE "母乳需要無限" ; 3601
+    RETURNF "Unlimited Demand for Breast Milk"
+CASE "魔界入りニンゲンで渋滞" ; 3602
+	RETURNF "Makai Rush Hour"
+CASE "貢献pt消費ゼロ" ; 3603
+	RETURNF "Use No Contribution Points"
+CASE "納税免除" ; 3604
+    RETURNF "Tax Exemption"
+
+	;6860～,ハードモード設定用半減
+CASE "噴乳量" ; 6860
+    RETURNF "Milk Ejection Volume"
+CASE "母乳容量・生産力" ; 6861
+    RETURNF "Breast Milk Capacity & Production Volume"
+CASE "母乳出荷価格" ; 6862
+    RETURNF "Breast Milk Shipping Price"
+CASE "業務EXP獲得量" ; 6863
+    RETURNF "Business EXP Gain"
+CASE "性EXP獲得量" ; 6864
+    RETURNF "Sexual EXP Gain"
+CASE "戦闘与ダメージ" ; 6865
+    RETURNF "Combat Damage Dealt"
+CASE "快楽値" ; 6866
+    RETURNF "Pleasure value"
+
+CASE "ランダムキャラのみ許可" ; 3700
+    RETURNF "Only Random Characters Allowed"
+
+CASE "半減／噴乳量" ; 3720
+    RETURNF "Milk Ejection Volume"
+CASE "半減／母乳容量・生産力" ; 3721
+    RETURNF "Breast Milk Cap & Output Vol"
+CASE "半減／母乳出荷価格" ; 3722
+    RETURNF "Breast Milk Shipping Price"
+CASE "半減／業務EXP獲得量" ; 3723
+    RETURNF "Business EXP Gain"
+CASE "半減／性EXP獲得量" ; 3724
+    RETURNF "Sexual EXP Gain"
+CASE "半減／戦闘与ダメージ" ; 3725
+    RETURNF "Combat Damage Dealt"
+CASE "半減／快楽値" ; 3726
+    RETURNF "Pleasure value"
+
+CASE "カスタマイズ／母乳出荷価格" ; 3500
+    RETURNF "Breast Milk Shipping Price"
+CASE "カスタマイズ／精算支出" ; 3501
+    RETURNF "Settlement Expenses"
+CASE "カスタマイズ／業務EXP獲得量" ; 3502
+    RETURNF "Business EXP Gain"
+CASE "カスタマイズ／性EXP獲得量" ; 3503
+    RETURNF "Sexual EXP Gain"
+CASE "カスタマイズ／快楽値" ; 3504
+    RETURNF "Pleasure value"
+CASE "カスタマイズ／噴乳量" ; 3505
+    RETURNF "Milk Ejection Volume"
+CASE "カスタマイズ／バッテリー消費量" ; 3506
+    RETURNF "Battery Consumption"
+CASE "カスタマイズ／魔力消費量" ; 3507
+    RETURNF "Magic Consumption"
+CASE "カスタマイズ／戦闘与ダメージ" ; 3508
+    RETURNF "Combat Damage Dealt"
+CASE "カスタマイズ／戦闘被ダメージ" ; 3509
+    RETURNF "Combat Damage Taken"
+
+CASE "母乳出荷価格" ; 3840
+    RETURNF "Breast Milk Shipping Price"
+CASE "精算支出" ; 3841
+    RETURNF "Settlement Expenses"
+CASE "業務EXP獲得量" ; 3842
+    RETURNF "Business EXP Gain"
+CASE "性EXP獲得量" ; 3843
+    RETURNF "Sexual EXP Gain"
+CASE "快楽値" ; 3844
+    RETURNF "Pleasure value"
+CASE "噴乳量" ; 3845
+    RETURNF "Milk Ejection Volume"
+CASE "バッテリー消費量" ; 3846
+    RETURNF "Battery Consumption"
+CASE "魔力消費量" ; 3847
+    RETURNF "Magic Consumption"
+CASE "戦闘与ダメージ" ; 3848
+    RETURNF "Combat Damage Dealt"
+CASE "戦闘被ダメージ" ; 3849
+    RETURNF "Combat Damage Taken"
+
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@MAKAI_INSTITUTIONS_ENG(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "軍事予算" ;3810
+	RETURNF "Military Budget"
+CASE "科学技術予算" ;3811
+	RETURNF "Research Budget"
+CASE "自治体予算" ;3812
+	RETURNF "City Budget"
+CASE "農業予算" ;3813
+	RETURNF "Agriculture Budget"
+
+CASE "軍事" ;3810
+	RETURNF "Military"
+CASE "科学技術" ;3811
+	RETURNF "Research"
+CASE "オカチ街" ;3812
+	RETURNF "Okachi City"
+CASE "酪農業" ;3813
+	RETURNF "Dairy Farming"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@MERCS_EN(ARGS) ;Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "ゴブリン軍団" ;3820
+	RETURNF "Goblin Army"
+CASE "ルーキー傭兵" ;3821
+	RETURNF "Rookie Mercenaries"
+CASE "ベテラン傭兵" ;3822
+	RETURNF "Veteran Mercenaries"
+CASE "鬼人傭兵" ;3823
+	RETURNF "Oni Mercenaries"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+
+@CSTR_ENG(ARGS) ;Cstr.csv
+; translation function incomplete, missing many values
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "種族" ; 0
+	RETURNF "Race"
+CASE "身長" ; 1
+	RETURNF "Height"
+CASE "体型" ; 2
+	RETURNF "Body Shape"
+CASE "髪色" ; 3
+	RETURNF "Hair Color"
+CASE "髪特徴" ; 4
+	RETURNF "Hair Characteristic"
+CASE "髪型" ; 5
+	RETURNF "Hair Style"
+CASE "肌の色" ; 6
+	RETURNF "Skin Color"
+CASE "右目の色" ; 7
+	RETURNF "Right Eye Color"
+CASE "左目の色" ; 8
+	RETURNF "Left Eye Color"
+CASE "目の特徴" ; 9
+	RETURNF "Eye Features"
+CASE "瞳の形" ; 10
+	RETURNF "Eye Shape"
+CASE "陰毛" ; 11
+	RETURNF "Pubic Hair"
+CASE "陰毛の濃さ" ; not in csv, but is needed here for CHANGE_STR_LINEUP
+	RETURNF "Pubic Hair Thickness"
+CASE "乳弾力" ; 12
+	RETURNF "Breast Firmness"
+CASE "乳首の色" ; 13
+	RETURNF "Nipple Color"
+
+CASE "ジョブ" ; 20
+	RETURNF "Job"
+CASE "性格" ; 21
+	RETURNF "Personality"
+CASE "性経験" ; 22
+	RETURNF "Sexual Experience"
+CASE "身分" ; 23
+	RETURNF "Status"
+CASE "所属" ; 25
+	RETURNF "Affiliation"
+
+CASE "初期値／一人称" ; 30
+	RETURNF "1st Person Pronoun"
+CASE "あなた呼び方／陥落前" ; 32
+	RETURNF "How to call you Pre-Fall"
+CASE "あなた呼び方／陥落後" ; 34
+	RETURNF "How to call you Post-Fall"
+
+CASE "性器呼び方／ペニス" ; 40
+	RETURNF "Name for Penis"
+CASE "性器呼び方／膣" ; 42
+	RETURNF "Name for Vagina"
+CASE "性器呼び方／アナル" ; 44
+	RETURNF "Name for Asshole"
+
+CASE "初経験／Ｖ" ; 50
+	RETURNF "First Ｖ Partner"
+CASE "初経験／Ａ" ; 51
+	RETURNF "First Ａ Partner"
+CASE "初経験／Ｐ" ; 52
+	RETURNF "First Ｐ Partner"
+CASE "初経験／授乳" ; 53
+	RETURNF "First Breastfeeding Partner"
+CASE "初経験／キス" ; 54
+	RETURNF "First Kiss"
+CASE "初経験／Ｍセックス" ; 55
+	RETURNF "First ＭSex Partner"
+CASE "初経験／パイズリ" ; 56
+	RETURNF "First Paizuri Partner"
+CASE "初経験／出産" ; 57
+	RETURNF "First Childbirth Experience"
+
+CASE "出典作品名" ; 202
+	RETURNF "Source"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@CUSTOM_SCHEDULE_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "自由" ; 3960
+	RETURNF "Free"
+CASE "酪農" ; 3961
+	RETURNF "Dairy"
+CASE "事務" ; 3962
+	RETURNF "Clerk"
+CASE "調剤" ; 3963
+	RETURNF "Mix Drugs"
+CASE "大浴場掃除" ; 3964
+	RETURNF "Clean Bathhouse"
+CASE "訓練" ; 3965
+	RETURNF "Combat Drill"
+CASE "調教／対象Ａ" ; 3966
+	RETURNF "Train Target A"
+CASE "調教／対象Ｂ" ; 3967
+	RETURNF "Train Target B"
+CASE "調教／対象Ｃ" ; 3968
+	RETURNF "Train Target C"
+CASE "搾乳" ; 3969
+	RETURNF "Milking"
+CASE "抽出" ; 3970
+	RETURNF "Extraction"
+CASE "図書館" ; 3971
+	RETURNF "Library"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@NAMES_ENG(ARGS) ; for RESIDENT_KOJO
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "あなた"
+	RETURNF "You"
+CASE "ユジン"
+	RETURNF "Eugene"
+CASE "マノ"
+	RETURNF "Mano"
+CASE "フドウ"
+	RETURNF "Fudou"
+CASE "ケンチ"
+	RETURNF "Kenchi"
+CASE "タルト"
+	RETURNF "Tart"
+CASE "あらし"
+	RETURNF "Arashi"
+CASE "シンミ"
+	RETURNF "Shinmi"
+CASE "カグヤ"
+	RETURNF "Kaguya"
+CASE "ノノミ"
+	RETURNF "Nonomi"
+CASE "ウキョウ"
+	RETURNF "Ukyou"
+CASE "マツダイラ"
+	RETURNF "Matsudaira"
+CASE "テラ"
+	RETURNF "Tera"
+CASE "ゴロー"
+	RETURNF "Goro"
+CASE "ショウ"
+	RETURNF "Shou"
+CASE "シンシア"
+	RETURNF "Cynthia"
+CASE "ぷにえ"
+	RETURNF "Punie"
+CASE "ゴーズ"
+	RETURNF "Gozu"
+CASE "ヒナ"
+	RETURNF "Hina"
+CASE "キュレタ"
+	RETURNF "Kyureta"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@DINNER_NAME_ENG(ARGS)
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "マッカイ鶏" ; 3300
+    RETURNF "Makai Chicken"
+CASE "マッカイ豚" ; 3301
+    RETURNF "Makai Pork"
+CASE "サーモン" ; 3302
+    RETURNF "Salmon"
+CASE "イカ" ; 3303
+    RETURNF "Squid"
+CASE "たこ" ; 3304
+    RETURNF "Octopus"
+CASE "タラ" ; 3305
+    RETURNF "Cod"
+CASE "ホッケ" ; 3306
+    RETURNF "Okhotsk Atka Mackerel"
+CASE "あんこう" ; 3307
+    RETURNF "Monkfish"
+CASE "ニシン" ; 3308
+    RETURNF "Herring"
+CASE "ブリ" ; 3309
+    RETURNF "Yellowtail"
+CASE "イナダ" ; 3310
+    RETURNF "Young Yellowtail"
+CASE "カジキ" ; 3311
+    RETURNF "Swordfish"
+CASE "さわら" ; 3312
+    RETURNF "Spanish Mackerel"
+CASE "かつお" ; 3313
+    RETURNF "Bonito"
+CASE "サバ" ; 3314
+    RETURNF "Mackerel"
+CASE "ハゼ" ; 3315
+    RETURNF "Gobies"
+CASE "サンマ" ; 3316
+    RETURNF "Pacific Saury"
+CASE "アジ" ; 3317
+    RETURNF "Horse Mackerel"
+CASE "いわし" ; 3318
+    RETURNF "Sardine"
+CASE "カレイ" ; 3319
+    RETURNF "Flounder"
+CASE "ヒラメ" ; 3320
+    RETURNF "Flatfish"
+CASE "サヨリ" ; 3321
+    RETURNF "Halfbeak"
+CASE "ヤマメ" ; 3322
+    RETURNF "Cherry Salmon"
+CASE "ワカサギ" ; 3323
+    RETURNF "Pond Smelt"
+CASE "メバル" ; 3324
+    RETURNF "Rockfish"
+CASE "スズキ" ; 3325
+    RETURNF "Sea Bass"
+CASE "キス" ; 3326
+    RETURNF "Sillago"
+CASE "アナゴ" ; 3327
+    RETURNF "Conger Eel"
+CASE "魔グロ" ; 3328
+    RETURNF "Magic Tuna"
+CASE "カニ" ; 3329
+    RETURNF "Crab"
+CASE "ホタテ" ; 3330
+    RETURNF "Scallop"
+CASE "エビ" ; 3331
+    RETURNF "Shrimp"
+CASE "うなぎ" ; 3332
+    RETURNF "Eel"
+CASE "鯛" ; 3333
+    RETURNF "Sea Bream"
+CASE "ふぐ" ; 3334
+    RETURNF "Pufferfish"
+CASE "うに（海）" ; 3335
+    RETURNF "Sea Urchin"
+CASE "牡蠣" ; 3336
+    RETURNF "Oyster"
+CASE "つぶ貝" ; 3337
+    RETURNF "Whelk"
+CASE "あさり" ; 3338
+    RETURNF "Clam"
+CASE "しじみ" ; 3339
+    RETURNF "Corbicula Clam"
+CASE "トマト" ; 3340
+    RETURNF "Tomato"
+CASE "枝豆" ; 3341
+    RETURNF "Edamame"
+CASE "茄子" ; 3342
+    RETURNF "Eggplant"
+CASE "アボカド" ; 3343
+    RETURNF "Avocado"
+CASE "きのこ" ; 3344
+    RETURNF "Mushroom"
+CASE "たけのこ" ; 3345
+    RETURNF "Bamboo Shoot"
+CASE "かぼちゃ" ; 3346
+    RETURNF "Pumpkin"
+CASE "とうもろこし" ; 3347
+    RETURNF "Corn"
+CASE "じゃが芋" ; 3348
+    RETURNF "Potato"
+CASE "山芋" ; 3349
+    RETURNF "Mountain Yam"
+CASE "里芋" ; 3350
+    RETURNF "Taro"
+CASE "薩摩芋" ; 3351
+    RETURNF "Sweet Potato"
+CASE "くり（陸）" ; 3352
+    RETURNF "Chestnut"
+CASE "マンドラゴラ" ; 3353
+    RETURNF "Mandragora"
+CASE "あわび" ; 3354
+    RETURNF "Abalone"
+
+; IDs 3400–3499: Secondary Ingredients
+CASE "人参" ; 3400
+    RETURNF "Carrot"
+CASE "大根" ; 3401
+    RETURNF "Daikon Radish"
+CASE "カブ" ; 3402
+    RETURNF "Turnip"
+CASE "白菜" ; 3403
+    RETURNF "Chinese Cabbage"
+CASE "キャベツ" ; 3404
+    RETURNF "Cabbage"
+CASE "ネギ" ; 3405
+    RETURNF "Green Onion"
+CASE "玉ねぎ" ; 3406
+    RETURNF "Onion"
+CASE "もやし" ; 3407
+    RETURNF "Bean Sprouts"
+CASE "ニラ" ; 3408
+    RETURNF "Garlic Chives"
+CASE "ピーマン" ; 3409
+    RETURNF "Green Bell Pepper"
+CASE "パプリカ" ; 3410
+    RETURNF "Bell Pepper"
+CASE "小松菜" ; 3411
+    RETURNF "Japanese Mustard Spinach"
+CASE "ほうれん草" ; 3412
+    RETURNF "Spinach"
+CASE "アスパラガス" ; 3413
+    RETURNF "Asparagus"
+CASE "きゅうり" ; 3414
+    RETURNF "Cucumber"
+CASE "かんぴょう" ; 3415
+    RETURNF "Gourd Strips"
+CASE "海苔" ; 3416
+    RETURNF "Seaweed"
+CASE "わかめ" ; 3417
+    RETURNF "Wakame Seaweed"
+CASE "めかぶ" ; 3418
+    RETURNF "Seaweed Stem"
+CASE "豆腐" ; 3419
+    RETURNF "Tofu"
+
+CASE "カレー" ; 3500
+    RETURNF "Curry"
+CASE "スープ" ; 3501
+    RETURNF "Soup"
+CASE "ポトフ" ; 3502
+    RETURNF "Pot-au-Feu"
+CASE "煮物" ; 3503
+    RETURNF "Simmered Dish"
+CASE "煮付け" ; 3504
+    RETURNF "Simmered in Sauce"
+CASE "炊き込みご飯" ; 3505
+    RETURNF "Steamed Rice with Ingredients"
+CASE "甘酢あんかけ" ; 3506
+    RETURNF "Sweet and Sour Sauce"
+CASE "パエリア" ; 3507
+    RETURNF "Paella"
+CASE "オムレツ" ; 3508
+    RETURNF "Omelet"
+CASE "卵とじ" ; 3509
+    RETURNF "Toji Egg Dish"
+CASE "チャーハン" ; 3510
+    RETURNF "Fried Rice"
+CASE "鍋" ; 3511
+    RETURNF "Hot Pot"
+CASE "丼" ; 3512
+    RETURNF "Bowl Dish"
+CASE "唐揚げ" ; 3513
+    RETURNF "Fried Chicken"
+CASE "コロッケ" ; 3514
+    RETURNF "Croquette"
+CASE "天ぷら" ; 3515
+    RETURNF "Tempura"
+CASE "フライ" ; 3516
+    RETURNF "Fried Food"
+CASE "包み焼き" ; 3517
+    RETURNF "Wrapped and Grilled"
+CASE "照り焼き" ; 3518
+    RETURNF "Teriyaki"
+CASE "味噌焼き" ; 3519
+    RETURNF "Miso-Grilled"
+CASE "塩焼き" ; 3520
+    RETURNF "Grilled with Salt"
+CASE "生姜焼き" ; 3521
+    RETURNF "Ginger-Grilled"
+CASE "バターソテー" ; 3522
+    RETURNF "Butter Saute"
+CASE "胡麻味噌炒め" ; 3523
+    RETURNF "Sesame Miso Stir-Fry"
+CASE "塩胡椒炒め" ; 3524
+    RETURNF "Salt and Pepper Stir-Fry"
+CASE "鶏がら炒め" ; 3525
+    RETURNF "Chicken Stock Stir-Fry"
+CASE "甘辛炒め" ; 3526
+    RETURNF "Sweet and Spicy Stir-Fry"
+CASE "オイスター炒め" ; 3527
+    RETURNF "Oyster Sauce Stir-Fry"
+CASE "バター醤油炒め" ; 3528
+    RETURNF "Butter Soy Sauce Stir-Fry"
+CASE "蒲焼き" ; 3529
+    RETURNF "Kabayaki (Grilled with Sauce)"
+
+CASE "ミルク粥" ; 3550
+    RETURNF "Milk Porridge"
+CASE "ミルクスープ" ; 3551
+    RETURNF "Milk Soup"
+CASE "ミルク煮込み" ; 3552
+    RETURNF "Milk Stew"
+CASE "チャウダー" ; 3553
+    RETURNF "Chowder"
+CASE "グラタン" ; 3554
+    RETURNF "Gratin"
+CASE "ドリア" ; 3555
+    RETURNF "Rice Gratin"
+CASE "キッシュ" ; 3556
+    RETURNF "Quiche"
+CASE "ミルクカレー" ; 3557
+    RETURNF "Milk Curry"
+CASE "カルボナーラ" ; 3558
+    RETURNF "Carbonara"
+CASE "チーズ焼き風" ; 3559
+    RETURNF "Cheese Gratin Style"
+CASE "リゾット" ; 3560
+    RETURNF "Risotto"
+CASE "シュクメルリ" ; 3561
+    RETURNF "Chicken in Garlic Milk Sauce"
+CASE "クリームシチュー" ; 3562
+    RETURNF "Cream Stew"
+CASE "クリーム煮" ; 3563
+    RETURNF "Cream Simmer"
+CASE "クリームパスタ" ; 3564
+    RETURNF "Cream Pasta"
+CASE "クリームパイ" ; 3565
+    RETURNF "Cream Pie"
+
+CASEELSE
+    RETURNF ARGS
+ENDSELECT
+
+
+
+@LACTATION_SRC_ENG(ARGS) ; for LACTATION_CONTINUE_MESSAGE
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "搾乳器"
+    RETURNF "Milking Machine"
+CASE "抽出装置"
+	RETURNF "Extractor"
+CASE "搾乳触手"
+	RETURNF "Milking Tentacle"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@BREAST_FIRMNESS_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+CASE "ぷにぷに" ; 1300, 1350
+	RETURNF "Squishy"
+CASE "ふにふに" ; 1301, 1351
+	RETURNF "Tender"
+CASE "すべすべ" ; 1302, 1352
+	RETURNF "Silky"
+CASE "もちもち" ; 1353
+	RETURNF "Springy"
+CASE "ぷるぷる" ; 1354
+	RETURNF "Jiggly"
+CASE "ふわとろ" ; 1355
+	RETURNF "Soft"
+CASE "たぷたぷ" ; 1356
+	RETURNF "Elastic"
+CASE "ふわふわ" ; 1357
+	RETURNF "Pillowy"
+CASE "むちむち" ; 1358
+	RETURNF "Voluptuous"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+@BUSINESS_PARTNER_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "ニンゲン搾乳牧場" ; 8200
+	RETURNF "Ningen Milking Farm"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@PREFERENCES_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "牛" ; 8300
+	RETURNF "Cows"
+CASE "馬" ; 8301
+	RETURNF "Horses"
+CASE "犬" ; 8302
+	RETURNF "Dogs"
+CASE "猫" ; 8303
+	RETURNF "Cats"
+CASE "ハムスター" ; 8304
+	RETURNF "Hamster"
+CASE "羊" ; 8305
+	RETURNF "Sheep"
+
+CASE "男" ; 8320
+	RETURNF "Men"
+CASE "女" ; 8321
+	RETURNF "Women"
+CASE "子供" ; 8322
+	RETURNF "Children"
+CASE "貴族" ; 8323
+	RETURNF "Aristocrats"
+CASE "王族" ; 8324
+	RETURNF "Royalty"
+CASE "同族" ; 8325
+	RETURNF "Same Race"
+CASE "天界族" ; 8326
+	RETURNF "Celestials"
+CASE "魔族" ; 8327
+	RETURNF "Demons"
+
+CASE "お風呂" ; 8330
+	RETURNF "Baths"
+CASE "掃除" ; 8331
+	RETURNF "Cleaning"
+CASE "料理" ; 8332
+	RETURNF "Cooking"
+CASE "読書" ; 8333
+	RETURNF "Reading"
+CASE "植物" ; 8334
+	RETURNF "Plants"
+CASE "機械" ; 8335
+	RETURNF "Machines"
+CASE "実験" ; 8336
+	RETURNF "Alchemy"
+CASE "おしゃれ" ; 8337
+	RETURNF "Fashion"
+
+CASE "ミルク" ; 8350
+	RETURNF "Milk"
+CASE "洋菓子" ; 8351
+	RETURNF "Sweets"
+CASE "和菓子" ; 8352
+	RETURNF "Wagashi"
+CASE "お酒" ; 8353
+	RETURNF "Sake"
+CASE "お茶" ; 8354
+	RETURNF "Tea"
+CASE "酸味" ; 8355
+	RETURNF "Sourness"
+CASE "辛味" ; 8356
+	RETURNF "Spiciness"
+CASE "魚" ; 8357
+	RETURNF "Fish"
+CASE "肉" ; 8358
+	RETURNF "Meat"
+CASE "野菜" ; 8359
+	RETURNF "Vegetables"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@ABILITIES_ACTIVE_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "豊穣" ; 22005
+    RETURNF "Abundance"
+CASE "濃厚母乳マッサージ" ; 22006
+    RETURNF "Rich Breast Milk Massage"
+CASE "ミルクタンクマッサージ" ; 22007
+    RETURNF "Milk Tank Massage"
+
+CASE "触手射精" ; 22010
+	RETURNF "Tentacle Ejaculation"
+CASE "触手受胎" ; 22011
+	RETURNF "Tentacle Impregnation"
+
+CASE "絶倫" ; 22013
+	RETURNF "Peerless"
+CASE "ふたなりちんぽ" ; 22014
+	RETURNF "Futanari Penis"
+CASE "触手分泌液増量" ; 22015
+	RETURNF "Increased Tentacle Secretion"
+
+CASE "搾乳エナジードレイン" ; 22020
+	RETURNF "Milking Energy Drain"
+CASE "エナジードレイン効率" ; 22021
+	RETURNF "Energy Drain Efficiency"
+CASE "魔力吸収効率" ; 22022
+	RETURNF "Mana Absorption Efficiency"
+CASE "濃厚ミルクドレイン" ; 22023
+	RETURNF "Thick Milk Drain"
+CASE "異種族孕ませ" ; 22004
+	RETURNF "Cross-Species Impregnation"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@MILESTONES(ARGS) ; Flag.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "ニンゲンのミルクを出荷" ; 800
+	RETURNF "Sell ningen's milk"
+CASE "ミルク1万ml出荷" ; 801
+	RETURNF "Sell 10,000 ml of milk"
+CASE "【濃厚母乳】の出荷" ; 802
+	RETURNF "Sell【Thick Milk】"
+
+CASE "傭兵アルバイトに奴隷を捕まえてきてもらう" ; 810
+	RETURNF "Get a mercenary to capture a slave"
+CASE "スレイ以外の奴隷を【屈服】状態にする" ; 811
+	RETURNF "Have a slave other than Surei enter【Submission】"
+CASE "【調合知識】所持した奴隷を屈服" ; 812
+	RETURNF "Get a slave with【Mixing Knowledge】to submit"
+CASE "掃除Lv5以上の奴隷を屈服" ; 813
+	RETURNF "Get a slave with cleaning level 5 to submit"
+CASE "あなた・スレイの他に5匹の奴隷を牧場に迎える" ; 814
+	RETURNF "Add 5 slaves to your ranch, in addition to you and Surei"
+CASE "奴隷3人を【恋慕】にする" ; 815
+	RETURNF "Get 3 slaves with【Love】"
+CASE "奴隷を【乳牛堕ち】させる" ; 816
+	RETURNF "Make a slave【Fall to Dairy Cow】"
+CASE "奴隷を【隷属】させる" ; 817
+	RETURNF "Make a slave into an【Love Slave】"
+
+CASE "母乳直飲みによりあなたの魔力を5000以上にする" ; 820
+	RETURNF "Increase your mana power to 5000 by drinking breast milk"
+CASE "魔術＜搾乳エナジードレイン＞取得" ; 821
+	RETURNF "Get ＜Milk Energy Drain＞ magic"
+CASE "搾乳エナジードレインであなたの霊力を5000以上にする" ; 822
+	RETURNF "Use Milk Energy Drain to increase your spirit energy to 5000"
+CASE "＜小型霊力抽出装置＞で霊力を貯蔵する" ; 823
+	RETURNF "Store spirit energy with ＜Portable EP Extractor＞"
+CASE "霊力を5万貯蔵する" ; 824
+	RETURNF "Store 50,000 spirit energy"
+CASE "魔力を＜家庭用魔力貯蔵器＞の上限まで貯蔵する" ; 825
+	RETURNF "Store mana up to the limit of the ＜Domestic Mana Reservoir＞"
+
+CASE "１日の収入を納税対象以上にする" ; 830
+	RETURNF "have daily income above taxable income"
+
+CASE "魔術＜テレポート＞習得" ; 840
+	RETURNF "Get ＜Teleport＞ magic"
+CASE "【アダルトショップ】の調教グッズを7コ以上購入" ; 841
+	RETURNF "Purchase at least 7 training goods from【Adult Shop】"
+
+CASE "＜奴隷寮＞の購入" ; 850
+	RETURNF "Purchase ＜Slave Dorms＞"
+CASE "＜牛舎＞の購入" ; 851
+	RETURNF "Purchase ＜Cowshed＞"
+CASE "＜システムキッチン＞の購入" ; 852
+	RETURNF "Purchase ＜Built-in Kitchen＞"
+CASE "＜家族風呂＞の購入" ; 853
+	RETURNF "Purchase ＜Family Bath＞"
+CASE "＜大浴場＞の購入" ; 854
+	RETURNF "Purchase ＜Bathhouse＞"
+
+
+CASE "軍事Lv1" ; 900
+	RETURNF "Military Lv1"
+CASE "軍事Lv5＋あなたの魔力100万以上＋魔術＜個人用転移門＞＋資金50000（旅費）" ; 901
+	RETURNF "Military Lv5 + your mana over 1 million + ＜Personal Teleport Gate＞ magic + funds 50000（travel expenses）"
+
+CASE "科学技術Lv1" ; 910
+	RETURNF "Research Lv1"
+CASE "科学技術Lv3＋施設【魔王軍研究所】解放済み＋" ; 911 ; pretty sure this is an error in jp csv file. Real condition seems to be "has a slave with mixing knowledge"
+	RETURNF "Research Lv3 + have submitted slave with 【Mixing Knowledge】"
+
+CASE "オカチ街Lv1" ; 920
+	RETURNF "Okachi City Lv1"
+CASE "オカチ街Lv2" ; 921
+	RETURNF "Okachi City Lv2"
+CASE "オカチ街Lv3" ; 922
+	RETURNF "Okachi City Lv3"
+CASE "オカチ街Lv4" ; 923
+	RETURNF "Okachi City Lv4"
+CASE "オカチ街Lv5" ; 924
+	RETURNF "Okachi City Lv5"
+CASE "オカチ街Lv6" ; 925
+	RETURNF "Okachi City Lv6"
+CASE "オカチ街Lv8" ; 926
+	RETURNF "Okachi City Lv8"
+
+CASE "酪農業Lv1" ; 930
+	RETURNF "Dairy Farming Lv1"
+CASE "酪農業Lv2" ; 931
+	RETURNF "Dairy Farming Lv2"
+CASE "酪農業Lv5＋魔術＜個人用転移門＞" ; 932
+	RETURNF "Dairy Farming Lv5 + ＜Personal Teleport Gate＞ magic"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+
+@MILESTONES_REWARD(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "魔術師奴隷の標的依頼（ベテラン傭兵への依頼料込み）・＜魔力枷＞入手" ; 7800
+	RETURNF "Hunting request for magic-using slave（Fee for mercenary contract included）・Obtain ＜Mana Shackles＞"
+CASE "＜母乳濃厚化薬＞入手" ; 7801
+	RETURNF "Obtain ＜Breast Milk Enriching Drug＞"
+CASE "＜膨乳薬＞入手" ; 7802
+	RETURNF "Obtain ＜Breast Expansion Drug＞"
+
+CASE "施設【町役場】解放・＜魔力枷＞2コ入手" ; 7810
+	RETURNF "【Town Hall】opened・Obtain 2＜Mana Shackles＞"
+CASE "システム【部屋割り変更】解放・＜裁縫道具セット＞入手" ; 7811
+	RETURNF "【Room allocation】system opened・Obtain ＜Sewing Kit＞"
+CASE "スケジュール【調剤】解放" ; 7812
+	RETURNF "【Mix Drugs】schedule enabled"
+CASE "システム【掃除当番変更】解放" ; 7813
+	RETURNF "【Cleaning Duty】system opened"
+CASE "施設【不動産】解放" ; 7814
+	RETURNF "【Real Estate】facility opened"
+CASE "＜スタイリング道具セット＞入手" ; 7815
+	RETURNF "Obtain ＜Styling Toolkit＞"
+CASE "＜工具セット＞入手" ; 7816
+	RETURNF "Obtain ＜Tool Set＞"
+CASE "【強くてニューゲーム】開放" ; 7817
+	RETURNF "Unlock 【New Game+】"
+
+
+CASE "＜ネクロノミコン＞入手・魔術習得解放" ; 7820
+	RETURNF "Obtain ＜Necronomicon＞・Magic learning enabled"
+CASE "＜触手生物生態図鑑＞入手・【触手魔術】習得解放・触手AP+1" ; 7821
+	RETURNF "Obtain ＜Tentacle Creature Ecology Book＞・【Tentacle magic】learning enabled・Tentacle AP +1"
+CASE "＜小型霊力抽出装置＞・＜家庭用魔力貯蔵器＞入手" ; 7822
+	RETURNF "Obtain ＜Portable Spirit Energy Extractor＞・＜Domestic Mana Reservoir＞"
+CASE "＜霊力抽出装置＞入手・スケジュール【抽出】解放・システム【抽出魔力での経費削減】解放" ; 7823
+	RETURNF "Obtain ＜Spirit Energy Extractor＞・【Extraction】schedule enabled・【Cost reduction with extracted magic】system enabled"
+CASE "施設【魔王軍研究所】解放" ; 7824
+	RETURNF "Facility【Demon King's Army Research Institute】unlocked"
+CASE "＜業務用魔力貯蔵器＞入手" ; 7825
+	RETURNF "Obtain ＜Industrial Mana Reservoir＞"
+
+CASE "施設【魔界農協】での【納税割合変更】解放" ; 7830
+	RETURNF "【Change Tax Distribution】at 【Makai Agricultural Cooperative】 unlocked"
+
+CASE "スケジュール【訓練】解放・システム【自分で戦う】／【奴隷に戦わせる】解放" ; 7840
+	RETURNF "【Training】schedule enabled・【Fight by yourself】／【Let slaves fight】systems enabled"
+CASE "＜サキュバス頒布の薄い本＞入手・【淫紋・性魔術】習得解放" ; 7841
+	RETURNF "Obtain ＜Succubus Distribution Doujinshi＞・【Lewd Crest・Sex Magic】learning enabled"
+
+CASE "部屋割りに【奴隷寮】追加" ; 7850
+	RETURNF "Add【Slave Dorms】to room assignment"
+CASE "システム【搾乳奴隷用牛舎】解放" ; 7851
+	RETURNF "【Cowshed Milking】system enabled"
+CASE "夕食当番・システム【料理当番変更】解放" ; 7852
+	RETURNF "【Cooking Duty】system enabled"
+CASE "システム【一緒にお風呂】解放" ; 7853
+	RETURNF "【Bathing together】system enabled"
+CASE "システム【大浴場】解放・スケジュール【大浴場掃除】解放" ; 7854
+	RETURNF "【Bathhouse】system enabled・【Bathhouse Cleaning】schedule enabled"
+
+CASE "＜魔力枷＞入手" ; 7900
+	RETURNF "Obtain＜Mana Shackles＞"
+CASE "スケジュール【図書館】解放・【禁断魔術】習得解放" ; 7901
+	RETURNF "【Library】schedule opened・【Forbidden Magic】learning enabled"
+
+CASE "＜魔力枷＞入手" ; 7910
+	RETURNF "Obtain＜Mana Shackles＞"
+CASE "＜高度薬学台＞入手・【調剤】で肉体改造薬の製造追加" ; 7911
+	RETURNF "Obtain ＜Advanced Pharmacy Table＞・Body modification drugs added to【Mix Drugs】"
+
+
+CASE "システム【ローン】解放・施設【アダルトショップ】解放" ; 7920
+	RETURNF "【Loan】system enabled・【Adult Shop】facility opened"
+CASE "【呉服屋】の品揃え追加：仕事用・ランジェリー" ; 7921
+	RETURNF "New【Fashion Street】products：Work Clothes・Lingerie"
+CASE "施設【家具屋】解放" ; 7922
+	RETURNF "【Furniture Store】opened"
+CASE "【呉服屋】の品揃え追加2：レプリカ・アクセサリー" ; 7923
+	RETURNF "New【Fashion Street】products：Replica・Accessories"
+CASE "＜マジカル裁ちバサミ＞入手" ; 7924
+	RETURNF "Obtain ＜Magic Fabric Scissors＞"
+CASE "【呉服屋】の品揃え追加3：アダルト衣装／ランジェリー" ; 7925
+	RETURNF "New【Fashion Street】products：Adult Clothes and Lingerie"
+CASE "【呉服屋】の品揃え追加4：異世界衣服／ランジェリー・一部レプリカ" ; 7926
+	RETURNF "New【Fashion Street】products：Otherworld Clothes and Partial Replica"
+
+CASE "施設【魔界農協】での【魔界乳牛用設備購入】解放" ; 7930
+	RETURNF "Enables buying 【equipment for Makai dairy cows】 at【Makai Agricultural Cooperative】"
+CASE "【呉服屋】の品揃え追加：乳牛セット" ; 7931
+	RETURNF "New【Fashion Street】products：Cow Costume"
+CASE "システム【事業提携】解放" ; 7932
+	RETURNF "【Business Partner】system enabled"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@PUBIC_HAIR_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "パイパン" ; 6850
+	RETURNF "Shaved"
+CASE "産毛" ; 6851
+	RETURNF "Peach Fuzz"
+CASE "薄め" ; 6852
+	RETURNF "Light"
+CASE "標準" ; 6853
+	RETURNF "Average"
+CASE "濃いめ" ; 6854
+	RETURNF "Thick"
+CASE "剛毛" ; 6855
+	RETURNF "Bristle"
+CASE "密林" ; 6856
+	RETURNF "Jungle"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@BODY_CONFIG_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "バストサイズ" ; 3830
+	RETURNF "Breast Size"
+CASE "体型" ; 3831
+	RETURNF "Body Shape"
+CASE "性経験" ; 3832
+	RETURNF "Sex Experience"
+CASE "陰毛" ; 3833
+	RETURNF "Pubic Hair"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@BACK_BUTTON_ENG(ARGS) ; for RIGHT_RETURN_BUTTON
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "キャンセル"
+	RETURNF "Cancel"
+CASE "牧場に戻る"
+	RETURNF "Back to Ranch"
+CASE "戻る"
+	RETURNF "Back"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@AP_ENG(ARGS); Money.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "調教AP" ; 20
+	RETURNF "Training AP"
+CASE "魔術AP" ; 21
+	RETURNF "Magic AP"
+CASE "触手AP" ; 22
+	RETURNF "Tentacle AP"
+CASE "戦闘AP" ; 22
+	RETURNF "Combat AP"
+CASE "触手AP" ; 22
+	RETURNF "Forbidden AP"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@TRAIN_DISPLAY_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "Ｂ責め" ; 8050
+	RETURNF "Breasts"
+CASE "Ｎ責め" ; 8051
+	RETURNF "Nipples"
+CASE "Ｃ責め" ; 8052
+	RETURNF "Clit"
+CASE "Ｖ責め" ; 8053
+	RETURNF "Vagina"
+CASE "Ａ責め" ; 8054
+	RETURNF "Ass"
+CASE "Ｍ責め" ; 8055
+	RETURNF "Mouth"
+CASE "その他" ; 8056
+	RETURNF "Other"
+CASE "ペニス" ; 8057
+	RETURNF "Penis"
+CASE "奉仕" ; 8058
+	RETURNF "Service"
+CASE "道具" ; 8059
+	RETURNF "Tools"
+CASE "触手" ; 8060
+	RETURNF "Tentacle"
+CASE "苦痛" ; 8061
+	RETURNF "Pain"
+CASE "特殊" ; 8062
+	RETURNF "Special"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@STRIP_SELECT_ENG(ARGS) ; Str.csv
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "現在のまま" ; 8130
+	RETURNF "As Is Now"
+CASE "半脱ぎ" ; 8131
+	RETURNF "Partially Undress"
+CASE "上半身半脱ぎ" ; 8132
+	RETURNF "Expose Upper Body"
+CASE "衣服・下着脱衣" ; 8133
+	RETURNF "Remove Clothing and Underwear"
+CASE "全裸" ; 8134
+	RETURNF "Completely Naked"
+CASE "下着のみ" ; 8135
+	RETURNF "Only underwear"
+CASE "半脱ぎ下着のみ" ; 8136
+	RETURNF "Half-worn underwear"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+
+@SEX_PARTNER_ENG(ARGS) ; for translating current sex partner (e.g. V_PENIS or KISS_PLAYER) and first sex partner (like CSTR:初経験／Ｖ or CSTR:初経験／Ｍセックス)
+#FUNCTIONS
+SELECTCASE ARGS
+
+CASE "触手"
+	RETURNF "tentacles"
+CASE "バイブ"
+	RETURNF "a vibrator"
+CASE "アナルバイブ"
+	RETURNF "an anal vibrator"
+CASE "ゴブリン"
+	RETURNF "goblins"
+CASE "不明"
+	RETURNF "unknown"
+
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+
+@STR_LINEUP_ENG(ARGS) ; combine translation functions for CHANGE_STR_LINEUP
+#FUNCTIONS
+RETURNF EYE_ENG(PUBIC_HAIR_ENG(HAIR_STYLE_ENG(HAIR_CHAR_ENG(HAIR_COLOR_ENG(PERSONALITY_ENG(SKIN_ENG(FIGURE_ENG(JOB_ENG(RACE_ENG(BREAST_FIRMNESS_ENG(ARGS)))))))))))
+

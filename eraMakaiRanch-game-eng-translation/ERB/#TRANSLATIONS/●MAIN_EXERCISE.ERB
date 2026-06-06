@@ -1,0 +1,99 @@
+﻿; No idea what this code is for. Commented to prevent tons of errors.
+
+[SKIPSTART]
+@WORK_EXERCISE
+#DIM COMMA
+;COMMA = CMATCH(CFLAG:スケジュール, 999)
+COMMA = 0
+;酪農は1人もいないといない場合に飛ばす
+IF COMMA == 0
+	RETURN
+ENDIF
+
+FOR COUNT, 0, CHARANUM
+	TARGET = COUNT
+	;SIF CFLAG:スケジュール != 999
+	;	CONTINUE
+	;一番目に当たったキャラの名前
+	IF BASE:レベル != MAXBASE:レベル && BASE:体力 > 0
+		PRINTFORML %CALLNAME% trains hard, attempting to regain her lost levels...
+
+		HP_BEFORE = BASE:体力
+		BASE:体力 = MIN(BASE:体力 / 5, BASE:体力 - 500)
+		BASE:体力 = MAX(BASE:体力, 0)
+		IF HP_BEFORE > BASE:体力
+			PRINTFORM HP－{HP_BEFORE - BASE:体力, 4, LEFT} 
+			SIF !BASE:体力
+				PRINT 【0 HP】
+			PRINTL
+		ENDIF
+
+		CFLAG:LevelMeter += RAND:10 * CFLAG:ランク 
+		IF (CFLAG:LevelMeter >= BASE:レベル * 3)
+			BASE:レベル += 1
+			CFLAG:LevelMeter -= (BASE:レベル * 3)
+			BASE:霊力 = (MAXBASE:霊力 * (POWER((BASE:レベル * 100 / MAXBASE:レベル), 3) / 10000)) / 100
+			PRINTFORML %CALLNAME%'s training paid off! Lv{BASE:レベル - 1} → Lv{BASE:レベル}...
+			CFLAG:次回レベルダウン霊力 = MAX(BASE:霊力 - 1, 0)
+			PRINTL
+		ENDIF
+	ELSEIF !(TALENT:魔界適応 || MARK:絶頂魔力回復淫紋) && BASE:体力 > 0
+		PRINTFORML %CALLNAME% trains hard, attempting to acclimate to the Makaian environment...
+
+		HP_BEFORE = BASE:体力
+		BASE:体力 = MIN(BASE:体力 / 5, BASE:体力 - 500)
+		BASE:体力 = MAX(BASE:体力, 0)
+		IF HP_BEFORE > BASE:体力
+			PRINTFORM %CALLNAME, 10% 
+			PRINTFORM HP－{HP_BEFORE - BASE:体力, 4, LEFT}
+			SIF !BASE:体力
+				PRINT 【0 HP】
+			PRINTL
+		ENDIF
+
+		CFLAG:MakaiAdapt += RAND:100
+		CFLAG:MakaiAdapt += RAND:MAX(CFLAG:ランク, 1) * 25
+		IF CFLAG:MakaiAdapt > 9000
+			TALENT:魔界適応 = 1
+			PRINTFORML %CALLNAME%'s hard word paid off! She can now regenerate Mana...
+			PRINTL
+		ENDIF
+	ELSEIF BASE:体力 > 0
+		PRINTFORML %CALLNAME% trains hard, attempting to reach a higher level...
+
+		HP_BEFORE = BASE:体力
+		BASE:体力 = MIN(BASE:体力 / 10, BASE:体力 - 500)
+		BASE:体力 = MAX(BASE:体力, 0)
+		IF HP_BEFORE > BASE:体力
+			PRINTFORM %CALLNAME, 10% 
+			PRINTFORM HP－{HP_BEFORE - BASE:体力, 4, LEFT} 
+			SIF !BASE:体力
+				PRINT 【0 HP】
+			PRINTL
+		ENDIF
+
+		CFLAG:LevelMeter += RAND:10 * CFLAG:ランク
+		IF (CFLAG:LevelMeter >= BASE:レベル * 10)
+			BASE:レベル += 1
+			MAXBASE:レベル += 1
+			CFLAG:LevelMeter -= (BASE:レベル * 10)
+			IF BASE:レベル < 100 ; leveling calc dohickey
+				MAXBASE:霊力 = MAXBASE:霊力 + (MAXBASE:霊力 * BASE:レベル / 1000)
+			ELSE
+				MAXBASE:霊力 = MAXBASE:霊力 + (MAXBASE:霊力 * BASE:レベル / 100)
+			ENDIF
+			BASE:霊力 = MAXBASE:霊力
+			PRINTFORML %CALLNAME%'s training paid off! Lv{BASE:レベル - 1} → Lv{BASE:レベル}...
+			CFLAG:次回レベルダウン霊力 = MAX(BASE:霊力 - 1, 0)
+		ENDIF
+	ELSE
+		PRINTFORML %CALLNAME% is too tired, and falls asleep during training...
+		PRINTFORM %CALLNAME, 10% 
+		CALL HP_HEAL(20, 0)
+		PRINTL
+	ENDIF
+NEXT
+
+PRINTW
+DRAWLINE
+[SKIPEND]

@@ -1,0 +1,37 @@
+﻿
+;図書館
+@VISIT_LIBRARY
+#DIM SKILL_POINT
+
+;あなたしか来ない
+CALL MILESTONE_UNLOCK_CHECK("禁断魔術","")
+SIF CSTR:0:スケジュール != "図書館" || !RESULT
+	RETURN
+TARGET = 0
+PRINTL 　　　《 Library 》
+PRINTFORML %CALLNAME% visited the library and continued reading ＜Al Azif＞
+
+;100万MPにつき1AP
+SKILL_POINT = MAXBASE:0:魔力
+MONEY:禁断AP蓄積値 += SKILL_POINT
+PRINTFORM Forbidden AP accumulation+%VALUE_DIGIT(SKILL_POINT)%
+
+;実際にAPになるほうを計算
+;禁断AP：蓄積値100万→1AP
+SKILL_POINT = MONEY:禁断AP蓄積値 /1000000
+IF SKILL_POINT
+	MONEY:禁断AP += SKILL_POINT
+	MONEY:禁断AP累計値 += SKILL_POINT
+	MONEY:禁断AP蓄積値 -= (SKILL_POINT *1000000)
+	CALL PRINT_WORD_COLOR,@"【Forbidden AP+{SKILL_POINT}】","水色"
+ENDIF
+PRINTL
+USE_MP = MAGIC_USE_MP:GETNUM(ITEM,"個人用転移門")
+BASE:魔力 = LIMIT(BASE:魔力 -USE_MP,0,BASE:魔力)
+PRINTFORML ＜Personal Transfer Gate > Consumption：%VALUE_DIGIT(USE_MP)%MP
+EXP:実行回数／図書館 ++
+EXP:区間実行回数／図書館 ++
+PRINTW
+DRAWLINE
+
+

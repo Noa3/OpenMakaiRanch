@@ -1,0 +1,54 @@
+﻿
+;触手責め搾乳
+@SLAVE_T_LACTATION
+
+CATTLE_COUNT = CMATCH(CSTR:スケジュール,"触手責め搾乳")
+SIF !CATTLE_COUNT
+	RETURN
+
+PRINTL 　　　《 Tentacle Breast Milking 》
+
+;補正値は触手があなたから学習する感じで少し技巧を反映
+FLAG:補正技巧値 = 1 + (ABL:0:技巧 / 4)
+CALL RANDOM_CHARA_SCHEDULE_COMMON("触手責め搾乳")
+
+;あなたの魔力が足りない場合バッテリーで補填
+IF BASE:0:魔力 < FLAG:区間魔力消費量
+	FLAG:区間バッテリー消費量 += (FLAG:区間魔力消費量 - BASE:0:魔力) * 5
+	FLAG:区間魔力消費量 = BASE:0:魔力
+ENDIF
+
+CALL SECTION_MP_COST
+CALL SCHEDULE_ABL_MARK_BULK(1,"触手責め搾乳")
+PRINTW
+DRAWLINE
+CALL RESET_TRAIN_PALAM
+
+
+
+;抽選したキャラの搾乳風景表示
+@SLAVE_T_LACTATION_ENTRANCE
+
+SIF CSTR:状態／あなたの子 == "成長後"
+	CALL CHILD_REBELLION(1)
+
+IF !EXP:実行回数／触手責め搾乳
+	KOJO_TYPE = 初回
+ELSE
+	KOJO_TYPE = 通常
+ENDIF
+;CALL STANDBY_SLAVE_LACTATION_MESSAGE
+CALL SLAVE_LACTATION_RUN(1,"触手責め搾乳")
+
+;実行後の地の文は↑の中
+FLAG:前回表示キャラID／触手責め搾乳 = CFLAG:ID
+
+;TFLAGでABLUPしたか判定が必要　なかった
+WAIT
+
+;改行しないと見にくい
+CALL MANYL(2)
+
+
+
+

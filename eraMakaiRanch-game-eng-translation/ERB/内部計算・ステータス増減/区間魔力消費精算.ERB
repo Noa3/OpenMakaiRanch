@@ -1,0 +1,67 @@
+﻿
+;区間魔力消費量精算
+@SECTION_MP_COST
+
+IF FLAG:区間魔力消費量
+	SIF FLAG:消費バッテリー表示
+		PRINTFORML Mana Consumed：{FLAG:区間魔力消費量}MP　
+	BASE:0:魔力 += FLAG:体内凌辱持ち越し魔力
+	BASE:0:魔力 -= FLAG:区間魔力消費量
+	BASE:0:魔力 = LIMIT(BASE:0:魔力,0,MAXBASE:0:魔力)
+ENDIF
+IF FLAG:区間バッテリー消費量
+	MONEY:バッテリー追加消費金額 += FLAG:区間バッテリー消費量
+	SIF FLAG:消費バッテリー表示
+		PRINTFORML Batteries Consumed：{FLAG:区間バッテリー消費量}
+ENDIF
+FLAG:区間魔力消費量 = 0
+FLAG:区間バッテリー消費量 = 0
+FLAG:体内凌辱持ち越し魔力 = 0
+
+;MPが時間圧縮のコスト以下になったら解除
+IF TFLAG:時間圧縮中 && BASE:0:魔力 < MAGIC_USE_MP:GETNUM(ITEM,"時間圧縮") *TFLAG:時間圧縮有効ターン数
+	TFLAG:時間圧縮中 = 0
+	PRINTFORML ＜Time Compression＞ is over as %CALLNAME:0% doesn't have enough Mana.
+ENDIF
+
+;調教中ならMP0で触手など解除
+SIF BASE:0:魔力
+	RETURN
+IF TFLAG:調教中 && TFLAG:触手装備
+	FOR LOCAL,100,200
+		TEQUIP:LOCAL = 0
+	NEXT
+	TFLAG:触手装備 = 0
+	SIF GETBIT(＃拘束／触手＃)
+		TFLAG:拘束BIT = 0
+	PRINTFORML As %CALLNAME:0%'s Mana runs out, the tentacles disappear.
+ENDIF
+
+;体内凌辱しているなら全員解放される
+SAVE_TARGET = TARGET
+CATTLE_COUNT = CMATCH(CSTR:スケジュール,"体内凌辱")
+SIF !CATTLE_COUNT
+	RETURN
+FOR LOCAL,0,CHARANUM
+	TARGET = LOCAL
+	SIF CSTR:スケジュール != "体内凌辱"
+		CONTINUE
+		
+	;一番目に当たったキャラの名前
+	IF CSTR:スケジュール == "体内凌辱"
+		PRINTFORM With %CALLNAME:0%'s Mana exhausted, %CALLNAME% 
+		SIF CATTLE_COUNT > 1
+			PRINT and the others 
+		BREAK
+	ENDIF
+NEXT
+PRINTFORMW \@ CATTLE_COUNT > 1 ? have # has \@ been released from %CALLNAME:0%'s body...
+FOR LOCAL,0,CHARANUM
+	TARGET = LOCAL
+	SIF CSTR:スケジュール != "体内凌辱"
+		CONTINUE
+	SIF CSTR:スケジュール == "体内凌辱"
+		CSTR:スケジュール = 行動済み
+NEXT
+TARGET = SAVE_TARGET
+

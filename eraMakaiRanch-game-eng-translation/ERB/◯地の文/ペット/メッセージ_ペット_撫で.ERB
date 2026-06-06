@@ -1,0 +1,142 @@
+﻿
+;ペットなでなで：地の文
+;TARGET,ANIMAL,PET_NAME指定済み
+@PET_COMMU_MESSAGE_STROKE
+
+;【動物に好かれる／嫌われる】となつき度で変化
+FLAG_NAME = なつき度／%ANIMAL%
+IF BASE:FLAG_NAME == MAXBASE:FLAG_NAME
+	CALL PET_COMMU_MESSAGE_STROKE_MAX
+ELSEIF TALENT:動物に好かれる || BASE:FLAG_NAME >= 8000
+	CALL PET_COMMU_MESSAGE_STROKE_LOVE
+ELSEIF BASE:FLAG_NAME >= 4000
+	CALL PET_COMMU_MESSAGE_STROKE_MEDIUM
+ELSEIF !TALENT:動物に嫌われる && BASE:FLAG_NAME >= 2000
+	CALL PET_COMMU_MESSAGE_STROKE_LOW
+ELSE
+	CALL PET_COMMU_MESSAGE_STROKE_HATE
+ENDIF
+
+
+
+;なつきMAX
+@PET_COMMU_MESSAGE_STROKE_MAX
+
+PRINTFORML %CALLNAME%が%PET_NAME%を撫でようと思った矢先に%PET_NAME%から寄ってきた。
+SELECTCASE ANIMAL
+CASE "堕天馬","オルトロス"
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML %PET_NAME%を撫でている間に顔を舐め回されてべとべとになってしまった。
+	CASE 1
+		PRINTFORML %PET_NAME%は%CALLNAME%に撫でられながら顔に頬を擦り寄せている。
+	CASEELSE
+		PRINTFORML %PET_NAME%を撫でてあげると、尻尾をちぎれんばかりに振って喜んでいる。
+	ENDSELECT
+CASEELSE
+	SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML お腹を見せる%PET_NAME%を思う存分撫でてあげた。
+	CASE 0
+		PRINTFORML %PET_NAME%は%CALLNAME%に撫でられながら顔に頬を擦り寄せている。
+	CASEELSE
+		PRINTFORML %PET_NAME%を撫でてあげると、すっかりこちらに身を任せて喜んでいる。
+	ENDSELECT
+ENDSELECT
+
+
+
+;【動物に好かれる】orなつき時
+@PET_COMMU_MESSAGE_STROKE_LOVE
+
+;尻尾とかなつき度とかで変えたい
+PRINTFORML %CALLNAME%は%PET_NAME%を撫でてあげた。
+SELECTCASE ANIMAL
+CASE "堕天馬","オルトロス"
+	PRINTFORML %PET_NAME%は満足げに尻尾を振って喜んでいる…
+CASEELSE
+	PRINTFORML %PET_NAME%は満足げに目を細めて喜んでいる…
+ENDSELECT
+
+
+
+;なつき度ほどほど
+@PET_COMMU_MESSAGE_STROKE_MEDIUM
+
+PRINTFORML %CALLNAME%は%PET_NAME%を撫でてあげた。
+SELECTCASE ANIMAL
+CASE "堕天馬","オルトロス"
+	PRINTFORML %PET_NAME%は悪くはなさそうに尻尾を振っている…
+CASEELSE
+	PRINTFORML %PET_NAME%は大人しく撫でられている…
+ENDSELECT
+
+
+
+;【動物に嫌われる】ではなくなつき度低い
+@PET_COMMU_MESSAGE_STROKE_LOW
+
+SELECTCASE RAND:3
+CASE 0
+	PRINTFORML %CALLNAME%は%PET_NAME%を撫でようとしたが、避けられた。
+	PRINTL そういう気分ではないのかもしれない…
+CASEELSE
+	PRINTFORML %CALLNAME%は%PET_NAME%を撫でてあげた。
+	PRINTFORML %PET_NAME%は特に抵抗はしていない…
+ENDSELECT
+
+
+
+;【動物に嫌われる】かなつき度すごく低い
+@PET_COMMU_MESSAGE_STROKE_HATE
+
+PRINTFORML %CALLNAME%は%PET_NAME%を撫でようと試みた…
+SELECTCASE ANIMAL
+CASE "堕天馬"
+	;蹴るのはだいぶ事故なので蹴っちゃダメと言っておきましょうね
+	SELECTCASE RAND:8
+	CASE 0
+		PRINTFORML %PET_NAME%は珍しく大人しく撫でられている…
+	CASE 1
+		PRINTL しゃくり上げるような頭突きでふっ飛ばされた…
+	CASE 2
+		PRINTL そっぽを向かれた…
+	CASE 3
+		PRINTL ものすごく睨まれており、撫でられるような空気ではない…
+	CASE 4
+		PRINTL 羽で引っぱたかれた…
+	CASEELSE
+		PRINTL 撫でようとした手を首を振って跳ね除けられた…
+	ENDSELECT
+
+CASE "オルトロス"
+	SELECTCASE RAND:8
+	CASE 0
+		PRINTFORML %PET_NAME%は珍しく大人しく撫でられている…
+	CASE 1
+		PRINTL 2連続頭突きでふっ飛ばされた…
+	CASE 2
+		PRINTL そっぽを向かれた…
+	CASE 3
+		PRINTL ものすごく睨まれており、撫でられるような空気ではない…
+	CASE 4
+		PRINTL 手を噛まれた…
+	CASEELSE
+		PRINTL 吠えられた…
+	ENDSELECT
+CASEELSE
+	SELECTCASE RAND:5
+	CASE 0
+		PRINTFORML %PET_NAME%は珍しく大人しく撫でられている…
+	CASE 1
+		PRINTL 手を引っ掻かれた…
+	CASE 2
+		PRINTL そっぽを向かれた…
+	CASEELSE
+		PRINTL 逃げられた…
+	ENDSELECT
+ENDSELECT
+
+
+
+

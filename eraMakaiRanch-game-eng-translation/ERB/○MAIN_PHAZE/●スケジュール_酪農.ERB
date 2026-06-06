@@ -1,0 +1,179 @@
+﻿
+;酪農、搾乳
+@WORK_LACTATION
+
+;人数
+WORKER = CMATCH(CSTR:スケジュール,"酪農")
+PRINTL 　　　《 Dairy 》
+
+;酪農は1人もいないといない場合に飛ばす
+IF !WORKER
+	CALL NO_EXIST_DAIRY_FARMER
+	RETURN
+ENDIF
+
+;共通部分呼び出し
+CALL WORKER_ABL_SET("酪農")
+
+;乳牛健康度に応じて消費体力増減
+FIRST_HEALTH = FLAG:乳牛健康度
+CALL WORK_LACTATION_COST_REF
+
+;優先度つけて実行
+CALL RANDOM_CHARA_SCHEDULE_COMMON("酪農")
+
+;朝夕は魔界乳牛から搾乳する
+CALL WORK_LACTATION_MAKAI_COW
+
+;健康度の増減
+CALL WORK_LACTATION_HEALTH_CALC
+
+;まとめてABL増加
+CALL SCHEDULE_ABL_MARK_BULK(0,"酪農")
+PRINTW
+DRAWLINE
+
+
+
+;乳牛健康度による基礎消費体力
+@WORK_LACTATION_COST_REF
+
+;元気なら手間かからない
+IF FIRST_HEALTH >= 90
+	COST_BASE = 100
+
+;体調悪そうなら頑張らないといかん
+ELSEIF FIRST_HEALTH <= 20
+	COST_BASE = 400
+
+;中間
+ELSE
+	COST_BASE = 200
+ENDIF
+
+
+
+;抽選したキャラの仕事風景表示
+@WORK_LACTATION_ENTRANCE
+
+;初回
+IF !EXP:実行回数／酪農
+	KOJO_TYPE = 初回
+ELSE
+	KOJO_TYPE = 通常
+ENDIF
+CALL WORK_LACTATION_BEGIN_MESSAGE
+CALL WORK_LACTATION_ABL_MESSAGE
+CALL WORK_LACTATION_RUN
+FLAG:前回表示キャラID／酪農 = CFLAG:ID
+
+
+
+;実行内容
+@WORK_LACTATION_RUN
+
+;HP0なら飛ばす　表示しなかったキャラまとめての部分で来るはず
+;たぶん変な処理しないと来ないはずなので口上作ったりはいらないかと
+IF !BASE:体力
+	PRINTFORML %CALLNAME% is exhausted and can't work...
+	RETURN
+ENDIF
+PRINTFORM %CALLNAME_DIGIT()% 
+
+;乳牛が弱ってるなら頑張る
+IF FIRST_HEALTH <= 20
+	CALL HP_COST(COST_BASE,1)
+	
+	;1.5倍
+	HEAL = ABL:酪農
+	TIMES HEAL,1.50
+	FLAG:乳牛健康度 += HEAL
+	PRINTFORM 【Struggling】HP-{COST} Cattle Health +{HEAL,2} 
+ELSE
+	CALL HP_COST(COST_BASE,1)
+	FLAG:乳牛健康度 += ABL:酪農
+	PRINTFORM HP-{COST} Cattle Health +{ABL:酪農,2} 
+ENDIF
+CALL EXP_UP("酪農")
+CALL WORK_LOVE_UP
+CALL MIND_PALAM_AFTER_PRINT(1)
+EXP:実行回数／酪農 ++
+EXP:区間実行回数／酪農 ++
+
+;あとの処理で二重にならないように行動済みフラグを立てる
+CFLAG:行動済み = 1
+
+
+
+;なんかの手違いで誰も世話しない場合大幅に健康度下がる処理を一応入れとくので
+@NO_EXIST_DAIRY_FARMER
+
+PRINT With nobody taking care of them, the health of the Makaian cattle deteriorates... 
+COST = 30 +RAND:10
+FLAG:乳牛健康度 -= COST
+PRINTFORML Health：-{COST}
+FLAG:乳牛健康度 = LIMIT(FLAG:乳牛健康度,0,100)
+PRINTW
+DRAWLINE
+
+
+
+;魔界乳牛の搾乳
+@WORK_LACTATION_MAKAI_COW
+
+;昼はやらない
+SIF TIME == 1
+	RETURN
+
+;乳牛の体調が悪いと母乳の出が悪いよ
+CALL COW_MILK_VALUE_MESSAGE
+IF FIRST_HEALTH < 20
+	MILK_PRICE = 5000
+ELSEIF FIRST_HEALTH < 50
+	MILK_PRICE = 9000
+ELSEIF FIRST_HEALTH < 91
+	MILK_PRICE = 12000
+ELSE
+	MILK_PRICE = 15000
+ENDIF
+CALL RANDOM_FIX(MILK_PRICE,5,"魔界乳牛ミルク出荷価格")
+MILK_PRICE += FIX
+PRINTFORM Expected Profit +%VALUE_DIGIT(MILK_PRICE)%G 
+MONEY:魔界乳牛ミルク出荷予定金額 += MILK_PRICE
+
+
+
+;健康度の増減
+@WORK_LACTATION_HEALTH_CALC
+#DIM TOTAL_WORK
+
+;5～7自然に下がっていく
+COST = 5 +RAND:3
+FLAG:乳牛健康度 -= COST
+PRINTFORM Cattle Health Expenditure：－{COST} 
+
+;設備があれば健康度を追加
+IF ITEM:牛床マット
+	PRINT ＜Cow Floor Mat＞+1 
+	FLAG:乳牛健康度 ++
+ENDIF
+IF ITEM:給水器フィルター
+	PRINT ＜Water Filter＞+1 
+	FLAG:乳牛健康度 ++
+ENDIF
+TOTAL_WORK = 0
+
+;合計20未満で世話する場合90が限界にする　世話するキャラが多い分恩恵が出やすい感出したいだけ
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CSTR:スケジュール == "酪農"
+		TOTAL_WORK += ABL:酪農
+NEXT
+IF TOTAL_WORK >= 20
+	FLAG:乳牛健康度 = LIMIT(FLAG:乳牛健康度,0,100)
+ELSE
+	FLAG:乳牛健康度 = LIMIT(FLAG:乳牛健康度,0,90)
+ENDIF
+
+
+

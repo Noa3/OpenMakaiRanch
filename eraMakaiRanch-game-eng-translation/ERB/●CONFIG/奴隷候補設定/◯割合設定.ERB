@@ -1,0 +1,140 @@
+﻿
+;身体特徴の割合設定
+@TENDENCY_CONFIG_COMMON
+
+CLEARLINE LINECOUNT
+PRINTL Sets the distribution of physical characteristics during random character generation.
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL 　《 Common Settings 》
+PRINTL [ 0] Height
+PRINTL [ 1] Nipple Color
+PRINTL [ 2] Nipple Color／Brown Skin
+PRINTL [ 3] Skin Color
+PRINTL
+PRINTL 　《 General Use 》
+PRINTL [10] Breast Size
+PRINTL [11] Body Shape
+PRINTL [12] Sex Experience
+PRINTL [13] Pubic Hair
+PRINTL
+;STR:バストサイズ→3830
+PRINTL 　《 For Child Sized 》
+STR_REF = 3830
+FOR LOCAL,0,10
+	SIF STR:(STR_REF +LOCAL) == ""
+		CONTINUE
+	IF GETBIT(FLAG:子供扱い時割合適用項目BIT,LOCAL)
+		PRINTFORMLC [{LOCAL +20}] %BODY_CONFIG_ENG(STR:(STR_REF +LOCAL))%
+	ELSE
+		CALL PRINTLC_WORD_COLOR,@"<{(LOCAL +20)}> %BODY_CONFIG_ENG(STR:(STR_REF +LOCAL))%","灰"
+	ENDIF
+	PRINTFORM [{LOCAL +30}] Apply
+	CALL PRINT_ONOFF(GETBIT(FLAG:子供扱い時割合適用項目BIT,LOCAL),1)
+NEXT
+
+PRINTLC [40] Height range for treating as child sized
+SELECTCASE FLAG:子供扱い身長範囲
+CASE 0
+	PRINT ：Never
+CASE 1
+	PRINT ：【Short】and below
+CASE 2
+	PRINT ：【Petite】and below
+CASE 3
+	PRINT ：【Child】and below
+ENDSELECT
+PRINTL
+
+CALL PRINTL_ALIGN(-5)
+;CALL DEFAULT_VOID_RETURN_BUTTON(1)
+DRAWLINE
+IF !FLAG:奴隷候補設定可能
+	IF ITEM:奴隷候補設定変更チケット
+		PRINTLC [90] Use ＜Slave Candidate Change Ticket＞
+	ELSE
+		CALL PRINTLC_WORD_COLOR("　No ＜Slave Candidate Change Ticket＞","灰")
+	ENDIF
+ELSE
+	PRINTLC [98] Restore to Defaults
+ENDIF
+PRINTLC 　
+PRINTL [99] Done
+
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	CALL TENDENCY_CONFIG_HEIGHT
+CASE 1
+	CALL TENDENCY_CONFIG_NIPPLE_COLOR
+CASE 2
+	CALL TENDENCY_CONFIG_NIPPLE_COLOR_DARKSKIN
+CASE 3
+	CALL TENDENCY_CONFIG_SKIN_COLOR
+CASE 10
+	CALL TENDENCY_CONFIG_BUST
+CASE 11
+	CALL TENDENCY_CONFIG_SHAPE
+CASE 12
+	CALL TENDENCY_CONFIG_VARGIN
+CASE 13
+	CALL TENDENCY_CONFIG_UNDERHAIR
+CASE 20
+	CALL TENDENCY_CONFIG_CHILD_BUST
+CASE 21
+	CALL TENDENCY_CONFIG_CHILD_SHAPE
+CASE 22
+	CALL TENDENCY_CONFIG_CHILD_VARGIN
+CASE 23
+	CALL TENDENCY_CONFIG_CHILD_UNDERHAIR
+	
+CASE 30 TO 39
+	IF !FLAG:奴隷候補設定可能
+		CALL PRINTL_WORD_COLOR("＜Slave Candidate Change Ticket＞を使用する必要があります。","黄")
+		WAIT
+		RESTART
+	ENDIF
+	INVERTBIT FLAG:子供扱い時割合適用項目BIT,RESULT -30
+	
+CASE 40	;子供扱い身長範囲
+	IF !FLAG:奴隷候補設定可能
+		CALL PRINTL_WORD_COLOR("＜Slave Candidate Change Ticket＞を使用する必要があります。","黄")
+		WAIT
+		RESTART
+	ENDIF
+	PRINTL 《 子供扱い時使用 》欄から体型などを参照する奴隷候補の身長を設定します。
+	PRINTL
+	PRINTL [ 0] Never
+	PRINTL [ 1] 【Short】and below
+	PRINTL [ 2] 【Petite】and below (Default)
+	PRINTL [ 3] 【Child】and below
+	BINPUT
+	FLAG:子供扱い身長範囲 = RESULT
+CASE 90
+	SIF FLAG:奴隷候補設定可能 || !ITEM:奴隷候補設定変更チケット
+		RETURN
+	PRINTL Use ＜Slave Candidate Change Ticket＞?
+	CALL PRINTL_WORD_COLOR("Settings can be changed until the next slave candidate is selected.","黄")
+	CALL ASK_YN
+	IF !RESULT
+		FLAG:奴隷候補設定変更チケット使用中 = 1
+		ITEM:奴隷候補設定変更チケット --
+		PRINTW ＜Slave Candidate Change Ticket＞ used
+	ENDIF
+CASE 98
+	IF !FLAG:奴隷候補設定可能
+		CALL PRINTL_WORD_COLOR("＜Slave Candidate Change Ticket＞を使用する必要があります。","黄")
+		WAIT
+		RESTART
+	ENDIF
+	PRINTL Return physical characteristics distribution to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TENDENCY_CONFIG_ALL
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

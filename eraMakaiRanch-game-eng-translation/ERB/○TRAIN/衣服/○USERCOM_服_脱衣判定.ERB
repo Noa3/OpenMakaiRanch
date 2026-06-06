@@ -1,0 +1,394 @@
+﻿
+;衣服の脱衣コマンドチェック
+@TRAIN_STRIP_COMMAND_CLOTHE
+
+VARSET COMMAND_OK
+PRINTL 　《 Clothing 》
+IF TFLAG:一時的脱衣／衣服 || !EQUIP:装備中ID／衣服
+	CALL PRINTL_WORD_COLOR("No Clothing","桃")
+
+;着てるけど脱がすも何もない
+ELSEIF ＃着用衣服／乳出し＃ && ＃着用衣服／股間出し＃
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／乳房% and %SAVESTR:表記／膣% exposed by %ITEMS_ENG(＃着用衣服／名称＃)%","桃"
+ELSEIF GROUPMATCH(＃着用衣服／名称＃,"逆バニー服")
+	CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用衣服／名称＃)%","桃"
+;ここから上下
+ELSE
+	CALL TRAIN_STRIP_COMMAND_CLOTHE_BUST
+	CALL TRAIN_STRIP_COMMAND_CLOTHE_VAGINA
+ENDIF
+PRINTL
+
+
+
+;衣服のおっぱい状態
+@TRAIN_STRIP_COMMAND_CLOTHE_BUST
+
+IF ＃着用衣服／乳出し＃
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／乳房% exposed by %ITEMS_ENG(＃着用衣服／名称＃)%","桃"
+ELSEIF ＃着用衣服／胸破け＃
+	CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用衣服／名称＃)% chest torn","桃"
+ELSEIF GETBIT(＃半脱ぎ／衣服上＃)
+	;半脱ぎとか破くとかないエロ衣服→フラグは半脱ぎ扱いにする
+	IF ＃着用衣服／乳暖簾＃
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用衣服／名称＃)% breast covering flipped","桃"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用衣服／名称＃)% upper body partly removed","桃"
+	ENDIF
+ELSE
+	IF TFLAG:乳暖簾
+		PRINTFORML [ 0] Flip the ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞'s Breast Curtain.
+		COMMAND_OK:0 = 1
+	ELSE
+		PRINTFORML [ 0] Partially strip ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞ upper body.
+		PRINTFORML [ 1] Tear ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞ to expose upper body.
+		COMMAND_OK:0 = 1
+		COMMAND_OK:1 = 1
+	ENDIF
+ENDIF
+;COMMAND_OKで最後のまとめ脱がし見てるのでここはそのまま
+
+
+
+;股間
+@TRAIN_STRIP_COMMAND_CLOTHE_VAGINA
+
+IF ＃着用衣服／股間出し＃
+	CALL PRINTL_WORD_COLOR,@"%SAVESTR:表記／膣% exposed by %ITEMS_ENG(＃着用衣服／名称＃)%","桃"
+ELSEIF ＃着用衣服／股間破け＃
+	CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用衣服／名称＃)% crotch torn","桃"
+ELSEIF GETBIT(＃半脱ぎ／衣服下＃)
+	IF ＃着用衣服／前掛け＃
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用衣服／名称＃)% apron flipped","桃"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用衣服／名称＃)% lower body partly removed","桃"
+	ENDIF
+ELSE
+	;壁乳だとNG
+	IF GETBIT(＃拘束／下半身埋め壁乳＃)
+		CALL PRINTL_WORD_COLOR("Lower body stuck in wall","灰")
+	ELSEIF ＃着用衣服／前掛け＃
+		PRINTFORML [ 2] Flip apron of ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞
+		COMMAND_OK:2 = 1
+	ELSE
+		PRINTFORML [ 2] Partially strip ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞ lower body.
+		PRINTFORML [ 3] Tear ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞ to expose lower body.
+		COMMAND_OK:2 = 1
+		COMMAND_OK:3 = 1
+	ENDIF
+ENDIF
+
+
+
+;ブラ
+@TRAIN_STRIP_LINGERIE_BUST
+
+PRINTL 　《 Underwwear 》
+IF TFLAG:一時的脱衣／下着上 || !EQUIP:装備中ID／下着上
+	IF GROUPMATCH(＃着用下着下／名称＃,"レオタード","スクール水着","触手服") && !TFLAG:一時的脱衣／下着下
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用下着上／名称＃)%＞ top part removed","桃"
+	ELSE
+		CALL PRINTL_WORD_COLOR("No bra","桃")
+	ENDIF
+
+ELSEIF GETBIT(＃半脱ぎ／下着上＃)
+	IF ＃着用下着上／名称＃ == ＃着用下着下／名称＃
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用下着上／名称＃)% upper body partly removed","桃"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用下着上／名称＃)% partly removed","桃"
+	ENDIF
+	CALL TRAIN_STRIP_COMMAND_LINGERIE_BUST
+
+;下着が見える場合に選択肢
+{
+ELSEIF ＃着用衣服／乳暖簾＃ || ＃着用衣服／乳出し＃ || ＃着用衣服／胸破け＃ || 
+TFLAG:一時的脱衣／衣服 || !EQUIP:装備中ID／衣服 || GETBIT(＃半脱ぎ／衣服上＃) || ＃着用衣服／名称＃ == "逆バニー服"
+}
+	CALL TRAIN_STRIP_COMMAND_LINGERIE_BUST
+ELSE
+	CALL PRINTL_WORD_COLOR("Upper body clothed","灰")
+ENDIF
+
+
+
+;ブラ脱衣判定
+@TRAIN_STRIP_COMMAND_LINGERIE_BUST
+
+;紐ほどきかチェック
+CALL LINGERIE_STRING_CHECK(＃着用下着上／名称＃)
+IF RESULT
+	;上下セットの場合文面替え
+	IF ＃着用下着上／名称＃ == ＃着用下着下／名称＃
+		PRINTFORML [10] Untie top ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞ strings
+		SIF !GETBIT(＃半脱ぎ／下着上＃)
+			PRINTFORML [11] Partially strip ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞ upper body
+	ELSE
+		PRINTFORML [10] Untie ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞ strings
+		SIF !GETBIT(＃半脱ぎ／下着上＃)
+			PRINTFORML [11] Partially strip ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞
+	ENDIF
+	COMMAND_OK:10 = 1
+	SIF !GETBIT(＃半脱ぎ／下着上＃)
+		COMMAND_OK:11 = 1
+
+;紐なし　ニップレスだけかもしれない
+ELSEIF GROUPMATCH(＃着用下着上／名称＃,"ニップレス")
+	PRINTFORML [10] Peel off ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞
+	COMMAND_OK:10 = 1
+
+ELSE
+	IF TFLAG:拘束BIT
+		CALL PRINTL_WORD_COLOR("Can't completely strip while restrained","灰")
+	ELSEIF CFLAG:無抵抗 || !BASE:体力
+		IF GROUPMATCH(＃着用下着上／名称＃,"スポーツブラ","レオタード","スクール水着","触手服")
+			IF !TFLAG:一時的脱衣／衣服 && EQUIP:装備中ID／衣服
+				CALL PRINTL_WORD_COLOR("Not allowed without removing clothing","灰")
+			ELSEIF GROUPMATCH(＃着用下着上／名称＃,"スポーツブラ")
+				PRINTFORML [10] Take off ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞
+			ELSE
+				PRINTFORML [10] Remove upper part of ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞
+			ENDIF
+		ELSE
+			PRINTFORML [10] Take off ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞
+		ENDIF
+		COMMAND_OK:10 = 1
+	ELSE
+		CALL PRINTL_WORD_COLOR("Can't remove due to resistance","灰")
+	ENDIF
+	IF !GETBIT(＃半脱ぎ／下着上＃)
+		IF GROUPMATCH(＃着用下着上／名称＃,"レオタード","スクール水着","触手服")
+			PRINTFORML [11] Pull the chest part of ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞ into her cleavage
+		ELSE
+			PRINTFORML [11] Partially strip ＜%ITEMS_ENG(＃着用下着上／名称＃)%＞
+		ENDIF
+		COMMAND_OK:11 = 1
+	ENDIF
+ENDIF
+
+
+
+;ショーツ
+@TRAIN_STRIP_LINGERIE_VAGINA
+
+IF TFLAG:一時的脱衣／下着下 || !EQUIP:装備中ID／下着下
+	CALL PRINTL_WORD_COLOR("No panties","桃")
+
+ELSEIF GETBIT(＃半脱ぎ／下着下＃)
+	IF ＃着用下着上／名称＃ == ＃着用下着下／名称＃
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用下着下／名称＃)% upper body partly removed","桃"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"%ITEMS_ENG(＃着用下着下／名称＃)% partly removed","桃"
+	ENDIF
+	CALL TRAIN_STRIP_COMMAND_LINGERIE_VAGINA
+{
+ELSEIF ＃着用衣服／前掛け＃ || ＃着用衣服／股間出し＃  || ＃着用衣服／股間破け＃ || 
+TFLAG:一時的脱衣／衣服 || !EQUIP:装備中ID／衣服 || GETBIT(＃半脱ぎ／衣服下＃) || ＃着用衣服／名称＃ == "逆バニー服"
+}
+	CALL TRAIN_STRIP_COMMAND_LINGERIE_VAGINA
+ELSE
+	CALL PRINTL_WORD_COLOR("Lower body clothed","灰")
+ENDIF
+PRINTL
+
+
+
+;ショーツ脱衣判定
+@TRAIN_STRIP_COMMAND_LINGERIE_VAGINA
+
+IF GETBIT(＃拘束／下半身埋め壁乳＃)
+	CALL PRINTL_WORD_COLOR("Lower body embedded in wall","灰")
+	RETURN
+ENDIF
+
+;紐ほどきかチェック
+CALL LINGERIE_STRING_CHECK(＃着用下着下／名称＃)
+IF RESULT
+	;上下セットの場合文面替え
+	IF ＃着用下着上／名称＃ == ＃着用下着下／名称＃
+		PRINTFORML [12] Untie lower ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞ strings
+		SIF !GETBIT(＃半脱ぎ／下着下＃)
+			PRINTFORML [13] Partially strip ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞ lower body
+	ELSE
+		PRINTFORML [12] Untie ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞ strings
+		SIF !GETBIT(＃半脱ぎ／下着下＃)
+			PRINTFORML [13] Partially strip ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞
+	ENDIF
+	COMMAND_OK:12 = 1
+	SIF !GETBIT(＃半脱ぎ／下着下＃)
+		COMMAND_OK:13 = 1
+
+;紐なし　前貼りとＣストリング
+ELSEIF GROUPMATCH(＃着用下着下／名称＃,"前貼り","Ｃストリング")
+	IF ＃着用下着下／名称＃ == "前貼り"
+		PRINTFORML [12] Peel off ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞
+	ELSE
+		PRINTFORML [12] Take off ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞
+	ENDIF
+	COMMAND_OK:12 = 1
+
+ELSE
+	;触手装備中以外はわりと自由だった
+	;触手以外のＡＢＣＶはOK
+	IF TFLAG:拘束BIT
+		CALL PRINTL_WORD_COLOR("Can't completely remove while restrained","灰")
+	ELSEIF TFLAG:搾乳器
+		CALL PRINTL_WORD_COLOR("Can't complelty remove while using milker","灰")
+	ELSEIF TFLAG:触手装備
+		CALL PRINTL_WORD_COLOR("Can't complelty remove while using tentacles","灰")
+	ELSEIF TFLAG:Ｐ使用BIT
+		CALL PRINTL_WORD_COLOR,@"Can't complelty remove while penetrating with %SAVESTR:表記／ペニス%","灰"
+	ELSEIF CFLAG:無抵抗 || !BASE:体力
+		;上下一体の場合はここは飛ばす
+		SIF ＃着用下着上／名称＃ == ＃着用下着下／名称＃ && !GROUPMATCH(＃着用下着下／名称＃,"レオタード","スクール水着","触手服")
+			RETURN
+		IF GROUPMATCH(＃着用下着下／名称＃,"レオタード","スクール水着","触手服") && !TFLAG:一時的脱衣／衣服 && EQUIP:装備中ID／衣服
+			CALL PRINTL_WORD_COLOR("Not allowed without removing clothing","灰")
+		ELSE
+			PRINTFORML [12] Take off ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞
+			COMMAND_OK:12 = 1
+		ENDIF
+	ELSE
+		CALL PRINTL_WORD_COLOR("Can't remove due to resistance","灰")
+	ENDIF
+	IF !GETBIT(＃半脱ぎ／下着下＃)
+		IF GROUPMATCH(＃着用下着下／名称＃,"レオタード","スクール水着","触手服")
+			PRINTFORML [13] Shift crotch part of ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞
+		ELSE
+			PRINTFORML [13] Partially strip ＜%ITEMS_ENG(＃着用下着下／名称＃)%＞
+		ENDIF
+		COMMAND_OK:13 = 1
+	ENDIF
+ENDIF
+PRINTL
+
+
+
+;上着
+@TRAIN_STRIP_JACKET
+
+IF TFLAG:一時的脱衣／上着 || !EQUIP:装備中ID／上着
+	CALL PRINTL_WORD_COLOR("No top clothing","灰")
+
+ELSEIF GROUPMATCH(＃着用上着／名称＃,"オーバーオール","エプロン")
+	CALL PRINTL_WORD_COLOR("No exposure assessment for the top clothing","灰")
+
+ELSEIF GETBIT(＃半脱ぎ／上着＃)
+	CALL PRINTL_WORD_COLOR,@"%＃着用上着／名称＃% Half-Undressed","桃"
+	
+ELSE
+	PRINTFORML [14] Half-undress ＜%＃着用上着／名称＃%＞
+	COMMAND_OK:14 = 1
+ENDIF
+PRINTL
+
+
+
+
+
+
+
+
+;アクセサリー外し表示
+@TRAIN_STRIP_ACCESSORY
+
+;アクセサリー一時的脱衣フラグ：130～
+;アクセサリー装備箇所のSTR：6670～
+EXIST = 0
+PRINTL 　《 Accessories 》
+FLAG_REF = 120
+STR_REF = 6660
+FOR LOCAL,10,20
+	SIF EQUIPNAME:LOCAL == ""
+		CONTINUE
+	IF !EQUIP:LOCAL || TFLAG:(LOCAL +FLAG_REF)
+		;表示が長いので装備してない場合も飛ばすことにした
+		;CALL PRINTL_WORD_COLOR,@"　%STR:(LOCAL +STR_REF)%装備なし","灰"
+		CONTINUE
+	
+	;下半身埋め拘束だと脚はダメ
+	ELSEIF GETBIT(＃拘束／下半身埋め壁乳＃) && LOCAL == 13
+		CALL PRINTL_WORD_COLOR("Leg accessories cannot be removed while lower body embedded in wall","灰")
+		CONTINUE
+	ENDIF
+	PRINTFORML [{LOCAL +10,2}] Take off ＜%ITEMS_ENG(ITEMNAME:(EQUIP:LOCAL))%＞
+	COMMAND_OK:(LOCAL +10) = 1
+	EXIST ++
+NEXT
+
+;ない場合ないって書く
+SIF !EXIST
+	CALL PRINTL_WORD_COLOR("No accessories","灰")
+PRINTL
+
+
+
+;まとめて脱がす
+@TRAIN_STRIP_BULK
+
+PRINTL 　《 Batch 》
+IF TFLAG:拘束BIT
+	CALL PRINTL_WORD_COLOR("Can't completely strip while restrained","灰")
+ELSEIF TFLAG:Ｐ使用BIT
+	CALL PRINTL_WORD_COLOR("Can't completely strip during insertion","灰")
+ELSEIF TFLAG:触手装備
+	CALL PRINTL_WORD_COLOR("Can't completely strip while using tentacles","灰")
+ELSEIF TFLAG:搾乳器
+	CALL PRINTL_WORD_COLOR("Can't completely strip while using milker","灰")
+ELSEIF !CFLAG:無抵抗 && BASE:体力
+	CALL PRINTL_WORD_COLOR("Can't completely strip due to resistance","灰")
+ELSEIF !TFLAG:一時的脱衣／衣服 && EQUIP:装備中ID／衣服
+	;他の装備はあっても脱がせるようにした
+	PRINTFORML [30] Take off ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞
+	COMMAND_OK:30 = 1
+ENDIF
+IF COMMAND_OK:0 && COMMAND_OK:2
+	PRINTFORML [31] Partially strip ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞ upper and lower body.
+	COMMAND_OK:31 = 1
+ENDIF
+IF COMMAND_OK:1 && COMMAND_OK:3
+	PRINTFORML [32] Tear ＜%ITEMS_ENG(＃着用衣服／名称＃)%＞ to expose upper and lower body.
+	COMMAND_OK:32 = 1
+ENDIF
+IF COMMAND_OK:0 && EQUIP:装備中ID／下着上
+	PRINTL [33] Partially strip upper body clothing and underwear
+	COMMAND_OK:33 = 1
+ENDIF
+IF COMMAND_OK:2 && EQUIP:装備中ID／下着下
+	PRINTL [34] Partially strip lower body clothing and underwear
+	COMMAND_OK:34 = 1
+ENDIF
+IF COMMAND_OK:10 && COMMAND_OK:12 && !GROUPMATCH(＃着用下着下／名称＃,"レオタード","スクール水着","触手服")
+	PRINTL [35] Take off top and bottom underwear
+	COMMAND_OK:35 = 1
+ENDIF
+IF COMMAND_OK:11 && COMMAND_OK:13
+	PRINTL [36] Partially strip top and bottom underwear
+	COMMAND_OK:36 = 1
+ENDIF
+IF COMMAND_OK:31 && COMMAND_OK:36
+	PRINTL [37] Partially strip everything, including undewear
+	COMMAND_OK:37 = 1
+ENDIF
+
+;下着がどっちかの場合でもOKにした
+;30がOKな時点で下着も脱がす準備はできてる
+IF COMMAND_OK:30
+	;下着の上、下それぞれでフラグ立て判定
+	SIF !TFLAG:一時的脱衣／下着上 && EQUIP:装備中ID／下着上
+		COMMAND_OK:38 = 1
+	SIF !TFLAG:一時的脱衣／下着下 && EQUIP:装備中ID／下着下
+		COMMAND_OK:38 = 1
+	
+	;フラグが立ってたら選択肢出す
+	SIF COMMAND_OK:38
+		PRINTL [38] Remove everything including underwear
+ENDIF
+IF SUMARRAY(COMMAND_OK,20,30)
+	PRINTL [39] Remove all Accessories
+	COMMAND_OK:39 = 1
+ENDIF
+PRINTL
+
+
+
+

@@ -1,0 +1,198 @@
+﻿
+@BIND_0_CONTINUE
+;立ち柱
+
+LOSEBASE:気力 += 5
+SOURCE:屈辱 += 300
+SOURCE:支配 += 500
+SOURCE:マゾヒズム += 300
+
+
+@BIND_1_CONTINUE
+;座り柱
+
+LOSEBASE:気力 += 5
+SOURCE:屈辱 += 300
+SOURCE:支配 += 500
+SOURCE:マゾヒズム += 300
+
+
+@BIND_2_CONTINUE
+;まんぐり
+
+LOSEBASE:気力 += 5
+SOURCE:恥辱 += 1000
+SOURCE:屈辱 += 1000
+SOURCE:支配 += 500
+SOURCE:マゾヒズム += 1000
+
+
+@BIND_3_CONTINUE
+;搾乳台
+
+LOSEBASE:気力 += 5
+SOURCE:恥辱 += 300
+SOURCE:屈辱 += 500
+SOURCE:支配 += 500
+SOURCE:マゾヒズム += 300
+
+
+@BIND_4_CONTINUE
+;吊るし
+
+LOSEBASE:気力 += 10
+SOURCE:恥辱 += 300
+SOURCE:屈辱 += 700
+SOURCE:支配 += 700
+SOURCE:マゾヒズム += 700
+SOURCE:非性感帯痛み += 700
+
+
+@BIND_5_CONTINUE
+;十字架
+
+LOSEBASE:気力 += 5
+SOURCE:屈辱 += 700
+SOURCE:支配 += 1000
+SOURCE:マゾヒズム += 200
+
+
+@BIND_6_CONTINUE
+;Ｘ字
+
+LOSEBASE:気力 += 5
+SOURCE:恥辱 += 300
+SOURCE:屈辱 += 1000
+SOURCE:支配 += 700
+SOURCE:マゾヒズム += 300
+
+
+@BIND_7_CONTINUE
+;手枷屈脚
+
+LOSEBASE:気力 += 5
+SOURCE:恥辱 += 500
+SOURCE:屈辱 += 500
+SOURCE:支配 += 1000
+SOURCE:マゾヒズム += 1000
+SOURCE:非性感帯痛み += 300
+
+
+@BIND_8_CONTINUE
+;ハーネス
+
+LOSEBASE:気力 += 5
+SOURCE:恥辱 += 500
+SOURCE:屈辱 += 700
+SOURCE:支配 += 1000
+SOURCE:マゾヒズム += 800
+SOURCE:非性感帯痛み += 500
+
+
+@BIND_9_CONTINUE
+;ベッド仰向け
+
+LOSEBASE:気力 += 5
+SOURCE:恥辱 += 500
+SOURCE:屈辱 += 300
+SOURCE:支配 += 600
+SOURCE:マゾヒズム += 500
+
+
+@BIND_10_CONTINUE
+;ベッドうつ伏せ
+
+LOSEBASE:気力 += 5
+SOURCE:恥辱 += 200
+SOURCE:屈辱 += 600
+SOURCE:支配 += 700
+SOURCE:マゾヒズム += 600
+
+
+@BIND_11_CONTINUE
+;荒縄
+
+LOSEBASE:体力 += 10
+LOSEBASE:気力 += 10
+SOURCE:恥辱 += 200
+SOURCE:屈辱 += 500
+SOURCE:支配 += 400
+SOURCE:マゾヒズム += 500
+
+
+@BIND_12_CONTINUE
+;亀甲縛り
+
+LOSEBASE:体力 += 10
+LOSEBASE:気力 += 10
+SOURCE:恥辱 += 500
+SOURCE:屈辱 += 1000
+SOURCE:支配 += 1000
+SOURCE:マゾヒズム += 1200
+
+
+@BIND_13_CONTINUE
+;触手
+
+LOSEBASE:体力 += 10
+LOSEBASE:気力 += 20
+SOURCE:恥辱 += 300
+SOURCE:不潔 += 300
+SOURCE:支配 += 500
+SOURCE:異形恐怖 += 300
+SOURCE:マゾヒズム += 300
+SOURCE:触手魔力消費量 += 50
+;	SIF ITEM:血中魔力強化媚液
+;		SOURCE:淫欲 += SOURCE:淫欲 /10
+
+
+@BIND_14_CONTINUE
+;下半身埋め壁乳
+
+LOSEBASE:気力 += 5
+SOURCE:恥辱 += 300
+SOURCE:屈辱 += 1000
+SOURCE:支配 += 1000
+SOURCE:マゾヒズム += 500
+
+
+@BIND_15_CONTINUE
+;三角木馬
+
+LOSEBASE:体力 += 30
+LOSEBASE:気力 += 30
+SOURCE:恥辱 += 300
+SOURCE:屈辱 += 1000
+SOURCE:支配 += 1000
+SOURCE:マゾヒズム += 1500
+
+;スパンキングだと痛み1.5倍
+IF SELECTCOM == 70
+	FIX = 1500
+ELSE
+	FIX = 1000
+ENDIF
+
+;着衣状態に応じて変化
+{
+IF TFLAG:一時的脱衣／衣服 || !EQUIP:装備中ID／衣服 || ＃着用衣服／名称＃ == "逆バニー服" ||
+＃着用衣服／股間破け＃ || GETBIT(＃半脱ぎ／衣服下＃) || ＃着用衣服／股間出し＃
+}
+	;無し
+	{
+	IF !EQUIP:装備中ID／下着下 || GETBIT(＃半脱ぎ／下着下＃) || TFLAG:一時的脱衣／下着下 ||
+	＃着用下着下／名称＃ == "局部露出ショーツ"
+	}
+		FIX *= 50
+	;下着越し
+	ELSE
+		FIX *= 40
+	ENDIF
+;衣服越し
+ELSE
+	FIX *= 25
+ENDIF
+SOURCE:Ｃ痛み += FIX
+SOURCE:Ｖ痛み += FIX
+
+

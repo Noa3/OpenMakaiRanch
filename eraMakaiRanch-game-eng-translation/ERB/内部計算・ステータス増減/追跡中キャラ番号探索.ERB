@@ -1,0 +1,13 @@
+﻿
+;追跡中のキャラがいるかの判定
+@CHASE_SLAVE_CHECK
+
+FLAG:追跡中人数 = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CFLAG:追跡対象
+		FLAG:追跡中人数 ++
+NEXT
+
+
+

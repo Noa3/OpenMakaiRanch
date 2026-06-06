@@ -1,0 +1,125 @@
+﻿
+;1ページ
+@SELF_CHARA_MAKE_STATUS_1
+
+PRINTL 　《 ステータス 》
+CALL HALFLINE
+IF !CFLAG:非戦闘職
+	PRINTLC [ 0] Level
+	PRINTFORML ：Lv{BASE:レベル}
+ELSE
+	CALL PRINTL_WORD_COLOR,@"< 0> レベル：Lv{BASE:レベル}固定","灰"
+ENDIF
+PRINTLC [ 1] Non-Combatant
+CALL PRINT_ONOFF(CFLAG:非戦闘職,1)
+PRINTLC 　Rank（Auto-Calculated）
+PRINTFORML ：★{CFLAG:ランク}
+PRINTLC [ 2] Health
+PRINTFORML ：{MAXBASE:体力}HP
+PRINTLC [ 3] 気力
+PRINTFORML ：{MAXBASE:気力}SP
+PRINTL
+
+;各数値固定を追加
+PRINTFORML 　Spirit Energy：%VALUE_DIGIT(MAXBASE:霊力)%EP
+IF !CFLAG:非戦闘職
+	PRINTL [ 4] Recalculate Spirit Energy
+	
+	;手動のみ変更可能
+	IF !SELF_CHARA_MAKE_RANDOM
+		PRINTLC [ 5] Input Spirit Energy
+		CALL PRINT_ONOFF(CFLAG:霊力固定,1)
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"< 5> 霊力固定…手動入力のみ","灰"
+	ENDIF
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　Recalculate Spirit Energy","灰"
+	CALL PRINTL_WORD_COLOR,@"　Input Spirit Energy","灰"
+ENDIF
+PRINTL
+PRINTFORML 　Mana：%VALUE_DIGIT(MAXBASE:魔力)%MP
+PRINTLC [ 6] Mana Capacity
+PRINTFORML ：{CFLAG:魔力量}／10
+PRINTL [ 7] Recalculate Mana
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTLC [ 8] Input Mana
+	CALL PRINT_ONOFF(CFLAG:魔力固定,1)
+	PRINTFORMLC [ 9] Mana Recovery
+	PRINTFORML ：{BASE:魔力回復割合}\%\/day
+ELSE
+	CALL PRINTL_WORD_COLOR,@"< 8> 　　魔力固定…手動入力のみ","灰"
+	CALL PRINTL_WORD_COLOR,@"< 9> 魔力回復割合…手動入力のみ","灰"
+ENDIF
+PRINTL
+PRINTFORML 　Combat Strength：%VALUE_DIGIT(MAXBASE:戦闘力)%
+IF !CFLAG:非戦闘職
+	PRINTL [10] Reclaculate Combat Strength
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　Recalculate Combat Strength","灰"
+ENDIF
+
+
+
+@SELF_CHARA_MAKE_STATUS_2
+
+PRINTL 　《 戦闘アビリティ・同行仲間 》
+CALL HALFLINE
+IF !CFLAG:非戦闘職
+	PRINTLC [ 0] Recovery Uses
+	PRINTFORML ：{BASE:回復回数}
+	PRINTLC [ 1] Signature Move Uses
+	PRINTFORML ：{BASE:大技回数}
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　Recovery Uses","灰"
+	CALL PRINTL_WORD_COLOR,@"　Signature Move Uses","灰"
+ENDIF
+PRINTL
+PRINTLC [ 2] Companions
+IF !CFLAG:仲間規模
+	PRINTL ：None
+	CALL PRINTL_WORD_COLOR,@"　Companion Rank","灰"
+	CALL PRINTL_WORD_COLOR,@"　Recalculate Companion Combat Strength","灰"
+ELSE
+	PRINTFORML ：%GROUP_SCALE()%
+	PRINTLC [ 3] Companion Rank
+	PRINTFORML ：{CFLAG:仲間ランク}
+	PRINTFORML 　Companion Combat Strength：%VALUE_DIGIT(MAXBASE:仲間戦闘力1)%
+	PRINTL [ 4] Recalculate Companion Combat Strength
+ENDIF
+PRINTL
+
+
+
+@SELF_CHARA_MAKE_STATUS_3
+
+PRINTL 　《 仕事能力 》
+CALL HALFLINE
+PRINTLC [ 0] Dairy
+PRINTFORML ：Lv{ABL:酪農,2}
+PRINTLC [ 1] Clerk
+PRINTFORML ：Lv{ABL:事務,2}
+PRINTLC [ 2] Cleaning
+PRINTFORML ：Lv{ABL:掃除,2}
+PRINTLC [ 3] Cooking
+PRINTFORML ：Lv{ABL:料理,2}
+PRINTLC [ 4] Pharmacy
+PRINTFORML ：Lv{ABL:薬学,2}
+PRINTLC [ 5] Reception
+PRINTFORML ：Lv{ABL:接客,2}
+PRINTL
+PRINTL 　《 仕事関連素質 》
+PRINTLC [10] 【Terrible Cleaner】
+CALL PRINT_ONOFF(TALENT:掃除下手,1)
+PRINTLC [11] 【Terrible Cook】
+CALL PRINT_ONOFF(TALENT:料理下手,1)
+PRINTLC [12] 【Terrible Receptionist】
+CALL PRINT_ONOFF(TALENT:接客下手,1)
+IF ABL:薬学 >= 5
+	PRINTLC [13] 【Mixing Knowledge】
+	CALL PRINT_ONOFF(TALENT:調合知識,1)
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　【Mixing Knowledge】requires Pharm Lv5 or higher","灰"
+ENDIF
+
+
+

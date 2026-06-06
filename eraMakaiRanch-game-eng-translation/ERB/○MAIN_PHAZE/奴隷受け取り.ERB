@@ -1,0 +1,20 @@
+﻿
+;牧場で奴隷を受け取る処理
+@SLAVE_RECEIVE_RANCH
+
+CALL CHASE_SLAVE_CHECK
+SIF !FLAG:追跡中人数
+	RETURN
+
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;追跡対象3＝輸送中の場合のみ実行
+	SIF CFLAG:追跡対象 != 3
+		CONTINUE
+	PRINTFORML The captured %CALLNAME% has been delivered to %SAVESTR:牧場名%.
+	CALL SLAVE_RECEIVE_COMMON
+NEXT
+TARGET = -1
+
+

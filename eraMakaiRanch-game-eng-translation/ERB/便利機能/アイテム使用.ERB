@@ -1,0 +1,55 @@
+﻿
+;あなたのアイテム使用
+@USE_ITEM_PLAYER
+
+PRINTFORML Select item to use on %CALLNAME%.
+PRINTL
+CALL USE_ITEM_PLAYER_CHECK
+PRINTL [99] Cancel
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL USE_ITEM_PLAYER_ENERGY_DRINK
+CASE 1
+	CALL USE_ITEM_PLAYER_DRAGON_BALL
+CASE 2
+	CALL VISIT_CHANGE_CHARA_CLOTHE
+ENDSELECT
+
+
+
+;選択肢チェック
+@USE_ITEM_PLAYER_CHECK
+
+IF CFLAG:当日制限／栄養ドリンク
+	CALL PRINTL_WORD_COLOR("　Can Only Drink One Energy Drink Per Day.","灰")
+ELSEIF BASE:体力 == MAXBASE:体力
+	CALL PRINTL_WORD_COLOR("　Stamina Is Full","灰")
+ELSEIF !ITEM:栄養ドリンク
+	CALL PRINTL_WORD_COLOR("　No ＜Energy Drink＞ Available","灰")
+ELSE
+	PRINTFORML [ 0] Energy Drink：{ITEM:栄養ドリンク} bottles.
+ENDIF
+IF ITEM:龍のタマ >= 7
+	PRINTFORML [ 1] Summon The Dragon With 7 ＜Dragon Balls＞
+ELSE
+	CALL PRINTL_WORD_COLOR,@"　Not Enough ＜Dragon Balls＞：{ITEM:龍のタマ}","灰"
+ENDIF
+PRINTFORML [ 2] Change Clothes
+PRINTL
+
+
+
+;栄養ドリンク
+@USE_ITEM_PLAYER_ENERGY_DRINK
+
+;最大体力の20%か400の多いほうが回復量になる
+HEAL = MAX(400,MAXBASE:体力 *20 /100)
+PRINTFORML %CALLNAME% Dinks One ＜Energy Drink＞.
+PRINTFORML %CALLNAME%s strength has recovered a bit!
+CALL ITEM_USE_HEAL(HEAL)
+CFLAG:当日制限／栄養ドリンク ++
+ITEM:栄養ドリンク --
+PRINTW
+
+

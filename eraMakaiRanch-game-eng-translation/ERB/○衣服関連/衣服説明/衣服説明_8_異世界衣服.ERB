@@ -1,0 +1,97 @@
+﻿
+;異世界衣服
+@ITEM_DETAIL_CLOTHE_OTHER_WORLD
+
+SELECTCASE ITEMNAME:SELECT_ITEM
+CASE "ブルマ体操着"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の教育機関で体操科目を行う際に着る、脚の隠れないパンツと半袖シャツの組み合わせ。
+	PRINTL しかし元々あった世界でもほぼ廃止されているらしい。
+
+CASE "シャツ＆ジーンズ"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界で性別問わずに着られるラフな服装。
+
+CASE "ブラウス＆スカート"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の女性が着るよそ行きの服装。
+
+CASE "割烹着"
+	CALL JACKET_DETAIL_COMMON()
+	PRINTL 異世界で料理をする際に他の衣服の上から着る、エプロンに近い衣服。
+
+CASE "囚人服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界で罪を犯し、収容所に送られたニンゲンに着せる横縞の入った衣服。
+	PRINTL 派手な色や柄によって脱獄しても見つけやすくする狙いがあるらしい。
+
+CASE "ゴスロリ衣装"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の少女が着る、派手な装飾やフリルのついた衣服。
+
+CASE "ディアンドル"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の「ドイツ」や「オーストリア」という国で着られる衣服。
+	PRINTL 近年では祭りの給仕が身に着けることが多いらしい。
+
+CASE "ナース服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の医療従事者のうち、補佐の役割の女性が身に着ける衣服。
+	PRINTL 白いものにすると白衣との違いはあまりない。
+
+CASE "バニースーツ"
+	CALL CLOTHE_DETAIL_COMMON("シールタイプのみ")
+	PRINTL 異世界の賭場などで働く女性が身に着ける、レオタード型の衣服。
+	PRINTFORML 露出度が高く、%SAVESTR:表記／乳房%の形がよくわかる。
+
+CASE "セーラー服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の教育機関の女性の制服。
+	PRINTL 元々は男性の船乗りの衣服だったらしい。
+
+CASE "チャイナドレス"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の「チュウゴク」という国で着られる上下一体の衣服。
+	PRINTL 正式にはチーパオというらしいが、そう言われても伝わりづらい気がするのでこの表記。
+
+CASE "アオザイ"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の「ベトナム」という国で着られる上下一体の衣服。
+	PRINTL 丈が長いが、スリットが大きく取られていて見た目より動きやすいらしい。
+
+CASE "着物"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の「ニホン」という国で着られる上下一体の衣服。
+	PRINTFORML %SAVESTR:表記／乳房%の高さで帯を巻くことで留めるのが正式な着方らしいが、
+	PRINTFORML 特にこのバリアントの乳牛たちは%SAVESTR:表記／乳房%が大きくて不可能な場合が多いかと思われるため
+	PRINTL そういう場合はあまり気にしないで腰に巻けばいいと思います。
+	PRINTL 上下一体ではあるが、帯で留める関係上膨乳したとき破けたりはしない。
+
+CASE "ブレザー制服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の教育機関で主に冬季に着られる制服。
+
+CASE "軍服"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 軍隊に所属するニンゲンが身に着ける丈夫な制服。
+	PRINTL 階級により装飾が異なるようだ。
+
+CASE "ライダースーツ"
+	CALL CLOTHE_DETAIL_COMMON()
+	PRINTL 異世界の乗り物に乗る際に身に着ける上下一体のとても丈夫な衣服。
+	PRINTL 体にぴっちりと張り付いて動きやすいため、特殊任務をするニンゲンが身につけたりもするらしい。
+	
+CASE "パーカー"
+	CALL JACKET_DETAIL_COMMON()
+	PRINTL 異世界で着られるフード付きの上着。
+	PRINTL 主に冬場に防寒着として着られるらしい。
+	
+CASE "カーディガン"
+	CALL JACKET_DETAIL_COMMON()
+	PRINTL 異世界で着られるボタンで前を留める上着。
+	PRINTL 主に冬場に防寒着として着られるらしい。
+ENDSELECT
+
+
+
+

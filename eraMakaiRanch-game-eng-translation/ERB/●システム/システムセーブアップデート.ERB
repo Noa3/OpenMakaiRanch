@@ -1,0 +1,57 @@
+﻿
+;グローバル変数読み込み後のアップデート処理
+@SYSTEM_SAVE_UPDATE
+
+;GLOBAL.savに記録されているバージョン情報を見る
+;高いことある？
+IF GLOBAL:システムデータのバージョン > GAMEBASE_VERSION
+	PRINTL ※なぜかゲーム本体より高いバージョンのシステムセーブを使用しています。
+	PRINTW 　バグが発生してもサポートできませんのでご了承ください。
+	RETURN
+ENDIF
+
+;同じなら何もしない
+SIF GLOBAL:システムデータのバージョン == GAMEBASE_VERSION
+	RETURN
+
+;ここにゲームのバージョンアップによるフラグ修正とかを入れる
+;1000以前は全部リセット
+IF GLOBAL:システムデータのバージョン < 1000
+	PRINTL 旧バージョンのシステムデータが存在しています。
+	PRINTL 現在のバージョンでは使用できないため、システムデータを初期化します。よろしいですか？
+	CALL ASK_YN
+	IF RESULT
+		PRINTL ゲームを終了します。バックアップ等の完了後にまたお越しください。
+		QUIT
+	ENDIF
+	CALL CREATE_GLOBAL_CONFIG
+	RETURN
+ENDIF
+
+IF GLOBAL:システムデータのバージョン < 1010
+	;搾乳器購入
+	GLOBAL:2373 = 0b101
+	
+	;褐色系用の乳首色
+	FLAG_REF = 3170
+	FOR LOCAL,0,10
+		GLOBAL:(FLAG_REF +LOCAL) = GLOBAL:(FLAG_REF +LOCAL -20)
+	NEXT
+ENDIF
+
+IF GLOBAL:システムデータのバージョン < 1030
+	;調教前選択肢に「毎回選ぶ」がなくなった対応
+	GLOBAL:2400 = LIMIT(GLOBAL:2400 -1,0,10)
+	GLOBAL:2401 = LIMIT(GLOBAL:2401 -1,0,10)
+	
+	;Ｖ・Ａサイズ確認
+	SETBIT GLOBAL:2370,5
+	SETBIT GLOBAL:2370,6
+ENDIF
+
+
+GLOBAL:システムデータのバージョン = GAMEBASE_VERSION
+SAVEGLOBAL
+PRINTW システムデータをアップデートしました。
+
+

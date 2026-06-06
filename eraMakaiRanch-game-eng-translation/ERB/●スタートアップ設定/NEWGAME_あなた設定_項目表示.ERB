@@ -1,0 +1,172 @@
+﻿
+;基本　だいたいはここだけでいいと思う
+@NEWGAME_PLAYER_DATA_INDEX1
+#DIM COLOR
+
+;手動のみ変更可能
+PRINTL [Manual Input Only]
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTL [ 0] Change Name
+	PRINTL [ 1] Full Name
+	PRINTFORML [ 2] 1st Person Pronoun   ：%CSTR:一人称%
+	PRINTFORML [ 3] Tone                 ：%SAVESTR:あなた口調%
+	PRINT [ 4] Introduction Display Color:
+ELSE
+	CALL PRINTL_WORD_COLOR,@"< 0> Change Name","灰"
+	CALL PRINTL_WORD_COLOR,@"< 1> Full Name","灰"
+	PRINTFORML < 2> 1st Person Pronoun   ：%CSTR:一人称%
+	PRINTFORML < 3> Tone                 ：%SAVESTR:あなた口調%
+	PRINT < 4> Introduction Display Color:
+ENDIF
+
+;口上の部分は共通
+COLOR = CFLAG:カラーコード／口上
+IF COLOR
+	SETCOLOR COLOR
+	PRINTFORML %UNICODE(0x2586)%(R:{GETRED(COLOR)} G:{GETGREEN(COLOR)} B:{GETBLUE(COLOR)})
+	RESETCOLOR
+ELSE
+	PRINTL Display color has not been set.
+ENDIF
+IF !SELF_CHARA_MAKE_RANDOM
+	IF FLAG:EXモード
+		PRINTFORML [ 5] 　　　Race：%CSTR:種族%
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"< 5> Race   ：【EXモード】のみ","灰"
+	ENDIF
+ELSE
+	CALL PRINTL_WORD_COLOR,@"< 5> Race","灰"
+ENDIF
+PRINTL
+PRINT [10] Height Change
+SIF SELF_CHARA_MAKE_RANDOM
+	PRINTFORM （【%CSTR:身長%】Internal Shuffle）
+PRINTL
+PRINT [11] 【Horns】
+CALL PRINT_ONOFF(TALENT:二本角,1)
+PRINTL [12] Glasses On/Off
+PRINTL [13] Apparent Age
+
+;女あなたの場合
+SIF TALENT:オトコ
+	RETURN
+PRINTL
+PRINT [14] Bust Size
+SIF SELF_CHARA_MAKE_RANDOM
+	PRINTFORM （【%PRINT_BUSTSIZE_TALENT()%】Internal Shuffle）
+PRINTL
+PRINTL [15] Breast Firmness
+
+
+
+;外見追加エディット
+@NEWGAME_PLAYER_DATA_INDEX2
+
+PRINTLC [ 0] Hair Color
+PRINTLC [ 1] Hair Characteristic
+PRINTL [ 2] Hair Style
+
+IF !SELF_CHARA_MAKE_RANDOM
+	CALL PRINTLC_WORD_COLOR,@"< 3> Batch Change: Shuffle Only","灰"
+	PRINTL [ 4] Hair Color Code
+ELSE
+	PRINTLC [ 3] Batch Hairstyle Change
+	CALL PRINTL_WORD_COLOR,@"< 4> Hair Color Code：Manual Only","灰"
+ENDIF
+PRINTL [ 5] Body Shape
+PRINTL [ 6] Skin Color
+PRINTL [ 7] Pubic Hair
+PRINTLC [ 8] Nipple Color
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTL [ 9] Nipple Color Code
+ELSE
+	CALL PRINTL_WORD_COLOR,@"< 9> Nipple Color Code: Manual Only","灰"
+ENDIF
+PRINTL
+IF !SELF_CHARA_MAKE_RANDOM
+	PRINTLC [10] Right Eye Color
+	PRINTL [11] Right Eye Color Code
+	PRINTLC [12] Left Eye Color
+	IF CSTR:左目の色 != ""
+		PRINTL [13] Left Eye Color Code
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"　Left Eye Color Code","灰"
+	ENDIF
+ELSE
+	PRINTLC [10] Eye Color
+	CALL PRINTL_WORD_COLOR,@"<11> Eye Color Code：Manual Only","灰"
+	PRINTL [12] Confirm Odd Eyes Shuffle
+ENDIF
+PRINTLC [14] Eye Shape
+PRINTL [15] Eye Features
+
+
+
+;あなた性経験の追加エディット
+@NEWGAME_PLAYER_DATA_INDEX3
+
+;シャッフルだと不可
+IF SELF_CHARA_MAKE_RANDOM
+	CALL PRINTL_WORD_COLOR("Shuffle Not Allowed","黄")
+	RETURN
+ENDIF
+
+PRINT [ 0] Ｖ Experience
+CALL PRINT_ONOFF(!TALENT:童貞,1)
+IF !TALENT:童貞
+	PRINT [10] First Partner：
+	SIF CSTR:初経験／Ｖ == ""
+		PRINT Unknown
+	PRINTFORM %SEX_PARTNER_ENG(CSTR:初経験／Ｖ)%　
+	PRINTFORML [20] Experienced：{FLAG:あなた経験人数／Ｖ} People
+ELSE
+	CALL PRINTL_WORD_COLOR("　First Experience Partner / Number of Partners","灰")
+ENDIF
+PRINT [ 1] Ａ Experience
+CALL PRINT_ONOFF(!TALENT:Ａ童貞,1)
+IF !TALENT:Ａ童貞
+	PRINT [11] First Partner：
+	SIF CSTR:初経験／Ａ == ""
+		PRINT Unknown
+	PRINTFORM %SEX_PARTNER_ENG(CSTR:初経験／Ａ)%　
+	PRINTFORML [21] Experienced：{FLAG:あなた経験人数／Ａ} People
+ELSE
+	CALL PRINTL_WORD_COLOR("　First Experience Partner / Number of Partners","灰")
+ENDIF
+PRINT [ 2] Blowjob Experience
+CALL PRINT_ONOFF(!TALENT:Ｍ童貞,1)
+IF !TALENT:Ｍ童貞
+	PRINT [12] First Partner：
+	SIF CSTR:初経験／Ｍセックス == ""
+		PRINT Unknown
+	PRINTFORM %SEX_PARTNER_ENG(CSTR:初経験／Ｍセックス)%　
+	PRINTFORML [22] Experienced：{FLAG:あなた経験人数／Ｍ} People
+ELSE
+	CALL PRINTL_WORD_COLOR("　First Experience Partner / Number of Partners","灰")
+ENDIF
+PRINT [ 3] Paizuri Experience
+CALL PRINT_ONOFF(!TALENT:パイズリ未経験,1)
+IF !TALENT:パイズリ未経験
+	PRINT [13] First Partner：
+	SIF CSTR:初経験／パイズリ == ""
+		PRINT Unknown
+	PRINTFORM %SEX_PARTNER_ENG(CSTR:初経験／パイズリ)%　
+	PRINTFORML [23] Experienced：{FLAG:あなた経験人数／パイズリ} People
+ELSE
+	CALL PRINTL_WORD_COLOR("　First Experience Partner / Number of Partners","灰")
+ENDIF
+PRINT [ 4] Kiss Experience
+CALL PRINT_ONOFF(!TALENT:キス未経験,1)
+IF !TALENT:キス未経験
+	PRINT [14] First Partner：
+	SIF CSTR:初経験／キス == ""
+		PRINT Unknown
+	PRINTFORM %SEX_PARTNER_ENG(CSTR:初経験／キス)%　
+	PRINTFORML [24] Experienced：{FLAG:あなた経験人数／キス} People
+ELSE
+	CALL PRINTL_WORD_COLOR("　First Experience Partner / Number of Partners","灰")
+ENDIF
+
+
+
+

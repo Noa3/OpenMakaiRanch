@@ -1,0 +1,61 @@
+﻿;**********************************************************
+;Semen(精液)の淫語
+;**********************************************************
+@SLANG_SEMEN(ARG)
+#FUNCTIONS
+
+;初期化
+EXIST = 0
+SLANGWORD =
+
+SIF GETBIT(FLAG:スラング接頭語／精液,3) && RAND:100 < 10
+	SLANGWORD += "boiling hot "
+SIF GETBIT(FLAG:スラング接頭語／精液,2) && RAND:100 < 10
+	SLANGWORD += "hot "
+SIF GETBIT(FLAG:スラング接頭語／精液,1) && RAND:100 < 10
+	SLANGWORD += "thick "
+SIF GETBIT(FLAG:スラング接頭語／精液,0) && RAND:100 < 10
+	SLANGWORD += "rich "
+
+IF GETBIT(FLAG:スラング置換／精液,9)
+	EXIST ++
+	SIF RAND:100 < 50
+		RETURNF SAVESTR:表記／精液
+ENDIF
+SIF GETBIT(FLAG:スラング置換／精液,0) && EXIST
+	RESTART
+
+IF GETBIT(FLAG:スラング表示／精液,0) && RAND:100 < 50
+	SLANGWORD += "semen"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,1) && RAND:100 < 50
+	SLANGWORD += "milky fluid"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,2) && RAND:100 < 30
+	SLANGWORD += "cum"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,3) && RAND:100 < 30
+	SLANGWORD += "cum juice"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,4) && RAND:100 < 30
+	SLANGWORD += "sperm"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,5) && RAND:100 < 30
+	SLANGWORD += "desire nectar"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,6) && RAND:100 < 30
+	SLANGWORD += "seed"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,7) && RAND:100 < 30
+	SLANGWORD += "baby milk"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,8) && RAND:100 < 30
+	SLANGWORD += "cock milk"
+	RETURNF SLANGWORD
+ELSEIF GETBIT(FLAG:スラング表示／精液,9)
+	SLANGWORD += "male milk"
+	RETURNF SLANGWORD
+ENDIF
+RESTART
+
+

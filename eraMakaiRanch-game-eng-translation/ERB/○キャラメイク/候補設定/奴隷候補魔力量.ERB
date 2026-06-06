@@ -1,0 +1,49 @@
+﻿
+;魔力量判定
+@RANDOM_LIST_MAGIC_POWER(ARG)
+
+;上位種族、ランクでの魔力を廃止
+SELECTCASE LIST_TRIBE:ARG
+CASE "エルフ","ダークエルフ","ハーフエルフ"
+	FLAG_NAME = 種族設定／%LIST_TRIBE:ARG%
+	TRIBE_FLAG_C = 体質反映率／%LIST_TRIBE:ARG%
+	SIF GETBIT(FLAG:FLAG_NAME,5) && (RAND:100 < FLAG:TRIBE_FLAG_C)
+		LIST_MAGIC_POWER:ARG += 2
+CASE "仙人"
+	LIST_MAGIC_POWER:ARG += 5
+CASE "ダンピール","天使","天人"
+	LIST_MAGIC_POWER:ARG += 7
+CASE "妖狐","ヴァンパイア","女神"
+	;魔力倍増オプションはあとで
+	LIST_MAGIC_POWER:ARG += 10
+ENDSELECT
+
+;ランダム性入れてみよう
+SELECTCASE LIST_JOB:ARG
+CASE "錬金術師"
+	SIF RAND:100 < 30
+		LIST_MAGIC_POWER:ARG += 2
+CASE "陰陽師","魔法戦士"
+	LIST_MAGIC_POWER:ARG += 2
+CASE "バトルシスター","退魔巫女"
+	SIF RAND:100 < 80
+		LIST_MAGIC_POWER:ARG += 3
+CASE "聖女"
+	LIST_MAGIC_POWER:ARG += 3
+	SIF RAND:100 < 20
+		LIST_MAGIC_POWER:ARG += 7
+CASE "姫騎士"
+	LIST_MAGIC_POWER:ARG += 3
+CASE "プリースト","黒魔術士","白魔術士","呪術士","死霊術士","召喚士"
+	LIST_MAGIC_POWER:ARG += (3 +RAND:3)
+CASE "聖騎士","暗黒騎士"
+	LIST_MAGIC_POWER:ARG += RAND:6
+CASE "魔女","勇者","パラディン","ブラックナイト"
+	LIST_MAGIC_POWER:ARG += 6
+CASE "時魔導士","ビショップ"
+	LIST_MAGIC_POWER:ARG += 8
+CASE "魔法少女","賢者","シャーマン","カーディナル","大魔導師","姫巫女"
+	LIST_MAGIC_POWER:ARG += 10
+ENDSELECT
+
+

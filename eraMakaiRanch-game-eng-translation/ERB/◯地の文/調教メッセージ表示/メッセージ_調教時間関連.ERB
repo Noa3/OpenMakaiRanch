@@ -1,0 +1,23 @@
+﻿
+;時間経過処理
+@SPECIAL_TRAIN_TIME_MESSAGE
+
+;最初の1回目だけ表示
+SIF TFLAG:調教時間メッセージ表示済み
+	RETURN
+IF GETBIT(＃制限撤廃／調教時間＃)
+	CALL PRINTL_WORD_COLOR,@"オプションにより調教時間無限","黄"
+	TFLAG:調教時間メッセージ表示済み ++
+ELSEIF TFLAG:時間圧縮中
+	IF GETBIT(＃制限撤廃／時間圧縮＃)
+		CALL PRINTL_WORD_COLOR,@"オプションにより＜時間圧縮＞永続","黄"
+		TFLAG:調教時間メッセージ表示済み ++
+	ELSEIF ITEM:時間圧縮永続化
+		CALL PRINTL_WORD_COLOR,@"＜時間圧縮永続化＞取得により永続","黄"
+		TFLAG:調教時間メッセージ表示済み ++
+	ENDIF
+ENDIF
+
+
+
+

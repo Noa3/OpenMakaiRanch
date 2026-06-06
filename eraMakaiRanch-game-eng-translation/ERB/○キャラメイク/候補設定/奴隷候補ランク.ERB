@@ -1,0 +1,105 @@
+﻿
+;ランクの決定
+@RANDOM_LIST_RANK(ARG)
+
+;目的別
+SELECTCASE LIST_PURPOSE:ARG
+
+;水晶・植物・名声
+CASE 0,1,2
+	;あんまり高くない
+	LIST_RANK:ARG = 1 +RAND:5
+	
+;奪還
+CASE 3
+	;まあまあ
+	LIST_RANK:ARG = 3 +RAND:6
+	
+	;姫騎士だとランダムで少し上がる
+	SIF LIST_JOB:ARG == "姫騎士"
+		LIST_RANK:ARG += RAND:3
+
+;事故
+CASE 4
+	;戦えないよ　何も書かないと0
+
+;侵略
+CASE 5
+	;そりゃ高い
+	LIST_RANK:ARG = 7 +RAND:5
+	
+;結界付き
+CASE 6
+	;振れ幅が大きい
+	LIST_RANK:ARG = 2 +RAND:8
+
+;競売所
+CASE 7
+	;ジョブにより変化させる
+	SELECTCASE LIST_JOB:ARG
+	CASE "プリースト","白魔術士","黒魔術士"
+		LIST_RANK:ARG = 4 +RAND:4
+	CASE "聖騎士","パラディン","ビショップ","カーディナル","姫騎士"
+		LIST_RANK:ARG = 7 +RAND:4
+	CASE "学者","姫君","姫巫女","聖女"
+		;戦闘能力なしだよ
+	
+	ENDSELECT
+
+;上位種族
+CASE 8
+	LIST_RANK:ARG = 8 +RAND:7
+	
+	;仙人・妖狐でランク14以上なら[神格]
+	;ランクは上げる手段作りたいね
+	SIF GROUPMATCH(LIST_TRIBE:ARG,"仙人","妖狐") && LIST_RANK:ARG >= 14
+		LIST_DIVINITY:ARG ++
+	
+;天界種族
+CASE 9
+	;天使→天人→女神　で強くなる
+	SELECTCASE LIST_TRIBE:ARG
+	CASE "天使"
+		LIST_RANK:ARG = 4 +RAND:4
+	CASE "天人"
+		LIST_RANK:ARG = 7 +RAND:4
+	CASE "女神"
+		LIST_RANK:ARG = 15 +RAND:6
+	ENDSELECT
+	
+	;天人・女神でランク14以上なら[神格]
+	;ランク上げ要素が後回しなので天人は神格にならないけど
+	SIF GROUPMATCH(LIST_TRIBE:ARG,"天人","女神") && LIST_RANK:ARG >= 14
+		LIST_DIVINITY:ARG ++
+ENDSELECT
+
+;補正かける前にPTランクをコピーしておく
+LIST_GROUP_RANK:ARG = LIST_RANK:ARG
+
+;侵略以下の場合ジョブ上書きに移る　10のとき対応のため入れ替え
+SIF ARG >= 6
+	RETURN
+
+;ジョブでの上書き
+SELECTCASE LIST_JOB:ARG
+
+;ヒーラー職、バカ、前出たら負けは3まで
+CASE "プリースト","白魔術士","薬師","勇者（自称）"
+	LIST_RANK:ARG = 1 +RAND:3
+	
+	;仲間は最大+2までにしておく
+	LIST_GROUP_RANK:ARG = LIMIT(LIST_GROUP_RANK:ARG,LIST_RANK:ARG,LIST_RANK:ARG +2)
+
+CASE "軍師","聖女"
+	LIST_RANK:ARG = 1 +RAND:3
+
+;精鋭以上のうち本人はさほど強くない部類
+CASE "召喚士","魔獣使い"
+	LIST_RANK:ARG = 3 +RAND:4
+
+;ガチ勇者は10～15
+CASE "勇者"
+	LIST_RANK:ARG = 10 +RAND:6
+ENDSELECT
+
+

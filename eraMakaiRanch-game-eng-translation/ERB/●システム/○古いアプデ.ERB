@@ -1,0 +1,137 @@
+﻿
+;古いアプデはここに移す
+@OLD_UPDATE
+
+IF FLAG:セーブデータのバージョン < 1001
+	;マイルストーン　【アダルトショップ】の調教アイテムを7コ以上購入の＜サキュバス頒布の薄い本＞修正
+	SIF FLAG:841
+		ITEM:15 = 1
+	FOR TARGET_COUNT,0,CHARANUM
+		TARGET = TARGET_COUNT
+		
+		;刻印番号修正
+		SIF MARK:32
+			MARK:190 = 1
+		SIF MARK:33
+			MARK:191 = 1
+		SIF MARK:34
+			MARK:192 = 1
+		MARK:32 = 0
+		MARK:33 = 0
+		MARK:34 = 0
+	NEXT
+	;PRINTL ver1.001
+	;PRINTL ・0.750用パッチから衣服変更を移植
+	;PRINTL ・衣服を渡そうとして拒否されたらアイテムが減らないように変更
+	;PRINTL ・Ｃ・Ｖ・耳・腋・頬舐めにも場合により＜汚れ無視＞必要なように変更
+	;PRINTL ・その他表示修正、バグ修正
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1002
+	;牛舎増築段階を+
+	;FLAG:第1牛舎増築段階→500
+	FLAG_REF = 490
+	FOR LOCAL,0,ITEM:128
+		SIF !FLAG:(FLAG_REF +LOCAL *10)
+			FLAG:(FLAG_REF +LOCAL *10) ++
+	NEXT
+	;PRINTL
+	;PRINTL ver1.002
+	;PRINTL 「era魔界牧場1.001用下着半脱ぎ時のドット表示切替パッチ」
+	;PRINTL 「era魔界牧場1.001用勝手に修正変更パッチ1.4」取り込み
+	;PRINTL ・戦闘後の戦闘適性増加がエラー吐くので経過ターンに合わせるように変更
+	;PRINTL ・母乳生産力が足りてる他に【絶頂魔力回復淫紋】でも母乳料理を作れるように変更
+	;PRINTL ・スケジュール【事務】を任せる条件を【恋慕】以上に統一
+	;PRINTL ・その他表示修正、バグ修正
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1003
+	;PRINTL
+	;PRINTL ver1.003
+	;PRINTL 傭兵雇ってもすぐキャンセルされるバグ修正
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1004
+	;PRINTL
+	;PRINTL ver1.004
+	;PRINTL 【母乳体質】→＜魔力母乳分泌促進薬＞での【魔力母乳体質】にできないのを修正
+	;PRINTL 戦闘後の戦闘適性増加を直してもらったので取り込み
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1010
+	;搾乳器購入コンフィグ
+	FLAG:2373 = 0b101
+
+	;褐色系用の乳首色
+	FLAG_REF = 3170
+	FOR LOCAL,0,10
+		FLAG:(FLAG_REF +LOCAL) = FLAG:(FLAG_REF +LOCAL -20)
+	NEXT
+
+	;パッチ入れる前は数値が入ってないので入れる(本体更新時、@VERSION_CHECKに入れるのがよさそう)
+	;入れたでー
+	;ありがとうやでー
+	FOR TARGET_COUNT,0,CHARANUM
+		TARGET = TARGET_COUNT
+		
+		;一度全リセット
+		VARSET ABL,0,70,80
+		VARSET ABL,0,170,180
+		IF !TARGET
+			IF TALENT:20 || ITEM:852
+				ABL:70 = CFLAG:0 / 50 + RAND:6 + 15
+				ABL:170 = ABL:70
+			ENDIF
+			IF !TALENT:20
+				ABL:71 = CFLAG:0 / 50 + RAND:6 + 10
+				ABL:171 = ABL:71
+			ENDIF
+		ELSE
+			ABL:71 = CFLAG:0 / 50 + RAND:6 + 10
+			ABL:171 = ABL:71
+		ENDIF
+		ABL:73 = CFLAG:0 / 100 + RAND:4 + 5
+		ABL:173 = ABL:73
+	NEXT
+	
+	;PRINTL ver1.010
+	;PRINTL 複数パッチ取り込み
+	;PRINTL Ｐ・Ｖ・Ａサイズは一度リセット
+	;PRINTL
+	;PRINTL 肌色が【褐色】【小麦色】の場合に適用される乳首色コンフィグ追加
+	;PRINTL デフォルトは通常肌と同じ割合です
+	;PRINTL ↑および子供用コンフィグ設定に「通常時の割合からコピー」ボタン追加
+	;PRINTL ・追加対応により「捕獲時選択肢」コンフィグが初期化されています
+	;PRINTL 【牛角族】の【豊乳】【爆乳】引き上げ処理をそれ以上がランダムで出た場合はそのままに変更
+	;PRINTL バグいくつか修正・誤字修正・内部処理少し変更
+	
+ENDIF
+
+IF FLAG:セーブデータのバージョン < 1011
+	;あなたのみ
+	TARGET = 0
+	
+	;Ｐサイズが入っていればここ無視
+	;オトコかふたなり→Ｐサイズ入れ
+	IF !ABL:170 && (TALENT:20 || ITEM:852)
+		ABL:70 = CFLAG:0 / 50 + RAND:6 + 15
+		ABL:170 = ABL:70
+	ENDIF
+	
+	;オトコ→Ｖサイズ消去
+	IF TALENT:20
+		ABL:71 = 0
+		ABL:171 = 0
+	ENDIF
+	
+	;女あなた、Ｖサイズ0→Ｖサイズ入れ
+	IF !TALENT:20 && !ABL:171
+		ABL:71 = CFLAG:0 / 50 + RAND:6 + 10
+		ABL:171 = ABL:71
+	ENDIF
+	;↑でＡサイズは入ってるはず
+	
+	;PRINTL ver1.011
+	;PRINTL 「era魔界牧場1.010用勝手に修正変更パッチ」取り込み→アプデ対応
+ENDIF
+

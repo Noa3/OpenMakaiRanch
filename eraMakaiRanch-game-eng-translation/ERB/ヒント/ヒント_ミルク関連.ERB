@@ -1,0 +1,275 @@
+﻿
+;おっぱい関連目次
+@HINT_MILK
+#DIM DYNAMIC PAGE
+
+PAGE_MAX = 2
+SIF PAGE < 1
+	PAGE = 1
+CLEARLINE LINECOUNT
+PRINTL 解説を見る項目を選択してください。
+DRAWLINE
+BR = 0
+STR_REF = 9060
+
+;ページで出す項目変更
+SELECTCASE PAGE
+CASE 1
+	CALL HINT_BUTTON_LIST(0,15)
+CASE 2
+	CALL HINT_BUTTON_LIST(15)
+ENDSELECT
+DRAWLINE
+CALL HINT_DETAIL_MILK
+CALL PRINTL_ALIGN(5)
+DRAWLINE
+PRINTLC [90] ページ切り替え
+PRINTFORMLC PAGE：{PAGE}／{PAGE_MAX}
+PRINTL [99] Return
+INPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0 TO 29
+	SELECT_TIPS = RESULT
+CASE 90
+	PAGE ++
+	SIF PAGE > PAGE_MAX
+		PAGE = 1
+	SELECT_TIPS = -1
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;おっぱい関連解説
+@HINT_DETAIL_MILK
+
+STR_NUM = STR_REF +SELECT_TIPS
+
+;対応IDでないなら汎用出して帰る
+IF SELECT_TIPS < 0 || SELECT_TIPS >= 30 || STR:STR_NUM == ""
+	CALL NOT_SELECT_HINT_COMMON
+	RETURN
+ENDIF
+
+;項目名
+PRINTFORML 　《 %STR:STR_NUM% 》
+SELECTCASE STR:STR_NUM
+CASE "母乳"
+	PRINTFORML 哺乳類のメスの%SAVESTR:表記／乳房%から出る、美味しくて栄養満点な神秘の液体です。
+	PRINTFORML 本来妊娠、出産しないと出ないはずのこの%SAVESTR:表記／母乳%を無理矢理出る状態にしてしまい、
+	PRINTL 搾ったり吸ったり飲んだり味わい尽くすのがこのゲームの目的です。
+	
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL 本来血液と同じだし味はしない？ゲームに野暮なこと言うんじゃありません。
+	ENDIF
+	
+CASE "母乳体質"
+	PRINTL 哺乳類のメスが妊娠、出産したために、または強制的にこの体質にされた結果
+	PRINTFORML %SAVESTR:表記／乳房%から%SAVESTR:表記／母乳%が出るようになった状態です。
+	PRINTL 搾乳のためにはまずこの状態にする必要があります。
+	PRINTL
+	PRINTL ＜母乳体質化薬＞・＜母乳体質化エキス＞の使用で【母乳体質】になるほか、
+	PRINTL ＜魔力母乳体質化薬＞・＜魔力母乳体質化エキス＞でも副次作用としてこの状態になります。
+	PRINTL （【魔力母乳体質】の場合は画面上では表示が省略されます）
+	PRINTL
+	PRINTL 【先天的母乳体質】という、出産経験も肉体改造もされたことがないのに
+	PRINTFORML %SAVESTR:表記／母乳%が出てしまう体質のニンゲンも存在します。
+	PRINTL
+	PRINTL 《 パラメータ影響 》
+	PRINTL 搾乳責め時：【Ｂ快楽】【Ｎ快楽】+10%
+	
+CASE "魔力母乳体質"
+	PRINTL 魔力を持つ奴隷に対し＜魔力母乳体質化薬＞・＜魔力母乳体質化エキス＞を
+	PRINTL 使用することで【魔力母乳体質】になります。
+	PRINTFORML どのような手段で%SAVESTR:表記／母乳%を搾っても、
+	PRINTFORML 常に魔力の含まれた%SAVESTR:表記／母乳%が出るようになり奴隷の魔力が減少していきます。
+	PRINTL
+	PRINTFORML 魔術を使おうとしても%SAVESTR:表記／母乳%と共に魔力が漏れ出してしまうようになり、
+	PRINTL 魔術頼りで戦闘していた場合はそもそもの実力が非常に高いニンゲン、または【上位種族】でもない限りは
+	PRINTL 戦闘能力を一切失ってしまいます。
+	PRINTL
+	PRINTFORML 《 %SAVESTR:表記／魔力母乳%の追加効果 》
+	PRINTL 抽出時：各種＜魔力貯蔵器＞を持っている場合、搾った魔力を貯蔵
+	PRINTL 乳吸い、触手搾乳時：飲んだキャラの魔力を回復
+	PRINTL あなたが吸った場合：魔力回復に加え【吸収可能魔力】を上限に魔力の最大値を増加
+	PRINTL
+	PRINTL 《 パラメータ影響 》
+	PRINTL 搾乳責め時：【Ｂ快楽】【Ｎ快楽】+15%
+	
+CASE "搾乳（スケジュール）"
+	;重複呼び出しへ
+	CALL PART_HINT_SCHEDULE_LACTATION
+	
+CASE "抽出（スケジュール）"
+	CALL PART_HINT_SCHEDULE_EP_DRAIN
+	
+CASE "搾乳・抽出補足"
+	CALL PART_HINT_SCHEDULE_LACTATION_OR_DRAIN
+	
+CASE "牛舎"
+	PRINTL 【街へ行く】→【不動産】から＜牛舎＞を建築することで
+	PRINTL 【母乳体質】の奴隷をまとめて牛舎に入れ、一括管理をすることができます。（マイルストーン進行が必要）
+	PRINTL 初期状態の牛舎の収容数は10匹、【不動産】で増築をするたびに10匹追加でき最大100匹です。
+	PRINTL 新たに牛舎を建築することもでき、最大10棟建築できます。
+	PRINTL
+	PRINTL 牛舎の奴隷は【搾乳家畜】として朝・夕に搾乳するか、
+	PRINTL 【ミルク製造機】として朝昼夕休まず搾乳するかを牛舎ごとに選択できます。
+	PRINTL
+	PRINTL スケジュール搾乳と同様に
+	PRINTFORML ・搾られた%SAVESTR:表記／母乳%は魔界農協へ出荷される
+	PRINTL ・誰も【酪農】スケジュールを実行していない場合キャンセルされる
+	PRINTL 特徴があります。
+	PRINTL ただし一括管理のため、【搾乳休憩母乳量】の設定は適用されません。
+	PRINTL 
+	PRINTL 牛舎に入れた家畜は個別にスケジュールを設定することはできないため、搾乳以外をしたい場合は牛舎から出してください。
+	PRINTL 例外的に、夜の行動時のみ牛舎内の奴隷も【調教】の対象にすることが可能です。
+	
+CASE "バストサイズ"
+	CALL PART_HINT_BUSTSIZE
+	
+CASE "バストサイズ補足"
+	CALL PART_HINT_BUSTSIZE2
+	
+CASE "膨乳"
+	PRINTL ＜膨乳薬＞＜超乳薬＞および魔術＜膨乳改造エキス＞＜淫乳改造エキス＞を使用することで、
+	PRINTL 奴隷のバストサイズを増加させることができます。
+	PRINTL 【母乳体質】の場合は【母乳容量】【母乳生産力】【基礎噴乳量】が再計算されます。
+	PRINTL
+	PRINTL ＜膨乳薬＞＜膨乳改造エキス＞：1段階ずつ増加　【超乳】は超えない
+	PRINTL
+	PRINTL ＜超乳薬＞：大きく体力を消費し、体力が0になるか【超乳】直前まで膨乳し続ける
+	PRINTL 　既に【超乳】の場合は1段階増加
+	PRINTL
+	PRINTL ＜淫乳改造エキス＞：あなたの魔力に応じて最大5段階続けて、または【超乳】直前まで膨乳し続ける
+	PRINTL 　既に【超乳】の場合は1段階増加
+	
+	
+CASE "搾乳器"
+	PRINTL ＜家畜用搾乳器＞＜魔動快楽搾乳器＞＜触手快楽搾乳器＞の3種類があります。
+	PRINTL スケジュールでの搾乳・抽出・牛舎搾乳時は通常の＜家畜用搾乳器＞が使用されます。
+	PRINTL
+	PRINTFORML 調教中に【道具・魔術コマンド】から使用することで、奴隷の%SAVESTR:表記／乳房%に吸着させ
+	PRINTFORML %SAVESTR:表記／母乳%を搾り取ることができます。（【Ｎ露出】かつ他のＮ装備がない必要があります）
+	PRINTL 上位の搾乳器ほど奴隷に与える快楽が大きくなります。
+	PRINTFORML 搾られた%SAVESTR:表記／母乳%は魔界農協へ出荷され、牧場の資金源になります。
+	PRINTL
+	PRINTFORML ＜媚薬＞などの一部アイテム使用中や、乳首に%SAVESTR:表記／母乳%以外が付着している場合は
+	PRINTFORML 出荷用の%SAVESTR:表記／母乳%を搾り取ることができないため注意してください。
+	
+CASE "小型霊力抽出装置"
+	PRINTFORML 調教中に【道具・魔術コマンド】から使用することで、奴隷の%SAVESTR:表記／乳房%に吸着させ
+	PRINTFORML %SAVESTR:表記／母乳%を搾り取ることができます。（【Ｎ露出】かつ他のＮ装備がない必要があります）
+	PRINTFORML この時搾られた%SAVESTR:表記／母乳%は＜霊力抽出装置＞本体に流れ込み、
+	PRINTFORML %SAVESTR:表記／母乳%と共に搾られた霊力・魔力が装置および各種＜魔力貯蔵器＞に貯蔵されます。
+	PRINTL
+	PRINTFORML この装置で%SAVESTR:表記／母乳%を搾られるたび、奴隷は搾乳快楽と引き換えに
+	PRINTL 霊力を搾られレベルダウンしていき「家畜」に近づいていきます。
+	
+CASE "乳吸い"
+	PRINTL 調教中に【乳吸い】【乳首しゃぶり】またはその派生コマンドの使用、
+	PRINTL 【奴隷に会いに行く】→【おっぱい吸わせて】コマンドの選択で
+	PRINTFORML あなたが直接奴隷の乳首に吸い付き、奴隷が【母乳体質】なら%SAVESTR:表記／母乳%を飲むことができます。
+	PRINTFORML 奴隷同士の調教スケジュールでは調教者が調教される奴隷の%SAVESTR:表記／母乳%を飲みます。
+	PRINTFORML %SAVESTR:表記／母乳%を吸われたキャラは【母性】経験値が多く増加します。
+	PRINTL 調教者が【小柄】以下かつ調教対象より身長が5cm以上低い、調教者が【幼稚】のとき、
+	PRINTL 調教者が実の娘などの条件を満たすと【母性】経験値の増加値が上昇します。
+	PRINTL
+	PRINTL 《 乳吸い効果 》
+	PRINTL 調教者の体力が回復
+	PRINTL 調教対象が【魔力母乳体質】の場合：調教者の魔力が回復
+	PRINTL
+	PRINTL 《 調教者があなたの場合の追加効果 》
+	PRINTL 調教対象が【魔力母乳体質】の場合：【吸収可能魔力】を上限に魔力の最大値が増加
+	PRINTL 調教対象に霊力が残っている、かつ【搾乳エナジードレイン】習得済み：
+	PRINTFORML %SAVESTR:表記／母乳%と共に調教対象の霊力を吸い取ってあなたの霊力が増加、
+	PRINTL 【吸収可能霊力】を上限に霊力の最大値が増加
+	
+CASE "触手搾乳"
+	PRINTL 魔術＜搾乳触手＞を習得することで、調教中の【触手コマンド】から
+	PRINTL ＜乳包み花弁搾乳触手＞＜透明カップ搾乳触手＞＜搾乳ワーム触手＞の3種の搾乳触手で
+	PRINTFORML 奴隷の%SAVESTR:表記／母乳%を搾ることができるようになります。
+	PRINTL （【Ｎ露出】+他のＮ装備がないことが条件）
+	PRINTL
+	PRINTFORML 搾乳触手で%SAVESTR:表記／母乳%を搾っている間は、あなたの口で直飲みしている場合と同じ処理が起こります。
+	PRINTL ・あなたの体力が回復
+	PRINTL ・【魔力母乳体質】の場合あなたの魔力が増加
+	PRINTL ・【搾乳エナジードレイン】が適用される場合あなたの霊力が増加
+	
+CASE "搾乳エナジードレイン"
+	PRINTFORML 魔術＜搾乳エナジードレイン＞を習得すると、あなたが%SAVESTR:表記／母乳%を飲むことにより
+	PRINTL 奴隷から霊力を直接吸収して【吸収可能霊力】を上限にあなたの霊力最大値を増加させることができます。
+	PRINTL
+	PRINTL あなたが飲む判定になるのであれば、【乳吸い】で直飲みしても【触手搾乳】しても
+	PRINTL 【体内凌辱】してもエナジードレインが発生します。
+	PRINTL
+	PRINTL 奴隷から霊力を奪いたくない場合は、
+	PRINTL 奴隷を選択→【個人設定】→【エナジードレイン適用外】をONにすることで
+	PRINTFORML その奴隷はあなたに%SAVESTR:表記／母乳%を吸われてもエナジードレインが発生しなくなります。
+	
+CASE "母乳容量"
+	CALL PART_HINT_MILK_CAPACITY
+	
+CASE "母乳生産力"
+	CALL PART_HINT_MILK_PRODUCT
+	
+CASE "母乳容量・生産力計算"
+	CALL PART_HINT_MILK_CALC
+	
+CASE "母乳濃度"
+	CALL PART_HINT_MILK_RICHNESS
+	
+CASE "母性"
+	CALL PART_HINT_MATERNAL
+	
+CASE "母性補足"
+	CALL PART_HINT_MATERNAL2
+	
+CASE "搾乳中毒"
+	CALL PART_HINT_LACTATION_RELIANCE
+	
+CASE "乳牛堕ち"
+	CALL PART_HINT_CATTLE_MIND_PALAM
+	
+CASE "乳牛（状態）"
+	CALL PART_HINT_CATTLE_MIND_STATUS
+	
+CASE "母乳の出荷"
+	PRINTFORML 搾乳器を使って奴隷から搾った%SAVESTR:表記／母乳%は、
+	PRINTL 朝の行動後の【精算】フェイズで魔界農協へ出荷され、牧場の資金源になります。
+	PRINTL
+	PRINTL （現在のバージョンでは単純な計算方法を使っているため、資金が余ると思われます）
+	
+CASE "母乳出荷金額計算"
+	PRINTL 【母乳濃度】：1段階増加ごとに+30%
+	PRINTL 【肉体改造経験】がない場合：+30%
+	PRINTL
+	PRINTL 身長が【小柄】／【子供体型】かつ【巨乳】：+10%
+	PRINTL 身長が【子供体型】以下かつ【絶壁】／【貧乳】：+20%
+	PRINTL 素質【神格】：最終倍率300%
+	PRINTL 身分が【貴族】：最終倍率150%
+	PRINTL 身分が【王族】：最終倍率500%
+	PRINTL
+	PRINTL 出荷金額の計算時、出現確率の低いニンゲンを除くと奴隷の強さはほぼ無関係に計算されます。
+	PRINTL 資金が厳しいと思ったら簡単に捕まえられる奴隷を集めるのもいいでしょう。
+	PRINTL
+	PRINTFORML （現在のバージョンでは、母乳濃度が上がる前に搾った%SAVESTR:表記／母乳%の出荷価格も精算時の濃度で計算されます）
+	
+CASE "母乳商品名"
+	PRINTL 奴隷を選択→【個人設定】→【母乳商品名変更】から、出荷時などに表示される商品名を変更できます。
+	PRINTL
+	PRINTL デフォルトの自動表記では<名前>+<特製>+<母乳濃度>+<その他素質など表記>
+	PRINTFORML +<%SAVESTR:表記／魔力母乳%／%SAVESTR:表記／母乳%>となります。
+	SIF FLAG:ジョーク表示
+		PRINTL （自由に記述できる代わり、嘘も書けるしデメリットもないのでプレイヤーの良心任せです）
+	
+CASE "吸収可能霊力"
+	CALL PART_HINT_EP_DRAIN_LIMIT
+	
+CASE "吸収可能魔力"
+	CALL PART_HINT_MP_DRAIN_LIMIT
+ENDSELECT
+

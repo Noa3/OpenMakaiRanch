@@ -1,0 +1,52 @@
+﻿
+;バストサイズ変更
+;膨乳で使ってたやつをキャラメイク中はこっち呼ぶほうがわかりやすいかとしたもの
+@BUSTSIZE_TALENT_SET
+
+;VARSETで乳サイズTALENTを一旦リセット：10～19・家畜フラグリセット
+VARSET TALENT,0,10,20
+CFLAG:家畜 = 0
+
+;上から見たほうが記述的にわかりやすくなった
+SELECTCASE ABL:バストサイズ
+
+;ZA～ZZ,超乳　多分来ることないと思うんだけど一応
+CASE IS >= BUSTSIZE_超乳
+	TALENT:超乳 = 1
+	CFLAG:家畜 = 1
+
+;目安サイズはデフォルトしきい値
+;VWXYZ,魔乳
+CASE IS >= BUSTSIZE_魔乳
+	TALENT:魔乳 = 1
+
+;QRSTU,神乳
+CASE IS >= BUSTSIZE_神乳
+	TALENT:神乳 = 1
+
+;LMNOP,爆乳
+CASE IS >= BUSTSIZE_爆乳
+	TALENT:爆乳 = 1
+
+;HIJK,豊乳
+CASE IS >= BUSTSIZE_豊乳
+	TALENT:豊乳 = 1
+
+;EFG,巨乳
+CASE IS >= BUSTSIZE_巨乳
+	TALENT:巨乳 = 1
+
+;CD,並乳
+CASE IS >= BUSTSIZE_並乳
+	TALENT:並乳 = 1
+
+;AB,貧乳
+CASE IS >= BUSTSIZE_貧乳
+	TALENT:貧乳 = 1
+
+;AA,絶壁
+CASE BUSTSIZE_絶壁
+	TALENT:絶壁 = 1
+ENDSELECT
+
+

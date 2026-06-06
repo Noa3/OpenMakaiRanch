@@ -1,0 +1,113 @@
+﻿
+;あなただけ風呂地の文　一応
+@MAIN_BATHING_PLAYER_SOLO_MESSAGE
+
+IF ITEM:天然温泉
+	PRINTFORML %CALLNAME% relaxes in the onsen...
+ELSE
+	PRINTFORML %CALLNAME% relaxes in the bath...
+ENDIF
+
+
+
+;奴隷と2人風呂の前
+@MAIN_BATHING_PLAYER_DUO_BEFORE_MESSAGE
+
+PRINTFORML %CALLNAME:0% called %CALLNAME% and decided to take a bath together.
+
+	;口上作ったらここ
+IF CFLAG:乳牛 || CFLAG:洗脳
+	PRINTFORML %CALLNAME% stood up immediately and went to the changing room with %CALLNAME:0%.
+	SIF TALENT:お風呂好き < 0
+		PRINTFORML Although she doesn't like baths much, she apparently doesn't mind at all due to the joy of spending time with %CALLNAME:0%.
+ELSEIF CFLAG:崩壊
+	PRINTFORML %CALLNAME% was so exhausted and vacant-eyed that %CALLNAME:0% carried them to the changing room.
+ELSE
+	;子供の場合
+	IF CSTR:状態／あなたの子 == "成長中"
+		IF TALENT:お風呂好き > 0
+			PRINTFORML %CALLNAME% beamed with a big smile and hurried %CALLNAME:0% towards the changing room.
+		ELSEIF TALENT:お風呂好き < 0
+			PRINTFORML %CALLNAME% reluctantly entered the changing room with %CALLNAME:0%.
+		ELSE
+			PRINTFORML %CALLNAME% cheerfully entered the changing room with %CALLNAME:0%.
+		ENDIF
+		RETURN
+	ENDIF
+	
+	SELECTCASE CSTR:陥落状態
+	CASE "隷属"
+		PRINTFORML %CALLNAME% stood up immediately and went to the changing room with %CALLNAME:0%.
+		SIF TALENT:お風呂好き < 0
+			PRINTFORML Although she don't like baths much, she apparently don't mind at all due to the joy of spending time with %CALLNAME:0%.
+	CASE "恋慕"
+		PRINTFORML %CALLNAME% happily entered the changing room with %CALLNAME:0%.
+		SIF TALENT:お風呂好き < 0
+			PRINTFORML Although she doesn't like baths much, the joy of spending time with %CALLNAME:0% seems to outweigh it.
+	CASE "陥落"
+		PRINTFORML %CALLNAME% looked somewhat displeased about not being alone, but quietly entered the changing room with %CALLNAME:0%.
+		SIF TALENT:お風呂好き > 0
+			PRINTFORML Apparently, she has no choice but to enter the family bath with %CALLNAME:0% since she can't do it alone.
+	CASE "屈服"
+		PRINTFORML %CALLNAME% looked frightened upon realizing she wouldn't be alone, and quietly entered the changing room with %CALLNAME:0%.
+		SIF TALENT:お風呂好き > 0
+			PRINTL She is complaining about wanting to bathe alone...
+	CASEELSE
+		IF TALENT:臆病 || TALENT:悲観的
+			PRINTFORML %CALLNAME% looked frightened upon realizing she wouldn't be alone, and quietly entered the changing room with %CALLNAME:0%.
+			SIF TALENT:お風呂好き > 0
+				PRINTL She is complaining about wanting to bathe alone...
+		ELSE
+			IF TALENT:お風呂好き > 0
+				PRINTFORML %CALLNAME% looked very displeased upon hearing that she would be with %CALLNAME:0%, but it seems she weighed it against not being able to bathe and
+				PRINTFORML quietly entered the changing room with %CALLNAME:0%.
+			ELSEIF TALENT:お風呂好き < 0
+				PRINTFORML %CALLNAME% seemed to dislike it in every sense and huddled in a corner...
+				PRINTL Since it wasn't getting anywhere, she was forcibly dragged to the changing room.
+			ELSE
+				PRINTFORML %CALLNAME% looked very displeased upon hearing that she would be with %CALLNAME:0%, but eventually, reluctantly entered the changing room with %CALLNAME:0%.
+			ENDIF
+		ENDIF
+	ENDSELECT
+ENDIF
+
+
+
+;奴隷と2人
+@MAIN_BATHING_PLAYER_DUO_MESSAGE
+
+IF ITEM:天然温泉
+	PRINTFORML %CALLNAME:0% takes %CALLNAME% to the onsen...
+ELSE
+	PRINTFORML %CALLNAME:0% takes a bath with %CALLNAME%...
+ENDIF
+
+;ここも口上作りたさある
+
+
+
+;奴隷のシャワー
+@MAIN_BATHING_SLAVE_SHOWER_MESSAGE
+
+PRINTFORM %CALLNAME% 
+SIF EXIST >= 2
+	PRINT and the others 
+PRINTFORML \@ EXIST > 1 ? take # takes \@ a shower...
+
+
+
+;大浴場
+@MAIN_BATHING_SLAVE_LARGE_BATH_MESSAGE
+
+PRINTFORM %CALLNAME% 
+SIF EXIST > 1
+	PRINT and the others 
+IF ITEM:天然温泉
+	PRINTFORML \@ EXIST > 1 ? relax # relaxes \@ in the onsen...
+ELSE
+	PRINTFORML \@ EXIST > 1 ? relax # relaxes \@ in the bathhouse...
+ENDIF
+
+
+
+

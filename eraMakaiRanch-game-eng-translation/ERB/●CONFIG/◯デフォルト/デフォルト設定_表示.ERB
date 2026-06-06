@@ -1,0 +1,173 @@
+﻿
+;表示設定デフォルト
+@DEFAULT_CONFIG_DISPLAY
+
+VARSET FLAG,0,2000,2300
+FLAG:口上表示 = 1
+FLAG:蕩け口上化絶頂回数 = 50
+FLAG:ジョーク表示 = 1
+FLAG:自動改行合わせの行数 = 30
+FLAG:カラーコード／メイン画面強調選択肢 = 0xFFFF70
+CALL DEFAULT_SLANG_CONFIG
+CALL DEFAULT_IMAGE_CONFIG
+CALL DEFAULT_PORTRAIT_CONFIG
+CALL DEFAULT_ONOMATOPEIA_CONFIG
+CALL DEFAULT_SENTENCE_CONFIG
+CALL DEFAULT_STATUS_CONFIG
+CALL DEFAULT_SCHEDULE_CONFIG
+CALL EN_DEFAULT_STAIN_MOD_CONFIG
+
+
+;スラングデフォルト全部
+@DEFAULT_SLANG_CONFIG
+
+CALL DEFAULT_SLANG_CONFIG_BUST
+CALL DEFAULT_SLANG_CONFIG_NIPPLE
+CALL DEFAULT_SLANG_CONFIG_MILK
+CALL DEFAULT_SLANG_CONFIG_VAGINA
+CALL DEFAULT_SLANG_CONFIG_ANAL
+CALL DEFAULT_SLANG_CONFIG_CLITORIS
+CALL DEFAULT_SLANG_CONFIG_HIP
+CALL DEFAULT_SLANG_CONFIG_PENIS
+CALL DEFAULT_SLANG_CONFIG_SEMEN
+FLAG:スラング表示／汚れ追加 = 1
+FLAG:スラング／子供扱い上限身長数値 = HEIGHT_MAX_小柄
+
+;おっぱいスラング
+@DEFAULT_SLANG_CONFIG_BUST
+
+;2進数表記
+FLAG:スラング表示／乳房 = 0b1100011
+FLAG:スラング接頭語／乳房 = 0b1011
+FLAG:スラング置換／乳房 = 0b111100110
+
+;乳首スラング
+@DEFAULT_SLANG_CONFIG_NIPPLE
+
+FLAG:スラング表示／乳首 = 0b1
+FLAG:スラング接頭語／乳首 = 0b1011
+FLAG:スラング置換／乳首 = 0b10
+
+;母乳スラング
+@DEFAULT_SLANG_CONFIG_MILK
+
+FLAG:スラング表示／母乳 = 0b10111
+FLAG:スラング接頭語／母乳 = 0b11111111
+FLAG:スラング置換／母乳 = 0b10110
+
+;膣スラング
+@DEFAULT_SLANG_CONFIG_VAGINA
+
+FLAG:スラング表示／膣 = 0b1111
+FLAG:スラング接頭語／膣 = 0b1
+FLAG:スラング置換／膣 = 0b110
+
+;アナルスラング
+@DEFAULT_SLANG_CONFIG_ANAL
+
+FLAG:スラング表示／アナル = 0b100101
+FLAG:スラング接頭語／アナル = 0b101
+FLAG:スラング置換／アナル = 0b1000
+
+;クリトリススラング
+@DEFAULT_SLANG_CONFIG_CLITORIS
+
+FLAG:スラング表示／クリトリス = 0b11
+FLAG:スラング接頭語／クリトリス = 0b1
+FLAG:スラング置換／クリトリス = 0b10
+
+;尻スラング
+@DEFAULT_SLANG_CONFIG_HIP
+
+FLAG:スラング表示／尻 = 0b111
+FLAG:スラング接頭語／尻 = 0b101111110011
+FLAG:スラング置換／尻 = 0
+
+;ペニススラング
+@DEFAULT_SLANG_CONFIG_PENIS
+
+FLAG:スラング表示／ペニス = 0b10000011
+FLAG:スラング接頭語／ペニス = 0
+FLAG:スラング置換／ペニス = 0
+
+;精液スラング
+@DEFAULT_SLANG_CONFIG_SEMEN
+
+FLAG:スラング表示／精液 = 0b101000111
+FLAG:スラング接頭語／精液 = 0
+FLAG:スラング置換／精液 = 0
+
+
+
+;画像コンフィグ
+@DEFAULT_IMAGE_CONFIG
+
+VARSET FLAG,0,2100,2120
+FLAG:顔グラ／表示 = 1
+FLAG:顔グラ／サイズ = 1000
+FLAG:顔グラ／横軸調整 = 5000
+FLAG:顔グラ／調教時画像置換 = 1
+FLAG:顔グラ／コマンド時改行数 = 5
+
+
+
+;ドット絵コンフィグ
+@DEFAULT_PORTRAIT_CONFIG
+
+VARSET FLAG,0,2120,2140
+FLAG:ドット絵／表示 = 1
+FLAG:ドット絵／サイズ = 150
+FLAG:ドット絵／横軸調整 = 4500
+FLAG:ドット絵／着替え画面追加横軸調整 = 1000
+FLAG:ドット絵／非対応衣服の置換形式 = 1
+FLAG:ドット絵／低身長適用上限数値 = HEIGHT_MAX_低身長
+
+
+
+;擬音コンフィグ
+@DEFAULT_ONOMATOPEIA_CONFIG
+
+FLAG:擬音表示 = 0b111111111111
+FLAG:擬音表示カラーコード = 0xA00080
+
+
+
+;地の文コンフィグ
+@DEFAULT_SENTENCE_CONFIG
+
+SAVESTR:表記／乳房 = Breasts
+SAVESTR:表記／母乳 = Milk
+SAVESTR:表記／魔力母乳 = Mana-infused Milk
+SAVESTR:表記／膣 = Pussy
+SAVESTR:表記／アナル = Ass
+SAVESTR:表記／ペニス = Penis
+SAVESTR:表記／ペニス触手 = Tentacle Penis
+SAVESTR:表記／陰核 = Clit
+SAVESTR:表記／精液 = Semen
+
+
+
+;ステータス画面表示コンフィグ
+@DEFAULT_STATUS_CONFIG
+
+VARSET FLAG,0,2070,2080
+FLAG:性経験表示BIT = 0b1111001
+FLAG:キャラ名前欄幅 = 16
+FLAG:身長小数点表示 = 1
+
+
+
+;スケジュール・調教実行時表示コンフィグ
+@DEFAULT_SCHEDULE_CONFIG
+
+VARSET FLAG,0,2060,2070
+FLAG:パラメータ上限到達後表示BIT = 0b10100
+FLAG:パラメータ影響要素表示BIT = 0
+FLAG:消費バッテリー表示 = 1
+FLAG:スケジュール搾乳改行 = 1
+FLAG:休憩時回復表示形式 = 1
+
+
+
+
+

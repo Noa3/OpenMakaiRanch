@@ -1,0 +1,90 @@
+﻿;[ライセンス]パブリックドメイン
+;本ファイルに係る著作権を放棄する。
+;本ファイルに係る著作人格権は行使しない。
+;2009/6/13 MinorShift(Emuera作者)
+
+;独自のタイトル画面の例（Emuera ver 1.700以降対象）
+;LOADGAME_EXが定義されていることが前提なので、SAVELOAD.ERBと同時に使用してください。
+;SAVELOAD.ERBを使用しない場合、CALL LOADGAME_EXをLOADGAMEに置き換えてください。
+;なお、SYSTEM_TITLEが定義されているとTITLE_LOADGAMEは呼ばれなくなります。
+;使用している命令、変数の詳細についてはEmueraの拡張文法.txtを参照してください。
+
+
+
+@SYSTEM_TITLE
+#DIM GLOBAL_EXIST
+;@SYSTEM_TITLEが定義されていると、標準のタイトル画面の代わりにSYSTEM_TITLEが呼ばれる。
+
+;これ入れればちらつき防止になるんだ…しらそん
+REDRAW 0
+
+;グローバル変数を読み込む処理
+CALL FIRST_LOAD_SYSTEM_SAVE
+
+;画像表示するためTEXTRENDERERに描画ツールを変更したのでその関係
+;0画像用　１標準
+;REDRAW 0
+;REDRAW 1
+
+
+
+;タイトル表示。
+DRAWLINE 
+ALIGNMENT CENTER
+PRINTFORML %GAMEBASE_TITLE%
+
+;バージョン表示はTOSTRすれば簡単そう
+PRINTFORML ver{GAMEBASE_VERSION /1000}.%TOSTR(GAMEBASE_VERSION %1000,"000")%
+PRINTFORML %GAMEBASE_AUTHOR%
+PRINTFORML (%GAMEBASE_YEAR%)
+PRINTL 
+PRINTFORML %GAMEBASE_INFO%
+DRAWLINE 
+
+;選択肢表示。_Rename.csvで指定した値を読むことはできないのでここで指定する必要がある。
+PRINTLC [0] New Game
+PRINTL
+PRINTL
+PRINTLC [1] Load Game
+PRINTL
+PRINTL
+PRINTLC [8] Lore
+PRINTL
+PRINTL
+PRINTLC [9] Quit Game
+PRINTL
+
+ALIGNMENT LEFT
+$TITLE_INPUT
+INPUT
+SELECTCASE RESULT
+CASE 0
+	RESETDATA
+	ADDCHARA 0
+	SIF GAMEBASE_DEFAULTCHARA >= 0
+		ADDCHARA GAMEBASE_DEFAULTCHARA
+	BEGIN FIRST
+	RETURN
+	
+CASE 1
+	CALL LOADGAME_EX
+	RESTART
+	;LOADGAME_EXでLOADを行わずに戻ってきた場合、もう一度選択しなおす。
+	
+CASE 8
+	CALL REFERENCE_ENTRANCE
+	RESTART
+	
+CASE 9
+	QUIT
+	
+CASEELSE
+	GOTO TITLE_INPUT
+	
+ENDSELECT
+
+;SYSTEM_TITLE中でRETURNすると次に実行する行が無くなり、エラーになる。
+;必ずBEGIN命令かLOADGAMEを行うこと。
+
+
+

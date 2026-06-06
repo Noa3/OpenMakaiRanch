@@ -1,0 +1,199 @@
+﻿
+;隣接キャラをTARGETに指定し直す
+;ARG→後ろ検索
+;ARGS→元ページ
+@CHANGE_TARGET_CHARA(ARG,ARGS)
+#DIMS PLACE
+#DIM LOOP_BASE
+
+SELECTCASE ARGS
+CASE "メインメニュー","精算詳細"
+	;あなた→侍従（拡張予定）→お気に入り→自室→奴隷寮→家畜小屋→体内→牧場外→あなた　の順
+	PLACE = %CSTR:居場所%
+	
+	;行動済みは判定だけ事務所に戻す
+	SIF PLACE == "行動済み"
+		PLACE = 事務所
+	
+	;お気に入りの場合は居場所に「お気に入り」上書き→そんな場所はないのでこれでOK
+	SIF CFLAG:お気に入り
+		PLACE = お気に入り
+	
+	;基点はTARGET番号+-1
+	IF ARG
+		LOOP_BASE = TARGET +1
+	ELSE
+		LOOP_BASE = TARGET -1
+	ENDIF
+	CALL CHANGE_TARGET_MAIN_MENU(ARG,LOOP_BASE,PLACE)
+	
+	;精算詳細の場合は当日に出荷した奴隷だけ
+	SIF !CFLAG:母乳出荷金額／当日 && ARGS == "精算詳細"
+		RESTART
+
+CASE "キャラコンフィグ","願い事選択"
+	IF ARG
+		;どこにいるか気にせずに+1
+		TARGET ++
+		SIF TARGET >= CHARANUM
+			TARGET = 0
+	ELSE
+		;逆順
+		TARGET --
+		SIF TARGET < 0
+			TARGET = CHARANUM -1
+	ENDIF
+
+CASE "全奴隷"
+	IF ARG
+		TARGET ++
+		
+		;全奴隷はあなたを飛ばす
+		SIF TARGET >= CHARANUM
+			TARGET = 1
+	ELSE
+		TARGET --
+		SIF TARGET < 1
+			TARGET = CHARANUM -1
+	ENDIF
+
+CASE "牛舎"
+	;牛舎番号保存
+	COWSHED_NUM = CFLAG:牛舎番号
+	IF ARG
+		LOOP_BASE = TARGET +1
+	ELSE
+		LOOP_BASE = TARGET -1
+	ENDIF
+	CALL CHANGE_TARGET_COWSHED(ARG,LOOP_BASE)
+	
+;他は何もしない
+ENDSELECT
+
+
+
+;メイン画面検索
+;ARG→後ろ検索
+@CHANGE_TARGET_MAIN_MENU(ARG,LOOP_BASE,PLACE)
+#DIMS DYNAMIC PLACE
+#DIM DYNAMIC LOOP_BASE
+
+;後ろ検索
+IF ARG
+	FOR TARGET_COUNT,LOOP_BASE,CHARANUM
+		TARGET = TARGET_COUNT
+		
+		;SHOPは非表示の場合飛ばす
+		SIF FLAG:メイン／奴隷非表示 && CFLAG:表示OFF／メイン画面
+			CONTINUE
+		
+		;お気に入り検索中の場合だけCFLAGを見るので異なる
+		IF PLACE == "お気に入り" && CFLAG:お気に入り
+			RETURN
+		
+		;同じ場所に見つけたらTARGET切り替えしてRETURN
+		;お気に入り検索中以外はお気に入り指定中の奴隷は飛ばす
+		ELSEIF PLACE == CSTR:居場所 && !CFLAG:お気に入り
+			RETURN
+		
+		;行動済みを飛ばさないように対応
+		ELSEIF PLACE == "事務所" && CSTR:居場所 == "行動済み" && !CFLAG:お気に入り
+			RETURN
+		
+		ENDIF
+	NEXT
+	
+	;見つからないなら検索場所変更
+	SELECTCASE PLACE
+	CASE "事務所"
+		PLACE = お気に入り
+	CASE "お気に入り"
+		PLACE = 自室
+	CASE "自室"
+		PLACE = 奴隷寮
+	CASE "奴隷寮"
+		PLACE = 家畜小屋
+	CASE "家畜小屋"
+		PLACE = 体内
+	CASE "体内"
+		PLACE = 牧場外
+	CASE "牧場外"
+		PLACE = 事務所
+	ENDSELECT
+	
+	;場所変更後は基点0に
+	LOOP_BASE = 0
+
+;前検索：逆順FORループ
+ELSE
+	FOR TARGET_COUNT,LOOP_BASE,-1,-1
+		TARGET = TARGET_COUNT
+		SIF FLAG:メイン／奴隷非表示 && CFLAG:表示OFF／メイン画面
+			CONTINUE
+		IF PLACE == "お気に入り" && CFLAG:お気に入り
+			TARGET = TARGET_COUNT
+			RETURN
+		ELSEIF PLACE == CSTR:居場所 && !CFLAG:お気に入り
+			TARGET = TARGET_COUNT
+			RETURN
+		ENDIF
+	NEXT
+	
+	;場所変更も逆順
+	SELECTCASE PLACE
+	CASE "牧場外"
+		PLACE = 体内
+	CASE "体内"
+		PLACE = 家畜小屋
+	CASE "家畜小屋"
+		PLACE = 奴隷寮
+	CASE "奴隷寮"
+		PLACE = 自室
+	CASE "自室"
+		PLACE = お気に入り
+	CASE "お気に入り"
+		PLACE = 事務所
+	CASE "事務所"
+		PLACE = 牧場外
+	ENDSELECT
+	
+	;基点をCHARANUM -1にする
+	LOOP_BASE = CHARANUM -1
+ENDIF
+RESTART
+
+
+
+;牛舎内で検索
+@CHANGE_TARGET_COWSHED(ARG,LOOP_BASE)
+#DIM DYNAMIC LOOP_BASE
+
+;同じ牛舎内の次のキャラ
+IF ARG
+	FOR TARGET_COUNT,LOOP_BASE,CHARANUM
+		TARGET = TARGET_COUNT
+		
+		;牛舎番号一致したらTARGET変更
+		SIF CFLAG:牛舎番号 != COWSHED_NUM
+			CONTINUE
+		RETURN
+	NEXT
+	
+	;見つからなければ基点0にして再検索
+	LOOP_BASE = 0
+
+;逆順FORループ
+ELSE
+	FOR TARGET_COUNT,LOOP_BASE,-1,-1
+		TARGET = TARGET_COUNT
+		SIF CFLAG:牛舎番号 != COWSHED_NUM
+			CONTINUE
+		RETURN
+	NEXT
+	
+	;基点をCHARANUM -1にする
+	LOOP_BASE = CHARANUM -1
+ENDIF
+RESTART
+
+

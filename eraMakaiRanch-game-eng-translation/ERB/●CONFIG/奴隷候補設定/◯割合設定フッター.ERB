@@ -1,0 +1,42 @@
+﻿
+;割合設定フッター
+@TENDENCY_CONFIG_FOOTER
+
+DRAWLINE
+IF !FLAG:奴隷候補設定可能
+	IF ITEM:奴隷候補設定変更チケット
+		PRINTLC [90] ＜Slave Candidate Change Ticket＞使用
+	ELSE
+		CALL PRINTLC_WORD_COLOR("　No ＜Slave Candidate Change Ticket＞","灰")
+	ENDIF
+ELSE
+	PRINTLC [98] Default
+ENDIF
+IF TOTAL_RATIO > 0 && TOTAL_RATIO <= 1000
+	PRINTLC 　
+	PRINTL [99] Done
+ELSE
+	CALL PRINTL_WORD_COLOR,@"！Total Weights must be from 1～1000：Currently{TOTAL_RATIO}","黄"
+ENDIF
+BINPUT
+PRINTL
+INPUT_NUM = RESULT
+IF INPUT_NUM == 90
+	SIF FLAG:奴隷候補設定可能 || !ITEM:奴隷候補設定変更チケット
+		RETURN
+	PRINTL Use ＜Slave Candidate Change Ticket＞?
+	CALL PRINTL_WORD_COLOR("Setting change is possible until next slave candidate is found.","黄")
+	CALL ASK_YN
+	IF !RESULT
+		FLAG:奴隷候補設定変更チケット使用中 = 1
+		ITEM:奴隷候補設定変更チケット --
+		PRINTW ＜Slave Candidate Change Ticket＞ used.
+	ENDIF
+ENDIF
+
+;設定不可ならINPUT_NUMを強制的に99に置き換え
+SIF !FLAG:奴隷候補設定可能
+	INPUT_NUM = 99
+
+;元関数にINPUT_NUMで判定させる
+

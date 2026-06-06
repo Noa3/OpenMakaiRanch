@@ -1,0 +1,185 @@
+﻿
+;一覧表示
+;ARGS→元関数　候補確認・候補選択
+@PRINT_TRAVELLER_LIST(ARGS)
+
+CALL MANYL(5)
+SELECTCASE ARGS
+CASE "候補確認"
+	PRINTL ＜Characteristics of the ningen who entered Makai today＞
+CASE "候補選択"
+	PRINTL Select Ningen to track.
+ENDSELECT
+
+;色付けの条件表示
+CALL PRINT_POSSESSION_TERM
+DRAWLINE
+FOR LOCAL,0,10
+	SIF LOCAL == 6
+		PRINTL
+	IF LIST_TRIBE:LOCAL == ""
+		CALL PRINTL_WORD_COLOR("EMPTY","灰")
+		CONTINUE
+	ENDIF
+	
+	;選択時はボタン出す
+	SIF ARGS == "候補選択"
+		PRINTFORM [{LOCAL,2}]
+	
+	;目的・種族
+	CALL PRINT_PURPOSE(LOCAL)
+	CALL PRINT_LIST_TRIBE(LOCAL)
+	
+	;おっぱい・身長
+	PRINTFORMLC 【%BUST_ENG_SHORT(LIST_BUST:LOCAL)%／%HEIGHT_ENG(LIST_HEIGHT:LOCAL)%】
+	
+	;魔力・ランク・仲間ランク
+	CALL SLAVE_LIST_MAGIC_POWER(LOCAL)
+	PRINTFORM ★{LIST_RANK:LOCAL,2}
+	SIF LIST_GROUP:LOCAL
+		PRINTFORM ／{LIST_GROUP_RANK:LOCAL}
+	PRINTL
+NEXT
+DRAWLINE
+
+
+
+;色付け条件
+@PRINT_POSSESSION_TERM
+
+SELECTCASE FLAG:奴隷候補の未所持強調表示形式
+CASE 1
+	PRINTL ＜Non-enslaved【Races】will be highlighted＞
+CASE 2
+	PRINTL ＜Non-enslaved【Jobs】will be highlighted＞
+CASE 3
+	PRINTL ＜Non-enslaved【Races】or【Jobs】within the race will be highlighted＞
+CASE 4
+	PRINTL ＜Non-enslaved【Races】or【Status】within the race will be highlighted＞
+ENDSELECT
+
+
+
+;目的表示
+;ARG→LOCAL
+@PRINT_PURPOSE(ARG)
+
+SELECTCASE ARG
+CASE 0
+	PRINT [  Crystals  ]
+CASE 1
+	PRINT [   Plants   ]
+CASE 2
+	PRINT [    Fame    ]
+CASE 3
+	PRINT [   Rescue   ]
+CASE 4
+	PRINT [  Accident  ]
+CASE 5
+	PRINT [  Invasion  ]
+CASE 6
+	PRINT [NearDisposal]
+CASE 7
+	PRINT [Auction Item]
+CASE 8
+	PRINT [ Higher Race]
+CASE 9
+	PRINT [ Celestial  ]
+	
+;CSV読み込み専用
+CASE 10
+	PRINT [Transmigrator]
+ENDSELECT
+
+
+
+;種族とか表示
+;ARG→LOCAL
+@PRINT_LIST_TRIBE(ARG)
+#DIMS TRIBE_DATA
+#DIMS TRIBE_DISP
+
+;種族は確実にある→上位・天界だとジョブなし身分欄ありの可能性　神格も考える
+TRIBE_DATA = 【%RACE_ENG(LIST_TRIBE:ARG)%】
+
+;1つずつ足していくと上手いこと表示されないかな
+SIF LIST_JOB:ARG != ""
+	TRIBE_DATA += @"【%JOB_ENG(LIST_JOB:ARG)%】"
+SIF LIST_POSITION:ARG != ""
+	TRIBE_DATA += @"[%JOB_ENG(LIST_POSITION:ARG)%]"
+SIF LIST_DIVINITY:ARG
+	TRIBE_DATA += "[Divine]"
+
+;短縮表示に対応しなきゃならんかった
+SELECTCASE LIST_TRIBE:ARG
+CASE "Ｈリング"
+	TRIBE_DISP = ハーフリング
+CASE "Ｈエルフ"
+	TRIBE_DISP = ハーフエルフ
+CASE "Ｄエルフ"
+	TRIBE_DISP = ダークエルフ
+CASEELSE
+	TRIBE_DISP = %LIST_TRIBE:ARG%
+ENDSELECT
+
+;未所持強調表示フラグで色つける
+CALL POSSESSION_COLOR_CHECK(ARG,TRIBE_DISP)
+SIF RESULT
+	SETCOLOR 0xFFFF00
+PRINTFORMLC %TRIBE_DATA%
+RESETCOLOR
+
+
+
+;未所持強調表示フラグで色つける
+;RETURN 1したら色付け
+;ARG→LOCAL
+;ARGS→TRIBE_DISP
+@POSSESSION_COLOR_CHECK(ARG,ARGS)
+
+SELECTCASE FLAG:奴隷候補の未所持強調表示形式
+CASE 1
+	;種族未所持
+	SIF !CMATCH(CSTR:種族,ARGS)
+		RETURN 1
+CASE 2
+	;ジョブ未所持
+	SIF !CMATCH(CSTR:ジョブ,LIST_JOB:ARG)
+		RETURN 1
+CASE 3
+	;種族未所持or種族一致でもジョブ未所持
+	FOR TARGET_COUNT,1,CHARANUM
+		TARGET = TARGET_COUNT
+		SIF CSTR:種族 != ARGS
+			RETURN 1
+		SIF CSTR:ジョブ != LIST_JOB:ARG
+			RETURN 1
+	NEXT
+CASE 4
+	;種族未所持or種族一致でも身分未所持
+	FOR TARGET_COUNT,1,CHARANUM
+		TARGET = TARGET_COUNT
+		SIF CSTR:種族 != ARGS
+			RETURN 1
+		SIF CSTR:初期値／身分 != LIST_POSITION:ARG
+			RETURN 1
+	NEXT
+ENDSELECT
+
+
+
+;魔力表示
+@SLAVE_LIST_MAGIC_POWER(ARG)
+
+SELECTCASE LIST_MAGIC_POWER:ARG
+CASE 0
+	CALL PRINT_WORD_COLOR("Mana：☓　","灰")
+CASE 1 TO 3
+	CALL PRINT_WORD_COLOR("Mana：△　","")
+CASE 4 TO 7
+	CALL PRINT_WORD_COLOR("Mana：○　","")
+CASEELSE
+	CALL PRINT_WORD_COLOR("Mana：◎　","青緑")
+ENDSELECT
+
+

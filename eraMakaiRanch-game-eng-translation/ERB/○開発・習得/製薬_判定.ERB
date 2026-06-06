@@ -1,0 +1,32 @@
+﻿
+;製薬できるか判定
+@PHARMACEUTICAL_JUDGE
+
+;非対応IDか名称なしならそのまま帰る
+IF SELECT_ITEM < ITEM_ID_MIN || SELECT_ITEM >= ITEM_ID_MAX || ITEMNAME:SELECT_ITEM == ""
+	PRINTL
+	RETURN
+ENDIF
+
+;生産コストの判定
+COST = ITEMPRICE:SELECT_ITEM
+
+;ITEM:[天界]母乳分泌促進薬→370
+;天界種族用は魔力も必要
+SIF ITEM_ID_MIN >= 370
+	NEED_MP_COST = 1
+IF COST > MONEY:貯蔵霊力
+	CALL PRINTL_WORD_COLOR("　Not Enough Spirit Energy Stored","灰")
+ELSEIF COST > MONEY:貯蔵魔力 && NEED_MP_COST
+	CALL PRINTL_WORD_COLOR("　Not Enough Mana Stored","灰")
+ELSE
+	IF NEED_MP_COST
+		PRINTFORMLC [  0] Synthesize：%VALUE_DIGIT(COST)%EP・MP
+	ELSE
+		PRINTFORMLC [  0] Synthesize：%VALUE_DIGIT(COST)%EP
+	ENDIF
+	PRINTLC [  1] Synthesize Multiple
+	PRINTL
+ENDIF
+
+

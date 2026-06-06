@@ -1,0 +1,431 @@
+﻿
+;動作確認用口上
+;ほんとに動作確認用なのでえっちも何もあったもんじゃない
+;この口上だけ「候補全部表示する」処理をするよ
+;全部埋めるのは大変だと思うのでないと寂しいポイントをつけとく
+;なきゃなくても大丈夫なとこもまあまああるよ　趣味だね
+
+; ======================================
+
+;動作確認用口上
+;口上識別名：動作確認用口上
+;↑口上を作ったら[Str.csv]の6100～に口上識別名を書いてね
+;口上作者：polt
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+
+;加筆者：
+;↑加筆も何もない
+; ======================================
+
+;ARGS:0　シチュ指定　ARGS:1,2　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_INDEX_動作確認用口上(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+;最初の振り分け　調教中もここから
+;…の前に　口が塞がってる場合や崩壊の場合の振り分けをしてしまおう
+
+;口が塞がっている場合は口塞ぎ汎用口上呼び出して終了　現状全部SHACKLE_1呼んでるけど必要に応じて2番以降作ってね
+;崩壊中＋Ｍ装備処理はＭ装備のほうに入れてるよ
+IF TFLAG:Ｍ装備
+	
+	;例文を呼ぶ場合は口塞ぎ口上に置き換えない
+	;イベント→Ｍ装備イベントを呼ぶ場合、肉体改造も同様
+	IF GROUPMATCH(ARGS:0,"例文","イベント","Ｍ装備中イベント","肉体改造","Ｍ装備中肉体改造")
+		;例外処理の中身は↓の呼び出しとRETURNを回避したいだけなので空っぽでOK　というか何も書かないで
+	
+	;レベルドレインの場合に例外処理
+	;Ｍ装備中～の分岐がない部分はTFLAG:Ｍ装備での分岐をその中に作ってないとなぜか喋ったりしちゃうので気をつけよう
+	ELSEIF GROUPMATCH(ARGS:1,"レベルドレイン")
+	
+	;フェラチオ・イラマチオ（触手含む）の例外処理
+	ELSEIF GROUPMATCH(ARGS:1,"フェラチオ","触手フェラチオ","イラマチオ","触手イラマチオ")
+	
+	;口に射精された時の例外処理
+	ELSEIF GROUPMATCH(ARGS:0,"射精") && SOURCE:精飲経験
+	
+	;例外処理を通過した場合
+	ELSE
+		CALL MESSAGE_BOX,@"「test_口が塞がっている場合はこれが表示されます」"
+		
+		;動作確認にしてもくどいので↓はコメントアウト
+		;CALL MESSAGE_BOX,@"「test_実際にはファイル内↓の行のコメントアウトを解除し、口が塞がっている場合の汎用口上ファイルを呼び出すのがいいでしょう」"
+		;CALL MESSAGE_BOX,@"「test_また、口が塞がっていてもフェラチオなどの場合はこちらを通らないように作ってあります」"
+		;CALL KOJO_GENERAL_MOUTH_SHACKLE_1(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+		RETURN
+	ENDIF
+ELSEIF CFLAG:崩壊 && !CFLAG:洗脳
+	;ここもあとで崩壊用汎用作る予定
+	
+	;例文を呼ぶ場合は崩壊口上に置き換えない
+	IF GROUPMATCH(ARGS:0,"例文")
+	
+	;崩壊した直後の口上、洗脳触手使用時も
+	ELSEIF GROUPMATCH(ARGS:1,"洗脳触手","崩壊")
+	
+	;例外処理を通過した場合
+	ELSE
+		CALL MESSAGE_BOX,@"「test_【崩壊】状態で、【洗脳】されていない場合これが表示されます」"
+		CALL MESSAGE_BOX,@"「test_【崩壊】状態でも、＜洗脳触手＞コマンド使用時はこれが表示されます」"
+		CALL MESSAGE_BOX,@"「test_例外処理の条件はファイル内↑のIF文を参照してください」"
+		CALL MESSAGE_BOX,@"「test_分岐の最後にRETURNをかけることでこの条件の場合に他の口上も候補に入ることを防ぎます」"
+		RETURN
+	ENDIF
+ENDIF
+
+SELECTCASE ARGS:0
+CASE "例文"
+	;口上設定画面で出すための例文
+	;ここは必要、かつランダムで出さずに1択がよい
+	CALL MESSAGE_BOX,@"「test_こちらは『動作確認用口上』です。\n『口上を作りたい、動作確認をしたい、分岐条件を確認したい』場合に使います」"
+	CALL MESSAGE_BOX,@"「test_よって、全くえっちさはありません、どころか口上になっていません。」"
+	CALL MESSAGE_BOX,@"「test_こちらの口上は、ERBファイルを開いて見比べながら動作確認する用途を想定しています」"
+	CALL MESSAGE_BOX,@"「test_エスケープシーケンスについて説明します」"
+	{
+	CALL MESSAGE_BOX,@"「test_♥をつけると　♥♥♥このようにハートマークが表示されます\n←を入力すると改行されます
+	\d←これで囲まれた中は♥文字色が標準に→\d戻ります、地の文などに便利です」\n
+	「test_←は何かの呪文とかそういうことはなく、\n
+	『このファイルを元に作った場合に文字列検索かければ残っている行がわかる』という用途です」\n
+	「注意点として、『動作確認用口上』を使っている場合のみ『表示候補を全て表示する』処理を行っています」\n
+	「実際にはこの文の『いずれか1つが』表示される処理になるので、\n　適宜←で改行など行いましょう」\n
+	「また、↑と↓の囲みは『ファイル上で改行しても1行の命令として扱ってもらえる』おまじないです」\n
+	「例文など、1行が長くなる口上は適宜改行するとよいでしょう」"
+	}
+	
+CASE "調教コマンド"
+	;調教コマンドごとにシチュ指定で振り分けしていくんだけど長いので別関数を呼び出す
+	CALL KOJO_GENERAL_動作確認用口上_TRAIN(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+CASE "スケジュール"
+	;スケジュール実行時に初仕事かランダム選択でキャラ1人の口上出す
+	;多くなってきたし増える予定もあるのでここも別関数を呼ぶ
+	CALL KOJO_GENERAL_動作確認用口上_SCHEDULE(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+CASE "魔界入り","イベント","Ｍ装備中イベント"
+	;基本的に1キャラ1回しか呼び出さない部分をここでまとめる
+	CALL KOJO_GENERAL_動作確認用口上_EVENT(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+	
+CASE "絶頂"
+	CALL MESSAGE_BOX,@"「test_射精されず、噴乳もしない場合で絶頂した時の口上です」"
+	SIF NOWEX:Ｂ絶頂
+		CALL MESSAGE_BOX,@"「test_今の責めでＢ絶頂した場合こちらも候補に入ります」"
+	SIF NOWEX:総絶頂 >= 20
+		CALL MESSAGE_BOX,@"「test_今の責めで合計20回以上絶頂した場合の候補です」"
+	SIF EX:総絶頂 >= 100
+		CALL MESSAGE_BOX,@"「test_今回の調教全体で合計100回以上絶頂している場合の候補です」"
+	
+CASE "射精"
+	;膣内射精は優先度高め　あとは趣味に応じて埋めてね
+	IF SOURCE:膣内射精経験
+		CALL MESSAGE_BOX,@"「test_膣内射精された場合の口上です」"
+		SIF ABL:膣内射精中毒 >= 10
+			CALL MESSAGE_BOX,@"「test_【膣内射精中毒】Lv10以上の場合候補に入ります」"
+		SIF NOWEX:Ｖ絶頂
+			CALL MESSAGE_BOX,@"「test_Ｖ絶頂した場合候補に入ります」"
+	
+	ELSEIF SOURCE:尻穴射精経験
+		CALL MESSAGE_BOX,@"「test_尻穴射精された場合の口上です」"
+		SIF ABL:尻穴射精中毒 >= 10
+			CALL MESSAGE_BOX,@"「test_【尻穴射精中毒】Lv10以上の場合候補に入ります」"
+		SIF NOWEX:Ａ絶頂
+			CALL MESSAGE_BOX,@"「test_Ａ絶頂した場合候補に入ります」"
+	
+	ELSEIF SOURCE:乳内射精経験
+		CALL MESSAGE_BOX,@"「test_パイズリから乳内射精された場合の口上です」"
+		SIF ABL:乳内射精中毒 >= 10
+			CALL MESSAGE_BOX,@"「test_【乳内射精中毒】Lv10以上の場合候補に入ります」"
+		SIF NOWEX:Ｂ絶頂
+			CALL MESSAGE_BOX,@"「test_Ｂ絶頂した場合候補に入ります」"
+	
+	ELSEIF SOURCE:精飲経験
+		CALL MESSAGE_BOX,@"「test_フェラチオ・イラマチオから口内射精された場合の口上です」"
+		CALL MESSAGE_BOX,@"「test_Ｍ装備の例外処理により、口が塞がっている状態ですが表示されます」"
+		SIF ABL:精飲中毒 >= 10
+			CALL MESSAGE_BOX,@"「test_【精飲中毒】Lv10以上の場合候補に入ります」"
+	
+	ELSEIF SOURCE:股ぶっかけ
+		CALL MESSAGE_BOX,@"「test_Ｖ・Ａセックスから引き抜いて股にかかった場合の口上です」"
+	
+	ELSEIF SOURCE:胸ぶっかけ
+		CALL MESSAGE_BOX,@"「test_パイズリから引き抜いて胸にかけた場合の口上です」"
+		SIF ABL:精液中毒 >= 10
+			CALL MESSAGE_BOX,@"「test_【精液中毒】Lv10以上の場合候補に入ります」"
+	
+	ELSEIF SOURCE:顔ぶっかけ
+		CALL MESSAGE_BOX,@"「test_パイズリ・フェラチオ・イラマチオから引き抜いて顔にかけた場合の口上です」"
+		SIF ABL:精液中毒 >= 10
+			CALL MESSAGE_BOX,@"「test_【精液中毒】Lv10以上の場合候補に入ります」"
+	
+	ELSEIF TEQUIP:手コキ
+		CALL MESSAGE_BOX,@"「test_手コキ・授乳手コキで射精された場合の口上です」"
+		SIF ABL:母性 >= 10
+			CALL MESSAGE_BOX,@"「test_【母性】Lv10以上の場合候補に入ります」"
+	ENDIF
+
+;母乳を搾られてる時の口上
+CASE "搾乳"
+	;最重要だよ　ここのバリエーションが寂しいとしょんぼりだよ
+	;勝手に噴いた場合ここだけ使う
+	IF SOURCE:母乳漏れ
+		CALL MESSAGE_BOX,@"「test_搾乳器、搾乳触手、乳吸いなどがない状態で噴乳した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_RETURN命令があるためこの下は候補に入りません」"
+		RETURN
+	ENDIF
+	IF CFLAG:乳牛
+		CALL MESSAGE_BOX,@"「test_搾乳された時、【乳牛】の場合候補に入ります」"
+		SIF NOWEX:Ｎ絶頂
+			CALL MESSAGE_BOX,@"「test_搾乳された時、【乳牛】でこの搾乳責めでＮ絶頂した場合の候補です」"
+	ELSEIF ＃陥落状態／隷属＃ || CFLAG:洗脳
+		CALL MESSAGE_BOX,@"「test_搾乳された時、【隷属】か【洗脳】の場合候補に入ります」"
+	ELSEIF ＃陥落状態／恋慕以上＃
+		CALL MESSAGE_BOX,@"「test_搾乳された時、【恋慕】の場合候補に入ります」"
+	ELSEIF ＃陥落状態／屈服以上＃
+		CALL MESSAGE_BOX,@"「test_搾乳された時、【陥落】か【屈服】の場合候補に入ります」"
+	ELSE
+		CALL MESSAGE_BOX,@"「test_搾乳された時、【陥落】でも【屈服】でもない→【反抗】か【拒絶】の場合候補に入ります」"
+	ENDIF
+	SIF TFLAG:搾乳器
+		CALL MESSAGE_BOX,@"「test_搾乳器で搾乳された時、どの心境でも候補に入ります」"
+	SIF TFLAG:搾乳触手
+		CALL MESSAGE_BOX,@"「test_搾乳触手いずれかで搾乳された時、どの心境でも候補に入ります」"
+	SIF TEQUIP:乳包み花弁搾乳触手
+		CALL MESSAGE_BOX,@"「test_＜乳包み花弁搾乳触手＞で搾乳された時、どの心境でも候補に入ります」"
+	SIF TEQUIP:透明カップ搾乳触手 && !TFLAG:目隠し
+		CALL MESSAGE_BOX,@"「test_目隠しされていない状態で＜透明カップ搾乳触手＞で搾乳された時、どの心境でも候補に入ります」"
+	SIF TEQUIP:搾乳ワーム触手
+		CALL MESSAGE_BOX,@"「test_＜搾乳ワーム触手＞で搾乳された時、どの心境でも候補に入ります」"
+	SIF GETBIT(＃Ｐ使用／Ｖ挿入＃) && NOWEX:Ｖ絶頂 && NOWEX:Ｎ絶頂
+		CALL MESSAGE_BOX,@"「test_Ｖ挿入されながら搾乳され、Ｖ絶頂かつＮ絶頂した場合どの心境でも候補に入ります」"
+	SIF SOURCE:魔力吸収量
+		CALL MESSAGE_BOX,@"「test_【魔力母乳体質】で搾乳されて魔力を搾られた時、どの心境でも候補に入ります」"
+	SIF SOURCE:プレイヤー増加魔力量
+		CALL MESSAGE_BOX,@"「test_【魔力母乳体質】で搾乳され、%CALLNAME:0%に魔力を奪われた時、どの心境でも候補に入ります」"
+	SIF MARK:絶頂魔力回復淫紋
+		CALL MESSAGE_BOX,@"「test_【絶頂魔力回復淫紋】で搾乳された時、どの心境でも候補に入ります」"
+	SIF ABL:搾乳中毒 >= 10
+		CALL MESSAGE_BOX,@"「test_【搾乳中毒】が10以上の時、どの心境でも候補に入ります」"
+	IF TFLAG:乳吸い
+		CALL MESSAGE_BOX,@"「test_母乳を直接吸われた時、どの心境でも候補に入ります」"
+		SIF NOWEX:Ｎ絶頂
+			CALL MESSAGE_BOX,@"「test_母乳を直接吸われてＮ絶頂した時、どの心境でも候補に入ります」"
+		IF !PLAYER
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%に母乳を直接吸われた時、どの心境でも候補に入ります」"
+			CALL MESSAGE_BOX,@"「test_%CALLNAME:0%の呼び方は%MASTER_CALL()%←で呼び出せます」"
+		ENDIF
+	ENDIF
+
+;霊力抽出口上を分けた　抽出中で霊力あるとここ
+CASE "抽出"
+	;ここも搾乳系譜なので最重要
+	CALL MESSAGE_BOX,@"「test_搾乳され、霊力を搾られた時の口上です」"
+	SIF NOWEX:Ｎ絶頂
+		CALL MESSAGE_BOX,@"「test_霊力を搾られた時にＮ絶頂した場合の口上です」"
+	SIF SOURCE:プレイヤー増加霊力量
+		CALL MESSAGE_BOX,@"「test_%CALLNAME:0%に吸われて霊力を奪われた時の口上です」"
+	SIF TALENT:乳責め嫌悪
+		CALL MESSAGE_BOX,@"「test_素質【乳責め嫌悪】で霊力を搾られた時の口上です」"
+	SIF MARK:乳責め嫌悪解消
+		CALL MESSAGE_BOX,@"「test_刻印【乳責め嫌悪解消】で霊力を搾られた時の口上です」"
+
+;その通りのコマンド　分岐多くなったので日常イベントから移動
+;口上なかった場合の代替テキストもあるので重要度中くらい
+CASE "おっぱい吸わせて"
+	SELECTCASE ARGS:1
+	CASE "開始"
+		IF BASE:母乳容量
+			CALL MESSAGE_BOX,@"「test_奴隷に会いに行きおっぱい吸わせてと頼んだ時、母乳容量がある場合の授乳前口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_奴隷に会いに行きおっぱい吸わせてと頼んだ時、母乳が空っぽの場合の授乳前口上です」"
+		ENDIF
+	CASE "終了"
+		IF EX:噴乳 >= 1000
+			CALL MESSAGE_BOX,@"「test_奴隷に会いに行き母乳を吸い、1000cc以上飲んだ場合の授乳後口上です」"
+		ELSEIF !EX:噴乳
+			CALL MESSAGE_BOX,@"「test_奴隷に会いに行き母乳を吸ったけど母乳が出なかった場合の授乳後口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_奴隷に会いに行き母乳を吸い、1000cc未満飲んだ場合の授乳後口上です」"
+		ENDIF
+	ENDSELECT
+
+;調教コマンドといえば調教コマンドかな…
+CASE "ペニス呼び方変更"
+	CALL MESSAGE_BOX,@"「test_挿入中にペニスの呼び方を躾した時の口上です」"
+	CALL MESSAGE_BOX,@"「test_%CSTR:性器呼び方／ペニス%←で絶頂回数に影響されず今躾したペニス呼び方を呼び出します」"
+	
+CASE "膣呼び方変更"
+	CALL MESSAGE_BOX,@"「test_Ｖ挿入中に膣の呼び方を躾した時の口上です」"
+	CALL MESSAGE_BOX,@"「test_%CSTR:性器呼び方／膣%←で絶頂回数に影響されず今躾した膣呼び方を呼び出します」"
+	
+CASE "アナル呼び方変更"
+	CALL MESSAGE_BOX,@"「test_Ａ挿入中にアナルの呼び方を躾した時の口上です」"
+	CALL MESSAGE_BOX,@"「test_%CSTR:性器呼び方／アナル%←で絶頂回数に影響されず今躾したアナル呼び方を呼び出します」"
+
+;イベントというよりも、という感じなので分けることにした
+CASE "訪問"
+	SELECTCASE ARGS:1
+	CASE "入口"
+		IF CFLAG:時刻制限／Ｈ
+			CALL MESSAGE_BOX,@"「test_[奴隷に会いに行く]の入り口で、おっぱいを吸ったりセックスしたあとの口上です」"
+		ELSEIF CFLAG:時刻制限／頭撫で
+			CALL MESSAGE_BOX,@"「test_[奴隷に会いに行く]の入り口で、まだおっぱいを吸ったりセックスしておらず、頭を撫でたあとの口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_[奴隷に会いに行く]の入り口で、まだおっぱいを吸ったりセックスしていない時の口上です」"
+		ENDIF
+		
+	CASE "肩書き変更"
+		SELECTCASE ARGS:2
+		CASE "通常"
+			CALL MESSAGE_BOX,@"「test_奴隷に会いに行き身分を一方的に変更した時の口上です」"
+		CASE "屈辱的"
+			CALL MESSAGE_BOX,@"「test_奴隷に会いに行き身分を一方的に変更した時、屈辱的な単語が含まれている場合の口上です」"
+		ENDSELECT
+	
+	;あなたの呼ばせ方変更後
+	;「会いに行く」からしか来ないのでここに移動
+	CASE "あなた呼び方変更"
+		CALL MESSAGE_BOX,@"「test__奴隷に会いに行き%CALLNAME:0%の呼び方を変更した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_%MASTER_CALL()%←これで変更後の呼び方を再確認できます」"
+		CALL MESSAGE_BOX,@"「test_呼び方変更には【反抗】でない場合に来ることができます」"
+	
+	CASE "頭撫で"
+		CALL MESSAGE_BOX,@"「test_奴隷に会いに行き頭を撫でた時の口上です」"
+	CASE "キス"
+		CALL MESSAGE_BOX,@"「test_奴隷に会いに行きキスした時の口上です」"
+	CASE "ヘアスタイル変更"
+		CALL MESSAGE_BOX,@"「test_奴隷に会いに行きヘアスタイルを変更した時の口上です」"
+	CASE "カラーコンタクト"
+		CALL MESSAGE_BOX,@"「test_奴隷に会いに行き＜カラーコンタクト＞を使用して目の色などを変更した時の口上です」"
+	CASE "自室割り当て"
+		CALL MESSAGE_BOX,@"「test_奴隷に自室を与えた時の口上です」"
+	CASE "寮割り当て"
+		CALL MESSAGE_BOX,@"「test_奴隷を寮に入れた時の口上です」"
+	ENDSELECT
+
+;繰り返し発生するイベントで使う　名称変更した
+;重要度低（なきゃなくてもいいかな）
+CASE "繰り返しイベント"
+	SELECTCASE ARGS:1
+	CASE "拘束抵抗"
+		SELECTCASE ARGS:2
+		CASE "抵抗"
+			CALL MESSAGE_BOX,@"「test_＜魔力枷＞がついた状態で朝を迎え、抵抗して魔力を消費させた時の口上です」"
+		CASE "休憩"
+			CALL MESSAGE_BOX,@"「test_＜魔力枷＞がついた状態で朝を迎え、体力不足で抵抗しなかった時の口上です」"
+		ENDSELECT
+	
+	CASE "レベルドレイン"
+		IF TFLAG:Ｍ装備
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態でエナジードレインされた時の口上です）"
+			CALL MESSAGE_BOX,@"（test_最初のＭ装備分岐で例外処理をしている場合、ここの記入漏れに気をつけましょう）"
+			CALL MESSAGE_BOX,@"（test_Ｍ装備有効時の分岐が空でも「口が塞がっていれば何も喋らない」分岐として使用可能です）"
+			SELECTCASE ARGS:2
+			CASE "初回"
+				CALL MESSAGE_BOX,@"（test_口が塞がっている状態で霊力抽出・エナジードレインで%CALLNAME%のレベルが初めて下がった時の口上です）"
+			CASE "霊力0"
+				CALL MESSAGE_BOX,@"（test_口が塞がっている状態で霊力抽出・エナジードレインで%CALLNAME%の霊力が吸い尽くされた時の口上です）"
+			CASE "通常"
+				CALL MESSAGE_BOX,@"（test_口が塞がっている状態で霊力抽出・エナジードレインで%CALLNAME%のレベルが下がった時の口上です）"
+			ENDSELECT
+		ELSE
+			SELECTCASE ARGS:2
+			CASE "初回"
+				CALL MESSAGE_BOX,@"「test_霊力抽出・エナジードレインで%CALLNAME%のレベルが初めて下がった時の口上です」"
+			CASE "霊力0"
+				CALL MESSAGE_BOX,@"「test_霊力抽出・エナジードレインで%CALLNAME%の霊力が吸い尽くされた時の口上です」"
+			CASE "通常"
+				CALL MESSAGE_BOX,@"「test_霊力抽出・エナジードレインで%CALLNAME%のレベルが下がった時の口上です」"
+			ENDSELECT
+		ENDIF
+	ENDSELECT
+
+;膨乳や感度増加など　母乳体質化は迷ったけど1回だけだしイベントに入れる
+;膨乳以外は重要度低かな？
+CASE "肉体改造"
+	;ここもＭ装備専用分岐あるといいかな
+	;最初のＭ装備時の口塞ぎ口上呼び出しの例外になってるのでここは呼び出せるよ
+	IF TFLAG:Ｍ装備
+		CALL KOJO_PRINT("Ｍ装備中肉体改造",ARGS:1,ARGS:2,ARGS:3)
+		RETURN
+	ENDIF
+	SELECTCASE ARGS:1
+	CASE "膨乳"
+		IF !EXP:膨乳
+			CALL MESSAGE_BOX,@"「test_初めて%CALLNAME%が膨乳させられた時の口上です」"
+		ELSE
+			CALL MESSAGE_BOX,@"「test_%CALLNAME%が膨乳させられた時の2回目以降の口上です」"
+		ENDIF
+	CASE "母乳濃厚化"
+		CALL MESSAGE_BOX,@"「test_薬品などによって【母乳濃厚化EXP】が増加した時の口上です」"
+	CASE "Ａ感度上昇"
+		CALL MESSAGE_BOX,@"「test_薬品などによって【Ａ感度】が増加した時の口上です」"
+	CASE "Ｂ感度上昇"
+		CALL MESSAGE_BOX,@"「test_薬品などによって【Ｂ感度】が増加した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_＜淫乳改造エキス＞を使用してＢ感度が増加した場合も表示されます」"
+	CASE "Ｃ感度上昇"
+		CALL MESSAGE_BOX,@"「test_薬品などによって【Ｃ感度】が増加した時の口上です」"
+	CASE "Ｖ感度上昇"
+		CALL MESSAGE_BOX,@"「test_薬品などによって【Ｖ感度】が増加した時の口上です」"
+	CASE "Ｎ感度上昇"
+		CALL MESSAGE_BOX,@"「test_薬品などによって【Ｎ感度】が増加した時の口上です」"
+		CALL MESSAGE_BOX,@"「test_Ｂ感度を増加させた結果、Ｎ感度も合わせて増加した場合は表示されません」"
+	ENDSELECT
+
+CASE "Ｍ装備中肉体改造"
+	SELECTCASE ARGS:1
+	CASE "膨乳"
+		IF !EXP:膨乳
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で初めて%CALLNAME%が膨乳させられた時の口上です）"
+		ELSE
+			CALL MESSAGE_BOX,@"（test_口が塞がっている状態で%CALLNAME%が膨乳させられた時の2回目以降の口上です）"
+		ENDIF
+	CASE "母乳濃厚化"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で薬品などによって【母乳濃厚化EXP】が増加した時の口上です）"
+	CASE "Ａ感度上昇"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で薬品などによって【Ａ感度】が増加した時の口上です）"
+	CASE "Ｂ感度上昇"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で薬品などによって【Ｂ感度】が増加した時の口上です）"
+		CALL MESSAGE_BOX,@"（test_＜淫乳改造エキス＞を使用してＢ感度が増加した場合も表示されます）"
+	CASE "Ｃ感度上昇"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で薬品などによって【Ｃ感度】が増加した時の口上です）"
+	CASE "Ｖ感度上昇"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で薬品などによって【Ｖ感度】が増加した時の口上です）"
+	CASE "Ｎ感度上昇"
+		CALL MESSAGE_BOX,@"（test_口が塞がっている状態で薬品などによって【Ｎ感度】が増加した時の口上です）"
+		CALL MESSAGE_BOX,@"（test_Ｂ感度を増加させた結果、Ｎ感度も合わせて増加した場合は表示されません）"
+	ENDSELECT
+	
+;傭兵のひとびとと戦闘になった場合
+;そもそも出る機会があまりないので重要度低、だけど掛け声とかでOKなので埋めやすいからせっかくだし書いちゃわない？
+CASE "戦闘"
+	SELECTCASE ARGS:1
+	CASE "戦闘開始"
+		CALL MESSAGE_BOX,@"「test_傭兵アルバイトおよび%CALLNAME%との戦闘開始前の口上です」"
+	CASE "人任せ"
+		CALL MESSAGE_BOX,@"「test_傭兵アルバイトおよび%CALLNAME%との戦闘開始前、【非戦闘職】のため仲間の後ろに隠れた時の口上です」"
+	CASE "非戦闘職攻撃"
+		CALL MESSAGE_BOX,@"「test_戦闘で攻撃しますが【非戦闘職】のため無意味な攻撃時の口上です」"
+	CASE "応援"
+		CALL MESSAGE_BOX,@"「test_戦闘中に【非戦闘職】のため攻撃せず仲間を応援しているだけの口上です」"
+	CASE "仲間全滅"
+		CALL MESSAGE_BOX,@"「test_戦闘中に仲間が全滅した時の口上です」"
+	CASE "降参"
+		CALL MESSAGE_BOX,@"「test_戦闘中または戦闘前に【非戦闘職】のため即座に降参した時の口上です」"
+	CASE "攻撃"
+		CALL MESSAGE_BOX,@"「test_戦闘中の攻撃時の口上です」"
+	CASE "大技"
+		CALL MESSAGE_BOX,@"「test_戦闘中の大技発動時の口上です」"
+	CASE "被撃"
+		CALL MESSAGE_BOX,@"「test_戦闘中にダメージを受けた時の口上です」"
+		CALL MESSAGE_BOX,@"「test_連続攻撃では1度だけ表示されます」"
+	CASE "勝利"
+		CALL MESSAGE_BOX,@"「test_戦闘で%CALLNAME%が勝利した時の口上です」"
+	CASE "敗北"
+		CALL MESSAGE_BOX,@"「test_戦闘で%CALLNAME%が敗北した時の口上です」"
+	CASE "しんがり"
+		CALL MESSAGE_BOX,@"「test_戦闘で仲間がしんがりになり%CALLNAME%を逃した時の口上です」"
+	CASE "仲間回復"
+		CALL MESSAGE_BOX,@"「test_戦闘中または戦闘後に%CALLNAME%が仲間を回復させた時の口上です」"
+	CASE "自分回復"
+		CALL MESSAGE_BOX,@"「test_戦闘中または戦闘後に%CALLNAME%が自分を回復させた時の口上です」"
+	ENDSELECT
+ENDSELECT
+

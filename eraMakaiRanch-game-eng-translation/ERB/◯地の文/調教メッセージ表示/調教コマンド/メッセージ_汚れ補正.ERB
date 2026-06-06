@@ -1,0 +1,44 @@
+﻿
+;ちんぽ汚れメッセージ
+@PENIS_STAIN_MESSAGE(ARGS)
+
+; move SLANG_PENIS call into this function to make a better translation. It's never called without that anyway.
+;ペニスに汚れがあると不潔など増加したり
+;射精後
+SIF GETBIT(STAIN:0:ペニス,6)
+	PRINTFORM %SLANG_SEMEN()% covered 
+
+PRINTFORM %SLANG_PENIS()%
+
+;尻挿入後
+SIF GETBIT(STAIN:0:ペニス,2)
+	PRINTFORM , which had in her %SLANG_A()% before this
+
+
+
+;恋慕以上で胸に母乳汚れないなら母乳パイズリ
+@MILK_PAIZURI_SELF_MESSAGE
+
+PRINTFORM %CALLNAME% applied her own %SLANG_MILK()%, 
+IF ABL:バストサイズ >= BUSTSIZE_並乳
+	PRINTFORM coating the valley of her %SAVESTR:表記／乳房%, while enveloping your %SLANG_PENIS()%...
+ELSE
+	PRINTFORM spreading it over her %SAVESTR:表記／乳房%, she began to rub your %SLANG_PENIS()%…
+ENDIF
+PRINTL
+
+
+
+;あなた主導母乳パイズリ
+@MILK_PAIZURI_FORCE_MESSAGE
+
+PRINTFORM You apply %CALLNAME%'s %SLANG_MILK()% to your %SLANG_PENIS()% as a lotion substitute for her %SLANG_B()% 
+IF ABL:バストサイズ >= BUSTSIZE_並乳
+	PRINT and thrust your hips...
+ELSE
+	PRINTFORM and rub your %SLANG_PENIS()%.
+ENDIF
+PRINTL
+
+
+

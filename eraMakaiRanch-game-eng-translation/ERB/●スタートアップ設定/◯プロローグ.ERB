@@ -1,0 +1,137 @@
+﻿
+;オープニング
+@PROLOGUE
+
+PRINTL Would you like to watch the opening?
+PRINTL
+PRINTLC [ 0] Watch
+PRINTL [ 1] Don't watch
+BINPUT
+SIF RESULT
+	RETURN
+
+CALL MANYL(3)
+CALL HALFLINE
+PRINTL This is a world where the demons of Makai and the ningens on the surface are in constant conflict.
+PRINTL
+PRINTL ...That being said, many creatures from Makai don't actually wish to fight.
+PRINTL You are one of those demons who avoids combat. You chose not to join the demon lord's army.
+SIF FLAG:ジョーク表示
+PRINT In the town of Okachi, located in the Makkai Plains, 
+PRINTL as the owner of a small countryside ranch, 
+PRINTL you lead a leisurely life taking care of Makai's dairy cows.
+
+CALL MANYL(3)
+CALL HALFLINE
+PRINTFORML Though it's a small ranch, %CALLNAME:0% isn't running %SAVESTR:牧場名% alone.
+PRINTFORML A few months ago, a ningen girl named %CALLNAME:1% somehow wandered into Makai.
+PRINTL
+PRINTL Without weapons or magic, she posed no threat. While the townspeople were wondering what to do with her,
+PRINTFORML your ranch had just finished a part-time contract, and being short on help,
+PRINTW you thought it might be fate and decided to let her live and work there.
+
+;あなた呼びが多めなのでTARGET = 0
+TARGET = 0
+CALL MANYL(3)
+CALL HALFLINE
+CALL RESIDENT_KOJO,@"ユジン","I need a favor. I'll bring a ningen girl here, so could you try milking her for me?"
+CALL RESIDENT_KOJO,@"あなた","＞???"
+PRINTW
+PRINTFORML One day, Eugene, a researcher from the Demon King's Army Research Institute and a friend of yours, said something strange.
+CALL RESIDENT_KOJO,@"ユジン","One day they came to me and said, 『The magic recovery potion isn't working well, so do something about it.』"
+CALL RESIDENT_KOJO,@"ユジン","I tried various things but wasn't satisfied, so the main office got angry and said,"
+CALL RESIDENT_KOJO,@"ユジン","『Just mix in some breast milk from the ningen female that got caught.』 or something like that."
+CALL RESIDENT_KOJO,@"ユジン","And after a lot of trial and error, this ＜Mana-Infused Breast Milk Stimulant＞ was created, specifically for ningens."
+IF SAVESTR:あなた口調 == "常時丁寧"
+	CALL RESIDENT_KOJO,@"あなた","＞I don't understand at all."
+ELSE
+	CALL RESIDENT_KOJO,@"あなた","＞I don't get it at all."
+ENDIF
+PRINTW
+CALL RESIDENT_KOJO,@"ユジン","Well, no worries. We've tried it a few times, but the output was small and the taste wasn't great."
+CALL RESIDENT_KOJO,@"ユジン","So I suggested at the meeting, 『My friend is a dairy farmer. Shouldn't we ask them for help?』 and they approved it."
+CALL RESIDENT_KOJO,@"ユジン","We'll handle all the preparations on our side, so you'll benefit from this arrangement."
+CALL PROLOGUE_ACCEPT
+CALL RESIDENT_KOJO,@"ユジン","Great, I knew you'd say yes!"
+CALL RESIDENT_KOJO,@"ユジン","Since we're taking in the ningen girl, I'll handle the paperwork. It will take a few days."
+PRINTL
+PRINTW A few days later...
+CALL MANYL(3)
+CALL HALFLINE
+CALL RESIDENT_KOJO,@"ユジン","We're all set! Oh, and it seems like Mano is coming over, too."
+CALL RESIDENT_KOJO,@"マノ","Hello! I'm here for the usual pickup."
+CALL RESIDENT_KOJO,@"マノ","Oh, why is there a ningen girl being restrained over there?"
+CALL RESIDENT_KOJO,@"ユジン","Well, I'm not sure how much to explain..."
+CALL RESIDENT_KOJO,@"ユジン","Actually, it might be better to tell Mano. So, here's the situation:"
+PRINTW
+CALL RESIDENT_KOJO,@"マノ","Oh my, so from tonight onward, the owner will be doing naughty things with this girl."
+CALL RESIDENT_KOJO,@"ユジン","Ah, about that... well, there are a lot of procedures involved."
+CALL RESIDENT_KOJO,@"ユジン","Most of the time we just say “too valuable to give away to the public”, but I think I may have let you down a bit."
+CALL RESIDENT_KOJO,@"ユジン","Apparently, there's something called a 【Virginity Barrier】, and because of that blessing, you can't use her front hole."
+
+PRINTLC [ 0] ＞I see...
+PRINTL [ 1] ＞...Is there a problem?
+BINPUT
+IF RESULT
+	CALL RESIDENT_KOJO,@"ユジン","Oh, no problem? That's a relief."
+ELSE
+	CALL RESIDENT_KOJO,@"ユジン","Sorry about that, it had to be approved under these conditions."
+ENDIF
+CALL RESIDENT_KOJO,@"マノ","Wait a second, but for ningens, breast milk can't be produced unless they're pregnant, right?"
+CALL RESIDENT_KOJO,@"ユジン","That's not an issue. With the ＜Mana-Infused Breast Milk Stimulant＞, they can produce breast milk even without pregnancy."
+CALL RESIDENT_KOJO,@"ユジン","Also, I have a favor to ask. Could you collect the milk we extract too? I've already coordinated with the Makai Agricultural Cooperative."
+CALL RESIDENT_KOJO,@"マノ","Got it〜. No problem at all."
+PRINTW
+CALL MANYL(3)
+CALL HALFLINE
+CALL RESIDENT_KOJO,@"ユジン","So here's the request from the Demon King's army research institute:"
+PRINTL
+PRINTL ・Slave Training → Use <Mana-Infused Breast Milk Stimulant> to extract and ship 【Mana-Infused Milk】
+PRINTL ・After using <Mana-Infused Breast Milk Stimulant>, if you stimulate the breasts or nipples to climax, they can start producing 【Mana-Infused Milk】
+PRINTL ・During training, use various <Milking Machines> or schedule <Milking> to extract milk for shipping
+PRINTL ・Extracted milk will be picked up by the Demon Realm Agricultural Cooperative staff at the end of the morning schedule, just like it is with the demon cows
+PRINTL ・Feel free to handle the slave however you like
+PRINTW
+CALL RESIDENT_KOJO,@"マノ","Do you have any spare milking machines, owner? Oh, there's one. It's for livestock, but it should work for ningens too."
+CALL RESIDENT_KOJO,@"マノ",@"By the way, can you use that drug on %CALLNAME:1%?"
+CALL RESIDENT_KOJO,@"ユジン","Ah, probably not. It's designed for 'magical ningens.'"
+CALL RESIDENT_KOJO,@"マノ","I see. Well, it seems unnecessary to worry about it since there's no one else besides her to handle the ranch work while you're busy."
+
+PRINTLC [ 0] ＞I see...
+PRINTLC [ 1] ＞Won't it be possible eventually?
+PRINTFORML [ 2] ＞It's troubling if %CALLNAME:1% can't work
+
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL RESIDENT_KOJO,@"ユジン",@"I didn't know you were thinking about %CALLNAME:1% like that... Just found out now."
+CASE 1
+	CALL RESIDENT_KOJO,@"ユジン","With current technology, it's not possible. But who knows what the future holds."
+CASE 2
+	CALL RESIDENT_KOJO,@"ユジン","Yeah, it's impressive how you manage with just the two of you."
+ENDSELECT
+CALL RESIDENT_KOJO,@"ユジン","Well, I'm counting on you! There might be more requests once the samples are collected, so please take care."
+CALL RESIDENT_KOJO,@"マノ","Well then, I'll be off for now〜. Looks like there's something to look forward to, huh?"
+PRINTW
+
+
+
+;そんな、ひどい
+@PROLOGUE_ACCEPT
+#DIM DYNAMIC COMMENT_LOOP
+
+PRINTLC [ 0] Do it
+PRINTL [ 1] Don't do it
+INPUT
+SIF !RESULT
+	RETURN
+CALL RESIDENT_KOJO,@"ユジン","Come on, please... This is a chance to get a ningen slave for free."
+COMMENT_LOOP ++
+SIF COMMENT_LOOP >= 3
+	CALL RESIDENT_KOJO,@"ユジン","No, you have to agree, or the game won't start."
+SIF COMMENT_LOOP >= 5
+	CALL RESIDENT_KOJO,@"ユジン","There won't be any more changes in response after this."
+RESTART
+
+
+

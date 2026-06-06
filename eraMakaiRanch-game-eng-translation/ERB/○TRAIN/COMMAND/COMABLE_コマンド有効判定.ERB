@@ -1,0 +1,444 @@
+﻿
+;コマンド有効判定
+@COMMAND_VALID_JUDGE
+
+TFLAG:コマンド有効BIT = 0
+CALL COMMAND_VALID_JUDGE_BUST_LUB
+CALL COMMAND_VALID_JUDGE_BUST_MASSAGE
+CALL COMMAND_VALID_JUDGE_NIPPLE_LUB
+CALL COMMAND_VALID_JUDGE_UNDER_LUB
+CALL COMMAND_VALID_JUDGE_NIPPLE_SUCK
+CALL COMMAND_VALID_JUDGE_NIPPLE_SUCK_PLUS
+CALL COMMAND_VALID_JUDGE_LICK
+CALL COMMAND_VALID_JUDGE_V
+CALL COMMAND_VALID_JUDGE_A
+CALL COMMAND_VALID_JUDGE_V_SEX
+CALL COMMAND_VALID_JUDGE_A_SEX
+CALL COMMAND_VALID_JUDGE_M_SEX
+CALL COMMAND_VALID_JUDGE_SERVICE
+CALL COMMAND_VALID_JUDGE_PAIZURI
+CALL COMMAND_VALID_JUDGE_PAIZURI_STROKE
+CALL COMMAND_VALID_JUDGE_LACTATION_MACHINE
+CALL COMMAND_VALID_JUDGE_TENTACLE
+CALL COMMAND_VALID_JUDGE_TENTACLE_PENIS
+CALL COMMAND_VALID_JUDGE_LACTATION_TENTACLE
+CALL COMMAND_VALID_JUDGE_TOOL
+CALL COMMAND_VALID_SPECIAL
+
+
+
+
+
+;乳揉み
+@COMMAND_VALID_JUDGE_BUST_LUB
+
+;ほどほどに流用
+;旧版と切り替え可能にする
+SIF !GETBIT(＃表示コマンド／Ｂ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／手・口＃
+	RETURN
+
+;口に挿れながらは無理
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	RETURN
+
+;最後までいったらSETBIT
+SETBIT ＃コマンド有効／乳揉み＃
+
+
+
+;おっぱいマッサージ
+@COMMAND_VALID_JUDGE_BUST_MASSAGE
+
+SIF !GETBIT(＃コマンド有効／乳揉み＃)
+	RETURN
+
+;Ｂ露出が必要
+SIF !TFLAG:Ｂ露出
+	RETURN
+SETBIT ＃コマンド有効／おっぱいマッサージ＃
+
+
+
+;乳首責め
+@COMMAND_VALID_JUDGE_NIPPLE_LUB
+
+SIF !GETBIT(＃表示コマンド／Ｎ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／手・口＃
+	RETURN
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+	RETURN
+SETBIT ＃コマンド有効／乳首責め＃
+
+
+
+;下半身責め
+@COMMAND_VALID_JUDGE_UNDER_LUB
+
+SIF ＃旧コマンド切替／無効／手・口＃
+	RETURN
+
+;パイズリ・イラマ体勢は無理
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃) || GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN
+
+;手コキ・授乳手コキも不可
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN
+SETBIT ＃コマンド有効／下半身責め＃
+
+
+
+;乳吸い
+@COMMAND_VALID_JUDGE_NIPPLE_SUCK
+
+SIF !GETBIT(＃表示コマンド／Ｎ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／手・口＃
+	RETURN
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃) || GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN
+SIF TEQUIP:手コキ
+	RETURN
+SIF GETBIT(＃体位制限／乳吸い＃)
+	RETURN
+
+;汚れ無視判定
+CALL COMMAND_STAIN_JUDGE("乳首")
+SIF !RESULT
+	RETURN
+
+;後背位などで背後にいるとダメ
+SIF TFLAG:背後
+	RETURN
+SIF TFLAG:Ｎ装備
+	RETURN
+
+;身長プレイ制限があれば呼ぶ
+CALL BUST_SUCK_HEIGHT_CONFIG_JUDGE
+SIF RESULT
+	RETURN
+SIF !TFLAG:Ｎ露出 && !TFLAG:授乳スリット
+	RETURN
+SETBIT ＃コマンド有効／乳吸い＃
+
+
+
+;乳吸い派生
+@COMMAND_VALID_JUDGE_NIPPLE_SUCK_PLUS
+
+;前回コマンドが乳吸い系か派生コマンドの場合に可能
+SIF !GROUPMATCH(TRAINNAME:PREVCOM,"乳吸い","乳首しゃぶり","乳揉み吸い","母乳吸い尽くし","直飲み触手複合搾乳")
+	RETURN
+SIF !GETBIT(＃コマンド有効／乳吸い＃)
+	RETURN
+SETBIT ＃コマンド有効／乳吸い派生＃
+
+
+
+;口使用
+@COMMAND_VALID_JUDGE_LICK
+
+SIF ＃旧コマンド切替／無効／手・口＃
+	RETURN
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃) || GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN
+SETBIT ＃コマンド有効／口使用＃
+
+
+
+;Ｖ責め
+@COMMAND_VALID_JUDGE_V
+
+;処女結界での判定の代わりに破壊が可能かを有効フラグで判断する
+SIF TFLAG:処女結界有効
+	RETURN
+SIF TFLAG:Ｖ装備
+	RETURN
+SIF !TFLAG:Ｖ露出
+	RETURN
+SETBIT ＃コマンド有効／Ｖ責め＃
+
+
+
+;Ａ責め
+@COMMAND_VALID_JUDGE_A
+
+SIF TFLAG:Ａ装備
+	RETURN
+SIF !TFLAG:Ａ露出
+	RETURN
+SETBIT ＃コマンド有効／Ａ責め＃
+
+
+
+;Ｖセックス
+@COMMAND_VALID_JUDGE_V_SEX
+
+SIF !GETBIT(＃コマンド有効／Ｖ責め＃)
+	RETURN
+
+;精力枯渇でもダメにした
+;挿入コマンド非表示だとおわり
+SIF (!GETBIT(＃表示コマンド／ペニス＃) || !GETBIT(＃表示コマンド／Ｖ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN
+SIF TFLAG:Ｐ使用BIT || !BASE:0:精力
+	RETURN
+
+;調教者にちんぽが存在するかチェック
+SIF !PLAYER_PENIS
+	RETURN
+SETBIT ＃コマンド有効／Ｖセックス＃
+
+
+
+;Ａセックス
+@COMMAND_VALID_JUDGE_A_SEX
+
+SIF !GETBIT(＃コマンド有効／Ａ責め＃)
+	RETURN
+SIF (!GETBIT(＃表示コマンド／ペニス＃) || !GETBIT(＃表示コマンド／Ａ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN
+SIF TFLAG:Ｐ使用BIT || !BASE:0:精力
+	RETURN
+SIF !PLAYER_PENIS
+	RETURN
+
+;アナルセックスフィルタあり、アナル不可体位→NG
+SIF GETBIT(＃各種Ａ挿入無効＃) || GETBIT(＃体位制限／アナル＃)
+	RETURN
+SETBIT ＃コマンド有効／Ａセックス＃
+
+
+
+;奉仕
+@COMMAND_VALID_JUDGE_SERVICE
+
+SIF !PLAYER_PENIS
+	RETURN
+
+;挿入中、HP0、虚脱→NG
+SIF TFLAG:Ｐ使用BIT || !BASE:体力 || CFLAG:虚脱
+	RETURN
+SIF !GETBIT(＃表示コマンド／ペニス＃) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN
+SETBIT ＃コマンド有効／奉仕＃
+
+
+
+;Ｍセックス
+@COMMAND_VALID_JUDGE_M_SEX
+
+SIF !PLAYER_PENIS
+	RETURN
+SIF TFLAG:Ｐ使用BIT
+	RETURN
+SIF (!GETBIT(＃表示コマンド／ペニス＃) || !GETBIT(＃表示コマンド／Ｍ責め＃)) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN
+SIF GETBIT(＃体位制限／Ｍ挿入＃)
+	RETURN
+SIF !BASE:0:精力
+	RETURN
+SIF TFLAG:Ｐ使用BIT
+	RETURN
+SETBIT ＃コマンド有効／Ｍセックス＃
+
+
+
+;パイズリ
+@COMMAND_VALID_JUDGE_PAIZURI
+
+;奉仕でない強制のほうからも来るので奉仕との重複部分はある
+SIF !PLAYER_PENIS
+	RETURN
+
+;触手ズリ中、体位で制限→NG
+SIF TFLAG:Ｐ使用BIT || TEQUIP:触手強制パイズリ || GETBIT(＃体位制限／パイズリ＃) || !BASE:0:精力
+	RETURN
+SIF !GETBIT(＃表示コマンド／ペニス＃) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／ペニス＃
+	RETURN
+
+;Ｂ露出しているか着衣パイズリ可能なら通す
+SIF !TFLAG:Ｂ露出 && !TFLAG:着衣パイズリ可能
+	RETURN
+
+;Ｎ装着かＢ装備の場合豊乳以上でないとダメ
+SIF TFLAG:Ｎ装備 && ABL:バストサイズ < BUSTSIZE_豊乳
+	RETURN
+SIF TFLAG:Ｂ装備 && ABL:バストサイズ < BUSTSIZE_豊乳
+	RETURN
+SETBIT ＃コマンド有効／パイズリ＃
+
+
+
+;縦パイズリ
+@COMMAND_VALID_JUDGE_PAIZURI_STROKE
+
+;パイズリとだいたい同じ
+SIF !GETBIT(＃コマンド有効／パイズリ＃)
+	RETURN
+
+;常に豊乳以上でないとダメ
+SIF ABL:バストサイズ < BUSTSIZE_豊乳
+	RETURN
+SETBIT ＃コマンド有効／縦パイズリ＃
+
+
+
+;搾乳器
+@COMMAND_VALID_JUDGE_LACTATION_MACHINE
+
+;イラマ中、授乳手コキ中、Ｎ装備中、非母乳体質、媚薬使用中→NG
+;道具コマンドの必要を撤廃
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃) || TEQUIP:授乳手コキ || TFLAG:Ｎ装備 || !MARK:母乳体質 || TFLAG:媚薬使用中
+	RETURN
+SIF !GETBIT(＃表示コマンド／Ｎ責め＃) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／道具・魔術＃
+	RETURN
+
+;乳首に母乳汚れ以外→NG
+SIF STAIN:乳首 != 0 && STAIN:乳首 != 1
+	RETURN
+
+;Ｎ露出か授乳スリット→OK
+SIF !TFLAG:Ｎ露出 && !TFLAG:授乳スリット
+	RETURN
+SETBIT ＃コマンド有効／搾乳器＃
+
+
+
+;触手
+@COMMAND_VALID_JUDGE_TENTACLE
+
+SIF !ITEM:触手変化
+	RETURN
+SIF !GETBIT(＃表示コマンド／触手＃) && !FLAG:表示調教コマンド切替
+	RETURN
+SIF ＃旧コマンド切替／無効／触手＃
+	RETURN
+SETBIT ＃コマンド有効／触手＃
+
+
+
+;ペニス触手
+@COMMAND_VALID_JUDGE_TENTACLE_PENIS
+
+SIF !GETBIT(＃コマンド有効／触手＃)
+	RETURN
+SIF !ITEM:ペニス触手
+	RETURN
+SETBIT ＃コマンド有効／ペニス触手＃
+
+
+
+;搾乳触手
+@COMMAND_VALID_JUDGE_LACTATION_TENTACLE
+
+SIF !GETBIT(＃コマンド有効／触手＃)
+	RETURN
+
+;授乳手コキ中、Ｎ装備、あなたの魔力0→NG
+SIF TEQUIP:授乳手コキ || TFLAG:Ｎ装備 || !BASE:0:魔力
+	RETURN
+SIF !TFLAG:Ｎ露出 && !TFLAG:授乳スリット
+	RETURN
+SETBIT ＃コマンド有効／搾乳触手＃
+
+
+
+;道具
+@COMMAND_VALID_JUDGE_TOOL
+
+SIF ＃旧コマンド切替／無効／道具・魔術＃
+	RETURN
+SIF GETBIT(＃Ｐ使用／Ｍ挿入＃) || GETBIT(＃Ｐ使用／パイズリ＃)
+	RETURN
+SIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	RETURN
+SETBIT ＃コマンド有効／道具＃
+
+
+
+;特殊コマンド
+@COMMAND_VALID_SPECIAL
+
+SIF ＃旧コマンド切替／無効／道具・魔術＃
+	RETURN
+SIF !GETBIT(＃表示コマンド／特殊＃) && !FLAG:表示調教コマンド切替
+	RETURN 0
+SIF TFLAG:Ｐ使用BIT
+	RETURN
+SETBIT ＃コマンド有効／特殊＃
+
+
+
+
+
+;汚れ無視必要判定まとめ
+;ARGS→部位
+@COMMAND_STAIN_JUDGE(ARGS)
+
+;[触手粘液][精液][ペニス汚れ]：汚れ無視必要
+SIF ITEM:汚れ無視 < 1 && (GETBIT(STAIN:ARGS,5) || GETBIT(STAIN:ARGS,6) || GETBIT(STAIN:ARGS,7))
+	RETURN
+
+;Ａ汚れがあるとき汚れ無視Lv2ないならダメ
+SIF ITEM:汚れ無視 < 2 && GETBIT(STAIN:ARGS,2)
+	RETURN
+RETURN 1
+
+
+
+;調教者にちんぽ存在するかチェック
+@PLAYER_PENIS_CHECK
+
+;とりあえずPLAYERが0以外は帰る
+;奴隷をふたなりにしたい場合は自分でやって
+PLAYER_PENIS = 0
+SIF PLAYER
+	RETURN
+
+;オトコはOK
+SIF TALENT:PLAYER:オトコ
+	PLAYER_PENIS = 1
+
+;女あなたでもふたなりちんぽ取得+有効ならON
+SIF ITEM:ふたなりちんぽ && GETBIT(＃有効／ふたなりちんぽ＃)
+	PLAYER_PENIS = 1
+
+
+
+;TARGETにちんぽ存在するかチェック
+@TARGET_PENIS_CHECK
+
+;TARGET == 0でない場合帰っていい
+TARGET_PENIS = 0
+SIF TARGET
+	RETURN
+
+;オトコはOK
+SIF TALENT:オトコ
+	TARGET_PENIS = 1
+
+;女あなたでもふたなりちんぽ取得+有効ならON
+SIF ITEM:ふたなりちんぽ && GETBIT(＃有効／ふたなりちんぽ＃)
+	TARGET_PENIS = 1
+
+
+
+

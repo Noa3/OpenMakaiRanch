@@ -1,0 +1,69 @@
+﻿
+;バストサイズの入力をさせる
+;ARG→「または」：デフォルトがある場合
+@INPUT_BUST(ARG)
+
+SIF ARG
+	PRINT or 
+PRINTL Input a cup size from [AA,A～Z] or [0(AA),1(A)～26(Z)] (Lowercase works as well)
+INPUTS
+SELECTCASE RESULTS
+CASE  "0" ,"AA" ,"aa"
+	RETURN 0
+CASE  "1" ,"A" ,"a"
+	RETURN 1
+CASE  "2" ,"B" ,"b"
+	RETURN 2
+CASE  "3" ,"C" ,"c"
+	RETURN 3
+CASE  "4" ,"D" ,"d"
+	RETURN 4
+CASE  "5" ,"E" ,"e"
+	RETURN 5
+CASE  "6" ,"F" ,"f"
+	RETURN 6
+CASE  "7" ,"G" ,"g"
+	RETURN 7
+CASE  "8" ,"H" ,"h"
+	RETURN 8
+CASE  "9" ,"I" ,"i"
+	RETURN 9
+CASE  "10" ,"J" ,"j"
+	RETURN 10
+CASE  "11" ,"K" ,"k"
+	RETURN 11
+CASE  "12" ,"L" ,"l"
+	RETURN 12
+CASE  "13" ,"M" ,"m"
+	RETURN 13
+CASE  "14" ,"N" ,"n"
+	RETURN 14
+CASE  "15" ,"O" ,"o"
+	RETURN 15
+CASE  "16" ,"P" ,"p"
+	RETURN 16
+CASE  "17" ,"Q" ,"q"
+	RETURN 17
+CASE  "18" ,"R" ,"r"
+	RETURN 18
+CASE  "19" ,"S" ,"s"
+	RETURN 19
+CASE  "20" ,"T" ,"t"
+	RETURN 20
+CASE  "21" ,"U" ,"u"
+	RETURN 21
+CASE  "22" ,"V" ,"v"
+	RETURN 22
+CASE  "23" ,"W" ,"w"
+	RETURN 23
+CASE  "24" ,"X" ,"x"
+	RETURN 24
+CASE  "25" ,"Y" ,"y"
+	RETURN 25
+CASE  "26" ,"Z" ,"z"
+	RETURN 26
+CASEELSE
+	RETURN -1
+ENDSELECT
+
+

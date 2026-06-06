@@ -1,0 +1,44 @@
+﻿
+;快楽刻印メッセージ
+@MARK_GET_PLEASURE_MESSAGE
+
+SETCOLOR 0xFF70FF
+SIF !LINEISEMPTY()
+	PRINTL
+ALIGNMENT CENTER
+PRINTFORM After experiencing numerous orgasms, %CALLNAME% can no longer resist the pleasure of being a female...
+CALL HEARTCB(0xD02830)
+PRINTL
+CALL HEARTCB(0xD02830)
+PRINTFORM %CALLNAME% acquired【Pleasure Mark】
+CALL HEARTCB(0xD02830)
+RESETCOLOR
+ALIGNMENT LEFT
+PRINTL
+
+
+
+;苦痛刻印メッセージ
+@MARK_GET_PAIN_MESSAGE
+
+SETCOLOR 0xE02020
+PRINTFORML Having been subjected to intense pain numerous times during training, %CALLNAME% has become frightened of being hurt...
+PRINTFORMW %CALLNAME% obtained【Pain Mark】
+RESETCOLOR
+
+
+
+;恐怖刻印メッセージ
+@MARK_GET_FEAR_MESSAGE
+
+SETCOLOR 0xE02020
+PRINTFORML Having been repeatedly dominated by fear, %CALLNAME% has become frightened of %CALLNAME:0%...
+PRINTFORMW %CALLNAME% obtained【Fear Mark】
+RESETCOLOR
+
+
+
+
+
+
+

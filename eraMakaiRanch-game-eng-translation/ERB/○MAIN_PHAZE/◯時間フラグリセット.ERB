@@ -1,0 +1,59 @@
+﻿
+;時間帯に1回系フラグをリセット
+@RESET_TIME_FLAG
+
+FLAG:外出済み = 0
+FLAG:現時刻訪問回数 = 0
+FLAG:時刻制限／部屋割り変更 = 0
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;会いに行くコマンドの時間帯1回をリセット
+	;時間帯に1回制限をリセット→CFLAG:600～649
+	VARSET CFLAG,0,600,650
+	
+	;スケジュールのループ回数をリセット
+	CFLAG:スケジュール実行回数 = 0
+	
+	;体内凌辱継続フラグをリセット
+	SIF CSTR:居場所 != "体内"
+		CFLAG:体内凌辱継続 = 0
+	
+	;母乳容量を回復　生産力上限
+	IF MARK:母乳体質
+		BASE:母乳容量 = MAXBASE:母乳容量
+		BASE:母乳容量 = LIMIT(BASE:母乳容量,0,BASE:母乳生産力)
+	ENDIF
+	
+	;EXなど残ってたりするのでリセット
+	CALL RESET_TRAIN_PALAM
+NEXT
+
+
+
+;1日1回系フラグをリセット・母乳回復
+@RESET_DAY_FLAG
+
+;体内凌辱から来たのはここでリセットじゃないとダメ
+;夜からしかフラグ入らないはずなのでOK
+FLAG:体内凌辱一時解除 = 0
+
+;龍のタマの発見率補正を増加
+FLAG:龍のタマ発見率補正 += 2
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;1日1回制限をリセット→CFLAG:650～699
+	VARSET CFLAG,0,650,700
+	
+	;戦闘済みフラグのリセット
+	CFLAG:当日戦闘済み = 0
+	
+	;母乳容量・生産力を回復　今のところMAX
+	IF MARK:母乳体質
+		BASE:母乳容量 = MAXBASE:母乳容量
+		BASE:母乳生産力 = MAXBASE:母乳生産力
+	ENDIF
+NEXT
+
+

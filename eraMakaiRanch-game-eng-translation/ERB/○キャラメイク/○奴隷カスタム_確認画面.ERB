@@ -1,0 +1,102 @@
+﻿
+;狙うメスの特徴を決める
+@CHARA_MAKE_SLAVE
+#DIM DYNAMIC PAGE
+
+PAGE_MAX = 2
+SIF PAGE < 1
+	PAGE = 1
+
+;候補のパーソナルデータからランダムで埋めてキャラ追加、それを複製
+;CHARANUM-1をTARGETにして変更、変更箇所に応じて貢献PTを消費する
+;処理を全て終えたらリスト最後をCHARADEL、LIST_STATUSを0にする
+;デフォルトに戻すときはカスタムしたキャラを消して現在タゲを複製
+;キャンセルする場合もLIST_STATUSは0にしよう　リセマラが出来てしまう
+;セーブロードすればリセマラできるけどまあそこまでやりたいならどうぞでいいような
+
+;ランダムする場合だけここON
+FLAG:キャラメイク隠蔽有効 = 1
+CLEARLINE LINECOUNT
+PRINTL Here is the detailed data of the targeted person
+CALL HALFLINE
+CALL CHARA_MAKE_SLAVE_DATA(PAGE)
+CALL PRINTL_ALIGN(2)
+PRINTLC [ 0] Go to Customization Screen
+PRINTFORMLC [ 1] Change Page <PAGE{PAGE,2}／{PAGE_MAX}>
+PRINTFORML [ 2] Dialogue Options　Currently Using：%DIALOGUE_ENG(CSTR:使用口上)%
+DRAWLINE
+PRINTLC [90] Cancel
+PRINTLC [91] datデータ出力
+
+;決定ボタン出すか無効か
+CALL SLAVE_AUCTION_PRICE_CALC
+IF MONEY:貢献PT < FLAG:使用貢献PT && !FLAG:貢献pt消費ゼロ
+	CALL PRINTL_WORD_COLOR,@"　Insufficient Contribution Points","黄"
+ELSEIF CFLAG:競売価格 > MONEY
+	CALL PRINTL_WORD_COLOR,@"　Insufficient Funds","黄"
+
+;一応
+ELSEIF CALLNAME == ""
+	CALL PRINTL_WORD_COLOR,@"　Set a Name","黄"
+ELSE
+	PRINTL [99] Confirm Target
+ENDIF
+SIF !FLAG:貢献pt消費ゼロ
+	PRINTFORM Contribution Point Cost：%VALUE_DIGIT(FLAG:使用貢献PT)%（You have %VALUE_DIGIT(MONEY:貢献PT)% Contribution Points）　
+SIF CFLAG:競売価格
+	PRINTFORML Auction Price：%VALUE_DIGIT(CFLAG:競売価格)%G（You have %VALUE_DIGIT(MONEY)%G）
+SIF !LINEISEMPTY()
+	PRINTL
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	CALL CHARA_MAKE_SLAVE_SHUFFLE_INDEX
+CASE 1
+	PAGE ++
+	SIF PAGE > PAGE_MAX
+		PAGE = 1
+CASE 2
+	CALL KOJO_SETTING
+CASE 90
+	PRINTL Cancel and discard this character.
+	PRINTL Please note they will also be removed from the candidates list.
+	CALL ASK_YN
+	IF !RESULT
+		;キャラを消す　全部終えたあとの処理も含めて2回消す
+		DELCHARA TARGET
+		FLAG:キャラメイク中 = 0
+		FLAG:キャラメイク隠蔽有効 = 0
+		RETURN
+	ENDIF
+CASE 91
+	;キャラメイク中のdat出力
+	CALL CHARA_MAKE_OUTPUT_DATA
+CASE 99
+	SIF MONEY:貢献PT < FLAG:使用貢献PT && !FLAG:貢献pt消費ゼロ
+		RESTART
+	SIF CFLAG:魔界入りの目的 == 7 && MONEY < CFLAG:競売価格
+		RESTART
+	IF !CFLAG:口上表示 && FLAG:口上表示
+		CALL PRINTL_WORD_COLOR,@"No dialogue selected, confirm?","黄"
+		CALL ASK_YN
+		SIF RESULT
+			RESTART
+	ENDIF
+	
+	;貢献pt消費
+	SIF !FLAG:貢献pt消費ゼロ
+		MONEY:貢献PT -= FLAG:使用貢献PT
+	
+	;競売時の購入処理
+	SIF CFLAG:魔界入りの目的 == 7
+		MONEY -= CFLAG:競売価格
+	
+	;終了時処理
+	CALL CHARA_MAKE_END_CALC
+	CALL CHARA_MAKE_END_FLAGSET
+	RETURN
+ENDSELECT
+RESTART
+
+
+

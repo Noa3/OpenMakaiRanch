@@ -1,0 +1,121 @@
+﻿
+;現在の刻印を表示
+;ARG→1なら改行
+@SHOW_MARK_LIST(ARG)
+
+;改行判定するために入れ子にすると楽だなってなった
+CALL SHOW_MARK_LIST_INNER
+SIF ARG
+	PRINTL
+
+
+
+;入れ子
+@SHOW_MARK_LIST_INNER
+
+BR = 0
+PRINT Marks       ：
+IF !MAXARRAY(MARK)
+	CALL PRINTL_WORD_COLOR("None","灰")
+	RETURN
+ENDIF
+SETCOLOR 0xFF70FF
+
+;母乳体質・魔力母乳体質は重複しないように
+IF MARK:母乳体質 && !MARK:魔力母乳体質
+	BR ++
+	PRINTFORM ❤Lactating❤ 
+ENDIF
+
+;～300
+FOR LOCAL,1,300
+	SIF !MARK:LOCAL
+		CONTINUE
+	
+	;～199は素質消去記録なので飛ばす
+	SIF LOCAL >= 150 && LOCAL < 200
+		CONTINUE
+	
+	;上位刻印のみ表示の場合飛ばす処理
+	IF FLAG:選択画面表示形式／刻印 == 1 && MARK:(LOCAL +1)
+		SIF LOCAL >= 10 && LOCAL < 14
+			CONTINUE
+		SIF LOCAL >= 15 && LOCAL < 20
+			CONTINUE
+		SIF LOCAL >= 200
+			CONTINUE
+	ENDIF
+	
+	;改行されてたらスペース版
+	CALL BR_PLUS(4,1)
+	PRINTFORM ❤%MARK_ENG(MARKNAME:LOCAL)%❤ 
+NEXT
+RESETCOLOR
+SIF BR
+	PRINTL
+
+;改行したあと屈服の記憶
+SIF !SUMARRAY(MARK,150,200)
+	RETURN
+PRINT 　　　
+BR = 0
+SETCOLOR 0xE02020
+FOR LOCAL,150,200
+	SIF !MARK:LOCAL
+		CONTINUE
+	CALL BR_PLUS(6,1)
+	PRINTFORM 【%MARK_ENG(MARKNAME:LOCAL)%】
+NEXT
+RESETCOLOR
+SIF BR
+	PRINTL
+
+
+
+;おっぱい刻印だけ表示
+@SHOW_MILK_MARK_LIST
+
+BR = 0
+PRINT Marks：
+SETCOLOR 0xFF70FF
+
+;母乳体質・魔力母乳体質は重複しないように
+IF MARK:母乳体質 && !MARK:魔力母乳体質
+	BR ++
+	PRINTFORM ❤Lactating❤ 
+ENDIF
+
+;～250
+FOR LOCAL,1,250
+	SIF !MARK:LOCAL
+		CONTINUE
+	
+	;おっぱい関連以外は飛ばす
+	IF !GROUPMATCH(LOCAL,30,43,45,52)
+		SIF LOCAL >= 21 && LOCAL < 200
+			CONTINUE
+		SIF LOCAL >= 210 && LOCAL < 245
+			CONTINUE
+	ENDIF
+	
+	;上位刻印のみ表示の場合飛ばす処理
+	IF FLAG:選択画面表示形式／刻印 == 1 && MARK:(LOCAL +1)
+		SIF LOCAL >= 10 && LOCAL < 14
+			CONTINUE
+		SIF LOCAL >= 15 && LOCAL < 20
+			CONTINUE
+	ENDIF
+	
+	;改行されてたらスペース版
+	CALL BR_PLUS(6,1)
+	PRINTFORM ❤%MARK_ENG(MARKNAME:LOCAL)%❤ 
+NEXT
+RESETCOLOR
+IF BR
+	PRINTL
+ELSE
+	CALL PRINTL_WORD_COLOR("None","灰")
+ENDIF
+PRINTL
+
+

@@ -1,0 +1,123 @@
+﻿
+;妖狐
+@TRIBE_FEATURE_CONFIG_SPECTERFOX
+
+CLEARLINE LINECOUNT
+PRINTL Modifying【Fox Spirit】
+CALL CONFIG_CHANGE_FLAG_CHECK
+DRAWLINE
+PRINTL Fixed：Always Has Mana・【Makai Adaptation】・【Animal Ears】・【Tail】
+PRINTLC [ 0] Height Tends Towards【Tall】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,0),1)
+PRINTLC [ 1] Skin Tends Towards【Fair】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,1),1)
+PRINTLC [ 2] Hair Color Is【Golden】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,2),1)
+PRINTLC [ 3] Hair Color Is【Silver】
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,3),1)
+PRINTLC [ 4] Doubled Mana Capacity
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,4),1)
+PRINTLC [ 5] 【Fast Recovery】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,5),1)
+PRINTLC [ 6] 【Drug Resistant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,6),1)
+PRINTLC [ 7] 【Hated By Animals】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,7),1)
+PRINTLC [ 8] 【Sunlight Adverse】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,8),1)
+PRINTL
+PRINTLC [10] 【Subversive】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,10),1)
+PRINTLC [11] 【Sassy】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,11),1)
+PRINTLC [12] 【Prideful】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,12),1)
+PRINTLC [13] 【Arrogant】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,13),1)
+PRINTLC [14] 【Devoted】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,14),1)
+PRINTLC [15] 【Sadistic】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,15),1)
+PRINTLC [16] 【Hates Baths】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,16),1)
+PRINTLC [17] 【Vain】Trait
+CALL PRINT_ONOFF(GETBIT(FLAG:種族設定／妖狐,17),1)
+CALL PRINTL_ALIGN
+CALL PRINT_SLAVE_CONFIG_FOOTER(15)
+SELECTCASE INPUT_NUM
+CASE 0
+	PRINTL IF【Average】・【Short】・【Petite】, replaced with【Tall】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 1
+	PRINTL If【Standard】、【Brown】、【Tanned】, replaced with【Fair】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 2
+	PRINTL Fix hair to【Golden】
+	PRINTL ※Mutually exclusive with【Silver】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／妖狐,2) && GETBIT(FLAG:種族設定／妖狐,3)
+		CLEARBIT FLAG:種族設定／妖狐,3
+CASE 3
+	PRINTL Fix hair to【Silver】
+	PRINTL ※Mutually exclusive with【Golden】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／妖狐,2) && GETBIT(FLAG:種族設定／妖狐,3)
+		CLEARBIT FLAG:種族設定／妖狐,2
+CASE 4
+	PRINTL Doubles Mana Capacity after base calculations.
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 5
+	PRINTL Add the【Fast Recovery】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 6
+	PRINTL Add the【Drug Resistant】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 7
+	PRINTL Add the【Hated By Animals】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 8
+	PRINTL Add the【Sunlight Adverse】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 10
+	PRINTL Add the【Subversive】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 11
+	PRINTL Add the【Sassy】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 12
+	PRINTL Add the【Prideful】trait
+	PRINTL ※Mutually exclusive with【Arrogant】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／妖狐,12) && GETBIT(FLAG:種族設定／妖狐,13)
+		CLEARBIT FLAG:種族設定／妖狐,13
+CASE 13
+	PRINTL Add the【Arrogant】trait
+	PRINTL ※Mutually exclusive with【Prideful】
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+	SIF GETBIT(FLAG:種族設定／妖狐,12) && GETBIT(FLAG:種族設定／妖狐,13)
+		CLEARBIT FLAG:種族設定／妖狐,12
+CASE 14
+	PRINTL Add the【Devoted】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 15
+	PRINTL Add the【Sadistic】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 16
+	PRINTL Add the【Hates Baths】trait
+	SIF FLAG:ジョーク表示
+		PRINTL Probably due to how long it takes to a wet tail
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 17
+	PRINTL Add the【Vain】trait
+	CALL ASK_BIT_ONOFF(GETNUM(FLAG,"種族設定／妖狐"),INPUT_NUM)
+CASE 98
+	PRINTL Restore【Fox Spirit】Defaults?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_TRIBE_FEATURE_CONFIG_SPECTREFOX
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

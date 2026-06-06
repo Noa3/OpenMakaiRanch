@@ -1,0 +1,63 @@
+﻿
+;楽々スタートキット
+@EASYMODE_GIFTSET_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Start the game with the selected category items and upgrades.
+PRINTL ・You will acquire items that have names set at the game start.
+SIF DAY
+	CALL PRINTL_WORD_COLOR,@"There is no particular meaning in operating here at the moment.","黄"
+DRAWLINE
+PRINTLC [ 0] 衣服　全部10万着
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／衣服＃),1)
+PRINTLC [ 1] 消耗品全部10万コ
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／消耗品＃),1)
+PRINTLC [ 2] 薬品　全部10万コ
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／薬品＃),1)
+PRINTLC [ 3] 搾乳器全部10万コ
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／搾乳器＃),1)
+PRINTLC [ 4] ドラゴンなボール7コ
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／龍タマ＃),1)
+PRINTL
+PRINTLC [10] 魔改造魔力貯蔵器+魔力補給装置に魔力満杯
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／魔力貯蔵器＃),1)
+PRINTLC [11] 不動産設備最大拡張
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／不動産＃),1)
+PRINTLC [12] 調教グッズ+拘束具全て
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／調教・拘束＃),1)
+PRINTLC [13] 魔術全て習得+Lvあるものは99
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／魔術＃),1)
+PRINTLC [14] アビリティ全て習得+Lvあるものは99
+CALL PRINT_ONOFF(GETBIT(＃スタートキット／アビリティ＃),1)
+
+CALL PRINTL_ALIGN(-5)
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+BINPUT
+PRINTL
+SIF !FLAG:開発者モード && DAY
+	RETURN
+SELECTCASE RESULT
+CASE 98
+	PRINTL Do you want to reset the start kit settings to default?
+	CALL ASK_YN
+	SIF !RESULT
+		FLAG:楽々スタートキットBIT = 0
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_GIFTSET_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_GIFTSET_CONFIG(ARG)
+
+;ひっくり返すだけ
+INVERTBIT FLAG:楽々スタートキットBIT,ARG
+
+
+
+

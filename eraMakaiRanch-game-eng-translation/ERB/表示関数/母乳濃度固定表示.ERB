@@ -1,0 +1,71 @@
+﻿
+;母乳濃度文中表記
+;ARG　0:ランダム 1:ミルク表記 2:母乳表記
+
+@PRINT_MILKWORD(ARG)
+#FUNCTIONS
+#DIMS MILKWORD
+
+MILKWORD =
+SIF ABL:母乳濃度 == 5
+	MILKWORD += "Premium "
+SIF ABL:母乳濃度 == 4
+	MILKWORD += "Potent "
+SIF ABL:母乳濃度 == 3
+	MILKWORD += "Rich "
+SIF ABL:母乳濃度 == 2
+	MILKWORD += "Fine "
+SIF ABL:母乳濃度 == 1
+	MILKWORD += "Thick "
+
+;フレーバーミルク追加
+IF CSTR:フレーバーミルク != ""
+	MILKWORD += CSTR:フレーバーミルク
+ELSEIF ARG == 1
+	MILKWORD += "Milk"
+ELSEIF ARG == 2
+	MILKWORD += "Breast Milk"
+ELSE
+	SELECTCASE RAND:2
+	CASE 0
+		MILKWORD += "Milk"
+	CASEELSE
+		MILKWORD += "Breast Milk"
+	ENDSELECT
+ENDIF
+RETURNF MILKWORD
+
+
+
+;CALL型
+;ARG　0:通常色　1:ピンク色
+;ARG:1　0:【】なし　1:【】あり
+@PRINT_MILKWORD_C(ARG,ARG:1)
+#DIMS MILKWORD
+
+;母乳体質でないなら帰る
+SIF !MARK:母乳体質
+	RETURN
+MILKWORD =
+SIF ARG:1 == 1
+	MILKWORD += "【"
+SIF ABL:母乳濃度 == 5
+	MILKWORD += "Premium "
+SIF ABL:母乳濃度 == 4
+	MILKWORD += "Potent "
+SIF ABL:母乳濃度 == 3
+	MILKWORD += "Rich "
+SIF ABL:母乳濃度 == 2
+	MILKWORD += "Fine "
+SIF ABL:母乳濃度 == 1
+	MILKWORD += "Thick "
+MILKWORD += "Milk"
+SIF ARG:1 == 1
+	MILKWORD += "】"
+SIF ARG == 1
+	SETCOLOR 0xFF70FF
+PRINTFORM %MILKWORD%
+RESETCOLOR
+
+
+

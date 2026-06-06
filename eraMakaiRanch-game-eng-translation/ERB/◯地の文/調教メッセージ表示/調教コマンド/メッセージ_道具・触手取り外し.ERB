@@ -1,0 +1,212 @@
+﻿
+;取り外し処理
+
+@COM100_REMOVE_MESSAGE
+;触手乳揉み
+
+PRINTFORML You remove the breast-squeezing tentacle from %CALLNAME%'s %SLANG_B()%...
+CALL KOJO_PRINT("調教コマンド","乳責め触手外し")
+
+
+
+@COM101_REMOVE_MESSAGE
+;触手乳搾り
+
+PRINTFORML You remove the milk-squeezing tentacle from %CALLNAME%'s %SLANG_B()%...
+CALL KOJO_PRINT("調教コマンド","乳責め触手外し")
+
+
+
+@COM105_REMOVE_MESSAGE
+;触手Ｖ挿入
+
+PRINTFORML You remove the %SAVESTR:表記／ペニス触手% from %CALLNAME%'s %SLANG_V()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+IF TFLAG:膣内精液
+	CALL PRINT_WORD_COLOR,@"　Tentacle %SLANG_SEMEN()% overflowed from her %SLANG_V()%...","桃"
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ENDIF
+
+
+
+@COM106_REMOVE_MESSAGE
+;触手Ａ挿入
+
+PRINTFORML You remove the %SAVESTR:表記／ペニス触手% from %CALLNAME%'s %SLANG_A()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+IF TFLAG:尻穴精液
+	CALL PRINT_WORD_COLOR,@"　Tentacle %SLANG_SEMEN()% overflowed from her %SLANG_A()%...","桃"
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ENDIF
+
+
+
+@COM107_REMOVE_MESSAGE
+;触手強制パイズリ
+
+PRINTFORML You remove the %SAVESTR:表記／ペニス触手% from %CALLNAME%'s %SLANG_B()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+IF TFLAG:乳内精液
+	CALL PRINT_WORD_COLOR,@"　Tentacle %SLANG_SEMEN()% spilled out from the valley of her %SLANG_B()%...","桃"
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ENDIF
+
+
+
+@COM108_REMOVE_MESSAGE
+;触手フェラチオ
+
+PRINTFORML You remove the %SAVESTR:表記／ペニス触手% from %CALLNAME%'s mouth...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+CALL MOUSE_TENTACLE_REMOVE_MESSAGE
+
+
+@COM109_REMOVE_MESSAGE
+;触手イラマチオ
+
+PRINTFORML You remove the %SAVESTR:表記／ペニス触手% from %CALLNAME%'s mouth...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+CALL MOUSE_TENTACLE_REMOVE_MESSAGE
+
+;触手フェラチオ、触手イラマチオ共通部分
+@MOUSE_TENTACLE_REMOVE_MESSAGE
+
+SIF !TFLAG:口内精液
+	RETURN
+IF CFLAG:崩壊
+	PRINTFORML %CALLNAME%'s mouth overflowed with tentacle %SLANG_SEMEN()%...
+ELSEIF (ABL:精液中毒 +ABL:触手中毒 >= 10) || ＃陥落状態／隷属＃
+	CALL PRINT_WORD_COLOR,@"　%CALLNAME% swallowed the remaining tentacle %SLANG_SEMEN()% in her mouth...","桃"
+	CALL HEARTCB(0xD02830)
+	PRINTL
+ELSEIF MARK:恐怖刻印
+	PRINTFORML %CALLNAME% swallowed the remaining tentacle %SLANG_SEMEN()% with teary eyes...
+ELSE
+	PRINTFORML %CALLNAME% spat out the remaining tentacle %SLANG_SEMEN()%...
+ENDIF
+
+
+@COM110_REMOVE_MESSAGE
+;ブラシ触手
+
+PRINTFORML You remove the brush tentacle that was wrapped around %CALLNAME%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM112_REMOVE_MESSAGE
+;触手目隠し
+
+PRINTFORML You remove the tentacle that was blocking %CALLNAME%'s view...
+CALL KOJO_PRINT("調教コマンド","目隠し取り外し")
+
+
+
+@COM113_REMOVE_MESSAGE
+;触手クリ吸い
+
+PRINTFORML You pulled the tentacle out from %CALLNAME%'s %SLANG_C()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM114_REMOVE_MESSAGE
+;耳姦触手
+
+PRINTFORML You pulled the tentacle out from %CALLNAME%'s ear...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+@COM115_REMOVE_MESSAGE
+;触手強制手コキ
+
+PRINTFORML You pulled the tentacle out from %CALLNAME%'s hand…
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM201_REMOVE_MESSAGE
+;バイブ
+
+PRINTFORML You pulled the vibrator out from %CALLNAME%'s %SLANG_V()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM202_REMOVE_MESSAGE
+;アナルバイブ
+
+PRINTFORML You pulled the anal vibrator out from %CALLNAME%'s %SLANG_A()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM203_REMOVE_MESSAGE
+;乳首ローター
+
+PRINTFORML You removed the rotor from %CALLNAME%'s %SLANG_N()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM204_REMOVE_MESSAGE
+;クリローター
+
+PRINTFORML You removed the rotor from %CALLNAME%'s %SLANG_C()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM205_REMOVE_MESSAGE
+;乳首吸引器
+
+PRINTFORML You removed the suction device from %CALLNAME%'s %SLANG_N()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM206_REMOVE_MESSAGE
+;クリ吸引器
+
+PRINTFORML You removed the suction device from %CALLNAME%'s %SLANG_C()%...
+CALL KOJO_PRINT("調教コマンド",TRAINNAME:SELECTCOM,"取り外し")
+
+
+
+@COM207_REMOVE_MESSAGE
+;アイマスク
+
+PRINTFORML You removed the eye mask that was blocking %CALLNAME%'s view...
+CALL KOJO_PRINT("調教コマンド","目隠し取り外し")
+
+
+
+@COM208_REMOVE_MESSAGE
+;口枷
+
+PRINTFORML You removed the mouth gag from %CALLNAME%'s mouth...
+CALL KOJO_PRINT("調教コマンド","口枷取り外し")
+
+
+
+@COM209_REMOVE_MESSAGE
+;ボールギャグ
+
+PRINTFORML You removed the ball gag from %CALLNAME%'s mouth...
+CALL KOJO_PRINT("調教コマンド","口枷取り外し")
+
+
+
+@COM212_REMOVE_MESSAGE
+;強制開口器
+
+PRINTFORML You removed the forced mouth opener from %CALLNAME%'s mouth...
+CALL KOJO_PRINT("調教コマンド","口枷取り外し")
+
+
+
+
+

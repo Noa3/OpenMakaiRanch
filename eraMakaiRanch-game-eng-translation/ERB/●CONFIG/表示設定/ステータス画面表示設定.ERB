@@ -1,0 +1,182 @@
+﻿
+;ステータス画面表示設定
+@STATUS_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL Change settings for status display page.
+DRAWLINE
+FLAG_REF = 2070
+PRINTLC [ 0] Character name field width
+PRINTFORML ：{FLAG:キャラ名前欄幅,2}
+PRINTLC [ 1] Print percentages with decimal points
+CALL PRINT_ONOFF(FLAG:％の小数点表示,1)
+PRINTLC [ 2] Height to the Decimal
+CALL PRINT_ONOFF(FLAG:身長小数点表示,1)
+PRINTLC [ 3] Talent
+SELECTCASE FLAG:選択画面表示形式／素質
+CASE 0
+	PRINTL ：Display All
+CASE 1
+	PRINTL ：Display by Category
+CASE 2
+	PRINTL ：Hide
+ENDSELECT
+PRINTLC [ 4] Mark
+SELECTCASE FLAG:選択画面表示形式／刻印
+CASE 0
+	PRINTL ：Display all
+CASE 1
+	PRINTL ：Only display Advanced Mark
+CASE 2
+	PRINTL ：Hide
+ENDSELECT
+PRINTLC [ 5] Love Slave Display Setting
+SELECTCASE FLAG:隷属時囲み表示形式
+CASE 0
+	PRINT Emoji →
+CASE 1
+	PRINT Normal→
+ENDSELECT
+CALL PRINT_SERVITUDE_HEART
+PRINTL
+PRINTLC [ 6] Capture and fall date display
+PRINTFORML ：\@ (FLAG:捕獲・陥落日の表示形式) ? Total Days # Year／Season／Day \@
+
+PRINTL
+PRINTL 　《 Sexual Experience 》
+PRINTL ※Experience will still accumulate when turned OFF
+PRINTLC [10] Ｖ  Sex
+CALL PRINT_ONOFF(GETBIT(＃経験表示／Ｖセックス＃),1)
+PRINTLC [11] Ａ Sex
+CALL PRINT_ONOFF(GETBIT(＃経験表示／Ａセックス＃),1)
+PRINTLC [12] Ｍ Sex
+CALL PRINT_ONOFF(GETBIT(＃経験表示／Ｍセックス＃),1)
+PRINTLC [13] Kissing
+CALL PRINT_ONOFF(GETBIT(＃経験表示／キス＃),1)
+PRINTLC [14] Paizuri
+CALL PRINT_ONOFF(GETBIT(＃経験表示／パイズリ＃),1)
+PRINTLC [15] Breastfeeding
+CALL PRINT_ONOFF(GETBIT(＃経験表示／授乳＃),1)
+PRINTLC [16] Childbirth
+CALL PRINT_ONOFF(GETBIT(＃経験表示／出産＃),1)
+
+CALL PRINTL_ALIGN(-5)
+CALL ON_OFF_BUTTON_FOOTER
+BINPUT
+PRINTL
+SELECTCASE RESULT
+CASE 82
+	PRINTL For all toggable options, no explaination for [ON] will be given.
+	CALL ASK_ONOFF
+	FLAG:ON／OFF項目の詳細を飛ばして反転 = RESULT
+CASE 98
+	PRINTL Do you want to return all status display settings to default?
+	CALL ASK_YN
+	SIF !RESULT
+		CALL DEFAULT_STATUS_CONFIG
+CASE 99
+	RETURN
+CASEELSE
+	CALL CHANGE_STATUS_CONFIG(RESULT)
+ENDSELECT
+RESTART
+
+
+
+;設定変更
+;ARG→INPUT
+@CHANGE_STATUS_CONFIG(ARG)
+
+;10までは元CONFIG使いまわせる
+IF ARG < 10
+	CALL CHANGE_STATUS_CONFIG_NAME(ARG)
+ELSE
+	CALL CHANGE_STATUS_CONFIG_NUM(ARG)
+ENDIF
+
+
+
+;FLAG_NAMEでの変更
+@CHANGE_STATUS_CONFIG_NAME(ARG)
+
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+CALL CHANGE_CONFIG_INVERTBIT
+SIF RESULT
+	RETURN
+SELECTCASE FLAG_NAME
+CASE "キャラ名前欄幅"
+	PRINTL Specifies the width of the character's name field. 
+	PRINTL 主にウインドウの横幅を調整している場合にこちらも調整してください。
+	PRINTL （少なくした場合一覧でのずれが起きがちになります）
+	PRINTL
+	PRINTL [16] 16 (Default)
+	PRINTL Enter number from 0 to 30
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 30
+		FLAG:FLAG_NUM = RESULT
+	
+CASE "％の小数点表示"
+	PRINTL Set whether to display the decimal point when displaying mental parameters.
+	PRINTL
+	PRINTL [ 0] Don't display (Default)
+	PRINTL [ 1] Display
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "身長小数点表示"
+	PRINTL Display height to the decimal points?
+	PRINTL
+	PRINTL [ 0] Don't Display
+	PRINTL [ 1] Display (Default)
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "選択画面表示形式／素質"
+	PRINTL Change trait display on character screen.
+	PRINTL The detailed status screen is always displayed by category.
+	PRINTL
+	PRINTL [ 0] Display All (Default)
+	PRINTL [ 1] Display by Category
+	PRINTL [ 2] Hide
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "選択画面表示形式／刻印"
+	PRINTL Select if you want character screen to display all marks, only the highest mark per category, or none.
+	PRINTL
+	PRINTL [ 0] Display all (Default)
+	PRINTL [ 1] Only display Advanced Mark
+	PRINTL [ 2] Hide
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "隷属時囲み表示形式"
+	PRINTL Set enclosure for characters in【Love Slave】state.
+	PRINTL ・絵文字表示　→リッチめな表現です
+	PRINTL ・通常文字表示→淡白めですが、他の状態の奴隷と並べた際の微妙なズレを抑えます
+	PRINTL
+	PRINTL [ 0] Emoji (Default)
+	PRINTL [ 1] Normal
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "捕獲・陥落日の表示形式"
+	PRINTL Set capture and fall date display.
+	PRINTL
+	PRINTL [ 0] Year／Season／Day (Default)
+	PRINTL [ 1] Total Days
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+ENDSELECT
+
+
+
+;番号変更
+@CHANGE_STATUS_CONFIG_NUM(ARG)
+
+;ひっくり返すだけ
+;+10で来てる
+INVERTBIT FLAG:性経験表示BIT,ARG -10
+
+

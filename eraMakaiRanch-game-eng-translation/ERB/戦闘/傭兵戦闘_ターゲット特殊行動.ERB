@@ -1,0 +1,67 @@
+﻿
+;大技
+@TARGET_SPECIAL_ATTACK
+
+CALL KOJO_PRINT("戦闘","大技")
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% unleashes her signature move!!!","水色"
+BASE:大技回数 --
+
+;ルーキーの場合直感により回避される可能性あり
+IF CFLAG:追跡者 == 2 && RAND:100 < 50
+	CALL PRINTL_WORD_COLOR,@"%PRINT_MONSTER()%'s intuition had them leap into the air; %CALLNAME%'s signature move missed!","黄"
+	PRINTFORML Remaining Signature Moves：{BASE:大技回数} 
+	RETURN
+ENDIF
+CALL TARGET_ATTACK_DAMAGE_CALC
+
+;大技のダメージ増加：4ターン目以下なら2.5倍、5ターン目以降1.5倍
+IF TURN < 5
+	TIMES DAMAGE,2.50
+ELSE
+	TIMES DAMAGE,1.50
+ENDIF
+CALL CRITICAL_CALC_TARGET
+
+;大技はミスにならないようにするためATTACK_RATEを最大100に下げる
+ATTACK_RATE = LIMIT(ATTACK_RATE,0,100)
+CALL CRITICAL_CHECK_ATTACK
+PRINTFORML %PRINT_MONSTER()% takes %VALUE_DIGIT(DAMAGE)% Damage! 
+TFLAG:バイト戦闘力 = LIMIT(TFLAG:バイト戦闘力 -DAMAGE,0,TFLAG:バイト戦闘力／最大値)
+
+;疲労度+10%
+BASE:疲労度 = LIMIT(BASE:疲労度 +10,0,MAXBASE:疲労度)
+PRINTFORML Remaining Signature Moves：{BASE:大技回数} Fatigue+10
+
+
+
+
+;仲間を回復する→50%
+@TARGET_SPECIAL_HEAL_GROUP
+
+CALL KOJO_PRINT("戦闘","仲間回復")
+HEAL = MAXBASE:仲間戦闘力1 *50 /100
+CALL RANDOM_FIX(HEAL,5,"仲間戦闘力回復量")
+HEAL += FIX
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% uses Recovery on her companions！  Compainion combat strength+%VALUE_DIGIT(HEAL)% ","水色"
+BASE:仲間戦闘力1 = LIMIT(BASE:仲間戦闘力1 +HEAL,0,MAXBASE:仲間戦闘力1)
+BASE:回復回数 --
+PRINTFORML Remaining Recoveries：{BASE:回復回数} 
+
+
+
+;自分を回復する→50%
+@TARGET_SPECIAL_HEAL_SELF
+
+CALL KOJO_PRINT("戦闘","自分回復")
+HEAL = MAXBASE:戦闘力 *50 /100
+CALL RANDOM_FIX(HEAL,5,"戦闘力回復量")
+HEAL += FIX
+BASE:戦闘力 += HEAL
+CALL PRINTL_WORD_COLOR,@"%CALLNAME% uses Recovery！ Combat strength+%VALUE_DIGIT(HEAL)% ","水色"
+BASE:戦闘力 = LIMIT(BASE:戦闘力 +HEAL,0,MAXBASE:戦闘力)
+BASE:回復回数 --
+PRINTFORML Remaining Recoveries：{BASE:回復回数} 
+
+
+
+

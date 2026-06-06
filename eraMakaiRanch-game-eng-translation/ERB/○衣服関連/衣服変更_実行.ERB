@@ -1,0 +1,326 @@
+﻿
+;衣服変更実行
+;キャラが既に持っている衣服を着させる処理
+@CHANGE_CHARA_CLOTHE_ENTER
+
+;持っている衣服、プレゼントで装備適用の共通関数へ
+;持っている場合は干渉装備を聞くようにするためARG=1を入れる
+;チェック回し
+CALL CHANGE_CLOTHE_RESIST_CHECK
+CALL WEAR_CHARA_CLOTHE(1)
+
+;RETURN 1してきたらキャンセル
+SIF RESULT
+	RETURN
+
+;未所持ならアイテム消費→コマンド1に統合
+CALL CHANGE_CLOTHE_RESIST(0,SELECT_ITEM)
+SIF RESULT
+	RETURN
+IF TARGET
+	PRINT You dress her in the 
+ELSE
+	PRINT You put on the 
+ENDIF
+CALL PRINT_SELECT_ITEM_DETAIL(SELECT_ITEM)
+PRINTW
+
+
+;未所持衣服をプレゼントする場合の処理
+@CHANGE_CHARA_NEW_CLOTHE
+#DIM ITEM_DETAIL
+
+;とりあえず色柄変更処理に飛ばす
+CALL EQUIP_DETAIL_CHANGE
+
+;RETURN 1してきた場合キャンセル
+SIF RESULT
+	RETURN
+CALL CHANGE_CLOTHE_RESIST_CHECK
+
+;キャラ所持数を追加、アイテムの所持数減らす
+;途中にSETBITする処理あるのでここもSETBITしないとバグるな
+SETBIT EQUIP:SELECT_ITEM,0
+ITEM:SELECT_ITEM --
+CALL WEAR_CHARA_CLOTHE
+
+;衣服一式からRETURN 1してきた場合キャンセル
+SIF RESULT
+	RETURN
+CALL CHANGE_CLOTHE_RESIST(1,SELECT_ITEM)
+SIF RESULT
+	RETURN
+IF TARGET
+	PRINT You gift her a 
+	CALL PRINT_SELECT_ITEM_DETAIL(SELECT_ITEM)
+	PRINTW  and make her wear it.
+ELSE
+	PRINT You wear the 
+	CALL PRINT_SELECT_ITEM_DETAIL(SELECT_ITEM)
+	PRINTW .
+ENDIF
+
+
+
+
+;デフォ状態の衣装の色柄を設定する場合の処理
+@CHANGE_CHARA_CLOTHE_DETAIL_CHANGE
+;#DIM ITEM_DETAIL
+
+CALL EQUIP_DETAIL_CHANGE
+SIF RESULT
+	RETURN
+IF CSTR:SELECT_ITEM == "" && EQUIP:SELECT_ITEM == 1
+	PRINTW Did not change
+ELSE
+	PRINT Changed to 
+	CALL PRINT_SELECT_ITEM_DETAIL(SELECT_ITEM)
+	PRINTW 
+ENDIF
+
+
+
+;衣服の変更
+;ARG→干渉衣服の確認
+;ARG:1→所持チェック回避
+;SELECT_ITEM指定中
+@WEAR_CHARA_CLOTHE(ARG,ARG:1)
+
+;カテゴリ分類関数を作った
+CALL CLOTHE_CATEGORY_CHECK(ITEMNAME:SELECT_ITEM)
+SELECTCASE RESULTS
+CASE "衣服一式"
+	;一式のときは全部変更するので別個処理
+	CALL EQUIP_CLOTHE_SET_WEAR
+	
+	;下でチェック回避する分ここ
+	CALL EQUIP_CLOTHE_SET_CHECK
+	
+	;内部で「着せました」を出してRETURN先ではキャンセル
+	RETURN 1
+
+CASE "衣服"
+	EQUIP:装備中ID／衣服 = SELECT_ITEM
+	
+	;下着制限フラグを一旦OFF
+	EQUIP:下着制限／極小 = 0
+	EQUIP:下着制限／シール = 0
+	
+	;下着制限の服なら一回まとめて外す
+	;シールのみ
+	IF GROUPMATCH(ITEMNAME:SELECT_ITEM,"バニースーツ","ビキニアーマー","踊り子の衣装")
+		EQUIP:装備中ID／下着上 = 0
+		EQUIP:装備中ID／下着下 = 0
+		EQUIP:下着制限／シール = 1
+	ENDIF
+	
+	;極小のみ
+	IF GROUPMATCH(ITEMNAME:SELECT_ITEM,"奴隷のボロ布","淫乱巫女服","淫乱シスター服","淫乱メイド服","淫乱チャイナドレス","淫乱ドレス")
+		EQUIP:装備中ID／下着上 = 0
+		EQUIP:装備中ID／下着下 = 0
+		EQUIP:下着制限／極小 = 1
+	ENDIF
+	
+	;逆バニーは特殊で脚不可
+	SIF GROUPMATCH(ITEMNAME:SELECT_ITEM,"逆バニー服")
+		EQUIP:装備中ID／脚 = 0
+
+CASE "鎧"
+	EQUIP:装備中ID／鎧 = SELECT_ITEM
+
+CASE "下着上下","下着上下／極小"
+	;下着制限の場合衣服のほうを脱がすか聞く：プレゼント時は無効にする
+	IF RESULTS == "下着上下"
+		CALL SMALL_LINGERIE_CHECK(ARG)
+		SIF RESULT
+			RETURN 1
+	
+	;上との差→極小タイプ可能ならそのまま通す
+	ELSE
+		CALL STICKER_LINGERIE_CHECK(ARG)
+		SIF RESULT
+			RETURN 1
+	ENDIF
+	EQUIP:装備中ID／下着上 = SELECT_ITEM
+	EQUIP:装備中ID／下着下 = SELECT_ITEM
+
+CASE "下着上","下着上／極小","下着上／シール"
+	IF RESULTS == "下着上"
+		CALL SMALL_LINGERIE_CHECK(ARG)
+		SIF RESULT
+			RETURN 1
+	ELSEIF RESULTS == "下着上／極小"
+		CALL STICKER_LINGERIE_CHECK(ARG)
+		SIF RESULT
+			RETURN 1
+	
+	;シールタイプは常に着用可能
+	ENDIF
+	
+	;上下一体をつけている場合外す
+	SIF EQUIP:装備中ID／下着上 == EQUIP:装備中ID／下着下
+		EQUIP:装備中ID／下着下 = 0
+	EQUIP:装備中ID／下着上 = SELECT_ITEM
+
+CASE "下着下","下着下／極小","下着下／シール"
+	IF RESULTS == "下着下"
+		CALL SMALL_LINGERIE_CHECK(ARG)
+		SIF RESULT
+			RETURN 1
+	ELSEIF RESULTS == "下着下／極小"
+		CALL STICKER_LINGERIE_CHECK(ARG)
+		SIF RESULT
+			RETURN 1
+	ENDIF
+	SIF EQUIP:装備中ID／下着上 == EQUIP:装備中ID／下着下
+		EQUIP:装備中ID／下着上 = 0
+	EQUIP:装備中ID／下着下 = SELECT_ITEM
+
+CASE "眼"
+	EQUIP:装備中ID／眼 = SELECT_ITEM
+
+CASE "頭"
+	EQUIP:装備中ID／頭 = SELECT_ITEM
+
+CASE "腕"
+	EQUIP:装備中ID／腕 = SELECT_ITEM
+
+CASE "脚"
+	;逆バニーだと脚不可
+	IF EQUIPNAME:(EQUIP:装備中ID／衣服) == "逆バニー服" && ARG
+		PRINTFORML This outfit cannot be worn with leg accessories.
+		PRINTFORML Remove＜%CLOTHES_ENG(＃着用衣服／名称＃)%＞ to put on ＜%ITEMS_ENG(ITEMNAME:SELECT_ITEM)%＞?
+		CALL ASK_YN
+		SIF RESULT
+			RETURN 1
+		EQUIP:装備中ID／衣服 = 0
+	ENDIF
+	EQUIP:装備中ID／脚 = SELECT_ITEM
+
+CASE "首"
+	EQUIP:装備中ID／首 = SELECT_ITEM
+
+CASE "上着"
+	EQUIP:装備中ID／上着 = SELECT_ITEM
+ENDSELECT
+
+;実行後に一式持ってる判定を回す→ARG:1ならやらない
+SIF !ARG:1
+	CALL EQUIP_CLOTHE_SET_CHECK
+
+
+
+;下着制限か確認
+;ARG：1の場合に確認を入れる
+@SMALL_LINGERIE_CHECK(ARG)
+
+SIF !EQUIP:下着制限／極小 && !EQUIP:下着制限／シール
+	RETURN
+IF !ARG
+	CALL CLOTHE_STRIP_LINGERIE_OVERWRITE
+	RETURN
+ENDIF
+IF EQUIP:下着制限／極小
+	PRINTL 現在の衣服は＜極小サイズ＞および＜シールタイプ＞の下着のみ着用可能です。
+ELSEIF EQUIP:下着制限／シール
+	PRINTL 現在の衣服は＜シールタイプ＞の下着のみ着用可能です。
+ELSE
+	RETURN
+ENDIF
+PRINTFORML ＜%＃着用衣服／名称＃%＞を脱がせて＜%ITEMNAME:SELECT_ITEM%＞を着せますか？
+CALL ASK_YN
+SIF RESULT
+	RETURN 1
+CALL CLOTHE_STRIP_LINGERIE_OVERWRITE
+
+
+
+;シールのみか確認
+;ARG：1の場合に確認を入れる
+@STICKER_LINGERIE_CHECK(ARG)
+
+SIF !EQUIP:下着制限／シール
+	RETURN
+IF !ARG
+	CALL CLOTHE_STRIP_LINGERIE_OVERWRITE
+	RETURN
+ENDIF
+PRINTL 現在の衣服は＜シールタイプ＞の下着のみ着用可能です。
+PRINTFORML ＜%＃着用衣服／名称＃%＞を脱がせて＜%ITEMNAME:SELECT_ITEM%＞を着せますか？
+CALL ASK_YN
+SIF RESULT
+	RETURN 1
+CALL CLOTHE_STRIP_LINGERIE_OVERWRITE
+
+
+
+;衣服解除
+@CLOTHE_STRIP_LINGERIE_OVERWRITE
+
+EQUIP:装備中ID／衣服 = 0
+EQUIP:下着制限／極小 = 0
+EQUIP:下着制限／シール = 0
+
+
+
+;抵抗した場合用の準備
+@CHANGE_CLOTHE_RESIST_CHECK
+;RETURN_PLAN　元の装備や元の露出度を保存する
+
+SIF !TARGET
+	RETURN
+SIF (CFLAG:無抵抗 || !BASE:体力) && !GROUPMATCH(CSTR:状態／あなたの子,"成長中","成長後")
+	RETURN
+
+;各種装備中ID→EQUIP:0～19
+;TFLAG:Ａ露出→140,-20して120
+FLAG_REF = 120
+FOR LOCAL,1,16
+	RETURN_PLAN:LOCAL = EQUIP:LOCAL
+NEXT
+FOR LOCAL,20,25
+	RETURN_PLAN:LOCAL = TFLAG:(LOCAL +FLAG_REF)
+NEXT
+
+
+;抵抗
+;ARG　１はプレゼント、2は脱衣の場合
+;ARG:1	added by english translation to fix grammar. Not used if ARG == 2.
+@CHANGE_CLOTHE_RESIST(ARG, ARG:1)
+
+SIF !TARGET
+	RETURN
+SIF (CFLAG:無抵抗 || !BASE:体力) && !GROUPMATCH(CSTR:状態／あなたの子,"成長中","成長後")
+	RETURN
+CALL AJUST_STRIP_FLAG
+RETURN_PLAN:0 = 0
+FLAG_REF = 120
+FOR LOCAL,20,25
+	SIF RETURN_PLAN:LOCAL >= TFLAG:(LOCAL +FLAG_REF)
+		RETURN_PLAN:0 ++
+NEXT
+IF RETURN_PLAN:0 < 5
+	FOR LOCAL,1,16
+		EQUIP:LOCAL = RETURN_PLAN:LOCAL
+	NEXT
+	IF ARG == 2
+		PRINTFORMW You try to remove %CALLNAME%'s clothes, but she resists...
+	ELSEIF ARG == 1
+		PRINTFORM You give %CALLNAME% a 
+		CALL PRINT_SELECT_ITEM_DETAIL(ARG:1)
+		PRINTFORMW and try to make her wear it, but she resists...
+		
+		;渡そうとして拒否されたらアイテム戻す
+		EQUIP:SELECT_ITEM = 0
+		ITEM:SELECT_ITEM ++
+	ELSE
+		PRINTFORM You try to make %CALLNAME% wear the 
+		CALL PRINT_SELECT_ITEM_DETAIL(ARG:1)
+		PRINTFORMW but she resists...
+	ENDIF
+	RETURN 1
+ENDIF
+
+
+
+

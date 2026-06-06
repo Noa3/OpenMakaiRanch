@@ -1,0 +1,28 @@
+﻿
+;噴乳での体力気力消費
+@LACTATION_HPDAMAGE_CALC
+
+;体力→濃厚化による消費増加、母性による消費減少
+DAMAGE = NOWEX:噴乳 /5
+FIX = 100 +ABL:母乳濃度 *10 -ABL:母性 *5
+FIX = LIMIT(FIX,10,150)
+DAMAGE *= FIX
+DAMAGE /= 100
+DAMAGE = LIMIT(DAMAGE,30,300)
+LOSEBASE:体力 += DAMAGE
+
+;気力→消費増加なし、母性による消費減少
+DAMAGE = NOWEX:噴乳 /5
+FIX = 100 -ABL:母性 *10
+FIX = LIMIT(FIX,10,100)
+DAMAGE *= FIX
+DAMAGE /= 100
+DAMAGE = LIMIT(DAMAGE,10,300)
+LOSEBASE:気力 += DAMAGE
+
+
+
+
+
+
+

@@ -1,0 +1,76 @@
+﻿
+;デフォルトに戻す・EXモードに変更
+@NEWGAME_PLAYER_DATA_EXMODE
+
+PRINTFORML You can change %CALLNAME%'s status as adult/child and their gender.
+CALL PRINTL_WORD_COLOR,@"For Female You, a lesbian adjustment is applied; for children, a maternal increase adjustment is applied, altering gameplay.","黄"
+CALL PRINTL_WORD_COLOR,@"All except 【Adult Male You】 enters 【EX Mode】, adding 「EX_」 to the difficulty display","黄"
+CALL PRINTL_WORD_COLOR,@"【EX Mode】 allows for greater changes to height, apparent age, and race.","黄"
+PRINTL
+PRINTL Selecting anything other than "Cancel" will reset your settings to default and apply corrections.
+PRINTL ※Options other than 【Adult Male You】 are considered extras, so do not rely on the introduction or narrative text.
+PRINTL
+PRINTL [ 0] [Adult Male You] (Default)
+PRINTL [ 1] [Adult Female You]
+PRINTL [ 2] [Shota You] / [Small Race You]
+PRINTL [ 3] [Loli You]
+PRINTL
+PRINTL [99] Cancel
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	;キャラリセット関数を呼ぶ
+	CALL NEWGAME_CHARA_RESET(0)
+	CALL NEWGAME_PLAYER_FLAG_SET
+	FLAG:EXモード = 0
+CASE 1
+	;キャラリセット関数→大人女あなた用変更
+	CALL NEWGAME_CHARA_RESET(0)
+	TALENT:オトコ = 0
+	
+	;身長は高身長～大柄の間
+	CFLAG:身長 = HEIGHT_MAX_標準 +(HEIGHT_MAX_高身長 -HEIGHT_MAX_標準) /2
+	ABL:バストサイズ = 5
+	CSTR:乳弾力 = もちもち
+	CSTR:一人称 = I
+	EQUIP:ブラ = 1
+	EQUIP:ショーツ = 1
+	EQUIP:トランクス = 0
+	CALL CSV_CHARA_ADD_FIX(1)
+	
+	;口調も戻しておく
+	SAVESTR:あなた口調 = 使い分け
+	FLAG:EXモード = 1
+
+CASE 2
+	CALL NEWGAME_CHARA_RESET(0)
+	
+	;身長は小柄～低身長の間
+	CFLAG:身長 = HEIGHT_MAX_子供体型 +(HEIGHT_MAX_小柄 -HEIGHT_MAX_子供体型) /2
+	CFLAG:外見年齢 = 13
+	CSTR:一人称 = I
+	CSTR:陰毛 = 産毛
+	CALL NEWGAME_PLAYER_FLAG_SET
+	FLAG:EXモード = 1
+
+CASE 3
+	CALL NEWGAME_CHARA_RESET(0)
+	TALENT:オトコ = 0
+	
+	;身長はショタあなたより少し低く
+	CFLAG:身長 = HEIGHT_MAX_子供体型 +(HEIGHT_MAX_小柄 -HEIGHT_MAX_子供体型) /3
+	CFLAG:外見年齢 = 12
+	ABL:バストサイズ = 0
+	CSTR:乳弾力 = ぷにぷに
+	CSTR:一人称 = I
+	CSTR:陰毛 = 産毛
+	EQUIP:ブラ = 1
+	EQUIP:ショーツ = 1
+	EQUIP:トランクス = 0
+	CALL CSV_CHARA_ADD_FIX(1)
+	SAVESTR:あなた口調 = 使い分け
+	FLAG:EXモード = 1
+ENDSELECT
+
+
+

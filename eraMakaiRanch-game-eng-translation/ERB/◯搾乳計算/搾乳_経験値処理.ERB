@@ -1,0 +1,55 @@
+﻿
+;搾乳経験値処理
+@LACTATION_MILK_EXP
+
+;母乳体質でなければ濃度・生産力を計算せずに帰る
+SIF !MARK:母乳体質
+	RETURN
+
+;母乳濃度：搾乳された量*SQRT母性+搾乳中毒*5で増加
+FIX = SQRT (10000 *(ABL:母性+1)) +ABL:搾乳中毒*5
+
+;調整
+FIX -= 20
+
+;通常の母乳体質だと+20
+SIF !MARK:魔力母乳体質
+	FIX += 20
+	
+;乳のでかさで+補正
+IF !ABL:バストサイズ
+	FIX += 10
+ELSEIF ABL:バストサイズ < BUSTSIZE_並乳
+	FIX += 10
+ENDIF
+EXPUP = NOWEX:噴乳 *FIX
+EXPUP /= 100
+
+;母乳濃厚化EXP半減フラグ
+SIF FLAG:半減／母乳濃度EXP増加値
+	EXPUP /= 2
+SOURCE:母乳濃度増加 += EXPUP
+
+;母乳生産力：(噴乳量+不足ミルク経験値*2)*母性*10%+搾乳中毒*20%+乳牛堕ち10%につき1%
+FIX = 100 +ABL:母性*10 +ABL:搾乳中毒*20 +BASE:乳牛堕ち/100
+EXPUP = (NOWEX:噴乳 +NOWEX:不足ミルク経験値*2) *FIX
+EXPUP /= 100
+
+;LV4までは(100 -20*現在ABL)%のEXP・5以降は(1/現在ABL)のEXP・10以降はさらに1/2
+IF ABL:母乳生産力 < 5
+	EXPUP *= (100 -20 *ABL:母乳生産力)
+	EXPUP /= 100
+ELSE
+	EXPUP /= ABL:母乳生産力
+	SIF ABL:母乳生産力 >= 10
+		EXPUP /= 2
+ENDIF
+SOURCE:母乳生産力増加 += EXPUP
+
+;搾乳絶頂していた場合EXP増加
+;精神パラメータの計算式に合わせたせいで多すぎた
+SIF NOWEX:Ｂ絶頂 || NOWEX:Ｎ絶頂
+	SOURCE:搾乳絶頂経験 += (SOURCE:乳牛 /5)
+
+
+

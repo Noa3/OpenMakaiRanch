@@ -1,0 +1,124 @@
+﻿
+@COM10_MESSAGE
+;乳揉み
+
+CALL TRAIN_INSERT_MESSAGE
+
+;横から手入れた場合の追加
+;乳暖簾・乳出しはＢ露出→横乳露出はOFFになる
+IF TFLAG:横乳露出
+	PRINTFORM %DIRECTION()% you move %CALLNAME%'s %SLANG_B()%, reaching in from the side of the clothing and 
+ELSEIF TFLAG:谷間露出
+	PRINTFORM %DIRECTION()% you move %CALLNAME%'s %SLANG_B()%, Reaching in from the cleavage of the clothing and 
+ELSE
+	PRINTFORM You get your hands to %CALLNAME%'s %BUST_CLOTHES()% %SLANG_STAIN("Ｂ")%%SLANG_B()%, %DIRECTION()%
+ENDIF
+CALL TRAIN_BUST_LUB_MESSAGE
+
+
+
+@COM11_MESSAGE
+;乳搾り
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORM Getting your hands to the %BUST_CLOTHES()% %CALLNAME%'s %SLANG_B()%, you grip them%DIRECTION()% and 
+IF MARK:母乳体質 && BASE:母乳容量
+	PRINTFORM squeeze the %SLANG_MILK()% towards the tip...
+ELSE
+	PRINTFORM tease %SAVESTR:表記／母乳% towards the tip...
+ENDIF
+PRINTL
+
+
+
+@COM12_MESSAGE
+;乳首つまみ
+
+CALL TRAIN_INSERT_MESSAGE
+IF TFLAG:横乳露出 && !TFLAG:Ｎ露出
+	IF ＃着用衣服／谷間露出＃
+		PRINT You slip a hand into the cleavage 
+	ELSE
+		PRINT You slip a hand in from the side 
+	ENDIF
+	PRINTFORM of the clothes to find %CALLNAME%'s %SLANG_N()%, 
+ELSE
+	PRINTFORM You get your hands on %CALLNAME%'s %SLANG_N()%, 
+ENDIF
+PRINTFORML toying with them gently%DIRECTION()%... 
+
+
+
+@COM13_MESSAGE
+;Ｃ愛撫
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORM You get your hands on %CALLNAME%'s %SLANG_C()%,
+PRINTFORML %DIRECTION()% toying with it gently...
+
+
+
+@COM14_MESSAGE
+;Ｖ指挿れ
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML You touch %CALLNAME%'s %SLANG_STAIN("Ｖ")%%SLANG_V()%%DIRECTION()% with a finger, stirring it inside...
+
+
+@COM15_MESSAGE
+;Ａ指挿れ
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML You touch %CALLNAME%'s %SLANG_STAIN("Ａ")% %SLANG_A()%%DIRECTION()% with a finger, stirring it inside...
+
+
+
+@COM16_MESSAGE
+;尻撫で
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML You rub %CALLNAME%'s buttocks softly...
+
+
+
+@COM17_MESSAGE
+;乳撫で
+
+CALL TRAIN_INSERT_MESSAGE
+IF TFLAG:横乳露出
+	IF ＃着用衣服／谷間露出＃
+		PRINTFORM %DIRECTION()% you slip a hand into the cleavage of the clothes to find %CALLNAME%'s %SLANG_B()%, 
+	ELSE
+		PRINTFORM %DIRECTION()% you slip a hand into the cleavage of the clothes to find %CALLNAME%'s %SLANG_B()%, 
+	ENDIF
+ELSE
+	PRINTFORM You get your hands on %CALLNAME%'s %BUST_CLOTHES()% %SLANG_B()%, 
+ENDIF
+PRINTFORML running%DIRECTION()% your fingers over them, while feeling their shape...
+
+
+
+@COM18_MESSAGE
+;くすぐり
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML %CALLNAME%'s armpits and soles, %BUST_CLOTHES()% %SLANG_B()% and sides were tickled...
+
+
+@COM19_MESSAGE
+;お腹撫で
+
+CALL TRAIN_INSERT_MESSAGE
+PRINTFORML You gently rubbed %CALLNAME%'s %BUST_CLOTHES()% belly...
+SIF CFLAG:崩壊
+	RETURN
+IF CFLAG:妊娠日数 > 92
+	PRINTFORM Stimulated by her swollen belly carrying tentacle offspring, %CALLNAME% is writhing in pleasure...
+ELSEIF 30 < TFLAG:子宮内精液量 + TFLAG:腸内精液量 + TFLAG:嚥下精液量
+	PRINTFORM Stimulated by her swollen belly filled with a large amount of %SLANG_SEMEN()%, %CALLNAME% is writhing in pleasure...
+ELSEIF MARK:淫紋
+	PRINTFORM %CALLNAME% is writhing in pleasure from the stimulation of the lewd crest...
+ENDIF
+PRINTL
+
+

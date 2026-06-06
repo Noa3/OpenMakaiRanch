@@ -1,0 +1,43 @@
+﻿
+;バストサイズおおよそ決定
+@RANDOM_LIST_BUST(ARG)
+
+;子供扱いする身長かチェック
+IF CHILD_HEIGHT_CHECK(LIST_HEIGHT:ARG)
+	;FLAG:子供候補割合／バストサイズ／絶壁→3200
+	FLAG_REF = 3200
+ELSE
+	;FLAG:候補割合／バストサイズ／絶壁→3110
+	FLAG_REF = 3110
+ENDIF
+STR_REF = 6550
+
+;それぞれの候補割合の数だけBOXに詰めていく
+CALL RANDOM_BOX_LOTTERY(9)
+LIST_BUST:ARG = %RESULTS%
+
+;種族補正
+CALL RANDOM_LIST_BUST_TRIBE_REVISION(ARG)
+
+
+
+;種族補正
+@RANDOM_LIST_BUST_TRIBE_REVISION(ARG)
+
+SELECTCASE LIST_TRIBE:ARG
+CASE "牛角族"
+	{
+	IF !GROUPMATCH(LIST_BUST:ARG,"豊乳","爆乳","神乳","魔乳","超乳") && GETBIT(FLAG:種族設定／牛角族,2) 
+	&& (RAND:100 < FLAG:外見反映率／牛角族)
+	}
+		IF RAND:2
+			LIST_BUST:ARG = 豊乳
+		ELSE
+			LIST_BUST:ARG = 爆乳
+		ENDIF
+	ENDIF
+ENDSELECT
+
+
+
+

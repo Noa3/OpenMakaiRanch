@@ -1,0 +1,53 @@
+﻿
+;ちんぽ汚れでの不潔補正
+@PENIS_STAIN_FIX
+
+;ペニスに汚れがあると不潔など増加したり
+;射精後
+IF GETBIT(STAIN:0:ペニス,6)
+	SOURCE:屈辱 += 2000
+	SOURCE:不潔 += 5000
+	SOURCE:情愛 += 1000
+ENDIF
+
+;尻挿入後
+IF GETBIT(STAIN:0:ペニス,2)
+	SOURCE:屈辱 += 5000
+	SOURCE:不潔 += 10000
+ENDIF
+
+
+
+;恋慕以上で胸に母乳汚れないなら母乳パイズリ
+@MILK_PAIZURI_SELF
+
+SIF !BASE:母乳容量 || !＃陥落状態／恋慕以上＃ || GETBIT(STAIN:乳房,0) || TFLAG:Ｎ装備
+	RETURN
+SOURCE:Ｂ快楽／あなた責め += 500
+SOURCE:Ｎ快楽／あなた責め += 500
+SOURCE:情愛 += 1000
+CALL SET_STAIN_TARGET("乳房","母乳")
+
+;後で呼ぶのも今呼ぶのも変わりない
+CALL MILK_PAIZURI_SELF_MESSAGE
+
+
+
+;あなた主導母乳パイズリ
+@MILK_PAIZURI_FORCE
+
+SIF !BASE:母乳容量 || GETBIT(STAIN:乳房,0) || TFLAG:Ｎ装備
+	RETURN
+PRINTFORML Would you like to use %CALLNAME%'s %SAVESTR:表記／母乳% as lotion?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+SOURCE:Ｂ快楽／あなた責め += 1000
+SOURCE:Ｎ快楽／あなた責め += 500
+SOURCE:情愛 += 1000
+CALL SET_STAIN_TARGET("乳房","母乳")
+CALL MILK_PAIZURI_FORCE_MESSAGE
+
+
+
+

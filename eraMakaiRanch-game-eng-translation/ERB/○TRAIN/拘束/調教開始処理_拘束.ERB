@@ -1,0 +1,46 @@
+﻿
+;拘束フラグ参照
+@BEFORE_TRAIN_AUTO_BIND_CHECK
+#DIM BIND
+
+BIND = CFLAG:個別設定／調教開始自動処理／拘束
+
+;0だと全体コンフィグ準拠→無抵抗・抵抗時でそれぞれ参照フラグが違う
+IF !BIND
+	IF CFLAG:無抵抗
+		BIND = FLAG:デフォルト拘束状態／無抵抗
+	ELSE
+		BIND = FLAG:デフォルト拘束状態／抵抗
+	ENDIF
+ELSE
+	BIND --
+ENDIF
+
+;他はキャラ個別設定を見る→そのまま
+;必要アイテム参照→条件を満たしていない場合は拘束なしに変更
+;STR:拘束中→3930
+STR_REF = 3930
+CALL BIND_NEED_ITEM(BIND -1)
+IF NEED_ITEM_ID && !ITEM:NEED_ITEM_ID
+	BIND = 0
+ELSEIF NEED_ITEM_ID:1 && !ITEM:(NEED_ITEM_ID:1)
+	BIND = 0
+ENDIF
+RETURN BIND
+
+
+
+;拘束選択
+@BEFORE_TRAIN_BIND_SELECT
+#DIM BIND
+
+CALL MANYL(3)
+PRINTFORML Restrain %CALLNAME%?
+CALL BIND_CHOICE("開始時選択")
+
+;デフォルトセット
+SIF DEFAULT_SET && RESULT >= 0
+	CFLAG:個別設定／調教開始自動処理／拘束 = RESULT +1
+RETURN RESULT
+
+

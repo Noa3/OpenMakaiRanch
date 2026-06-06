@@ -1,0 +1,382 @@
+﻿
+;まとめ買い入り口
+;ARG→ページ　0だとページなし
+;ARGS→店
+@BULK_BUYING_COMMON(ARG,ARGS)
+
+;SELECT_ITEMは0に戻しておく
+SELECT_ITEM = 0
+PRINTL Bulk purchase unowned items with funds or expenses.
+PRINTFORML Currently: Paying with [\@ FLAG:買い物／経費計上 ? expenses # Funds \@]
+PRINTL
+
+;IDを消耗品と一点ものにしたせいで完全一括購入できそうにねえや
+IF GROUPMATCH(ARGS,"家具屋")
+	CALL PRINTL_WORD_COLOR("　消耗品の在庫なし","灰")
+ELSE
+	PRINTL [ 0] Purchase specific amount of all consumables in store.
+ENDIF
+IF GROUPMATCH(ARGS,"ペット","ファッション")
+	CALL PRINTL_WORD_COLOR("　一点商品の在庫なし","灰")
+ELSE
+	PRINTL [ 1] Purchase one of each item.
+ENDIF
+IF GROUPMATCH(ARGS,"ファッション")
+	PRINT [ 2] 
+	CALL PRINT_CLOTHE_CATEGORY(ARG)
+	PRINTL カテゴリの服を個数指定して一括購入
+ENDIF
+PRINTL
+
+IF FLAG:最大一日売上 -MONEY:経費計上 > 0
+	PRINTL [90] 経費／所持金の切り替え
+ELSE
+	PRINTL （Paying With Funds）
+ENDIF
+PRINTL [99] Cancel
+BINPUT
+INPUT_NUM = RESULT
+CALL MANYL(3)
+SELECTCASE INPUT_NUM
+CASE 0
+	CALL BULK_BUYING_USING(ARGS)
+CASE 1
+	CALL BULK_BUYING_ONES(ARGS)
+CASE 2
+	CALL BULK_BUYING_CLOTHE_CATEGORY(ARG)
+CASE 90
+	INVERTBIT FLAG:買い物／経費計上,0
+	CALL MANYL(5)
+	RESTART
+ENDSELECT
+
+
+
+;衣服カテゴリ表示
+;ARG→PAGE
+@PRINT_CLOTHE_CATEGORY(ARG)
+
+SELECTCASE ARG
+CASE 1
+	PRINT 《 仕事用衣服 》
+CASE 2
+	PRINT 《 ランジェリー 》および《 アクセサリー 》
+CASE 3
+	PRINT 《 アダルトランジェリー 》および《 乳牛衣装 》
+CASE 4
+	PRINT 《 ニンゲン衣服 》
+CASE 5
+	PRINT 《 異世界の衣服 》
+CASE 6
+	PRINT 《 アダルト衣装 》
+ENDSELECT
+
+
+
+;購入ID範囲取得
+;ARG→ページ
+;ARGS→店
+;ARGS:1→消耗品or一点ものorページ内
+@BULK_BUYING_GET_ITEMID(ARG,ARGS,ARGS:1)
+
+;一旦10000にしてバグチェック
+ITEM_ID_MIN = 10000
+SELECTCASE ARGS
+CASE "アダルト"
+	SELECTCASE ARGS:1
+	CASE "消耗品"
+		ITEM_ID_MIN = 250
+		ITEM_ID_MAX = 300
+	CASE "一点もの"
+		ITEM_ID_MIN = 500
+		ITEM_ID_MAX = 550
+	ENDSELECT
+
+CASE "ホームセンター"
+	SELECTCASE ARGS:1
+	CASE "消耗品"
+		ITEM_ID_MIN = 200
+		ITEM_ID_MAX = 250
+	CASE "一点もの"
+		ITEM_ID_MIN = 70
+		ITEM_ID_MAX = 80
+	ENDSELECT
+
+CASE "ファッション"
+	;ページ内の場合だけARG使う
+	SELECTCASE ARGS:1
+	CASE "消耗品"
+		;要は全部
+		ITEM_ID_MIN = 1000
+		ITEM_ID_MAX = 2000
+	CASE "一点もの"		;ないです
+	CASE "ページ内"
+		SELECTCASE ARG
+		CASE 0
+			ITEM_ID_MIN = 1020
+			ITEM_ID_MAX = 1100
+		CASE 1
+			ITEM_ID_MIN = 1100
+			ITEM_ID_MAX = 1150
+		CASE 2
+			ITEM_ID_MIN = 1150
+			ITEM_ID_MAX = 1200
+		CASE 3
+			ITEM_ID_MIN = 1200
+			ITEM_ID_MAX = 1300
+		CASE 4
+			ITEM_ID_MIN = 1300
+			ITEM_ID_MAX = 1350
+		CASE 5
+			ITEM_ID_MIN = 1350
+			ITEM_ID_MAX = 1400
+		CASE 6
+			ITEM_ID_MIN = 1400
+			ITEM_ID_MAX = 1450
+		CASE 7
+			ITEM_ID_MIN = 1450
+			ITEM_ID_MAX = 1500
+		CASE 8
+			ITEM_ID_MIN = 1500
+			ITEM_ID_MAX = 1600
+		CASE 9
+			ITEM_ID_MIN = 1600
+			ITEM_ID_MAX = 1700
+		ENDSELECT
+	ENDSELECT
+
+CASE "ペット"
+	;消耗品だけ
+	ITEM_ID_MIN = 300
+	ITEM_ID_MAX = 350
+
+CASE "家具屋"
+	;一点ものだけ
+	ITEM_ID_MIN = 550
+	ITEM_ID_MAX = 600
+ENDSELECT
+IF ITEM_ID_MIN == 10000
+	CALL PRINTL_WORD_COLOR("！アイテムID参照にバグがあります。正常に動作しないためこの文章が出たらお知らせください。","黄")
+	WAIT
+ENDIF
+
+
+
+;一点もの一括購入
+;ARGS→店
+@BULK_BUYING_ONES(ARGS)
+
+CALL BULK_BUYING_GET_ITEMID(0,ARGS,"一点もの")
+PRINTFORML ＜%ARGS%＞カテゴリの一点ものアイテムをリストの前から順に一括購入しますか？
+SIF ARGS == "ホームセンター"
+	PRINTL ・＜魔力貯蔵器＞2種は対象外です。
+PRINTL （経費／所持金が不足した場合、以降の購入は行われません）
+CALL ASK_YN
+SIF RESULT
+	RETURN
+
+;一括購入そのまま使える
+IF FLAG:買い物／経費計上
+	CALL BULK_BUYING_NOEXIST_BUDGET
+ELSE
+	CALL BULK_BUYING_NOEXIST_MONEY
+ENDIF
+
+;RESULTでメッセージ変更
+IF RESULT == 1
+	PRINTL アイテムの購入ができませんでした。
+ELSEIF RESULT == 2
+	PRINTL 《 全てのアイテムを購入しました 》
+ENDIF
+PRINTW
+
+
+
+;経費計上未所持まとめ買い
+@BULK_BUYING_NOEXIST_BUDGET
+
+;記録
+MONEY_BEFORE = MONEY:経費計上
+FOR LOCAL,ITEM_ID_MIN,ITEM_ID_MAX
+	SIF !ITEMPRICE:LOCAL || ITEM:LOCAL
+		CONTINUE
+	
+	;衣服は購入可能か別に見る
+	CALL CLOTHE_CAN_BUY_FLAG(LOCAL)
+	SIF RESULT
+		CONTINUE
+	
+	;予算不足のときおわり
+	SIF MONEY:経費計上 +ITEMPRICE:LOCAL > FLAG:最大一日売上
+		BREAK
+	ITEM:LOCAL ++
+	MONEY:経費計上 += ITEMPRICE:LOCAL
+	CALL PRINTL_WORD_COLOR,@"＜%ITEMS_ENG(ITEMNAME:LOCAL)%＞を購入しました。","水色"
+NEXT
+PRINTFORML Funds Spent：%VALUE_DIGIT(MONEY:経費計上 -MONEY_BEFORE)%G
+
+;RESULTを変えて元関数でメッセージ出す
+IF MONEY_BEFORE == MONEY:経費計上
+	RETURN 1
+
+;LOCAL=ITEM_ID_MAXなら全部
+ELSEIF LOCAL >= ITEM_ID_MAX
+	RETURN 2
+ENDIF
+
+
+
+;所持金未所持まとめ買い
+@BULK_BUYING_NOEXIST_MONEY
+
+MONEY_BEFORE = MONEY
+FOR LOCAL,ITEM_ID_MIN,ITEM_ID_MAX
+	SIF !ITEMPRICE:LOCAL || ITEM:LOCAL
+		CONTINUE
+	CALL CLOTHE_CAN_BUY_FLAG(LOCAL)
+	SIF RESULT
+		CONTINUE
+	
+	;所持金不足のときおわり
+	SIF ITEMPRICE:LOCAL > MONEY
+		BREAK
+	ITEM:LOCAL ++
+	MONEY -= ITEMPRICE:LOCAL
+	CALL PRINTL_WORD_COLOR,@"＜%ITEMS_ENG(ITEMNAME:LOCAL)%＞を購入しました。","水色"
+NEXT
+PRINTFORML Funds Spent：%VALUE_DIGIT(MONEY_BEFORE -MONEY)%G
+IF MONEY_BEFORE == MONEY
+	RETURN 1
+ELSEIF LOCAL >= ITEM_ID_MAX
+	RETURN 2
+ENDIF
+
+
+
+;消耗品まとめ買い
+;ARGS→店
+@BULK_BUYING_USING(ARGS)
+
+CALL BULK_BUYING_GET_ITEMID(0,ARGS,"消耗品")
+PRINTFORML Do you want to buy all the consumables from the ＜%ARGS%＞ category in order from the top of the list?
+PRINTL (If you run out of budget or money, no further purchases will be made)
+PRINTLC [ 0] Cancel
+PRINTLC [ 5] Buy 5
+PRINTL [10] Buy 10
+PRINTL Or enter any number between 1 and 100 to specify the quantity.
+INPUT
+SIF RESULT <= 0 || RESULT > 100
+	RETURN
+IF FLAG:買い物／経費計上
+	CALL BULK_BUYING_USING_BUDGET(RESULT,ARGS)
+ELSE
+	CALL BULK_BUYING_USING_MONEY(RESULT,ARGS)
+ENDIF
+IF RESULT == 1
+    PRINTL The items could not be purchased.
+ELSEIF RESULT == 2
+    PRINTL 《 All items have been purchased 》
+ENDIF
+PRINTW
+
+
+
+;衣服のページ内でまとめ買い
+;ARG→PAGE
+@BULK_BUYING_CLOTHE_CATEGORY(ARG)
+
+;ここでページ番号使う
+CALL BULK_BUYING_GET_ITEMID(ARG,"ファッション","ページ内")
+CALL PRINT_CLOTHE_CATEGORY(ARG)
+PRINTL Do you want to buy all the clothing from the category in order from the top of the list?
+PRINTL (If you run out of budget or money, no further purchases will be made)
+PRINTLC [ 0] Cancel
+PRINTLC [ 5] Buy 5
+PRINTL [10] Buy 10
+PRINTL Or enter any number between 1 and 100 to specify the quantity.
+INPUT
+SIF RESULT <= 0 || RESULT > 100
+	RETURN
+IF FLAG:買い物／経費計上
+	CALL BULK_BUYING_USING_BUDGET(RESULT,"ファッション")
+ELSE
+	CALL BULK_BUYING_USING_MONEY(RESULT,"ファッション")
+ENDIF
+IF RESULT == 1
+    PRINTL The items could not be purchased.
+ELSEIF RESULT == 2
+    PRINTL 《 All items have been purchased 》
+ENDIF
+PRINTW
+
+
+
+;経費計上消耗品まとめ買い
+;ARG→購入数
+;ARGS→店
+@BULK_BUYING_USING_BUDGET(ARG,ARGS)
+
+MONEY_BEFORE = MONEY:経費計上
+FOR LOCAL,ITEM_ID_MIN,ITEM_ID_MAX
+	SIF !ITEMPRICE:LOCAL
+		CONTINUE
+	CALL CLOTHE_CAN_BUY_FLAG(LOCAL)
+	SIF RESULT
+		CONTINUE
+	
+	;予算不足のときおわり
+	SIF MONEY:経費計上 +ITEMPRICE:LOCAL *ARG > FLAG:最大一日売上
+		BREAK
+	ITEM:LOCAL += ARG
+	MONEY:経費計上 += (ITEMPRICE:LOCAL *ARG)
+	
+	;衣服だと「着」にしとく
+	IF ARGS == "ファッション"
+		CALL PRINTL_WORD_COLOR,@"＜%ITEMS_ENG(ITEMNAME:LOCAL)%＞を{ARG}着購入しました。","水色"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"＜%ITEMS_ENG(ITEMNAME:LOCAL)%＞を{ARG}コ購入しました。","水色"
+	ENDIF
+NEXT
+PRINTFORML Funds Spent：%VALUE_DIGIT(MONEY:経費計上 -MONEY_BEFORE)%G
+IF MONEY_BEFORE == MONEY:経費計上
+	RETURN 1
+ELSEIF LOCAL >= ITEM_ID_MAX
+	RETURN 2
+ENDIF
+
+
+
+;所持金消耗品まとめ買い
+@BULK_BUYING_USING_MONEY(ARG,ARGS)
+
+MONEY_BEFORE = MONEY
+FOR LOCAL,ITEM_ID_MIN,ITEM_ID_MAX
+	SIF !ITEMPRICE:LOCAL
+		CONTINUE
+	CALL CLOTHE_CAN_BUY_FLAG(LOCAL)
+	SIF RESULT
+		CONTINUE
+	
+	;所持金不足のときおわり
+	SIF ITEMPRICE:LOCAL *ARG > MONEY
+		BREAK
+	ITEM:LOCAL += ARG
+	MONEY -= (ITEMPRICE:LOCAL *ARG)
+	IF ARGS == "ファッション"
+		CALL PRINTL_WORD_COLOR,@"＜%ITEMS_ENG(ITEMNAME:LOCAL)%＞を{ARG}着購入しました。","水色"
+	ELSE
+		CALL PRINTL_WORD_COLOR,@"＜%ITEMS_ENG(ITEMNAME:LOCAL)%＞を{ARG}コ購入しました。","水色"
+	ENDIF
+NEXT
+PRINTFORML Funds Spent：%VALUE_DIGIT(MONEY_BEFORE -MONEY)%G
+IF MONEY_BEFORE == MONEY
+	RETURN 1
+ELSEIF LOCAL >= ITEM_ID_MAX
+	RETURN 2
+ENDIF
+
+
+
+
+
+

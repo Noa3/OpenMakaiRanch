@@ -1,0 +1,20 @@
+﻿
+;マノさんの着けてる下着ください
+@SELECT_WISH_GIVE_LINGERIE
+
+CALL DRAGON_LINGERIE_MESSAGE
+CALL ASK_YN
+SIF RESULT
+	RETURN
+PRINTL 龍の体が光ると、空からひらひらと何か降ってきた…
+CALL PRINTL_WORD_COLOR("＜マノさんの下着＞を手に入れた！","黄")
+PRINTL 上下セットの黒いレースの下着だ。まだほんのりと温かい…
+PRINTL バストサイズで言うと【G】くらいありそうだ…
+PRINTW
+ITEM:マノさんの下着 ++
+SAVESTR:下着取得キャラ = マノ
+ITEM:龍のタマ = 0
+
+
+
+

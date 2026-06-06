@@ -1,0 +1,192 @@
+﻿
+;傭兵アルバイトに奴隷を捕まえてきてもらう
+@MILESTONE_CHECK_810
+
+SIF GETBIT(＃マイルストーン達成／奴隷捕獲＃)
+	RETURN 1
+
+
+;施設【町役場】解放・＜魔力枷＞2コ入手
+@MILESTONE_REWARD_810
+
+ITEM:魔力枷 += 2
+PRINTL A mercenary part-timer has delivered a captured slave. You'll train her to be a fine 「Dairy Cow」.
+PRINTL From now on, it seems that if you ask them to capture humans found on Makai,
+PRINTL they will do so just like they did this time.
+PRINTL You didn't notice before he mentioned it, but the the Makai newspaper
+PRINTL had a small column titled "Ningen information confirmed today."
+PRINTL However, he adds that you'll need to pay a fee next time, before leaving the ranch.
+CALL PRINTL_WORD_COLOR,@"Obtained 2x＜Mana Shackles＞.","水色"
+CALL PRINTL_WORD_COLOR,@"【Go to town】→【Town Hall】enabled.","水色"
+PRINTL You can now read the 「List of Ningen who have entered the Demon Realm」
+PRINTL Every day after the Midday settlement, the ningen available for tracking will be displayed,
+PRINTL and you can make capture requests from the【Town Hall】.
+
+
+;スレイ以外の奴隷を【屈服】状態にする
+@MILESTONE_CHECK_811
+
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;スレイちゃんは捕獲日マイナスなので弾く
+	SIF CFLAG:捕獲日 > 0 && ＃陥落状態／屈服以上＃
+		RETURN 1
+NEXT
+
+
+;システム【部屋割り変更】解放・＜裁縫道具セット＞入手
+@MILESTONE_REWARD_811
+
+ITEM:裁縫道具セット += 1
+PRINTL When Mr. Mano came to collect the goods, he admires how obedient the rebellious slave has become.
+PRINTL It would be good to have more staff.
+PRINTL He suggests that, if you want to treat her as an <employee>, you should give her a room.
+PRINTL Maybe you could have the slave help with farm work.
+PRINTL He also gave you a ＜Sewing Kit＞, in case that you are bothered by torn clothes.
+PRINTL He told you to buy the ＜Mending Cloth＞ yourself at the Home Center.
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Sewing Kit＞","水色"
+PRINTL 【Visit Slave】→【Fix Torn Clothes】allows you to repair worn clothes.（Requires ＜Mending Cloth＞）
+CALL PRINTL_WORD_COLOR,@"【Management】→【Room Assignment】enabled.","水色"
+
+
+;【調合知識】所持した奴隷を屈服
+@MILESTONE_CHECK_812
+
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CFLAG:捕獲日 > 0 && ＃陥落状態／屈服以上＃ && TALENT:調合知識
+		RETURN 1
+NEXT
+
+
+;スケジュール【調剤】解放
+@MILESTONE_REWARD_812
+
+PRINTL A slave with mixing knowledge from the surface has surrendeded to you.
+PRINTL When you mention it to Eugene, he brings you a surplus Demon World Pharmacology Basics book.
+PRINTL It looks like you can make some drugs with the equipment currently on the ranch.
+PRINTL You could make your slave mix the drugs.
+CALL PRINTL_WORD_COLOR,@"【Schedule】→【Mix Drugs】enabled.","水色"
+
+
+
+;掃除Lv5以上の奴隷を屈服
+@MILESTONE_CHECK_813
+
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CFLAG:捕獲日 > 0 && ＃陥落状態／屈服以上＃ && ABL:掃除 >= 5
+		RETURN 1
+NEXT
+
+
+;システム【掃除当番変更】解放
+@MILESTONE_REWARD_813
+
+PRINTL You have a submitted slave with general cleaning knowledge.
+PRINTL So far, the two of you had been cleaning, but it might be a good idea to leave the cleaning to other slaves.
+CALL PRINTL_WORD_COLOR,@"【Management】→【Cleaning Duty】enabled.","水色"
+
+
+
+;あなた・スレイの他に5匹の奴隷を牧場に迎える
+@MILESTONE_CHECK_814
+
+SLAVE_COUNT = 0
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF !CFLAG:追跡対象
+		SLAVE_COUNT ++
+NEXT
+
+;スレイちゃん含めると6人
+SIF SLAVE_COUNT >= 6
+	RETURN 1
+
+
+;施設【不動産】解放
+@MILESTONE_REWARD_814
+
+PRINTL The number of slaves on the ranch is increasing. It might be a good idea to add more living space.
+PRINTL If you want to order something in Okachi City, it would be best to ask Makai Construction through Fudou's real estate agency.
+PRINTL It is expensive, but income from milk shipments is increasing more than expected, so you can think about it.
+CALL PRINTL_WORD_COLOR,@"【Go to town】→【Real Estate】enabled.","水色"
+
+
+
+;奴隷3人を【恋慕】にする
+@MILESTONE_CHECK_815
+
+SLAVE_COUNT = 0
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF ＃陥落状態／恋慕以上＃
+		SLAVE_COUNT ++
+NEXT
+SIF SLAVE_COUNT >= 3
+	RETURN 1
+
+
+;＜スタイリング道具セット＞入手
+@MILESTONE_REWARD_815
+
+ITEM:スタイリング道具セット += 1
+PRINTL The slaves are becoming obedient and even feeling love for you. This is a good trend.
+PRINTL According to Mano, "Even though she's a ningen, she's still a girl, so you should take care of her hair."
+PRINTL Even though you are given the tools, you never did anything with other people's hair,
+PRINTL but you feel like you could manage it, because it came with a strangely thick instruction manual?
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Styling Toolkit＞.","水色"
+PRINTL You can now change your slave's hairstyle with【Visit Slave】→【Change Hairstyle】.（Changing hair color requires ＜Hair Dye＞）
+
+
+
+;奴隷を【乳牛堕ち】させる
+@MILESTONE_CHECK_816
+
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF CFLAG:乳牛
+		RETURN 1
+NEXT
+
+
+;＜工具セット＞入手
+@MILESTONE_REWARD_816
+
+ITEM:工具セット += 1
+PRINTL The slave fell to the pleasure of milking and declared herself a 「Dairy Cow」. You did a great job.
+PRINTL Thinking about whether there were any device appropriate for the cute 「Dairy Cow」,
+PRINTL you suddenly remembered that you had a set of tools in the warehouse.
+PRINTL Your grandfather occasionally used it to make tools for each of the Makai Dairy Cows.
+PRINTL Maybe you should try making something yourself.
+CALL PRINTL_WORD_COLOR,@"Obtained ＜Tool Set＞.","水色"
+PRINTL You can now make high-quality milking machines.【Development and Acquisition】→【Milker Development】
+
+
+
+;奴隷を【隷属】させる
+@MILESTONE_CHECK_817
+
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	SIF ＃陥落状態／隷属＃
+		RETURN 1
+NEXT
+
+
+;【強くてニューゲーム】開放
+@MILESTONE_REWARD_817
+
+PRINTL The slave became completely submissive and declared herself your 「Love Slave」.
+PRINTL ...From somewhere you heard a voice saying, 「Even if you go to the next world, you'll do well」.
+PRINTL What does that mean?
+CALL PRINTL_WORD_COLOR,@"【New Game+】enabled.","水色"
+PRINTL You can start it by selecting【Options】→【New Game+】.
+PRINTL It is recommended to create a backup save before this.
+
+
+
+
+
+

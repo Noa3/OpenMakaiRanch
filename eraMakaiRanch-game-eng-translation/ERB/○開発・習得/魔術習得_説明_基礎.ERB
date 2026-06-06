@@ -1,0 +1,226 @@
+﻿
+;魔術説明
+;ARG→SELECT_ITEM
+@ITEM_DETAIL_MAGIC(ARG)
+
+;非対応IDか名称なしならそのまま帰る
+IF ARG < ITEM_ID_MIN || ARG >= ITEM_ID_MAX || ITEMNAME:ARG == ""
+	PRINTL  　《 Magic Description Displayed Here 》
+	RETURN
+ENDIF
+
+;1限チェック
+CALL ITEM_GET_ONCE_CHECK(ARG)
+
+;アイテム名、価格を出す→ここでは基礎値
+IF FLAG:１コ限定アイテム
+	PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:ARG)% 》%VALUE_DIGIT(ITEMPRICE:ARG)%AP
+ELSE
+	PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:ARG)% 》%VALUE_DIGIT(ITEMPRICE:ARG)%AP（Base Value）:Currently Lv{ITEM:ARG}
+ENDIF
+
+SELECTCASE ITEMNAME:ARG
+CASE "個人用転移門"
+	PRINTL ＜Unlock＞
+	PRINTFORML During action selection: Go to town → 【Personal Teleport Gate】 (Costs %VALUE_DIGIT(MAGIC_USE_MP:ARG)% MP per use)
+	PRINTL
+	PRINTL The ＜Teleport Gate＞ acts like a station, allowing travel between towns in Makai.
+    PRINTL This spell lets you instantly teleport to the gate, which is very useful.
+    PRINTL It's not ideal for moving large groups or items but is very convenient.
+    PRINTL You can also teleport home even without a gate, though how this works is unknown.
+	PRINTFORML You can complete town tasks without being marked as [Action Taken].
+	
+	CASE "テレポート"
+    PRINTL ＜Unlock＞
+    PRINTFORML Town Hall: You can perform direct combat (Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG)% MP per use)
+    PRINTFORML 　　　　Send slaves into combat (Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG *2)% MP per use)
+    PRINTL
+    PRINTL Teleports instantly to a visible location. 
+    PRINTL Consumes more MP than ＜Personal Teleport Gate＞ but can be used anywhere without a gate.
+    PRINTL With practice, it can help you move behind enemies in combat.
+    PRINTL
+    PRINTL Allows you to capture slaves yourself without mercenaries.
+    PRINTL If you lack combat training, you might struggle, so consider hiring mercenaries if untrained.
+	
+CASE "搾乳エナジードレイン"
+PRINTL ＜Passive＞＜ON/OFF＞
+	PRINTFORML Always: Directly drinking your slave's %SAVESTR:表記／母乳% or using tentacles to milk absorbs spiritual energy.
+	PRINTL
+	PRINTFORML Absorbing %SAVESTR:表記／母乳% or milking with tentacles boosts your magical power and endurance.
+	PRINTFORML You can also convert spiritual energy into %SAVESTR:表記／母乳%, though less efficiently if low.
+	PRINTL
+	PRINTL To exclude specific slaves from energy drain, adjust their settings.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL Spiritual energy is like "experience points" and should not decrease easily.
+		PRINTFORML Only unusual extraction methods or your specific techniques affect it.
+	ENDIF
+	
+CASE "濃厚ミルクドレイン"
+    PRINTL ＜Passive＞＜ON/OFF＞
+    PRINTFORML Always: Drinking directly from slaves' %SAVESTR:表記／母乳% or using tentacles boosts energy absorption based on milk concentration.
+    PRINTL
+    PRINTFORML Higher milk concentration means more energy absorption. Ideal for draining high-energy slaves or for quick recovery.
+    PRINTFORML Increases absorption by {DENCE_MILK_FIX}\% per milk concentration level.
+    PRINTL
+    PRINTFORML When OFF, you can still enjoy rich and tasty %SAVESTR:表記／魔力母乳%.
+	
+CASE "魔力注入"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Command【Mana Infusion】
+	PRINTL
+	PRINTFORML Inject mana-infused semen into slaves to restore their mana.
+	PRINTL If the slave is in a 【Submissive】 state, infusing their mana increases your maximum mana.
+	PRINTL
+	PRINTL Slaves without mana can gain it through persistent infusion if they are in a 【Submissive】 state.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTFORML Infuse mana, absorb the converted %SAVESTR:表記／魔力母乳%, and enjoy an endless loop of pleasure!
+		PRINTFORML Often used for 【Mana Recovering Climax Crest】 to continuously absorb %SAVESTR:表記／母乳%.
+	ENDIF
+	
+CASE "簡易催眠"
+	PRINTL ＜Passive＞
+	;＜ON／OFF可能＞
+	PRINTFORML ＜Prerequisite＞
+	;PRINTFORML ゲーム全体：%CALLNAME:0%の最大魔力が奴隷の魔力の倍以上のとき無抵抗化
+	PRINTL
+	PRINTL This magic applies a basic hypnosis to rebellious slaves,
+	PRINTL allowing you to control their clothing and make them serve you.
+	PRINTFORML It only lasts a short time and isn't effective if your maximum mana is less than twice the slave's mana.
+	PRINTL Commands like losing virginity can be resisted by strong will.
+	PRINTL
+	PRINTL This is a prerequisite magic for ＜Brainwashing＞.
+	
+	
+CASE "母乳分泌催眠"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Command【Lactation Hypnosis】
+	PRINTL
+	PRINTFORML Applies hypnosis that makes the slave believe they have given birth and are feeding a baby. 
+	PRINTL This forces the thought "I need to feed the baby" and conditions their body to produce milk even without actual childbirth.
+	PRINTL
+	PRINTL In short, it turns the slave into a milk-producing state even without drugs or impregnation.
+	
+CASE "初級攻撃魔術"
+	PRINTL ＜アンロック＞
+	PRINTL 戦闘中：初級攻撃魔術
+	PRINTL
+	PRINTL ＜ファイア＞＜ブリザド＞＜サンダー＞などの初歩的攻撃魔術のセット。
+	PRINTL 別にネクロノミコンにセットで書かれているわけではないのだが、
+	PRINTFORML %CALLNAME:0%にとっては習得のコツがまるっきり同じためまとめて習得できる。
+	PRINTL
+	PRINTL 天才型とかそういう訳ではなく、本来は「得意属性ならイメージしやすくて習得も楽」なのだが
+	PRINTL 魔術の特訓なんてしてこない人生を送ったため得意属性なしの結果というだけである。
+	PRINTL しいて言うなら土属性なのかもしれない。
+	
+CASE "中級攻撃魔術"
+	PRINTL ＜アンロック＞
+	PRINTL 戦闘中：中級攻撃魔術
+	PRINTL
+	PRINTL ＜ファイラ＞＜ブリザラ＞＜サンダラ＞などの中級攻撃魔術のセット。
+	PRINTL 圧倒的実力があれば初級で十分と思いきやそうでもなく、
+	PRINTL 威力の伸びが悪くなるため使えるならより上位の魔術を使ったほうがいい。
+	
+CASE "上級攻撃魔術"
+	PRINTL ＜アンロック＞
+	PRINTL 戦闘中：上級攻撃魔術
+	PRINTL
+	PRINTL ＜ファイガ＞＜ブリザガ＞＜サンダガ＞などの上級攻撃魔術のセット。
+	PRINTL これが使えるくらいの実力ならもう魔術士として一人前と言ってもいい。
+	
+CASE "超越攻撃魔術"
+	PRINTL ＜アンロック＞
+	PRINTL 戦闘中：超越攻撃魔術
+	PRINTL
+	PRINTL ＜テンペスト＞＜アビス＞＜ヴォルケーノ＞などの上級をさらに超える攻撃魔術のセット。
+	PRINTL このクラスが使えるのは魔王軍でもニンゲン達でもほんの一握りで、即幹部昇進レベルの戦闘力ということになる。
+	SIF FLAG:ジョーク表示
+		PRINTL が、このゲームにそんな要素はありません。
+	
+CASE "エナジードレイン効率"
+	PRINTL ＜Unlock＞＜ON／OFF可能＞
+	PRINTL Always：Increases spirit energy absorption rate during energy drain milking
+	PRINTL
+	PRINTFORML When %CALLNAME:0% steals spirit energy by drinking the slave's %SAVESTR:表記／母乳%,
+	PRINTFORML the amount of spirit energy stolen increases for the same amount of milk.
+	PRINTFORML When enabled, increase by {ENERGY_DRAIN_FIX}\% per level.
+	PRINTL
+	PRINTFORML Turning it off allows you to drink more %SAVESTR:表記／母乳% in the spirit energy draining state.
+	
+CASE "魔力吸収効率"
+	PRINTL ＜Unlock＞＜ON／OFF可能＞
+	PRINTL Always：Increases mana absorption rate when sucking milk or using milking tentacles.
+	PRINTL
+	PRINTFORML When %CALLNAME:0% steals mana by drinking the slave's %SAVESTR:表記／魔力母乳%,
+	PRINTL the amount of mana stolen increases for the same amount of milk.
+	PRINTFORML When enabled, increase by {MAGIC_DRAIN_FIX}\% per level.
+	PRINTL
+	PRINTFORML Turning it off allows you to drink more %SAVESTR:表記／魔力母乳%
+	
+CASE "淫紋付与"
+	PRINTL ＜アンロック＞
+	PRINTFORML 調教中：特殊魔術→コマンド【淫紋付与】（1回%VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP必要）
+	PRINTL
+	PRINTL Enables granting slaves a 【Lewd Crest】.
+	PRINTL 全身の感度＋50%上乗せ効果、淫欲増加＋50%上乗せ効果、
+	PRINTL 奉仕可能な状態の場合に自分の意思での拒否が不可能になる効果がある。
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL 奴隷調教の定番中の定番ですね。
+		PRINTL 魔力枷への抵抗の際に効果があってもいいかもしれない。
+	ENDIF
+	
+CASE "絶頂体力回復淫紋"
+	PRINTL ＜アンロック＞
+	PRINTFORML 調教中：特殊魔術→コマンド【絶頂体力回復淫紋付与】（1回%VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP必要）
+	PRINTL
+	PRINTL 絶頂時に体力・気力が回復するようになる淫紋を奴隷に刻む。
+	PRINTL 淫魔の中でも最上級の魔力を持つ者しか使えないような代物かつ基本的に奴隷に使うようなものでもない。
+	PRINTL 完全に堕ちきった奴隷であれば奉仕し続けてもらうことができるようになりそう。
+	PRINTL 術者に心酔していないと定着率はだいぶ低い。
+	PRINTL （基本5%から【好感度】の1／3の値定着確率が増加します）
+	PRINTL
+	PRINTL 体力回復という名前ですが、気力も同時に回復します。
+	
+CASE "絶頂魔力回復淫紋"
+	PRINTL ＜アンロック＞
+	PRINTFORML 調教中：特殊魔術→コマンド【絶頂魔力回復淫紋付与】（1回%VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP必要）
+	PRINTL
+	PRINTL 絶頂時に魔力が回復するようになる淫紋を奴隷に刻む。
+	PRINTL そんな利敵行為をどうして、と思いきや【魔力母乳体質】でない場合は淫紋が定着しないこと、
+	PRINTFORML 魔力が無限に回復したところでその魔力は「全てが」%SAVESTR:表記／母乳%に変換されてしまうことから、
+	PRINTFORML 実のところ搾乳されればされるだけ無限に%SAVESTR:表記／魔力母乳%が溢れ出る、
+	PRINTL ミルクサーバーに相応しい【永久魔力母乳】体質にする、二度とニンゲンの生活には戻れなくなる極悪魔術である。
+	PRINTL
+	PRINTL そんな大魔術のため、定着する確率が低い。とはいえそれはニンゲンをやめることへの抵抗感からのようで、
+	PRINTL どうも術者への愛情が深かったり、自分から【乳牛】になることを望んでいるなら定着確率は高くなるようだ。
+	PRINTL （基本5%から【好感度】および【乳牛堕ち】の合計の1／3の値定着確率が増加します）
+	PRINTL
+	PRINTFORML また、本来%SAVESTR:表記／乳房%サイズにより制限のかかる母乳生産力での刻印取得制限がなくなる効果もあります。
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL とてもわかりやすくエンドコンテンツ。
+		PRINTFORML ここまでたどり着いたらあとは何も気にせず無限に%SAVESTR:表記／母乳%を吸ってイチャイチャすればいいと思います。
+	ENDIF
+	
+CASE "苦痛快楽変換"
+	PRINTL ＜アンロック＞
+	PRINTFORML 調教中：特殊魔術→コマンド【苦痛快楽変換】（1回%VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP必要）
+	PRINTL
+	PRINTL 調教が終わるまでの間、奴隷が本来受けるはずの苦痛をなくし、代わりに快楽を受けるようにする。
+	PRINTL 性感帯ではない箇所の場合は淫欲が増加する。
+	PRINTL 再使用で解除。
+	
+CASE "ペニス変化"
+	PRINTL ＜アンロック＞
+	PRINTFORML 調教中：特殊魔術→コマンド【ペニス変化】（1回%VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP必要）
+	PRINTL
+	PRINTFORML %CALLNAME:0%の%SAVESTR:表記／ペニス%サイズを変化できる。
+	PRINTFORML ただ、基本的にはサイズ差が少ないほうがお互い気持ちよくなる。
+	PRINTL
+	PRINTFORML 注意として%SAVESTR:表記／ペニス%が挿入先より一定以上大きいと激しい痛みを与えたり、穴が緩くなる場合があり、
+	PRINTFORML 条件を満たす場合、調教画面でその箇所のサイズ表示が赤色になる。
+ENDSELECT
+
+

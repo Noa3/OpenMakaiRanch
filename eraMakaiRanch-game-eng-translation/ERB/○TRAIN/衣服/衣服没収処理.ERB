@@ -1,0 +1,71 @@
+﻿
+;衣服没収処理
+@CLOTHE_SEIZURE
+
+;衣服・下着・アクセサリーと別々
+CALL CLOTHE_SEIZURE_CLOTHE
+CALL CLOTHE_SEIZURE_LINGERIE
+CALL CLOTHE_SEIZURE_ACCESSORY
+
+
+
+;衣服
+@CLOTHE_SEIZURE_CLOTHE
+
+;一時的脱衣フラグがあるか見る
+SIF !TFLAG:一時的脱衣／衣服
+	RETURN
+
+;コンフィグ有効の場合だけ
+IF CFLAG:無抵抗
+	SIF !GETBIT(＃衣服没収／無抵抗＃)
+		RETURN
+ELSE
+	SIF !GETBIT(＃衣服没収／抵抗＃)
+		RETURN
+ENDIF
+PRINTFORML Confiscate %CALLNAME%'s %CLOTHES_ENG(＃着用衣服／名称＃)%?
+CALL ASK_YN
+SIF !RESULT
+	EQUIP:装備中ID／衣服 = 0
+
+
+
+;下着
+@CLOTHE_SEIZURE_LINGERIE
+
+SIF !TFLAG:一時的脱衣／下着上 && !TFLAG:一時的脱衣／下着下
+	RETURN
+IF CFLAG:無抵抗
+	SIF !GETBIT(＃下着没収／無抵抗＃)
+		RETURN
+ELSE
+	SIF !GETBIT(＃下着没収／抵抗＃)
+		RETURN
+ENDIF
+PRINTFORML Confiscate %CALLNAME%'s underwear?
+CALL ASK_YN
+SIF RESULT
+	RETURN
+EQUIP:装備中ID／下着上 = 0
+EQUIP:装備中ID／下着下 = 0
+
+
+
+;アクセサリー
+@CLOTHE_SEIZURE_ACCESSORY
+
+SIF !SUMARRAY(TFLAG,130,140)
+	RETURN
+IF CFLAG:無抵抗
+	SIF !GETBIT(＃アクセ没収／無抵抗＃)
+		RETURN
+ELSE
+	SIF !GETBIT(＃アクセ没収／抵抗＃)
+		RETURN
+ENDIF
+PRINTFORML Confiscate %CALLNAME%'s accessories?
+CALL ASK_YN
+SIF !RESULT
+	VARSET EQUIP,0,10,20
+

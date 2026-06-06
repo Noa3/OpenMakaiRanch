@@ -1,0 +1,270 @@
+﻿
+;NG+の有効度合いコンフィグ
+@NEWGAMEPLUS_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTL 　《 Your Parameters 》
+IF !GLOBAL:あなたパラメータ引き継ぎ
+	CALL PRINTL_WORD_COLOR,@"Your Parameters Transfer: OFF","灰"
+ELSE
+	PRINTFORML 　Spirit Energy  ：%TOSTR(GLOBAL:引き継ぎ霊力,"#,0")%EP
+	PRINTFORML 　Mana           ：%TOSTR(GLOBAL:引き継ぎ魔力,"#,0")%MP
+	PRINTFORML 　Training AP    ：%TOSTR(GLOBAL:引き継ぎ調教AP,"#,0")%PT
+	PRINTFORML 　Tentacle AP    ：%TOSTR(GLOBAL:引き継ぎ触手AP,"#,0")%PT
+	PRINTFORML 　Combat Aptitude：%TOSTR(GLOBAL:引き継ぎ戦闘適性,"#,0")%\%
+ENDIF
+PRINTL
+PRINTL 　《 Makai Realm Level 》
+IF !GLOBAL:魔界レベル引き継ぎ
+	CALL PRINTL_WORD_COLOR,@"Makai Realm Level Transfer: OFF","灰"
+ELSE
+	PRINTFORML 　Military     ：{GLOBAL:引き継ぎ魔界レベル／軍事,2}Lv
+	PRINTFORML 　Research     ：{GLOBAL:引き継ぎ魔界レベル／科学技術,2}Lv
+	PRINTFORML 　Okachi City  ：{GLOBAL:引き継ぎ魔界レベル／オカチ街,2}Lv
+	PRINTFORML 　Dairy Farming：{GLOBAL:引き継ぎ魔界レベル／酪農業,2}Lv
+ENDIF
+PRINTL
+PRINTL 　《 Bonus Items 》
+IF !GLOBAL:ボーナスアイテム引き継ぎ
+	CALL PRINTL_WORD_COLOR,@"Bonus Items Transfer: OFF","灰"
+ELSE
+	PRINTFORML 　＜Breast Expansion Drug＞     ：{GLOBAL:ボーナス入手／膨乳薬,2}コ
+	PRINTFORML 　＜Breast Milk Enriching Drug＞：{GLOBAL:ボーナス入手／母乳濃厚化薬,2}コ
+	PRINTFORML 　＜Permeating Aphrodisiac＞    ：{GLOBAL:ボーナス入手／浸透媚薬,2}コ
+	PRINTFORML 　＜Mega Milk Drug＞            ：{GLOBAL:ボーナス入手／超乳薬,2}コ
+ENDIF
+CALL PRINTL_ALIGN(-5)
+PRINTLC [ 0] Your Parameters ON/OFF
+PRINTLC [ 1] Makai Realm Level ON/OFF
+PRINTL [ 2] Bonus Items ON/OFF
+PRINTL [99] Complete
+BINPUT
+SELECTCASE RESULT
+CASE 0
+	INVERTBIT GLOBAL:あなたパラメータ引き継ぎ,0
+CASE 1
+	INVERTBIT GLOBAL:魔界レベル引き継ぎ,0
+CASE 2
+	INVERTBIT GLOBAL:ボーナスアイテム引き継ぎ,0
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;NG+前のGLOBALセット
+@NEWGAMEPLUS_BEFORE_FLAG_SET
+
+VARSET GLOBAL,0,100,200
+TARGET = 0
+
+;VER1.0以前で番号が違うんだ
+IF FLAG:セーブデータのバージョン < 1000 || FLAG:セーブデータのバージョン >= 10000
+	;BASE:霊力→1
+	GLOBAL:引き継ぎ霊力 = MAXBASE:1
+	
+	;BASE:魔力→2
+	GLOBAL:引き継ぎ魔力 = MAXBASE:2
+	
+	;CFLAG:戦闘適性→67
+	GLOBAL:引き継ぎ戦闘適性 = CFLAG:67
+	
+	;人数によるボーナス
+	FOR TARGET_COUNT,0,CHARANUM
+		TARGET = TARGET_COUNT
+		;隷属させた奴隷数+【搾乳家畜】の人数で調教AP
+		;CFLAG:隷属→190
+		;MARK:搾乳家畜→42
+		SIF CFLAG:190
+			GLOBAL:引き継ぎ調教AP += 100
+		SIF MARK:42
+			GLOBAL:引き継ぎ調教AP += 100
+		
+		;【触手の苗床】の人数で触手AP
+		;MARK:触手の苗床→57
+		SIF MARK:57
+			GLOBAL:引き継ぎ触手AP += 100
+		
+		;乳牛堕ちさせた奴隷数で膨乳薬
+		;CFLAG:乳牛→195
+		SIF CFLAG:195
+			GLOBAL:ボーナス入手／膨乳薬 ++
+		
+		;極上母乳の人数分で母乳濃厚化薬
+		;MARK:極上母乳→23
+		SIF MARK:23
+			GLOBAL:ボーナス入手／膨乳薬 ++
+		
+		;感度合計1000以上の人数で浸透媚薬
+		;ABL:感度→10～14
+		SIF SUMARRAY(ABL,10,15) >= 1000
+			GLOBAL:ボーナス入手／浸透媚薬 ++
+		
+		;【極上母乳】で【ミルクサーバー】で【みんなのママ】で【搾乳家畜】の人数超乳薬
+		;MARK:ミルクサーバー→32
+		;MARK:みんなのママ→37
+		SIF MARK:23 && MARK:32 && MARK:37 && MARK:42
+			GLOBAL:ボーナス入手／超乳薬 ++
+	NEXT
+	
+	;魔界レベルの引き継ぎ
+	;FLAG:魔界レベル／軍事→270
+	GLOBAL:引き継ぎ魔界レベル／軍事 = FLAG:270
+	GLOBAL:引き継ぎ魔界レベル／科学技術 = FLAG:271
+	GLOBAL:引き継ぎ魔界レベル／オカチ街 = FLAG:272
+	GLOBAL:引き継ぎ魔界レベル／酪農業 = FLAG:273
+	
+	;周回数を数えてないと思うので1
+	FLAG:周回数 = 1
+	
+ELSE
+	;BASE:霊力→2
+	GLOBAL:引き継ぎ霊力 = MAXBASE:2
+	
+	;BASE:魔力→3
+	GLOBAL:引き継ぎ魔力 = MAXBASE:3
+	
+	;BASE:戦闘適性→17
+	GLOBAL:引き継ぎ戦闘適性 = MAXBASE:17
+	
+	;人数によるボーナス
+	FOR TARGET_COUNT,0,CHARANUM
+		TARGET = TARGET_COUNT
+		;隷属させた奴隷数+【搾乳家畜】の人数で調教AP
+		;CFLAG:隷属→CSTRへ移動
+		;MARK:搾乳家畜→207
+		SIF ＃陥落状態／隷属＃
+			GLOBAL:引き継ぎ調教AP += 100
+		SIF MARK:207
+			GLOBAL:引き継ぎ調教AP += 100
+		
+		;【触手の苗床】の人数で触手AP
+		;MARK:触手の苗床→222
+		SIF MARK:222
+			GLOBAL:引き継ぎ触手AP += 100
+		
+		;乳牛堕ちさせた奴隷数で膨乳薬
+		;CFLAG:乳牛→431
+		SIF CFLAG:431
+			GLOBAL:ボーナス入手／膨乳薬 ++
+		
+		;極上母乳の人数分で母乳濃厚化薬
+		;MARK:極上母乳→14
+		SIF MARK:14
+			GLOBAL:ボーナス入手／膨乳薬 ++
+		
+		;感度合計1000以上の人数で浸透媚薬
+		;ABL:感度→10～14
+		SIF SUMARRAY(ABL,10,15) >= 1000
+			GLOBAL:ボーナス入手／浸透媚薬 ++
+		
+		;【極上母乳】で【ミルクサーバー】で【みんなのママ】で【搾乳家畜】の人数超乳薬
+		;MARK:ミルクサーバー→17
+		;MARK:みんなのママ→202
+		SIF MARK:14 && MARK:17 && MARK:202 && MARK:207
+			GLOBAL:ボーナス入手／超乳薬 ++
+	NEXT
+	
+	;魔界レベルの引き継ぎ
+	;FLAG:魔界レベル／軍事→720
+	GLOBAL:引き継ぎ魔界レベル／軍事 = FLAG:720
+	GLOBAL:引き継ぎ魔界レベル／科学技術 = FLAG:721
+	GLOBAL:引き継ぎ魔界レベル／オカチ街 = FLAG:722
+	GLOBAL:引き継ぎ魔界レベル／酪農業 = FLAG:723
+ENDIF
+GLOBAL:あなたパラメータ引き継ぎ = 1
+GLOBAL:魔界レベル引き継ぎ = 1
+GLOBAL:ボーナスアイテム引き継ぎ = 1
+GLOBAL:引き継ぎ前周回数 = FLAG:周回数
+SAVEGLOBAL
+
+CALL MANYL(5)
+PRINTFORML Previous Data Cycle Count：{GLOBAL:引き継ぎ前周回数}周
+PRINTL 　《 Your Parameters 》
+PRINTFORML 　Spirit Energy  ：%TOSTR(GLOBAL:引き継ぎ霊力,"#,0")%EP
+PRINTFORML 　Mana           ：%TOSTR(GLOBAL:引き継ぎ魔力,"#,0")%MP
+PRINTL 　（Magic Power Increases Magic AP Proportionally）
+PRINTFORML 　Training AP    ：%TOSTR(GLOBAL:引き継ぎ調教AP,"#,0")%PT
+PRINTFORML 　Tentacle AP    ：%TOSTR(GLOBAL:引き継ぎ触手AP,"#,0")%PT
+PRINTFORML 　Combat Aptitude：%TOSTR(GLOBAL:引き継ぎ戦闘適性,"#,0")%\%
+PRINTL
+PRINTL 　《 Makai Realm Level》
+PRINTFORML 　Military     ：{GLOBAL:引き継ぎ魔界レベル／軍事,2}Lv
+PRINTFORML 　Research     ：{GLOBAL:引き継ぎ魔界レベル／科学技術,2}Lv
+PRINTFORML 　Okachi City  ：{GLOBAL:引き継ぎ魔界レベル／オカチ街,2}Lv
+PRINTFORML 　Dairy Farming：{GLOBAL:引き継ぎ魔界レベル／酪農業,2}Lv
+PRINTL
+PRINTL 　《 Bonus Itens 》
+PRINTFORML 　＜Breast Expansion Drug＞     ：{GLOBAL:ボーナス入手／膨乳薬,2}コ
+PRINTFORML 　＜Breast Milk Enriching Drug＞：{GLOBAL:ボーナス入手／母乳濃厚化薬,2}コ
+PRINTFORML 　＜Permeating Aphrodisiac＞    ：{GLOBAL:ボーナス入手／浸透媚薬,2}コ
+PRINTFORML 　＜Mega Milk Drug＞            ：{GLOBAL:ボーナス入手／超乳薬,2}コ
+PRINTL
+PRINTL The above items will be carried over as bonuses for the "Strong New Game" feature.
+PRINTW ※You can also turn this off in the game start configuration.
+
+
+
+;強くてニューゲームの引き継ぎステータス選択
+@NEWGAMEPLUS_BONUS
+
+;設定してない場合帰る
+SIF !GLOBAL:引き継ぎ前周回数
+	RETURN
+TARGET = 0
+
+;それぞれで小分け
+CALL NEWGAMEPLUS_BONUS_STATUS
+CALL NEWGAMEPLUS_BONUS_MAKAILV
+CALL NEWGAMEPLUS_BONUS_ITEM
+
+
+
+;パラメータ
+@NEWGAMEPLUS_BONUS_STATUS
+
+SIF !GLOBAL:あなたパラメータ引き継ぎ
+	RETURN
+MAXBASE:霊力 = MAX(MAXBASE:霊力,GLOBAL:引き継ぎ霊力)
+BASE:霊力 = MAXBASE:霊力
+MAXBASE:魔力 = MAX(MAXBASE:魔力,GLOBAL:引き継ぎ魔力)
+BASE:魔力 = MAXBASE:魔力
+MONEY:調教AP = GLOBAL:引き継ぎ調教AP
+MONEY:触手AP = GLOBAL:引き継ぎ触手AP
+
+;魔力から魔術APにする：1000MP→1AP
+MONEY:魔術AP = MAXBASE:魔力 /1000
+MAXBASE:戦闘適性 = GLOBAL:引き継ぎ戦闘適性
+BASE:戦闘適性 = MAXBASE:戦闘適性
+CALL MASTER_POWERUP_EP
+CALL MASTER_POWERUP_MP
+BASE:体力 = MAXBASE:体力
+
+
+
+;魔界レベル
+@NEWGAMEPLUS_BONUS_MAKAILV
+
+SIF !GLOBAL:魔界レベル引き継ぎ
+	RETURN
+FLAG:魔界レベル／軍事 = GLOBAL:引き継ぎ魔界レベル／軍事
+FLAG:魔界レベル／科学技術 = GLOBAL:引き継ぎ魔界レベル／科学技術
+FLAG:魔界レベル／オカチ街 = GLOBAL:引き継ぎ魔界レベル／オカチ街
+FLAG:魔界レベル／酪農業 = GLOBAL:引き継ぎ魔界レベル／酪農業
+
+
+
+;アイテム
+@NEWGAMEPLUS_BONUS_ITEM
+
+SIF !GLOBAL:ボーナスアイテム引き継ぎ
+	RETURN
+ITEM:膨乳薬 += GLOBAL:ボーナス入手／膨乳薬
+ITEM:母乳濃厚化薬 += GLOBAL:ボーナス入手／母乳濃厚化薬
+ITEM:浸透媚薬 += GLOBAL:ボーナス入手／浸透媚薬
+ITEM:超乳薬 += GLOBAL:ボーナス入手／超乳薬
+
+
+
+

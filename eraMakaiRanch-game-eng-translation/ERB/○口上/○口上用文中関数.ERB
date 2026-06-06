@@ -1,0 +1,78 @@
+﻿
+;奴隷が自分を呼ぶ一人称
+@SELF_CALL
+#FUNCTIONS
+
+;調教（またはスケジュール）中の絶頂回数デフォルト50以上で蕩け版に変える
+IF EX:総絶頂 >= FLAG:蕩け口上化絶頂回数
+	RETURNF CSTR:一人称／蕩け
+ELSE
+	RETURNF CSTR:一人称
+ENDIF
+
+
+;あなたを呼ぶ二人称
+@MASTER_CALL
+#FUNCTIONS
+
+;一人称の分岐+恋慕・隷属・乳牛化で陥落分岐
+IF EX:総絶頂 >= FLAG:蕩け口上化絶頂回数
+	IF ＃陥落状態／陥落以上＃ || CFLAG:乳牛 || CFLAG:洗脳 
+		RETURNF MASTER_ENG(CSTR:あなた呼び方／陥落後／蕩け)
+	ELSE
+		RETURNF MASTER_ENG(CSTR:あなた呼び方／陥落前／蕩け)
+	ENDIF
+ELSE
+	IF ＃陥落状態／陥落以上＃ || CFLAG:乳牛 || CFLAG:洗脳
+		RETURNF MASTER_ENG(CSTR:あなた呼び方／陥落後)
+	ELSE
+		RETURNF MASTER_ENG(CSTR:あなた呼び方／陥落前)
+	ENDIF
+ENDIF
+
+
+;甘えた声であなたを呼ぶ二人称
+@SWEET_MASTER_CALL
+#FUNCTIONS
+
+;一応恋慕未満で来た場合には普通に呼ぶ処理
+IF ＃陥落状態／恋慕以上＃ || CFLAG:乳牛
+	RETURNF CSTR:あなた呼び方／甘え
+ELSE
+	RETURNF CSTR:あなた呼び方／陥落前
+ENDIF
+
+
+;ペニス
+@PENIS_CALL
+#FUNCTIONS
+
+IF EX:総絶頂 >= FLAG:蕩け口上化絶頂回数
+	RETURNF PENIS_CALL_ENG(CSTR:性器呼び方／ペニス／蕩け)
+ELSE
+	RETURNF PENIS_CALL_ENG(CSTR:性器呼び方／ペニス)
+ENDIF
+
+
+;膣
+@VAGINA_CALL
+#FUNCTIONS
+
+IF EX:総絶頂 >= FLAG:蕩け口上化絶頂回数
+	RETURNF VAGINA_CALL_ENG(CSTR:性器呼び方／膣／蕩け)
+ELSE
+	RETURNF VAGINA_CALL_ENG(CSTR:性器呼び方／膣)
+ENDIF
+
+
+;アナル
+@ANAL_CALL
+#FUNCTIONS
+
+IF EX:総絶頂 >= FLAG:蕩け口上化絶頂回数
+	RETURNF ANUS_CALL_ENG(CSTR:性器呼び方／アナル／蕩け)
+ELSE
+	RETURNF ANUS_CALL_ENG(CSTR:性器呼び方／アナル)
+ENDIF
+
+

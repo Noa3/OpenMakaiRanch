@@ -1,0 +1,27 @@
+パッチの目的
+	仕事能力を一覧表示することで仕事の割り当てを楽に
+	牛舎に入れる際させたい仕事のある者を誤って入れることを防ぐ
+	
+やったこと
+	牛舎管理と全体スケジュール表示,調教対象変更に個別に記載のあった一覧ステータスを表示補助の中に関数化
+	それに伴い酪農ABL表示内のABL_WORK_LISTに改行無しバージョン追加
+	
+	いじったファイル
+		●SHOP.ERB
+		●ステータス表示
+		牛舎管理.ERB				>サイズダウンしています
+		全体スケジュール表示.ERB	>サイズダウンしています
+		調教対象変更.ERB			>サイズダウンしています
+		酪農ABL表示.ERB
+	
+	新規作成
+		一覧ステータス
+		
+当て方
+	era魔界牧場0.4.04のERBフォルダにコピー＆ペースト
+	
+作者…P's
+License
+	This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+Ver.1 2022/1/23

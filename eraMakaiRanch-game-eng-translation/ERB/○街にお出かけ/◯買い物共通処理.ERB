@@ -1,0 +1,134 @@
+﻿
+;経費か財布から出すか判定
+@ITEM_SHOP_BUDGET_MONEY_JUDGE
+
+;毎回経費か財布かの判定をする
+;経費を超えるまでは経費計上可能
+;「足りない場合に財布から」だと逐一判定出したりまとめ買い判定が大変なので
+IF FLAG:最大一日売上 -MONEY:経費計上 > 0
+	FLAG:買い物／経費計上 = 1
+ELSE
+	FLAG:買い物／経費計上 = 0
+ENDIF
+
+;ローンになる高額品は基本的に自動ローン　どうせ金利もないので
+;USE_MONEYはここでとりあえず計算
+USE_MONEY = FLAG:最大一日売上 -MONEY:経費計上
+
+;一旦OFF
+FLAG:１コ限定アイテム = 0
+
+
+
+;店フッター部分
+;ARG→現在ページ番号
+;ARGS→PAGE関数の呼び方
+;1ページのみ・目次付き
+@ITEM_SHOP_FOOTER(ARG,ARGS)
+
+DRAWLINE
+SELECTCASE ARGS
+CASE ""
+	CALL PRINT_NOW_PAGE(ARG)
+CASE "目次"
+	CALL PRINT_NOW_PAGE(ARG,0,1)
+ENDSELECT
+PRINTLC [ 90] Bulk Purchase
+PRINTLC 　
+PRINTL [ 99] Done
+
+
+
+;リスト内ループ中身
+;ARG→アイテムID
+@ITEM_SHOP_LOOP_JUDGE(ARG)
+
+;名前があれば表示
+SIF ITEMNAME:ARG == ""
+	RETURN
+CALL BR_PLUS(3)
+
+;アイテム番号により制限
+CALL ITEM_SHOP_LOOP_JUDGE_ESCAPE(ARG)
+SIF RESULT
+	RETURN
+
+;1コ限定で持ってるとダメ
+IF FLAG:１コ限定アイテム && ITEM:ARG
+	CALL PRINTLC_WORD_COLOR,@"[{ARG,3}] %ITEMS_ENG(ITEMNAME:ARG)%","水色"
+	RETURN
+
+;価格0はダメ
+ELSEIF !ITEMPRICE:ARG
+	CALL PRINTLC_WORD_COLOR,@"[{ARG,3}] %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+	RETURN
+
+;経費計上OFFならMONEY判定
+ELSEIF !FLAG:買い物／経費計上 && ITEMPRICE:ARG > MONEY
+	CALL PRINTLC_WORD_COLOR,@"[{ARG,3}] %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+	RETURN
+
+;経費計上・10万以上のITEM・超過する場合はMONEY判定
+ELSEIF FLAG:買い物／経費計上 && ITEMPRICE:ARG >= BUDGET_CAP && ITEMPRICE:ARG > USE_MONEY && ITEMPRICE:ARG > MONEY
+	CALL PRINTLC_WORD_COLOR,@"[{ARG,3}] %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+	RETURN
+ENDIF
+PRINTFORMLC [{ARG,3}] %ITEMS_ENG(ITEMNAME:ARG)% 
+
+
+
+;アイテム番号制限
+;ARG→アイテムID
+@ITEM_SHOP_LOOP_JUDGE_ESCAPE(ARG)
+
+SELECTCASE ITEMNAME:ARG
+CASE "大容量魔力貯蔵器"
+	;業務用を持ってないと大容量を買えない
+	IF !ITEM:業務用魔力貯蔵器
+		CALL PRINTLC_WORD_COLOR,@"[{ARG,3}] %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+		RETURN 1
+	ENDIF
+
+CASE "巫女服セット","シスター衣装セット","ドレスセット","夏のワンピースセット"
+	;衣服レプリカを購入できるマイルストーンでないとダメ
+	CALL MILESTONE_UNLOCK_CHECK("衣服レプリカ","")
+	IF !RESULT
+		CALL PRINTLC_WORD_COLOR,@"<{ARG,3}> %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+		RETURN 1
+	ENDIF
+
+CASE "メイド服セット"
+	;衣服拡張
+	CALL MILESTONE_UNLOCK_CHECK("衣服拡張","")
+	IF !RESULT
+		CALL PRINTLC_WORD_COLOR,@"<{ARG,3}> %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+		RETURN 1
+	ENDIF
+
+CASE "授乳メイド服セット"
+	;アダルト衣装込み
+	CALL MILESTONE_UNLOCK_CHECK("アダルト衣装","")
+	IF !RESULT
+		CALL PRINTLC_WORD_COLOR,@"<{ARG,3}> %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+		RETURN 1
+	ENDIF
+
+CASE "バニースーツセット","逆バニーセット","ゴスロリファッションセット"
+	;異世界衣服込み
+	CALL MILESTONE_UNLOCK_CHECK("異世界衣服","")
+	IF !RESULT
+		CALL PRINTLC_WORD_COLOR,@"<{ARG,3}> %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+		RETURN 1
+	ENDIF
+
+CASE "乳牛衣装セット","マイクロビキニ乳牛衣装セット","穴空き乳牛衣装セット"
+	;乳牛セット
+	CALL MILESTONE_UNLOCK_CHECK("乳牛セット衣装","")
+	IF !RESULT
+		CALL PRINTLC_WORD_COLOR,@"<{ARG,3}> %ITEMS_ENG(ITEMNAME:ARG)%","灰"
+		RETURN 1
+	ENDIF
+
+ENDSELECT
+
+

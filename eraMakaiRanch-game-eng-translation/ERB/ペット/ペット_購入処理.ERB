@@ -1,0 +1,21 @@
+﻿
+;ペット購入
+;SELECT_ITEMで指定中
+@BUY_PET
+
+;種族名をITEMから持ってくる
+ANIMAL = %ITEMNAME:SELECT_ITEM%
+
+;名前など決め
+CALL NAMING_PET_BEFORE
+SIF !RESULT
+	RETURN
+
+;完了してきたらローン増加→足りないとき所持金減少
+CALL ITEM_LOAN_BUY(ITEMPRICE:SELECT_ITEM)
+ITEM:SELECT_ITEM ++
+CALL PRINTW_WORD_COLOR,@"＜%ANIMAL%＞の%PET_NAME_REF(ANIMAL)%を新しく牧場に迎え入れました。","水色"
+
+
+
+

@@ -1,0 +1,89 @@
+﻿
+;奴隷候補の仕事ABL
+@RANDOM_SLAVE_WORK_ABL
+
+;身分が高いと事務経験が高いこともある
+SELECTCASE CSTR:身分
+CASE "貴族"
+	ABL:事務 += RAND:4
+CASE "王族"
+	ABL:事務 += RAND:8
+ENDSELECT
+
+;種族補正
+;けもの入ってると家畜の気持ちもﾁｮｯﾄﾜｶﾙ　猫耳族を除く
+SELECTCASE CSTR:種族
+CASE "翼人","犬耳族","兎耳族","狐耳族","狸耳族","鹿角族","牛角族","羊角族"
+	ABL:酪農 += RAND:3
+ENDSELECT
+
+;ジョブ補正
+SELECTCASE CSTR:ジョブ
+CASE "メイド","バトルメイド"
+	;当然掃除ができる　できないこともある(RANDで0付近引くこともある)
+	ABL:掃除 += RAND:15
+
+CASE "学者","商人","軍師","賢者"
+	;当然頭がいい
+	ABL:事務 += (6 +RAND:6)
+
+CASE "料理人"
+	;当然料理ができる
+	;下で料理好き補正する分減らした
+	ABL:料理 += (6 +RAND:6)
+
+CASE "シスター","バトルシスター","巫女","狩人"
+	;わりと掃除ができることがある
+	ABL:掃除 += RAND:5
+
+CASE "牛飼い"
+	;もちろん酪農経験たっぷり
+	ABL:酪農 += (7 +RAND:4)
+
+CASE "羊飼い"
+	;牛の酪農にだいたい活かせる
+	ABL:酪農 += (5 +RAND:4)
+
+ENDSELECT
+
+;接客
+SELECTCASE CSTR:ジョブ
+CASE "商人"
+	;当然商売は慣れてる
+	ABL:接客 += (8 +RAND:5)
+
+CASE "メイド","シスター","料理人","鍛冶士"
+	;客商売ではある
+	ABL:接客 += (3 +RAND:5)
+
+CASE "旅人","冒険者","学者","軍師","賢者","盗賊"
+	;口が回る　回らないこともある
+	ABL:接客 += RAND:8
+ENDSELECT
+
+;趣味嗜好素質の補正
+SIF TALENT:掃除好き > 0
+	ABL:掃除 += 2
+SIF TALENT:料理好き > 0
+	ABL:料理 += 2
+SIF TALENT:読書好き > 0
+	ABL:事務 += 2
+
+SIF TALENT:掃除好き < 0
+	ABL:掃除 -= 2
+SIF TALENT:料理好き < 0
+	ABL:料理 -= 2
+SIF TALENT:読書好き < 0
+	ABL:事務 -= 2
+
+;ランダムで2までUP
+ABL:酪農 += RAND:3
+ABL:事務 += RAND:3
+ABL:掃除 += RAND:3
+ABL:料理 += RAND:3
+
+ABL:酪農 = LIMIT(ABL:酪農,0,10)
+ABL:事務 = LIMIT(ABL:事務,0,10)
+ABL:掃除 = LIMIT(ABL:掃除,0,10)
+ABL:料理 = LIMIT(ABL:料理,0,10)
+

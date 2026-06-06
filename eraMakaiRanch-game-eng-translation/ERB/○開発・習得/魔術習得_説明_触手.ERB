@@ -1,0 +1,316 @@
+﻿
+;魔術説明
+;ARG→SELECT_ITEM
+@ITEM_DETAIL_TENTACLE_MAGIC(ARG)
+
+IF ARG < ITEM_ID_MIN || ARG >= ITEM_ID_MAX || ITEMNAME:ARG == ""
+	PRINTL  　《 Magic Description Displayed Here 》
+	RETURN
+ENDIF
+PRINTFORML 　《 %ITEMS_ENG(ITEMNAME:ARG)% 》%VALUE_DIGIT(ITEMPRICE:ARG)%AP
+SELECTCASE ITEMNAME:ARG
+CASE "触手変化"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Restraint【Tentacle Restraints】【Tentacle Blindfold】
+	PRINTL When receiving a slave or using「Visit Slave」: Using drugs while restrained
+	PRINTL
+	PRINTFORML %CALLNAME:0%'s body can now grow tentacles, which can be used to restrain ningen when training them.
+	PRINTL If you could transform these into different variants of tentacles,
+	PRINTL a wide variety of torture and body modification would be possible.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL If you don't focus on it, they grow from your back. It's probably because it's close to your arms, making them easier to control?
+		PRINTL The spell book says it's useful in everyday live for retrieving things that are far away,
+		PRINTL but in reality, it's difficult to control it to retrieve small objects unless you're used to it,
+		PRINTL and the things you grab become slimy, so it's better to just walk there and retrieve them until you get used to it.
+	ENDIF
+	
+CASE "ブラシ触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tentacle command【Brush Tentacles】
+	PRINTL The brush-like tentacles rub and stimulate the slave's erogenous zones.
+	PRINTL They torture all body parts that are exposed and not fitted with other devices.
+	PRINTL When other stimulation is applied to that area, the brush tentacles retract.
+	PRINTL
+	PRINTFORML The brush tentacles do not penetrate when rubbing the %SAVESTR:表記／膣% and %SAVESTR:表記／アナル%,
+	PRINTFORML so it can give pleasure without causing pain, and may be a gentle form of training for the slave.
+	PRINTL It can also be very useful to get used to handling tentacles, as the tentacles attack the entire body.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL If you're lacking time, this command, which generates full-body pleasure from the first turn, is powerful.
+		PRINTL But do you really need to rush that much in this game?
+	ENDIF
+	
+CASE "ペニス触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tentacle command【Ｖ Tentacle Fuck】【Ａ Tentacle Fuck】【Forced Tentacle Paizuri】
+	PRINTL                                  【Tentacle Blowjob】【Tentacle Facefuck】
+	PRINTL
+	PRINTFORML Creates %SAVESTR:表記／ペニス% shaped tentacles that can be inserted into various parts of the slave.
+	PRINTFORML It is not surprising that a tentacle creatures have a %SAVESTR:表記／ペニス%,
+	PRINTL but the reason for the creation of magic that specifically imitates one
+	PRINTL is probably as a way to harass captured female humans.
+
+CASE "吸引触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training:【Tentacle Clit Sucking】
+	PRINTL
+	PRINTL A tentacle with a small hole at the tip that allows it to strongly suck strongly.
+	PRINTL It can't drink what it sucks up, limiting what you can use it for,
+	PRINTL but it looks like it could be modified to create tentacles that can suck and drink.
+	
+CASE "揉み触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training:【Tentacle Breast Massage】【Tentacle Milking】
+	PRINTL
+	PRINTL The tentacles can adjust the strength of their grip and contract with just enough force not to damage skin.
+	PRINTFORML The branching tentacles gently knead her lewd %SAVESTR:表記／乳房%.
+	PRINTL But it seems unlikely that there are any other uses.
+	
+CASE "先割れ触手"
+	PRINTL ＜Prerequisite＞
+	PRINTL
+	PRINTL Tentacles whose tips open like flowers.
+	PRINTL You could probably grab something with it, once you got used to it,
+	PRINTL but it felt like a few thin tentacles would be enough for that.
+	
+CASE "半透明触手"
+	PRINTL ＜Prerequisite＞
+	PRINTL
+	PRINTL The tentacles are translucent, allowing you to see what they are wrapping around.
+	PRINTL You aren't certain what they would be useful for.
+	
+CASE "口型触手"
+	PRINTL ＜Prerequisite＞
+	PRINTL
+	PRINTL A tentacle resembling a mouth.
+	PRINTL It was probably made for harassment.
+	
+CASE "注入触手"
+	PRINTL ＜Prerequisite＞
+	PRINTL
+	PRINTL A tentacle used to inject substances produced by the body into other organisms.
+	PRINTL It would probably require some medical knowledge to use it on a person, but it's fine for use on ningen.
+	
+CASE "極細触手"
+	PRINTL ＜Prerequisite＞
+	PRINTL
+	PRINTL Tentacles that are much thinner than a human finger.
+	PRINTL Although very thin, it is surprisingly strong and will not tear apart unless it is cut.
+
+CASE "魔力注入触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tentacle command【Tentacles Mana Injection】
+	PRINTL
+	PRINTFORML A thick magical mucus is released from the %SAVESTR:表記／ペニス触手% inserted into the %SAVESTR:表記／膣% or %SAVESTR:表記／アナル%.
+	PRINTL It provides pleasure through simulated ejaculation and restores the slave's mana,
+	PRINTL functioning as a ＜Mana Infusion＞ using tentacles.
+
+CASE "吸引搾乳触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tentacle command【Milking Tentacles】／ Hand・Mouth command【Breastfeeding Tentacle】
+	PRINTL
+	PRINTFORML The tentacles attach themselves to the slave's nipples, greedily drinking her %SAVESTR:表記／母乳%.
+	PRINTFORML The %SAVESTR:表記／母乳% is absorbed by %CALLNAME:0% through the tentacle.
+	PRINTL
+	PRINTL This is a suction tentacle with an added function of absorbing the sucked liquid into the main body.
+	PRINTFORML However, since it only sucks on the nipples, no pleasure is felt in the  %SAVESTR:表記／乳房%.
+	PRINTL
+	PRINTL Currently, only【Breastfeeding Tentacle】is implenented.
+	
+CASE "乳包み花弁搾乳触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tentacle command【Petal Milking Tentacles】
+	PRINTL
+	PRINTFORML The tips of the tentacles open like petals, wrapping around the slave's %SAVESTR:表記／乳房% and squeezing them.
+	PRINTFORML The tentacle attacks with its countless lamella and squeezes out the milk through its central suction hole.
+	PRINTFORML The %SAVESTR:表記／母乳% is absorbed by %CALLNAME:0% through the tentacle.
+	PRINTL
+	PRINTL It takes some skill to move the petal-like tentacles in a kneading motion.
+	PRINTFORML It seems that the pleasure caused to the %SAVESTR:表記／乳房% is extremely strong.
+	
+CASE "透明カップ搾乳触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tentacle command【Cup-Tentacle Milking】
+	PRINTL
+	PRINTFORML The tentacles have transparent cup-shaped tips that wrap around the slave's %SAVESTR:表記／乳房%,
+	PRINTFORML sucking them while the inner tentacles wrap around the nipples, squeezing and rubbing them to extract %SAVESTR:表記／母乳%.
+	PRINTFORML The %SAVESTR:表記／母乳% is absorbed by %CALLNAME:0% through the tentacle.
+	PRINTL
+	PRINTFORML Because it's transparent, allowing you to see the inside, you can clearly see the nipples being teased and 
+	PRINTFORML %SAVESTR:表記／母乳% squirting out, which seems to be very effective at making the slave feel shame.
+	
+CASE "搾乳ワーム触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tentacle command【Worm-Tentacle Milking】
+	PRINTL
+	PRINTL The tentacles, having a rounded tip resembling a mouth and tongue, making them look like a living creature,
+	PRINTFORML attach themselves to the slave's nipples, licking and sucking them to extract %SAVESTR:表記／母乳%.
+	PRINTFORML The %SAVESTR:表記／母乳% is absorbed by %CALLNAME:0% through the tentacle.
+	PRINTL
+	PRINTL This gives the slave the sensation of being sucked by a young tentacle,
+	PRINTL which seems to have the effect of stimulating the slave's maternal instincts.
+	PRINTL However, this doesn't change the fact that the slave is being sucked by a tentacle,
+	PRINTL so this applies only if the tentacle torture feels good.
+	
+CASE "耳姦触手"
+	PRINTL ＜Unlock＞
+	PRINTL During training: Tentacle command【Tentacle Ear Rape】
+	PRINTL
+	PRINTL A very thin tentacle that penetrates the slave's ear and stimulates it.
+	PRINTL There are actually a lot of nerves inside a ningen's ear, and if developed properly,
+	PRINTL it can become an excellent erogenous zone.
+	PRINTL This uses specially made thin tentacles and mucus to develop those nerves.
+	PRINTL The mucus is reabsorbed before it is removed, so there is no health risk.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL 現状では感情パラメータしか動かないので調整したい。
+	ENDIF
+	
+CASE "乳腺侵入触手"
+	PRINTL ＜Unlock＞
+	PRINTL While using【Petal-Tentacle Milking】or【Cup-Tentacle Milking】: Command【Nipple Penetrating Tentacle】
+	PRINTL
+	PRINTL 極細触手を乳首から乳腺に侵入させ、直接刺激する技術。
+	PRINTL 当たり前だが、使用中は激しい痛みが伴うためこの触手を使われて気持ちよくなる奴隷はもう手遅れと言っていい。
+	PRINTL 母乳濃度を高める効果が高いほか、＜濃厚ミルクドレイン＞が有効なら倍率がさらに増加する。
+	PRINTL
+	PRINTL ※ Still under development, currently non-functional
+	
+	
+;肉体改造
+CASE "媚毒生成"
+	PRINTL ＜Prerequisite＞
+	PRINTL
+	PRINTL It becomes possible to produce an aphrodisiac that affects the body of ningen.
+	SIF FLAG:ジョーク表示
+		PRINTFORML %SAVESTR:表記／乳房%や%SAVESTR:表記／母乳%関連の改造ばかりだが、このバリアントのテーマ上それはそう。
+	
+CASE "母乳体質化エキス"
+	PRINTL ＜Unlock＞
+	PRINTFORML During training: Body Modification →【Lactation Extract】（Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP to use）
+	PRINTL
+	PRINTFORML A special extract is injected into the slave's %SAVESTR:表記／乳房%,
+	PRINTFORML making them【Lactating】even if they are not pregnant.
+	PRINTFORML Once a slave starts producing %SAVESTR:表記／乳房%, it can be milked and sold,
+	PRINTL or the slave can be attached to a spirit energy extractor to steal her spirit energy, allowing for a variety of uses.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL If you aren't avoiding tentacles in your playthrough, you should probably prioritize this.
+		PRINTL It's main benefit is that it saves you the trouble of having to make drugs every time.
+	ENDIF
+	
+CASE "魔力母乳体質化エキス"
+	PRINTL ＜Unlock＞
+	PRINTFORML During training: Body Modification →【Mana Infusion Extract】（Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP to use）
+	PRINTL
+	PRINTFORML A special extract is injected into the %SAVESTR:表記／乳房% of slaves with magical power,
+	PRINTFORML giving them【Mana-Infused Milk】where magical power leaks out as %SAVESTR:表記／母乳%.
+	PRINTFORML Even if their mana has been temporarily drained to 0, accumulated %SAVESTR:表記／母乳% it can still be collected.
+	PRINTL
+	PRINTFORML By sucking directly, %CALLNAME:0% can steal mana from slaves and make it his own, although the logic behind this is unclear.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL If you aren't avoiding tentacles in your playthrough, you should probably prioritize this.
+		PRINTFORML Maybe there was a makaian somewhere in %CALLNAME:0%'s family tree who could drain energy?
+	ENDIF
+	
+CASE "膨乳改造エキス"
+	PRINTL ＜Unlock＞
+	PRINTFORML During training: Body Modification →【Breast Expanding Extract】（Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP to use）
+	PRINTL
+	PRINTFORML A special extract is injected into the slave's neck, causing her %SAVESTR:表記／乳房% to grow by one size.
+	PRINTL If the breasts are too large, it will have no effect. Breast expansion with this extract will not exceed 【Supreme Breasts】.
+	PRINTL
+	PRINTFORML It is possible to return %SAVESTR:表記／乳房% to their original size once they have expanded, but it is extremely troublesome, so be careful.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL It seems to be derived from [Lewd Breasts Extract], but it can be used to make fine adjustments.
+	ENDIF
+	
+CASE "淫乳改造エキス"
+	PRINTL ＜Unlock＞
+	PRINTFORML During training: Body Modification →【Lewd Breasts Extract】（Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP to use）
+	PRINTL
+	PRINTFORML A special extract is injected into the slave's neck, enlarging her %SAVESTR:表記／乳房% by several sizes and increasing their sensitivity.
+	PRINTFORML Amount of breast expansion depends on %CALLNAME:0%'s maximum mana.（Uo to 5 steps）
+	PRINTL Ｂ sensitivity increases if it is less than 300%（Stronger increase at lower sensitvity）
+	PRINTL
+	PRINTL It allows to increase breast size up to【Supreme Breasts】, remodeling the body until she can only live as livestock.
+	PRINTFORML It is possible to return %SAVESTR:表記／乳房% to their original size once they have expanded, but it is extremely troublesome, so be careful.
+	PRINTFORML For ranchers who believe the bigger the %SAVESTR:表記／乳房%, the better.
+	
+CASE "母乳濃厚化エキス"
+	PRINTL ＜Unlock＞
+	PRINTFORML During training: Body Modification →【Milk Enrichening Extract】（Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP to use）
+	PRINTL
+	PRINTFORML A special extract is injected into the slave's neck to increase the concentration of the %SAVESTR:表記／母乳% produced by the slave.
+	PRINTL If the breast milk concentration is already high, it will increase slower, requiring multiple uses.
+	PRINTL
+	PRINTFORML The richer the %SAVESTR:表記／母乳%, the better it tastes, and stamina of the trainer recovers faster after drinking it.
+	PRINTL Shipping prices and demand for breast milk also increase accordingly.
+	PRINTL If ＜Thick Milk Drain＞ is active, the amount of spirit energy and mana that can be stolen from the same amount will increase as well.
+	
+CASE "感度上昇粘液"
+	PRINTL ＜Unlock＞
+	PRINTFORML During training: Body Modification →【Sensitivity Increasing Slime】（Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP to use）
+	PRINTL
+	PRINTFORML Rub the mucus into any part of the slave's body to increase the sensitivity of that area.（Up to {SENSITIVE_MAX}\%）
+	PRINTFORML The lower the current sensitivity, the greater the effect.
+	PRINTFORML When used on nipples or %SAVESTR:表記／陰核%, which are naturally sensitive areas, it is twice as effective.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL It might be better not taise 「Sensitivity」too high. Makes fine-tuining possible.
+	ENDIF
+	
+	
+;機能開放
+CASE "触手射精"
+	PRINTL ＜Unlock＞
+	PRINTFORML Tentacle insertion: Tentacle ejaculation
+	PRINTL
+	PRINTFORML When using the %SAVESTR:表記／ペニス触手%, it can ejaculate separately from %CALLNAME:0%'s ejaculation.
+	PRINTL If multiple penises are used, they will all ejaculate at the same time.
+	PRINTL Since it was developed based on tentacle creatures, the produced semen is not fake.
+	PRINTL It's stated that 「although they were unable to reproduce the function of causing pregnancy, it is almost like actual ejaculation.」
+	
+CASE "触手受胎"
+	PRINTL ＜Unlock＞
+	PRINTL
+	PRINTL Chance of tentacle pregnancy on tentacle vaginal ejaculation
+	PRINTL
+	PRINTFORML If a %SAVESTR:表記／ペニス触手% ejaculates into a %SAVESTR:表記／膣%, there is a chance of becoming pregnant with a tentacle creature.
+	PRINTL The impregnation function was successfully recreated.
+	PRINTL They discovered that the chances of conception were significantly higher than with sexual intercourse between people.
+	PRINTL
+		;PRINTL 産まれた触手をどうするかは、今のところ研究所に送ることになっています。
+	PRINTL The tentacle creatures that are born can be raised on the farm and used for 【Tentacle Milking】.
+	PRINTL Furthermore, unless the person giving birth has completely fallen, they will almost certainly have a mental breakdown.
+	PRINTL In this case, it is possible to force the person to maintain their sanity by using ＜Brainwashing＞.
+	
+CASE "媚薬粘液"
+	PRINTL ＜Unlock＞
+	PRINTFORML During training: Body Modification →【Aphrodisiac Slime】（Requires %VALUE_DIGIT(MAGIC_USE_MP:ARG)%MP to use）
+	PRINTL
+	PRINTL By secreting a special mucus from the tentacles and making the slave drink it, arousal is temporarily increased dramatically.
+	PRINTL It is more effective than commercially available ＜Aphrodisiac＞. However, since the feeling is forced upon the victim, the resentment is doubled.
+	PRINTFORML In addition, to prevent contamination, %SAVESTR:表記／母乳% milked while using this can't be sold.
+	IF FLAG:ジョーク表示
+		PRINTL
+		PRINTL Gives you the option to use aphrodisiacs when training begins.
+	ENDIF
+	
+CASE "触手装備作成"
+	PRINTL ＜Unlock＞
+	PRINTFORML Main screen「Development and Acquisition」→【Tentacle Equipment Creation】
+	PRINTL
+	PRINTL Allows creating special equipment like the ＜Tentacle Suit＞.
+	
+CASE "触手分泌液増量"
+	PRINTL ＜Unlock＞
+	PRINTFORML Before tentacle insertion: Increase lubrication
+	PRINTL
+	PRINTFORML When using the %SAVESTR:表記／ペニス触手%, greatly increase %SAVESTR:表記／膣% or %SAVESTR:表記／アナル% lubrication before insertion.
+ENDSELECT
+
+

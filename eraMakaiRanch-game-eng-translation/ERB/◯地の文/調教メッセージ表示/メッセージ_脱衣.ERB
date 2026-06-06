@@ -1,0 +1,258 @@
+﻿
+;脱衣メッセージ
+;衣服上
+@STRIP_MESSAGE_CLOTHE_BUST
+
+;脱衣メッセージ表示フラグではない場合帰る
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+
+;ここに来るのはフラグ問わないのでもう脱衣状態とかだとここで帰る
+SIF !EQUIP:装備中ID／衣服 || TFLAG:一時的脱衣／衣服
+	RETURN
+SIF ＃着用衣服／胸破け＃ || ＃着用衣服／乳出し＃ || GETBIT(＃半脱ぎ／衣服上＃)
+	RETURN
+
+IF ＃着用衣服／乳暖簾＃
+	PRINTFORML The Breast Curtain of her %ITEMS_ENG(＃着用衣服／名称＃)% is flipped...
+	RETURN
+ELSEIF ＃着用衣服／谷間露出＃
+	PRINTFORML Her %ITEMS_ENG(＃着用衣服／名称＃)% is pulled down...
+	RETURN
+ELSEIF ＃着用衣服／横乳露出＃ && ABL:バストサイズ >= BUSTSIZE_巨乳
+	PRINTFORML The %ITEMS_ENG(＃着用衣服／名称＃)% covering of her %SAVESTR:表記／乳房% is pulled into her cleavage...
+	RETURN
+ENDIF
+
+SELECTCASE ＃着用衣服／名称＃
+CASE "巫女服","法衣","戦闘用巫女服"
+	PRINTFORML Her %ITEMS_ENG(＃着用衣服／名称＃)% is opened...
+CASE "着物","割烹着"
+	PRINTFORML The sash of her %ITEMS_ENG(＃着用衣服／名称＃)% is untied...
+CASE "ビキニアーマー"
+	PRINTFORML The belt holding her %ITEMS_ENG(＃着用衣服／名称＃)% in place is removed...
+CASE "ドレス","バトルドレス","バニースーツ"
+	PRINTFORML Her %ITEMS_ENG(＃着用衣服／名称＃)% is pulled down...
+CASE "ブルマ体操着","忍装束","シャツ＆ジーンズ","囚人服","スクール水着","セーラー服","ブレザー制服"
+	PRINTFORML Her %ITEMS_ENG(＃着用衣服／名称＃)%'s top is pulled up...
+CASE "踊り子の衣装","淫乱巫女服","淫乱シスター服","淫乱メイド服","淫乱チャイナドレス","淫乱ドレス"
+	PRINTFORML The bands of her %ITEMS_ENG(＃着用衣服／名称＃)% are pulled to the side...
+CASEELSE
+	PRINTFORML The buttons of her %ITEMS_ENG(＃着用衣服／名称＃)% are opened...
+ENDSELECT
+
+
+
+;下半脱ぎ
+@STRIP_MESSAGE_CLOTHE_VAGINA
+
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF !EQUIP:装備中ID／衣服 || TFLAG:一時的脱衣／衣服
+	RETURN
+SIF ＃着用衣服／股間破け＃ || ＃着用衣服／股間出し＃ || GETBIT(＃半脱ぎ／衣服下＃)
+	RETURN
+
+IF ＃着用衣服／前掛け＃
+	PRINTFORML The part of her %ITEMS_ENG(＃着用衣服／名称＃)% covering her lower body is flipped...
+	RETURN
+ENDIF
+
+SELECTCASE ＃着用衣服／名称＃
+CASE "作業着","オーバーオール","白衣","布の服","軍服","シャツ＆ジーンズ","囚人服"
+	PRINTFORML The pants of her %ITEMS_ENG(＃着用衣服／名称＃)% are pulled down...
+CASE "ブルマ体操着"
+	PRINTL Her bloomers are pulled down...
+CASE "巫女服","戦闘用巫女服"
+	PRINTFORML The hakama of her %ITEMS_ENG(＃着用衣服／名称＃)% is pulled down...
+CASE "着物","法衣"
+	PRINTFORML The lower part of her %ITEMS_ENG(＃着用衣服／名称＃)% is pushed open...
+CASE "エプロン","割烹着","ローブ","修道服","戦闘用シスター服","チャイナドレス","アオザイ"
+	PRINTFORML The %ITEMS_ENG(＃着用衣服／名称＃)% is flipped up...
+CASE "ビキニアーマー"
+	PRINTFORML The belt holding her %ITEMS_ENG(＃着用衣服／名称＃)% in place is removed...
+{
+CASE "バニースーツ","忍装束","スクール水着","踊り子の衣装","淫乱巫女服",
+"淫乱シスター服","淫乱メイド服","淫乱チャイナドレス","淫乱ドレス"
+}
+	PRINTFORML The crotch part of her %ITEMS_ENG(＃着用衣服／名称＃)% is pulled to the side...
+CASEELSE
+	PRINTFORML The skirt of her %ITEMS_ENG(＃着用衣服／名称＃)% is pushed up...
+ENDSELECT
+
+
+
+;上破き
+@BREAK_MESSAGE_CLOTHE_BUST
+
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF !EQUIP:装備中ID／衣服 || TFLAG:一時的脱衣／衣服
+	RETURN
+SIF ＃着用衣服／胸破け＃ || ＃着用衣服／乳出し＃ || GETBIT(＃半脱ぎ／衣服上＃)
+	RETURN
+
+SELECTCASE ＃着用衣服／名称＃
+CASE "ビキニアーマー"
+	PRINTFORML The belt holding her %ITEMS_ENG(＃着用衣服／名称＃)% is torn!
+CASE "踊り子の衣装","淫乱巫女服","淫乱シスター服","淫乱メイド服","淫乱チャイナドレス","淫乱ドレス"
+	PRINTFORML The part of her %ITEMS_ENG(＃着用衣服／名称＃)% hiding the nipples is torn!
+CASEELSE
+	PRINTFORML The top of her %ITEMS_ENG(＃着用衣服／名称＃)% is torn!
+ENDSELECT
+
+
+
+;下破き
+@BREAK_MESSAGE_CLOTHE_VAGINA
+
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF !EQUIP:装備中ID／衣服 || TFLAG:一時的脱衣／衣服
+	RETURN
+SIF ＃着用衣服／股間破け＃ || ＃着用衣服／股間出し＃ || GETBIT(＃半脱ぎ／衣服下＃)
+	RETURN
+
+SELECTCASE ＃着用衣服／名称＃
+CASE "ビキニアーマー"
+	PRINTFORML The belt holding her %ITEMS_ENG(＃着用衣服／名称＃)% is torn!
+CASEELSE
+	PRINTFORML The bottom of her %ITEMS_ENG(＃着用衣服／名称＃)% is torn!
+ENDSELECT
+
+
+
+;衣服完全脱衣
+@STRIP_MESSAGE_CLOTHE_ALL
+
+;完全脱衣なので1パターンでいい気がする
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF EQUIP:装備中ID／衣服 && !TFLAG:一時的脱衣／衣服
+	PRINTFORML Her %ITEMS_ENG(＃着用衣服／名称＃)% is taken off...
+
+
+
+;下着上脱衣
+@STRIP_MESSAGE_LINGERIE_BUST
+
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF TFLAG:一時的脱衣／下着上 || !EQUIP:装備中ID／下着上; || GETBIT(＃半脱ぎ／下着上＃)
+	RETURN
+
+CALL LINGERIE_STRING_CHECK(＃着用下着上／名称＃)
+IF RESULT
+	PRINTFORML The strings of her %ITEMS_ENG(＃着用下着上／名称＃)% are untied...
+	RETURN
+ENDIF
+
+SELECTCASE ＃着用下着上／名称＃
+CASE "ニップレス"
+	PRINTFORML Her %ITEMS_ENG(＃着用下着上／名称＃)% are peeled off...
+CASE "さらし"
+	PRINTFORML Her %ITEMS_ENG(＃着用下着上／名称＃)% is unwrapped...
+CASE "レオタード","スクール水着","触手服"
+	PRINTFORML The upper part of her %ITEMS_ENG(＃着用下着上／名称＃)% is removed...
+CASEELSE
+	PRINTFORML Her %ITEMS_ENG(＃着用下着上／名称＃)% is taken off...
+ENDSELECT
+
+
+
+;下着上半脱ぎ
+@STRIP_MESSAGE_LINGERIE_BUST_HALF
+
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF TFLAG:一時的脱衣／下着上 || !EQUIP:装備中ID／下着上 || GETBIT(＃半脱ぎ／下着上＃)
+	RETURN
+
+SELECTCASE ＃着用下着上／名称＃
+CASE "フロントホックブラ"
+	PRINTFORML Her %ITEMS_ENG(＃着用下着上／名称＃)% is opened...
+CASE "レオタード","スクール水着","触手服"
+	PRINTFORML The chest part of her %ITEMS_ENG(＃着用下着上／名称＃)% is pulled into her cleavage...
+CASE "マイクロビキニ","ビキニ","牛柄ビキニ","牛柄マイクロビキニ"
+	PRINTFORML The top of her %ITEMS_ENG(＃着用下着上／名称＃)% is shifted...
+CASE "ビスチェ"
+	PRINTFORML Her %ITEMS_ENG(＃着用下着上／名称＃)% is pulled down...
+CASE "紐","スリングショット","牛柄スリングショット"
+	PRINTFORML Her %ITEMS_ENG(＃着用下着上／名称＃)% is pulled to the side...
+CASEELSE
+	PRINTFORML Her %ITEMS_ENG(＃着用下着上／名称＃)% is pulled up...
+ENDSELECT
+
+
+
+;下着下脱衣
+@STRIP_MESSAGE_LINGERIE_VAGINA
+
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF TFLAG:一時的脱衣／下着下 || !EQUIP:装備中ID／下着下; || GETBIT(＃半脱ぎ／下着下＃)
+	RETURN
+
+CALL LINGERIE_STRING_CHECK(＃着用下着下／名称＃)
+IF RESULT
+	PRINTFORML The strings of her %ITEMS_ENG(＃着用下着下／名称＃)% are untied...
+	RETURN
+ENDIF
+
+SELECTCASE ＃着用下着下／名称＃
+CASE "前貼り"
+	PRINTFORML Her %ITEMS_ENG(＃着用下着下／名称＃)% are pulled off...
+CASEELSE
+	PRINTFORML Her %ITEMS_ENG(＃着用下着下／名称＃)% are stripped...
+ENDSELECT
+
+
+
+;下着下半脱ぎ
+@STRIP_MESSAGE_LINGERIE_VAGINA_HALF
+
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF TFLAG:一時的脱衣／下着下 || !EQUIP:装備中ID／下着下 || GETBIT(＃半脱ぎ／下着下＃)
+	RETURN
+
+SELECTCASE ＃着用下着下／名称＃
+CASE "レオタード","紐","スリングショット","スクール水着","触手服","牛柄スリングショット"
+	PRINTFORML The crotch part of her %ITEMS_ENG(＃着用下着下／名称＃)% is pulled to the side....
+CASE "マイクロビキニ","ビキニ","牛柄ビキニ","牛柄マイクロビキニ"
+	PRINTFORML The bottom of her %ITEMS_ENG(＃着用下着下／名称＃)% is shifted...
+CASEELSE
+	PRINTFORML Her %ITEMS_ENG(＃着用下着下／名称＃)% are pulled down...
+ENDSELECT
+
+
+
+;下着上下脱衣
+@STRIP_MESSAGE_LINGERIE_ALL
+
+CALL STRIP_MESSAGE_LINGERIE_BUST
+
+;上下同じなら書かない
+SIF ＃着用下着上／名称＃ != ＃着用下着下／名称＃
+	CALL STRIP_MESSAGE_LINGERIE_VAGINA
+
+
+
+;一部上着半脱ぎ
+@STRIP_MESSAGE_CLOTHE_JACKET
+
+SIF !SOURCE:脱衣メッセージ表示
+	RETURN
+SIF !EQUIP:装備中ID／上着 || TFLAG:一時的脱衣／上着
+	RETURN
+
+;別に脱がせる必要のない上着ならメッセージなし
+SELECTCASE ＃着用上着／名称＃
+CASE "オーバーオール"
+	PRINTFORML Her %＃着用上着／名称＃% suspenders are removed...
+CASE "エプロン"
+	PRINTFORML Her %＃着用上着／名称＃%'s strings are untied...
+ENDSELECT
+
+
+

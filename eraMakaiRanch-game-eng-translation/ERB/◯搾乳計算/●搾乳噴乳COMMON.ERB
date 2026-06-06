@@ -1,0 +1,45 @@
+﻿
+;搾乳噴乳処理
+@TRAIN_LACTATION
+
+;促進薬での母乳体質化判定
+CALL TRAIN_MILK_PROMOTION_CHECK
+
+;母乳体質でないなら帰る
+SIF !MARK:母乳体質
+	RETURN
+
+;機械に搾られたことがあるかの口上分岐に使えるかな
+SIF TFLAG:搾乳器
+	EXP:搾乳器 ++
+
+;絶頂してないか乳責めされてないなら帰る
+SIF SOURCE:Ｎ快楽 +SOURCE:Ｂ快楽 +NOWEX:総絶頂 <= 0
+	RETURN
+
+;噴乳量計算
+CALL LACTATION_VALUE_CALC
+
+;噴乳量10以上ないならここで帰る
+SIF !NOWEX:噴乳
+	RETURN
+BASE:母乳容量 = LIMIT(BASE:母乳容量 -NOWEX:噴乳,0,MAXBASE:母乳容量)
+BASE:母乳生産力 = LIMIT(BASE:母乳生産力 -NOWEX:噴乳,0,MAXBASE:母乳生産力)
+
+;噴乳での体力気力消費
+CALL LACTATION_HPDAMAGE_CALC
+
+;搾ったミルクの行き先
+CALL LACTATION_MILK_COLLECT_DEVICE
+
+;搾乳エナジードレイン
+CALL LACTATION_ENERGY_DRAIN
+
+;魔力母乳での魔力減少
+CALL LACTATION_MAGIC_DRAIN
+
+;魔力吸い尽くし処理
+CALL LACTATION_MAGIC_ALL_SUCK
+
+
+

@@ -1,0 +1,239 @@
+﻿
+;画像・ドット絵表示設定
+;被らず表示できるか確かめるために同じページで調整できるようにした
+@IMAGE_CONFIG
+
+CLEARLINE LINECOUNT
+PRINTFORML Configure image and pixel art display settings. Refer to the sample image on the right to make adjustments.
+CALL SAMPLE_PRINT_IMAGE
+CALL SAMPLE_PRINT_PORTRAIT
+CALL MANYL(5)
+PRINTFORM [ 0] Image Display                             
+CALL PRINT_ONOFF(FLAG:顔グラ／表示,1)
+IF FLAG:顔グラ／表示
+	PRINTFORML [ 1] Image Size                                ：{FLAG:顔グラ／サイズ} 
+	PRINTFORML [ 2] Image Horizontal Alignment                ：{FLAG:顔グラ／横軸調整} 
+	PRINTFORM [ 3] Use normal graphics if no training image  
+	CALL PRINT_ONOFF(FLAG:顔グラ／調教時画像置換,1)
+	PRINTFORML [ 4] Line breaks when displaying training image：{FLAG:顔グラ／コマンド時改行数} lines
+	PRINTFORM [ 5] Left-align training execution image       
+	CALL PRINT_ONOFF(FLAG:顔グラ／コマンド時左寄せ,1)
+ELSE
+	CALL PRINTL_WORD_COLOR("　　 Image Size","灰")
+	CALL PRINTL_WORD_COLOR("　　 Image Horizontal Alignment","灰")
+	CALL PRINTL_WORD_COLOR("　　 Use normal graphics if no training image","灰")
+	CALL PRINTL_WORD_COLOR("　　 Line breaks when displaying training image","灰")
+	CALL PRINTL_WORD_COLOR("　　 Left-align training execution image","灰")
+ENDIF
+PRINTL
+PRINT [10] Sprite Display                            
+CALL PRINT_ONOFF(FLAG:ドット絵／表示,1)
+IF FLAG:ドット絵／表示
+	PRINTFORML [11] Sprite Size                               ：{FLAG:ドット絵／サイズ} 
+	PRINTFORML [12] Sprite Horizontal Alignment               ：{FLAG:ドット絵／横軸調整} 
+	PRINTFORML [13] Horizontal Adjustment on Changing Screen  ：{FLAG:ドット絵／着替え画面追加横軸調整}
+	PRINT [14] Replacement for missing clothing          ：
+	SELECTCASE FLAG:ドット絵／非対応衣服の置換形式
+	CASE 0
+		PRINTL Naked
+	CASE 1
+		PRINTL ＜Simple Clothes＞
+	CASE 2
+		PRINTL ＜Slave Rags＞
+	ENDSELECT
+	PRINTFORML [15] Short Body Sprite                         ： less than {FLAG:ドット絵／低身長適用上限数値}mm
+	PRINT [16] Display for upper body undressed          ：
+	SELECTCASE FLAG:ドット絵／上半脱ぎ表示形式
+	CASE 0
+		PRINTL Clothed
+	CASE 1
+		PRINTL Nude
+	CASE 2
+		PRINTFORML Expose %SAVESTR:表記／乳房%（※Test Version）
+	ENDSELECT
+	PRINT [17] Racial ear concealment with some clothes  
+	CALL PRINT_ONOFF(FLAG:ドット絵／頭装備で耳隠し,1)
+	PRINT [18] Display with helf-removed underwear       ：
+	SELECTCASE FLAG:ドット絵／下着半脱ぎ表示形式
+	CASE 0
+		PRINTL Clothed
+	CASE 1
+		PRINTL Nude
+	ENDSELECT
+ELSE
+	CALL PRINTL_WORD_COLOR("　　 Sprite Size","灰")
+	CALL PRINTL_WORD_COLOR("　　 Sprite Horizontal Alignment","灰")
+	CALL PRINTL_WORD_COLOR("　　 Horizontal Adjustment on Changing Screen","灰")
+	CALL PRINTL_WORD_COLOR("　　 Replacement of missing clothing","灰")
+	CALL PRINTL_WORD_COLOR("　　 Short Body Sprite","灰")
+	CALL PRINTL_WORD_COLOR("　　 Replacement for missing clothing","灰")
+	CALL PRINTL_WORD_COLOR("　　 Racial ear concealment with some clothes","灰")
+	CALL PRINTL_WORD_COLOR("　　 Display with helf-removed underwear","灰")
+ENDIF
+CALL PRINTL_ALIGN
+CALL DEFAULT_VOID_RETURN_BUTTON(1)
+INPUT
+PRINTL
+SIF RESULT == 99
+	RETURN
+CALL CHANGE_IMAGE_CONFIG(RESULT)
+RESTART
+
+
+
+;入力
+;ARG→RESULT
+@CHANGE_IMAGE_CONFIG(ARG)
+
+SELECTCASE ARG
+CASE 0
+	INVERTBIT FLAG:顔グラ／表示,0
+CASE 1
+	PRINTL Enter image size.
+	PRINTL The scaling is proportional to font size.
+	PRINTL
+	PRINTL [1000] Default
+	PRINTL or enter value above 0.
+	INPUT
+	SIF RESULT > 0
+		FLAG:顔グラ／サイズ = RESULT
+CASE 2
+	PRINTL Enter horizontal position for image.
+	PRINTL The scaling is proportional to font size.
+	PRINTL
+	PRINTL [5000] Default
+	PRINTL or enter value above 0.
+	INPUT
+	SIF RESULT > 0
+		FLAG:顔グラ／横軸調整 = RESULT
+CASE 3
+	INVERTBIT FLAG:顔グラ／調教時画像置換,0
+CASE 4
+	PRINTL Enter the number of line breaks when displaying the training image.
+	PRINTL If the font size is changed, the amount of movement per line will also change.
+	PRINTL
+	PRINTL [5] Default
+	PRINTL or enter value from 0 to 10
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 10
+		FLAG:顔グラ／コマンド時改行数 = RESULT
+CASE 5
+	PRINTL When displaying the training execution image, set whether to disable horizontal axis adjustment and display it on the left.
+	PRINTL （地の文・口上と揃えて左に表示されるためその点では見やすいですが、画像が左右に振れて目に悪い可能性があります）
+	PRINTL
+	PRINTL [ 0] Normal Adjustment (Default)
+	PRINTL [ 1] Left-Aligned
+	BINPUT
+	FLAG:顔グラ／コマンド時左寄せ = RESULT
+
+CASE 10
+	INVERTBIT FLAG:ドット絵／表示,0
+CASE 11
+	PRINTL Enter pixel image size
+	PRINTL The scaling is proportional to font size.
+	PRINTL
+	PRINTL [150] Default
+	PRINTL or enter value above 0.
+	INPUT
+	SIF RESULT > 0
+		FLAG:ドット絵／サイズ = RESULT
+CASE 12
+	PRINTL Enter horizontal positon for pixel image
+	PRINTL The scaling is proportional to font size.
+	PRINTL
+	PRINTL [4500] Default
+	PRINTL or enter value above 0.
+	INPUT
+	SIF RESULT > 0
+		FLAG:ドット絵／横軸調整 = RESULT
+CASE 13;Horizontal Adjustment on Changing Screen：
+	PRINTL Enter the horizontal adjustment for the sprite display on the cloth changing screen.
+	PRINTL Changing font size changes how much 1 adjustment is.
+	PRINTL
+	PRINTL [1000] default
+	PRINTL Manual Input.（Negative values possible）
+	INPUT
+	FLAG:ドット絵／着替え画面追加横軸調整 = RESULT
+CASE 14
+	PRINTL Select the replacement to display if the clothing has no sprite.
+	PRINTLC [ 0] Naked
+	PRINTLC [ 1] Use ＜Simple Clothes＞ (Default)
+	PRINTLC [ 2] Use ＜slave rags＞
+	BINPUT
+	FLAG:ドット絵／非対応衣服の置換形式 = RESULT
+CASE 15
+	PRINTL Select height threshold for using short body sprites.
+	PRINTLC [ 0] 【Short】and shorter (Default)
+	PRINTLC [ 1] 【Petite】and shorter
+	PRINTL [ 2] 【Child】and shorter
+	PRINTL
+	PRINTLC [90] （Manual Input）
+	PRINTL [99] （Cancel）
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0
+		FLAG:ドット絵／低身長適用上限数値 = HEIGHT_MAX_低身長
+	CASE 1
+		FLAG:ドット絵／低身長適用上限数値 = HEIGHT_MAX_小柄
+	CASE 2
+		FLAG:ドット絵／低身長適用上限数値 = HEIGHT_MAX_子供体型
+	CASE 90
+		PRINTL Enter the upper limit for child size image treatment in mm.（Treatment applies for values lower than this）
+		PRINTFORML （Possbie values are from 0 to【Tall】Sized （{HEIGHT_MAX_標準}））
+		INPUT
+		SIF RESULT >= 0 && RESULT <= HEIGHT_MAX_標準
+			FLAG:ドット絵／低身長適用上限数値 = RESULT
+	ENDSELECT
+CASE 16
+	PRINTL Select the display used when upper body is undressed
+	PRINTLC [ 0] Clothed (Default)
+	PRINTLC [ 1] Nude
+	PRINTFORML [ 2] Expose %SAVESTR:表記／乳房%（※Test Version, display problems may occur depending on clothing and bust size）
+	BINPUT
+	FLAG:ドット絵／上半脱ぎ表示形式 = RESULT
+CASE 17
+	PRINTL Choose to hide some race ears while equipping some items like ＜Sister Veil＞
+	PRINTLC [ 0] No Change (Default)
+	PRINTLC [ 1] Hide
+	BINPUT
+	FLAG:ドット絵／頭装備で耳隠し = RESULT
+CASE 18
+	PRINTL Select the display used when underwear is partially removed
+	PRINTLC [ 0] Clothed (Default)
+	PRINTLC [ 1] Nude
+	BINPUT
+	FLAG:ドット絵／下着半脱ぎ表示形式 = RESULT
+CASE 98
+	PRINTL Revert to Defaults?
+	PRINTL
+	PRINTL [ 0] Restore Image Config
+	PRINTL [ 1] Restore Pixel Config
+	PRINTL [ 2] Restore Both Configs
+	PRINTL [99] Cancel
+	BINPUT
+	SELECTCASE RESULT
+	CASE 0
+		CALL DEFAULT_IMAGE_CONFIG
+	CASE 1
+		CALL DEFAULT_PORTRAIT_CONFIG
+	CASE 2
+		CALL DEFAULT_IMAGE_CONFIG
+		CALL DEFAULT_PORTRAIT_CONFIG
+	ENDSELECT
+ENDSELECT
+RETURN
+
+
+
+;サンプル表示
+@SAMPLE_PRINT_PORTRAIT
+#DIMS PRT_SAMPLE
+
+SIF !FLAG:ドット絵／表示
+	RETURN
+PRT_SAMPLE = <nobr><nonbutton pos='{FLAG:ドット絵／横軸調整}'><img src='ドットサンプル' height='{FLAG:ドット絵／サイズ *5945 /1000}' ypos = '0'></nonbutton>
+HTML_PRINT PRT_SAMPLE
+
+
+
+

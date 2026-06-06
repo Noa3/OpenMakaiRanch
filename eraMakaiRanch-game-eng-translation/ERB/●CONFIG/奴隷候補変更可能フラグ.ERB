@@ -1,0 +1,26 @@
+﻿
+;奴隷候補変更可能フラグ
+;ARG→変更可能条件メッセージ飛ばす
+@CONFIG_CHANGE_FLAG_CHECK(ARG)
+
+SIF !ARG
+	CALL PRINTL_WORD_COLOR("This setting can only be changed by ・Game Initialization・Developer Mode・＜Slave Candidate Change Ticket＞.","黄")
+
+;一旦OFF
+FLAG:奴隷候補設定可能 = 0
+IF !DAY
+	CALL PRINTL_WORD_COLOR("Game Not Started - Can be changed","桃")
+	FLAG:奴隷候補設定可能 = 1
+ELSEIF FLAG:開発者モード
+	CALL PRINTL_WORD_COLOR("[Developer Mode] - Can be changed","桃")
+	FLAG:奴隷候補設定可能 = 1
+ELSEIF FLAG:奴隷候補設定変更チケット使用中
+	CALL PRINTL_WORD_COLOR("Using ＜Slave Candidate Change Ticket＞","桃")
+	FLAG:奴隷候補設定可能 = 1
+ELSEIF ITEM:奴隷候補設定変更チケット
+	PRINTFORML Can use ＜Slave Candidate Change Ticket＞（Owned：{ITEM:奴隷候補設定変更チケット}）
+ELSE
+	CALL PRINTL_WORD_COLOR("No ＜Slave Candidate Change Ticket＞","灰")
+ENDIF
+
+

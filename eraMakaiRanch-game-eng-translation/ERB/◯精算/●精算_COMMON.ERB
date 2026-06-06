@@ -1,0 +1,120 @@
+﻿
+;精算
+@SETTLEMENT
+#DIM GET_PT
+
+;精算用変数のリセット
+VARSET MONEY_COST
+VARSET MONEY_SELL
+VARSET SAVE_BATTERY_COST
+VARSET WORK_MEMBER
+VARSET SLAVE_MEMBER
+VARSET MILK_SUM
+VARSET COWSHED_TOTAL_MILK_CC
+VARSET COWSHED_TOTAL_MILK_PRICE
+VARSET MONEY_PLUS
+VARSET SETTLEMENT_EFFECT_DRAGON_BALL
+
+;従業員／家畜の分類
+FOR TARGET_COUNT,0,CHARANUM
+	TARGET = TARGET_COUNT
+	
+	;体内にいる場合一時的に家畜とみなす
+	SIF EQUIP:自室 && CSTR:居場所 != "体内"
+		WORK_MEMBER ++
+	
+	;当日金額を一度リセット
+	CFLAG:母乳出荷金額／当日 = 0
+NEXT
+
+;捕らえていない奴隷候補も入れないように
+SLAVE_MEMBER = FLAG:奴隷人数 -WORK_MEMBER +1
+
+
+;魔界乳牛も含むのでここは変更なし
+PRINTL 　　　《 Accounting 》
+PRINTL Milk shipped to the Makai Argicultural Cooperative
+PRINTL
+
+;一旦居場所整理
+CALL CALC_PEOPLE_FLAG
+
+;計算→変数に入れて一旦保存→合計表示・詳細ボタンで詳しく表示に変更
+;収入計算
+CALL INCOME_CALC
+
+;支出計算
+CALL PAYMENT_CALC
+
+;純利益計算・最大値なら更新
+MONEY_PLUS = 0
+MONEY_TOTAL = MONEY_SELL -MONEY_COST
+PRINTFORM ＜Profit：%VALUE_DIGIT(MONEY_TOTAL)%G ＞
+IF FLAG:最大一日売上 < MONEY_TOTAL
+	FLAG:最大一日売上 = MONEY_TOTAL
+	CALL PRINT_WORD_COLOR("Maximum daily profit updated ","黄")
+ENDIF
+PRINTL
+
+;収支が+のとき経費の精算
+CALL SETTLEMENT_BUDGET_COST
+
+;MONEY_TOTALが残ってるとき納税額算出
+CALL SETTLEMENT_TAX
+
+;納税額一定でLvUP
+CALL MAKAI_LVUP
+
+;経費・納税後に牧場資金へ　マイナスの場合引く
+IF MONEY_PLUS
+	MONEY += MONEY_PLUS
+	CALL PRINTL_WORD_COLOR,@"Funds +%VALUE_DIGIT(MONEY_PLUS)%G ","水色"
+ELSEIF MONEY_TOTAL < 0
+	MONEY += MONEY_TOTAL
+	CALL PRINTL_WORD_COLOR,@"Funds -%VALUE_DIGIT(ABS(MONEY_TOTAL))%G ","赤"
+ENDIF
+
+;母乳出荷量に応じて貢献pt
+IF MONEY_SELL:2 >= 10000
+	GET_PT = SQRT(MONEY_SELL:2)
+	MONEY:貢献PT += GET_PT
+	PRINTFORM Contribution Points +{GET_PT} 
+ENDIF
+
+;出荷したら龍のタマボーナス日数-1
+IF FLAG:精算額倍増残り日数
+	SETTLEMENT_EFFECT_DRAGON_BALL ++
+	FLAG:精算額倍増残り日数 = LIMIT(FLAG:精算額倍増残り日数 -1,0,10)
+	PRINTFORML 【Dragon Ball bonus days -1 → {FLAG:精算額倍増残り日数} days remaining】
+ENDIF
+
+;このタイミングで事務作業量増加　3～4ランダム
+COST = 3 +RAND:2
+FLAG:事務作業量 += COST
+PRINTFORML ＜Administrative Workload+{COST}＞
+DRAWLINE
+PRINTLC [ 0] OK
+PRINTL [ 1] Details
+INPUT
+SIF RESULT
+	CALL SETTLEMENT_DETAIL
+
+
+
+;精算終了したものをリセット
+MONEY:バッテリー追加消費金額 = 0
+FLAG:簡易食事人数 = 0
+FLAG:食事人数 = 0
+FOR TARGET_COUNT,1,CHARANUM
+	TARGET = TARGET_COUNT
+	CFLAG:出荷母乳／一日最大量 = MAX(CFLAG:出荷母乳／一日最大量,CFLAG:出荷予定母乳量)
+	CFLAG:出荷母乳／一日最大額 = MAX(CFLAG:出荷母乳／一日最大額,CFLAG:母乳出荷金額／当日)
+	CFLAG:出荷予定母乳量 = 0
+	CFLAG:母乳出荷金額／当日 = 0
+NEXT
+
+
+
+
+
+

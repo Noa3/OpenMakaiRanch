@@ -1,0 +1,25 @@
+﻿
+;「専用口上に書いた分だけ表示して口調崩れを防ぎたい」人向けのベース
+;例文以外一切入ってない、かつそれ以外入れないほうがいい
+; ======================================
+;口上識別名：専用口上ベース
+;口上作者：polt
+;当口上の内容はすべてCC BY-NC（商用利用を除き改造自由）とします
+;（creativecommons.org/licenses/by-nc/4.0/deed.ja）
+;↑これいる？
+; ======================================
+
+;ARGS:0　シチュ指定　ARGS:1,2　さらに細かく振り分けたい場合に使用
+@KOJO_GENERAL_INDEX_専用口上ベース(ARGS:0,ARGS:1,ARGS:2,ARGS:3)
+
+SELECTCASE ARGS:0
+CASE "Example"
+	{
+	CALL MESSAGE_BOX,@"--------\nThis [Exclusive Dialogue Base] is for those who want to display only the parts written in the dedicated script to prevent speech distortion.\n
+	No other scripts apart from the example shown here are set up.\n
+	If you have set a dedicated script but this example is being displayed,\n
+	It is likely that the [Example] is not set in the dedicated script file."
+	}
+
+ENDSELECT
+

@@ -1,0 +1,147 @@
+﻿
+;射精メッセージ
+@PRINT_EJACULATION_MESSAGE
+
+SIF !TFLAG:調教中 && !TFLAG:スケジュール外Ｈ && !TFLAG:ループ中メッセージ表示
+	RETURN
+SIF !SOURCE:射精回数
+	RETURN
+MESSAGE_EXIST ++
+SIF !LINEISEMPTY()
+	PRINTL
+
+;スケジュール外なら射精メッセージ前に止める
+IF TFLAG:スケジュール外Ｈ
+	PRINTW
+ELSE
+	PRINTL
+ENDIF
+
+;注ぎ込みは別パターン呼ぶ
+IF SOURCE:注ぎ込み霊力量 || SOURCE:注ぎ込み魔力量
+	CALL PRINT_EJACULATION_MESSAGE_GIVE_ENERGY
+	RETURN
+ENDIF
+
+; Moved to here because of jp/eng grammar differences
+SIF SOURCE:射精回数 > 1
+	PRINT a large amount of 
+CALL TRAIN_EJACULATION_FINISH_MESSAGE
+
+
+IF TEQUIP:0:コンドーム
+	PRINT , with the condom on,  
+	IF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+		PRINTFORM inside %CALLNAME%'s %SLANG_V()% 
+	ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+		PRINTFORM inside %CALLNAME%'s %SLANG_A()% 
+	ELSEIF GETBIT(＃Ｐ使用／パイズリ＃)
+		PRINTFORM in the cleavage of %CALLNAME%'s %SLANG_B()% 
+	ELSEIF TEQUIP:素股
+		PRINTFORM in %CALLNAME%'s groin 
+	ELSEIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+		PRINTFORM inside %CALLNAME%'s mouth 
+	ELSEIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+		PRINTFORM in %CALLNAME%'s hand 
+	ENDIF
+
+;膣内射精
+ELSEIF SOURCE:膣内射精経験
+	PRINTFORM %CALLNAME%'s %SLANG_V()% 
+
+;尻穴射精
+ELSEIF SOURCE:尻穴射精経験
+	PRINTFORM %CALLNAME%'s %SLANG_A()% 
+
+;引き抜いて外出しor素股
+ELSEIF SOURCE:股ぶっかけ
+	IF TEQUIP:素股
+		PRINTFORM while rubbing between %CALLNAME%'s thighs 
+	ELSEIF GETBIT(＃Ｐ使用／Ｖ挿入＃)
+		PRINTFORM while pulling out of %CALLNAME%'s %SLANG_V()% 
+	ELSEIF GETBIT(＃Ｐ使用／Ａ挿入＃)
+		PRINTFORM while pulling out of %CALLNAME%'s %SLANG_A()% 
+	ENDIF
+
+;乳内射精
+ELSEIF SOURCE:乳内射精経験
+	PRINTFORM between %CALLNAME%'s %SLANG_B()% 
+
+;胸ぶっかけ
+ELSEIF SOURCE:胸ぶっかけ
+	IF !SOURCE:ペニス引き抜き
+		PRINTFORM on %CALLNAME%'s %SLANG_B()% 
+	ELSEIF ABL:バストサイズ < BUSTSIZE_並乳
+		PRINTFORM while moving away from %CALLNAME%'s %SLANG_B()%, hitting her %SAVESTR:表記／乳房% 
+	ELSE
+		PRINTFORM while pulling out from betweeen %CALLNAME%'s %SLANG_B()%, hitting her %SAVESTR:表記／乳房% 
+	ENDIF
+
+;顔ぶっかけ
+ELSEIF SOURCE:顔ぶっかけ
+	IF GETBIT(＃Ｐ使用／パイズリ＃)
+		IF ABL:バストサイズ < BUSTSIZE_並乳
+			PRINTFORM while moving away from %SLANG_B()%, 
+		ELSE
+			PRINTFORM while pulling out from betweeen her %SLANG_B()%, 
+		ENDIF
+	ELSEIF GETBIT(＃Ｐ使用／Ｍ挿入＃)
+		PRINTFORM while pulling out of her mouth, 
+		
+		; Due to the dialogue, reset here (except for forced mouth openers)
+		SIF !TEQUIP:強制開口器
+			TFLAG:Ｍ装備 = 0
+	ENDIF
+	PRINTFORM hitting %CALLNAME%'s face 
+
+;口内射精
+ELSEIF SOURCE:精飲経験
+	PRINTFORM %CALLNAME%'s mouth 
+
+;手コキ射精
+ELSEIF TEQUIP:手コキ || TEQUIP:授乳手コキ
+	PRINTFORM while you were getting stimulated by %CALLNAME%'s hand
+
+ENDIF
+PRINTL ...
+CALL ONOMATOPOEIA("射精")
+
+;口上は準備していないのでコンドーム使用中は一時封鎖
+SIF !TEQUIP:0:コンドーム
+	CALL KOJO_PRINT("射精")
+
+
+
+;注ぎ込みのパターン
+@PRINT_EJACULATION_MESSAGE_GIVE_ENERGY
+
+SIF SOURCE:大量注ぎ込み
+	PRINT A generous amount of 
+IF SOURCE:注ぎ込み霊力量
+	PRINT Spiritual semen was injected 
+ELSE
+	PRINT Magical semen was injected 
+ENDIF
+IF SOURCE:膣内射精経験
+	PRINTFORM into %CALLNAME%'s %SLANG_V()%...
+ELSEIF SOURCE:尻穴射精経験
+	PRINTFORM into %CALLNAME%'s %SLANG_A()%...
+ENDIF
+PRINTL
+IF SOURCE:注ぎ込み外射精回数
+	PRINT Furthermore, 
+	SIF SOURCE:注ぎ込み外射精回数 > 1
+		PRINT a large amount of 
+	CALL TRAIN_EJACULATION_FINISH_MESSAGE
+	IF SOURCE:膣内射精経験
+		PRINTFORM into %CALLNAME%'s %SLANG_V()%
+	ELSEIF SOURCE:尻穴射精経験
+		PRINTFORM into %CALLNAME%'s %SLANG_A()%
+	ENDIF
+ENDIF
+CALL ONOMATOPOEIA("射精")
+CALL KOJO_PRINT("射精")
+
+
+
+

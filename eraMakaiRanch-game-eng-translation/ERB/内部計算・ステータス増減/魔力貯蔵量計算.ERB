@@ -1,0 +1,27 @@
+﻿
+;魔力貯蔵器の上限を書き換え
+@MAGIC_STORAGE
+
+IF ITEM:魔改造魔力貯蔵器
+	IF FLAG:貯蔵魔力上限値 < MAGIC_TANK_MAD_CAPACITY
+		FLAG:貯蔵魔力上限値 = MAGIC_TANK_MAD_CAPACITY
+		PRINTFORMW Mana storage capacity has been increased to %VALUE_DIGIT(MAGIC_TANK_MAD_CAPACITY)%MP.
+	ENDIF
+ELSEIF ITEM:大容量魔力貯蔵器
+	IF FLAG:貯蔵魔力上限値 < MAGIC_TANK_LARGE_CAPACITY
+		FLAG:貯蔵魔力上限値 = MAGIC_TANK_LARGE_CAPACITY
+		PRINTFORMW Mana storage capacity has been increased to %VALUE_DIGIT(MAGIC_TANK_LARGE_CAPACITY)%MP.
+	ENDIF
+ELSEIF ITEM:業務用魔力貯蔵器
+	IF FLAG:貯蔵魔力上限値 < MAGIC_TANK_BUSINESSUSE
+		FLAG:貯蔵魔力上限値 = MAGIC_TANK_BUSINESSUSE
+		PRINTFORMW Mana storage capacity has been increased to %VALUE_DIGIT(MAGIC_TANK_BUSINESSUSE)%MP.
+	ENDIF
+ELSEIF ITEM:家庭用魔力貯蔵器
+	IF FLAG:貯蔵魔力上限値 < MAGIC_TANK_HOMEUSE
+		FLAG:貯蔵魔力上限値 = MAGIC_TANK_HOMEUSE
+		PRINTFORMW Mana storage capacity has been increased to%VALUE_DIGIT(MAGIC_TANK_HOMEUSE)%MP.
+	ENDIF
+ENDIF
+
+

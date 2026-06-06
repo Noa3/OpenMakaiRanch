@@ -1,0 +1,94 @@
+﻿
+;人称が空だったら直すとこ
+@PERSON_CALL_FIX
+
+;NEWGAMEするとあなたも来てなんか入力させられるので帰す
+SIF !TARGET
+	RETURN
+CALL PERSON_CALL_FIX_SELF
+CALL PERSON_CALL_FIX_YOU
+CALL PERSON_CALL_FIX_MASTER
+CALL PERSON_CALL_FIX_PENIS
+CALL PERSON_CALL_FIX_VAGINA
+CALL PERSON_CALL_FIX_ANAL
+
+
+
+;一人称
+@PERSON_CALL_FIX_SELF
+
+SIF CSTR:一人称 != "" && CSTR:一人称／蕩け != ""
+	RETURN
+PRINTFORML %CALLNAME%の一人称が空欄のため補正を行います。
+PRINTL
+CALL CHANGE_PERSONAL_CALL("一人称")
+SIF CSTR:一人称 == "" || CSTR:一人称／蕩け == ""
+	RESTART
+
+
+
+;陥落前のあなた呼び方
+@PERSON_CALL_FIX_YOU
+
+SIF CSTR:あなた呼び方／陥落前 != "" && CSTR:あなた呼び方／陥落前／蕩け != ""
+	RETURN
+PRINTFORML %CALLNAME%の陥落前のあなた呼び方が空欄のため補正を行います。
+PRINTL
+CALL CHANGE_PERSONAL_CALL("陥落前のあなた呼び方")
+SIF CSTR:あなた呼び方／陥落前 == "" || CSTR:あなた呼び方／陥落前／蕩け == ""
+	RESTART
+
+
+
+;陥落後のあなた呼び方
+@PERSON_CALL_FIX_MASTER
+
+SIF CSTR:あなた呼び方／陥落後 != "" && CSTR:あなた呼び方／陥落後／蕩け != "" && CSTR:あなた呼び方／甘え != ""
+	RETURN
+PRINTFORML %CALLNAME%の陥落後のあなた呼び方が空欄のため補正を行います。
+PRINTL
+CALL CHANGE_PERSONAL_CALL("陥落後のあなた呼び方")
+SIF CSTR:あなた呼び方／陥落後 == "" || CSTR:あなた呼び方／陥落後／蕩け == "" || CSTR:あなた呼び方／甘え == ""
+	RESTART
+
+
+
+;ペニス
+@PERSON_CALL_FIX_PENIS
+
+SIF CSTR:性器呼び方／ペニス != "" && CSTR:性器呼び方／ペニス／蕩け != ""
+	RETURN
+PRINTFORML %CALLNAME%のペニス呼び方が空欄のため補正を行います。
+PRINTL
+CALL CHANGE_PERSONAL_CALL("ペニス呼び方")
+SIF CSTR:性器呼び方／ペニス == "" || CSTR:性器呼び方／ペニス／蕩け == ""
+	RESTART
+
+
+
+;膣
+@PERSON_CALL_FIX_VAGINA
+
+SIF CSTR:性器呼び方／膣 != "" && CSTR:性器呼び方／膣／蕩け != ""
+	RETURN
+PRINTFORML %CALLNAME%の膣呼び方が空欄のため補正を行います。
+PRINTL
+CALL CHANGE_PERSONAL_CALL("膣呼び方")
+SIF CSTR:性器呼び方／膣 == "" || CSTR:性器呼び方／膣／蕩け == ""
+	RESTART
+
+
+
+;アナル
+@PERSON_CALL_FIX_ANAL
+
+SIF CSTR:性器呼び方／アナル != "" && CSTR:性器呼び方／アナル／蕩け != ""
+	RETURN
+PRINTFORML %CALLNAME%のアナル呼び方が空欄のため補正を行います。
+PRINTL
+CALL CHANGE_PERSONAL_CALL("アナル呼び方")
+SIF CSTR:性器呼び方／アナル == "" || CSTR:性器呼び方／アナル／蕩け == ""
+	RESTART
+
+
+

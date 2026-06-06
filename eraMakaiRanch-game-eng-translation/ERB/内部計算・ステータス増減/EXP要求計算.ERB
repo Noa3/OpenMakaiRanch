@@ -1,0 +1,40 @@
+﻿
+;次レベルまでの必要経験値を求める式
+;ARGS　上げたいABL
+;ARG　1だと現在ABL
+@NEXT_EXP(ARGS,ARG)
+
+SIF ARGS == ""
+	RETURN 1
+SELECTCASE ARGS
+;5感覚　絶頂回数が加算　目標ABL2乗*（目標ABL-1）*（目標ABL-2）
+;LV100だと表示が崩れるけどほぼ1億絶頂　行ったらバグじゃないかな
+CASE "Ａ感覚","Ｂ感覚","Ｃ感覚","Ｖ感覚","Ｎ感覚"
+	IF ABL:ARGS == 0
+		SIF ARG
+			RETURN 0
+		RETURN 1
+	ELSEIF ABL:ARGS == 1
+		SIF ARG
+			RETURN 1
+		;2*2
+		RETURN 4
+	;目標3以上はこの式で出る
+	ELSE
+		SIF ARG
+			RETURN ABL:ARGS *ABL:ARGS *(ABL:ARGS -1) *(ABL:ARGS -2)
+		RETURN (ABL:ARGS +1) *(ABL:ARGS +1) *ABL:ARGS *(ABL:ARGS -1)
+	ENDIF
+
+;他中毒・母性・仕事ABLなど
+;LV*10000で固定してEXPを減衰させる
+CASEELSE
+
+; "膣内射精中毒","尻穴射精中毒","乳内射精中毒","精飲中毒","精液中毒","輪姦中毒","マゾっ気","レズっ気",
+;"奉仕精神","技巧","母性","母乳生産力","酪農","事務","掃除","料理","薬学","接客","搾乳中毒","触手中毒","母乳濃度"
+	SIF ARG
+		RETURN ABL:ARGS *10000
+	RETURN (ABL:ARGS +1) *10000
+
+ENDSELECT
+

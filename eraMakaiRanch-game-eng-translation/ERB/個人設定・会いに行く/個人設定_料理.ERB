@@ -1,0 +1,71 @@
+﻿
+;料理個人設定
+@SLAVE_CONFIG_COOKING
+
+CLEARLINE LINECOUNT
+CALL SHOW_SLAVE_STATE
+PRINTLC [ 0] Serve dinner of the same quality even when not in a private room
+CALL PRINT_ONOFF(CFLAG:夕食許可,1)
+PRINTFORMLC [ 1] Cooking with %SAVESTR:表記／母乳%
+SELECTCASE CFLAG:母乳料理／依頼
+CASE -1
+	PRINTL ：Regular Menu
+CASE 0
+	PRINTL ：Always Ask
+CASE 1
+	PRINTFORML ：%SAVESTR:表記／母乳% Menu
+ENDSELECT
+PRINTFORMLC [ 2] Assist with pouring her %SAVESTR:表記／母乳% during cooking
+SELECTCASE CFLAG:母乳料理／搾乳アシスト
+CASE -1
+	PRINTL :Do Not
+CASE 0
+	PRINTL ：Always Ask
+CASE 1
+	PRINTL ：Do
+ENDSELECT
+
+CALL PRINTL_ALIGN
+DRAWLINE
+PRINTL [99] Done
+INPUT
+PRINTL
+SELECTCASE RESULT
+CASE 0
+	INVERTBIT CFLAG:夕食許可,0
+CASE 1
+	PRINTFORML Please choose whether to create a menu using her %SAVESTR:表記／母乳% when making dinner.
+	PRINTL
+	PRINTLC [ 0] Always Ask
+	PRINTFORMLC [ 1] %SAVESTR:表記／母乳% Menu
+	PRINTLC [ 2] Regular Menu
+	INPUT
+	SELECTCASE RESULT
+	CASE 0
+		CFLAG:母乳料理／依頼 = 0
+	CASE 1
+		CFLAG:母乳料理／依頼 = 1
+	CASE 2
+		CFLAG:母乳料理／依頼 = -1
+	ENDSELECT
+CASE 2
+	PRINTFORML Please choose whether you will help her with milking when making %SAVESTR:表記／母乳% dishes.
+	PRINTL
+	PRINTLC [ 0] Always Ask
+	PRINTLC [ 1] Help Out
+	PRINTLC [ 2] Let her do it herself
+	INPUT
+	SELECTCASE RESULT
+	CASE 0
+		CFLAG:母乳料理／搾乳アシスト = 0
+	CASE 1
+		CFLAG:母乳料理／搾乳アシスト = 1
+	CASE 2
+		CFLAG:母乳料理／搾乳アシスト = -1
+	ENDSELECT
+CASE 99
+	RETURN
+ENDSELECT
+RESTART
+
+

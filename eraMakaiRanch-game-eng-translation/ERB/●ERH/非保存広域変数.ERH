@@ -1,0 +1,263 @@
+﻿
+;いろんな場所で使う変数
+;CSVの番号参照に使用
+#DIM STR_REF,5		;CSVのSTR番号参照
+#DIM STR_MAX		;CSVの参照範囲指定：REF～REF+MAXで使ったりする
+#DIM STR_NUM		;適用するSTR番号：RESULT足して出したりする
+#DIMS STR_NAME		;名前格納するほうが楽な場合はこれ
+#DIM FLAG_REF,5
+#DIM FLAG_NUM
+#DIM FLAG_MAX
+#DIM ITEM_REF,5
+#DIM ITEM_NUM
+#DIM ITEM_MAX
+#DIMS ITEM_NAME
+#DIM TALENT_REF,5
+#DIM TALENT_MAX
+#DIM TALENT_NUM
+#DIMS TALENT_NAME
+#DIM ABL_REF,5
+#DIM ABL_MAX
+#DIM ABL_NUM
+#DIMS ABL_NAME
+#DIMS EXP_NAME
+#DIM BIT_REF
+#DIM BASE_REF
+#DIM SOURCE_REF,10
+#DIM EQUIP_REF,5
+#DIM EXP_REF
+#DIM CSTR_REF
+#DIM CSTR_NUM
+
+#DIM EXPUP
+#DIMS ANIMAL
+
+#DIM SAVE_TARGET		;調教対象を選ぶ時などに元々のTARGETを保存する場合
+#DIM FIX,10				;10%のランダム性などで補正かけたい時の数
+#DIM EXIST		;存在するかどうかのフラグ代わり
+#DIM DAMAGE		;ダメージ　最初にこれを=で宣言しないとへんなことになるよ
+#DIM TURN		;ターン数、戦闘に使う
+#DIM PLEASURE,10	;快楽
+#DIM HEAL		;回復量
+#DIM LOVE		;好感度とかの増加がダメージではないのではっていう数値
+#DIM COST		;ダメージかこれ？というときのダメージに使うと見栄えがいいかもしれない
+#DIM CAP		;精神パラメータのキャップ
+#DIM MESSAGE_EXIST		;絶頂メッセージなど表示されたか判定
+
+#DIM COMMAND_OK,1000		;コマンドが使用可能か判定するため、複雑なとこに入れると繰り返さなくていいので楽ちんちん
+	;BINPUTでどうにかなることが判明
+#DIM CSVLOAD_OK,10000			;CSVから読み込めるか判定
+
+#DIM PAGE_MAX				;最終ページ
+
+#DIM STATUS		;ステータス計算に使用
+#DIM SELECT_ITEM 	;アイテム購入の選択に使用
+#DIM BR			;改行判定に使う
+#DIM NEED_MP_COST		;天界種族用の薬品を作るために魔力必要
+#DIM USE_MP				;使用MP
+
+#DIM NEED_ITEM_ID,5		;コマンドに必要なアイテムID
+#DIM SLAVE_COUNT		;人数数える時
+#DIM CLOTHE_BUY_LIMIT		;衣服購入制限
+#DIM RETURN_PLAN,100
+#DIM AP_BEFORE
+#DIM LINECOUNT_BEFORE		;ループした部分だけ消すときの前回までのLINE数保存
+
+
+
+;スケジュール実行前の数値
+;体力・魔力・霊力・気力・戦闘力
+#DIM HP_BEFORE
+#DIM MP_BEFORE
+#DIM EP_BEFORE
+#DIM SP_BEFORE
+#DIM BP_BEFORE
+
+#DIM DRAIN_POWER,10			;体内凌辱でのEP,MPのスケジュール前後差を計算する
+#DIM SENSITIVE_BEFORE		;感度上昇の前後とかで使う
+
+;SOURCE倍率処理
+#DIM TECHNIQUE_FIX,10
+#DIM LESBIAN_FIX,10
+#DIM TENTACLE_FIX,10
+#DIM EXPERIENCE_FIX,5
+#DIM SENSITIVE_FIX,5
+#DIM MARK_FIX,5
+
+#DIMS V_PENIS			;挿入指定
+#DIMS A_PENIS			;Ａ挿入指定
+#DIMS M_PENIS			;フェラちんぽ指定
+#DIMS PAIZURI_PENIS		;パイズリちんぽ指定
+#DIMS KISS_PLAYER		;キス相手指定
+#DIMS MILK_SUCK_PLAYER	;乳吸い相手指定
+
+
+#DIM PLAYER_PENIS		;PLAYERにちんぽがあるか
+#DIM TARGET_PENIS		;TARGETに同上
+
+
+
+	;#DIM CHASE_SLAVE		;追跡してる奴隷候補の数　FLAG:追跡中人数に移行
+#DIM SHUFFLE_COUNT		;キャラメイクのシャッフルの回数カウント
+#DIM LAST_SHUFFLE
+#DIMS LAST_SHUFFLE_S	;シャッフル前の数値、語句
+#DIMS KOJO_TYPE			;どの口上を呼び出すか　だいたい初回か通常
+
+#DIMS RESIDENT_KOJO_BEFORE			;魔界の住民口上の前回発言者
+
+
+#DIM CSVCHARA,5					;CSVに何人キャラがいるか　まだ使ってないよ
+#DIM SAMPLE_COLOR,30			;いろいろ表示色の変更に使うサンプル色
+#DIMS SAMPLE_COLOR_NAME,30		;いろいろ表示色の名前
+#DIM PRINT_DONE		;スケジュール実行の表示をしたかどうかに使用
+#DIM WORKER			;仕事する人数
+#DIM WORK_GROUP		;複数人で仕事をするか判定
+#DIM CATTLE_COUNT	;家畜の頭数
+
+
+
+#DIMS SLANGWORD		;スラング抽選で入れるワード
+#DIM INPUT_NUM		;RESULTを入れる
+
+#DIMS VARGIN_PERSON		;初経験の人の名前（保存せず初経験表示に使う）
+
+#DIM TARGET_COUNT		;TARGETでCOUNTを回していたのを代わりにTARGET = TARGET_COUNT　する
+#DIM SAVEPAGE			;セーブデータ数を変更してる場合のページ
+
+#DIM ONOMATO_SKIP		;擬音表示の「っ」追加を判定しない場合に使う
+#DIM BUY_NUM			;アイテムまとめ買いの個数
+#DIM MONEY_BEFORE		;アイテムまとめ買い前の所持金
+#DIM SELECT_TIPS		;ヒントの選択項目
+
+#DIM RUN_COUNT			;スケジュールのループ実行回数
+#DIM RUN_MEMBER			;スケジュール実行人数
+#DIM WAIT_ON			;WAITを入れる
+#DIM WAIT_SKIP			;WAITを普段するとこでしない
+#DIM EVENT_SKIP			;プロローグとかスキップ
+
+#DIM ATTACK_RATE		;戦闘時のクリティカル・ファンブルの判定
+#DIM BATTLE_CHARA		;戦闘するこちら側のキャラ
+#DIM DISH_QUANTITY		;食事人数
+#DIM DISH_NEED_MILK		;母乳料理に必要なミルク量
+#DIM DEFAULT_SET		;選んだほうをデフォルトにする
+#DIM MILK_DINNER		;母乳料理を作る
+#DIMS DINNER_NAME,10	;作る料理名と候補
+#DIMS RANDOM_FOOD		;食材
+#DIMS RANDOM_COOKING	;料理方法
+#DIM LACTATION_ASSIST	;搾乳をあなたが手伝う
+
+#DIM EXTRA_SHUFFLE		;おまけ機能使用中シャッフル
+#DIM MILK_PRICE			;母乳出荷金額
+#DIM HEAL_PRINT_DONE	;回復表示済み
+
+#DIM PART_COST			;支出計算の区分ごとのコスト
+#DIM SELF_INPUT			;手動入力しましたフラグ
+
+#DIM WORK_POEWR			;スケジュール実行する従業員のABL（とか）合計
+#DIM JUDGE_NG			;スケジュールを実行できるか判定
+
+#DIM TOTAL_RATIO		;合計割合
+#DIMS SLAVE_SEARCH_TERM			;奴隷検索条件
+#DIMS GROUP_CALL				;傭兵アルバイト雇うときに「部隊」か「人」か
+#DIM ORIGINAL_STATUS			;詳細ステータスで元々のステータスを出す
+
+
+#DIM ITEM_ID_MIN
+#DIM ITEM_ID_MAX		;それぞれ店で出すアイテム・まとめ買いアイテムの範囲
+
+#DIM CAN_LOAN_MONEY			;ローン可能額
+#DIM USE_MONEY				;使える資金
+
+#DIM SELF_CHARA_MAKE_RANDOM		;手動キャラメイクでランダム入力
+#DIMS CHANGE_STATE				;手動キャラメイクの変更箇所
+
+
+
+#DIM CONFIG_RATIO		;コンフィグの割合を%で出す
+#DIM EXIST_IMAGE		;画像表示したフラグ
+#DIM IMAGE_ID
+#DIMS PRINT_TAG
+
+
+;変更候補に使用
+#DIMS CHANGE_PLANS,100
+#DIM CHANGE_PLAN,100
+
+
+;ペット設定候補
+;PET_NAMEの1,2はオルトロスに使う
+#DIM PET_GENDER
+#DIMS PET_NAME,3
+#DIMS PET_COAT
+#DIMS PET_PATTERN
+
+
+
+;抽選用の箱
+#DIMS RANDOM_BOX,1000
+#DIM RANDOM_NO_BOX,1000
+#DIM BOX_COUNT
+
+;抽選しない箱
+#DIMS CANDI_BOX,1000
+#DIM CANDI_NO_BOX,1000
+
+;箱の人数
+#DIM BOX_CHARA_NUM,1000
+
+
+
+;口上ランダム選択処理に利用 カウンタ・配列
+#DIM  MESSAGE_COUNT
+#DIMS MESSAGE_BOX,500
+
+;口上ランダム選択処理に利用 ログ(ランダムの偏り軽減用)
+;キャラ別に用意したりはしないので配列長ちょっと大きめ
+#DIMS MESSAGE_LOG,1000
+
+
+
+;フラグ名を引っ張る
+#DIMS FLAG_NAME
+#DIMS TRIBE_FLAG_A			;外見→Appearance
+#DIMS TRIBE_FLAG_C			;体質→constitution
+#DIMS TRIBE_FLAG_P			;性格→personality
+
+
+
+;酪農スケジュールに使用、持ってくる関係で広域にしたほうがスマート
+#DIM FIRST_HEALTH
+#DIM COST_BASE
+
+#DIM ABL_UP_EXIST		;ABL増加があるとき
+#DIM MILKTANK_UP		;母乳容量増加の予約
+
+#DIM CHILD_COM			;子供に手出す時用の予約コマンド番号
+
+
+
+
+;牛舎用
+;1～10を指定する：第1牛舎が0番とかだとややこしいので
+#DIM COWSHED_NUM			;牛舎番号
+#DIM COWSHED_SLAVE			;選択中牛舎にいる乳牛
+#DIM COWSHED_CAPACITY		;選択中牛舎の最大乳牛頭数
+
+
+
+;精算用
+;詳細を見るために一時的に保存する
+;オートセーブまで行ったら使わないので保存変数でなくても大丈夫
+#DIM MONEY_COST,10
+#DIM MONEY_SELL,10
+#DIM SAVE_BATTERY_COST
+#DIM WORK_MEMBER
+#DIM SLAVE_MEMBER
+#DIM MILK_SUM
+#DIM COWSHED_TOTAL_MILK_CC,11
+#DIM COWSHED_TOTAL_MILK_PRICE,11
+#DIM MONEY_TOTAL		;精算時の売上-支出
+#DIM MONEY_PLUS			;資金の増加分
+#DIM SETTLEMENT_EFFECT_DRAGON_BALL
+
+

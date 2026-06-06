@@ -1,0 +1,49 @@
+﻿
+;ボタンリスト
+;ARG→分割するときその数値から開始
+;ARG:1→分割するときの終点
+@HINT_BUTTON_LIST(ARG,ARG:1)
+
+SIF !ARG:1
+	ARG:1 = 99
+
+;STR_REFを元関数で指定してね
+;50まで行くけど空ならそこまで
+FOR LOCAL,ARG,ARG:1
+	STR_NUM = STR_REF +LOCAL
+	SIF STR:STR_NUM == ""
+		BREAK
+	CALL BR_PLUS(3)
+	PRINTFORMLC [{LOCAL,2}] %STR:STR_NUM% 
+NEXT
+PRINTL
+
+
+
+;ステータスの選択外共通ヒント
+@NOT_SELECT_HINT_COMMON
+
+PRINTL  　《 選択した項目の説明が表示されます 》
+PRINTL ※ステータス解説の補足
+PRINTL ・実際に得られる経験値はそのステータスの現在Lvによって減衰されます
+PRINTL ・ステータスLvで得られる【刻印】については省略しますが、
+PRINTL 　一部そのステータス以外の条件がある部分は記述しています
+
+
+
+;仕様書表示
+@HINT_SPECIFICATION
+
+CALL HALFLINE
+PRINTL 　《 仕様書 》
+PRINTFORMLC [10] %SAVESTR:表記／母乳%
+PRINTLC [11] パラメータ
+PRINTLC [12] 精神ステータス
+PRINTLC [13] Ｈステータス
+PRINTLC [14] リソース
+PRINTL
+PRINTL
+
+
+
+

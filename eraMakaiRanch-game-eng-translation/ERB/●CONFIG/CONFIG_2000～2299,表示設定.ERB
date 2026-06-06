@@ -1,0 +1,206 @@
+﻿
+;表示設定一覧
+@LIST_CONFIG_DISPLAY
+
+PRINTL --- 《 Display Settings 》 ---
+ALIGNMENT LEFT
+DRAWLINE
+FLAG_REF = 2000
+FOR LOCAL,0,50
+	SIF FLAGNAME:(LOCAL +FLAG_REF) == ""
+		CONTINUE
+	CALL PRINT_CONFIG_DISPLAY(LOCAL)
+NEXT
+PRINTL
+PRINTL [70] Slang Settings
+PRINTL [71] Image and Sprite Settings
+PRINTL [72] Onomatopoeia Settings
+PRINTL [73] Bodypart Reference Settings
+PRINTL [74] Status Settings
+PRINTL [75] Schedule・Training Settings
+PRINTL
+PRINTL [100] Stain Removal Mod
+
+
+
+;ARG→LOCAL　FLAG_REFを足すことでフラグ番号
+@PRINT_CONFIG_DISPLAY(ARG)
+#DIM COLOR
+
+FLAG_NAME = %FLAGNAME:(ARG +FLAG_REF)%
+SELECTCASE FLAG_NAME
+CASE "蕩け口上化絶頂回数"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：Above {FLAG:FLAG_NAME}x
+
+CASE "ジョーク表示"
+	LOCALS = See Author's Jokes
+	PRINTFORM [{ARG,2}] %LOCALS,32%：\@ (FLAG:FLAG_NAME) ? Yes # No \@
+	
+CASE "母乳単位"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：\@ (FLAG:FLAG_NAME) ? cc／L # ml／L \@
+
+CASE "桁数の短縮表示形式"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：
+	SELECTCASE FLAG:FLAG_NAME
+	CASE 0
+		PRINT No shortening
+	CASE 1
+		PRINT k,M,G,T
+	CASE 2
+		PRINT 万,億,兆
+	ENDSELECT
+
+CASE "自動改行合わせの行数"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：{FLAG:FLAG_NAME,2} lines
+
+CASE "奴隷候補の未所持強調表示形式"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：
+	SELECTCASE FLAG:FLAG_NAME
+	CASE 0
+		PRINT None
+	CASE 1
+		PRINT Unowned【Races】
+	CASE 2
+		PRINT Unowned【Jobs】
+	CASE 3
+		PRINT Unowned【Race】or【Jobs】
+	CASE 4
+		PRINT Unowned【Races】or unowned【Status】within the Races
+	ENDSELECT
+
+CASE "カラーコード／メイン画面強調選択肢"
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%：
+	COLOR = FLAG:FLAG_NAME
+	SETCOLOR COLOR
+	PRINTFORM %UNICODE(0x2586)%(R:{GETRED(COLOR)} G:{GETGREEN(COLOR)} B:{GETBLUE(COLOR)})
+	RESETCOLOR
+
+CASEELSE
+	PRINTFORM [{ARG,2}] %CONFIG_FLAGS_ENG(FLAG_NAME),32%
+	CALL PRINT_ONOFF(FLAG:FLAG_NAME)
+
+ENDSELECT
+PRINTL
+
+
+
+;ARG→INPUT
+@CHANGE_CONFIG_DISPLAY(ARG)
+
+;番号での分岐から
+SELECTCASE ARG
+CASE 70	;スラング表示
+	CALL SLANG_CONFIG
+CASE 71	;画像表示
+	CALL IMAGE_CONFIG
+CASE 72	;擬音表示
+	CALL ONOMATOPEIA_CONFIG
+CASE 73	;スラング外表記設定
+	CALL SENTENCE_CONFIG
+CASE 74	;ステータス画面表示設定
+	CALL STATUS_CONFIG
+CASE 75	;スケジュール・調教実行時表示設定
+	CALL SCHEDULE_CONFIG
+
+CASE 100 ;EN mod to remove unwanted stains
+	CALL EN_STAIN_CONFIG
+
+;それ以外はフラグ名判定へ
+CASEELSE
+	CALL CHANGE_CONFIG_DISPLAY_NAME(ARG)
+ENDSELECT
+
+
+
+@CHANGE_CONFIG_DISPLAY_NAME(ARG)
+
+FLAG_NUM = ARG +FLAG_REF
+FLAG_NAME = %FLAGNAME:FLAG_NUM%
+
+;飛ばして反転フラグに対応する番号は共通関数
+CALL CHANGE_CONFIG_INVERTBIT
+SIF RESULT
+	RETURN
+SELECTCASE FLAG_NAME
+CASE "口上表示"
+	PRINTL Enable dialogue globally?
+	PRINTL
+	PRINTLC [ 0] Don't Display
+	PRINTLC [ 1] Display (Default)
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "蕩け口上化絶頂回数"
+	PRINTL The number of times orgasms before a slave starts speaking to you differently.
+	PRINTL
+	PRINTL [50] (Default)
+	PRINTL Enter a number between 0～1000
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 1000
+		FLAG:FLAG_NUM = RESULT
+	
+CASE "ジョーク表示"
+	PRINTL Show extra flavor text in tips and item descriptions?
+	PRINTL If jokes and parodies are OK, I recommend you have this on.
+	PRINTL （Default：Display）
+	PRINTL 
+	PRINTL [ 0] No, be serious (Don't Display)
+	PRINTL [ 1] Sure, why not (Display) (Default)
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "母乳単位"
+	PRINTFORML Unit of measure for %SAVESTR:表記／母乳%?
+	PRINTL
+	PRINTL [ 0] ml／L (Default)
+	PRINTL [ 1] cc／L
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "桁数の短縮表示形式"
+	PRINTFORML Sets a notation for large numbers.
+	PRINTL
+	PRINTL [ 0] No shortening (Default)
+	PRINTL [ 1]  10,000 and above shortens with「k,M,G,T」
+	PRINTL [ 2] 100,000 and above shortens with「万,億,兆」
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+
+CASE "自動改行合わせの行数"
+	PRINTL Set the number of line feeds for a page to automatically adjust the display of newlines.
+	PRINTL Set an appropriate value according to the size of the text and screen.
+	PRINTL
+	PRINTL [30] 30 lines (Default)
+	PRINTL Enter a value between 0～50
+	INPUT
+	SIF RESULT >= 0 && RESULT <= 50
+		FLAG:FLAG_NUM = RESULT
+	
+CASE "奴隷候補の未所持強調表示形式"
+	PRINTL Set whether or not to have highlighting for Ningen with certain characteristics
+	PRINTL For example,【Human】【Swordsman】with no status.
+	PRINTL
+	PRINTL [ 0] No Highlighting (Default)
+	PRINTL
+	PRINTL [ 1] Highlight Unowned【Race】
+	PRINTL 　　　→If no enslaved【Humans】, will be highlighted
+	PRINTL
+	PRINTL [ 2] Highlight Unowned【Job】
+	PRINTL 　　　→If no enslaved【Swordsman】, will be highlighted
+	PRINTL
+	PRINTL [ 3] Highlight Unowned【Race】or Unowned【Jobs】within given【Race】
+	PRINTL 　　　→If you own【Humans】, but no【Human】【Swordsman】, will be highlighted
+	PRINTL
+	PRINTL [ 4] Highlight Unowned【Race】or Unowned【Status】within given【Race】
+	PRINTL 　　　→Only【Humans】with status（e.g.【Tutor】）will be highlighted
+	PRINTL
+	BINPUT
+	FLAG:FLAG_NUM = RESULT
+	
+CASE "カラーコード／メイン画面強調選択肢"
+	CALL EDIT_COLOR_CODE(FLAG:カラーコード／メイン画面強調選択肢)
+	SIF RESULT
+		FLAG:カラーコード／メイン画面強調選択肢 = RESULT
+ENDSELECT
+
+

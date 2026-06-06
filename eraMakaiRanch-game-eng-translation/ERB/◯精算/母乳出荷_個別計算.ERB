@@ -1,0 +1,74 @@
+﻿
+;個人ごとの母乳出荷価格計算
+@SELL_MILK_PRICE_CALC_COMMON
+#DIM MILK_FIX
+
+VARSET MILK_PRICE
+
+;付与価値の補正を計算
+CALL SELL_MILK_PRICE_FIX_CALC
+MILK_FIX = RESULT
+
+;補正後価格計算
+CALL SELL_MILK_PRICE_CALC(MILK_FIX)
+
+;濃厚母乳を出荷したらマイルストーン用変数をON
+SIF ABL:母乳濃度
+	SETBIT ＃マイルストーン達成／濃厚母乳出荷＃
+
+
+
+;付与価値の補正を計算
+@SELL_MILK_PRICE_FIX_CALC
+#DIM MILK_FIX
+
+;初期値100%
+MILK_FIX = 100
+
+;濃度による補正
+MILK_FIX += (ABL:母乳濃度 *30)
+
+;天然母乳補正→20日目まで
+SIF !EXP:肉体改造 && (DAY -CFLAG:捕獲日 < 20)
+	MILK_FIX += 20
+RETURN MILK_FIX
+
+
+
+;補正後価格計算
+;ARG→MILK_FIX
+@SELL_MILK_PRICE_CALC(ARG)
+#DIM MILK_DEMAND_VALUE
+#DIM MILK_DEMAND_OVER_VALUE
+
+;母乳需要を追加→今とても簡易型
+CALL SELL_MILK_DEMAND_CALC
+
+;母乳需要まで5G／ml、それ以上は1G/ml
+IF CFLAG:出荷予定母乳量 <= CFLAG:母乳需要値
+	MILK_DEMAND_VALUE = CFLAG:出荷予定母乳量
+	MILK_DEMAND_OVER_VALUE = 0
+ELSE
+	MILK_DEMAND_VALUE = CFLAG:母乳需要値
+	MILK_DEMAND_OVER_VALUE = CFLAG:出荷予定母乳量 -CFLAG:母乳需要値
+ENDIF
+
+;魔力母乳と価格を共通にした
+CFLAG:母乳出荷金額／当日 = MILK_DEMAND_VALUE *ARG *(CFLAG:母乳価格ボーナス +100)
+CFLAG:母乳出荷金額／当日 /= 2000
+CFLAG:母乳出荷金額／当日 += MILK_DEMAND_OVER_VALUE
+
+;価格補正コンフィグ
+CALL DIFFICULTY_CONFIG_APPLY("母乳出荷価格")
+
+
+
+;母乳需要計算
+@SELL_MILK_DEMAND_CALC
+
+;簡易→全員10Lまで
+CFLAG:母乳需要値 = 10000
+SIF FLAG:母乳需要無限
+	CFLAG:母乳需要値 = RESOURCE_MAX
+
+

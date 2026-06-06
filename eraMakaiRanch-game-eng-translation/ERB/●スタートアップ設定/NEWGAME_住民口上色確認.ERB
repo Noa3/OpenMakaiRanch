@@ -1,0 +1,51 @@
+﻿
+;住民口上色確認
+@NEWGAME_CONFIRM_MAKAI_MESSAGE
+
+CALL MANYL(5)
+CALL RESIDENT_KOJO,@"ユジン","I'm Eugene from the Demon King's Army Research Institute. I see you have a 'I didn't need you to say that' look, but it's a formality."
+CALL RESIDENT_KOJO,@"ユジン","This is the screen to check the speech color for demon world residents. My lines will appear in this color."
+
+;まだ
+IF 1
+    CALL RESIDENT_KOJO,@"ユジン","That said, this is a test version, and we haven't made much of it, so only people like me and Mano-san can confirm it."
+    CALL RESIDENT_KOJO,@"マノ","That's right〜 Oh, I think it's a bit late to mention, but I'm Mano from the Demon World Agricultural Cooperative〜"
+ELSE
+
+
+PRINTL
+CALL RESIDENT_KOJO,@"マノ","I'm Mano from the Demon World Agricultural Cooperative〜. Well, it's a bit late to mention to the owner, right?"
+CALL RESIDENT_KOJO,@"フドウ","I'm Fudou, managing real estate in Okachi Town."
+CALL RESIDENT_KOJO,@"ケンチ","Hello... I'm Kenchi, the head of the Makkaidou Construction East Branch."
+CALL RESIDENT_KOJO,@"タルト","I'm Tart, running an adult shop〜"
+CALL RESIDENT_KOJO,@"あらし","I'm Arashi, the Home Center store manager!!!!!!! Thank you for your continued patronage!!!!!!!!"
+CALL RESIDENT_KOJO,@"シンミ","I'm Shinmi, running a clothing store."
+CALL RESIDENT_KOJO,@"カグヤ","I'm Kaguya from the furniture store. Have a lovely day."
+CALL RESIDENT_KOJO,@"ノノミ","Oh, hello... I'm Nonomi... uh, well... I'm currently job hunting..."
+CALL RESIDENT_KOJO,@"ウキョウ","I'm Ukyou, the dairy section chief at the Demon World Agricultural Cooperative Okachi Town branch. Nice to meet you."
+CALL RESIDENT_KOJO,@"マツダイラ","I'm Matsudaira, the midwife. I've attended most births around here, hehe."
+PRINTL
+CALL RESIDENT_KOJO,@"テラ","Let me have the people in the office, including me, give a unified greeting."
+CALL RESIDENT_KOJO,@"テラ","I'm Tera, a demon mercenary. Well, strictly speaking, it's 'mercenary part-time job,' but..."
+CALL RESIDENT_KOJO,@"ゴロー","Hello, I'm Goro, managing the goblins."
+CALL RESIDENT_KOJO,@"ショウ","I'm Shou, a mercenary part-timer! I'm still a newbie, but I'll become the strongest someday!"
+CALL RESIDENT_KOJO,@"シンシア","I'm Cynthia, the younger sister of the idiot above. Oh, species? There are no males among harpies, so this is how it turns out."
+CALL RESIDENT_KOJO,@"ぷにえ","I'm Punie, a demon part-timer! I'd be happy if you could leave things to me!"
+CALL RESIDENT_KOJO,@"ゴーズ","Gahaha! I'm Gozu, working part-time! I'm probably the strongest in Okachi Town!!!"
+PRINTL
+CALL RESIDENT_KOJO,@"ヒナ","I'm Hina. I don't live in Okachi Town right now, so it might be a while before we meet."
+CALL RESIDENT_KOJO,@"キュレタ","I'm Kyureta, a librarian at the library. If you visit the library, you might see me."
+
+
+ENDIF
+PRINTL
+PRINTL You can change the display colors by modifying the contents of the constants file. If you want to make changes,
+PRINTL open the file "住民口上色定数.ERH" in the "●ERH" folder within the "ERB" folder using a text editor,
+PRINTL and directly edit the values.
+PRINTL ・These constants can be changed during the game without much issue.
+WAIT
+
+
+
+
+

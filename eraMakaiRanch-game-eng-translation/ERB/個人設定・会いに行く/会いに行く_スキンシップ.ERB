@@ -1,0 +1,73 @@
+﻿
+;頭撫で（複雑になってもいいよう関数分け）
+@VISIT_STROKING_HEAD
+
+CALL VISIT_STROKING_HEAD_MESSAGE
+IF GROUPMATCH(CSTR:状態／あなたの子,"成長中","成長後")
+	CALL MIND_BASE_DIRECT_PLUS("好感度",100)
+ELSEIF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+	CALL MIND_BASE_DIRECT_PLUS("好感度",50)
+ELSEIF ＃陥落状態／屈服以上＃
+	CALL MIND_BASE_DIRECT_PLUS("好感度",30)
+ENDIF
+
+;好感度増減したあとに止め
+PRINTW
+CFLAG:時刻制限／頭撫で = 1
+TFLAG:スキンシップ回数 ++
+
+;娘恋慕化判定
+CALL CHILD_LOVE
+
+
+;キス
+@VISIT_KISS
+
+;反発なしの娘だと頬にキス
+IF GROUPMATCH(CSTR:状態／あなたの子,"成長中","成長後")
+	PRINTFORML %CALLNAME%の頬にキスをした…
+	PRINTFORMW %CALLNAME%はうれしそうにしている…
+	CALL MIND_BASE_DIRECT_PLUS("好感度",100)
+	TFLAG:スキンシップ回数 ++
+	CFLAG:時刻制限／キス = 1
+	;娘恋慕化判定
+	CALL CHILD_LOVE
+	RETURN
+ENDIF
+KISS_PLAYER = %CALLNAME:0%
+SOURCE:キス = 1
+CALL VISIT_KISS_MESSAGE
+CALL LOST_VARGIN
+CALL LOST_VARGIN_PLAYER
+
+;初キス判定するので分け
+CALL VISIT_KISS_AFTER_MESSAGE
+IF CFLAG:乳牛 || CFLAG:洗脳 || ＃陥落状態／恋慕以上＃
+	CALL MIND_BASE_DIRECT_PLUS("好感度",100)
+ELSEIF ＃陥落状態／陥落以上＃
+	CALL MIND_BASE_DIRECT_PLUS("好感度",30)
+ENDIF
+PRINTW
+SIF !EXP:経験回数／あなた／キス
+	FLAG:あなた経験人数／キス ++
+EXP:経験回数／あなた／キス ++
+CFLAG:時刻制限／キス = 1
+CFLAG:時刻制限／Ｈ = 1
+SOURCE:キス = 0
+
+;ファーストキス処理があるのでこれ必要
+CALL LOST_VARGIN_MIND_DAMAGE
+TFLAG:スキンシップ回数 ++
+
+
+;遊ぶ
+@VISIT_PLAY_WITH_CHILD
+
+PRINTFORML %CALLNAME%と少し遊んだ…
+PRINTFORML %CALLNAME%は楽しんだようだ…
+CALL MIND_BASE_DIRECT_PLUS("好感度",100)
+PRINTW
+CFLAG:時刻制限／子供と遊び = 1
+
+
+
