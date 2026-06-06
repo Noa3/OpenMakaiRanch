@@ -49,6 +49,12 @@ Run, in order:
 3. Add issue templates and pull request template under `.github/`.
 4. Add a short upload checklist for first push.
 
+## Phase 8: LFS And Launcher
+1. Enable Git LFS for large local editor binaries (`git lfs install`).
+2. Track `Godot_v*_mono_win64*.exe` in `.gitattributes`.
+3. Add a root launcher script that opens `OpenMakaiRanchGame` in Godot.
+4. Document preferred binary strategy (LFS + package-manager fallback).
+
 ## Guardrails
 - Do not recreate explicit adult content.
 - Do not copy the old CSV folder into the Godot runtime project.

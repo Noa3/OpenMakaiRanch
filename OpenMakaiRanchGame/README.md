@@ -16,9 +16,30 @@ dotnet build OpenMakaiRanchGame.csproj
 ..\Godot_v4.6.3-stable_mono_win64_console.exe --headless --path . --quit-after 3
 ```
 
+## Open Editor Quickly
+
+From repository root:
+
+```powershell
+.\OpenMakaiRanchGame-Editor.bat
+```
+
+This launcher opens the project with the local Godot editor binary if present, or falls back to `godot` on PATH.
+
 ## Scope Notes
 
 - Runtime gameplay does not depend on copied CSV files.
 - Public mainline content is kept content-safe. Adult-only original systems are not recreated explicitly in this repository; they are replaced with SFW bond, mentorship, ranch work, and adventure hooks.
 - If mature customizations are ever developed, keep them as private extensions and ensure they follow local law and platform policy.
 - `net10.0` is used because this machine currently has only .NET SDK 10 and the .NET 10 reference pack installed. Retarget to `net8.0` after installing the .NET 8 SDK if strict Godot LTS targeting is needed.
+
+## Binary Storage Note
+
+Large editor binaries are tracked with Git LFS to avoid hitting normal GitHub file-size limits.
+
+After cloning, run:
+
+```powershell
+git lfs install
+git lfs pull
+```

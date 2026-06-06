@@ -36,6 +36,36 @@ dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
 .\Godot_v4.6.3-stable_mono_win64_console.exe --headless --path OpenMakaiRanchGame --quit-after 5
 ```
 
+## Open In Godot (Shortcut)
+
+Use the launcher script from repo root:
+
+```powershell
+.\OpenMakaiRanchGame-Editor.bat
+```
+
+The script opens `OpenMakaiRanchGame` using:
+
+1. Local editor binary in repo root (`Godot_v4.6.3-stable_mono_win64.exe`), or
+2. `godot` from your PATH.
+
+## Large Editor Binary Strategy
+
+Better way than committing large binaries directly to Git history:
+
+- Use Git LFS for local pinned editor binaries.
+- Prefer installing Godot through a package manager for most contributors (for example, `winget install GodotEngine.GodotMono`).
+- Keep a launcher script in the repo so both approaches work consistently.
+
+Initialize LFS after cloning:
+
+```powershell
+git lfs install
+git lfs pull
+```
+
+This repository tracks `Godot_v*_mono_win64*.exe` through Git LFS.
+
 ## Roadmap (Starter)
 
 - [x] Godot .NET scaffold and typed service architecture

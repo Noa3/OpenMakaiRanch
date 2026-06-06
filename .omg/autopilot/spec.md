@@ -7,6 +7,8 @@ Rebuild `OpenMakaiRanchGame` as a Godot .NET game based on the local eraMakaiRan
 
 Also provide repository-level GitHub starter documentation that states the remake target clearly and documents public content boundaries.
 
+Current extension request: configure Git LFS for large local editor binaries and add a simple launcher shortcut to open the Godot project.
+
 ## Decisions
 - Archive the current broken `OpenMakaiRanchGame` before replacing it.
 - Do not push to GitHub yet.
@@ -17,6 +19,7 @@ Also provide repository-level GitHub starter documentation that states the remak
 - Avoid runtime copied CSV files. Use seeded Godot-native resource objects in this pass, with a future manifest/editor conversion path.
 - Keep adult-only original systems out of the remake. Represent them with SFW bond, mentorship, ranch work, and adventure hooks.
 - Allow only policy-safe mention of mature extension points as private, out-of-mainline customization.
+- Keep repository onboarding smooth by supporting both local editor binary and PATH-based Godot installs.
 
 ## First Milestone Scope
 Tier 1 must complete:

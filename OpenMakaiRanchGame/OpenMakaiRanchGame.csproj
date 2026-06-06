@@ -6,5 +6,15 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <DefaultItemExcludes>$(DefaultItemExcludes);.godot/**;.mono/**</DefaultItemExcludes>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove=".godot/**/*.cs" />
+    <Compile Remove=".mono/**/*.cs" />
+    <None Remove=".godot/**/*" />
+    <None Remove=".mono/**/*" />
+  </ItemGroup>
 </Project>
