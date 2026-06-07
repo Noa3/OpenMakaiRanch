@@ -11,26 +11,6 @@ namespace OpenMakaiRanch.Ui;
 
 public partial class UiShellController : Control
 {
-    private static readonly (string ScreenId, string NodeName, string CompactText)[] NavigationItems =
-    {
-        ("ranch", "OverviewButton", "Overview"),
-        ("roster", "CharactersButton", "Roster"),
-        ("schedule", "ScheduleButton", "Schedule"),
-        ("town", "TownButton", "Town"),
-        ("shop", "ShopButton", "Shop"),
-        ("adventure", "AdventureButton", "Adventure"),
-        ("combat", "CombatButton", "Combat"),
-        ("milestones", "MilestonesButton", "Goals"),
-        ("research", "ResearchButton", "Research"),
-        ("bond", "BondButton", "Bond"),
-        ("pets", "PetsButton", "Pets"),
-        ("training", "TrainingButton", "Training"),
-        ("milk", "MilkButton", "Milk"),
-        ("mental", "MentalButton", "Mental"),
-        ("saveload", "SaveLoadButton", "Save"),
-        ("settings", "SettingsButton", "Settings")
-    };
-
     [Export]
     public string InitialScreen { get; set; } = "title";
 
@@ -250,9 +230,9 @@ public partial class UiShellController : Control
         ApplySectionStyle(_navigation, "SystemSection");
 
         _navButtons.Clear();
-        foreach (var item in NavigationItems)
+        foreach (var button in _navigation.GetChildren().OfType<Button>())
         {
-            if (!BindNavButton(_navigation, item.ScreenId, item.NodeName))
+            if (!BindNavButton(button))
             {
                 return false;
             }
@@ -278,27 +258,28 @@ public partial class UiShellController : Control
         _compactNavigation.AddThemeConstantOverride("separation", 6);
 
         _compactNavButtons.Clear();
-        foreach (var item in NavigationItems)
+        foreach (var button in _compactNavigation.GetChildren().OfType<Button>())
         {
-            var compactButtonName = item.NodeName.Replace("Button", "CompactButton", StringComparison.Ordinal);
-            var button = _compactNavigation.GetNodeOrNull<Button>(compactButtonName);
-            if (button is null)
+            if (!TryResolveScreenId(button, "CompactButton", out var screenId))
             {
-                GD.PushError($"UiShellController scene is missing compact navigation button '{compactButtonName}'.");
+                GD.PushError($"UiShellController could not map compact navigation button '{button.Name}' to a screen id.");
                 return false;
             }
 
-            button.Text = item.CompactText;
-            button.TooltipText = ScreenTitle(item.ScreenId);
+            if (string.IsNullOrWhiteSpace(button.TooltipText))
+            {
+                button.TooltipText = ScreenTitle(screenId);
+            }
+
             ApplySecondaryButtonStyle(button);
             button.CustomMinimumSize = new Vector2(76, 34);
             button.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
             button.Pressed += () =>
             {
                 _game.Feedback.PlayNavigate();
-                ShowScreen(item.ScreenId);
+                ShowScreen(screenId);
             };
-            _compactNavButtons[item.ScreenId] = button;
+            _compactNavButtons[screenId] = button;
         }
 
         return true;
@@ -348,12 +329,11 @@ public partial class UiShellController : Control
         }
     }
 
-    private bool BindNavButton(Node navigation, string screenId, string nodeName)
+    private bool BindNavButton(Button button)
     {
-        var button = navigation.GetNodeOrNull<Button>(nodeName);
-        if (button is null)
+        if (!TryResolveScreenId(button, "Button", out var screenId))
         {
-            GD.PushError($"UiShellController scene is missing navigation button '{nodeName}'.");
+            GD.PushError($"UiShellController could not map navigation button '{button.Name}' to a screen id.");
             return false;
         }
 
@@ -366,6 +346,37 @@ public partial class UiShellController : Control
         };
         _navButtons[screenId] = button;
         return true;
+    }
+
+    private static bool TryResolveScreenId(Button button, string suffix, out string screenId)
+    {
+        if (button.HasMeta("screen_id"))
+        {
+            var meta = button.GetMeta("screen_id").AsString();
+            if (!string.IsNullOrWhiteSpace(meta))
+            {
+                screenId = meta;
+                return true;
+            }
+        }
+
+        var nodeName = button.Name.ToString();
+        if (!nodeName.EndsWith(suffix, StringComparison.Ordinal))
+        {
+            screenId = string.Empty;
+            return false;
+        }
+
+        var token = nodeName[..^suffix.Length];
+        screenId = token switch
+        {
+            "Overview" => "ranch",
+            "Characters" => "roster",
+            "SaveLoad" => "saveload",
+            _ => token.ToLowerInvariant()
+        };
+
+        return !string.IsNullOrWhiteSpace(screenId);
     }
 
     private void ExecuteUiAction(Func<bool> action, bool stateEventExpected, string? goToScreen = null)
