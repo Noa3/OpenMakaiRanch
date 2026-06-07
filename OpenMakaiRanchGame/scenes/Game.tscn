@@ -58,6 +58,83 @@ custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 theme_override_constants/separation = 10
 
+[node name="CompactNavigationScroll" type="ScrollContainer" parent="UiShell/Margin/RootPanel/Root"]
+visible = false
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+
+[node name="CompactNavigation" type="HBoxContainer" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="OverviewCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Overview"
+
+[node name="CharactersCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Roster"
+
+[node name="ScheduleCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Schedule"
+
+[node name="TownCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Town"
+
+[node name="ShopCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Shop"
+
+[node name="AdventureCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Adventure"
+
+[node name="CombatCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Combat"
+
+[node name="MilestonesCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Goals"
+
+[node name="ResearchCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Research"
+
+[node name="BondCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Bond"
+
+[node name="PetsCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Pets"
+
+[node name="TrainingCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Training"
+
+[node name="MilkCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Milk"
+
+[node name="MentalCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Mental"
+
+[node name="SaveLoadCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Save"
+
+[node name="SettingsCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
+layout_mode = 2
+text = "Settings"
+
 [node name="TitleBox" type="VBoxContainer" parent="UiShell/Margin/RootPanel/Root/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3

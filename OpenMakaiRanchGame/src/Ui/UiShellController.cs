@@ -54,6 +54,12 @@ public partial class UiShellController : Control
     public NodePath ContentPath { get; set; } = "Margin/RootPanel/Root/Body/ContentPanel/Scroll/Content";
 
     [Export]
+    public NodePath CompactNavigationScrollPath { get; set; } = "Margin/RootPanel/Root/CompactNavigationScroll";
+
+    [Export]
+    public NodePath CompactNavigationPath { get; set; } = "Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation";
+
+    [Export]
     public NodePath TitleLabelPath { get; set; } = "Margin/RootPanel/Root/TopBar/TitleBox/TitleLabel";
 
     [Export]
@@ -208,10 +214,12 @@ public partial class UiShellController : Control
         _endDayButton = GetNodeOrNull<Button>(EndDayButtonPath)!;
         _scroll = GetNodeOrNull<ScrollContainer>(ScrollPath)!;
         _content = GetNodeOrNull<VBoxContainer>(ContentPath)!;
+        _compactNavigationScroll = GetNodeOrNull<ScrollContainer>(CompactNavigationScrollPath)!;
+        _compactNavigation = GetNodeOrNull<HBoxContainer>(CompactNavigationPath)!;
 
         if (canvas is null || _margin is null || _rootPanel is null || root is null || _topBar is null || _navigation is null || _navPanel is null || _body is null || contentPanel is null || _titleLabel is null
             || _screenLabel is null || _statusLabel is null || _dayLabel is null || _phaseLabel is null || _goldLabel is null
-            || _endDayButton is null || _scroll is null || _content is null)
+            || _endDayButton is null || _scroll is null || _content is null || _compactNavigationScroll is null || _compactNavigation is null)
         {
             GD.PushError("UiShellController scene is missing required shell nodes.");
             return false;
@@ -250,34 +258,39 @@ public partial class UiShellController : Control
             }
         }
 
-        BuildCompactNavigation(root);
+        if (!BindCompactNavigation())
+        {
+            return false;
+        }
+
         ApplyResponsiveLayout();
         return true;
     }
 
-    private void BuildCompactNavigation(VBoxContainer root)
+    private bool BindCompactNavigation()
     {
-        _compactNavigationScroll = new ScrollContainer
-        {
-            CustomMinimumSize = new Vector2(0, 44),
-            SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            HorizontalScrollMode = ScrollContainer.ScrollMode.Auto,
-            VerticalScrollMode = ScrollContainer.ScrollMode.Disabled,
-            Visible = false
-        };
-        _compactNavigation = new HBoxContainer
-        {
-            SizeFlagsHorizontal = SizeFlags.ExpandFill
-        };
+        _compactNavigationScroll.CustomMinimumSize = new Vector2(0, 44);
+        _compactNavigationScroll.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        _compactNavigationScroll.HorizontalScrollMode = ScrollContainer.ScrollMode.Auto;
+        _compactNavigationScroll.VerticalScrollMode = ScrollContainer.ScrollMode.Disabled;
+        _compactNavigationScroll.Visible = false;
+        _compactNavigation.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         _compactNavigation.AddThemeConstantOverride("separation", 6);
-        _compactNavigationScroll.AddChild(_compactNavigation);
-        root.AddChild(_compactNavigationScroll);
-        root.MoveChild(_compactNavigationScroll, 1);
 
         _compactNavButtons.Clear();
         foreach (var item in NavigationItems)
         {
-            var button = SecondaryButton(item.CompactText, ScreenTitle(item.ScreenId));
+            var compactButtonName = item.NodeName.Replace("Button", "CompactButton", StringComparison.Ordinal);
+            var button = _compactNavigation.GetNodeOrNull<Button>(compactButtonName);
+            if (button is null)
+            {
+                GD.PushError($"UiShellController scene is missing compact navigation button '{compactButtonName}'.");
+                return false;
+            }
+
+            button.Text = item.CompactText;
+            button.TooltipText = ScreenTitle(item.ScreenId);
+            ApplySecondaryButtonStyle(button);
             button.CustomMinimumSize = new Vector2(76, 34);
             button.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
             button.Pressed += () =>
@@ -285,9 +298,10 @@ public partial class UiShellController : Control
                 _game.Feedback.PlayNavigate();
                 ShowScreen(item.ScreenId);
             };
-            _compactNavigation.AddChild(button);
             _compactNavButtons[item.ScreenId] = button;
         }
+
+        return true;
     }
 
     private void ApplyResponsiveLayout()
