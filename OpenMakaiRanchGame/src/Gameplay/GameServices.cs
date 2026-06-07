@@ -419,9 +419,11 @@ public sealed class SaveStateFactory
     {
         var baseBodyTier = combatSkill >= HighCombatBodyThreshold ? 1 : 0;
         var bodyLayer = PortraitLayerCatalog.ClampIndex(baseBodyTier + recruitIdSeed, PortraitLayerCatalog.BodyLayers.Length);
-        var raceLayer = PortraitLayerCatalog.ClampIndex(ranchSkill + recruitIdSeed, PortraitLayerCatalog.RaceLayers.Length);
-        var hairLayer = PortraitLayerCatalog.ClampIndex(craftSkill * 2 + recruitIdSeed, PortraitLayerCatalog.HairLayers.Length);
-        var clothLayer = PortraitLayerCatalog.ClampIndex(combatSkill + craftSkill + recruitIdSeed, PortraitLayerCatalog.ClothLayers.Length);
+        // Mix seed and skill values so expanded layer pools are sampled more evenly.
+        var mixedSeed = (recruitIdSeed * 73) + (ranchSkill * 31) + (craftSkill * 53) + (combatSkill * 97);
+        var raceLayer = PortraitLayerCatalog.ClampIndex(mixedSeed + (ranchSkill * 17), PortraitLayerCatalog.RaceLayers.Length);
+        var hairLayer = PortraitLayerCatalog.ClampIndex((mixedSeed * 3) + (craftSkill * 19), PortraitLayerCatalog.HairLayers.Length);
+        var clothLayer = PortraitLayerCatalog.ClampIndex((mixedSeed * 5) + (combatSkill * 23), PortraitLayerCatalog.ClothLayers.Length);
         return (bodyLayer, raceLayer, hairLayer, clothLayer);
     }
 
