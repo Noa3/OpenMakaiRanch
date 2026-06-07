@@ -14,44 +14,124 @@ namespace OpenMakaiRanch.Gameplay;
 
 public static class PortraitLayerCatalog
 {
-    public static readonly string[] RaceLayers =
+    // Persisted layer indices depend on array order. Keep existing entries stable and append new ones.
+    public static readonly PortraitLayerFrame[] RaceLayers =
     {
-        "res://assets/portrait_layers/race_00.png",
-        "res://assets/portrait_layers/race_01.png",
-        "res://assets/portrait_layers/race_02.png",
-        "res://assets/portrait_layers/race_03.png",
-        "res://assets/portrait_layers/race_04.png",
-        "res://assets/portrait_layers/race_05.png"
+        new("res://assets/portrait_layers/race_00.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_01.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_02.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_03.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_04.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_05.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_06.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_07.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_08.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_09.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_10.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_11.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_20.png", 0, 0, 48, 48, 0, -16),
+        new("res://assets/portrait_layers/race_21.png", 0, 0, 48, 48, 0, -16)
     };
 
-    public static readonly string[] HairLayers =
+    public static readonly PortraitLayerFrame[] HairLayers =
     {
-        "res://assets/portrait_layers/hair_00.png",
-        "res://assets/portrait_layers/hair_01.png",
-        "res://assets/portrait_layers/hair_02.png",
-        "res://assets/portrait_layers/hair_03.png",
-        "res://assets/portrait_layers/hair_04.png",
-        "res://assets/portrait_layers/hair_05.png"
+        new("res://assets/portrait_layers/hair_00.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_01.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_02.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_03.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_04.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_05.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_06.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_07.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_08.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_09.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_10.png", 0, 32, 48, 112, 0, -2),
+        new("res://assets/portrait_layers/hair_11.png", 0, 32, 48, 112, 0, -2)
     };
 
-    public static readonly string[] ClothLayers =
+    // First six cloth entries preserve the historical order used by existing save data.
+    public static readonly PortraitLayerFrame[] ClothLayers =
     {
-        "res://assets/portrait_layers/cloth/cloth_320_00.png",
-        "res://assets/portrait_layers/cloth/cloth_321.png",
-        "res://assets/portrait_layers/cloth/cloth_322_00.png",
-        "res://assets/portrait_layers/cloth/cloth_324_00.png",
-        "res://assets/portrait_layers/cloth/cloth_329_00.png",
-        "res://assets/portrait_layers/cloth/cloth_364_00.png"
+        new("res://assets/portrait_layers/cloth/cloth_320_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_321.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_322_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_324_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_329_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_364_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/accessory_01.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/accessory_02.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/accessory_02_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/accessory_03.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_1462.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_1462_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_302.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_302_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_320.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_322.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_324.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_329.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_363.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_364.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_380.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_381.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_382.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_383.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_401.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_401_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_402.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_402_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_403.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_403_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_404.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_405.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_406.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_407.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_407_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_408.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_408_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_409.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_409_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_410.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_410_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_411.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_411_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_412.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_412_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_413.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_413_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_414.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_414_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_415.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_415_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_437.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_437_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_439.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_439_00.png", 0, 0, 64, 112, -8, 0),
+        new("res://assets/portrait_layers/cloth/cloth_460.png", 0, 0, 64, 112, -8, 0)
     };
 
-    public static readonly string[] BodyLayers =
+    public static readonly PortraitLayerFrame[] BodyLayers =
     {
-        "res://assets/portrait_layers/body.png",
-        "res://assets/portrait_layers/body2.png"
+        new("res://assets/portrait_layers/body.png", 0, 0, 48, 112, 0, 0),
+        new("res://assets/portrait_layers/body2.png", 0, 0, 80, 112, -25, 0)
     };
 
-    public const string FaceLayer = "res://assets/portrait_layers/face.png";
+    public static readonly PortraitLayerFrame FaceLayer = new("res://assets/portrait_layers/face.png", 0, 0, 8, 16, 14, 14);
+    // Legacy mouth frames use the same draw offset; their opaque pixels sit lower inside the transparent 16x16 crop.
+    public static readonly PortraitLayerFrame MouthLayer = new("res://assets/portrait_layers/face.png", 0, 384, 16, 16, 14, 14);
     public const string BackgroundLayer = "res://assets/portrait_layers/bg.png";
+
+    public static IEnumerable<string> AllLayerPaths()
+    {
+        return RaceLayers.Concat(HairLayers)
+            .Concat(ClothLayers)
+            .Concat(BodyLayers)
+            .Append(FaceLayer)
+            .Append(MouthLayer)
+            .Select(frame => frame.Path)
+            .Append(BackgroundLayer)
+            .Distinct(StringComparer.Ordinal);
+    }
 
     public static int ClampIndex(int index, int size)
     {
@@ -64,6 +144,8 @@ public static class PortraitLayerCatalog
     }
 }
 
+public readonly record struct PortraitLayerFrame(string Path, int X, int Y, int Width, int Height, int OffsetX, int OffsetY);
+
 public sealed class SaveStateFactory
 {
     private readonly DataRegistry _data;
@@ -71,9 +153,6 @@ public sealed class SaveStateFactory
     private const int MinimumGeneratedHp = 40;
     private const int MinimumGeneratedEnergy = 35;
     private const int HighCombatBodyThreshold = 6;
-    private static readonly string[] RecruitNamePrefixes = { "Aster", "Bramble", "Cinder", "Dawn", "Ember", "Fable", "Gale", "Hollow", "Iris", "Juniper", "Kite", "Lumen" };
-    private static readonly string[] RecruitNameSuffixes = { "Vale", "Moor", "Hearth", "Run", "Bloom", "Reed", "March", "Wisp", "Bell", "Cross", "Field", "Song" };
-    private static readonly string[] RecruitTraits = { "Inventive", "Tender", "Swift", "Patient", "Plucky", "Observant", "Steadfast", "Cheerful" };
     private static readonly string[] CombatPortraitPool = { "res://assets/portraits/slay.png", "res://assets/portraits/kagura.png", "res://assets/portraits/noir.png" };
     private static readonly string[] CraftPortraitPool = { "res://assets/portraits/maria.png", "res://assets/portraits/noir.png", "res://assets/portraits/sampleprt.png" };
     private static readonly string[] RanchPortraitPool = { "res://assets/portraits/sharon.png", "res://assets/portraits/slay.png", "res://assets/portraits/sampleprt.png" };
@@ -127,6 +206,36 @@ public sealed class SaveStateFactory
         state.Adventure.SelectedPartyIds.AddRange(state.Roster.Characters.Take(3).Select(character => character.Id));
         state.Inventory.Items["meal_box"] = 2;
         state.Recruitment.CurrentOffer = CreateGeneratedRecruit(state);
+
+        // Discover first 3 local missions
+        var localMissions = _data.Missions.Values.Where(m => m.Tier == MissionTier.Local).OrderBy(m => m.Difficulty).ToList();
+        for (int i = 0; i < Math.Min(3, localMissions.Count); i++)
+            state.Adventure.DiscoveredMissionIds.Add(localMissions[i].Id);
+
+        state.Player = new PlayerState
+        {
+            Name = "Anon",
+            Race = "Demonfolk",
+            RanchName = "Okachi Ranch",
+            Gender = "Male",
+            Height = 1900,
+            ApparentAge = 20,
+            BodyShape = "Standard",
+            SkinColor = "Standard",
+            HairColor = "Black",
+            HairStyle = "Short",
+            HairFeature = "None",
+            EyeColor = "Red",
+            EyeShape = "Standard",
+            Job = "Dairy Farmer",
+            Personality = "Quiet",
+            HasHorns = true,
+            HasGlasses = false,
+            BustSize = "Flat",
+            BreastFirmness = "Firm",
+            FirstPersonPronoun = "I"
+        };
+
         return state;
     }
 
@@ -216,12 +325,24 @@ public sealed class SaveStateFactory
         }
 
         existingIds.Add(recruitId);
+        var (givenName, familyName) = CharacterGenerationPools.GenerateName(_random);
+        var bustSize = CharacterGenerationPools.PickBreastSize(_random);
+        var heightMm = CharacterGenerationPools.GenerateHeight(_random);
+        var apparentAge = CharacterGenerationPools.GenerateApparentAge(_random);
+        var race = CharacterGenerationPools.PickRace(_random);
+        var talents = CharacterGenerationPools.GenerateTalents(_random, 3);
+        var bodyTypeLabel = CharacterGenerationPools.BodyTypes[_random.Next(CharacterGenerationPools.BodyTypes.Length)];
+        var skinColor = CharacterGenerationPools.SkinColors[_random.Next(CharacterGenerationPools.SkinColors.Length)];
+        var hairColor = CharacterGenerationPools.HairColors[_random.Next(CharacterGenerationPools.HairColors.Length)];
+        var hairStyle = CharacterGenerationPools.HairStyles[_random.Next(CharacterGenerationPools.HairStyles.Length)];
+        var eyeColor = CharacterGenerationPools.EyeColors[_random.Next(CharacterGenerationPools.EyeColors.Length)];
+        var personality = CharacterGenerationPools.Personalities[_random.Next(CharacterGenerationPools.Personalities.Length)];
         return new CharacterState
         {
             Id = recruitId,
             DefinitionId = selectedArchetype.Id,
             IsGenerated = true,
-            DisplayNameOverride = $"{RecruitNamePrefixes[_random.Next(RecruitNamePrefixes.Length)]} {RecruitNameSuffixes[_random.Next(RecruitNameSuffixes.Length)]}",
+            DisplayNameOverride = $"{givenName} {familyName}",
             PortraitPathOverride = portraitPath,
             BodyImagePathOverride = bodyImagePath,
             BodyTypeOverride = bodyType,
@@ -230,7 +351,7 @@ public sealed class SaveStateFactory
             HairLayerIndex = hairLayer,
             ClothLayerIndex = clothLayer,
             FaceLayerIndex = 0,
-            TraitOverride = RecruitTraits[_random.Next(RecruitTraits.Length)],
+            TraitOverride = personality,
             MaxHpOverride = maxHp,
             MaxEnergyOverride = maxEnergy,
             Hp = maxHp,
@@ -239,7 +360,18 @@ public sealed class SaveStateFactory
             CraftSkill = craftSkill,
             CombatSkill = combatSkill,
             Morale = 55,
-            Bond = _random.Next(0, 5)
+            Bond = _random.Next(0, 5),
+            Race = race,
+            ApparentAge = apparentAge,
+            Height = heightMm,
+            SkinColor = skinColor,
+            HairColor = hairColor,
+            HairStyle = hairStyle,
+            EyeColor = eyeColor,
+            JobClass = CharacterGenerationPools.PickJob(_random),
+            Personality = personality,
+            BustSize = bustSize,
+            Talents = talents
         };
     }
 
@@ -309,12 +441,7 @@ public sealed class SaveStateFactory
             }
         }
 
-        foreach (var path in PortraitLayerCatalog.RaceLayers
-                     .Concat(PortraitLayerCatalog.HairLayers)
-                     .Concat(PortraitLayerCatalog.ClothLayers)
-                     .Concat(PortraitLayerCatalog.BodyLayers)
-                     .Append(PortraitLayerCatalog.FaceLayer)
-                     .Append(PortraitLayerCatalog.BackgroundLayer))
+        foreach (var path in PortraitLayerCatalog.AllLayerPaths())
         {
             if (!Godot.FileAccess.FileExists(path))
             {
@@ -472,6 +599,26 @@ public static class SaveMigrator
             state.SchemaVersion = 7;
         }
 
+        if (state.SchemaVersion == 7)
+        {
+            state.SchemaVersion = 8;
+        }
+
+        if (state.SchemaVersion == 8)
+        {
+            state.SchemaVersion = 9;
+        }
+
+        if (state.SchemaVersion == 9)
+        {
+            state.SchemaVersion = 10;
+        }
+
+        if (state.SchemaVersion == 10)
+        {
+            state.SchemaVersion = 11;
+        }
+
         state.Calendar ??= new CalendarState();
         state.Economy ??= new EconomyState();
         state.Ranch ??= new RanchState();
@@ -495,13 +642,22 @@ public static class SaveMigrator
         state.Schedule.AssignedJobs ??= new Dictionary<string, string>();
         state.Inventory.Items ??= new Dictionary<string, int>();
         state.Adventure.SelectedPartyIds ??= new List<string>();
+        state.Adventure.DiscoveredMissionIds ??= new List<string>();
+        state.Adventure.AvailableMercenaries ??= new List<MercenaryOffer>();
         state.Milestones.CompletedIds ??= new List<string>();
         state.Research.UnlockedSkillIds ??= new List<string>();
         state.Pets.AdoptedPetIds ??= new List<string>();
+        state.Pets.Entries ??= new Dictionary<string, PetEntryState>();
+        foreach (var petId in state.Pets.AdoptedPetIds)
+        {
+            if (!state.Pets.Entries.ContainsKey(petId))
+                state.Pets.Entries[petId] = new PetEntryState();
+        }
         state.Bond.CompletedEventIds ??= new List<string>();
         state.Adventure.LastCaptureSummary ??= string.Empty;
         foreach (var character in state.Roster.Characters)
         {
+            character.SkillXp ??= new Dictionary<string, int>();
             if (string.IsNullOrWhiteSpace(character.BodyImagePathOverride) && !string.IsNullOrWhiteSpace(character.PortraitPathOverride))
             {
                 character.BodyImagePathOverride = character.PortraitPathOverride;
@@ -517,7 +673,30 @@ public static class SaveMigrator
             character.RaceLayerIndex = PortraitLayerCatalog.ClampIndex(character.RaceLayerIndex, PortraitLayerCatalog.RaceLayers.Length);
             character.HairLayerIndex = PortraitLayerCatalog.ClampIndex(character.HairLayerIndex, PortraitLayerCatalog.HairLayers.Length);
             character.ClothLayerIndex = PortraitLayerCatalog.ClampIndex(character.ClothLayerIndex, PortraitLayerCatalog.ClothLayers.Length);
+
+            // NSFW migration - initialize mature state if missing
+            character.Mature ??= new MentalState();
+            character.Milk ??= new MilkState();
+            character.Addictions ??= new AddictionState();
+            character.Equipment ??= new EquipmentState();
+            character.EquippedItems ??= new Dictionary<string, string>();
+            character.Talents ??= new List<string>();
         }
+
+        state.Mature ??= new MatureState();
+        state.Mature.TrainingHistory ??= new List<TrainingRecord>();
+
+        state.Player ??= new PlayerState();
+        if (string.IsNullOrWhiteSpace(state.Player.Name)) state.Player.Name = "Anon";
+        if (string.IsNullOrWhiteSpace(state.Player.Race)) state.Player.Race = "Demonfolk";
+        if (string.IsNullOrWhiteSpace(state.Player.RanchName)) state.Player.RanchName = "Okachi Ranch";
+        if (string.IsNullOrWhiteSpace(state.Player.Gender)) state.Player.Gender = "Male";
+        if (string.IsNullOrWhiteSpace(state.Player.BodyShape)) state.Player.BodyShape = "Standard";
+        if (string.IsNullOrWhiteSpace(state.Player.SkinColor)) state.Player.SkinColor = "Standard";
+        if (string.IsNullOrWhiteSpace(state.Player.HairColor)) state.Player.HairColor = "Black";
+        if (string.IsNullOrWhiteSpace(state.Player.HairStyle)) state.Player.HairStyle = "Short";
+        if (string.IsNullOrWhiteSpace(state.Player.EyeColor)) state.Player.EyeColor = "Red";
+        if (string.IsNullOrWhiteSpace(state.Player.EyeShape)) state.Player.EyeShape = "Standard";
 
         return state;
     }
@@ -598,11 +777,13 @@ public sealed class RanchService
 {
     private readonly SaveState _state;
     private readonly DataRegistry _data;
+    private readonly EquipmentService _equipment;
 
-    public RanchService(SaveState state, DataRegistry data)
+    public RanchService(SaveState state, DataRegistry data, EquipmentService equipment)
     {
         _state = state;
         _data = data;
+        _equipment = equipment;
     }
 
     public IReadOnlyDictionary<string, int> Stockpile => _state.Ranch.Stockpile;
@@ -635,6 +816,7 @@ public sealed class RanchService
     public int FacilityUpkeep()
     {
         var upkeep = 0;
+        var logistics = _state.Research.UnlockedSkillIds.Contains("logistics");
         foreach (var facility in _state.Ranch.Facilities)
         {
             if (_data.Facilities.TryGetValue(facility.Key, out var definition))
@@ -643,7 +825,30 @@ public sealed class RanchService
             }
         }
 
+        if (logistics && upkeep > 0)
+        {
+            int saved = Math.Max(1, upkeep / 4);
+            upkeep -= saved;
+        }
+
         return upkeep;
+    }
+
+    public void ApplyAutomation(DailyReport report)
+    {
+        if (!_state.Research.UnlockedSkillIds.Contains("ranch_automation"))
+            return;
+
+        int totalBonus = 0;
+        foreach (var facility in _state.Ranch.Facilities)
+        {
+            if (facility.Value <= 0) continue;
+            int bonus = facility.Value * 2;
+            _state.Ranch.Stockpile["farm_goods"] = _state.Ranch.Stockpile.GetValueOrDefault("farm_goods") + bonus;
+            totalBonus += bonus;
+        }
+        if (totalBonus > 0)
+            report.Lines.Add($"Automated Feeding produced {totalBonus} bonus farm goods from facilities.");
     }
 
     public int ApplyJobOutput(CharacterState character, JobDefinition job, DailyReport report)
@@ -654,13 +859,59 @@ public sealed class RanchService
             return 0;
         }
 
-        var skillBonus = job.Category == JobCategory.Adventure ? character.CombatSkill : character.RanchSkill;
+        var equipRanch = _equipment.BonusRanchSkill(character.Id);
+        var equipCombat = _equipment.BonusCombatSkill(character.Id);
+        var effectiveRanch = character.RanchSkill + equipRanch;
+        var effectiveCombat = character.CombatSkill + equipCombat;
+        var skillBonus = job.Category == JobCategory.Adventure ? effectiveCombat : effectiveRanch;
         var researchBonus = _state.Research.UnlockedSkillIds.Contains("ranch_planning") && job.Category != JobCategory.Rest ? 2 : 0;
         var amount = Math.Max(0, job.ResourceAmount + skillBonus / 2) + researchBonus;
+
+        var gold = job.GoldIncome + amount * 3;
+
+        if (_state.Research.UnlockedSkillIds.Contains("dairy_science") && job.Category == JobCategory.Dairy)
+        {
+            int bonus = amount / 2;
+            amount += bonus;
+            gold += bonus * 4;
+            report.Lines.Add($"Dairy Science: +{bonus} bonus farm goods from improved techniques.");
+        }
+
+        if (_state.Research.UnlockedSkillIds.Contains("culinary_arts") && job.Category == JobCategory.Cooking)
+        {
+            int bonus = amount / 3 + 1;
+            amount += bonus;
+            report.Lines.Add($"Culinary Arts: produced {bonus} extra meals from expert cooking.");
+        }
+
+        if (_state.Research.UnlockedSkillIds.Contains("herbalism") && job.Category == JobCategory.Pharmacy)
+        {
+            int bonus = amount / 3 + 1;
+            amount += bonus;
+            gold += bonus * 5;
+            report.Lines.Add($"Herbalism: +{bonus} bonus supplies from herbal remedies.");
+        }
+
+        if (_state.Research.UnlockedSkillIds.Contains("hospitality") && job.Category == JobCategory.CustomerService)
+        {
+            int bonus = amount / 2 + 1;
+            amount += bonus;
+            gold += 15;
+            report.Lines.Add($"Hospitality: superior service earned extra comfort ({bonus}) and tips (+15g).");
+        }
+
+        if (_state.Research.UnlockedSkillIds.Contains("craftsmanship") && job.Category == JobCategory.Chore)
+        {
+            int bonus = amount / 3 + 1;
+            amount += bonus;
+            gold += bonus * 3;
+            report.Lines.Add($"Craftsmanship: +{bonus} bonus output from skilled workshop work.");
+        }
+
         _state.Ranch.Stockpile.TryGetValue(job.ResourceId, out var currentAmount);
         _state.Ranch.Stockpile[job.ResourceId] = currentAmount + amount;
         report.Lines.Add($"{character.Id} completed {job.DisplayName}, adding {amount} {job.ResourceId}.");
-        return job.GoldIncome + amount * 3;
+        return gold;
     }
 }
 
@@ -741,8 +992,13 @@ public sealed class DailySettlementService
     private readonly EconomyService _economy;
     private readonly DayCycleService _dayCycle;
     private readonly MilestoneService _milestones;
+    private readonly DailyEventService _events;
+    private readonly CharacterGrowthService _growth;
+    private readonly ResourceConsumptionService _resources;
+    private readonly InventoryService _inventory;
+    private readonly MilkEconomyService _milkEconomy;
 
-    public DailySettlementService(SaveState state, DataRegistry data, ScheduleService schedule, RanchService ranch, EconomyService economy, DayCycleService dayCycle, MilestoneService milestones)
+    public DailySettlementService(SaveState state, DataRegistry data, ScheduleService schedule, RanchService ranch, EconomyService economy, DayCycleService dayCycle, MilestoneService milestones, InventoryService inventory)
     {
         _state = state;
         _data = data;
@@ -751,6 +1007,11 @@ public sealed class DailySettlementService
         _economy = economy;
         _dayCycle = dayCycle;
         _milestones = milestones;
+        _events = new DailyEventService(state, data, economy);
+        _growth = new CharacterGrowthService(state);
+        _resources = new ResourceConsumptionService(state);
+        _inventory = inventory;
+        _milkEconomy = new MilkEconomyService(state);
     }
 
     public DailyReport SettleDay()
@@ -758,6 +1019,10 @@ public sealed class DailySettlementService
         var report = new DailyReport { Day = _state.Calendar.Day };
         var income = 0;
 
+        // 1. Resource consumption (meals, supplies) before work
+        _resources.ConsumeResources(report);
+
+        // 2. Process each character's assigned job
         foreach (var character in _state.Roster.Characters)
         {
             var jobId = _schedule.GetAssignment(character.Id);
@@ -768,14 +1033,63 @@ public sealed class DailySettlementService
             character.Bond = Math.Clamp(character.Bond + job.BondDelta, 0, 100);
         }
 
+        // 3. Calculate expenses
         var expenses = _ranch.FacilityUpkeep() + PetCareCost();
         _economy.ApplySettlement(income, expenses);
         report.Income = income;
         report.Expenses = expenses;
         report.NetGold = income - expenses;
         report.Lines.Add($"Facility upkeep cost {expenses} gold.");
+
+        // 3b. Facility automation bonus
+        _ranch.ApplyAutomation(report);
+
+        // 4. Daily milk production (pre-shipment)
+        int milkRevenue = 0;
+        foreach (var character in _state.Roster.Characters)
+        {
+            _milkEconomy.ProduceMilk(character.Id);
+            // Auto-ship milk each day
+            milkRevenue += _milkEconomy.ShipMilk(character.Id);
+        }
+        if (milkRevenue > 0)
+        {
+            report.MilkRevenue = milkRevenue;
+            report.Lines.Add($"Auto-shipped milk for {milkRevenue} gold.");
+        }
+
+        // 5. Daily random events
+        _events.GenerateEvents(report);
+
+        // 6. Character growth
+        _growth.ApplyGrowth(report);
+
+        // 7. Check milestones
         _milestones.CheckAfterSettlement(report);
+
+        // 8. Advance calendar
         _dayCycle.AdvanceToNextDay();
+
+        // 9. Discover missions every 3 days
+        var discovered = _state.Adventure.DiscoveredMissionIds.Count;
+        var total = _data.Missions.Count;
+        if (discovered < total && _state.Calendar.Day % 3 == 0)
+        {
+            var next = _data.Missions.Values
+                .Where(m => !_state.Adventure.DiscoveredMissionIds.Contains(m.Id))
+                .OrderBy(m => m.Difficulty)
+                .FirstOrDefault();
+            if (next is not null)
+            {
+                _state.Adventure.DiscoveredMissionIds.Add(next.Id);
+                report.Lines.Add($"Scouted a new mission location: {next.DisplayName}");
+            }
+        }
+
+        // 10. Refresh mercenaries
+        _state.Adventure.AvailableMercenaries.Clear();
+        _state.Adventure.ActiveMercenaryHpBonus = 0;
+
         return report;
     }
 
