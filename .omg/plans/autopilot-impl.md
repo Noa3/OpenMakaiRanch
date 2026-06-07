@@ -55,6 +55,22 @@ Run, in order:
 3. Add a root launcher script that opens `OpenMakaiRanchGame` in Godot.
 4. Document preferred binary strategy (LFS + package-manager fallback).
 
+## Phase 9: Backlog Definition
+1. Write an explicit missing-work backlog document for the remake.
+2. Include no-runtime-CSV-parser constraint and Godot-optimized data pipeline tasks.
+3. Include cross-platform workstreams for desktop/mobile/web.
+4. Include private mature-extension track tasks as non-public modular integration work.
+5. Capture open product questions required to prioritize next implementation cycle.
+
+## Phase 10: Portrait And Mobile UI Follow-Up
+1. Read the current Godot portrait composition code and compare it against the legacy `resources/portrait.csv` sprite region format.
+2. Replace hardcoded whole-PNG portrait paths with typed frame metadata for body, race, hair, face, mouth, and clothing layers.
+3. Render layered portraits with cropped atlas regions and legacy offsets.
+4. Rename non-English files under `OpenMakaiRanchGame/assets/portrait_layers` to English names and update their `.import` metadata.
+5. Remove unreferenced exact duplicate portrait-layer PNG/import pairs and record the canonical retained files.
+6. Improve menu layout behavior for compact/mobile-like viewports by avoiding visual root scaling, wrapping/trimming labels, and adding a horizontal compact navigation strip.
+7. Run build and headless smoke verification, then fix blockers in the touched path.
+
 ## Guardrails
 - Do not recreate explicit adult content.
 - Do not copy the old CSV folder into the Godot runtime project.

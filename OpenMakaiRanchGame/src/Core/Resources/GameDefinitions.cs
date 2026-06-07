@@ -8,7 +8,13 @@ public enum JobCategory
     RanchWork,
     Chore,
     Mentorship,
-    Adventure
+    Adventure,
+    Dairy,
+    Office,
+    Cleaning,
+    Cooking,
+    Pharmacy,
+    CustomerService
 }
 
 public enum ItemCategory
@@ -16,7 +22,8 @@ public enum ItemCategory
     Consumable,
     Material,
     Tool,
-    Keepsake
+    Keepsake,
+    Equipment
 }
 
 public enum MissionTier
@@ -32,7 +39,11 @@ public enum MilestoneTriggerKind
     GoldReached,
     MissionCompleted,
     BondReached,
-    ResearchUnlocked
+    ResearchUnlocked,
+    CharacterCount,
+    FacilityMaster,
+    PetCount,
+    EquipmentCount
 }
 
 [GlobalClass]
@@ -49,6 +60,21 @@ public partial class CharacterDefinition : Resource
     public int CraftSkill { get; set; }
     public int CombatSkill { get; set; }
     public string Trait { get; set; } = string.Empty;
+    // Extended fields from original CSV
+    public string Race { get; set; } = string.Empty;
+    public string Personality { get; set; } = string.Empty;
+    public string JobClass { get; set; } = string.Empty;
+    public string Height { get; set; } = string.Empty;
+    public string SkinColor { get; set; } = string.Empty;
+    public string HairColor { get; set; } = string.Empty;
+    public string HairStyle { get; set; } = string.Empty;
+    public string EyeColor { get; set; } = string.Empty;
+    public string EyeFeature { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public int Level { get; set; } = 1;
+    public int MagicPower { get; set; }
+    public List<string> Talents { get; set; } = new();
+    public List<string> StartingItems { get; set; } = new();
 }
 
 [GlobalClass]
@@ -66,6 +92,15 @@ public partial class JobDefinition : Resource
     public bool Assignable { get; set; } = true;
 }
 
+public enum EquipmentSlot
+{
+    Weapon,
+    Armor,
+    Accessory,
+    Head,
+    Feet
+}
+
 [GlobalClass]
 public partial class ItemDefinition : Resource
 {
@@ -74,6 +109,13 @@ public partial class ItemDefinition : Resource
     public ItemCategory Category { get; set; }
     public int Price { get; set; }
     public string Description { get; set; } = string.Empty;
+    public EquipmentSlot Slot { get; set; }
+    public int BonusRanchSkill { get; set; }
+    public int BonusCraftSkill { get; set; }
+    public int BonusCombatSkill { get; set; }
+    public int BonusMaxHp { get; set; }
+    public int BonusMaxEnergy { get; set; }
+    public int BonusMorale { get; set; }
 }
 
 [GlobalClass]
@@ -96,6 +138,24 @@ public partial class MissionDefinition : Resource
     public int Difficulty { get; set; }
     public int RewardGold { get; set; }
     public string RewardItemId { get; set; } = string.Empty;
+    public string EnemyGroupId { get; set; } = string.Empty;
+}
+
+[GlobalClass]
+public partial class EnemyDefinition : Resource
+{
+    public string Id { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string GroupId { get; set; } = string.Empty;
+    public MissionTier Tier { get; set; }
+    public int BaseHp { get; set; } = 50;
+    public int BaseSp { get; set; } = 20;
+    public int Attack { get; set; } = 8;
+    public int Defense { get; set; } = 4;
+    public int Speed { get; set; } = 5;
+    public int RewardGold { get; set; }
+    public string RewardItemId { get; set; } = string.Empty;
+    public int CaptureDifficulty { get; set; } = 30;
 }
 
 [GlobalClass]

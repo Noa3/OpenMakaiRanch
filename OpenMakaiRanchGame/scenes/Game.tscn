@@ -125,15 +125,11 @@ theme_override_constants/separation = 6
 [node name="CoreSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-text = "CORE"
+text = "RANCH"
 
 [node name="OverviewButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
 layout_mode = 2
 text = "Overview"
-
-[node name="CharactersButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
-layout_mode = 2
-text = "Characters"
 
 [node name="ScheduleButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
 layout_mode = 2
@@ -150,7 +146,32 @@ text = "Shop"
 [node name="ProgressSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-text = "PROGRESS"
+text = "CHARACTERS"
+
+[node name="CharactersButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+layout_mode = 2
+text = "Roster"
+
+[node name="TrainingButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+layout_mode = 2
+text = "Training"
+
+[node name="BondButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+layout_mode = 2
+text = "Bond"
+
+[node name="MilkButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+layout_mode = 2
+text = "Milk"
+
+[node name="MentalButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+layout_mode = 2
+text = "Mental"
+
+[node name="NsfwSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "ADVENTURE"
 
 [node name="AdventureButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
 layout_mode = 2
@@ -167,10 +188,6 @@ text = "Milestones"
 [node name="ResearchButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
 layout_mode = 2
 text = "Research"
-
-[node name="BondButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
-layout_mode = 2
-text = "Bond"
 
 [node name="PetsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
 layout_mode = 2

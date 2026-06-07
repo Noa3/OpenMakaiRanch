@@ -1,0 +1,5 @@
+{
+  "_comment": "English locale. Empty because T() defaults to English text inline.",
+  "lang.name": "English",
+  "lang.id": "en"
+}

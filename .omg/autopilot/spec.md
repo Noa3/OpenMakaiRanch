@@ -9,6 +9,10 @@ Also provide repository-level GitHub starter documentation that states the remak
 
 Current extension request: configure Git LFS for large local editor binaries and add a simple launcher shortcut to open the Godot project.
 
+Current planning request: write a concrete missing-work TODO that includes public-core tasks and private mature-extension tasks, while enforcing no runtime CSV parser and planning for desktop/mobile/web targets.
+
+Current follow-up request: improve the Godot remake by fixing portrait layer sprite-sheet rendering, renaming non-English `portrait_layers` asset paths to English, deduplicating exact duplicate portrait layer files, improving menu scaling/overlap on mobile-like viewports, checking whether persistent menu elements are necessary, and fixing nearby blockers or logic errors found during verification.
+
 ## Decisions
 - Archive the current broken `OpenMakaiRanchGame` before replacing it.
 - Do not push to GitHub yet.
@@ -20,6 +24,8 @@ Current extension request: configure Git LFS for large local editor binaries and
 - Keep adult-only original systems out of the remake. Represent them with SFW bond, mentorship, ranch work, and adventure hooks.
 - Allow only policy-safe mention of mature extension points as private, out-of-mainline customization.
 - Keep repository onboarding smooth by supporting both local editor binary and PATH-based Godot installs.
+- Treat `resources/portrait.csv` as the reference for portrait sprite-sheet regions, but do not add a runtime CSV parser. Use typed frame metadata in the Godot code for the currently wired layers.
+- On compact/widescreen-mobile layouts, the full sidebar section labels do not need to remain visible; replace them with a horizontal scrollable navigation strip.
 
 ## First Milestone Scope
 Tier 1 must complete:
@@ -43,3 +49,6 @@ Tier 2 best effort:
 - All major original gameplay pillars have named services and UI entry points.
 - Incomplete full-game systems have explicit method hooks and concise TODO comments.
 - Build and Godot headless smoke checks are attempted and results recorded.
+- Portrait layers are cropped from sprite sheets with source rectangles and offsets instead of drawing whole sheets.
+- Non-English files under `OpenMakaiRanchGame/assets/portrait_layers` are renamed to English equivalents, and exact duplicate PNGs are removed when unreferenced by the current Godot code.
+- Menus avoid obvious label/button overlap at compact sizes through layout-driven scaling, wrapping/ellipsis, and compact navigation.

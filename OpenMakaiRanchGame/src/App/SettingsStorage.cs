@@ -65,10 +65,6 @@ public sealed class SettingsStorage
         settings.ThemeId = string.IsNullOrWhiteSpace(settings.ThemeId) ? "midnight" : settings.ThemeId;
         settings.Locale = string.IsNullOrWhiteSpace(settings.Locale) ? "en" : settings.Locale;
         settings.UiScale = Mathf.Clamp(settings.UiScale <= 0 ? 1.0f : settings.UiScale, 0.85f, 1.35f);
-        if (settings.ContentMode == ContentMode.MatureSkeleton && !settings.MatureContentAgeConfirmed)
-        {
-            settings.ContentMode = ContentMode.Sfw;
-        }
 
         return settings;
     }

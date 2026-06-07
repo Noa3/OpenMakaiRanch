@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using Godot;
 using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Data;
 using OpenMakaiRanch.Gameplay;
+using OpenMakaiRanch.Locale;
 using OpenMakaiRanch.Tests;
 using OpenMakaiRanch.Ui;
 
@@ -15,6 +17,7 @@ public partial class GameRoot : Node
     public event Action? StateChanged;
     public event Action<DailyReport>? DaySettled;
     public event Action<CombatReport>? CombatResolved;
+    public event Action? GameComplete;
 
     public DataRegistry Data { get; private set; } = null!;
     public SaveState State { get; private set; } = null!;
@@ -35,9 +38,20 @@ public partial class GameRoot : Node
     public ResearchService Research { get; private set; } = null!;
     public PetService Pets { get; private set; } = null!;
     public TrainingService Training { get; private set; } = null!;
-    public IMatureContentHooks MatureContentHooks { get; private set; } = new NullMatureContentHooks();
-    public DailyReport? LastDailyReport { get; private set; }
-    public CombatReport? LastCombatReport { get; private set; }
+    public IMatureContentHooks MatureContentHooks { get; private set; } = new MatureContentHooks();
+    public MentalStateService MentalState { get; private set; } = null!;
+    public EnhancedTrainingService EnhancedTraining { get; private set; } = null!;
+    public MilkEconomyService MilkEconomy { get; private set; } = null!;
+    public AddictionService Addiction { get; private set; } = null!;
+    public CombatService Combat { get; private set; } = null!;
+    public DiscoveryService Discovery { get; private set; } = null!;
+    public MercenaryService Mercenary { get; private set; } = null!;
+    public WinConditionService WinCondition { get; private set; } = null!;
+    public EquipmentService Equipment { get; private set; } = null!;
+    public DailyReport? LastDailyReport { get; set; }
+    public CombatReport? LastCombatReport { get; set; }
+    public CombatPhase CurrentCombatPhase { get; set; } = CombatPhase.PreBattle;
+    public int CurrentCombatRound { get; set; }
 
     public override void _Ready()
     {
@@ -74,9 +88,103 @@ public partial class GameRoot : Node
         StateChanged?.Invoke();
     }
 
+    public void StartNewGamePlus()
+    {
+        var persistedSettings = State.Settings.Clone();
+        State = new SaveStateFactory(Data).CreateNewGame();
+        State.Settings = persistedSettings;
+        State.NgPlusActive = true;
+        State.Economy.Gold = 5000;
+        LastDailyReport = null;
+        LastCombatReport = null;
+        SyncFeedbackSettings();
+        BuildServices();
+        StateChanged?.Invoke();
+    }
+
     public void RerollGeneratedRecruits()
     {
         new SaveStateFactory(Data).RerollGeneratedRecruits(State);
+        StateChanged?.Invoke();
+    }
+
+    public void SetRecruitName(string characterId, string name)
+    {
+        var character = State.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
+        if (character is null || string.IsNullOrWhiteSpace(name)) return;
+        character.DisplayNameOverride = name.Trim();
+        StateChanged?.Invoke();
+    }
+
+    public void SetRecruitRace(string characterId, string race)
+    {
+        var character = State.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
+        if (character is null || string.IsNullOrWhiteSpace(race)) return;
+        character.Race = race;
+        StateChanged?.Invoke();
+    }
+
+    public void SetRecruitPersonality(string characterId, string personality)
+    {
+        var character = State.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
+        if (character is null || string.IsNullOrWhiteSpace(personality)) return;
+        character.Personality = personality;
+        character.TraitOverride = personality;
+        StateChanged?.Invoke();
+    }
+
+    public void RerollSingleRecruit(string characterId)
+    {
+        var character = State.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
+        if (character is null) return;
+        var factory = new SaveStateFactory(Data);
+        var existingIds = State.Roster.Characters.Select(c => c.Id).ToHashSet();
+        existingIds.Remove(characterId);
+        var replacement = factory.CreateGeneratedRecruit(State, existingIds);
+        replacement.IsStartingRecruit = character.IsStartingRecruit;
+        var index = State.Roster.Characters.FindIndex(c => c.Id == characterId);
+        if (index >= 0)
+        {
+            State.Roster.Characters[index] = replacement;
+            State.Schedule.AssignedJobs.Remove(characterId);
+            State.Schedule.AssignedJobs[replacement.Id] = "rest";
+            State.Adventure.SelectedPartyIds.Remove(characterId);
+        }
+
+        StateChanged?.Invoke();
+    }
+
+    public void SetPlayerName(string name)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+            State.Player.Name = name.Trim();
+        StateChanged?.Invoke();
+    }
+
+    public void SetPlayerRace(string race)
+    {
+        if (!string.IsNullOrWhiteSpace(race))
+            State.Player.Race = race;
+        StateChanged?.Invoke();
+    }
+
+    public void SetRanchName(string name)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+            State.Player.RanchName = name.Trim();
+        StateChanged?.Invoke();
+    }
+
+    public void SetPlayerGender(string gender)
+    {
+        if (!string.IsNullOrWhiteSpace(gender))
+            State.Player.Gender = gender;
+        StateChanged?.Invoke();
+    }
+
+    public void ModifyPlayer(Action<PlayerState> modify)
+    {
+        modify(State.Player);
         StateChanged?.Invoke();
     }
 
@@ -151,41 +259,19 @@ public partial class GameRoot : Node
 
     public bool SetLocale(string locale)
     {
-        if (string.IsNullOrWhiteSpace(locale))
+        var normalizedLocale = LocaleCatalog.NormalizeLocale(locale);
+        if (string.IsNullOrWhiteSpace(normalizedLocale))
         {
             return false;
         }
 
-        if (string.Equals(State.Settings.Locale, locale, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(State.Settings.Locale, normalizedLocale, StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
 
-        State.Settings.Locale = locale;
+        State.Settings.Locale = normalizedLocale;
         ApplyLocale();
-        PersistAndSyncFeedbackSettings();
-        StateChanged?.Invoke();
-        return true;
-    }
-
-    public bool TrySetContentMode(ContentMode mode, bool ageConfirmed)
-    {
-        if (mode == ContentMode.MatureSkeleton && !ageConfirmed)
-        {
-            return false;
-        }
-
-        if (mode == ContentMode.MatureSkeleton)
-        {
-            State.Settings.MatureContentAgeConfirmed = true;
-        }
-
-        if (State.Settings.ContentMode == mode)
-        {
-            return false;
-        }
-
-        State.Settings.ContentMode = mode;
         PersistAndSyncFeedbackSettings();
         StateChanged?.Invoke();
         return true;
@@ -218,10 +304,15 @@ public partial class GameRoot : Node
     public DailyReport EndDay()
     {
         var dayCycle = new DayCycleService(State);
-        var settlement = new DailySettlementService(State, Data, Schedule, Ranch, Economy, dayCycle, Milestones);
+        var settlement = new DailySettlementService(State, Data, Schedule, Ranch, Economy, dayCycle, Milestones, Inventory);
         LastDailyReport = settlement.SettleDay();
         DaySettled?.Invoke(LastDailyReport);
         StateChanged?.Invoke();
+        if (WinCondition.IsGameComplete() && !State.VictoryDay.HasValue)
+        {
+            State.VictoryDay = State.Calendar.Day;
+            GameComplete?.Invoke();
+        }
         return LastDailyReport;
     }
 
@@ -237,6 +328,34 @@ public partial class GameRoot : Node
         CombatResolved?.Invoke(LastCombatReport);
         StateChanged?.Invoke();
         return LastCombatReport;
+    }
+
+    public CombatReport RunRoundBasedMission(string missionId, bool autoResolve)
+    {
+        LastCombatReport = Combat.ResolveMissionRounds(missionId, autoResolve);
+        CurrentCombatPhase = CombatPhase.BattleResults;
+        CurrentCombatRound = LastCombatReport.Rounds.Count;
+        CombatResolved?.Invoke(LastCombatReport);
+        StateChanged?.Invoke();
+        return LastCombatReport;
+    }
+
+    public CombatReport RunRoundBasedCapture(string missionId)
+    {
+        LastCombatReport = Combat.AttemptCapture(missionId);
+        CurrentCombatPhase = CombatPhase.BattleResults;
+        CurrentCombatRound = LastCombatReport.Rounds.Count;
+        CombatResolved?.Invoke(LastCombatReport);
+        StateChanged?.Invoke();
+        return LastCombatReport;
+    }
+
+    public void StartNewCombat()
+    {
+        CurrentCombatPhase = CombatPhase.PreBattle;
+        CurrentCombatRound = 0;
+        LastCombatReport = null;
+        NotifyStateChanged();
     }
 
     public void NotifyStateChanged()
@@ -275,11 +394,41 @@ public partial class GameRoot : Node
         return true;
     }
 
+    public TrainingReport PerformTraining(string characterId, string actionId)
+    {
+        var report = EnhancedTraining.PerformAction(characterId, actionId);
+        if (report.Success)
+        {
+            Addiction.ApplyAddictionDelta(characterId, report.Action?.Category.ToString() ?? "", report.Action?.BasePleasure ?? 0);
+            StateChanged?.Invoke();
+        }
+        return report;
+    }
+
+    public int ShipMilk(string characterId)
+    {
+        var revenue = MilkEconomy.ShipMilk(characterId);
+        if (revenue > 0)
+        {
+            StateChanged?.Invoke();
+        }
+        return revenue;
+    }
+
+    public void ProduceAllMilk()
+    {
+        foreach (var character in State.Roster.Characters)
+        {
+            MilkEconomy.ProduceMilk(character.Id);
+        }
+    }
+
     private void BuildServices()
     {
         Roster = new RosterService(State, Data);
         Schedule = new ScheduleService(State, Data);
-        Ranch = new RanchService(State, Data);
+        Equipment = new EquipmentService(State, Data);
+        Ranch = new RanchService(State, Data, Equipment);
         Economy = new EconomyService(State);
         Inventory = new InventoryService(State);
         Milestones = new MilestoneService(State, Data, Economy);
@@ -292,6 +441,16 @@ public partial class GameRoot : Node
         Research = new ResearchService(State, Data, Milestones);
         Pets = new PetService(State, Data, Economy);
         Training = new TrainingService(State);
+        MentalState = new MentalStateService();
+        EnhancedTraining = new EnhancedTrainingService(State);
+        MilkEconomy = new MilkEconomyService(State);
+        Addiction = new AddictionService(State);
+        Combat = new CombatService(State, Data, Equipment);
+        Discovery = new DiscoveryService(State, Data);
+        Mercenary = new MercenaryService(State, Economy);
+        WinCondition = new WinConditionService(State, Data);
+        CurrentCombatPhase = CombatPhase.PreBattle;
+        CurrentCombatRound = 0;
     }
 
     private void SyncFeedbackSettings()
@@ -308,9 +467,9 @@ public partial class GameRoot : Node
 
     private void ApplyLocale()
     {
-        if (!string.IsNullOrWhiteSpace(State.Settings.Locale))
-        {
-            TranslationServer.SetLocale(State.Settings.Locale);
-        }
+        var locale = LocaleCatalog.NormalizeLocale(State.Settings.Locale);
+        State.Settings.Locale = locale;
+        TranslationServer.SetLocale(locale);
+        LocaleCatalog.LoadLocale(locale);
     }
 }

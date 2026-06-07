@@ -55,14 +55,66 @@ public sealed class InventoryService
 
     public bool UseItemOnCharacter(string itemId, CharacterState character)
     {
-        if (itemId != "meal_box" || !TryConsume(itemId, 1))
+        if (!TryConsume(itemId, 1))
         {
             return false;
         }
 
-        character.Fatigue = Math.Clamp(character.Fatigue - 18, 0, 100);
-        character.Morale = Math.Clamp(character.Morale + 4, 0, 100);
-        return true;
+        var herbalism = _state.Research.UnlockedSkillIds.Contains("herbalism");
+
+        switch (itemId)
+        {
+            case "meal_box":
+                character.Fatigue = Math.Clamp(character.Fatigue - 18, 0, 100);
+                character.Morale = Math.Clamp(character.Morale + 4, 0, 100);
+                return true;
+            case "energy_drink":
+                character.Energy = Math.Clamp(character.Energy + 20, 0, character.MaxEnergyOverride ?? 150);
+                character.Fatigue = Math.Clamp(character.Fatigue - 8, 0, 100);
+                return true;
+            case "herb_tea":
+                character.Morale = Math.Clamp(character.Morale + (herbalism ? 18 : 12), 0, 100);
+                character.Fatigue = Math.Clamp(character.Fatigue - (herbalism ? 8 : 5), 0, 100);
+                return true;
+            case "first_aid":
+                character.Fatigue = Math.Clamp(character.Fatigue - 25, 0, 100);
+                character.Hp = Math.Clamp(character.Hp + 15, 0, character.MaxHpOverride ?? 150);
+                return true;
+            case "lotion":
+                character.Morale = Math.Clamp(character.Morale + 6, 0, 100);
+                character.Fatigue = Math.Clamp(character.Fatigue - 4, 0, 100);
+                return true;
+            case "lube":
+                character.Fatigue = Math.Clamp(character.Fatigue - 5, 0, 100);
+                return true;
+            case "hair_dye":
+                character.Morale = Math.Clamp(character.Morale + 10, 0, 100);
+                return true;
+            case "collar_tag":
+                character.Bond = Math.Clamp(character.Bond + 2, 0, 100);
+                return true;
+            case "guts_carrot":
+                character.Energy = Math.Clamp(character.Energy + 25, 0, character.MaxEnergyOverride ?? 150);
+                character.Fatigue = Math.Clamp(character.Fatigue + 3, 0, 100);
+                return true;
+            case "milk_tea":
+                character.Morale = Math.Clamp(character.Morale + 8, 0, 100);
+                return true;
+            case "protein_bar":
+                character.Fatigue = Math.Clamp(character.Fatigue - 12, 0, 100);
+                character.Energy = Math.Clamp(character.Energy + 10, 0, character.MaxEnergyOverride ?? 150);
+                return true;
+            case "bandage":
+                character.Hp = Math.Clamp(character.Hp + (herbalism ? 15 : 10), 0, character.MaxHpOverride ?? 150);
+                character.Fatigue = Math.Clamp(character.Fatigue - (herbalism ? 8 : 5), 0, 100);
+                return true;
+            case "tonic":
+                character.Hp = Math.Clamp(character.Hp + (herbalism ? 30 : 20), 0, character.MaxHpOverride ?? 150);
+                character.Energy = Math.Clamp(character.Energy + (herbalism ? 22 : 15), 0, character.MaxEnergyOverride ?? 150);
+                return true;
+            default:
+                return false;
+        }
     }
 }
 
@@ -150,7 +202,8 @@ public sealed class AdventureService
         var closingRoll = DeterministicRoll(_state.Calendar.Day, mission.Id, 3);
         turnLog.Add($"Turn 3: Finisher sequence lands with force {closingRoll}.");
 
-        var score = partyPower + tacticalSupport + openingRoll + closingRoll - pressureRoll;
+        var trainingBonus = _state.Research.UnlockedSkillIds.Contains("adventure_training") ? 6 : 0;
+        var score = partyPower + tacticalSupport + openingRoll + closingRoll - pressureRoll + trainingBonus;
         var outcome = score >= mission.Difficulty + 6 ? MissionOutcome.Success : score >= mission.Difficulty ? MissionOutcome.PartialSuccess : MissionOutcome.Failure;
         var rewardGold = outcome == MissionOutcome.Success ? mission.RewardGold : outcome == MissionOutcome.PartialSuccess ? mission.RewardGold / 2 : 0;
 
@@ -263,6 +316,10 @@ public sealed class MilestoneService
                 MilestoneTriggerKind.GoldReached => _economy.Gold >= milestone.TriggerAmount,
                 MilestoneTriggerKind.BondReached => _state.Roster.Characters.Any(character => character.Bond >= milestone.TriggerAmount),
                 MilestoneTriggerKind.ResearchUnlocked => (milestone.TriggerId == "any" && _state.Research.UnlockedSkillIds.Count > 0) || (milestone.TriggerId != "any" && _state.Research.UnlockedSkillIds.Contains(milestone.TriggerId)),
+                MilestoneTriggerKind.CharacterCount => _state.Roster.Characters.Count >= milestone.TriggerAmount,
+                MilestoneTriggerKind.FacilityMaster => _state.Ranch.Facilities.Count > 0 && _state.Ranch.Facilities.All(f => f.Value >= 5),
+                MilestoneTriggerKind.PetCount => _state.Pets.AdoptedPetIds.Count >= milestone.TriggerAmount,
+                MilestoneTriggerKind.EquipmentCount => _state.Inventory.Items.Count(kv => _data.Items.TryGetValue(kv.Key, out var item) && item.Category == ItemCategory.Equipment) >= milestone.TriggerAmount,
                 _ => false
             };
             if (!completed)
@@ -365,8 +422,15 @@ public sealed class BondService
             return;
         }
 
-        character.Bond = Math.Clamp(character.Bond + 5, 0, 100);
+        var bondGain = 5;
+        if (_state.Research.UnlockedSkillIds.Contains("hospitality"))
+        {
+            bondGain += 3;
+        }
+
+        character.Bond = Math.Clamp(character.Bond + bondGain, 0, 100);
         character.Morale = Math.Clamp(character.Morale + 4, 0, 100);
+        character.Fatigue = Math.Clamp(character.Fatigue + 4, 0, 100);
         _milestones.CheckBondMilestones();
     }
 
@@ -613,6 +677,64 @@ public sealed class PetService
         }
 
         _state.Pets.AdoptedPetIds.Add(petId);
+        _state.Pets.Entries[petId] = new PetEntryState();
         return true;
+    }
+
+    public string Feed(string petId)
+    {
+        if (!_state.Pets.Entries.TryGetValue(petId, out var entry))
+            return "Not adopted";
+
+        if (!_economy.Spend(10))
+            return "Not enough gold";
+
+        entry.Hunger = Math.Clamp(entry.Hunger + 20, 0, 100);
+        entry.Mood = Math.Clamp(entry.Mood + 5, 0, 100);
+        entry.Bond = Math.Clamp(entry.Bond + 2, 0, 100);
+        entry.TimesFed++;
+        return $"Fed successfully. Hunger +20, Mood +5, Bond +2";
+    }
+
+    public string Play(string petId)
+    {
+        if (!_state.Pets.Entries.TryGetValue(petId, out var entry))
+            return "Not adopted";
+
+        if (!_economy.Spend(5))
+            return "Not enough gold";
+
+        entry.Mood = Math.Clamp(entry.Mood + 15, 0, 100);
+        entry.Bond = Math.Clamp(entry.Bond + 3, 0, 100);
+        entry.Hunger = Math.Clamp(entry.Hunger - 5, 0, 100);
+        entry.TimesPlayed++;
+        return $"Played successfully. Mood +15, Bond +3, Hunger -5";
+    }
+
+    public string Train(string petId)
+    {
+        if (!_state.Pets.Entries.TryGetValue(petId, out var entry))
+            return "Not adopted";
+
+        if (!_economy.Spend(15))
+            return "Not enough gold";
+
+        entry.Training = Math.Clamp(entry.Training + 10, 0, 100);
+        entry.Bond = Math.Clamp(entry.Bond + 1, 0, 100);
+        entry.Hunger = Math.Clamp(entry.Hunger - 10, 0, 100);
+        entry.Mood = Math.Clamp(entry.Mood - 5, 0, 100);
+        entry.TimesTrained++;
+        return $"Trained successfully. Training +10, Bond +1, Hunger -10, Mood -5";
+    }
+
+    public string Status(string petId)
+    {
+        if (!_state.Pets.Entries.TryGetValue(petId, out var entry))
+            return "Not adopted";
+
+        var moodDesc = entry.Mood switch { >= 80 => "joyful", >= 50 => "content", >= 25 => "restless", _ => "unhappy" };
+        var hungerDesc = entry.Hunger switch { >= 80 => "sated", >= 50 => "peckish", >= 25 => "hungry", _ => "starving" };
+        var bondDesc = entry.Bond switch { >= 80 => "devoted", >= 50 => "friendly", >= 25 => "wary", _ => "distrustful" };
+        return $"{moodDesc}, {hungerDesc}, {bondDesc} (Bond {entry.Bond}, Training {entry.Training})";
     }
 }

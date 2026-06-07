@@ -1,0 +1,477 @@
+warning: in the working copy of 'OpenMakaiRanchGame/src/App/BootstrapController.cs', LF will be replaced by CRLF the next time Git touches it
+diff --git a/OpenMakaiRanchGame/src/App/BootstrapController.cs b/OpenMakaiRanchGame/src/App/BootstrapController.cs
+index f2d848c..f6ded53 100644
+--- a/OpenMakaiRanchGame/src/App/BootstrapController.cs
++++ b/OpenMakaiRanchGame/src/App/BootstrapController.cs
+@@ -7,18 +7,18 @@ namespace OpenMakaiRanch.App;
+ /// </summary>
+ public partial class BootstrapController : Control
+ {
+-    public override void _Ready()
+-    {
+-        // Defer scene swap so autoloads and this root are fully initialized first.
+-        CallDeferred(nameof(RouteToMainMenu));
+-    }
++	public override void _Ready()
++	{
++		// Defer scene swap so autoloads and this root are fully initialized first.
++		CallDeferred(nameof(RouteToMainMenu));
++	}
+ 
+-    private void RouteToMainMenu()
+-    {
+-        var error = GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
+-        if (error != Error.Ok)
+-        {
+-            GD.PushError($"Bootstrap failed to open MainMenu scene: {error}");
+-        }
+-    }
++	private void RouteToMainMenu()
++	{
++		var error = GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
++		if (error != Error.Ok)
++		{
++			GD.PushError($"Bootstrap failed to open MainMenu scene: {error}");
++		}
++	}
+ }
+diff --git a/OpenMakaiRanchGame/src/App/GameRoot.cs b/OpenMakaiRanchGame/src/App/GameRoot.cs
+index f1eedb1..ee7dddb 100644
+--- a/OpenMakaiRanchGame/src/App/GameRoot.cs
++++ b/OpenMakaiRanchGame/src/App/GameRoot.cs
+@@ -1,8 +1,10 @@
+ using System;
++using System.Linq;
+ using Godot;
+ using OpenMakaiRanch.Core.Models;
+ using OpenMakaiRanch.Data;
+ using OpenMakaiRanch.Gameplay;
++using OpenMakaiRanch.Locale;
+ using OpenMakaiRanch.Tests;
+ using OpenMakaiRanch.Ui;
+ 
+@@ -15,6 +17,7 @@ public partial class GameRoot : Node
+     public event Action? StateChanged;
+     public event Action<DailyReport>? DaySettled;
+     public event Action<CombatReport>? CombatResolved;
++    public event Action? GameComplete;
+ 
+     public DataRegistry Data { get; private set; } = null!;
+     public SaveState State { get; private set; } = null!;
+@@ -35,9 +38,20 @@ public partial class GameRoot : Node
+     public ResearchService Research { get; private set; } = null!;
+     public PetService Pets { get; private set; } = null!;
+     public TrainingService Training { get; private set; } = null!;
+-    public IMatureContentHooks MatureContentHooks { get; private set; } = new NullMatureContentHooks();
+-    public DailyReport? LastDailyReport { get; private set; }
+-    public CombatReport? LastCombatReport { get; private set; }
++    public IMatureContentHooks MatureContentHooks { get; private set; } = new MatureContentHooks();
++    public MentalStateService MentalState { get; private set; } = null!;
++    public EnhancedTrainingService EnhancedTraining { get; private set; } = null!;
++    public MilkEconomyService MilkEconomy { get; private set; } = null!;
++    public AddictionService Addiction { get; private set; } = null!;
++    public CombatService Combat { get; private set; } = null!;
++    public DiscoveryService Discovery { get; private set; } = null!;
++    public MercenaryService Mercenary { get; private set; } = null!;
++    public WinConditionService WinCondition { get; private set; } = null!;
++    public EquipmentService Equipment { get; private set; } = null!;
++    public DailyReport? LastDailyReport { get; set; }
++    public CombatReport? LastCombatReport { get; set; }
++    public CombatPhase CurrentCombatPhase { get; set; } = CombatPhase.PreBattle;
++    public int CurrentCombatRound { get; set; }
+ 
+     public override void _Ready()
+     {
+@@ -74,12 +88,106 @@ public partial class GameRoot : Node
+         StateChanged?.Invoke();
+     }
+ 
++    public void StartNewGamePlus()
++    {
++        var persistedSettings = State.Settings.Clone();
++        State = new SaveStateFactory(Data).CreateNewGame();
++        State.Settings = persistedSettings;
++        State.NgPlusActive = true;
++        State.Economy.Gold = 5000;
++        LastDailyReport = null;
++        LastCombatReport = null;
++        SyncFeedbackSettings();
++        BuildServices();
++        StateChanged?.Invoke();
++    }
++
+     public void RerollGeneratedRecruits()
+     {
+         new SaveStateFactory(Data).RerollGeneratedRecruits(State);
+         StateChanged?.Invoke();
+     }
+ 
++    public void SetRecruitName(string characterId, string name)
++    {
++        var character = State.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
++        if (character is null || string.IsNullOrWhiteSpace(name)) return;
++        character.DisplayNameOverride = name.Trim();
++        StateChanged?.Invoke();
++    }
++
++    public void SetRecruitRace(string characterId, string race)
++    {
++        var character = State.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
++        if (character is null || string.IsNullOrWhiteSpace(race)) return;
++        character.Race = race;
++        StateChanged?.Invoke();
++    }
++
++    public void SetRecruitPersonality(string characterId, string personality)
++    {
++        var character = State.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
++        if (character is null || string.IsNullOrWhiteSpace(personality)) return;
++        character.Personality = personality;
++        character.TraitOverride = personality;
++        StateChanged?.Invoke();
++    }
++
++    public void RerollSingleRecruit(string characterId)
++    {
++        var character = State.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
++        if (character is null) return;
++        var factory = new SaveStateFactory(Data);
++        var existingIds = State.Roster.Characters.Select(c => c.Id).ToHashSet();
++        existingIds.Remove(characterId);
++        var replacement = factory.CreateGeneratedRecruit(State, existingIds);
++        replacement.IsStartingRecruit = character.IsStartingRecruit;
++        var index = State.Roster.Characters.FindIndex(c => c.Id == characterId);
++        if (index >= 0)
++        {
++            State.Roster.Characters[index] = replacement;
++            State.Schedule.AssignedJobs.Remove(characterId);
++            State.Schedule.AssignedJobs[replacement.Id] = "rest";
++            State.Adventure.SelectedPartyIds.Remove(characterId);
++        }
++
++        StateChanged?.Invoke();
++    }
++
++    public void SetPlayerName(string name)
++    {
++        if (!string.IsNullOrWhiteSpace(name))
++            State.Player.Name = name.Trim();
++        StateChanged?.Invoke();
++    }
++
++    public void SetPlayerRace(string race)
++    {
++        if (!string.IsNullOrWhiteSpace(race))
++            State.Player.Race = race;
++        StateChanged?.Invoke();
++    }
++
++    public void SetRanchName(string name)
++    {
++        if (!string.IsNullOrWhiteSpace(name))
++            State.Player.RanchName = name.Trim();
++        StateChanged?.Invoke();
++    }
++
++    public void SetPlayerGender(string gender)
++    {
++        if (!string.IsNullOrWhiteSpace(gender))
++            State.Player.Gender = gender;
++        StateChanged?.Invoke();
++    }
++
++    public void ModifyPlayer(Action<PlayerState> modify)
++    {
++        modify(State.Player);
++        StateChanged?.Invoke();
++    }
++
+     public bool SaveSlot(int slot)
+     {
+         var saved = Save.Save(State, slot);
+@@ -168,29 +276,6 @@ public partial class GameRoot : Node
+         return true;
+     }
+ 
+-    public bool TrySetContentMode(ContentMode mode, bool ageConfirmed)
+-    {
+-        if (mode == ContentMode.MatureSkeleton && !ageConfirmed)
+-        {
+-            return false;
+-        }
+-
+-        if (mode == ContentMode.MatureSkeleton)
+-        {
+-            State.Settings.MatureContentAgeConfirmed = true;
+-        }
+-
+-        if (State.Settings.ContentMode == mode)
+-        {
+-            return false;
+-        }
+-
+-        State.Settings.ContentMode = mode;
+-        PersistAndSyncFeedbackSettings();
+-        StateChanged?.Invoke();
+-        return true;
+-    }
+-
+     public bool TrainCharacter(string characterId, string focus)
+     {
+         if (!Training.Train(characterId, focus))
+@@ -218,10 +303,15 @@ public partial class GameRoot : Node
+     public DailyReport EndDay()
+     {
+         var dayCycle = new DayCycleService(State);
+-        var settlement = new DailySettlementService(State, Data, Schedule, Ranch, Economy, dayCycle, Milestones);
++        var settlement = new DailySettlementService(State, Data, Schedule, Ranch, Economy, dayCycle, Milestones, Inventory);
+         LastDailyReport = settlement.SettleDay();
+         DaySettled?.Invoke(LastDailyReport);
+         StateChanged?.Invoke();
++        if (WinCondition.IsGameComplete() && !State.VictoryDay.HasValue)
++        {
++            State.VictoryDay = State.Calendar.Day;
++            GameComplete?.Invoke();
++        }
+         return LastDailyReport;
+     }
+ 
+@@ -239,6 +329,34 @@ public partial class GameRoot : Node
+         return LastCombatReport;
+     }
+ 
++    public CombatReport RunRoundBasedMission(string missionId, bool autoResolve)
++    {
++        LastCombatReport = Combat.ResolveMissionRounds(missionId, autoResolve);
++        CurrentCombatPhase = CombatPhase.BattleResults;
++        CurrentCombatRound = LastCombatReport.Rounds.Count;
++        CombatResolved?.Invoke(LastCombatReport);
++        StateChanged?.Invoke();
++        return LastCombatReport;
++    }
++
++    public CombatReport RunRoundBasedCapture(string missionId)
++    {
++        LastCombatReport = Combat.AttemptCapture(missionId);
++        CurrentCombatPhase = CombatPhase.BattleResults;
++        CurrentCombatRound = LastCombatReport.Rounds.Count;
++        CombatResolved?.Invoke(LastCombatReport);
++        StateChanged?.Invoke();
++        return LastCombatReport;
++    }
++
++    public void StartNewCombat()
++    {
++        CurrentCombatPhase = CombatPhase.PreBattle;
++        CurrentCombatRound = 0;
++        LastCombatReport = null;
++        NotifyStateChanged();
++    }
++
+     public void NotifyStateChanged()
+     {
+         StateChanged?.Invoke();
+@@ -275,11 +393,41 @@ public partial class GameRoot : Node
+         return true;
+     }
+ 
++    public TrainingReport PerformTraining(string characterId, string actionId)
++    {
++        var report = EnhancedTraining.PerformAction(characterId, actionId);
++        if (report.Success)
++        {
++            Addiction.ApplyAddictionDelta(characterId, report.Action?.Category.ToString() ?? "", report.Action?.BasePleasure ?? 0);
++            StateChanged?.Invoke();
++        }
++        return report;
++    }
++
++    public int ShipMilk(string characterId)
++    {
++        var revenue = MilkEconomy.ShipMilk(characterId);
++        if (revenue > 0)
++        {
++            StateChanged?.Invoke();
++        }
++        return revenue;
++    }
++
++    public void ProduceAllMilk()
++    {
++        foreach (var character in State.Roster.Characters)
++        {
++            MilkEconomy.ProduceMilk(character.Id);
++        }
++    }
++
+     private void BuildServices()
+     {
+         Roster = new RosterService(State, Data);
+         Schedule = new ScheduleService(State, Data);
+-        Ranch = new RanchService(State, Data);
++        Equipment = new EquipmentService(State, Data);
++        Ranch = new RanchService(State, Data, Equipment);
+         Economy = new EconomyService(State);
+         Inventory = new InventoryService(State);
+         Milestones = new MilestoneService(State, Data, Economy);
+@@ -292,6 +440,17 @@ public partial class GameRoot : Node
+         Research = new ResearchService(State, Data, Milestones);
+         Pets = new PetService(State, Data, Economy);
+         Training = new TrainingService(State);
++        MentalState = new MentalStateService();
++        EnhancedTraining = new EnhancedTrainingService(State);
++        MilkEconomy = new MilkEconomyService(State);
++        Addiction = new AddictionService(State);
++        Combat = new CombatService(State, Data, Equipment);
++        Discovery = new DiscoveryService(State, Data);
++        Mercenary = new MercenaryService(State, Economy);
++        WinCondition = new WinConditionService(State, Data);
++        Equipment = new EquipmentService(State, Data);
++        CurrentCombatPhase = CombatPhase.PreBattle;
++        CurrentCombatRound = 0;
+     }
+ 
+     private void SyncFeedbackSettings()
+@@ -311,6 +470,7 @@ public partial class GameRoot : Node
+         if (!string.IsNullOrWhiteSpace(State.Settings.Locale))
+         {
+             TranslationServer.SetLocale(State.Settings.Locale);
++            LocaleCatalog.LoadLocale(State.Settings.Locale);
+         }
+     }
+ }
+\ No newline at end of file
+diff --git a/OpenMakaiRanchGame/src/App/SettingsStorage.cs b/OpenMakaiRanchGame/src/App/SettingsStorage.cs
+index 2b02c8f..8014e88 100644
+--- a/OpenMakaiRanchGame/src/App/SettingsStorage.cs
++++ b/OpenMakaiRanchGame/src/App/SettingsStorage.cs
+@@ -65,10 +65,6 @@ public sealed class SettingsStorage
+         settings.ThemeId = string.IsNullOrWhiteSpace(settings.ThemeId) ? "midnight" : settings.ThemeId;
+         settings.Locale = string.IsNullOrWhiteSpace(settings.Locale) ? "en" : settings.Locale;
+         settings.UiScale = Mathf.Clamp(settings.UiScale <= 0 ? 1.0f : settings.UiScale, 0.85f, 1.35f);
+-        if (settings.ContentMode == ContentMode.MatureSkeleton && !settings.MatureContentAgeConfirmed)
+-        {
+-            settings.ContentMode = ContentMode.Sfw;
+-        }
+ 
+         return settings;
+     }
+diff --git a/OpenMakaiRanchGame/src/Core/Resources/GameDefinitions.cs b/OpenMakaiRanchGame/src/Core/Resources/GameDefinitions.cs
+index c08f69c..5c0c615 100644
+--- a/OpenMakaiRanchGame/src/Core/Resources/GameDefinitions.cs
++++ b/OpenMakaiRanchGame/src/Core/Resources/GameDefinitions.cs
+@@ -8,7 +8,13 @@ public enum JobCategory
+     RanchWork,
+     Chore,
+     Mentorship,
+-    Adventure
++    Adventure,
++    Dairy,
++    Office,
++    Cleaning,
++    Cooking,
++    Pharmacy,
++    CustomerService
+ }
+ 
+ public enum ItemCategory
+@@ -16,7 +22,8 @@ public enum ItemCategory
+     Consumable,
+     Material,
+     Tool,
+-    Keepsake
++    Keepsake,
++    Equipment
+ }
+ 
+ public enum MissionTier
+@@ -32,7 +39,11 @@ public enum MilestoneTriggerKind
+     GoldReached,
+     MissionCompleted,
+     BondReached,
+-    ResearchUnlocked
++    ResearchUnlocked,
++    CharacterCount,
++    FacilityMaster,
++    PetCount,
++    EquipmentCount
+ }
+ 
+ [GlobalClass]
+@@ -49,6 +60,21 @@ public partial class CharacterDefinition : Resource
+     public int CraftSkill { get; set; }
+     public int CombatSkill { get; set; }
+     public string Trait { get; set; } = string.Empty;
++    // Extended fields from original CSV
++    public string Race { get; set; } = string.Empty;
++    public string Personality { get; set; } = string.Empty;
++    public string JobClass { get; set; } = string.Empty;
++    public string Height { get; set; } = string.Empty;
++    public string SkinColor { get; set; } = string.Empty;
++    public string HairColor { get; set; } = string.Empty;
++    public string HairStyle { get; set; } = string.Empty;
++    public string EyeColor { get; set; } = string.Empty;
++    public string EyeFeature { get; set; } = string.Empty;
++    public string Description { get; set; } = string.Empty;
++    public int Level { get; set; } = 1;
++    public int MagicPower { get; set; }
++    public List<string> Talents { get; set; } = new();
++    public List<string> StartingItems { get; set; } = new();
+ }
+ 
+ [GlobalClass]
+@@ -66,6 +92,15 @@ public partial class JobDefinition : Resource
+     public bool Assignable { get; set; } = true;
+ }
+ 
++public enum EquipmentSlot
++{
++    Weapon,
++    Armor,
++    Accessory,
++    Head,
++    Feet
++}
++
+ [GlobalClass]
+ public partial class ItemDefinition : Resource
+ {
+@@ -74,6 +109,13 @@ public partial class ItemDefinition : Resource
+     public ItemCategory Category { get; set; }
+     public int Price { get; set; }
+     public string Description { get; set; } = string.Empty;
++    public EquipmentSlot Slot { get; set; }
++    public int BonusRanchSkill { get; set; }
++    public int BonusCraftSkill { get; set; }
++    public int BonusCombatSkill { get; set; }
++    public int BonusMaxHp { get; set; }
++    public int BonusMaxEnergy { get; set; }
++    public int BonusMorale { get; set; }
+ }
+ 
+ [GlobalClass]
+@@ -96,6 +138,24 @@ public partial class MissionDefinition : Resource
+     public int Difficulty { get; set; }
+     public int RewardGold { get; set; }
+     public string RewardItemId { get; set; } = string.Empty;
++    public string EnemyGroupId { get; set; } = string.Empty;
++}
++
++[GlobalClass]
++public partial class EnemyDefinition : Resource
++{
++    public string Id { get; set; } = string.Empty;
++    public string DisplayName { get; set; } = string.Empty;
++    public string GroupId { get; set; } = string.Empty;
++    public MissionTier Tier { get; set; }
++    public int BaseHp { get; set; } = 50;
++    public int BaseSp { get; set; } = 20;
++    public int Attack { get; set; } = 8;
++    public int Defense { get; set; } = 4;
++    public int Speed { get; set; } = 5;
++    public int RewardGold { get; set; }
++    public string RewardItemId { get; set; } = string.Empty;
++    public int CaptureDifficulty { get; set; } = 30;
+ }
+ 
+ [GlobalClass]

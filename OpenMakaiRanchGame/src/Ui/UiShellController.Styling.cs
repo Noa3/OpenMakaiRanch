@@ -3,6 +3,7 @@ using Godot;
 using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Core.Resources;
 using OpenMakaiRanch.Gameplay;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 
 namespace OpenMakaiRanch.Ui;
 
@@ -11,6 +12,8 @@ namespace OpenMakaiRanch.Ui;
 /// </summary>
 public partial class UiShellController
 {
+    private static readonly Vector2 PortraitDisplaySize = new(112, 112);
+    private const float PortraitBodyOriginX = 32f;
     private UiThemePalette Palette => _game.Theme;
 
     private void ApplyHeaderLabelStyle(Label label)
@@ -18,11 +21,13 @@ public partial class UiShellController
         label.CustomMinimumSize = new Vector2(220, 0);
         label.ThemeTypeVariation = "HeaderSmall";
         label.AddThemeColorOverride("font_color", Palette.HeaderText);
+        ConfigureReadableLabel(label);
     }
 
     private void ApplyMutedLabelStyle(Label label)
     {
         label.AddThemeColorOverride("font_color", Palette.MutedText);
+        ConfigureReadableLabel(label);
     }
 
     private void ApplyChipLabelStyle(Label label)
@@ -47,11 +52,13 @@ public partial class UiShellController
     {
         label.CustomMinimumSize = new Vector2(0, 28);
         label.AddThemeColorOverride("font_color", Palette.SectionText);
+        ConfigureReadableLabel(label);
     }
 
     private void ApplyPrimaryButtonStyle(Button button)
     {
         button.CustomMinimumSize = button.CustomMinimumSize == Vector2.Zero ? new Vector2(0, 36) : button.CustomMinimumSize;
+        ConfigureReadableButton(button);
         button.AddThemeColorOverride("font_color", Palette.HeaderText);
         button.AddThemeStyleboxOverride("normal", CardStyle(Palette.PrimaryFill, Palette.PrimaryBorder, 1, 8));
         button.AddThemeStyleboxOverride("pressed", CardStyle(Palette.PrimaryPressed, Palette.PrimaryBorder, 1, 8));
@@ -62,6 +69,7 @@ public partial class UiShellController
     private void ApplySecondaryButtonStyle(Button button)
     {
         button.CustomMinimumSize = button.CustomMinimumSize == Vector2.Zero ? new Vector2(0, 34) : button.CustomMinimumSize;
+        ConfigureReadableButton(button);
         button.AddThemeColorOverride("font_color", Palette.BodyText);
         button.AddThemeStyleboxOverride("normal", CardStyle(Palette.SecondaryFill, Palette.SecondaryBorder, 1, 8));
         button.AddThemeStyleboxOverride("pressed", CardStyle(Palette.SecondaryPressed, Palette.SecondaryBorder, 1, 8));
@@ -90,6 +98,7 @@ public partial class UiShellController
     {
         var label = new Label { Text = text, CustomMinimumSize = new Vector2(0, 30) };
         label.AddThemeColorOverride("font_color", Palette.HeaderText);
+        ConfigureReadableLabel(label);
         return label;
     }
 
@@ -97,6 +106,7 @@ public partial class UiShellController
     {
         var label = new Label { Text = text, CustomMinimumSize = new Vector2(0, 24) };
         label.AddThemeColorOverride("font_color", Palette.BodyText);
+        ConfigureReadableLabel(label);
         return label;
     }
 
@@ -111,6 +121,7 @@ public partial class UiShellController
     {
         var label = new Label { Text = text, CustomMinimumSize = new Vector2(104, 32), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
         ApplyChipLabelStyle(label);
+        label.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
         return label;
     }
 
@@ -125,6 +136,7 @@ public partial class UiShellController
     {
         var line = new Label { Text = text };
         line.AddThemeColorOverride("font_color", Palette.BodyText);
+        ConfigureReadableLabel(line);
         if (fill)
         {
             line.SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -135,16 +147,46 @@ public partial class UiShellController
 
     private Button PrimaryButton(string text)
     {
-        var button = new Button { Text = text, CustomMinimumSize = new Vector2(0, 36) };
+        return PrimaryButton(text, "");
+    }
+
+    private Button PrimaryButton(string text, string tooltip)
+    {
+        var button = new Button { Text = text, TooltipText = tooltip, CustomMinimumSize = new Vector2(0, 36) };
         ApplyPrimaryButtonStyle(button);
         return button;
     }
 
     private Button SecondaryButton(string text)
     {
-        var button = new Button { Text = text, CustomMinimumSize = new Vector2(0, 34) };
+        return SecondaryButton(text, "");
+    }
+
+    private Button SecondaryButton(string text, string tooltip)
+    {
+        var button = new Button { Text = text, TooltipText = tooltip, CustomMinimumSize = new Vector2(0, 34) };
         ApplySecondaryButtonStyle(button);
         return button;
+    }
+
+    private Button SmallButton(string text)
+    {
+        var button = new Button { Text = text, CustomMinimumSize = new Vector2(0, 24) };
+        ConfigureReadableButton(button);
+        button.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
+        return button;
+    }
+
+    private static void ConfigureReadableLabel(Label label)
+    {
+        label.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+        label.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
+    }
+
+    private static void ConfigureReadableButton(Button button)
+    {
+        button.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
+        button.ClipText = true;
     }
 
     private PanelContainer CardContainer()
@@ -185,7 +227,7 @@ public partial class UiShellController
             return new TextureRect
             {
                 Texture = texture,
-                CustomMinimumSize = new Vector2(112, 112),
+                CustomMinimumSize = PortraitDisplaySize,
                 StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
                 ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize
             };
@@ -194,13 +236,13 @@ public partial class UiShellController
         return new ColorRect
         {
             Color = new Color("24364f"),
-            CustomMinimumSize = new Vector2(112, 112)
+            CustomMinimumSize = PortraitDisplaySize
         };
     }
 
     private static Control BuildCharacterVisual(CharacterState character, CharacterDefinition definition)
     {
-        var wrap = new VBoxContainer { CustomMinimumSize = new Vector2(112, 112) };
+        var wrap = new VBoxContainer { CustomMinimumSize = PortraitDisplaySize };
         wrap.AddThemeConstantOverride("separation", 6);
 
         var layered = BuildLayeredPortrait(character);
@@ -228,40 +270,60 @@ public partial class UiShellController
         }
 
         var bg = LoadTexture(PortraitLayerCatalog.BackgroundLayer);
-        var race = LoadTexture(PortraitLayerCatalog.RaceLayers[PortraitLayerCatalog.ClampIndex(character.RaceLayerIndex, PortraitLayerCatalog.RaceLayers.Length)]);
-        var body = LoadTexture(PortraitLayerCatalog.BodyLayers[PortraitLayerCatalog.ClampIndex(character.BodyLayerIndex, PortraitLayerCatalog.BodyLayers.Length)]);
-        var face = LoadTexture(PortraitLayerCatalog.FaceLayer);
-        var hair = LoadTexture(PortraitLayerCatalog.HairLayers[PortraitLayerCatalog.ClampIndex(character.HairLayerIndex, PortraitLayerCatalog.HairLayers.Length)]);
-        var cloth = LoadTexture(PortraitLayerCatalog.ClothLayers[PortraitLayerCatalog.ClampIndex(character.ClothLayerIndex, PortraitLayerCatalog.ClothLayers.Length)]);
-        if (bg is null || face is null)
+        if (bg is null)
         {
             return null;
         }
 
-        if (race is null || body is null || hair is null || cloth is null)
+        var race = LayerRect(PortraitLayerCatalog.RaceLayers[PortraitLayerCatalog.ClampIndex(character.RaceLayerIndex, PortraitLayerCatalog.RaceLayers.Length)]);
+        var body = LayerRect(PortraitLayerCatalog.BodyLayers[PortraitLayerCatalog.ClampIndex(character.BodyLayerIndex, PortraitLayerCatalog.BodyLayers.Length)]);
+        var face = LayerRect(PortraitLayerCatalog.FaceLayer);
+        var mouth = LayerRect(PortraitLayerCatalog.MouthLayer);
+        var hair = LayerRect(PortraitLayerCatalog.HairLayers[PortraitLayerCatalog.ClampIndex(character.HairLayerIndex, PortraitLayerCatalog.HairLayers.Length)]);
+        var cloth = LayerRect(PortraitLayerCatalog.ClothLayers[PortraitLayerCatalog.ClampIndex(character.ClothLayerIndex, PortraitLayerCatalog.ClothLayers.Length)]);
+        if (race is null || body is null || face is null || mouth is null || hair is null || cloth is null)
         {
             return null;
         }
 
-        var stack = new Control { CustomMinimumSize = new Vector2(112, 112) };
-        stack.AddChild(LayerRect(bg));
-        stack.AddChild(LayerRect(race));
-        stack.AddChild(LayerRect(body));
-        stack.AddChild(LayerRect(face));
-        stack.AddChild(LayerRect(hair));
-        stack.AddChild(LayerRect(cloth));
+        var stack = new Control { CustomMinimumSize = PortraitDisplaySize };
+        stack.AddChild(LayerRect(bg, new Vector2(24, 0), new Vector2(64, 112)));
+        stack.AddChild(race);
+        stack.AddChild(body);
+        stack.AddChild(face);
+        stack.AddChild(mouth);
+        stack.AddChild(hair);
+        stack.AddChild(cloth);
         return stack;
     }
 
-    private static TextureRect LayerRect(Texture2D? texture)
+    private static TextureRect? LayerRect(PortraitLayerFrame frame)
+    {
+        var texture = LoadTexture(frame.Path);
+        if (texture is null)
+        {
+            return null;
+        }
+
+        var atlas = new AtlasTexture
+        {
+            Atlas = texture,
+            Region = new Rect2(frame.X, frame.Y, frame.Width, frame.Height)
+        };
+        return LayerRect(atlas, new Vector2(PortraitBodyOriginX + frame.OffsetX, frame.OffsetY), new Vector2(frame.Width, frame.Height));
+    }
+
+    private static TextureRect LayerRect(Texture2D texture, Vector2 position, Vector2 size)
     {
         return new TextureRect
         {
             Texture = texture,
-            AnchorRight = 1,
-            AnchorBottom = 1,
+            Position = position,
+            Size = size,
+            CustomMinimumSize = size,
             StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            MouseFilter = Control.MouseFilterEnum.Ignore
         };
     }
 
@@ -302,21 +364,27 @@ public partial class UiShellController
     {
         return screenId switch
         {
-            "title" => "Main Menu",
-            "ranch" => "Ranch Overview",
-            "roster" => "Characters",
-            "schedule" => "Daily Schedule",
-            "town" => "Town Hub",
-            "shop" => "General Store",
-            "adventure" => "Adventure Guild",
-            "combat" => "Combat And Mission Result",
-            "milestones" => "Milestones",
-            "research" => "Research",
-            "bond" => "Bond And Mentorship",
-            "pets" => "Pets",
-            "saveload" => "Save And Load",
-            "settings" => "Settings",
-            _ => "Ranch Overview"
+            "title" => T("screen.title", "Main Menu"),
+            "ranch" => T("screen.ranch", "Ranch Overview"),
+            "roster" => T("screen.roster", "Characters"),
+            "schedule" => T("screen.schedule", "Daily Schedule"),
+            "town" => T("screen.town", "Town Hub"),
+            "shop" => T("screen.shop", "General Store"),
+            "adventure" => T("screen.adventure", "Adventure Guild"),
+            "combat" => T("screen.combat", "Combat And Mission Result"),
+            "milestones" => T("screen.milestones", "Milestones"),
+            "research" => T("screen.research", "Research"),
+            "bond" => T("screen.bond", "Bond And Mentorship"),
+            "pets" => T("screen.pets", "Pets"),
+            "training" => T("screen.training", "Training Room"),
+            "milk" => T("screen.milk", "Milk Processing"),
+            "mental" => T("screen.mental", "Mental State Overview"),
+            "character_creation" => T("screen.character_creation", "Character Creation"),
+            "prologue" => T("screen.prologue", "Opening"),
+            "victory" => T("screen.victory", "Victory!"),
+            "saveload" => T("screen.saveload", "Save And Load"),
+            "settings" => T("screen.settings", "Settings"),
+            _ => T("screen.ranch", "Ranch Overview")
         };
     }
 

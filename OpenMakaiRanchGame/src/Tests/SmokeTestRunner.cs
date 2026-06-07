@@ -32,6 +32,7 @@ public static class SmokeTestRunner
             TestManagementLoops(result);
             TestBondEventsAndResearchEffects(result);
             TestGeneratedRecruits(result);
+            TestPortraitLayerCatalog(result);
             TestSaveRoundTrip(result);
             TestSceneAuthoredUiNodes(result);
         }
@@ -59,10 +60,11 @@ public static class SmokeTestRunner
         var data = DataRegistry.CreateSeeded();
         var state = new SaveStateFactory(data).CreateNewGame();
         var schedule = new ScheduleService(state, data);
-        var ranch = new RanchService(state, data);
+        var equipment = new EquipmentService(state, data);
+        var ranch = new RanchService(state, data, equipment);
         var economy = new EconomyService(state);
         var milestones = new MilestoneService(state, data, economy);
-        var settlement = new DailySettlementService(state, data, schedule, ranch, economy, new DayCycleService(state), milestones);
+        var settlement = new DailySettlementService(state, data, schedule, ranch, economy, new DayCycleService(state), milestones, new InventoryService(state));
 
         schedule.AssignJob("slay", "pasture");
         var startingGold = state.Economy.Gold;
@@ -182,6 +184,9 @@ public static class SmokeTestRunner
                 "ResearchButton",
                 "BondButton",
                 "PetsButton",
+                "TrainingButton",
+                "MilkButton",
+                "MentalButton",
                 "SaveLoadButton",
                 "SettingsButton"
             };
@@ -213,9 +218,14 @@ public static class SmokeTestRunner
         Assert(result, generated.All(character => !string.IsNullOrWhiteSpace(character.PortraitPathOverride)), "generated recruits receive portrait overrides");
         Assert(result, generated.All(character => !string.IsNullOrWhiteSpace(character.BodyImagePathOverride)), "generated recruits receive body image overrides");
         Assert(result, generated.All(character => !string.IsNullOrWhiteSpace(character.BodyTypeOverride)), "generated recruits receive body type overrides");
+        Assert(result, generated.All(character => character.BodyLayerIndex >= 0), "generated recruits receive body layer indices");
         Assert(result, generated.All(character => character.RaceLayerIndex >= 0), "generated recruits receive race layer indices");
         Assert(result, generated.All(character => character.HairLayerIndex >= 0), "generated recruits receive hair layer indices");
         Assert(result, generated.All(character => character.ClothLayerIndex >= 0), "generated recruits receive cloth layer indices");
+        Assert(result, generated.All(character => !string.IsNullOrWhiteSpace(character.Race)), "generated recruits receive race");
+        Assert(result, generated.All(character => character.BustSize >= 0), "generated recruits receive bust size");
+        Assert(result, generated.All(character => character.Talents is { Count: > 0 }), "generated recruits receive talents");
+        Assert(result, generated.All(character => !string.IsNullOrWhiteSpace(character.JobClass)), "generated recruits receive job class");
         var uniqueLayerProfiles = generated
             .Select(character => $"{character.BodyLayerIndex}:{character.RaceLayerIndex}:{character.HairLayerIndex}:{character.ClothLayerIndex}")
             .Distinct()
@@ -236,13 +246,42 @@ public static class SmokeTestRunner
         Assert(result, state.Economy.Gold == retainedGold, "reroll recruits does not reset economy state");
     }
 
+    private static void TestPortraitLayerCatalog(SmokeTestResult result)
+    {
+        Assert(result, ResourceLoader.Exists(PortraitLayerCatalog.BackgroundLayer), "portrait background layer exists");
+        foreach (var frame in PortraitLayerCatalog.RaceLayers
+                     .Concat(PortraitLayerCatalog.HairLayers)
+                     .Concat(PortraitLayerCatalog.ClothLayers)
+                     .Concat(PortraitLayerCatalog.BodyLayers)
+                     .Append(PortraitLayerCatalog.FaceLayer)
+                     .Append(PortraitLayerCatalog.MouthLayer))
+        {
+            Assert(result, ResourceLoader.Exists(frame.Path), $"portrait layer asset exists: {frame.Path}");
+            var texture = GD.Load<Texture2D>(frame.Path);
+            Assert(result, texture is not null, $"portrait layer texture loads: {frame.Path}");
+            if (texture is null)
+            {
+                continue;
+            }
+
+            var regionIsValid = frame.X >= 0
+                && frame.Y >= 0
+                && frame.Width > 0
+                && frame.Height > 0
+                && frame.X + frame.Width <= texture.GetWidth()
+                && frame.Y + frame.Height <= texture.GetHeight();
+            Assert(result, regionIsValid, $"portrait layer frame fits sheet: {frame.Path}");
+        }
+    }
+
     private static void TestManagementLoops(SmokeTestResult result)
     {
         var data = DataRegistry.CreateSeeded();
         var state = new SaveStateFactory(data).CreateNewGame();
         var economy = new EconomyService(state);
         var inventory = new InventoryService(state);
-        var ranch = new RanchService(state, data);
+        var equipment = new EquipmentService(state, data);
+        var ranch = new RanchService(state, data, equipment);
         var milestones = new MilestoneService(state, data, economy);
         var recruitment = new RecruitmentService(state, data, economy);
         var research = new ResearchService(state, data, milestones);
@@ -298,7 +337,8 @@ public static class SmokeTestRunner
         var economy = new EconomyService(state);
         var milestones = new MilestoneService(state, data, economy);
         var bond = new BondService(state, data, milestones);
-        var ranch = new RanchService(state, data);
+        var equipment = new EquipmentService(state, data);
+        var ranch = new RanchService(state, data, equipment);
 
         Assert(result, bond.AvailableEvents("slay").Any(), "bond events are available at starting bond");
         Assert(result, bond.CompleteEvent("slay_morning_rounds"), "bond event completes");

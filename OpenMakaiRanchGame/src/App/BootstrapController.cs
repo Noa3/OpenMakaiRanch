@@ -7,18 +7,18 @@ namespace OpenMakaiRanch.App;
 /// </summary>
 public partial class BootstrapController : Control
 {
-    public override void _Ready()
-    {
-        // Defer scene swap so autoloads and this root are fully initialized first.
-        CallDeferred(nameof(RouteToMainMenu));
-    }
+	public override void _Ready()
+	{
+		// Defer scene swap so autoloads and this root are fully initialized first.
+		CallDeferred(nameof(RouteToMainMenu));
+	}
 
-    private void RouteToMainMenu()
-    {
-        var error = GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
-        if (error != Error.Ok)
-        {
-            GD.PushError($"Bootstrap failed to open MainMenu scene: {error}");
-        }
-    }
+	private void RouteToMainMenu()
+	{
+		var error = GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
+		if (error != Error.Ok)
+		{
+			GD.PushError($"Bootstrap failed to open MainMenu scene: {error}");
+		}
+	}
 }
