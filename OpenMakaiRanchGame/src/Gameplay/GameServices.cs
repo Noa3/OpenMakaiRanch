@@ -935,7 +935,8 @@ public sealed class RanchService
 
         _state.Ranch.Stockpile.TryGetValue(job.ResourceId, out var currentAmount);
         _state.Ranch.Stockpile[job.ResourceId] = currentAmount + amount;
-        report.Lines.Add($"{character.Id} completed {job.DisplayName}, adding {amount} {job.ResourceId}.");
+        var displayName = !string.IsNullOrWhiteSpace(character.DisplayNameOverride) ? character.DisplayNameOverride : character.Id;
+        report.Lines.Add($"{displayName} completed {job.DisplayName}, adding {amount} {job.ResourceId}.");
         return gold;
     }
 }
@@ -1035,7 +1036,7 @@ public sealed class DailySettlementService
         _milestones = milestones;
         _events = new DailyEventService(state, data, economy);
         _growth = new CharacterGrowthService(state, talents);
-        _resources = new ResourceConsumptionService(state);
+        _resources = new ResourceConsumptionService(state, data);
         _inventory = inventory;
         _milkEconomy = new MilkEconomyService(state);
         _talents = talents;
@@ -1083,6 +1084,7 @@ public sealed class DailySettlementService
         if (milkRevenue > 0)
         {
             report.MilkRevenue = milkRevenue;
+            report.NetGold += milkRevenue;
             report.Lines.Add($"Auto-shipped milk for {milkRevenue} gold.");
         }
 

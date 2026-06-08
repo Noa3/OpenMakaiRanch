@@ -68,7 +68,7 @@ public sealed class DailyEventService
             var evt = badEvents[rng.Next(badEvents.Count)];
             if (evt.goldCost > 0 && !_economy.Spend(evt.goldCost))
             {
-                report.Events.Add(new DailyEvent { Title = evt.title, Description = $"${{evt.desc}} (could not afford repair)", IsPositive = false });
+                report.Events.Add(new DailyEvent { Title = evt.title,                 Description = $"{evt.desc} (could not afford repair)", IsPositive = false });
                 return;
             }
             foreach (var c in _state.Roster.Characters)
@@ -97,7 +97,7 @@ public sealed class DailyEventService
                 _state.Inventory.Items[evt.item] = _state.Inventory.Items.GetValueOrDefault(evt.item) + evt.amt;
             report.Events.Add(new DailyEvent
             {
-                Title = evt.title, Description = evt.desc, IsPositive = true,
+                Title = evt.title, Description = evt.desc, IsPositive = !string.IsNullOrEmpty(evt.item),
                 ItemId = evt.item, ItemAmount = evt.amt
             });
         }
@@ -175,10 +175,12 @@ public sealed class CharacterGrowthService
 public sealed class ResourceConsumptionService
 {
     private readonly SaveState _state;
+    private readonly DataRegistry _data;
 
-    public ResourceConsumptionService(SaveState state)
+    public ResourceConsumptionService(SaveState state, DataRegistry data)
     {
         _state = state;
+        _data = data;
     }
 
     public void ConsumeResources(DailyReport report)
@@ -190,12 +192,14 @@ public sealed class ResourceConsumptionService
             var jobId = _state.Schedule.AssignedJobs.GetValueOrDefault(character.Id) ?? "rest";
             if (jobId == "rest") continue;
 
+            int maxEnergy = character.MaxEnergyOverride ?? (_data.Characters.TryGetValue(character.DefinitionId ?? character.Id, out var def) ? def.MaxEnergy : 100);
+
             if (_state.Inventory.Items.TryGetValue("meal_box", out var meals) && meals > 0)
             {
                 _state.Inventory.Items["meal_box"] = meals - 1;
                 mealsConsumed++;
                 character.Morale = Math.Clamp(character.Morale + 3, 0, 100);
-                character.Energy = Math.Min(character.Energy + 15, character.MaxEnergyOverride ?? 100);
+                character.Energy = Math.Min(character.Energy + 15, maxEnergy);
             }
             else
             {
