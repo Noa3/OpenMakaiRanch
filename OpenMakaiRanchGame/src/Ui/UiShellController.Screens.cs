@@ -240,6 +240,33 @@ public partial class UiShellController
                 };
                 equipRow.AddChild(btn);
             }
+
+            // Consumable items section
+            var consumables = _game.Inventory.Items
+                .Where(kvp => kvp.Value > 0 && _game.Data.Items.TryGetValue(kvp.Key, out var def) && def.Category == ItemCategory.Consumable)
+                .ToList();
+            if (consumables.Count > 0)
+            {
+                var itemRow = new HBoxContainer();
+                itemRow.AddThemeConstantOverride("separation", 4);
+                details.AddChild(itemRow);
+                itemRow.AddChild(MutedLabel("Items:"));
+
+                foreach (var kvp in consumables.Take(5))
+                {
+                    var capturedId = kvp.Key;
+                    var btn = SmallButton($"{capturedId} ({kvp.Value})");
+                    btn.Pressed += () => ExecuteUiAction(() =>
+                    {
+                        return _game.UseItemOnCharacter(capturedId, character.Id);
+                    }, false);
+                    itemRow.AddChild(btn);
+                }
+                if (consumables.Count > 5)
+                {
+                    itemRow.AddChild(MutedLabel($"+{consumables.Count - 5} more"));
+                }
+            }
         }
     }
 

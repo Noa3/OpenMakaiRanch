@@ -116,9 +116,9 @@ public static class PortraitLayerCatalog
         new("res://assets/portrait_layers/body2.png", 0, 0, 80, 112, -25, 0)
     };
 
-    public static readonly PortraitLayerFrame FaceLayer = new("res://assets/portrait_layers/face.png", 0, 0, 8, 16, 14, 14);
+    public static readonly PortraitLayerFrame FaceLayer = new("res://assets/portrait_layers/face.png", 0, 0, 8, 16, 14, 14, 6f);
     // Legacy mouth frames use the same draw offset; their opaque pixels sit lower inside the transparent 16x16 crop.
-    public static readonly PortraitLayerFrame MouthLayer = new("res://assets/portrait_layers/face.png", 0, 384, 16, 16, 14, 14);
+    public static readonly PortraitLayerFrame MouthLayer = new("res://assets/portrait_layers/face.png", 0, 384, 16, 16, 14, 14, 5f);
     public const string BackgroundLayer = "res://assets/portrait_layers/bg.png";
 
     public static IEnumerable<string> AllLayerPaths()
@@ -144,7 +144,7 @@ public static class PortraitLayerCatalog
     }
 }
 
-public readonly record struct PortraitLayerFrame(string Path, int X, int Y, int Width, int Height, int OffsetX, int OffsetY);
+public readonly record struct PortraitLayerFrame(string Path, int X, int Y, int Width, int Height, int OffsetX, int OffsetY, float Scale = 1f);
 
 public sealed class SaveStateFactory
 {
@@ -780,12 +780,14 @@ public sealed class RanchService
     private readonly SaveState _state;
     private readonly DataRegistry _data;
     private readonly EquipmentService _equipment;
+    private readonly TalentService _talents;
 
-    public RanchService(SaveState state, DataRegistry data, EquipmentService equipment)
+    public RanchService(SaveState state, DataRegistry data, EquipmentService equipment, TalentService talents)
     {
         _state = state;
         _data = data;
         _equipment = equipment;
+        _talents = talents;
     }
 
     public IReadOnlyDictionary<string, int> Stockpile => _state.Ranch.Stockpile;
@@ -863,13 +865,34 @@ public sealed class RanchService
 
         var equipRanch = _equipment.BonusRanchSkill(character.Id);
         var equipCombat = _equipment.BonusCombatSkill(character.Id);
-        var effectiveRanch = character.RanchSkill + equipRanch;
-        var effectiveCombat = character.CombatSkill + equipCombat;
+        var talentRanch = _talents.BonusRanchSkill(character.Id);
+        var talentCombat = _talents.BonusCombatSkill(character.Id);
+        var effectiveRanch = character.RanchSkill + equipRanch + talentRanch;
+        var effectiveCombat = character.CombatSkill + equipCombat + talentCombat;
         var skillBonus = job.Category == JobCategory.Adventure ? effectiveCombat : effectiveRanch;
         var researchBonus = _state.Research.UnlockedSkillIds.Contains("ranch_planning") && job.Category != JobCategory.Rest ? 2 : 0;
         var amount = Math.Max(0, job.ResourceAmount + skillBonus / 2) + researchBonus;
-
         var gold = job.GoldIncome + amount * 3;
+
+        var talentMult = _talents.JobOutputMultiplier(character.Id);
+        if (talentMult < 1f)
+        {
+            int penalty = amount - (int)(amount * talentMult);
+            if (penalty > 0)
+            {
+                amount -= penalty;
+                gold = job.GoldIncome + amount * 3;
+            }
+        }
+        else if (talentMult > 1f)
+        {
+            int bonus = (int)(amount * (talentMult - 1f));
+            if (bonus > 0)
+            {
+                amount += bonus;
+                gold += bonus * 3;
+            }
+        }
 
         if (_state.Research.UnlockedSkillIds.Contains("dairy_science") && job.Category == JobCategory.Dairy)
         {
@@ -999,8 +1022,9 @@ public sealed class DailySettlementService
     private readonly ResourceConsumptionService _resources;
     private readonly InventoryService _inventory;
     private readonly MilkEconomyService _milkEconomy;
+    private readonly TalentService _talents;
 
-    public DailySettlementService(SaveState state, DataRegistry data, ScheduleService schedule, RanchService ranch, EconomyService economy, DayCycleService dayCycle, MilestoneService milestones, InventoryService inventory)
+    public DailySettlementService(SaveState state, DataRegistry data, ScheduleService schedule, RanchService ranch, EconomyService economy, DayCycleService dayCycle, MilestoneService milestones, InventoryService inventory, TalentService talents)
     {
         _state = state;
         _data = data;
@@ -1010,10 +1034,11 @@ public sealed class DailySettlementService
         _dayCycle = dayCycle;
         _milestones = milestones;
         _events = new DailyEventService(state, data, economy);
-        _growth = new CharacterGrowthService(state);
+        _growth = new CharacterGrowthService(state, talents);
         _resources = new ResourceConsumptionService(state);
         _inventory = inventory;
         _milkEconomy = new MilkEconomyService(state);
+        _talents = talents;
     }
 
     public DailyReport SettleDay()
@@ -1030,7 +1055,8 @@ public sealed class DailySettlementService
             var jobId = _schedule.GetAssignment(character.Id);
             var job = _data.Jobs.TryGetValue(jobId, out var foundJob) ? foundJob : _data.Job("rest");
             income += _ranch.ApplyJobOutput(character, job, report);
-            character.Fatigue = Math.Clamp(character.Fatigue + job.FatigueDelta, 0, 100);
+            var fatigueResistance = _talents.FatigueResistance(character.Id);
+            character.Fatigue = Math.Clamp(character.Fatigue + Math.Max(0, job.FatigueDelta - fatigueResistance), 0, 100);
             character.Morale = Math.Clamp(character.Morale + job.MoraleDelta, 0, 100);
             character.Bond = Math.Clamp(character.Bond + job.BondDelta, 0, 100);
         }

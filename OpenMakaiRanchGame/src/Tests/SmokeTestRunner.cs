@@ -61,10 +61,11 @@ public static class SmokeTestRunner
         var state = new SaveStateFactory(data).CreateNewGame();
         var schedule = new ScheduleService(state, data);
         var equipment = new EquipmentService(state, data);
-        var ranch = new RanchService(state, data, equipment);
+        var talents = new TalentService(state, data);
+        var ranch = new RanchService(state, data, equipment, talents);
         var economy = new EconomyService(state);
         var milestones = new MilestoneService(state, data, economy);
-        var settlement = new DailySettlementService(state, data, schedule, ranch, economy, new DayCycleService(state), milestones, new InventoryService(state));
+        var settlement = new DailySettlementService(state, data, schedule, ranch, economy, new DayCycleService(state), milestones, new InventoryService(state), talents);
 
         schedule.AssignJob("slay", "pasture");
         var startingGold = state.Economy.Gold;
@@ -281,7 +282,8 @@ public static class SmokeTestRunner
         var economy = new EconomyService(state);
         var inventory = new InventoryService(state);
         var equipment = new EquipmentService(state, data);
-        var ranch = new RanchService(state, data, equipment);
+        var talents = new TalentService(state, data);
+        var ranch = new RanchService(state, data, equipment, talents);
         var milestones = new MilestoneService(state, data, economy);
         var recruitment = new RecruitmentService(state, data, economy);
         var research = new ResearchService(state, data, milestones);
@@ -338,7 +340,8 @@ public static class SmokeTestRunner
         var milestones = new MilestoneService(state, data, economy);
         var bond = new BondService(state, data, milestones);
         var equipment = new EquipmentService(state, data);
-        var ranch = new RanchService(state, data, equipment);
+        var talents = new TalentService(state, data);
+        var ranch = new RanchService(state, data, equipment, talents);
 
         Assert(result, bond.AvailableEvents("slay").Any(), "bond events are available at starting bond");
         Assert(result, bond.CompleteEvent("slay_morning_rounds"), "bond event completes");

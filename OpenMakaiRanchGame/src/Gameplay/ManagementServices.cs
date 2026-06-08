@@ -614,10 +614,12 @@ public sealed class ResearchService
 public sealed class TrainingService
 {
     private readonly SaveState _state;
+    private readonly TalentService _talents;
 
-    public TrainingService(SaveState state)
+    public TrainingService(SaveState state, TalentService talents)
     {
         _state = state;
+        _talents = talents;
     }
 
     public bool Train(string characterId, string focus)
@@ -628,8 +630,10 @@ public sealed class TrainingService
             return false;
         }
 
+        var efficiency = _talents.TrainingEfficiency(characterId);
+        var fatigueCost = Math.Max(1, (int)(12 / efficiency));
         character.Energy = Math.Max(0, character.Energy - 10);
-        character.Fatigue = Math.Clamp(character.Fatigue + 12, 0, 100);
+        character.Fatigue = Math.Clamp(character.Fatigue + fatigueCost, 0, 100);
         character.Morale = Math.Clamp(character.Morale + 1, 0, 100);
 
         switch (focus)

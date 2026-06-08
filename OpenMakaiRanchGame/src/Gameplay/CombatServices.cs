@@ -12,12 +12,14 @@ public sealed class CombatService
     private readonly SaveState _state;
     private readonly DataRegistry _data;
     private readonly EquipmentService _equipment;
+    private readonly TalentService _talents;
 
-    public CombatService(SaveState state, DataRegistry data, EquipmentService equipment)
+    public CombatService(SaveState state, DataRegistry data, EquipmentService equipment, TalentService talents)
     {
         _state = state;
         _data = data;
         _equipment = equipment;
+        _talents = talents;
     }
 
     public CombatReport ResolveMissionRounds(string missionId, bool autoResolve)
@@ -249,11 +251,11 @@ public sealed class CombatService
         return chars.Select(c => new BattleCombatant
         {
             Id = c.Id, DisplayName = c.DisplayNameOverride,
-            Hp = Math.Max(50, c.Hp / 20), MaxHp = Math.Max(50, ((c.MaxHpOverride ?? 100) + _equipment.BonusMaxHp(c.Id)) / 20),
-            Sp = Math.Max(20, c.Energy / 10), MaxSp = Math.Max(20, ((c.MaxEnergyOverride ?? 100) + _equipment.BonusMaxEnergy(c.Id)) / 10),
-            Attack = (c.CombatSkill + _equipment.BonusCombatSkill(c.Id)) * 3 + c.Morale / 20 + trainingBonus + tacticalBonus,
-            Defense = (c.CombatSkill + _equipment.BonusCombatSkill(c.Id)) * 2 + (c.CraftSkill + _equipment.BonusCraftSkill(c.Id)) / 3 + trainingBonus / 2 + tacticalBonus / 2,
-            Speed = 5 + (c.CombatSkill + _equipment.BonusCombatSkill(c.Id)) / 2 - c.Fatigue / 25 + trainingBonus / 2 + tacticalBonus / 3,
+            Hp = Math.Max(50, c.Hp / 20), MaxHp = Math.Max(50, ((c.MaxHpOverride ?? 100) + _equipment.BonusMaxHp(c.Id) + _talents.BonusMaxHp(c.Id)) / 20),
+            Sp = Math.Max(20, c.Energy / 10), MaxSp = Math.Max(20, ((c.MaxEnergyOverride ?? 100) + _equipment.BonusMaxEnergy(c.Id) + _talents.BonusMaxEnergy(c.Id)) / 10),
+            Attack = (c.CombatSkill + _equipment.BonusCombatSkill(c.Id) + _talents.BonusCombatSkill(c.Id)) * 3 + c.Morale / 20 + trainingBonus + tacticalBonus,
+            Defense = (c.CombatSkill + _equipment.BonusCombatSkill(c.Id) + _talents.BonusCombatSkill(c.Id)) * 2 + (c.CraftSkill + _equipment.BonusCraftSkill(c.Id) + _talents.BonusCraftSkill(c.Id)) / 3 + trainingBonus / 2 + tacticalBonus / 2,
+            Speed = 5 + (c.CombatSkill + _equipment.BonusCombatSkill(c.Id) + _talents.BonusCombatSkill(c.Id)) / 2 - c.Fatigue / 25 + trainingBonus / 2 + tacticalBonus / 3,
             IsEnemy = false
         }).ToList();
     }

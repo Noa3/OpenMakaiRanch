@@ -118,6 +118,23 @@ public partial class ItemDefinition : Resource
     public int BonusMorale { get; set; }
 }
 
+public class TalentDefinition
+{
+    public string Id { get; set; } = "";
+    public string DisplayName { get; set; } = "";
+    public string Description { get; set; } = "";
+    public int BonusRanchSkill { get; set; }
+    public int BonusCraftSkill { get; set; }
+    public int BonusCombatSkill { get; set; }
+    public int BonusMaxHp { get; set; }
+    public int BonusMaxEnergy { get; set; }
+    public float GrowthMultiplier { get; set; } = 1f;
+    public float JobOutputMultiplier { get; set; } = 1f;
+    public float TrainingEfficiency { get; set; } = 1f;
+    public int MoraleCapBonus { get; set; }
+    public int FatigueResistance { get; set; }
+}
+
 [GlobalClass]
 public partial class FacilityDefinition : Resource
 {

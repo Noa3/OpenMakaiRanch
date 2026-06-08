@@ -22,7 +22,7 @@ public partial class UiShellController : Control
     public NodePath RootPanelPath { get; set; } = "Margin/RootPanel";
 
     [Export]
-    public NodePath NavigationPath { get; set; } = "Margin/RootPanel/Root/Body/NavPanel/Navigation";
+    public NodePath NavigationPath { get; set; } = "Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation";
 
     [Export]
     public NodePath ContentPanelPath { get; set; } = "Margin/RootPanel/Root/Body/ContentPanel";
@@ -60,6 +60,9 @@ public partial class UiShellController : Control
     [Export]
     public NodePath EndDayButtonPath { get; set; } = "Margin/RootPanel/Root/TopBar/EndDayButton";
 
+    [Export]
+    public NodePath MenuButtonPath { get; set; } = "Margin/RootPanel/Root/TopBar/MenuButton";
+
     private GameRoot _game = null!;
     private MarginContainer _margin = null!;
     private PanelContainer _rootPanel = null!;
@@ -71,6 +74,8 @@ public partial class UiShellController : Control
     private Label _screenLabel = null!;
     private Label _statusLabel = null!;
     private Button _endDayButton = null!;
+    private Button _menuButton = null!;
+    private bool _navCollapsed;
     private HBoxContainer _body = null!;
     private PanelContainer _navPanel = null!;
     private VBoxContainer _navigation = null!;
@@ -192,6 +197,7 @@ public partial class UiShellController : Control
         _phaseLabel = GetNodeOrNull<Label>(PhaseLabelPath)!;
         _goldLabel = GetNodeOrNull<Label>(GoldLabelPath)!;
         _endDayButton = GetNodeOrNull<Button>(EndDayButtonPath)!;
+        _menuButton = GetNodeOrNull<Button>(MenuButtonPath)!;
         _scroll = GetNodeOrNull<ScrollContainer>(ScrollPath)!;
         _content = GetNodeOrNull<VBoxContainer>(ContentPath)!;
         _compactNavigationScroll = GetNodeOrNull<ScrollContainer>(CompactNavigationScrollPath)!;
@@ -224,9 +230,14 @@ public partial class UiShellController : Control
         ApplyPrimaryButtonStyle(_endDayButton);
         _endDayButton.Pressed += () => ExecuteUiAction(() => _game.AdvanceTime(), true);
 
+        if (_menuButton is not null)
+        {
+            _menuButton.Pressed += ToggleNavCollapse;
+        }
+
         ApplySectionStyle(_navigation, "CoreSection");
         ApplySectionStyle(_navigation, "ProgressSection");
-        ApplySectionStyle(_navigation, "NsfwSection");
+        ApplySectionStyle(_navigation, "AdventureSection");
         ApplySectionStyle(_navigation, "SystemSection");
 
         _navButtons.Clear();
@@ -288,7 +299,7 @@ public partial class UiShellController : Control
     private void ApplyResponsiveLayout()
     {
         var viewportSize = GetViewportRect().Size;
-        var compact = viewportSize.X <= 900 || viewportSize.Y <= 520;
+        var compact = _navCollapsed || viewportSize.X <= 900 || viewportSize.Y <= 520;
         var tightWidth = viewportSize.X <= 680;
         var margin = compact ? 8 : 18;
         _margin.OffsetLeft = margin;
@@ -311,6 +322,13 @@ public partial class UiShellController : Control
         ApplyChipMinimum(_phaseLabel.GetParent() as PanelContainer, compact);
         ApplyChipMinimum(_goldLabel.GetParent() as PanelContainer, compact);
         _endDayButton.CustomMinimumSize = new Vector2(compact ? 96 : 118, compact ? 34 : 38);
+    }
+
+    private void ToggleNavCollapse()
+    {
+        _navCollapsed = !_navCollapsed;
+        _game.Feedback.PlayConfirm();
+        ApplyResponsiveLayout();
     }
 
     private static void ApplyChipMinimum(PanelContainer? panel, bool compact)

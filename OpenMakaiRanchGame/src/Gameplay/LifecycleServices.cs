@@ -107,10 +107,12 @@ public sealed class DailyEventService
 public sealed class CharacterGrowthService
 {
     private readonly SaveState _state;
+    private readonly TalentService _talents;
 
-    public CharacterGrowthService(SaveState state)
+    public CharacterGrowthService(SaveState state, TalentService talents)
     {
         _state = state;
+        _talents = talents;
     }
 
     public void ApplyGrowth(DailyReport report)
@@ -131,6 +133,8 @@ public sealed class CharacterGrowthService
             character.SkillXp ??= new Dictionary<string, int>();
             int xp = character.SkillXp.GetValueOrDefault(skillKey);
             int gain = 3 + (character.Fatigue < 50 ? 2 : 0);
+            float growthMult = _talents.GrowthMultiplier(character.Id);
+            gain = Math.Max(1, (int)(gain * growthMult));
             xp += gain;
             character.SkillXp[skillKey] = xp;
 

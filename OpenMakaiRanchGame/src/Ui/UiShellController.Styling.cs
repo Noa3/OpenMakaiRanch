@@ -310,7 +310,9 @@ public partial class UiShellController
             Atlas = texture,
             Region = new Rect2(frame.X, frame.Y, frame.Width, frame.Height)
         };
-        return LayerRect(atlas, new Vector2(PortraitBodyOriginX + frame.OffsetX, frame.OffsetY), new Vector2(frame.Width, frame.Height));
+        var scaledW = (int)(frame.Width * frame.Scale);
+        var scaledH = (int)(frame.Height * frame.Scale);
+        return LayerRect(atlas, new Vector2(PortraitBodyOriginX + frame.OffsetX, frame.OffsetY), new Vector2(scaledW, scaledH));
     }
 
     private static TextureRect LayerRect(Texture2D texture, Vector2 position, Vector2 size)

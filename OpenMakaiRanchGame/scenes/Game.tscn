@@ -184,6 +184,11 @@ custom_minimum_size = Vector2(118, 38)
 layout_mode = 2
 text = "End Day"
 
+[node name="MenuButton" type="Button" parent="UiShell/Margin/RootPanel/Root/TopBar"]
+custom_minimum_size = Vector2(40, 38)
+layout_mode = 2
+text = "☰"
+
 [node name="Body" type="HBoxContainer" parent="UiShell/Margin/RootPanel/Root"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -194,92 +199,98 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(230, 0)
 layout_mode = 2
 
-[node name="Navigation" type="VBoxContainer" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel"]
+[node name="NavScroll" type="ScrollContainer" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Navigation" type="VBoxContainer" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="CoreSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="CoreSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 text = "RANCH"
 
-[node name="OverviewButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="OverviewButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Overview"
 
-[node name="ScheduleButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="ScheduleButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Schedule"
 
-[node name="TownButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="TownButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Town"
 
-[node name="ShopButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="ShopButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Shop"
 
-[node name="ProgressSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="ProgressSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 text = "CHARACTERS"
 
-[node name="CharactersButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="CharactersButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Roster"
 
-[node name="TrainingButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="TrainingButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Training"
 
-[node name="BondButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="BondButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Bond"
 
-[node name="MilkButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="MilkButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Milk"
 
-[node name="MentalButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="MentalButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Mental"
 
-[node name="NsfwSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="AdventureSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 text = "ADVENTURE"
 
-[node name="AdventureButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="AdventureButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Adventure"
 
-[node name="CombatButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="CombatButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Combat"
 
-[node name="MilestonesButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="MilestonesButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Milestones"
 
-[node name="ResearchButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="ResearchButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Research"
 
-[node name="PetsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="PetsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Pets"
 
-[node name="SystemSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="SystemSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 text = "SYSTEM"
 
-[node name="SaveLoadButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="SaveLoadButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Save And Load"
 
-[node name="SettingsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/Navigation"]
+[node name="SettingsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Settings"
 

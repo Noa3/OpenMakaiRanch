@@ -14,6 +14,7 @@ public sealed class DataRegistry
     public Dictionary<string, MilestoneDefinition> Milestones { get; } = new();
     public Dictionary<string, SkillDefinition> Skills { get; } = new();
     public Dictionary<string, PetDefinition> Pets { get; } = new();
+    public Dictionary<string, TalentDefinition> Talents { get; } = new();
     public Dictionary<string, BondEventDefinition> BondEvents { get; } = new();
     public Dictionary<string, EnemyDefinition> Enemies { get; } = new();
 
@@ -30,6 +31,7 @@ public sealed class DataRegistry
         registry.SeedSkills();
         registry.SeedPets();
         registry.SeedBondEvents();
+        registry.SeedTalents();
         return registry;
     }
 
@@ -272,6 +274,59 @@ public sealed class DataRegistry
         Add(new BondEventDefinition { Id = "anon_stargazing", CharacterId = "anon", Title = "Stargazing", Description = "Lie on the ranch roof and name constellations. Anon's playful commentary makes the night memorable.", RequiredBond = 16, BondReward = 8, MoraleReward = 6, StockpileRewardId = "comfort", StockpileRewardAmount = 1 });
     }
 
+    private void SeedTalents()
+    {
+        // Stat modifiers
+        Add(new TalentDefinition { Id = "fast_learner", DisplayName = "Fast Learner", Description = "Gains skills 25% faster.", GrowthMultiplier = 1.25f });
+        Add(new TalentDefinition { Id = "klutz", DisplayName = "Klutz", Description = "Clumsy hands reduce job output by 20%.", JobOutputMultiplier = 0.8f });
+        Add(new TalentDefinition { Id = "hospitality_clumsy", DisplayName = "Hospitality Clumsy", Description = "Awkward service reduces output by 15%.", JobOutputMultiplier = 0.85f });
+        Add(new TalentDefinition { Id = "cowardly", DisplayName = "Cowardly", Description = "-1 Combat Skill.", BonusCombatSkill = -1 });
+        Add(new TalentDefinition { Id = "shy", DisplayName = "Shy", Description = "Training is 10% less effective.", TrainingEfficiency = 0.9f });
+        Add(new TalentDefinition { Id = "obedient", DisplayName = "Obedient", Description = "Training is 20% more effective.", TrainingEfficiency = 1.2f });
+        Add(new TalentDefinition { Id = "devoted", DisplayName = "Devoted", Description = "+10 max Morale.", MoraleCapBonus = 10 });
+        Add(new TalentDefinition { Id = "proud", DisplayName = "Proud", Description = "+1 Combat Skill.", BonusCombatSkill = 1 });
+        Add(new TalentDefinition { Id = "faith", DisplayName = "Faith", Description = "+2 Combat Skill, +5 max Morale.", BonusCombatSkill = 2, MoraleCapBonus = 5 });
+        Add(new TalentDefinition { Id = "justice", DisplayName = "Justice", Description = "+2 Combat Skill.", BonusCombatSkill = 2 });
+        Add(new TalentDefinition { Id = "steadfast", DisplayName = "Steadfast", Description = "Resists 2 fatigue per day.", FatigueResistance = 2 });
+        Add(new TalentDefinition { Id = "honest_to_pleasure", DisplayName = "Honest to Pleasure", Description = "Training is 15% more effective.", TrainingEfficiency = 1.15f });
+        Add(new TalentDefinition { Id = "shameless", DisplayName = "Shameless", Description = "Training is 20% more effective.", TrainingEfficiency = 1.2f });
+        Add(new TalentDefinition { Id = "weak_to_pain", DisplayName = "Weak to Pain", Description = "Training is 15% less effective.", TrainingEfficiency = 0.85f });
+        Add(new TalentDefinition { Id = "moody", DisplayName = "Moody", Description = "Gains 1 more fatigue per day.", FatigueResistance = -1 });
+        Add(new TalentDefinition { Id = "easily_charmed", DisplayName = "Easily Charmed", Description = "Training is 10% more effective.", TrainingEfficiency = 1.1f });
+        Add(new TalentDefinition { Id = "pharmacy_knowledge", DisplayName = "Pharmacy Knowledge", Description = "+1 Craft Skill, better item healing.", BonusCraftSkill = 1 });
+        Add(new TalentDefinition { Id = "docile", DisplayName = "Docile", Description = "+5 max Morale.", MoraleCapBonus = 5 });
+        Add(new TalentDefinition { Id = "maternal_instinct", DisplayName = "Maternal Instinct", Description = "+5 max Energy, +1 Ranch Skill.", BonusMaxEnergy = 5, BonusRanchSkill = 1 });
+        Add(new TalentDefinition { Id = "self_control", DisplayName = "Self Control", Description = "Resists 1 fatigue per day.", FatigueResistance = 1 });
+        Add(new TalentDefinition { Id = "conservative", DisplayName = "Conservative", Description = "+1 Craft Skill.", BonusCraftSkill = 1 });
+        Add(new TalentDefinition { Id = "dignity", DisplayName = "Dignity", Description = "+1 max Morale, resists 1 fatigue.", MoraleCapBonus = 1, FatigueResistance = 1 });
+        Add(new TalentDefinition { Id = "rebellious", DisplayName = "Rebellious", Description = "Training is 10% less effective.", TrainingEfficiency = 0.9f });
+        // Narrative/non-mechanical talents (tags only)
+        Add(new TalentDefinition { Id = "horns", DisplayName = "Horns" });
+        Add(new TalentDefinition { Id = "male", DisplayName = "Male" });
+        Add(new TalentDefinition { Id = "owner", DisplayName = "Ranch Owner" });
+        Add(new TalentDefinition { Id = "makai_race", DisplayName = "Makai Race" });
+        Add(new TalentDefinition { Id = "mouth_paradise", DisplayName = "Mouth Paradise" });
+        Add(new TalentDefinition { Id = "virginity_barrier", DisplayName = "Virginity Barrier" });
+        Add(new TalentDefinition { Id = "chastity", DisplayName = "Chastity" });
+        Add(new TalentDefinition { Id = "virgin", DisplayName = "Virgin" });
+        Add(new TalentDefinition { Id = "a_virgin", DisplayName = "Anal Virgin" });
+        Add(new TalentDefinition { Id = "m_virgin", DisplayName = "Mouth Virgin" });
+        Add(new TalentDefinition { Id = "pure", DisplayName = "Pure" });
+        Add(new TalentDefinition { Id = "tsundere", DisplayName = "Tsundere" });
+        Add(new TalentDefinition { Id = "doesnt_cross_line", DisplayName = "Doesn't Cross Line" });
+        Add(new TalentDefinition { Id = "maiden_heart", DisplayName = "Maiden Heart" });
+        Add(new TalentDefinition { Id = "denies_pleasure", DisplayName = "Denies Pleasure" });
+        Add(new TalentDefinition { Id = "jk", DisplayName = "JK" });
+        Add(new TalentDefinition { Id = "baby_face", DisplayName = "Baby Face" });
+        Add(new TalentDefinition { Id = "extreme_milk_pressure", DisplayName = "Extreme Milk Pressure" });
+        Add(new TalentDefinition { Id = "breast_abuse_hatred", DisplayName = "Breast Abuse Hatred" });
+        Add(new TalentDefinition { Id = "breast_proud", DisplayName = "Breast Proud" });
+        Add(new TalentDefinition { Id = "cleaning_clumsy", DisplayName = "Cleaning Clumsy" });
+        Add(new TalentDefinition { Id = "indifferent", DisplayName = "Indifferent" });
+        Add(new TalentDefinition { Id = "animal_ears", DisplayName = "Animal Ears" });
+        Add(new TalentDefinition { Id = "instigator", DisplayName = "Instigator" });
+    }
+
     private void Add(CharacterDefinition definition) => Characters[definition.Id] = definition;
     private void Add(JobDefinition definition) => Jobs[definition.Id] = definition;
     private void Add(ItemDefinition definition) => Items[definition.Id] = definition;
@@ -282,4 +337,5 @@ public sealed class DataRegistry
     private void Add(PetDefinition definition) => Pets[definition.Id] = definition;
     private void Add(EnemyDefinition definition) => Enemies[definition.Id] = definition;
     private void Add(BondEventDefinition definition) => BondEvents[definition.Id] = definition;
+    private void Add(TalentDefinition definition) => Talents[definition.Id] = definition;
 }

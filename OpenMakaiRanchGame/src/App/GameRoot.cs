@@ -48,6 +48,7 @@ public partial class GameRoot : Node
     public MercenaryService Mercenary { get; private set; } = null!;
     public WinConditionService WinCondition { get; private set; } = null!;
     public EquipmentService Equipment { get; private set; } = null!;
+    public TalentService Talents { get; private set; } = null!;
     public DailyReport? LastDailyReport { get; set; }
     public CombatReport? LastCombatReport { get; set; }
     public CombatPhase CurrentCombatPhase { get; set; } = CombatPhase.PreBattle;
@@ -304,7 +305,7 @@ public partial class GameRoot : Node
     public DailyReport EndDay()
     {
         var dayCycle = new DayCycleService(State);
-        var settlement = new DailySettlementService(State, Data, Schedule, Ranch, Economy, dayCycle, Milestones, Inventory);
+        var settlement = new DailySettlementService(State, Data, Schedule, Ranch, Economy, dayCycle, Milestones, Inventory, Talents);
         LastDailyReport = settlement.SettleDay();
         DaySettled?.Invoke(LastDailyReport);
         StateChanged?.Invoke();
@@ -428,7 +429,8 @@ public partial class GameRoot : Node
         Roster = new RosterService(State, Data);
         Schedule = new ScheduleService(State, Data);
         Equipment = new EquipmentService(State, Data);
-        Ranch = new RanchService(State, Data, Equipment);
+        Talents = new TalentService(State, Data);
+        Ranch = new RanchService(State, Data, Equipment, Talents);
         Economy = new EconomyService(State);
         Inventory = new InventoryService(State);
         Milestones = new MilestoneService(State, Data, Economy);
@@ -440,12 +442,12 @@ public partial class GameRoot : Node
         Recruitment.EnsureOffer();
         Research = new ResearchService(State, Data, Milestones);
         Pets = new PetService(State, Data, Economy);
-        Training = new TrainingService(State);
+        Training = new TrainingService(State, Talents);
         MentalState = new MentalStateService();
         EnhancedTraining = new EnhancedTrainingService(State);
         MilkEconomy = new MilkEconomyService(State);
         Addiction = new AddictionService(State);
-        Combat = new CombatService(State, Data, Equipment);
+        Combat = new CombatService(State, Data, Equipment, Talents);
         Discovery = new DiscoveryService(State, Data);
         Mercenary = new MercenaryService(State, Economy);
         WinCondition = new WinConditionService(State, Data);
