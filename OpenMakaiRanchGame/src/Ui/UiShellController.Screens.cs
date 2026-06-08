@@ -844,24 +844,74 @@ public partial class UiShellController
 
     private void RenderBond()
     {
-        AddTitle(T("screen.bond", "Bond And Mentorship"));
+        AddTitle(T("screen.bond", "Bond Events"));
         foreach (var character in _game.Roster.Characters)
         {
             var definition = _game.Roster.DefinitionFor(character);
-            var card = CardContainer();
-            _content.AddChild(card);
+            var characterCard = CardContainer();
+            _content.AddChild(characterCard);
 
-            card.AddChild(SubtitleLabel($"{definition.DisplayName} ({T("label.bond", "bond")} {character.Bond})"));
-            var mentor = PrimaryButton(T("screen.bond.mentorship", "Conduct Mentorship"), T("tooltip.mentorship", "Spend 4 fatigue: +5 bond, +4 morale"));
-            mentor.Pressed += () => ExecuteUiAction(() => _game.Bond.ConductMentorship(character.Id), false);
-            card.AddChild(mentor);
+            var header = new HBoxContainer();
+            header.AddThemeConstantOverride("separation", 10);
+            characterCard.AddChild(header);
 
-            foreach (var bondEvent in _game.Bond.AvailableEvents(character.Id))
+            var portrait = BuildCharacterVisual(character, definition);
+            portrait.CustomMinimumSize = new Vector2(112, 112);
+            header.AddChild(portrait);
+
+            var info = new VBoxContainer();
+            info.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            info.AddThemeConstantOverride("separation", 4);
+            header.AddChild(info);
+            info.AddChild(SubtitleLabel($"{definition.DisplayName} — Bond {character.Bond}"));
+
+            var mentorBtn = SecondaryButton("Mentorship (+4 bond, -4 fatigue)", "Spend 4 fatigue: +5 bond, +4 morale");
+            mentorBtn.Pressed += () => ExecuteUiAction(() => _game.Bond.ConductMentorship(character.Id), false);
+            info.AddChild(mentorBtn);
+
+            var events = _game.Bond.AvailableEvents(character.Id).ToList();
+            if (events.Count == 0)
             {
-                var eventButton = SecondaryButton($"{T("screen.bond.event", "Event")}: {bondEvent.Title}", T("tooltip.bond_event", $"Required bond: {bondEvent.RequiredBond}, rewards: +{bondEvent.BondReward} bond, +{bondEvent.MoraleReward} morale, +{bondEvent.StockpileRewardAmount} {bondEvent.StockpileRewardId}"));
-                eventButton.Pressed += () => ExecuteUiAction(() => _game.Bond.CompleteEvent(bondEvent.Id), false);
-                card.AddChild(eventButton);
-                card.AddChild(MutedLabel(bondEvent.Description));
+                info.AddChild(MutedLabel("No events available yet. Raise bond to unlock more."));
+            }
+
+            foreach (var bondEvent in events)
+            {
+                var eventCard = CardContainer();
+                _content.AddChild(eventCard);
+
+                var eventHeader = AddStyledLine($"✦ {bondEvent.Title}", true);
+                eventCard.AddChild(eventHeader);
+
+                var reqLabel = MutedLabel($"Required bond: {bondEvent.RequiredBond}  |  Reward: +{bondEvent.BondReward} bond, +{bondEvent.MoraleReward} morale{(string.IsNullOrWhiteSpace(bondEvent.StockpileRewardId) ? "" : $", +{bondEvent.StockpileRewardAmount} {bondEvent.StockpileRewardId}")}");
+                eventCard.AddChild(reqLabel);
+
+                var narrativeBox = new PanelContainer();
+                narrativeBox.AddThemeStyleboxOverride("panel", CardStyle(new Color("1a2a4a"), new Color("3a5a8a"), 1, 8));
+                narrativeBox.CustomMinimumSize = new Vector2(0, 60);
+                eventCard.AddChild(narrativeBox);
+
+                var narrativeLabel = new Label
+                {
+                    Text = bondEvent.Description,
+                    AutowrapMode = TextServer.AutowrapMode.WordSmart,
+                    SizeFlagsHorizontal = SizeFlags.ExpandFill,
+                    SizeFlagsVertical = SizeFlags.ExpandFill
+                };
+                narrativeBox.AddChild(narrativeLabel);
+
+                var completeBtn = PrimaryButton("Complete Event", "Complete this bond event to earn rewards and progress the story");
+                completeBtn.Pressed += () => ExecuteUiAction(() => _game.Bond.CompleteEvent(bondEvent.Id), false);
+                eventCard.AddChild(completeBtn);
+            }
+
+            // Show completed events count
+            var completedCount = _game.Data.BondEvents.Values.Count(e => e.CharacterId == character.Id && _game.State.Bond.CompletedEventIds.Contains(e.Id));
+            if (completedCount > 0)
+            {
+                var completedTitle = MutedLabel($"✓ {completedCount} event{(completedCount == 1 ? "" : "s")} completed");
+                completedTitle.AddThemeColorOverride("font_color", new Color("66dd88"));
+                characterCard.AddChild(completedTitle);
             }
         }
     }
