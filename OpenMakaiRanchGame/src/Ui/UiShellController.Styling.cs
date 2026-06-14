@@ -44,8 +44,8 @@ public partial class UiShellController
             return;
         }
 
-        panel.CustomMinimumSize = new Vector2(104, 32);
-        panel.AddThemeStyleboxOverride("panel", CardStyle(Palette.ChipFill, Palette.ChipBorder, 1, 8));
+        panel.CustomMinimumSize = new Vector2(70, 24);
+        panel.AddThemeStyleboxOverride("panel", CardStyle(Palette.ChipFill, Palette.ChipBorder, 1, 4));
     }
 
     private void ApplySectionLabelStyle(Label label)
@@ -57,24 +57,30 @@ public partial class UiShellController
 
     private void ApplyPrimaryButtonStyle(Button button)
     {
-        button.CustomMinimumSize = button.CustomMinimumSize == Vector2.Zero ? new Vector2(0, 36) : button.CustomMinimumSize;
+        button.CustomMinimumSize = button.CustomMinimumSize == Vector2.Zero ? new Vector2(120, 36) : button.CustomMinimumSize;
         ConfigureReadableButton(button);
-        button.AddThemeColorOverride("font_color", Palette.HeaderText);
-        button.AddThemeStyleboxOverride("normal", CardStyle(Palette.PrimaryFill, Palette.PrimaryBorder, 1, 8));
-        button.AddThemeStyleboxOverride("pressed", CardStyle(Palette.PrimaryPressed, Palette.PrimaryBorder, 1, 8));
-        button.AddThemeStyleboxOverride("hover", CardStyle(Palette.PrimaryHover, Palette.PrimaryBorder, 1, 8));
-        button.AddThemeStyleboxOverride("disabled", CardStyle(Palette.SecondaryFill, Palette.SecondaryBorder, 1, 8));
+        foreach (var state in new[] { "font_color", "font_hover_color", "font_pressed_color", "font_disabled_color", "font_focus_color" })
+            button.AddThemeColorOverride(state, Palette.HeaderText);
+        button.AddThemeFontSizeOverride("font_size", 15);
+        button.AddThemeStyleboxOverride("normal", CardStyle(Palette.PrimaryFill, Palette.PrimaryBorder, 1, 4));
+        button.AddThemeStyleboxOverride("pressed", CardStyle(Palette.PrimaryPressed, Palette.PrimaryBorder, 1, 4));
+        button.AddThemeStyleboxOverride("hover", CardStyle(Palette.PrimaryHover, Palette.PrimaryBorder, 1, 4));
+        button.AddThemeStyleboxOverride("disabled", CardStyle(Palette.SecondaryFill, Palette.SecondaryBorder, 1, 4));
+        button.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     }
 
     private void ApplySecondaryButtonStyle(Button button)
     {
-        button.CustomMinimumSize = button.CustomMinimumSize == Vector2.Zero ? new Vector2(0, 34) : button.CustomMinimumSize;
+        button.CustomMinimumSize = button.CustomMinimumSize == Vector2.Zero ? new Vector2(120, 34) : button.CustomMinimumSize;
         ConfigureReadableButton(button);
-        button.AddThemeColorOverride("font_color", Palette.BodyText);
-        button.AddThemeStyleboxOverride("normal", CardStyle(Palette.SecondaryFill, Palette.SecondaryBorder, 1, 8));
-        button.AddThemeStyleboxOverride("pressed", CardStyle(Palette.SecondaryPressed, Palette.SecondaryBorder, 1, 8));
-        button.AddThemeStyleboxOverride("hover", CardStyle(Palette.SecondaryHover, Palette.SecondaryBorder, 1, 8));
-        button.AddThemeStyleboxOverride("disabled", CardStyle(Palette.SecondaryFill.Darkened(0.2f), Palette.SecondaryBorder.Darkened(0.2f), 1, 8));
+        foreach (var state in new[] { "font_color", "font_hover_color", "font_pressed_color", "font_disabled_color", "font_focus_color" })
+            button.AddThemeColorOverride(state, Palette.BodyText);
+        button.AddThemeFontSizeOverride("font_size", 15);
+        button.AddThemeStyleboxOverride("normal", CardStyle(Palette.SecondaryFill, Palette.SecondaryBorder, 1, 4));
+        button.AddThemeStyleboxOverride("pressed", CardStyle(Palette.SecondaryPressed, Palette.SecondaryBorder, 1, 4));
+        button.AddThemeStyleboxOverride("hover", CardStyle(Palette.SecondaryHover, Palette.SecondaryBorder, 1, 4));
+        button.AddThemeStyleboxOverride("disabled", CardStyle(Palette.SecondaryFill.Darkened(0.2f), Palette.SecondaryBorder.Darkened(0.2f), 1, 4));
+        button.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     }
 
     private void AddTitle(string text)
@@ -145,6 +151,14 @@ public partial class UiShellController
         return line;
     }
 
+    private Label BodyLabel(string text)
+    {
+        var label = new Label { Text = text, VerticalAlignment = VerticalAlignment.Center };
+        label.AddThemeColorOverride("font_color", Palette.BodyText);
+        ConfigureReadableLabel(label);
+        return label;
+    }
+
     private Button PrimaryButton(string text)
     {
         return PrimaryButton(text, "");
@@ -171,10 +185,62 @@ public partial class UiShellController
 
     private Button SmallButton(string text)
     {
-        var button = new Button { Text = text, CustomMinimumSize = new Vector2(0, 24) };
+        var button = new Button { Text = text, CustomMinimumSize = new Vector2(92, 26) };
         ConfigureReadableButton(button);
-        button.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
+        button.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
         return button;
+    }
+
+    private OptionButton StyledPicker(float minWidth = 200)
+    {
+        var picker = new OptionButton
+        {
+            CustomMinimumSize = new Vector2(minWidth, 34),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ShrinkCenter,
+            FitToLongestItem = false,
+            TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis
+        };
+        return picker;
+    }
+
+    private HFlowContainer FlowRow(int separation = 8)
+    {
+        var row = new HFlowContainer
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        row.AddThemeConstantOverride("h_separation", separation);
+        row.AddThemeConstantOverride("v_separation", 6);
+        return row;
+    }
+
+    private void AddFlowButton(HFlowContainer row, Button button, float minWidth = 132)
+    {
+        button.CustomMinimumSize = new Vector2(Math.Max(button.CustomMinimumSize.X, minWidth), Math.Max(button.CustomMinimumSize.Y, 34));
+        button.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
+        row.AddChild(button);
+    }
+
+    private Button DestinationButton(string text, string screenId, bool primary = false, string tooltip = "")
+    {
+        var canEnter = CanEnterScreen(screenId, out var requirement);
+        var label = canEnter ? text : $"{text} {LockedSuffix()}";
+        var button = primary ? PrimaryButton(label, canEnter ? tooltip : requirement) : SecondaryButton(label, canEnter ? tooltip : requirement);
+        button.Disabled = !canEnter;
+        button.Pressed += () =>
+        {
+            _game.Feedback.PlayNavigate();
+            ShowScreen(screenId);
+        };
+        return button;
+    }
+
+    private Label RequirementLabel(string text)
+    {
+        var label = MutedLabel(text);
+        label.AddThemeColorOverride("font_color", new Color("e9c46a"));
+        return label;
     }
 
     private static void ConfigureReadableLabel(Label label)
@@ -191,9 +257,17 @@ public partial class UiShellController
 
     private PanelContainer CardContainer()
     {
-        var card = new PanelContainer();
-        card.AddThemeStyleboxOverride("panel", CardStyle(Palette.CardFill, Palette.CardBorder, 1, 12));
+        var card = new PanelContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        card.AddThemeStyleboxOverride("panel", CardStyle(Palette.CardFill, Palette.CardBorder, 1, 8));
         return card;
+    }
+
+    private VBoxContainer CardContent()
+    {
+        var inner = new VBoxContainer();
+        inner.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        inner.AddThemeConstantOverride("separation", 6);
+        return inner;
     }
 
     private static StyleBoxFlat CardStyle(Color fill, Color border, int borderWidth, int cornerRadius)
@@ -263,7 +337,8 @@ public partial class UiShellController
     {
         if (PortraitLayerCatalog.RaceLayers.Length == 0
             || PortraitLayerCatalog.HairLayers.Length == 0
-            || PortraitLayerCatalog.BodyLayers.Length == 0
+            || PortraitLayerCatalog.BodyBaseLayers.Length == 0
+            || PortraitLayerCatalog.BreastLayers.Length == 0
             || PortraitLayerCatalog.ClothLayers.Length == 0)
         {
             return null;
@@ -275,21 +350,27 @@ public partial class UiShellController
             return null;
         }
 
+        var bodyShape = PortraitLayerCatalog.ClampIndex(character.BodyLayerIndex, PortraitLayerCatalog.BodyTypeCount);
+        var skinColor = PortraitLayerCatalog.ClampIndex(character.SkinColorIndex, PortraitLayerCatalog.SkinColorCount);
+        var breastSize = PortraitLayerCatalog.ClampIndex(character.BreastSizeIndex, PortraitLayerCatalog.BreastSizeCount);
+
+        var bodyBase = LayerRect(PortraitLayerCatalog.BodyBaseLayers[PortraitLayerCatalog.BodyBaseIndex(bodyShape, skinColor)]);
+        var breast = LayerRect(PortraitLayerCatalog.BreastLayers[PortraitLayerCatalog.BreastIndex(bodyShape, breastSize, skinColor)]);
         var race = LayerRect(PortraitLayerCatalog.RaceLayers[PortraitLayerCatalog.ClampIndex(character.RaceLayerIndex, PortraitLayerCatalog.RaceLayers.Length)]);
-        var body = LayerRect(PortraitLayerCatalog.BodyLayers[PortraitLayerCatalog.ClampIndex(character.BodyLayerIndex, PortraitLayerCatalog.BodyLayers.Length)]);
         var face = LayerRect(PortraitLayerCatalog.FaceLayer);
         var mouth = LayerRect(PortraitLayerCatalog.MouthLayer);
         var hair = LayerRect(PortraitLayerCatalog.HairLayers[PortraitLayerCatalog.ClampIndex(character.HairLayerIndex, PortraitLayerCatalog.HairLayers.Length)]);
         var cloth = LayerRect(PortraitLayerCatalog.ClothLayers[PortraitLayerCatalog.ClampIndex(character.ClothLayerIndex, PortraitLayerCatalog.ClothLayers.Length)]);
-        if (race is null || body is null || face is null || mouth is null || hair is null || cloth is null)
+        if (bodyBase is null || breast is null || race is null || face is null || mouth is null || hair is null || cloth is null)
         {
             return null;
         }
 
         var stack = new Control { CustomMinimumSize = PortraitDisplaySize };
         stack.AddChild(LayerRect(bg, new Vector2(24, 0), new Vector2(64, 112)));
+        stack.AddChild(bodyBase);
         stack.AddChild(race);
-        stack.AddChild(body);
+        stack.AddChild(breast);
         stack.AddChild(face);
         stack.AddChild(mouth);
         stack.AddChild(hair);
@@ -347,17 +428,52 @@ public partial class UiShellController
             ShowPercentage = false,
             CustomMinimumSize = new Vector2(0, 14)
         };
-        bar.AddThemeStyleboxOverride("background", CardStyle(Palette.StatBarBackground, Palette.StatBarBorder, 1, 6));
-        bar.AddThemeStyleboxOverride("fill", CardStyle(fillColor, fillColor, 0, 6));
+        bar.AddThemeStyleboxOverride("background", CardStyle(Palette.StatBarBackground, Palette.StatBarBorder, 1, 4));
+        bar.AddThemeStyleboxOverride("fill", CardStyle(fillColor, fillColor, 0, 4));
         wrap.AddChild(bar);
 
         return wrap;
     }
 
+    private void BuildCompactStatBar(PanelContainer chip, out Label label, out ProgressBar bar, Color fillColor)
+    {
+        chip.CustomMinimumSize = new Vector2(80, 34);
+        chip.AddThemeStyleboxOverride("panel", CardStyle(Palette.StatBarBackground, Palette.StatBarBorder, 1, 4));
+
+        var wrap = new VBoxContainer();
+        wrap.AddThemeConstantOverride("separation", 1);
+        wrap.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        wrap.SizeFlagsVertical = SizeFlags.ExpandFill;
+
+        label = new Label
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Text = "..."
+        };
+        label.AddThemeFontSizeOverride("font_size", 11);
+        label.AddThemeColorOverride("font_color", Palette.ChipText);
+        wrap.AddChild(label);
+
+        bar = new ProgressBar
+        {
+            MinValue = 0,
+            MaxValue = 100,
+            Value = 50,
+            ShowPercentage = false,
+            CustomMinimumSize = new Vector2(0, 6)
+        };
+        bar.AddThemeStyleboxOverride("background", CardStyle(Palette.StatBarBackground, Palette.StatBarBorder, 1, 2));
+        bar.AddThemeStyleboxOverride("fill", CardStyle(fillColor, fillColor, 0, 2));
+        wrap.AddChild(bar);
+
+        chip.AddChild(wrap);
+    }
+
     private Control StatChip(string text)
     {
         var panel = new PanelContainer();
-        panel.AddThemeStyleboxOverride("panel", CardStyle(Palette.ChipFill, Palette.ChipBorder, 1, 8));
+        panel.AddThemeStyleboxOverride("panel", CardStyle(Palette.ChipFill, Palette.ChipBorder, 1, 4));
         panel.AddChild(MutedLabel(text));
         return panel;
     }

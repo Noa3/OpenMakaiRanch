@@ -8,14 +8,14 @@ namespace OpenMakaiRanch.App;
 /// </summary>
 public partial class GameSceneController : Control
 {
-    [Export]
-    public NodePath UiShellPath { get; set; } = "UiShell";
+	[Export]
+	public NodePath UiShellPath { get; set; } = "UiShell";
 
-    public override void _Ready()
-    {
-        if (GetNodeOrNull<UiShellController>(UiShellPath) is not { })
-        {
-            GD.PushError($"Game scene could not find UiShell at '{UiShellPath}'.");
-        }
-    }
+	public override void _Ready()
+	{
+		if (GetNodeOrNull<UiShellController>(UiShellPath) is not { })
+		{
+			GD.PushError($"Game scene could not find UiShell at '{UiShellPath}'.");
+		}
+	}
 }

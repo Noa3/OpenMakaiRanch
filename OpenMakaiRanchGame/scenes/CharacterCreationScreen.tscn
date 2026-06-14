@@ -1,0 +1,346 @@
+[gd_scene format=3]
+
+[node name="CharacterCreationContent" type="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_constants/separation = 14
+
+[node name="BasicCard" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BasicInner" type="VBoxContainer" parent="BasicCard"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BasicTitle" type="Label" parent="BasicCard/BasicInner"]
+layout_mode = 2
+
+[node name="BasicGrid" type="GridContainer" parent="BasicCard/BasicInner"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="NameLabel" type="Label" parent="BasicCard/BasicInner/BasicGrid"]
+layout_mode = 2
+text = "Character Name:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="NameInput" type="LineEdit" parent="BasicCard/BasicInner/BasicGrid"]
+custom_minimum_size = Vector2(260, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter your name"
+
+[node name="SpeciesLabel" type="Label" parent="BasicCard/BasicInner/BasicGrid"]
+layout_mode = 2
+text = "Species:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="SpeciesPicker" type="OptionButton" parent="BasicCard/BasicInner/BasicGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="GenderLabel" type="Label" parent="BasicCard/BasicInner/BasicGrid"]
+layout_mode = 2
+text = "Gender:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="GenderPicker" type="OptionButton" parent="BasicCard/BasicInner/BasicGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="RanchLabel" type="Label" parent="BasicCard/BasicInner/BasicGrid"]
+layout_mode = 2
+text = "Ranch Name:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="RanchInput" type="LineEdit" parent="BasicCard/BasicInner/BasicGrid"]
+custom_minimum_size = Vector2(260, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter your ranch name"
+
+[node name="BodyCard" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BodyInner" type="VBoxContainer" parent="BodyCard"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BodyTitle" type="Label" parent="BodyCard/BodyInner"]
+layout_mode = 2
+
+[node name="BodyGrid" type="GridContainer" parent="BodyCard/BodyInner"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="HeightLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+layout_mode = 2
+text = "Height:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="HeightPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="AgeLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+layout_mode = 2
+text = "Age:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="AgePicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="BuildLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+layout_mode = 2
+text = "Body Build:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="BuildPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="ChestLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+layout_mode = 2
+text = "Chest Size:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="ChestPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="SkinLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+layout_mode = 2
+text = "Skin Tone:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="SkinRow" type="HBoxContainer" parent="BodyCard/BodyInner/BodyGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="SkinPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid/SkinRow"]
+custom_minimum_size = Vector2(200, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="TailLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+layout_mode = 2
+text = "Tail:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="TailPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="AppearanceCard" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AppearanceInner" type="VBoxContainer" parent="AppearanceCard"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AppearanceTitle" type="Label" parent="AppearanceCard/AppearanceInner"]
+layout_mode = 2
+
+[node name="AppearanceGrid" type="GridContainer" parent="AppearanceCard/AppearanceInner"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="HairColorLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+layout_mode = 2
+text = "Hair Color:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="HairColorRow" type="HBoxContainer" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="HairColorPicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid/HairColorRow"]
+custom_minimum_size = Vector2(200, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="HairLengthLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+layout_mode = 2
+text = "Hair Length:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="HairLengthPicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="HairstyleLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+layout_mode = 2
+text = "Hairstyle:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="HairstylePicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="EyeColorLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+layout_mode = 2
+text = "Eye Color:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="EyeColorRow" type="HBoxContainer" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="EyeColorPicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid/EyeColorRow"]
+custom_minimum_size = Vector2(200, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="EyeStyleLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+layout_mode = 2
+text = "Eye Style:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="EyeStylePicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="AccessoriesCard" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AccessoriesInner" type="VBoxContainer" parent="AccessoriesCard"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AccessoriesTitle" type="Label" parent="AccessoriesCard/AccessoriesInner"]
+layout_mode = 2
+
+[node name="AccessoriesGrid" type="GridContainer" parent="AccessoriesCard/AccessoriesInner"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="AccessoriesLabel" type="Label" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
+layout_mode = 2
+text = "Accessories:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="AccessoriesRow" type="HBoxContainer" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="HornsCheck" type="CheckBox" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow"]
+layout_mode = 2
+text = "Horns"
+
+[node name="GlassesCheck" type="CheckBox" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow"]
+layout_mode = 2
+text = "Glasses"
+
+[node name="BodyFurLabel" type="Label" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
+layout_mode = 2
+text = "Body Fur:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="BodyFurPicker" type="OptionButton" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="PetMountCard" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PetMountInner" type="VBoxContainer" parent="PetMountCard"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PetMountTitle" type="Label" parent="PetMountCard/PetMountInner"]
+layout_mode = 2
+
+[node name="PetMountGrid" type="GridContainer" parent="PetMountCard/PetMountInner"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="PetLabel" type="Label" parent="PetMountCard/PetMountInner/PetMountGrid"]
+layout_mode = 2
+text = "Starting Pet:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="PetPicker" type="OptionButton" parent="PetMountCard/PetMountInner/PetMountGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="MountLabel" type="Label" parent="PetMountCard/PetMountInner/PetMountGrid"]
+layout_mode = 2
+text = "Starting Mount:"
+custom_minimum_size = Vector2(140, 0)
+
+[node name="MountPicker" type="OptionButton" parent="PetMountCard/PetMountInner/PetMountGrid"]
+custom_minimum_size = Vector2(220, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="ActionRow" type="HFlowContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 8
+
+[node name="StartButton" type="Button" parent="ActionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start Game"
+tooltip_text = "Begin your story and head to the ranch"
+
+[node name="BackButton" type="Button" parent="ActionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Back To Title"
+tooltip_text = "Return to the main menu"

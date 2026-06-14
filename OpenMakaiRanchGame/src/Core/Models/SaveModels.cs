@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -9,6 +10,22 @@ public enum DayPhase
     Afternoon,
     Evening,
     Night
+}
+
+public enum Season
+{
+    Spring,
+    Summer,
+    Autumn,
+    Winter
+}
+
+public enum Weather
+{
+    Clear,
+    Cloudy,
+    Rain,
+    Storm
 }
 
 public enum MissionOutcome
@@ -56,9 +73,10 @@ public enum TrainingCategory
 
 public sealed class SaveState
 {
-    public const int CurrentSchemaVersion = 11;
+    public const int CurrentSchemaVersion = 14;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
+    public DateTime? SavedAt { get; set; }
     public CalendarState Calendar { get; set; } = new();
     public EconomyState Economy { get; set; } = new();
     public RanchState Ranch { get; set; } = new();
@@ -100,12 +118,20 @@ public sealed class PlayerState
     public string BustSize { get; set; } = "Flat";
     public string BreastFirmness { get; set; } = "Firm";
     public string FirstPersonPronoun { get; set; } = "I";
+    public string StartingPetId { get; set; } = "stable_cat";
+    public string StartingMountId { get; set; } = "none";
+    public string TailType { get; set; } = "None";
+    public string BodyFur { get; set; } = "None";
 }
 
 public sealed class CalendarState
 {
     public int Day { get; set; } = 1;
     public DayPhase Phase { get; set; } = DayPhase.Morning;
+    public Weather CurrentWeather { get; set; } = Weather.Clear;
+
+    [JsonIgnore]
+    public Season Season => (Season)(((Day - 1) / 30) % 4);
 }
 
 public sealed class EconomyState
@@ -113,12 +139,17 @@ public sealed class EconomyState
     public int Gold { get; set; } = 500;
     public int LastIncome { get; set; }
     public int LastExpenses { get; set; }
+    public int SpiritEnergy { get; set; }
+    public int ManaReservoir { get; set; }
 }
 
 public sealed class RanchState
 {
     public Dictionary<string, int> Stockpile { get; set; } = new();
     public Dictionary<string, int> Facilities { get; set; } = new();
+    public int CattleHealth { get; set; } = 80;
+    public int Workload { get; set; }
+    public bool BathtubClean { get; set; } = true;
 }
 
 public sealed class RosterState
@@ -137,6 +168,8 @@ public sealed class CharacterState
     public string BodyImagePathOverride { get; set; } = string.Empty;
     public string BodyTypeOverride { get; set; } = string.Empty;
     public int BodyLayerIndex { get; set; }
+    public int SkinColorIndex { get; set; }
+    public int BreastSizeIndex { get; set; }
     public int FaceLayerIndex { get; set; }
     public int HairLayerIndex { get; set; }
     public int RaceLayerIndex { get; set; }
@@ -152,6 +185,7 @@ public sealed class CharacterState
     public int RanchSkill { get; set; }
     public int CraftSkill { get; set; }
     public int CombatSkill { get; set; }
+    public int MagicPower { get; set; }
     public Dictionary<string, int> SkillXp { get; set; } = new();
     public bool HasGrownToday { get; set; }
     public Dictionary<string, string> EquippedItems { get; set; } = new();

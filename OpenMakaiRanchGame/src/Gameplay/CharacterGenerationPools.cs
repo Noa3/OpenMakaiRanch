@@ -352,6 +352,19 @@ public static class CharacterGenerationPools
 
     public static readonly int[] BreastSizeValues = { 0, 2, 4, 6, 8, 10, 12, 15 };
 
+    // === Tail Types (era customization 14) ===
+    public static readonly string[] TailTypes =
+    {
+        "None", "Short", "Long", "Fluffy", "Cat Tail", "Fox Tail",
+        "Demon Tail", "Lizard Tail", "Bunny Tail", "Lion Tail", "Dragon Tail"
+    };
+
+    // === Body Fur (era customization 15) ===
+    public static readonly string[] BodyFurOptions =
+    {
+        "None", "Light", "Normal", "Heavy", "Full Body"
+    };
+
     // === Height Pool (from Str.csv 6500+) ===
     public static readonly (string Label, int Min, int Max)[] HeightRanges =
     {

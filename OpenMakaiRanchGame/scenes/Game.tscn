@@ -53,10 +53,155 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="TopBar" type="HBoxContainer" parent="UiShell/Margin/RootPanel/Root"]
+[node name="TopBar" type="VBoxContainer" parent="UiShell/Margin/RootPanel/Root"]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 2
+
+[node name="TopBarRow1" type="HBoxContainer" parent="UiShell/Margin/RootPanel/Root/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="TitleBox" type="VBoxContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="TitleLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/TitleBox"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Open Makai Ranch"
+
+[node name="ScreenLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/TitleBox"]
+layout_mode = 2
+text = "Ranch Overview"
+
+[node name="StatusLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/TitleBox"]
+layout_mode = 2
+
+[node name="PlayerNameChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+custom_minimum_size = Vector2(70, 26)
+layout_mode = 2
+
+[node name="PlayerNameLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/PlayerNameChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HpChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+custom_minimum_size = Vector2(80, 30)
+layout_mode = 2
+
+[node name="HpLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/HpChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WorkloadChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+custom_minimum_size = Vector2(80, 30)
+layout_mode = 2
+
+[node name="WorkloadLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TopBarRow1Spacer" type="Control" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="WeatherChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+custom_minimum_size = Vector2(68, 26)
+layout_mode = 2
+
+[node name="WeatherLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/WeatherChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DayChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+custom_minimum_size = Vector2(88, 26)
+layout_mode = 2
+
+[node name="DayLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/DayChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PhaseChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+custom_minimum_size = Vector2(68, 26)
+layout_mode = 2
+
+[node name="PhaseLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/PhaseChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MenuButton" type="Button" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+custom_minimum_size = Vector2(36, 26)
+layout_mode = 2
+text = "☰"
+
+[node name="TopBarRow2" type="HBoxContainer" parent="UiShell/Margin/RootPanel/Root/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="GoldChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2"]
+custom_minimum_size = Vector2(76, 24)
+layout_mode = 2
+
+[node name="GoldLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/GoldChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpiritChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2"]
+custom_minimum_size = Vector2(76, 24)
+layout_mode = 2
+
+[node name="SpiritLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/SpiritChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ManaChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2"]
+custom_minimum_size = Vector2(76, 24)
+layout_mode = 2
+
+[node name="ManaLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/ManaChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HealthChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2"]
+custom_minimum_size = Vector2(76, 28)
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/HealthChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BathtubChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2"]
+custom_minimum_size = Vector2(76, 24)
+layout_mode = 2
+
+[node name="BathtubLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/BathtubChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TopBarRow2Spacer" type="Control" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="EndDayButton" type="Button" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2"]
+custom_minimum_size = Vector2(100, 24)
+layout_mode = 2
+text = "End Day"
 
 [node name="CompactNavigationScroll" type="ScrollContainer" parent="UiShell/Margin/RootPanel/Root"]
 visible = false
@@ -134,60 +279,6 @@ text = "Save"
 [node name="SettingsCompactButton" type="Button" parent="UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation"]
 layout_mode = 2
 text = "Settings"
-
-[node name="TitleBox" type="VBoxContainer" parent="UiShell/Margin/RootPanel/Root/TopBar"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 2
-
-[node name="TitleLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TitleBox"]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-text = "Open Makai Ranch"
-
-[node name="ScreenLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TitleBox"]
-layout_mode = 2
-text = "Ranch Overview"
-
-[node name="StatusLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TitleBox"]
-layout_mode = 2
-
-[node name="DayChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar"]
-custom_minimum_size = Vector2(104, 32)
-layout_mode = 2
-
-[node name="DayLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/DayChip"]
-layout_mode = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="PhaseChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar"]
-custom_minimum_size = Vector2(104, 32)
-layout_mode = 2
-
-[node name="PhaseLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/PhaseChip"]
-layout_mode = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="GoldChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar"]
-custom_minimum_size = Vector2(104, 32)
-layout_mode = 2
-
-[node name="GoldLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/GoldChip"]
-layout_mode = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="EndDayButton" type="Button" parent="UiShell/Margin/RootPanel/Root/TopBar"]
-custom_minimum_size = Vector2(118, 38)
-layout_mode = 2
-text = "End Day"
-
-[node name="MenuButton" type="Button" parent="UiShell/Margin/RootPanel/Root/TopBar"]
-custom_minimum_size = Vector2(40, 38)
-layout_mode = 2
-text = "☰"
 
 [node name="Body" type="HBoxContainer" parent="UiShell/Margin/RootPanel/Root"]
 layout_mode = 2

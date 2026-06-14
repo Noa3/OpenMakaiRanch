@@ -118,21 +118,22 @@ public partial class ItemDefinition : Resource
     public int BonusMorale { get; set; }
 }
 
-public class TalentDefinition
+[GlobalClass]
+public partial class TalentDefinition : Resource
 {
-    public string Id { get; set; } = "";
-    public string DisplayName { get; set; } = "";
-    public string Description { get; set; } = "";
-    public int BonusRanchSkill { get; set; }
-    public int BonusCraftSkill { get; set; }
-    public int BonusCombatSkill { get; set; }
-    public int BonusMaxHp { get; set; }
-    public int BonusMaxEnergy { get; set; }
-    public float GrowthMultiplier { get; set; } = 1f;
-    public float JobOutputMultiplier { get; set; } = 1f;
-    public float TrainingEfficiency { get; set; } = 1f;
-    public int MoraleCapBonus { get; set; }
-    public int FatigueResistance { get; set; }
+    [Export] public string Id { get; set; } = "";
+    [Export] public string DisplayName { get; set; } = "";
+    [Export] public string Description { get; set; } = "";
+    [Export] public int BonusRanchSkill { get; set; }
+    [Export] public int BonusCraftSkill { get; set; }
+    [Export] public int BonusCombatSkill { get; set; }
+    [Export] public int BonusMaxHp { get; set; }
+    [Export] public int BonusMaxEnergy { get; set; }
+    [Export] public float GrowthMultiplier { get; set; } = 1f;
+    [Export] public float JobOutputMultiplier { get; set; } = 1f;
+    [Export] public float TrainingEfficiency { get; set; } = 1f;
+    [Export] public int MoraleCapBonus { get; set; }
+    [Export] public int FatigueResistance { get; set; }
 }
 
 [GlobalClass]
@@ -202,6 +203,7 @@ public partial class PetDefinition : Resource
     public string Id { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public int CareCost { get; set; }
+    public bool IsMountable { get; set; }
 }
 
 [GlobalClass]

@@ -112,6 +112,17 @@ public sealed class InventoryService
                 character.Hp = Math.Clamp(character.Hp + (herbalism ? 30 : 20), 0, character.MaxHpOverride ?? 150);
                 character.Energy = Math.Clamp(character.Energy + (herbalism ? 22 : 15), 0, character.MaxEnergyOverride ?? 150);
                 return true;
+            case "mana_root":
+                character.Energy = Math.Clamp(character.Energy + 25, 0, character.MaxEnergyOverride ?? 150);
+                character.Fatigue = Math.Clamp(character.Fatigue - 10, 0, 100);
+                return true;
+            case "calming_incense":
+                character.Fatigue = Math.Clamp(character.Fatigue - 15, 0, 100);
+                character.Morale = Math.Clamp(character.Morale + 5, 0, 100);
+                return true;
+            case "spirit_water":
+                character.Energy = Math.Clamp(character.Energy + 30, 0, character.MaxEnergyOverride ?? 150);
+                return true;
             default:
                 return false;
         }
@@ -630,6 +641,16 @@ public sealed class TrainingService
             return false;
         }
 
+        if (character.Fatigue >= 80)
+        {
+            return false;
+        }
+
+        if (character.Mature.FallState == FallState.Collapse)
+        {
+            return false;
+        }
+
         var efficiency = _talents.TrainingEfficiency(characterId);
         var fatigueCost = Math.Max(1, (int)(12 / efficiency));
         character.Energy = Math.Max(0, character.Energy - 10);
@@ -646,6 +667,11 @@ public sealed class TrainingService
                 break;
             case "combat":
                 character.CombatSkill = Math.Clamp(character.CombatSkill + 1, 1, 10);
+                break;
+            case "magic":
+                if (character.MagicPower < 1)
+                    character.MagicPower = 1;
+                character.MagicPower += 2;
                 break;
             default:
                 return false;

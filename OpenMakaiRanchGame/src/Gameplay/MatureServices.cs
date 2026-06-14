@@ -393,6 +393,9 @@ public sealed class EnhancedTrainingService
         if (character.Bond < action.MinBond)
             return new TrainingReport { Success = false, Summary = $"Requires bond {action.MinBond} (current: {character.Bond})." };
 
+        if (character.Mature.FallState == FallState.Collapse)
+            return new TrainingReport { Success = false, Summary = "Character is collapsed and cannot be trained." };
+
         // Apply effects
         character.Energy -= action.EnergyCost;
         character.Fatigue = Clamp100(character.Fatigue + action.FatigueCost);

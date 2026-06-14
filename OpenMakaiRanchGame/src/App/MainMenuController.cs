@@ -1,4 +1,5 @@
 using Godot;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 
 namespace OpenMakaiRanch.App;
 
@@ -7,155 +8,232 @@ namespace OpenMakaiRanch.App;
 /// </summary>
 public partial class MainMenuController : Control
 {
-    [Export]
-    public NodePath ContinueButtonPath { get; set; } = "Root/Center/Panel/Content/ContinueButton";
+	[Export]
+	public NodePath ContinueButtonPath { get; set; } = "Root/Center/Panel/Content/ContinueButton";
 
-    [Export]
-    public NodePath BackgroundPath { get; set; } = "Root/Background";
+	[Export]
+	public NodePath BackgroundPath { get; set; } = "Root/Background";
 
-    [Export]
-    public NodePath PanelPath { get; set; } = "Root/Center/Panel";
+	[Export]
+	public NodePath PanelPath { get; set; } = "Root/Center/Panel";
 
-    [Export]
-    public NodePath NewGameButtonPath { get; set; } = "Root/Center/Panel/Content/NewGameButton";
+	[Export]
+	public NodePath NewGameButtonPath { get; set; } = "Root/Center/Panel/Content/NewGameButton";
 
-    [Export]
-    public NodePath QuitButtonPath { get; set; } = "Root/Center/Panel/Content/QuitButton";
+	[Export]
+	public NodePath NewGamePlusButtonPath { get; set; } = "Root/Center/Panel/Content/NewGamePlusButton";
 
-    [Export]
-    public NodePath StatusLabelPath { get; set; } = "Root/Center/Panel/Content/StatusLabel";
+	[Export]
+	public NodePath QuitButtonPath { get; set; } = "Root/Center/Panel/Content/QuitButton";
 
-    private Button _continueButton = null!;
-    private Button _newGameButton = null!;
-    private Button _quitButton = null!;
-    private Label _statusLabel = null!;
-    private ColorRect _background = null!;
-    private PanelContainer _panel = null!;
+	[Export]
+	public NodePath LangPickerPath { get; set; } = "Root/Center/Panel/Content/LangRow/LangPicker";
 
-    public override void _Ready()
-    {
-        if (!TryBindUi())
-        {
-            GD.PushError("MainMenuController failed to bind required scene nodes.");
-            return;
-        }
+	[Export]
+	public NodePath LangLabelPath { get; set; } = "Root/Center/Panel/Content/LangRow/LangLabel";
 
-        _continueButton.Pressed += () => HandleStart(loadExisting: true);
-        _newGameButton.Pressed += () => HandleStart(loadExisting: false);
-        _quitButton.Pressed += () => GetTree().Quit();
+	private Button _continueButton = null!;
+	private Button _newGameButton = null!;
+	private Button _newGamePlusButton = null!;
+	private Button _quitButton = null!;
+	private ColorRect _background = null!;
+	private PanelContainer _panel = null!;
+	private OptionButton _langPicker = null!;
+	private Label _langLabel = null!;
 
-        ApplyTheme();
-        RefreshState();
-    }
+	public override void _Ready()
+	{
+		if (!TryBindUi())
+		{
+			GD.PushError("MainMenuController failed to bind required scene nodes.");
+			return;
+		}
 
-    private bool TryBindUi()
-    {
-        var continueButton = GetNodeOrNull<Button>(ContinueButtonPath);
-        var newGameButton = GetNodeOrNull<Button>(NewGameButtonPath);
-        var quitButton = GetNodeOrNull<Button>(QuitButtonPath);
-        var statusLabel = GetNodeOrNull<Label>(StatusLabelPath);
-        var background = GetNodeOrNull<ColorRect>(BackgroundPath);
-        var panel = GetNodeOrNull<PanelContainer>(PanelPath);
+		_continueButton.Pressed += () => HandleStart(loadExisting: true);
+		_newGameButton.Pressed += () => HandleStart(loadExisting: false);
+		_newGamePlusButton.Pressed += () => HandleStart(loadExisting: false, newGamePlus: true);
+		_quitButton.Pressed += () => GetTree().Quit();
 
-        if (continueButton is null || newGameButton is null || quitButton is null || statusLabel is null || background is null || panel is null)
-        {
-            return false;
-        }
+		if (GameRoot.Instance is { } game)
+		{
+			game.StateChanged += RefreshState;
+		}
 
-        _continueButton = continueButton;
-        _newGameButton = newGameButton;
-        _quitButton = quitButton;
-        _statusLabel = statusLabel;
-        _background = background;
-        _panel = panel;
-        return true;
-    }
+		ApplyTheme();
+		SetupLangPicker();
+		RefreshState();
+	}
 
-    private void ApplyTheme()
-    {
-        if (GameRoot.Instance is not { } game)
-        {
-            return;
-        }
+	private bool TryBindUi()
+	{
+		var continueButton = GetNodeOrNull<Button>(ContinueButtonPath);
+		var newGameButton = GetNodeOrNull<Button>(NewGameButtonPath);
+		var newGamePlusButton = GetNodeOrNull<Button>(NewGamePlusButtonPath);
+		var quitButton = GetNodeOrNull<Button>(QuitButtonPath);
+		var background = GetNodeOrNull<ColorRect>(BackgroundPath);
+		var panel = GetNodeOrNull<PanelContainer>(PanelPath);
+		var langPicker = GetNodeOrNull<OptionButton>(LangPickerPath);
+		var langLabel = GetNodeOrNull<Label>(LangLabelPath);
 
-        var palette = game.Theme;
-        _background.Color = palette.Canvas;
-        _panel.AddThemeStyleboxOverride("panel", new StyleBoxFlat
-        {
-            BgColor = palette.RootPanelFill,
-            BorderColor = palette.RootPanelBorder,
-            BorderWidthLeft = 1,
-            BorderWidthTop = 1,
-            BorderWidthRight = 1,
-            BorderWidthBottom = 1,
-            CornerRadiusTopLeft = 12,
-            CornerRadiusTopRight = 12,
-            CornerRadiusBottomLeft = 12,
-            CornerRadiusBottomRight = 12,
-            ContentMarginLeft = 14,
-            ContentMarginTop = 12,
-            ContentMarginRight = 14,
-            ContentMarginBottom = 12
-        });
+		if (continueButton is null || newGameButton is null || newGamePlusButton is null || quitButton is null || background is null || panel is null || langPicker is null || langLabel is null)
+		{
+			return false;
+		}
 
-        _statusLabel.AddThemeColorOverride("font_color", palette.MutedText);
-        _continueButton.AddThemeColorOverride("font_color", palette.HeaderText);
-        _newGameButton.AddThemeColorOverride("font_color", palette.HeaderText);
-        _quitButton.AddThemeColorOverride("font_color", palette.BodyText);
-    }
+		_continueButton = continueButton;
+		_newGameButton = newGameButton;
+		_newGamePlusButton = newGamePlusButton;
+		_quitButton = quitButton;
+		_background = background;
+		_panel = panel;
+		_langPicker = langPicker;
+		_langLabel = langLabel;
+		return true;
+	}
 
-    private void RefreshState()
-    {
-        var canContinue = GameRoot.Instance is not null && GameRoot.Instance.HasSaveSlot(1);
-        _continueButton.Disabled = !canContinue;
-        _continueButton.Text = canContinue ? "Continue Slot 1" : "No Save In Slot 1";
-        _statusLabel.Text = canContinue ? "Ready." : "No save found in slot 1. Start a new game.";
-    }
+	private void SetupLangPicker()
+	{
+		var game = GameRoot.Instance;
+		if (game is null) return;
 
-    private void HandleStart(bool loadExisting)
-    {
-        if (GameRoot.Instance is not { } game)
-        {
-            GD.PushError("MainMenu could not resolve GameRoot autoload.");
-            _statusLabel.Text = "GameRoot autoload missing.";
-            return;
-        }
+		_langPicker.Clear();
+		foreach (var locale in AvailableLocales)
+		{
+			_langPicker.AddItem(LocaleDisplayName(locale));
+		}
 
-        if (loadExisting)
-        {
-            ContinueFromSlot(game);
-            return;
-        }
+		var currentIdx = System.Array.IndexOf(AvailableLocales, game.State.Settings.Locale);
+		if (currentIdx >= 0)
+			_langPicker.Selected = currentIdx;
 
-        StartNewGame(game);
-    }
+		_langPicker.ItemSelected += idx =>
+		{
+			var locale = AvailableLocales[(int)idx];
+			game.SetLocale(locale);
+		};
+	}
 
-    private void ContinueFromSlot(GameRoot game)
-    {
-        if (!game.LoadSlot(1))
-        {
-            GD.PushWarning("Continue requested but save slot 1 was unavailable.");
-            _statusLabel.Text = "Continue failed: slot 1 unavailable.";
-            RefreshState();
-            return;
-        }
+	private void ApplyTheme()
+	{
+		if (GameRoot.Instance is not { } game)
+		{
+			return;
+		}
 
-        GoToGameScene();
-    }
+		var palette = game.Theme;
+		_background.Color = palette.Canvas;
+		_panel.AddThemeStyleboxOverride("panel", new StyleBoxFlat
+		{
+			BgColor = palette.RootPanelFill,
+			BorderColor = palette.RootPanelBorder,
+			BorderWidthLeft = 1,
+			BorderWidthTop = 1,
+			BorderWidthRight = 1,
+			BorderWidthBottom = 1,
+			CornerRadiusTopLeft = 12,
+			CornerRadiusTopRight = 12,
+			CornerRadiusBottomLeft = 12,
+			CornerRadiusBottomRight = 12,
+			ContentMarginLeft = 14,
+			ContentMarginTop = 12,
+			ContentMarginRight = 14,
+			ContentMarginBottom = 12
+		});
 
-    private void StartNewGame(GameRoot game)
-    {
-        game.NewGame();
-        GoToGameScene();
-    }
+		_langLabel.AddThemeColorOverride("font_color", palette.BodyText);
+		_continueButton.AddThemeColorOverride("font_color", palette.HeaderText);
+		_newGameButton.AddThemeColorOverride("font_color", palette.HeaderText);
+		_newGamePlusButton.AddThemeColorOverride("font_color", palette.HeaderText);
+		_quitButton.AddThemeColorOverride("font_color", palette.BodyText);
+	}
 
-    private void GoToGameScene()
-    {
-        var error = GetTree().ChangeSceneToFile("res://scenes/Game.tscn");
-        if (error != Error.Ok)
-        {
-            GD.PushError($"MainMenu failed to open Game scene: {error}");
-            _statusLabel.Text = $"Could not open game scene: {error}";
-        }
-    }
+	private void RefreshState()
+	{
+		var game = GameRoot.Instance;
+		if (game is null) return;
+
+		GetNode<Label>("Root/Center/Panel/Content/TitleLabel").Text = T("mainmenu.title", "Open Makai Ranch");
+		GetNode<Label>("Root/Center/Panel/Content/LangRow/LangLabel").Text = T("mainmenu.language", "Language:");
+
+		var canContinue = game.HasSaveSlot(0) || game.HasSaveSlot(1);
+		_continueButton.Visible = canContinue;
+		_continueButton.Text = T("mainmenu.continue", "Continue");
+
+		_newGameButton.Text = T("mainmenu.new_game", "New Game");
+
+		var hasVictorySave = game.HasVictorySave();
+		_newGamePlusButton.Visible = hasVictorySave;
+		_newGamePlusButton.Disabled = !hasVictorySave;
+		_newGamePlusButton.Text = T("mainmenu.new_game_plus", "New Game+");
+
+		_quitButton.Text = T("mainmenu.quit", "Quit");
+	}
+
+	private void HandleStart(bool loadExisting, bool newGamePlus = false)
+	{
+		if (GameRoot.Instance is not { } game)
+		{
+			GD.PushError("MainMenu could not resolve GameRoot autoload.");
+			return;
+		}
+
+		if (loadExisting)
+		{
+			ContinueFromSlot(game);
+			return;
+		}
+
+		if (newGamePlus)
+		{
+			StartNewGamePlusFromMenu(game);
+			return;
+		}
+
+		StartNewGame(game);
+	}
+
+	private void ContinueFromSlot(GameRoot game)
+	{
+		if (game.LoadSlot(1))
+		{
+			GoToGameScene();
+			return;
+		}
+
+		if (game.LoadSlot(0))
+		{
+			GoToGameScene();
+			return;
+		}
+
+		GD.PushWarning("Continue requested but no save slots were available.");
+		RefreshState();
+	}
+
+	private void StartNewGame(GameRoot game)
+	{
+		game.NewGame();
+		GameRoot.PendingInitialScreen = "character_creation";
+		GoToGameScene();
+	}
+
+	private void StartNewGamePlusFromMenu(GameRoot game)
+	{
+		if (!game.LoadSlot(1))
+		{
+			GD.PushWarning("New Game+ failed: could not load save.");
+			return;
+		}
+		game.StartNewGamePlus();
+		GoToGameScene();
+	}
+
+	private void GoToGameScene()
+	{
+		var error = GetTree().ChangeSceneToFile("res://scenes/Game.tscn");
+		if (error != Error.Ok)
+		{
+			GD.PushError($"MainMenu failed to open Game scene: {error}");
+		}
+	}
 }
