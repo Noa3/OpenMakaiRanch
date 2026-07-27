@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "projectRoot": "E:\\OpenMakaiRanch\\OpenMakaiRanchGame",
+  "tcp": {
+    "host": "127.0.0.1",
+    "editorPort": 9500,
+    "runtimePort": 9501,
+    "timeoutMs": 10000,
+    "reconnectIntervalMs": 3000
+  },
+  "security": {
+    "allowWrite": false,
+    "trustMode": "read-only",
+    "deniedPaths": [
+      ".git",
+      ".godot",
+      ".godot-import",
+      ".import",
+      "node_modules",
+      ".env"
+    ]
+  },
+  "scan": {
+    "maxFiles": 500,
+    "maxFileSizeBytes": 524288,
+    "ignore": [
+      ".git/",
+      ".godot/",
+      ".godot-import/",
+      ".import/",
+      "node_modules/",
+      ".godot-universal-mcp/"
+    ]
+  },
+  "godot": {
+    "binaryPath": "E:\\OpenMakaiRanch\\Godot_v4.7-stable_mono_win64.exe"
+  },
+  "addon": {
+    "enabled": true,
+    "autoload": true
+  }
+}

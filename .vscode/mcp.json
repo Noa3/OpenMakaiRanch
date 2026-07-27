@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "godot": {
+      "command": "npx",
+      "args": ["@coding-solo/godot-mcp"],
+      "env": {
+        "GODOT_PATH": "E:/OpenMakaiRanch/Godot_v4.7-stable_mono_win64.exe",
+        "DEBUG": "true"
+      }
+    }
+  }
+}

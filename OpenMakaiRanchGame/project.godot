@@ -12,14 +12,23 @@ config_version=5
 
 config/name="OpenMakaiRanch"
 run/main_scene="res://scenes/Bootstrap.tscn"
-config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
+config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GameRoot="*res://src/App/GameRoot.cs"
 SceneRouter="*res://src/App/SceneRouter.cs"
+GodotUniversalMcpRuntime="*res://addons/godot_universal_mcp/runtime_bridge.gd"
 
 [dotnet]
 
 project/assembly_name="OpenMakaiRanch"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_universal_mcp/plugin.cfg")
+
+[plugins]
+
+godot_universal_mcp:enabled=true

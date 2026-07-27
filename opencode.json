@@ -1,0 +1,10 @@
+﻿{
+    "mcpServers":  {
+                       "godot-universal":  {
+                                               "args":  [
+                                                            "godot-universal-mcp"
+                                                        ],
+                                               "command":  "npx"
+                                           }
+                   }
+}
