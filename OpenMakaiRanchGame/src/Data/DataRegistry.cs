@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Godot;
+using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Core.Resources;
 using OpenMakaiRanch.Tools;
 
@@ -11,17 +12,18 @@ namespace OpenMakaiRanch.Data;
 
 public sealed class DataRegistry
 {
-	public Dictionary<string, CharacterDefinition> Characters { get; } = new();
-	public Dictionary<string, JobDefinition> Jobs { get; } = new();
-	public Dictionary<string, ItemDefinition> Items { get; } = new();
-	public Dictionary<string, FacilityDefinition> Facilities { get; } = new();
-	public Dictionary<string, MissionDefinition> Missions { get; } = new();
-	public Dictionary<string, MilestoneDefinition> Milestones { get; } = new();
-	public Dictionary<string, SkillDefinition> Skills { get; } = new();
-	public Dictionary<string, PetDefinition> Pets { get; } = new();
-	public Dictionary<string, TalentDefinition> Talents { get; } = new();
-	public Dictionary<string, BondEventDefinition> BondEvents { get; } = new();
-	public Dictionary<string, EnemyDefinition> Enemies { get; } = new();
+    public Dictionary<string, CharacterDefinition> Characters { get; } = new();
+    public Dictionary<string, JobDefinition> Jobs { get; } = new();
+    public Dictionary<string, ItemDefinition> Items { get; } = new();
+    public Dictionary<string, FacilityDefinition> Facilities { get; } = new();
+    public Dictionary<string, MissionDefinition> Missions { get; } = new();
+    public Dictionary<string, MilestoneDefinition> Milestones { get; } = new();
+    public Dictionary<string, SkillDefinition> Skills { get; } = new();
+    public Dictionary<string, PetDefinition> Pets { get; } = new();
+    public Dictionary<string, TalentDefinition> Talents { get; } = new();
+    public Dictionary<string, BondEventDefinition> BondEvents { get; } = new();
+    public Dictionary<string, EnemyDefinition> Enemies { get; } = new();
+    public Dictionary<string, TrainingActionDefinition> TrainingActions { get; } = new();
 
 	public static DataRegistry CreateSeeded()
 	{
@@ -42,6 +44,7 @@ public sealed class DataRegistry
 		registry.SeedPets();
 		registry.SeedBondEvents();
 		registry.SeedTalents();
+		registry.SeedTrainingActions();
 		return registry;
 	}
 
@@ -70,6 +73,7 @@ public sealed class DataRegistry
 			loaded += TryLoadJson<PetDefinition>(dataDir, "pets.json", opts, c => Add(c));
 			loaded += TryLoadJson<BondEventDefinition>(dataDir, "bond_events.json", opts, c => Add(c));
 			loaded += TryLoadJson<TalentDefinition>(dataDir, "talents.json", opts, c => Add(c));
+		loaded += TryLoadJson<TrainingActionDefinition>(dataDir, "training_actions.json", opts, c => Add(c));
 
 			if (Characters.Count > 0)
 			{
@@ -391,6 +395,144 @@ public sealed class DataRegistry
 		Add(new TalentDefinition { Id = "instigator", DisplayName = "Instigator" });
 	}
 
+	private void SeedTrainingActions()
+	{
+		// Hand category (10 actions)
+		Add(new TrainingActionDefinition { Id = "hand_01", DisplayName = "Breast Massage", Category = TrainingCategory.Hand, ActionId = 10, FatigueDelta = 8, MoraleDelta = 3, XpTypes = new List<string> { "ranch_skill" }, Description = "Gentle breast massage" });
+		Add(new TrainingActionDefinition { Id = "hand_02", DisplayName = "Breast Milking", Category = TrainingCategory.Hand, ActionId = 11, FatigueDelta = 10, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Breast milking" });
+		Add(new TrainingActionDefinition { Id = "hand_03", DisplayName = "Nipple Pinch", Category = TrainingCategory.Hand, ActionId = 12, FatigueDelta = 7, MoraleDelta = 1, XpTypes = new List<string> { "craft_skill" }, Description = "Nipple pinch" });
+		Add(new TrainingActionDefinition { Id = "hand_04", DisplayName = "Clit Stimulation", Category = TrainingCategory.Hand, ActionId = 13, FatigueDelta = 9, MoraleDelta = 2, XpTypes = new List<string> { "craft_skill" }, Description = "Clit stimulation" });
+		Add(new TrainingActionDefinition { Id = "hand_05", DisplayName = "V Finger Insertion", Category = TrainingCategory.Hand, ActionId = 14, FatigueDelta = 10, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "V finger insertion" });
+		Add(new TrainingActionDefinition { Id = "hand_06", DisplayName = "A Finger Insertion", Category = TrainingCategory.Hand, ActionId = 15, FatigueDelta = 10, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "A finger insertion" });
+		Add(new TrainingActionDefinition { Id = "hand_07", DisplayName = "Butt Caress", Category = TrainingCategory.Hand, ActionId = 16, FatigueDelta = 5, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Butt caress" });
+		Add(new TrainingActionDefinition { Id = "hand_08", DisplayName = "Breast Caress", Category = TrainingCategory.Hand, ActionId = 17, FatigueDelta = 6, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Breast caress" });
+		Add(new TrainingActionDefinition { Id = "hand_09", DisplayName = "Tickling", Category = TrainingCategory.Hand, ActionId = 18, FatigueDelta = 4, MoraleDelta = 5, XpTypes = new List<string> { "ranch_skill" }, Description = "Tickling" });
+		Add(new TrainingActionDefinition { Id = "hand_10", DisplayName = "Belly Caress", Category = TrainingCategory.Hand, ActionId = 19, FatigueDelta = 5, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Belly caress" });
+
+		// Mouth category (10 actions)
+		Add(new TrainingActionDefinition { Id = "mouth_01", DisplayName = "Breast Sucking", Category = TrainingCategory.Mouth, ActionId = 20, FatigueDelta = 8, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Breast sucking" });
+		Add(new TrainingActionDefinition { Id = "mouth_02", DisplayName = "Nipple Sucking", Category = TrainingCategory.Mouth, ActionId = 21, FatigueDelta = 7, MoraleDelta = 4, XpTypes = new List<string> { "craft_skill" }, Description = "Nipple sucking" });
+		Add(new TrainingActionDefinition { Id = "mouth_03", DisplayName = "Kiss", Category = TrainingCategory.Mouth, ActionId = 22, FatigueDelta = 4, MoraleDelta = 5, XpTypes = new List<string> { "ranch_skill" }, Description = "Kiss" });
+		Add(new TrainingActionDefinition { Id = "mouth_04", DisplayName = "Clit Licking", Category = TrainingCategory.Mouth, ActionId = 23, FatigueDelta = 9, MoraleDelta = 2, XpTypes = new List<string> { "craft_skill" }, Description = "Clit licking" });
+		Add(new TrainingActionDefinition { Id = "mouth_05", DisplayName = "Vaginal Licking", Category = TrainingCategory.Mouth, ActionId = 24, FatigueDelta = 10, MoraleDelta = 2, XpTypes = new List<string> { "craft_skill" }, Description = "Vaginal licking" });
+		Add(new TrainingActionDefinition { Id = "mouth_06", DisplayName = "Anal Licking", Category = TrainingCategory.Mouth, ActionId = 25, FatigueDelta = 10, MoraleDelta = 1, XpTypes = new List<string> { "craft_skill" }, Description = "Anal licking" });
+		Add(new TrainingActionDefinition { Id = "mouth_07", DisplayName = "Breast Licking", Category = TrainingCategory.Mouth, ActionId = 26, FatigueDelta = 6, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Breast licking" });
+		Add(new TrainingActionDefinition { Id = "mouth_08", DisplayName = "Ear Licking", Category = TrainingCategory.Mouth, ActionId = 27, FatigueDelta = 5, MoraleDelta = 4, XpTypes = new List<string> { "craft_skill" }, Description = "Ear licking" });
+		Add(new TrainingActionDefinition { Id = "mouth_09", DisplayName = "Armpit Licking", Category = TrainingCategory.Mouth, ActionId = 28, FatigueDelta = 5, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Armpit licking" });
+		Add(new TrainingActionDefinition { Id = "mouth_10", DisplayName = "Cheek Licking", Category = TrainingCategory.Mouth, ActionId = 29, FatigueDelta = 3, MoraleDelta = 4, XpTypes = new List<string> { "ranch_skill" }, Description = "Cheek licking" });
+
+		// V Insertion (8 actions)
+		Add(new TrainingActionDefinition { Id = "v_01", DisplayName = "Missionary Position", Category = TrainingCategory.VInsertion, ActionId = 30, FatigueDelta = 12, MoraleDelta = 2, XpTypes = new List<string> { "combat_skill" }, Description = "Missionary position" });
+		Add(new TrainingActionDefinition { Id = "v_02", DisplayName = "Doggy Style", Category = TrainingCategory.VInsertion, ActionId = 31, FatigueDelta = 12, MoraleDelta = 1, XpTypes = new List<string> { "combat_skill" }, Description = "Doggy style" });
+		Add(new TrainingActionDefinition { Id = "v_03", DisplayName = "Face-to-Face Sitting", Category = TrainingCategory.VInsertion, ActionId = 32, FatigueDelta = 11, MoraleDelta = 3, XpTypes = new List<string> { "ranch_skill" }, Description = "Face-to-face sitting" });
+		Add(new TrainingActionDefinition { Id = "v_04", DisplayName = "Back-to-Back Sitting", Category = TrainingCategory.VInsertion, ActionId = 33, FatigueDelta = 11, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Back-to-back sitting" });
+		Add(new TrainingActionDefinition { Id = "v_05", DisplayName = "Cowgirl Position", Category = TrainingCategory.VInsertion, ActionId = 34, FatigueDelta = 13, MoraleDelta = 2, XpTypes = new List<string> { "combat_skill" }, Description = "Cowgirl position" });
+		Add(new TrainingActionDefinition { Id = "v_06", DisplayName = "Face-to-Face Standing", Category = TrainingCategory.VInsertion, ActionId = 35, FatigueDelta = 14, MoraleDelta = 1, XpTypes = new List<string> { "combat_skill" }, Description = "Face-to-face standing" });
+		Add(new TrainingActionDefinition { Id = "v_07", DisplayName = "Back-to-Back Standing", Category = TrainingCategory.VInsertion, ActionId = 36, FatigueDelta = 14, MoraleDelta = 1, XpTypes = new List<string> { "combat_skill" }, Description = "Back-to-back standing" });
+		Add(new TrainingActionDefinition { Id = "v_08", DisplayName = "Forced Cowgirl", Category = TrainingCategory.VInsertion, ActionId = 37, FatigueDelta = 15, MoraleDelta = -2, XpTypes = new List<string> { "combat_skill" }, Description = "Forced cowgirl" });
+
+		// A Insertion (8 actions)
+		Add(new TrainingActionDefinition { Id = "a_01", DisplayName = "A Missionary", Category = TrainingCategory.AInsertion, ActionId = 40, FatigueDelta = 12, MoraleDelta = 1, XpTypes = new List<string> { "combat_skill" }, Description = "A missionary" });
+		Add(new TrainingActionDefinition { Id = "a_02", DisplayName = "A Doggy Style", Category = TrainingCategory.AInsertion, ActionId = 41, FatigueDelta = 13, MoraleDelta = 0, XpTypes = new List<string> { "combat_skill" }, Description = "A doggy style" });
+		Add(new TrainingActionDefinition { Id = "a_03", DisplayName = "A Face-to-Face Sitting", Category = TrainingCategory.AInsertion, ActionId = 42, FatigueDelta = 11, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "A face-to-face sitting" });
+		Add(new TrainingActionDefinition { Id = "a_04", DisplayName = "A Back-to-Back Sitting", Category = TrainingCategory.AInsertion, ActionId = 43, FatigueDelta = 11, MoraleDelta = 0, XpTypes = new List<string> { "ranch_skill" }, Description = "A back-to-back sitting" });
+		Add(new TrainingActionDefinition { Id = "a_05", DisplayName = "A Cowgirl", Category = TrainingCategory.AInsertion, ActionId = 44, FatigueDelta = 13, MoraleDelta = 1, XpTypes = new List<string> { "combat_skill" }, Description = "A cowgirl" });
+		Add(new TrainingActionDefinition { Id = "a_06", DisplayName = "A Face-to-Face Standing", Category = TrainingCategory.AInsertion, ActionId = 45, FatigueDelta = 14, MoraleDelta = 0, XpTypes = new List<string> { "combat_skill" }, Description = "A face-to-face standing" });
+		Add(new TrainingActionDefinition { Id = "a_07", DisplayName = "A Back-to-Back Standing", Category = TrainingCategory.AInsertion, ActionId = 46, FatigueDelta = 14, MoraleDelta = 0, XpTypes = new List<string> { "combat_skill" }, Description = "A back-to-back standing" });
+		Add(new TrainingActionDefinition { Id = "a_08", DisplayName = "Forced A Cowgirl", Category = TrainingCategory.AInsertion, ActionId = 47, FatigueDelta = 15, MoraleDelta = -3, XpTypes = new List<string> { "combat_skill" }, Description = "Forced A cowgirl" });
+
+		// Penis Actions (9 actions)
+		Add(new TrainingActionDefinition { Id = "penis_01", DisplayName = "Frottage", Category = TrainingCategory.PenisAction, ActionId = 50, FatigueDelta = 8, MoraleDelta = 3, XpTypes = new List<string> { "combat_skill" }, Description = "Frottage" });
+		Add(new TrainingActionDefinition { Id = "penis_02", DisplayName = "Fellatio", Category = TrainingCategory.PenisAction, ActionId = 51, FatigueDelta = 7, MoraleDelta = 4, XpTypes = new List<string> { "craft_skill" }, Description = "Fellatio" });
+		Add(new TrainingActionDefinition { Id = "penis_03", DisplayName = "Iratachio", Category = TrainingCategory.PenisAction, ActionId = 52, FatigueDelta = 10, MoraleDelta = 1, XpTypes = new List<string> { "craft_skill" }, Description = "Iratachio" });
+		Add(new TrainingActionDefinition { Id = "penis_04", DisplayName = "Paizuri", Category = TrainingCategory.PenisAction, ActionId = 53, FatigueDelta = 9, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Paizuri" });
+		Add(new TrainingActionDefinition { Id = "penis_05", DisplayName = "Forced Paizuri", Category = TrainingCategory.PenisAction, ActionId = 54, FatigueDelta = 11, MoraleDelta = 0, XpTypes = new List<string> { "craft_skill" }, Description = "Forced paizuri" });
+		Add(new TrainingActionDefinition { Id = "penis_06", DisplayName = "Vertical Paizuri", Category = TrainingCategory.PenisAction, ActionId = 55, FatigueDelta = 10, MoraleDelta = 2, XpTypes = new List<string> { "craft_skill" }, Description = "Vertical paizuri" });
+		Add(new TrainingActionDefinition { Id = "penis_07", DisplayName = "Forced Vertical Paizuri", Category = TrainingCategory.PenisAction, ActionId = 56, FatigueDelta = 12, MoraleDelta = -1, XpTypes = new List<string> { "craft_skill" }, Description = "Forced vertical paizuri" });
+		Add(new TrainingActionDefinition { Id = "penis_08", DisplayName = "Handjob", Category = TrainingCategory.PenisAction, ActionId = 57, FatigueDelta = 6, MoraleDelta = 4, XpTypes = new List<string> { "craft_skill" }, Description = "Handjob" });
+		Add(new TrainingActionDefinition { Id = "penis_09", DisplayName = "Breastfeeding Handjob", Category = TrainingCategory.PenisAction, ActionId = 58, FatigueDelta = 7, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Breastfeeding handjob" });
+
+		// Tools (4 actions)
+		Add(new TrainingActionDefinition { Id = "tool_01", DisplayName = "Livestock Milking Machine", Category = TrainingCategory.Tool, ActionId = 60, FatigueDelta = 5, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Livestock milking machine" });
+		Add(new TrainingActionDefinition { Id = "tool_02", DisplayName = "Magic Milking Device", Category = TrainingCategory.Tool, ActionId = 61, FatigueDelta = 6, MoraleDelta = 3, XpTypes = new List<string> { "ranch_skill" }, Description = "Magic milking device" });
+		Add(new TrainingActionDefinition { Id = "tool_03", DisplayName = "Tentacle Milking Device", Category = TrainingCategory.Tool, ActionId = 62, FatigueDelta = 7, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Tentacle milking device" });
+		Add(new TrainingActionDefinition { Id = "tool_04", DisplayName = "Small Spirit Extraction Device", Category = TrainingCategory.Tool, ActionId = 63, FatigueDelta = 8, MoraleDelta = 0, XpTypes = new List<string> { "ranch_skill" }, Description = "Small spirit extraction device" });
+
+		// Pain (1 action)
+		Add(new TrainingActionDefinition { Id = "pain_01", DisplayName = "Spanking", Category = TrainingCategory.Pain, ActionId = 70, FatigueDelta = 10, MoraleDelta = -3, XpTypes = new List<string> { "combat_skill" }, Description = "Spanking" });
+
+		// Tentacle (17 actions)
+		Add(new TrainingActionDefinition { Id = "tentacle_01", DisplayName = "Tentacle Breast Massage", Category = TrainingCategory.Tentacle, ActionId = 100, FatigueDelta = 7, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Tentacle breast massage" });
+		Add(new TrainingActionDefinition { Id = "tentacle_02", DisplayName = "Tentacle Breast Milking", Category = TrainingCategory.Tentacle, ActionId = 101, FatigueDelta = 8, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Tentacle breast milking" });
+		Add(new TrainingActionDefinition { Id = "tentacle_03", DisplayName = "Petal Milking Tentacle", Category = TrainingCategory.Tentacle, ActionId = 102, FatigueDelta = 9, MoraleDelta = 0, XpTypes = new List<string> { "ranch_skill" }, Description = "Petal milking tentacle" });
+		Add(new TrainingActionDefinition { Id = "tentacle_04", DisplayName = "Transparent Cup Tentacle", Category = TrainingCategory.Tentacle, ActionId = 103, FatigueDelta = 8, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Transparent cup tentacle" });
+		Add(new TrainingActionDefinition { Id = "tentacle_05", DisplayName = "Milking Worm Tentacle", Category = TrainingCategory.Tentacle, ActionId = 104, FatigueDelta = 9, MoraleDelta = 0, XpTypes = new List<string> { "ranch_skill" }, Description = "Milking worm tentacle" });
+		Add(new TrainingActionDefinition { Id = "tentacle_06", DisplayName = "Tentacle V Insertion", Category = TrainingCategory.Tentacle, ActionId = 105, FatigueDelta = 12, MoraleDelta = 0, XpTypes = new List<string> { "combat_skill" }, Description = "Tentacle V insertion" });
+		Add(new TrainingActionDefinition { Id = "tentacle_07", DisplayName = "Tentacle A Insertion", Category = TrainingCategory.Tentacle, ActionId = 106, FatigueDelta = 12, MoraleDelta = 0, XpTypes = new List<string> { "combat_skill" }, Description = "Tentacle A insertion" });
+		Add(new TrainingActionDefinition { Id = "tentacle_08", DisplayName = "Tentacle Forced Paizuri", Category = TrainingCategory.Tentacle, ActionId = 107, FatigueDelta = 11, MoraleDelta = -1, XpTypes = new List<string> { "craft_skill" }, Description = "Tentacle forced paizuri" });
+		Add(new TrainingActionDefinition { Id = "tentacle_09", DisplayName = "Tentacle Fellatio", Category = TrainingCategory.Tentacle, ActionId = 108, FatigueDelta = 8, MoraleDelta = 1, XpTypes = new List<string> { "craft_skill" }, Description = "Tentacle fellatio" });
+		Add(new TrainingActionDefinition { Id = "tentacle_10", DisplayName = "Tentacle Iratachio", Category = TrainingCategory.Tentacle, ActionId = 109, FatigueDelta = 10, MoraleDelta = -1, XpTypes = new List<string> { "craft_skill" }, Description = "Tentacle iratachio" });
+		Add(new TrainingActionDefinition { Id = "tentacle_11", DisplayName = "Brush Tentacle", Category = TrainingCategory.Tentacle, ActionId = 110, FatigueDelta = 5, MoraleDelta = 3, XpTypes = new List<string> { "ranch_skill" }, Description = "Brush tentacle" });
+		Add(new TrainingActionDefinition { Id = "tentacle_12", DisplayName = "Tentacle Blindfold", Category = TrainingCategory.Tentacle, ActionId = 112, FatigueDelta = 4, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Tentacle blindfold" });
+		Add(new TrainingActionDefinition { Id = "tentacle_13", DisplayName = "Tentacle Clit Sucking", Category = TrainingCategory.Tentacle, ActionId = 113, FatigueDelta = 8, MoraleDelta = 2, XpTypes = new List<string> { "craft_skill" }, Description = "Tentacle clit sucking" });
+		Add(new TrainingActionDefinition { Id = "tentacle_14", DisplayName = "Tentacle Ear Rape", Category = TrainingCategory.Tentacle, ActionId = 114, FatigueDelta = 9, MoraleDelta = 0, XpTypes = new List<string> { "craft_skill" }, Description = "Tentacle ear rape" });
+		Add(new TrainingActionDefinition { Id = "tentacle_15", DisplayName = "Tentacle Forced Handjob", Category = TrainingCategory.Tentacle, ActionId = 115, FatigueDelta = 10, MoraleDelta = -1, XpTypes = new List<string> { "craft_skill" }, Description = "Tentacle forced handjob" });
+		Add(new TrainingActionDefinition { Id = "tentacle_16", DisplayName = "Suction Milking Tentacle", Category = TrainingCategory.Tentacle, ActionId = 116, FatigueDelta = 7, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Suction milking tentacle" });
+		Add(new TrainingActionDefinition { Id = "tentacle_17", DisplayName = "Mammary Gland Invasion Tentacle", Category = TrainingCategory.Tentacle, ActionId = 117, FatigueDelta = 10, MoraleDelta = -1, XpTypes = new List<string> { "ranch_skill" }, Description = "Mammary gland invasion tentacle" });
+
+		// Massage (3 actions)
+		Add(new TrainingActionDefinition { Id = "massage_01", DisplayName = "Breast Growth Massage", Category = TrainingCategory.Massage, ActionId = 150, FatigueDelta = 6, MoraleDelta = 3, XpTypes = new List<string> { "ranch_skill" }, Description = "Breast growth massage" });
+		Add(new TrainingActionDefinition { Id = "massage_02", DisplayName = "Rich Milk Massage", Category = TrainingCategory.Massage, ActionId = 151, FatigueDelta = 7, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Rich milk massage" });
+		Add(new TrainingActionDefinition { Id = "massage_03", DisplayName = "Milk Tank Massage", Category = TrainingCategory.Massage, ActionId = 152, FatigueDelta = 8, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Milk tank massage" });
+
+		// Items (17 actions)
+		Add(new TrainingActionDefinition { Id = "item_01", DisplayName = "Vibrator", Category = TrainingCategory.Item, ActionId = 201, FatigueDelta = 6, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Vibrator" });
+		Add(new TrainingActionDefinition { Id = "item_02", DisplayName = "Anal Vibrator", Category = TrainingCategory.Item, ActionId = 202, FatigueDelta = 7, MoraleDelta = 2, XpTypes = new List<string> { "craft_skill" }, Description = "Anal vibrator" });
+		Add(new TrainingActionDefinition { Id = "item_03", DisplayName = "Nipple Rotor", Category = TrainingCategory.Item, ActionId = 203, FatigueDelta = 5, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Nipple rotor" });
+		Add(new TrainingActionDefinition { Id = "item_04", DisplayName = "Clit Rotor", Category = TrainingCategory.Item, ActionId = 204, FatigueDelta = 5, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Clit rotor" });
+		Add(new TrainingActionDefinition { Id = "item_05", DisplayName = "Nipple Suction Device", Category = TrainingCategory.Item, ActionId = 205, FatigueDelta = 6, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Nipple suction device" });
+		Add(new TrainingActionDefinition { Id = "item_06", DisplayName = "Clit Suction Device", Category = TrainingCategory.Item, ActionId = 206, FatigueDelta = 5, MoraleDelta = 3, XpTypes = new List<string> { "craft_skill" }, Description = "Clit suction device" });
+		Add(new TrainingActionDefinition { Id = "item_07", DisplayName = "Eye Mask", Category = TrainingCategory.Item, ActionId = 207, FatigueDelta = 3, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Eye mask" });
+		Add(new TrainingActionDefinition { Id = "item_08", DisplayName = "Mouth Gag", Category = TrainingCategory.Item, ActionId = 208, FatigueDelta = 4, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Mouth gag" });
+		Add(new TrainingActionDefinition { Id = "item_09", DisplayName = "Ball Gag", Category = TrainingCategory.Item, ActionId = 209, FatigueDelta = 3, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Ball gag" });
+		Add(new TrainingActionDefinition { Id = "item_10", DisplayName = "Forced Mouth Opener", Category = TrainingCategory.Item, ActionId = 212, FatigueDelta = 5, MoraleDelta = -2, XpTypes = new List<string> { "ranch_skill" }, Description = "Forced mouth opener" });
+		Add(new TrainingActionDefinition { Id = "item_11", DisplayName = "Lotion", Category = TrainingCategory.Item, ActionId = 250, FatigueDelta = 2, MoraleDelta = 1, XpTypes = new List<string> { "craft_skill" }, Description = "Lotion" });
+		Add(new TrainingActionDefinition { Id = "item_12", DisplayName = "Aphrodisiac", Category = TrainingCategory.Item, ActionId = 251, FatigueDelta = 3, MoraleDelta = 2, XpTypes = new List<string> { "craft_skill" }, Description = "Aphrodisiac" });
+		Add(new TrainingActionDefinition { Id = "item_13", DisplayName = "Condom", Category = TrainingCategory.Item, ActionId = 252, FatigueDelta = 1, MoraleDelta = 0, XpTypes = new List<string> { "craft_skill" }, Description = "Condom" });
+		Add(new TrainingActionDefinition { Id = "item_14", DisplayName = "Energy Drink", Category = TrainingCategory.Item, ActionId = 253, FatigueDelta = -5, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Energy drink" });
+		Add(new TrainingActionDefinition { Id = "item_15", DisplayName = "V Lotion", Category = TrainingCategory.Item, ActionId = 290, FatigueDelta = 2, MoraleDelta = 1, XpTypes = new List<string> { "craft_skill" }, Description = "V lotion" });
+		Add(new TrainingActionDefinition { Id = "item_16", DisplayName = "A Lotion", Category = TrainingCategory.Item, ActionId = 291, FatigueDelta = 2, MoraleDelta = 1, XpTypes = new List<string> { "craft_skill" }, Description = "A lotion" });
+		Add(new TrainingActionDefinition { Id = "item_17", DisplayName = "B Lotion", Category = TrainingCategory.Item, ActionId = 292, FatigueDelta = 2, MoraleDelta = 1, XpTypes = new List<string> { "craft_skill" }, Description = "B lotion" });
+
+		// Body Mod (4 actions)
+		Add(new TrainingActionDefinition { Id = "bodymod_01", DisplayName = "Mark Infusion", Category = TrainingCategory.BodyMod, ActionId = 502, FatigueDelta = 10, MoraleDelta = -5, XpTypes = new List<string> { "combat_skill" }, Description = "Mark infusion" });
+		Add(new TrainingActionDefinition { Id = "bodymod_02", DisplayName = "Pleasure-Pain Conversion", Category = TrainingCategory.BodyMod, ActionId = 503, FatigueDelta = 8, MoraleDelta = -3, XpTypes = new List<string> { "combat_skill" }, Description = "Pleasure-pain conversion" });
+		Add(new TrainingActionDefinition { Id = "bodymod_03", DisplayName = "Penis Change", Category = TrainingCategory.BodyMod, ActionId = 504, FatigueDelta = 15, MoraleDelta = -10, XpTypes = new List<string> { "combat_skill" }, Description = "Penis change" });
+		Add(new TrainingActionDefinition { Id = "bodymod_04", DisplayName = "Time Compression", Category = TrainingCategory.BodyMod, ActionId = 505, FatigueDelta = 12, MoraleDelta = -5, XpTypes = new List<string> { "combat_skill" }, Description = "Time compression" });
+
+		// Magic (19 actions)
+		Add(new TrainingActionDefinition { Id = "magic_01", DisplayName = "Aphrodisiac Slime", Category = TrainingCategory.ForbiddenMagic, ActionId = 550, FatigueDelta = 5, MoraleDelta = 2, XpTypes = new List<string> { "craft_skill" }, Description = "Aphrodisiac slime" });
+		Add(new TrainingActionDefinition { Id = "magic_02", DisplayName = "Brainwashing Tentacle", Category = TrainingCategory.ForbiddenMagic, ActionId = 580, FatigueDelta = 15, MoraleDelta = -10, XpTypes = new List<string> { "combat_skill" }, Description = "Brainwashing tentacle" });
+		Add(new TrainingActionDefinition { Id = "magic_03", DisplayName = "Orgasm HP Recovery Mark", Category = TrainingCategory.ForbiddenMagic, ActionId = 581, FatigueDelta = -10, MoraleDelta = 5, XpTypes = new List<string> { "combat_skill" }, Description = "Orgasm HP recovery mark" });
+		Add(new TrainingActionDefinition { Id = "magic_04", DisplayName = "Orgasm Mana Recovery Mark", Category = TrainingCategory.ForbiddenMagic, ActionId = 582, FatigueDelta = -8, MoraleDelta = 3, XpTypes = new List<string> { "combat_skill" }, Description = "Orgasm mana recovery mark" });
+		Add(new TrainingActionDefinition { Id = "magic_05", DisplayName = "Body Modification", Category = TrainingCategory.ForbiddenMagic, ActionId = 800, FatigueDelta = 12, MoraleDelta = -8, XpTypes = new List<string> { "combat_skill" }, Description = "Body modification" });
+		Add(new TrainingActionDefinition { Id = "magic_06", DisplayName = "Mark Infusion (Magic)", Category = TrainingCategory.ForbiddenMagic, ActionId = 801, FatigueDelta = 10, MoraleDelta = -5, XpTypes = new List<string> { "combat_skill" }, Description = "Mark infusion magic" });
+		Add(new TrainingActionDefinition { Id = "magic_07", DisplayName = "Penis Removal", Category = TrainingCategory.ForbiddenMagic, ActionId = 890, FatigueDelta = 10, MoraleDelta = -3, XpTypes = new List<string> { "combat_skill" }, Description = "Penis removal" });
+		Add(new TrainingActionDefinition { Id = "magic_08", DisplayName = "Milking Machine Removal", Category = TrainingCategory.ForbiddenMagic, ActionId = 891, FatigueDelta = 5, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Milking machine removal" });
+		Add(new TrainingActionDefinition { Id = "magic_09", DisplayName = "Milking Tentacle Removal", Category = TrainingCategory.ForbiddenMagic, ActionId = 892, FatigueDelta = 6, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Milking tentacle removal" });
+		Add(new TrainingActionDefinition { Id = "magic_10", DisplayName = "Breast Cleaning", Category = TrainingCategory.ForbiddenMagic, ActionId = 893, FatigueDelta = 3, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Breast cleaning" });
+		Add(new TrainingActionDefinition { Id = "magic_11", DisplayName = "Condom Removal", Category = TrainingCategory.ForbiddenMagic, ActionId = 895, FatigueDelta = 2, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Condom removal" });
+		Add(new TrainingActionDefinition { Id = "magic_12", DisplayName = "Piston", Category = TrainingCategory.ForbiddenMagic, ActionId = 900, FatigueDelta = 14, MoraleDelta = 0, XpTypes = new List<string> { "combat_skill" }, Description = "Piston" });
+		Add(new TrainingActionDefinition { Id = "magic_13", DisplayName = "Breast Sucking Piston", Category = TrainingCategory.ForbiddenMagic, ActionId = 901, FatigueDelta = 12, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Breast sucking piston" });
+		Add(new TrainingActionDefinition { Id = "magic_14", DisplayName = "Milk Sucking", Category = TrainingCategory.ForbiddenMagic, ActionId = 902, FatigueDelta = 10, MoraleDelta = 2, XpTypes = new List<string> { "ranch_skill" }, Description = "Milk sucking" });
+		Add(new TrainingActionDefinition { Id = "magic_15", DisplayName = "Tentacle Milk Sucking", Category = TrainingCategory.ForbiddenMagic, ActionId = 903, FatigueDelta = 11, MoraleDelta = 1, XpTypes = new List<string> { "ranch_skill" }, Description = "Tentacle milk sucking" });
+		Add(new TrainingActionDefinition { Id = "magic_16", DisplayName = "Penis Training", Category = TrainingCategory.ForbiddenMagic, ActionId = 904, FatigueDelta = 8, MoraleDelta = -2, XpTypes = new List<string> { "combat_skill" }, Description = "Penis training" });
+		Add(new TrainingActionDefinition { Id = "magic_17", DisplayName = "Spirit Power Injection", Category = TrainingCategory.ForbiddenMagic, ActionId = 905, FatigueDelta = -8, MoraleDelta = 3, XpTypes = new List<string> { "combat_skill" }, Description = "Spirit power injection" });
+		Add(new TrainingActionDefinition { Id = "magic_18", DisplayName = "Mana Injection", Category = TrainingCategory.ForbiddenMagic, ActionId = 906, FatigueDelta = -6, MoraleDelta = 2, XpTypes = new List<string> { "combat_skill" }, Description = "Mana injection" });
+		Add(new TrainingActionDefinition { Id = "magic_19", DisplayName = "Force Service", Category = TrainingCategory.ForbiddenMagic, ActionId = 907, FatigueDelta = 12, MoraleDelta = -5, XpTypes = new List<string> { "craft_skill" }, Description = "Force service" });
+		Add(new TrainingActionDefinition { Id = "magic_20", DisplayName = "Mana Sucking", Category = TrainingCategory.ForbiddenMagic, ActionId = 910, FatigueDelta = 10, MoraleDelta = -3, XpTypes = new List<string> { "combat_skill" }, Description = "Mana sucking" });
+	}
+
 	private void Add(CharacterDefinition definition)
 	{
 		definition.ResourceName = definition.Id;
@@ -445,5 +587,10 @@ public sealed class DataRegistry
 	{
 		definition.ResourceName = definition.Id;
 		Talents[definition.Id] = definition;
+	}
+	private void Add(TrainingActionDefinition definition)
+	{
+		definition.ResourceName = definition.Id;
+		TrainingActions[definition.Id] = definition;
 	}
 }

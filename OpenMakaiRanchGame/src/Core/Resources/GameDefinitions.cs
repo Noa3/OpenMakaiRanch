@@ -1,4 +1,5 @@
 using Godot;
+using OpenMakaiRanch.Core.Models;
 
 namespace OpenMakaiRanch.Core.Resources;
 
@@ -205,6 +206,29 @@ public partial class PetDefinition : Resource
     public string DisplayName { get; set; } = string.Empty;
     public int CareCost { get; set; }
     public bool IsMountable { get; set; }
+}
+
+public enum BondEventTrigger
+{
+    BondReached,
+    DayReached,
+    AfterJob,
+    AfterMission,
+    AfterTraining,
+    Random
+}
+
+[GlobalClass]
+public partial class TrainingActionDefinition : Resource
+{
+    public string Id { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public TrainingCategory Category { get; set; }
+    public int ActionId { get; set; }
+    public int FatigueDelta { get; set; }
+    public int MoraleDelta { get; set; }
+    public List<string> XpTypes { get; set; } = new();
+    public string Description { get; set; } = string.Empty;
 }
 
 [GlobalClass]
