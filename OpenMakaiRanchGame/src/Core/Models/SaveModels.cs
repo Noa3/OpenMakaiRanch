@@ -247,6 +247,7 @@ public sealed class MilestoneState
 public sealed class ResearchState
 {
     public List<string> UnlockedSkillIds { get; set; } = new();
+    public int LastResearchDay { get; set; }
 }
 
 public sealed class PetState
@@ -387,6 +388,10 @@ public sealed class MatureState
     public int TotalMilkProduced { get; set; }
     public int TotalMilkRevenue { get; set; }
     public int TotalTrainingSessions { get; set; }
+    public List<string> Marks { get; set; } = new();
+    public int LastSpellDay { get; set; }
+    public List<WithdrawalRecord> WithdrawalHistory { get; set; } = new();
+    public AddictionState Addiction { get; set; } = new();
 }
 
 public sealed class MentalState
@@ -453,6 +458,24 @@ public sealed class AddictionState
     public int Milking { get; set; }
     public int Tentacle { get; set; }
     public int ServiceSpirit { get; set; }
+}
+
+public sealed class WithdrawalRecord
+{
+    public string CharacterId { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public int Day { get; set; }
+    public int Intensity { get; set; }
+}
+
+public sealed class ResearchSkillDefinition
+{
+    public string Id { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public int ResearchCost { get; set; }
+    public List<string> Requires { get; set; } = new();
+    public int CooldownDays { get; set; }
 }
 
 public sealed class EquipmentState
