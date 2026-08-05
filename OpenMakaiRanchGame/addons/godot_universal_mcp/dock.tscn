@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dock_godot_universal_mcp"]
 
-[ext_resource type="Script" path="res://addons/godot_universal_mcp/dock.gd" id="1"]
+[ext_resource type="Script" path="res://addons/godot_universal_mcp/dock.gd" uid="uid://fec456f7df9a51fc" id="1"]
 
 [node name="GodotUniversalMCPDock" type="VBoxContainer"]
 script = ExtResource("1")
