@@ -145,6 +145,7 @@ public partial class FacilityDefinition : Resource
     public int UpkeepGold { get; set; }
     public string OutputResourceId { get; set; } = string.Empty;
     public int OutputBonus { get; set; }
+    public int Capacity { get; set; }
 }
 
 [GlobalClass]

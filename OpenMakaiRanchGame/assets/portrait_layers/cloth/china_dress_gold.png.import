@@ -1,9 +1,9 @@
-﻿[remap]
+[remap]
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://caw40marpmkc0"
-path="res://.godot/imported/ãƒãƒ£ã‚¤ãƒŠãƒ‰ãƒ¬ã‚¹_é‡‘.png-9ac6484651e682a16b9aa89b68b45341.ctex"
+uid="uid://8olxmfbihph"
+path="res://.godot/imported/china_dress_gold.png-11f89de7a433442596c44b7693cfeb0a.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/portrait_layers/cloth/china_dress_gold.png"
-dest_files=["res://.godot/imported/ãƒãƒ£ã‚¤ãƒŠãƒ‰ãƒ¬ã‚¹_é‡‘.png-9ac6484651e682a16b9aa89b68b45341.ctex"]
+dest_files=["res://.godot/imported/china_dress_gold.png-11f89de7a433442596c44b7693cfeb0a.ctex"]
 
 [params]
 

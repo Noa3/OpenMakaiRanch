@@ -38,7 +38,7 @@ dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
 
 ## Content Policy
 
-This is a public repository. Contributions must remain content-safe.
+This is a public repository for a NSFW game. All contributions should follow local law and platform policies.
 
 - Do not submit explicit adult material.
 - Do not submit illegal or exploitative content.

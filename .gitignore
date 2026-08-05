@@ -1,10 +1,79 @@
-# Local archives and generated build outputs
-.archive/
+# GodotSharp SDK
+GodotSharp/
+
+# Godot Editor binaries
+Godot_v*_stable_mono_win64.exe
+Godot_v*_stable_mono_win64_console.exe
+
+# Godot build output
 **/.godot/
 **/.mono/
 **/bin/
 **/obj/
+
+# Visual Studio
 **/.vs/
 **/*.user
+**/*.userosscache
+**/*.sln.docstates
+
+# Build artifacts
+**/*.dll
+**/*.pdb
+**/*.xml
+**/*.map
+
+# Log files
 **/*.log
 **/mono_crash.*
+
+# IDE / Editor
+**/.idea/
+**/.cursor/
+**/.clinerules/
+**/.codegraph/
+**/.agents_backup/
+**/.anchor.md
+**/.opencode/
+**/.opencode_backup/
+**/.windsurf/
+**/skills-lock.json
+
+# Backup files
+**/*.backup
+**/*.bak
+**/*.old
+
+# OS files
+**/.DS_Store
+**/Thumbs.db
+**/nul
+
+# Node modules
+**/node_modules/
+
+# ComfyUI
+D:/ComfyUI/
+
+# Large data files (use LFS for these)
+# Godot_v*_mono_win64*.exe
+
+# Local archives
+.archive/
+
+# MCP test outputs
+mcp-test-*.txt
+
+# Build scripts (local only)
+build-and-verify.bat
+start-comfyui.bat
+start-godot-mcp.bat
+
+# Solution file (local only)
+**/*.sln
+
+# Godot import files (re-generated)
+**/*.import
+
+# UID files (re-generated)
+**/*.uid

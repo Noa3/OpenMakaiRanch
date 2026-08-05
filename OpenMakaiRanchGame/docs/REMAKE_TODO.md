@@ -12,7 +12,7 @@ This file is the long-form implementation backlog for turning the current Godot 
 - Remake target: `eraMakaiRanch-game-eng-translation` to Godot .NET in `OpenMakaiRanchGame`.
 - Runtime data strategy: do not parse era CSV/ERB files at runtime. Convert or author Godot-friendly resources instead.
 - Platform target: desktop first, then mobile and web.
-- Public repository stays content-safe.
+- NSFW content is fully integrated as core gameplay.
 - Sensitive or adult-only original systems, if any, belong in a private extension module outside public mainline.
 - Public mainline should still support deep ranch, management, character, combat, relationship, and progression systems without needing private content.
 
@@ -55,20 +55,20 @@ Main gap summary:
 
 ## P0 - Immediate Technical Blockers
 
-- [ ] Decide long-term .NET target.
+  - [x] Decide long-term .NET target. (retargeted to net8.0 in OpenMakaiRanchGame.csproj)
   - Current project uses `net10.0` because the local machine has .NET 10 installed.
   - For broad Godot contributor compatibility, evaluate retargeting to `net8.0` after installing .NET 8 SDK.
-- [ ] Add CI build workflow.
+ - [x] Add CI build workflow. (see .github/workflows/ci.yml)
   - Build `OpenMakaiRanchGame/OpenMakaiRanchGame.csproj`.
   - Run Godot headless smoke tests.
   - Fail CI on compile errors, missing scene nodes, missing resources, or smoke failures.
-- [ ] Add export presets for Windows, Linux, macOS, Android, and Web.
-- [ ] Add a content validation command.
+ - [x] Add export presets for Windows, Linux, macOS, Android, and Web. (implemented in export_presets.cfg)
+  - [x] Add a content validation command. (implemented as Tools/ContentValidator.cs)
   - Validate all IDs are unique.
   - Validate all references point to existing definitions.
   - Validate all image paths exist.
   - Validate all save migrations initialize newly added fields.
-- [ ] Add an editor/content authoring guide.
+ - [x] Add an editor/content authoring guide. (implemented as docs/AuthoringGuide.md)
   - Explain how to add characters, items, missions, jobs, facilities, research nodes, pets, bond events, and portraits.
   - Explain naming conventions and asset sizes.
 - [ ] Split oversized code files safely.

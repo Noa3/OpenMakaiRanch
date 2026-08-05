@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Godot;
 using OpenMakaiRanch.Core.Models;
@@ -62,29 +63,117 @@ public partial class UiShellController
         }
     }
 
+    private static readonly string[] LivingBuildingIds = { "office", "private_room", "barn", "guest_room", "dormitory" };
+    private static readonly Dictionary<string, int> BuildingCapacities = new()
+    {
+        ["office"] = 1, ["private_room"] = 1, ["barn"] = 3, ["guest_room"] = 2, ["dormitory"] = 4
+    };
+
     private void RenderRanch()
     {
         AddTitle(T("screen.ranch", "Ranch Overview"));
 
         AddRanchCommandDeck();
-        AddCharacterLocations();
+
+        var chars = _game.Roster.Characters.ToList();
+
+        var buildingsCard = CardContainer();
+        _content.AddChild(buildingsCard);
+        var buildingsInner = CardContent();
+        buildingsCard.AddChild(buildingsInner);
+        buildingsInner.AddChild(SubtitleLabel(T("screen.ranch.locations", "Buildings & Characters")));
+
+        foreach (var buildingId in LivingBuildingIds)
+        {
+            var occupantIdx = System.Array.IndexOf(LivingBuildingIds, buildingId);
+            var isBuilt = buildingId switch
+            {
+                "office" => true,
+                "private_room" => true,
+                "barn" => true,
+                "dormitory" => true,
+                _ => FacilityLevel(buildingId) > 0
+            };
+
+            var cap = BuildingCapacities.TryGetValue(buildingId, out var capacity) ? capacity : 2;
+            var occupants = new List<CharacterState>();
+            if (occupantIdx >= 0 && occupantIdx < chars.Count)
+            {
+                var ch = chars[occupantIdx];
+                if (ch is not null) occupants.Add(ch);
+            }
+            var used = occupants.Count;
+
+            var buildingRow = new HBoxContainer();
+            buildingRow.AddThemeConstantOverride("separation", 10);
+            buildingRow.CustomMinimumSize = new Vector2(0, 100);
+            buildingRow.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            buildingsInner.AddChild(buildingRow);
+
+            var nameDef = _game.Data.Facilities.TryGetValue(buildingId, out var facDef)
+                ? facDef.DisplayName
+                : buildingId;
+
+            var icon = isBuilt ? "🏠" : "🔒";
+            var info = new VBoxContainer();
+            info.CustomMinimumSize = new Vector2(180, 0);
+            info.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
+            info.AddThemeConstantOverride("separation", 4);
+            buildingRow.AddChild(info);
+            info.AddChild(SubtitleLabel($"{icon} {nameDef}"));
+            info.AddChild(MutedLabel($"{T("screen.ranch.space", "Space")}: {used}/{cap}"));
+
+            var charRow = new HBoxContainer();
+            charRow.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            charRow.AddThemeConstantOverride("separation", 8);
+            buildingRow.AddChild(charRow);
+
+            if (!isBuilt || occupants.Count == 0)
+            {
+                charRow.AddChild(MutedLabel(isBuilt ? T("screen.ranch.vacant", "Vacant") : T("screen.ranch.locked", "Locked")));
+                continue;
+            }
+
+            foreach (var ch in occupants)
+            {
+                var def = _game.Roster.DefinitionFor(ch);
+                var charCard = CardContainer();
+                charCard.CustomMinimumSize = new Vector2(0, 80);
+                charCard.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                charRow.AddChild(charCard);
+
+                var charInner = CardContent();
+                charCard.AddChild(charInner);
+
+                var portrait = BuildCharacterVisual(ch, def);
+                if (portrait is not null)
+                {
+                    var portraitRow = new HBoxContainer();
+                    portraitRow.AddThemeConstantOverride("separation", 8);
+                    charInner.AddChild(portraitRow);
+                    portraitRow.AddChild(portrait);
+
+                    var details = new VBoxContainer();
+                    details.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                    details.AddThemeConstantOverride("separation", 3);
+                    portraitRow.AddChild(details);
+
+                    details.AddChild(AddStyledLine(CharacterPickerName(ch)));
+                    details.AddChild(MutedLabel($"HP {ch.Hp}/{def.MaxHp} | {T("label.energy", "E")} {ch.Energy} | {T("label.morale", "M")} {ch.Morale}"));
+
+                    var jobId2 = _game.Schedule.GetAssignment(ch.Id);
+                    var jobName2 = _game.Data.Jobs.TryGetValue(jobId2, out var j2) ? j2.DisplayName : "rest";
+                    details.AddChild(MutedLabel($"{T("label.job", "Job")}: {jobName2}"));
+
+                    var visitBtn = SmallButton(T("label.visit", "Visit"));
+                    var capturedId = ch.Id;
+                    visitBtn.Pressed += () => { _detailCharacterId = capturedId; ShowScreen("character_detail"); };
+                    details.AddChild(visitBtn);
+                }
+            }
+        }
+
         AddFacilityMap();
-
-        var stock = CardContainer();
-        _content.AddChild(stock);
-        var stockInner = CardContent();
-        stock.AddChild(stockInner);
-        stockInner.AddChild(SubtitleLabel(T("screen.ranch.stockpile", "Stockpile")));
-        if (_game.Ranch.Stockpile.Count == 0)
-        {
-            stockInner.AddChild(MutedLabel(T("screen.ranch.no_stock", "No stored resources yet.")));
-        }
-        foreach (var entry in _game.Ranch.Stockpile.OrderBy(entry => entry.Key))
-        {
-            stockInner.AddChild(AddStyledLine($"{entry.Key}: {entry.Value}"));
-        }
-
-        AddLatestDailyReport();
 
         var progress = CardContainer();
         _content.AddChild(progress);
@@ -122,48 +211,6 @@ public partial class UiShellController
         AddFlowButton(actions, DestinationButton(T("screen.saveload", "Save And Load"), "saveload", tooltip: T("tooltip.saveload", "Save or load the current game.")), 150);
     }
 
-    private void AddCharacterLocations()
-    {
-        var chars = _game.Roster.Characters.ToList();
-        if (chars.Count == 0) return;
-
-        var locations = new[] { "Office", "Private Room", "Barn", "Guest Room", "Dormitory" };
-        var locCard = CardContainer();
-        _content.AddChild(locCard);
-        var locInner = CardContent();
-        locCard.AddChild(locInner);
-        locInner.AddChild(SubtitleLabel(T("screen.ranch.locations", "Ranch Locations")));
-
-        var map = FlowRow(10);
-        locInner.AddChild(map);
-
-        for (var i = 0; i < chars.Count && i < locations.Length; i++)
-        {
-            var ch = chars[i];
-            var def = _game.Roster.DefinitionFor(ch);
-            var locationName = locations[i];
-            var jobId = _game.Schedule.GetAssignment(ch.Id);
-            var jobName = _game.Data.Jobs.TryGetValue(jobId, out var j) ? j.DisplayName : "rest";
-
-            var room = CardContainer();
-            room.CustomMinimumSize = new Vector2(200, 130);
-            room.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
-            map.AddChild(room);
-
-            var roomInner = CardContent();
-            room.AddChild(roomInner);
-            roomInner.AddChild(SubtitleLabel(locationName));
-            roomInner.AddChild(AddStyledLine(CharacterPickerName(ch)));
-            roomInner.AddChild(MutedLabel($"HP {ch.Hp}/{def.MaxHp}  Energy {ch.Energy}  Morale {ch.Morale}"));
-            roomInner.AddChild(MutedLabel($"{T("label.job", "Job")}: {jobName}"));
-
-            var visitBtn = SmallButton(T("label.visit", "Visit"));
-            var capturedLocId = ch.Id;
-            visitBtn.Pressed += () => { _detailCharacterId = capturedLocId; ShowScreen("character_detail"); };
-            roomInner.AddChild(visitBtn);
-        }
-    }
-
     private void AddFacilityMap()
     {
         AddFacilityTiles(T("screen.ranch.facility_map", "Buildings And Facilities"));
@@ -190,23 +237,35 @@ public partial class UiShellController
             inner.AddChild(AddStyledLine(level > 0
                 ? $"{T("label.level", "Level")} {level} | {T("screen.ranch.open", "Open")}" 
                 : T("screen.ranch.locked_unbuilt", "Locked - not built")));
-            inner.AddChild(MutedLabel($"{T("screen.ranch.output", "Output")}: +{facility.OutputBonus}/{T("label.level", "level")} {facility.OutputResourceId}"));
-            inner.AddChild(MutedLabel($"{T("screen.ranch.upkeep", "Upkeep")}: {facility.UpkeepGold}{T("unit.g", "g")}/{T("label.day", "day")}"));
 
-            var actionLabel = level > 0
-                ? $"{T("screen.town.upgrade", "Upgrade")} ({cost}{T("unit.g", "g")})"
-                : $"{T("screen.town.build", "Build")} ({cost}{T("unit.g", "g")})";
-            var action = level > 0 ? SecondaryButton(actionLabel) : PrimaryButton(actionLabel);
-            action.TooltipText = level > 0
-                ? T("tooltip.facility_upgrade", "Upgrade {0} to level {1}.", facility.DisplayName, level + 1)
-                : T("tooltip.facility_build", "Build {0} to unlock its output and services.", facility.DisplayName);
-            action.Disabled = _game.Economy.Gold < cost;
-            action.Pressed += () => ExecuteUiAction(() => _game.Ranch.UpgradeFacility(facility.Id, _game.Economy), false);
-            inner.AddChild(action);
-
-            if (action.Disabled)
+            if (facility.Capacity > 0)
             {
-                inner.AddChild(RequirementLabel($"{T("screen.town.need_gold", "Need")}: {cost - _game.Economy.Gold}{T("unit.g", "g")}"));
+                var occupantCount = LivingBuildingIds.Contains(facility.Id) ? 1 : 0;
+                inner.AddChild(MutedLabel($"{T("screen.ranch.space", "Space")}: {occupantCount}/{facility.Capacity}"));
+            }
+
+            if (facility.OutputBonus > 0)
+                inner.AddChild(MutedLabel($"{T("screen.ranch.output", "Output")}: +{facility.OutputBonus}/{T("label.level", "level")} {facility.OutputResourceId}"));
+            if (facility.UpkeepGold > 0)
+                inner.AddChild(MutedLabel($"{T("screen.ranch.upkeep", "Upkeep")}: {facility.UpkeepGold}{T("unit.g", "g")}/{T("label.day", "day")}"));
+
+            if (facility.BuildCost > 0)
+            {
+                var actionLabel = level > 0
+                    ? $"{T("screen.town.upgrade", "Upgrade")} ({cost}{T("unit.g", "g")})"
+                    : $"{T("screen.town.build", "Build")} ({cost}{T("unit.g", "g")})";
+                var action = level > 0 ? SecondaryButton(actionLabel) : PrimaryButton(actionLabel);
+                action.TooltipText = level > 0
+                    ? T("tooltip.facility_upgrade", "Upgrade {0} to level {1}.", facility.DisplayName, level + 1)
+                    : T("tooltip.facility_build", "Build {0} to unlock its output and services.", facility.DisplayName);
+                action.Disabled = _game.Economy.Gold < cost;
+                action.Pressed += () => ExecuteUiAction(() => _game.Ranch.UpgradeFacility(facility.Id, _game.Economy), false);
+                inner.AddChild(action);
+
+                if (action.Disabled)
+                {
+                    inner.AddChild(RequirementLabel($"{T("screen.town.need_gold", "Need")}: {cost - _game.Economy.Gold}{T("unit.g", "g")}"));
+                }
             }
         }
     }
@@ -1317,8 +1376,10 @@ public partial class UiShellController
         AddTitle(T("screen.settings", "Settings"));
         var card = CardContainer();
         _content.AddChild(card);
-        card.AddChild(AddStyledLine(T("screen.settings.menu_flow", "Menu flow has been simplified: grouped navigation, cards, and clear action priorities.")));
-        card.AddChild(AddStyledLine(T("screen.settings.feedback_info", "Mobile and handheld feedback can use short UI tones and optional vibration.")));
+        var inner = CardContent();
+        card.AddChild(inner);
+        inner.AddChild(AddStyledLine(T("screen.settings.menu_flow", "Menu flow has been simplified: grouped navigation, cards, and clear action priorities.")));
+        inner.AddChild(AddStyledLine(T("screen.settings.feedback_info", "Mobile and handheld feedback can use short UI tones and optional vibration.")));
 
         var audioToggle = PrimaryButton($"{T("screen.settings.audio_feedback", "Audio Feedback")}: {(_game.Feedback.AudioEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
         audioToggle.Pressed += () =>
@@ -1329,7 +1390,7 @@ public partial class UiShellController
                 _game.Feedback.PlayConfirm();
             }
         };
-        card.AddChild(audioToggle);
+        inner.AddChild(audioToggle);
 
         var hapticsToggle = PrimaryButton($"{T("screen.settings.handheld_vibration", "Handheld Vibration")}: {(_game.Feedback.HapticsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
         hapticsToggle.Pressed += () =>
@@ -1337,18 +1398,18 @@ public partial class UiShellController
             _game.ToggleHapticsFeedback();
             _game.Feedback.PulseHaptics(40, 0.45f);
         };
-        card.AddChild(hapticsToggle);
+        inner.AddChild(hapticsToggle);
 
         var previewFeedback = SecondaryButton(T("screen.settings.preview_confirm", "Preview Confirm Feedback"));
         previewFeedback.Pressed += () => _game.Feedback.PlayConfirm();
-        card.AddChild(previewFeedback);
+        inner.AddChild(previewFeedback);
 
         var previewError = SecondaryButton(T("screen.settings.preview_error", "Preview Error Feedback"));
         previewError.Pressed += () => _game.Feedback.PlayError();
-        card.AddChild(previewError);
+        inner.AddChild(previewError);
 
         var themeRow = FlowRow(8);
-        card.AddChild(themeRow);
+        inner.AddChild(themeRow);
         themeRow.AddChild(AddStyledLine(T("screen.settings.color_theme", "Color Theme"), true));
 
         var themePicker = StyledPicker(220);
@@ -1360,7 +1421,7 @@ public partial class UiShellController
         {
             themePicker.AddItem(theme.DisplayName);
             themePicker.SetItemMetadata(index, theme.Id);
-            if (string.Equals(theme.Id, currentThemeId, System.StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(theme.Id, currentThemeId, StringComparison.OrdinalIgnoreCase))
             {
                 selectedThemeIndex = index;
             }
@@ -1377,7 +1438,7 @@ public partial class UiShellController
         themeRow.AddChild(themePicker);
 
         var uiScaleRow = FlowRow(8);
-        card.AddChild(uiScaleRow);
+        inner.AddChild(uiScaleRow);
         uiScaleRow.AddChild(AddStyledLine($"{T("screen.settings.ui_scale", "UI Scale")}: {_game.State.Settings.UiScale:0.00}x", true));
         var uiScale = new HSlider
         {
@@ -1392,7 +1453,7 @@ public partial class UiShellController
         uiScaleRow.AddChild(uiScale);
 
         var localeRow = FlowRow(8);
-        card.AddChild(localeRow);
+        inner.AddChild(localeRow);
         localeRow.AddChild(AddStyledLine(T("screen.settings.language", "Language"), true));
         var localePicker = StyledPicker(180);
         localePicker.Name = "LocaleOption";
@@ -1402,7 +1463,7 @@ public partial class UiShellController
             var lc = AvailableLocales[localeIdx];
             localePicker.AddItem(LocaleDisplayName(lc));
             localePicker.SetItemMetadata(localeIdx, lc);
-            if (string.Equals(lc, _game.State.Settings.Locale, System.StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(lc, _game.State.Settings.Locale, StringComparison.OrdinalIgnoreCase))
             {
                 selectedLocaleIndex = localeIdx;
             }
@@ -1415,8 +1476,8 @@ public partial class UiShellController
         };
         localeRow.AddChild(localePicker);
 
-        card.AddChild(MutedLabel($"{T("screen.settings.haptics_supported", "Haptics supported on this device")}: {(_game.Feedback.SupportsHaptics ? T("label.yes", "Yes") : T("label.no", "No"))}"));
-        card.AddChild(MutedLabel(T("screen.settings.android_haptics", "Android exports need the VIBRATE permission enabled for handheld vibration.")));
+        inner.AddChild(MutedLabel($"{T("screen.settings.haptics_supported", "Haptics supported on this device")}: {(_game.Feedback.SupportsHaptics ? T("label.yes", "Yes") : T("label.no", "No"))}"));
+        inner.AddChild(MutedLabel(T("screen.settings.android_haptics", "Android exports need the VIBRATE permission enabled for handheld vibration.")));
     }
 
     // === Training state tracking ===

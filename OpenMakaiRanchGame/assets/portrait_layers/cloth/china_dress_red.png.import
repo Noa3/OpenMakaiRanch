@@ -1,9 +1,9 @@
-﻿[remap]
+[remap]
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bjlxrdors8e5i"
-path="res://.godot/imported/ãƒãƒ£ã‚¤ãƒŠãƒ‰ãƒ¬ã‚¹_èµ¤.png-146fecb0aa09de554482eaf60e313c9e.ctex"
+uid="uid://cpilej54esgb4"
+path="res://.godot/imported/china_dress_red.png-d26fc0b09b30e54ee606bea3936cf6dd.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/portrait_layers/cloth/china_dress_red.png"
-dest_files=["res://.godot/imported/ãƒãƒ£ã‚¤ãƒŠãƒ‰ãƒ¬ã‚¹_èµ¤.png-146fecb0aa09de554482eaf60e313c9e.ctex"]
+dest_files=["res://.godot/imported/china_dress_red.png-d26fc0b09b30e54ee606bea3936cf6dd.ctex"]
 
 [params]
 

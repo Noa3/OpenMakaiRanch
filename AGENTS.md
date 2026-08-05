@@ -1,10 +1,10 @@
 # OpenMakaiRanch
 
-Godot 4.6 .NET (C#) game — a SFW remake of eraMakaiRanch.
+Godot 4.7 .NET (C#) game — a NSFW remake of eraMakaiRanch.
 
 ## Commands
 - **Build**: `dotnet build` from `OpenMakaiRanchGame/`
-- **Run**: Launch `Godot_v4.6.3-stable_mono_win64.exe` with project
+- **Run**: Launch `Godot_v4.7-stable_mono_win64.exe` with project
 - **Test**: Godot unit tests in `OpenMakaiRanchGame/src/Tests/`
 
 ## Architecture
@@ -27,6 +27,31 @@ Godot 4.6 .NET (C#) game — a SFW remake of eraMakaiRanch.
   - Config: `opencode.json` and `.vscode/mcp.json`
   - Godot exe: `E:\OpenMakaiRanch\Godot_v4.6.3-stable_mono_win64.exe`
   - Command: `npx @coding-solo/godot-mcp`
+- **comfyui-mcp** (artokun/comfyui-mcp): Full ComfyUI control (image gen, workflows, models)
+  - 96 tools: generate_image, workflow authoring, model management
+  - Config: `opencode.json` — auto-detects local ComfyUI at D:\ComfyUI
+  - Start ComfyUI first: `start-comfyui.bat`
+
+## Multi-Agent SDLC Pipeline
+
+```
+@pm spec -> @designer design -> (@artist + @programmer) -> @qa verify -> @tech-lead review -> DONE
+```
+
+### Agents (defined in opencode.json)
+| Agent | Role | Tools |
+|-------|------|-------|
+| `@pm` | Product Manager | Specs, ACs, prioritization |
+| `@designer` | Game Designer | UI/mechanic specs, flows |
+| `@artist` | 2D Artist | ComfyUI MCP (sprite gen) |
+| `@programmer` | C# Dev | dotnet build, Godot code |
+| `@qa` | QA Tester | Tests, bug reports |
+| `@tech-lead` | Architect | Code review, quality gates |
+
+### Commands
+- `/sprint "feature"` — full pipeline from spec to delivery
+- `/generate-sprite "desc"` — generate asset via ComfyUI
+- `/review "feature"` — tech review + QA cycle
 
 ## Character Creation Labels
 
@@ -38,12 +63,18 @@ Invisible grid labels (e.g. "Hair Color:") in `CharacterCreationScene.tscn`:
 - Scene labels must have `custom_minimum_size` (140px+) and explicit `text` values in TSCN.
 
 ## Available Agents
-- `@godot-dev` — Godot Godot 4.x C# expert
+- `@godot-dev` — Godot 4.x C# expert
 - `@unity-dev` — Unity C# expert
-- `@minecraft-dev` — Minecraft Fabric/Forge modding
+- `@minecraft-dev` — Minecraft Fabric/NeoForge modding
 - `@python-game-dev` — Python game dev (Pygame/Arcade)
 - `@csharp-game-dev` — C# patterns across engines
 - `@java-game-dev` — Java game dev (LWJGL/LibGDX)
+- `@pm` — Product Manager (specs, ACs)
+- `@designer` — Game Designer (UI, mechanics)
+- `@artist` — 2D Artist (ComfyUI asset gen)
+- `@programmer` — C# Godot programmer
+- `@qa` — QA Tester
+- `@tech-lead` — Tech Lead / Architect
 
 Respond terse like smart caveman. All technical substance stay. Only fluff die.
 

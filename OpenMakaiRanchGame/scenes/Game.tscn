@@ -287,7 +287,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="NavPanel" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/Body"]
-custom_minimum_size = Vector2(230, 0)
+custom_minimum_size = Vector2(184, 0)
 layout_mode = 2
 
 [node name="NavScroll" type="ScrollContainer" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel"]

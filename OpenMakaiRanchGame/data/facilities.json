@@ -1,0 +1,83 @@
+[
+  {
+    "Id": "bathhouse",
+    "DisplayName": "Bathhouse",
+    "BuildCost": 200,
+    "UpkeepGold": 15,
+    "OutputResourceId": "comfort",
+    "OutputBonus": 2,
+    "_id": "bathhouse"
+  },
+  {
+    "Id": "dairy_barn",
+    "DisplayName": "Dairy Barn",
+    "BuildCost": 250,
+    "UpkeepGold": 25,
+    "OutputResourceId": "farm_goods",
+    "OutputBonus": 5,
+    "_id": "dairy_barn"
+  },
+  {
+    "Id": "guest_room",
+    "DisplayName": "Guest Rooms",
+    "BuildCost": 120,
+    "UpkeepGold": 8,
+    "OutputResourceId": "comfort",
+    "OutputBonus": 1,
+    "_id": "guest_room"
+  },
+  {
+    "Id": "kitchen",
+    "DisplayName": "Kitchen",
+    "BuildCost": 140,
+    "UpkeepGold": 12,
+    "OutputResourceId": "meals",
+    "OutputBonus": 1,
+    "_id": "kitchen"
+  },
+  {
+    "Id": "pasture",
+    "DisplayName": "Pasture",
+    "BuildCost": 180,
+    "UpkeepGold": 20,
+    "OutputResourceId": "farm_goods",
+    "OutputBonus": 3,
+    "_id": "pasture"
+  },
+  {
+    "Id": "pharmacy_lab",
+    "DisplayName": "Pharmacy Lab",
+    "BuildCost": 300,
+    "UpkeepGold": 20,
+    "OutputResourceId": "supplies",
+    "OutputBonus": 3,
+    "_id": "pharmacy_lab"
+  },
+  {
+    "Id": "storage",
+    "DisplayName": "Storage Shed",
+    "BuildCost": 130,
+    "UpkeepGold": 6,
+    "OutputResourceId": "supplies",
+    "OutputBonus": 1,
+    "_id": "storage"
+  },
+  {
+    "Id": "well",
+    "DisplayName": "Well",
+    "BuildCost": 160,
+    "UpkeepGold": 10,
+    "OutputResourceId": "farm_goods",
+    "OutputBonus": 2,
+    "_id": "well"
+  },
+  {
+    "Id": "workshop",
+    "DisplayName": "Workshop",
+    "BuildCost": 170,
+    "UpkeepGold": 16,
+    "OutputResourceId": "supplies",
+    "OutputBonus": 1,
+    "_id": "workshop"
+  }
+]

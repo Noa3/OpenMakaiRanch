@@ -1,0 +1,164 @@
+[
+  {
+    "Id": "all_hired",
+    "DisplayName": "Full Roster",
+    "TriggerKind": 5,
+    "TriggerId": "",
+    "TriggerAmount": 11,
+    "RewardGold": 250,
+    "_id": "all_hired"
+  },
+  {
+    "Id": "deep_bonds",
+    "DisplayName": "Deep Bonds",
+    "TriggerKind": 3,
+    "TriggerId": "",
+    "TriggerAmount": 40,
+    "RewardGold": 100,
+    "_id": "deep_bonds"
+  },
+  {
+    "Id": "equipment_collector",
+    "DisplayName": "Well Equipped",
+    "TriggerKind": 8,
+    "TriggerId": "",
+    "TriggerAmount": 5,
+    "RewardGold": 180,
+    "_id": "equipment_collector"
+  },
+  {
+    "Id": "facility_master",
+    "DisplayName": "Facility Master",
+    "TriggerKind": 6,
+    "TriggerId": "",
+    "TriggerAmount": 0,
+    "RewardGold": 150,
+    "_id": "facility_master"
+  },
+  {
+    "Id": "first_day",
+    "DisplayName": "First Settlement",
+    "TriggerKind": 0,
+    "TriggerId": "",
+    "TriggerAmount": 2,
+    "RewardGold": 50,
+    "_id": "first_day"
+  },
+  {
+    "Id": "first_patrol",
+    "DisplayName": "First Patrol",
+    "TriggerKind": 2,
+    "TriggerId": "any",
+    "TriggerAmount": 0,
+    "RewardGold": 75,
+    "_id": "first_patrol"
+  },
+  {
+    "Id": "first_research",
+    "DisplayName": "First Research",
+    "TriggerKind": 4,
+    "TriggerId": "any",
+    "TriggerAmount": 0,
+    "RewardGold": 70,
+    "_id": "first_research"
+  },
+  {
+    "Id": "first_trust",
+    "DisplayName": "First Trust",
+    "TriggerKind": 3,
+    "TriggerId": "",
+    "TriggerAmount": 20,
+    "RewardGold": 60,
+    "_id": "first_trust"
+  },
+  {
+    "Id": "mission_veteran",
+    "DisplayName": "Mission Veteran",
+    "TriggerKind": 2,
+    "TriggerId": "any",
+    "TriggerAmount": 0,
+    "RewardGold": 200,
+    "_id": "mission_veteran"
+  },
+  {
+    "Id": "modest_fortune",
+    "DisplayName": "Modest Fortune",
+    "TriggerKind": 1,
+    "TriggerId": "",
+    "TriggerAmount": 2000,
+    "RewardGold": 150,
+    "_id": "modest_fortune"
+  },
+  {
+    "Id": "pet_lover",
+    "DisplayName": "Pet Lover",
+    "TriggerKind": 7,
+    "TriggerId": "",
+    "TriggerAmount": 3,
+    "RewardGold": 80,
+    "_id": "pet_lover"
+  },
+  {
+    "Id": "ranch_community",
+    "DisplayName": "Ranch Community",
+    "TriggerKind": 0,
+    "TriggerId": "",
+    "TriggerAmount": 5,
+    "RewardGold": 75,
+    "_id": "ranch_community"
+  },
+  {
+    "Id": "ranch_empire",
+    "DisplayName": "Ranch Empire",
+    "TriggerKind": 1,
+    "TriggerId": "",
+    "TriggerAmount": 5000,
+    "RewardGold": 300,
+    "_id": "ranch_empire"
+  },
+  {
+    "Id": "ranch_foundation",
+    "DisplayName": "Ranch Foundation",
+    "TriggerKind": 1,
+    "TriggerId": "",
+    "TriggerAmount": 500,
+    "RewardGold": 80,
+    "_id": "ranch_foundation"
+  },
+  {
+    "Id": "research_master",
+    "DisplayName": "Research Master",
+    "TriggerKind": 4,
+    "TriggerId": "any",
+    "TriggerAmount": 0,
+    "RewardGold": 200,
+    "_id": "research_master"
+  },
+  {
+    "Id": "seasoned_rancher",
+    "DisplayName": "Seasoned Rancher",
+    "TriggerKind": 0,
+    "TriggerId": "",
+    "TriggerAmount": 10,
+    "RewardGold": 100,
+    "_id": "seasoned_rancher"
+  },
+  {
+    "Id": "steady_ranch",
+    "DisplayName": "Steady Ranch",
+    "TriggerKind": 1,
+    "TriggerId": "",
+    "TriggerAmount": 750,
+    "RewardGold": 100,
+    "_id": "steady_ranch"
+  },
+  {
+    "Id": "veteran_rancher",
+    "DisplayName": "Veteran Rancher",
+    "TriggerKind": 0,
+    "TriggerId": "",
+    "TriggerAmount": 20,
+    "RewardGold": 200,
+    "_id": "veteran_rancher"
+  }
+]

@@ -1,9 +1,9 @@
-﻿[remap]
+[remap]
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://en0bkhhredo1"
-path="res://.godot/imported/ã‚¹ãƒªãƒ³ã‚°ã‚·ãƒ§ãƒƒãƒˆ_ç´«.png-5d0fb2f3f4e61271dda632030c32b8c1.ctex"
+uid="uid://ws30j5hjtxqo"
+path="res://.godot/imported/slingshot_purple.png-f541aad410297743ea8c6345dba6a422.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/portrait_layers/cloth/slingshot/slingshot_purple.png"
-dest_files=["res://.godot/imported/ã‚¹ãƒªãƒ³ã‚°ã‚·ãƒ§ãƒƒãƒˆ_ç´«.png-5d0fb2f3f4e61271dda632030c32b8c1.ctex"]
+dest_files=["res://.godot/imported/slingshot_purple.png-f541aad410297743ea8c6345dba6a422.ctex"]
 
 [params]
 

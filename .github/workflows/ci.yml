@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          # Use .NET 8 for broader compatibility; can be changed to 10 if needed
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
+
+      - name: Build project
+        run: dotnet build --configuration Release OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
+
+      - name: Run content validation
+        # Ensure the validator project is built and executed
+        run: |
+          dotnet build --configuration Release OpenMakaiRanchGame/Tools/ContentValidator.cs
+          dotnet run --project OpenMakaiRanchGame/Tools/ContentValidator.cs --configuration Release
+
+      - name: Install Godot (headless)
+        # This step downloads a portable Godot headless build for Windows.
+        # Adjust version as needed.
+        run: |
+          $url = "https://downloads.tuxfamily.org/godotengine/4.6.3/mono/Godot_v4.6.3-stable_mono_win64.zip"
+          $zip = "$env:RUNNER_TEMP\godot.zip"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath $env:RUNNER_TEMP\godot
+          $env:PATH += ";$env:RUNNER_TEMP\godot"
+
+      - name: Run Godot headless smoke tests
+        # Assumes a script or scene that runs the smoke tests on startup.
+        # The project includes a command‑line entry point for tests.
+        run: |
+          $godotExe = "godot.exe"
+          & $godotExe --headless --path . --run-tests
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            OpenMakaiRanchGame/bin/Release/**
+            OpenMakaiRanchGame/**/*.pck

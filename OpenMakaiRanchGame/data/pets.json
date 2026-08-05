@@ -1,0 +1,32 @@
+[
+  {
+    "Id": "demon_hamster",
+    "DisplayName": "Demon Hamster",
+    "CareCost": 30,
+    "_id": "demon_hamster"
+  },
+  {
+    "Id": "fallen_pegasus",
+    "DisplayName": "Fallen Angel Horse",
+    "CareCost": 60,
+    "_id": "fallen_pegasus"
+  },
+  {
+    "Id": "orthrus",
+    "DisplayName": "Orthrus",
+    "CareCost": 50,
+    "_id": "orthrus"
+  },
+  {
+    "Id": "stable_cat",
+    "DisplayName": "Stable Cat",
+    "CareCost": 15,
+    "_id": "stable_cat"
+  },
+  {
+    "Id": "yard_hound",
+    "DisplayName": "Yard Hound",
+    "CareCost": 20,
+    "_id": "yard_hound"
+  }
+]

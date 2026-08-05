@@ -11,13 +11,9 @@ The main target is to rebuild the gameplay framework from `eraMakaiRanch-game-en
 - A playable vertical slice first, then iterative feature parity
 - Safe public repository standards for code and content
 
-## Content Scope And Boundaries
+## Content Scope
 
-This repository's public core stays content-safe.
-
-- The default implementation is systems-first and safe-for-work.
-- Any mature customization must stay out of this public mainline.
-- If private extensions are created, they should follow local law, platform policy, and project contributor rules.
+NSFW systems-first remake of eraMakaiRanch. Mature content (training mechanics, bond events, character progression) is fully integrated as a core gameplay pillar. The original game's adult content is faithfully recreated — not abstracted or placeholdered.
 
 ## Repository Layout
 

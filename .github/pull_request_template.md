@@ -16,4 +16,4 @@ Link issue number if available.
 
 - [ ] No unrelated refactors
 - [ ] Docs updated if needed
-- [ ] Public content-safe policy preserved
+- [ ] NSFW content appropriately handled (UI flags, consent checks, content warnings where applicable)

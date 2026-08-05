@@ -1,0 +1,20 @@
+Godot 4.6 documentation: https://docs.godotengine.org/en/stable/
+
+This project uses:
+- Godot 4.6 with C# (.NET)
+- GL Compatibility renderer
+- UiShellController (partial class split across multiple files)
+- GameRoot as an autoload (singleton)
+- SceneRouter as an autoload
+
+Key scene structure for UiShellController (Game.tscn):
+- UiShell (Control) → Margin (MarginContainer) → RootPanel (PanelContainer) → Root (VBoxContainer)
+- Root/Body (HBoxContainer) → NavPanel (PanelContainer, hidden in fullscreen) | ContentPanel (PanelContainer) → Scroll (ScrollContainer) → Content (VBoxContainer) ← `_content`
+
+Fullscreen screens: "character_creation", "prologue", "victory", "title"
+- These hide nav, topbar, set margins to 0
+
+Important: PanelContainer in Godot 4.6 has issues when used as a card container inside dynamically-rendered fullscreen screens — children may not lay out or render text. Workaround: use VBoxContainer or add children directly to `_content` instead.
+
+BodyText color: "c8c8d0" (light gray, midnight theme)
+CardFill: "1e1e2a" (dark)

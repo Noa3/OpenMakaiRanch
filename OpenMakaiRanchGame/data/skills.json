@@ -1,0 +1,98 @@
+[
+  {
+    "Id": "adventure_training",
+    "DisplayName": "Adventure Training",
+    "Description": "Improves party combat performance on missions.",
+    "CostResourceId": "meals",
+    "CostAmount": 3,
+    "_id": "adventure_training"
+  },
+  {
+    "Id": "arcane_studies",
+    "DisplayName": "Arcane Studies",
+    "Description": "Improves MagicPower training efficiency and energy recovery.",
+    "CostResourceId": "supplies",
+    "CostAmount": 4,
+    "_id": "arcane_studies"
+  },
+  {
+    "Id": "craftsmanship",
+    "DisplayName": "Craftsmanship",
+    "Description": "Improves workshop output and item quality.",
+    "CostResourceId": "supplies",
+    "CostAmount": 4,
+    "_id": "craftsmanship"
+  },
+  {
+    "Id": "culinary_arts",
+    "DisplayName": "Culinary Arts",
+    "Description": "Improves meal quality and cooking output.",
+    "CostResourceId": "meals",
+    "CostAmount": 4,
+    "_id": "culinary_arts"
+  },
+  {
+    "Id": "dairy_science",
+    "DisplayName": "Dairy Science",
+    "Description": "Increases dairy output and milk quality.",
+    "CostResourceId": "supplies",
+    "CostAmount": 4,
+    "_id": "dairy_science"
+  },
+  {
+    "Id": "field_medicine",
+    "DisplayName": "Field Medicine",
+    "Description": "Reduces adventure fatigue risk.",
+    "CostResourceId": "meals",
+    "CostAmount": 4,
+    "_id": "field_medicine"
+  },
+  {
+    "Id": "herbalism",
+    "DisplayName": "Herbalism",
+    "Description": "Improves pharmacy and potion crafting.",
+    "CostResourceId": "supplies",
+    "CostAmount": 3,
+    "_id": "herbalism"
+  },
+  {
+    "Id": "hospitality",
+    "DisplayName": "Hospitality",
+    "Description": "Improves guest comfort and bond gains.",
+    "CostResourceId": "comfort",
+    "CostAmount": 3,
+    "_id": "hospitality"
+  },
+  {
+    "Id": "logistics",
+    "DisplayName": "Logistics",
+    "Description": "Reduces facility upkeep costs.",
+    "CostResourceId": "supplies",
+    "CostAmount": 5,
+    "_id": "logistics"
+  },
+  {
+    "Id": "ranch_automation",
+    "DisplayName": "Automated Feeding",
+    "Description": "Facilities produce bonus resources each day.",
+    "CostResourceId": "supplies",
+    "CostAmount": 5,
+    "_id": "ranch_automation"
+  },
+  {
+    "Id": "ranch_planning",
+    "DisplayName": "Ranch Planning",
+    "Description": "Improves job output and schedule efficiency.",
+    "CostResourceId": "supplies",
+    "CostAmount": 3,
+    "_id": "ranch_planning"
+  },
+  {
+    "Id": "tactical_training",
+    "DisplayName": "Tactical Training",
+    "Description": "All party members gain bonus combat skill in missions.",
+    "CostResourceId": "meals",
+    "CostAmount": 5,
+    "_id": "tactical_training"
+  }
+]

@@ -1,9 +1,9 @@
-﻿[remap]
+[remap]
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bxqu3u0ajk5gp"
-path="res://.godot/imported/é€†ãƒãƒ‹ãƒ¼æœ_èµ¤.png-2e68c28f532b428a1b6207a78ac38973.ctex"
+uid="uid://blix1jny50nor"
+path="res://.godot/imported/reverse_bunny_suit_red.png-c9d48b7e06963ba971b0e6ca0141cb43.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/portrait_layers/cloth/reverse_bunny_suit_red.png"
-dest_files=["res://.godot/imported/é€†ãƒãƒ‹ãƒ¼æœ_èµ¤.png-2e68c28f532b428a1b6207a78ac38973.ctex"]
+dest_files=["res://.godot/imported/reverse_bunny_suit_red.png-c9d48b7e06963ba971b0e6ca0141cb43.ctex"]
 
 [params]
 

@@ -1,54 +1,30 @@
-# Autopilot Specification: SFW Godot .NET Remake
+# Autopilot Specification: Game.tscn Scene Rework
 
-Source of truth: `.omg/specs/deep-interview-sfw-godot-remake.md`.
+Source of truth: `IDEA.md` plus the 2026-06-14 Game.tscn follow-up interview.
 
 ## Goal
-Rebuild `OpenMakaiRanchGame` as a Godot .NET game based on the local eraMakaiRanch project, using a SFW systems-first interpretation. The first execution must protect a full-game scaffold and implement a playable vertical slice.
+Rework `OpenMakaiRanchGame/scenes/Game.tscn` and the attached Godot C# UI shell so the main game scene feels playable, readable, and coherent on desktop, web, and mobile-sized viewports.
 
-Also provide repository-level GitHub starter documentation that states the remake target clearly and documents public content boundaries.
+This pass is not a complete eraMakaiRanch clone. It should tighten the existing single-scene UI shell, expose existing gameplay screens reliably, add sensible ranch/map/menu affordances where they fit the current architecture, and fix obvious code/test blockers found during verification.
 
-Current extension request: configure Git LFS for large local editor binaries and add a simple launcher shortcut to open the Godot project.
-
-Current planning request: write a concrete missing-work TODO that includes public-core tasks and private mature-extension tasks, while enforcing no runtime CSV parser and planning for desktop/mobile/web targets.
-
-Current follow-up request: improve the Godot remake by fixing portrait layer sprite-sheet rendering, renaming non-English `portrait_layers` asset paths to English, deduplicating exact duplicate portrait layer files, improving menu scaling/overlap on mobile-like viewports, checking whether persistent menu elements are necessary, and fixing nearby blockers or logic errors found during verification.
-
-## Decisions
-- Archive the current broken `OpenMakaiRanchGame` before replacing it.
-- Do not push to GitHub yet.
-- Use local Godot 4.6.3 Mono tooling.
-- Use the local `Godot.NET.Sdk.4.6.3.nupkg` package source.
-- Target the locally installed SDK path first. The machine currently has .NET SDK 10.0.300 and only the .NET 10 ref pack; `net8.0` requires installing the .NET 8 SDK later.
-- Use typed C# models, services, and Godot Resource definition classes.
-- Avoid runtime copied CSV files. Use seeded Godot-native resource objects in this pass, with a future manifest/editor conversion path.
-- Keep adult-only original systems out of the remake. Represent them with SFW bond, mentorship, ranch work, and adventure hooks.
-- Allow only policy-safe mention of mature extension points as private, out-of-mainline customization.
-- Keep repository onboarding smooth by supporting both local editor binary and PATH-based Godot installs.
-- Treat `resources/portrait.csv` as the reference for portrait sprite-sheet regions, but do not add a runtime CSV parser. Use typed frame metadata in the Godot code for the currently wired layers.
-- On compact/widescreen-mobile layouts, the full sidebar section labels do not need to remain visible; replace them with a horizontal scrollable navigation strip.
-
-## First Milestone Scope
-Tier 1 must complete:
-- Clean Godot project shell and buildable C# assembly.
-- `GameRoot` and `SceneRouter` autoloads.
-- Typed data definitions and seeded catalog manifest/fallback.
-- Typed `SaveState` and JSON save/load.
-- Full UI navigation shell for all major systems.
-- Ranch day loop: schedule assignment, end-day settlement, resource/gold/fatigue/morale changes, daily report.
-- Skeleton services/screens for town, shop, adventure/combat, bond, pets, milestones, research, inventory, settings.
-
-Tier 2 best effort:
-- Shop transactions.
-- Simple adventure/combat mission resolution with rewards and fatigue risk.
-- Live milestone checks.
+## User Decisions
+- Prioritize safe wins across shell polish, 2D ranch/menu affordances, and era-style density.
+- Success means readable labels, buttons sized for text, enough spacing, desktop/mobile/web usability, all existing screens reachable, coherent playable day loop, and modern era-style readability where useful.
+- Do not let players enter locked or unpurchased buildings.
+- Locked/unpurchased buildings should remain visible but disabled with requirement text.
+- Execute directly with OMG Autopilot after interview; ambiguity score: 18%.
 
 ## Acceptance Criteria
-- Current project state is archived locally before replacement.
-- `OpenMakaiRanchGame` has a clean Godot project config, C# project, ignores, scenes, and scripts.
-- The app can start, create a new game, navigate screens, assign schedules, end a day, view a report, and save/load typed state.
-- All major original gameplay pillars have named services and UI entry points.
-- Incomplete full-game systems have explicit method hooks and concise TODO comments.
-- Build and Godot headless smoke checks are attempted and results recorded.
-- Portrait layers are cropped from sprite sheets with source rectangles and offsets instead of drawing whole sheets.
-- Non-English files under `OpenMakaiRanchGame/assets/portrait_layers` are renamed to English equivalents, and exact duplicate PNGs are removed when unreferenced by the current Godot code.
-- Menus avoid obvious label/button overlap at compact sizes through layout-driven scaling, wrapping/ellipsis, and compact navigation.
+- `Game.tscn` has no vestigial duplicate top-bar nodes that waste layout space or confuse tests.
+- Top bar, navigation, content cards, and action rows avoid obvious text clipping/overlap at desktop and compact/mobile-like widths.
+- Side navigation and compact navigation expose all intended major screens, while unavailable/locked destinations are disabled with requirement text instead of silently entered.
+- Ranch overview provides a clearer playable hub, including facility status and visible next actions that connect the day loop, town/shop/research/adventure, roster, schedule, and save/load.
+- Town/building actions are visible but disabled when requirements are not met; locked state communicates the requirement.
+- Smoke tests verify current scene paths, expected navigation buttons, compact navigation, and absence of duplicate top-bar nodes.
+- `dotnet build OpenMakaiRanchGame\OpenMakaiRanchGame.csproj` succeeds.
+- Godot headless smoke test is attempted and any blocker is reported or fixed.
+
+## Non-Goals
+- Do not import runtime CSV parsing into the Godot project.
+- Do not replace the existing C# UI shell with a large new scene architecture unless required by verification.
+- Do not push or commit changes.

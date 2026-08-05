@@ -59,6 +59,9 @@
   "screen.mental": "精神状態",
   "screen.saveload": "セーブ・ロード",
   "screen.settings": "設定",
+  "screen.facility.locked": "町で{0}を建設すると入れます。",
+  "tooltip.facility_upgrade": "{0}をレベル{1}に強化します。",
+  "tooltip.facility_build": "{0}を建設して生産とサービスを解放します。",
 
   "screen.character_creation": "キャラ作成",
   "screen.character_creation.identity": "プロフィール",
@@ -125,6 +128,7 @@
   "label.combat": "戦闘",
   "label.day": "日",
   "label.traits": "特性",
+  "label.locked_suffix": "（未解放）",
 
   "title.welcome": "OpenMakaiRanch へようこそ",
   "title.new_game": "ニューゲーム",
@@ -211,6 +215,17 @@
   "settings.audio": "オーディオフィードバック",
   "settings.haptics": "バイブレーション",
   "settings.reduce_motion": "動きを減らす",
+
+  "mainmenu.title": "Open Makai Ranch",
+  "mainmenu.continue": "続きから",
+  "mainmenu.new_game": "ニューゲーム",
+  "mainmenu.new_game_plus": "ニューゲーム+",
+  "mainmenu.quit": "終了",
+  "mainmenu.language": "言語:",
+  "victory.continue": "牧場を続ける",
+  "victory.continue_hint": "勝利後もプレイを続けます。ニューゲーム+は後でメインメニューから開始できます。",
+  "victory.new_game_plus": "ニューゲーム+",
+  "victory.new_game_plus_hint": "ボーナスゴールドと引き継ぎ要素つきで新しく始めます。",
 
   "common.back": "戻る",
   "common.confirm": "確認",

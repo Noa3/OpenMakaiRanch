@@ -67,11 +67,13 @@
 - saveload
 - settings (audio, haptics, theme, scale, locale, content mode)
 
-### Content Mode Architecture
-- `ContentMode` enum: `Sfw` / `MatureSkeleton`
-- `IMatureContentHooks` interface with `NullMatureContentHooks`
-- Settings toggle in UI
-- Currently only placeholder hooks exist
+### Mature Content Systems
+- Full training system (170+ actions in catalog)
+- Mental state / fall state tracking (resistance, dignity, aversion, corruption)
+- Breast milk economy (production, quality tiers, pricing)
+- Addiction system (multiple addiction types, withdrawal)
+- Equipment/clothing system (8 slots, 100+ items, outfit layering)
+- All integrated as core gameplay — no toggle, no placeholders
 
 ---
 
@@ -280,7 +282,7 @@ resources/
 
 ## 4. GAP ANALYSIS: What's Missing & Priority
 
-### P0 - Core SFW Expansion (Already Started)
+### P0 - Core Systems Expansion
 Status: Partially done, needs expansion
 
 | Feature | Current | Needed | Priority |
@@ -288,13 +290,16 @@ Status: Partially done, needs expansion
 | Characters | 6 main + gen | 10 named characters from CSV | P0 |
 | Jobs/Schedule | 5 jobs, simple | Full work skill system with levels | P0 |
 | Facilities | 4 basic | More with deeper upgrade trees | P0 |
-| Items | 4 shop | 20+ SFW consumables, tools, materials | P0 |
+| Items | 4 shop | 20+ consumables, tools, materials | P0 |
 | Missions | 2 missions | 6+ missions, tiers, rewards | P0 |
 | Bond events | 5 events | Per-character event chains, story arcs | P0 |
 | Research | 2 skills | Skill tree with dependencies | P0 |
 | Milestones | 5 milestones | 20+ achievements, unlocks | P0 |
 | Pets | 2 pets | 3-6 pets with interactions | P0 |
 | Training | 3 focuses | Expanded with facility-based training | P0 |
+| Training actions | 0 (catalog exists) | 170+ actions from Train.csv | P0 |
+| Mental state | 0 (models exist) | Full fall state engine with UI | P0 |
+| Milk economy | 0 (models exist) | Production, pricing, sales UI | P0 |
 
 ### P1 - Character & Visual Expansion
 
@@ -306,7 +311,7 @@ Status: Partially done, needs expansion
 | Body types | 4 types | Per-character body from CSV (height, bust, skin, etc.) |
 | Generated recruits | Random names | Name pool from original CSV (Str.csv sections 10000+) |
 
-### P2 - Expanded Systems (SFW)
+### P2 - Expanded Systems
 
 | System | Description |
 |--------|-------------|
@@ -318,16 +323,10 @@ Status: Partially done, needs expansion
 | Character quests | Per-character storylines with progression |
 | Crafting | Item creation from resources |
 | Reputation system | Town/faction standing, discounts, unlocks |
-
-### P3 - NSFW Content Module (Toggleable)
-
-| System | Description | Original Reference |
-|--------|-------------|-------------------|
-| Training screen | Interactive training actions | Train.csv (170 actions) |
-| Mental state engine | Emotions, fall states, corruption | Palam.csv, base.csv |
-| Breast milk economy | Production, pricing, sales | Abl.csv, Mark.csv, base.csv |
+| Training screen UI | Interactive training actions from catalog | Train.csv (170 actions) |
+| Mental state UI | Emotions, fall states, corruption display | Palam.csv, base.csv |
 | Addiction system | Drug/pleasure addiction mechanics | Abl.csv |
-| Clothing/equipment | Layered outfits, lewd variants | Equip.csv, Item.csv |
+| Clothing/equipment UI | Layered outfits, lewd variants | Equip.csv, Item.csv |
 | Relationship system | Love/Devotion/Collapse/Milk Cow | Cflag.csv fall states |
 | Magic system | Spells, tentacles, body mod | Item.csv (600-900) |
 | Character dialogue | Per-character lines per state | Cstr.csv speech patterns |
@@ -344,57 +343,34 @@ Status: Partially done, needs expansion
 GameRoot (autoload)
 ├── DataRegistry (static seeded data)
 ├── SaveState (runtime state)
-├── Service Layer (rosters, economy, combat, etc.)
-└── UiShellController (14 screens)
+├── Service Layer (rosters, economy, combat, training, etc.)
+└── UiShellController (14+ screens)
     └── SceneRouter
 ```
 
-### Recommended Architecture
+### Target Architecture
 ```
 GameRoot (autoload)
-├── DataRegistry (static seeded data)
-│   ├── SfwContentModule (always loaded)
-│   └── MatureContentModule (loaded on toggle)
-├── SaveState (runtime state)
-│   ├── SfwState (existing)
-│   └── MatureState (NSFW toggleable data)
+├── DataRegistry (static seeded data — all systems)
+├── SaveState (runtime state — all systems)
 ├── Service Layer
-│   ├── Core Services (existing)
-│   │   ├── RosterService
-│   │   ├── ScheduleService
-│   │   ├── RanchService / EconomyService
-│   │   ├── InventoryService / ShopService
-│   │   ├── AdventureService / BondService
-│   │   ├── MilestoneService
-│   │   ├── ResearchService
-│   │   ├── PetService
-│   │   └── TrainingService
-│   └── Mature Services (toggleable module)
-│       ├── TrainingService (expanded with NSFW actions)
-│       ├── MentalStateService
-│       ├── MilkEconomyService
-│       ├── AddictionService
-│       ├── ClothingService
-│       ├── MagicService
-│       └── RelationshipService
+│   ├── RosterService
+│   ├── ScheduleService
+│   ├── RanchService / EconomyService
+│   ├── InventoryService / ShopService
+│   ├── AdventureService / BondService
+│   ├── MilestoneService / ResearchService
+│   ├── PetService / TrainingService
+│   ├── MatureService (training actions, sensations)
+│   ├── MentalStateService (fall states, corruption)
+│   ├── MilkEconomyService (production, pricing)
+│   ├── AddictionService (addiction tracking, withdrawal)
+│   ├── ClothingService (equipment/outfit slots)
+│   └── MagicService (spells, tentacles, body mod)
 ├── UiShellController
-│   ├── Core Screens (existing 14)
-│   └── Mature Screens (conditionally shown)
-│       ├── Training Room
-│       ├── Milk Processing
-│       ├── Magic Lab
-│       ├── Relationship Status
-│       └── Equipment
-└── ContentMode Filter
-    ├── SFW: Core screens only
-    └── Mature: Core + Mature screens
-```
-
-### Data Flow for Content Mode
-```
-Settings.ContentMode → GameRoot → Service Factory → Screen Visibility
-1. SFW mode: All existing services, NullMatureContentHooks
-2. Mature mode: Core services + MatureModule services, MatureContentHooksImpl
+│   ├── Core Screens (ranch, roster, schedule, town, shop, adventure, etc.)
+│   └── Mature Screens (training room, milk processing, magic lab, equipment)
+└── No toggle — all content is core
 ```
 
 ---
@@ -407,13 +383,16 @@ Settings.ContentMode → GameRoot → Service Factory → Screen Visibility
 - Expand bond events per character
 - Add more skills, pets, milestones
 - Add character talents/traits system
+- Expand training action catalog from Train.csv
+- Wire up mental state models to gameplay
 
 ### Phase 1: Visual & Content
 - Layered portrait system with emotion states
 - Name pool for generated recruits
 - Cooking/farming system
 - Expanded town interactions
-- Character questlines (SFW)
+- Character questlines
+- Training screen with categorized actions
 
 ### Phase 2: System Expansion
 - Facility upgrade trees
@@ -421,15 +400,18 @@ Settings.ContentMode → GameRoot → Service Factory → Screen Visibility
 - Crafting system
 - Reputation/faction system
 - More combat depth
+- Mental state / fall state UI
+- Breast milk economy UI (production, pricing, sales)
+- Clothing/equipment management screen
+- Addiction system with withdrawal effects
+- Relationship fall state progression
 
-### Phase 3: NSFW Module (Toggleable)
-- MatureContentModule with all NSFW systems
-- Training system with 170+ actions
-- Mental state / corruption engine
-- Breast milk economy
-- Clothing/equipment system
-- Relationship fall states
-- Character NSFW content (scenes, dialogue)
+### Phase 3: Content Polish
+- Character dialogue per emotional state
+- Emotional state portrait variants
+- Bond event scenes (NSFW)
+- Magic system (spells, tentacles, body mod)
+- Pregnancy system
 - Age verification gate
 
 ---
@@ -463,26 +445,21 @@ Missing portrait assets: kagura.png, ayaka/en/yukina portraits
 4. **Collapse** (精神0%): Mental strength = 0%, broken state
 5. **Milk Cow** (乳牛100%): Complete submission, identified as livestock
 
-These would be reimagined as SFW equivalents in vanilla mode:
-- Normal → Trust → Close → Family → Partner
-
 ### Training Actions (170+) - Categories
-| Category | Count | SFW Equivalent |
-|----------|-------|----------------|
-| Hand | 10 | Massage, grooming, comfort |
-| Mouth | 10 | Feeding, encouragement |
-| V Insertion | 8 | (NSFW only) |
-| A Insertion | 8 | (NSFW only) |
-| Penis Actions | 8 | (NSFW only) |
-| Tools | 5 | Massage tools, training aids |
-| Pain | 1 | (NSFW only) |
-| Tentacle | 20+ | (NSFW only - fantasy horror) |
-| Massage | 3 | Massage therapy (SFW) |
-| Items | 20+ | (mostly NSFW) |
-| Body Mod | 30+ | (mostly NSFW) |
-| Forbidden Magic | 30+ | (mostly NSFW) |
-
-SFW Training could include: meditation, exercise, study, skill practice, bonding activities
+| Category | Count | Description |
+|----------|-------|-------------|
+| Hand | 14 | Breast massage, nipple pinch, clit play, fingering, caresses |
+| Mouth | 14 | Breast sucking, kissing, cunnilingus, licking |
+| V Insertion | 8 | Vaginal penetration positions |
+| A Insertion | 8 | Anal penetration positions |
+| Penis Actions | 8 | Paizuri, fellatio, handjob, sumata |
+| Tools | 5 | Milking machines, vibrators, restraints |
+| Pain | 1 | Spanking |
+| Tentacle | 20+ | Tentacle types and interactions |
+| Massage | 3 | Breast growth, milk massage |
+| Items | 20+ | Consumables and equipment for training |
+| Body Mod | 30+ | Magic marks, pleasure-pain conversion, penis change, time compression |
+| Forbidden Magic | 30+ | Brainwashing, hypnosis, dimensional magic |
 
 ### Breast Milk Economy (NSFW Core)
 - Base production per character
@@ -515,12 +492,14 @@ Tracked per character (0-100%):
 ## 9. IMMEDIATE NEXT STEPS (Priority Order)
 
 1. **Update DataRegistry.cs** - Add all 10 original characters with their CSV data (talents, stats, body, personality)
-2. **Add missing portraits** - kagura.png, ayaka/en/yukina portraits, plus NSFW variants
-3. **Expand job/training system** - Map original work skills to SFW jobs
-4. **Expand item system** - Add 20+ SFW items from original item list
+2. **Add missing portraits** - kagura.png, ayaka/en/yukina portraits, plus emotion state variants
+3. **Expand job/training system** - Map original work skills to jobs
+4. **Expand item system** - Add 20+ items from original item list
 5. **Expand mission system** - Add 4+ missions from original content
 6. **Expand bond events** - Per-character event chains based on personality
 7. **Expand research tree** - Add skills from original skill list
-8. **Add NSFW content module** - Start with MentalStateService and TrainingService
-9. **Full training UI** - Training screen with categorized actions
+8. **Wire up training catalog** - Connect TrainingActionCatalog to gameplay UI
+9. **Full training screen** - Categorized training actions with stat effects
 10. **Mental state UI** - Character status with mental/emotional display
+11. **Milk economy UI** - Production tracking, quality tiers, pricing
+12. **Addiction system** - Tracking, withdrawal effects, UI

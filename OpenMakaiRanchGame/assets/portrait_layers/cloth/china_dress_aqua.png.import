@@ -1,9 +1,9 @@
-﻿[remap]
+[remap]
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3wo4p5w4if7d"
-path="res://.godot/imported/ãƒãƒ£ã‚¤ãƒŠãƒ‰ãƒ¬ã‚¹_æ°´.png-2864b3117839123514262f428585f70f.ctex"
+uid="uid://btygwhmedhwjo"
+path="res://.godot/imported/china_dress_aqua.png-96b8b200609b9022b8ba780bc3dd592c.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/portrait_layers/cloth/china_dress_aqua.png"
-dest_files=["res://.godot/imported/ãƒãƒ£ã‚¤ãƒŠãƒ‰ãƒ¬ã‚¹_æ°´.png-2864b3117839123514262f428585f70f.ctex"]
+dest_files=["res://.godot/imported/china_dress_aqua.png-96b8b200609b9022b8ba780bc3dd592c.ctex"]
 
 [params]
 

@@ -1,9 +1,9 @@
-﻿[remap]
+[remap]
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8i6isa50o7rs"
-path="res://.godot/imported/ã‚»ãƒ¼ãƒ©ãƒ¼æœ_ãƒ™ãƒ¼ã‚¸ãƒ¥.png-3bed4383b48a633150a3c717040c5533.ctex"
+uid="uid://bnu6ldpc1ed6k"
+path="res://.godot/imported/sailor_uniform_beige.png-5a82de4cd0f7ef469a5e611b4d141da1.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/portrait_layers/cloth/sailor_uniform_beige.png"
-dest_files=["res://.godot/imported/ã‚»ãƒ¼ãƒ©ãƒ¼æœ_ãƒ™ãƒ¼ã‚¸ãƒ¥.png-3bed4383b48a633150a3c717040c5533.ctex"]
+dest_files=["res://.godot/imported/sailor_uniform_beige.png-5a82de4cd0f7ef469a5e611b4d141da1.ctex"]
 
 [params]
 

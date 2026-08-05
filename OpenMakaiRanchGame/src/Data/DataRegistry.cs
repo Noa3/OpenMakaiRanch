@@ -210,10 +210,14 @@ public sealed class DataRegistry
 
 	private void SeedFacilities()
 	{
+		Add(new FacilityDefinition { Id = "office", DisplayName = "Office", BuildCost = 0, UpkeepGold = 0, Capacity = 1 });
+		Add(new FacilityDefinition { Id = "private_room", DisplayName = "Private Room", BuildCost = 0, UpkeepGold = 0, Capacity = 1 });
+		Add(new FacilityDefinition { Id = "barn", DisplayName = "Barn", BuildCost = 0, UpkeepGold = 0, Capacity = 3 });
+		Add(new FacilityDefinition { Id = "guest_room", DisplayName = "Guest Rooms", BuildCost = 120, UpkeepGold = 8, OutputResourceId = "comfort", OutputBonus = 1, Capacity = 2 });
+		Add(new FacilityDefinition { Id = "dormitory", DisplayName = "Dormitory", BuildCost = 0, UpkeepGold = 0, Capacity = 4 });
 		Add(new FacilityDefinition { Id = "pasture", DisplayName = "Pasture", BuildCost = 180, UpkeepGold = 20, OutputResourceId = "farm_goods", OutputBonus = 3 });
 		Add(new FacilityDefinition { Id = "kitchen", DisplayName = "Kitchen", BuildCost = 140, UpkeepGold = 12, OutputResourceId = "meals", OutputBonus = 1 });
 		Add(new FacilityDefinition { Id = "workshop", DisplayName = "Workshop", BuildCost = 170, UpkeepGold = 16, OutputResourceId = "supplies", OutputBonus = 1 });
-		Add(new FacilityDefinition { Id = "guest_room", DisplayName = "Guest Rooms", BuildCost = 120, UpkeepGold = 8, OutputResourceId = "comfort", OutputBonus = 1 });
 		Add(new FacilityDefinition { Id = "well", DisplayName = "Well", BuildCost = 160, UpkeepGold = 10, OutputResourceId = "farm_goods", OutputBonus = 2 });
 		Add(new FacilityDefinition { Id = "storage", DisplayName = "Storage Shed", BuildCost = 130, UpkeepGold = 6, OutputResourceId = "supplies", OutputBonus = 1 });
 		Add(new FacilityDefinition { Id = "dairy_barn", DisplayName = "Dairy Barn", BuildCost = 250, UpkeepGold = 25, OutputResourceId = "farm_goods", OutputBonus = 5 });

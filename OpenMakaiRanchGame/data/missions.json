@@ -1,0 +1,122 @@
+[
+  {
+    "Id": "abyssal_cavern",
+    "DisplayName": "Abyssal Cavern",
+    "Tier": 2,
+    "Difficulty": 35,
+    "RewardGold": 400,
+    "RewardItemId": "magic_ring",
+    "EnemyGroupId": "group_dragon_dangerous",
+    "_id": "abyssal_cavern"
+  },
+  {
+    "Id": "bandit_supply",
+    "DisplayName": "Bandit Supply Raid",
+    "Tier": 0,
+    "Difficulty": 14,
+    "RewardGold": 100,
+    "RewardItemId": "feed_bundle",
+    "EnemyGroupId": "group_bandit_regional",
+    "_id": "bandit_supply"
+  },
+  {
+    "Id": "beast_hunt",
+    "DisplayName": "Beast Hunt",
+    "Tier": 0,
+    "Difficulty": 12,
+    "RewardGold": 90,
+    "RewardItemId": "pet_jerky",
+    "EnemyGroupId": "group_beast_local",
+    "_id": "beast_hunt"
+  },
+  {
+    "Id": "demon_tower",
+    "DisplayName": "Demon Tower Approach",
+    "Tier": 2,
+    "Difficulty": 40,
+    "RewardGold": 500,
+    "RewardItemId": "lucky_amulet",
+    "EnemyGroupId": "group_dragon_dangerous",
+    "_id": "demon_tower"
+  },
+  {
+    "Id": "dragon_outcrop",
+    "DisplayName": "Dragon Outcrop",
+    "Tier": 2,
+    "Difficulty": 30,
+    "RewardGold": 350,
+    "RewardItemId": "keepsake",
+    "EnemyGroupId": "group_dragon_dangerous",
+    "_id": "dragon_outcrop"
+  },
+  {
+    "Id": "field_clear",
+    "DisplayName": "Field Clear",
+    "Tier": 0,
+    "Difficulty": 8,
+    "RewardGold": 60,
+    "RewardItemId": "feed_bundle",
+    "EnemyGroupId": "group_wild_local",
+    "_id": "field_clear"
+  },
+  {
+    "Id": "forest_survey",
+    "DisplayName": "Forest Survey",
+    "Tier": 1,
+    "Difficulty": 16,
+    "RewardGold": 130,
+    "RewardItemId": "tool_kit",
+    "EnemyGroupId": "group_forest_regional",
+    "_id": "forest_survey"
+  },
+  {
+    "Id": "moonlight_grove",
+    "DisplayName": "Moonlight Grove",
+    "Tier": 1,
+    "Difficulty": 24,
+    "RewardGold": 220,
+    "RewardItemId": "magic_crystal",
+    "EnemyGroupId": "group_ruin_regional",
+    "_id": "moonlight_grove"
+  },
+  {
+    "Id": "mountain_pass",
+    "DisplayName": "Mountain Pass Survey",
+    "Tier": 1,
+    "Difficulty": 20,
+    "RewardGold": 170,
+    "RewardItemId": "herb_pack",
+    "EnemyGroupId": "group_forest_regional",
+    "_id": "mountain_pass"
+  },
+  {
+    "Id": "road_patrol",
+    "DisplayName": "Road Patrol",
+    "Tier": 0,
+    "Difficulty": 10,
+    "RewardGold": 80,
+    "RewardItemId": "feed_bundle",
+    "EnemyGroupId": "group_wild_local",
+    "_id": "road_patrol"
+  },
+  {
+    "Id": "ruin_delve",
+    "DisplayName": "Ruin Delve",
+    "Tier": 1,
+    "Difficulty": 22,
+    "RewardGold": 200,
+    "RewardItemId": "travel_gear",
+    "EnemyGroupId": "group_ruin_regional",
+    "_id": "ruin_delve"
+  },
+  {
+    "Id": "trade_escort",
+    "DisplayName": "Trade Escort",
+    "Tier": 1,
+    "Difficulty": 18,
+    "RewardGold": 150,
+    "RewardItemId": "camping_gear",
+    "EnemyGroupId": "group_bandit_regional",
+    "_id": "trade_escort"
+  }
+]
