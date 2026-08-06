@@ -12,8 +12,9 @@ namespace OpenMakaiRanch.Ui;
 /// </summary>
 public partial class UiShellController
 {
-    private static readonly Vector2 PortraitDisplaySize = new(112, 112);
-    private const float PortraitBodyOriginX = 32f;
+    private static readonly Lazy<PortraitRenderer> _portraitRenderer = new(() => new PortraitRenderer());
+
+    private static PortraitRenderer PortraitRenderer => _portraitRenderer.Value;
     private UiThemePalette Palette => _game.Theme;
 
     private void ApplyHeaderLabelStyle(Label label)
@@ -301,7 +302,7 @@ public partial class UiShellController
             return new TextureRect
             {
                 Texture = texture,
-                CustomMinimumSize = PortraitDisplaySize,
+                CustomMinimumSize = new Vector2(112, 112),
                 StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
                 ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize
             };
@@ -310,104 +311,18 @@ public partial class UiShellController
         return new ColorRect
         {
             Color = new Color("24364f"),
-            CustomMinimumSize = PortraitDisplaySize
+            CustomMinimumSize = new Vector2(112, 112)
         };
     }
 
     private static Control BuildCharacterVisual(CharacterState character, CharacterDefinition definition)
     {
-        var wrap = new VBoxContainer { CustomMinimumSize = PortraitDisplaySize };
-        wrap.AddThemeConstantOverride("separation", 6);
-
-        var layered = BuildLayeredPortrait(character);
-        if (layered is not null)
-        {
-            wrap.AddChild(layered);
-        }
-        else
-        {
-            wrap.AddChild(BuildPortrait(definition.PortraitPath));
-            wrap.AddChild(BuildPortrait(string.IsNullOrWhiteSpace(definition.BodyImagePath) ? definition.PortraitPath : definition.BodyImagePath));
-        }
-
-        return wrap;
+        return PortraitRenderer.BuildCharacterVisual(character, definition);
     }
 
-    private static Control? BuildLayeredPortrait(CharacterState character)
+    private static Control? BuildLayeredPortrait(CharacterState character, CharacterDefinition definition)
     {
-        if (PortraitLayerCatalog.RaceLayers.Length == 0
-            || PortraitLayerCatalog.HairLayers.Length == 0
-            || PortraitLayerCatalog.BodyBaseLayers.Length == 0
-            || PortraitLayerCatalog.BreastLayers.Length == 0
-            || PortraitLayerCatalog.ClothLayers.Length == 0)
-        {
-            return null;
-        }
-
-        var bg = LoadTexture(PortraitLayerCatalog.BackgroundLayer);
-        if (bg is null)
-        {
-            return null;
-        }
-
-        var bodyShape = PortraitLayerCatalog.ClampIndex(character.BodyLayerIndex, PortraitLayerCatalog.BodyTypeCount);
-        var skinColor = PortraitLayerCatalog.ClampIndex(character.SkinColorIndex, PortraitLayerCatalog.SkinColorCount);
-        var breastSize = PortraitLayerCatalog.ClampIndex(character.BreastSizeIndex, PortraitLayerCatalog.BreastSizeCount);
-
-        var bodyBase = LayerRect(PortraitLayerCatalog.BodyBaseLayers[PortraitLayerCatalog.BodyBaseIndex(bodyShape, skinColor)]);
-        var breast = LayerRect(PortraitLayerCatalog.BreastLayers[PortraitLayerCatalog.BreastIndex(bodyShape, breastSize, skinColor)]);
-        var race = LayerRect(PortraitLayerCatalog.RaceLayers[PortraitLayerCatalog.ClampIndex(character.RaceLayerIndex, PortraitLayerCatalog.RaceLayers.Length)]);
-        var face = LayerRect(PortraitLayerCatalog.FaceLayer);
-        var mouth = LayerRect(PortraitLayerCatalog.MouthLayer);
-        var hair = LayerRect(PortraitLayerCatalog.HairLayers[PortraitLayerCatalog.ClampIndex(character.HairLayerIndex, PortraitLayerCatalog.HairLayers.Length)]);
-        var cloth = LayerRect(PortraitLayerCatalog.ClothLayers[PortraitLayerCatalog.ClampIndex(character.ClothLayerIndex, PortraitLayerCatalog.ClothLayers.Length)]);
-        if (bodyBase is null || breast is null || race is null || face is null || mouth is null || hair is null || cloth is null)
-        {
-            return null;
-        }
-
-        var stack = new Control { CustomMinimumSize = PortraitDisplaySize };
-        stack.AddChild(LayerRect(bg, new Vector2(24, 0), new Vector2(64, 112)));
-        stack.AddChild(bodyBase);
-        stack.AddChild(race);
-        stack.AddChild(breast);
-        stack.AddChild(face);
-        stack.AddChild(mouth);
-        stack.AddChild(hair);
-        stack.AddChild(cloth);
-        return stack;
-    }
-
-    private static TextureRect? LayerRect(PortraitLayerFrame frame)
-    {
-        var texture = LoadTexture(frame.Path);
-        if (texture is null)
-        {
-            return null;
-        }
-
-        var atlas = new AtlasTexture
-        {
-            Atlas = texture,
-            Region = new Rect2(frame.X, frame.Y, frame.Width, frame.Height)
-        };
-        var scaledW = (int)(frame.Width * frame.Scale);
-        var scaledH = (int)(frame.Height * frame.Scale);
-        return LayerRect(atlas, new Vector2(PortraitBodyOriginX + frame.OffsetX, frame.OffsetY), new Vector2(scaledW, scaledH));
-    }
-
-    private static TextureRect LayerRect(Texture2D texture, Vector2 position, Vector2 size)
-    {
-        return new TextureRect
-        {
-            Texture = texture,
-            Position = position,
-            Size = size,
-            CustomMinimumSize = size,
-            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-            MouseFilter = Control.MouseFilterEnum.Ignore
-        };
+        return PortraitRenderer.BuildLayeredPortrait(character, definition);
     }
 
     private Control StatBar(string label, int value, int max, Color fillColor)
