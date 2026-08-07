@@ -672,6 +672,38 @@ public sealed class DataRegistry
 		Add(new FacilityDefinition { Id = "dairy_barn", DisplayName = "Dairy Barn", BuildCost = 250, UpkeepGold = 25, OutputResourceId = "farm_goods", OutputBonus = 5 });
 		Add(new FacilityDefinition { Id = "pharmacy_lab", DisplayName = "Pharmacy Lab", BuildCost = 300, UpkeepGold = 20, OutputResourceId = "supplies", OutputBonus = 3 });
 		Add(new FacilityDefinition { Id = "bathhouse", DisplayName = "Bathhouse", BuildCost = 200, UpkeepGold = 15, OutputResourceId = "comfort", OutputBonus = 2 });
+
+		// === NSFW Facilities (from original CSV) ===
+		Add(new FacilityDefinition { Id = "family_bath", DisplayName = "Family Bath (家族風呂)", BuildCost = 500, UpkeepGold = 30, OutputResourceId = "comfort", OutputBonus = 5, Capacity = 4 });
+		Add(new FacilityDefinition { Id = "large_bath", DisplayName = "Large Bath (大浴場)", BuildCost = 800, UpkeepGold = 50, OutputResourceId = "comfort", OutputBonus = 8, Capacity = 8 });
+		Add(new FacilityDefinition { Id = "natural_hot_spring", DisplayName = "Natural Hot Spring (天然温泉)", BuildCost = 1500, UpkeepGold = 80, OutputResourceId = "comfort", OutputBonus = 12, Capacity = 10 });
+		Add(new FacilityDefinition { Id = "office_extension", DisplayName = "Office Extension (事務所増築)", BuildCost = 400, UpkeepGold = 20, OutputResourceId = "office_bonus", OutputBonus = 3, Capacity = 2 });
+		Add(new FacilityDefinition { Id = "system_kitchen", DisplayName = "System Kitchen (システムキッチン)", BuildCost = 600, UpkeepGold = 40, OutputResourceId = "meals", OutputBonus = 5, Capacity = 4 });
+		Add(new FacilityDefinition { Id = "slave_dormitory", DisplayName = "Slave Dormitory (奴隷寮)", BuildCost = 1000, UpkeepGold = 60, OutputResourceId = "comfort", OutputBonus = 3, Capacity = 10 });
+		Add(new FacilityDefinition { Id = "magic_workshop", DisplayName = "Magic Workshop (魔改造工房)", BuildCost = 1200, UpkeepGold = 70, OutputResourceId = "magic_supplies", OutputBonus = 8, Capacity = 6 });
+		Add(new FacilityDefinition { Id = "tentacle_room", DisplayName = "Tentacle Room (触手部屋)", BuildCost = 2000, UpkeepGold = 100, OutputResourceId = "comfort", OutputBonus = 15, Capacity = 6 });
+		Add(new FacilityDefinition { Id = "nursing_room", DisplayName = "Nursing Room (授乳ルーム)", BuildCost = 800, UpkeepGold = 50, OutputResourceId = "milk_bonus", OutputBonus = 10, Capacity = 4 });
+		Add(new FacilityDefinition { Id = "restraint_room", DisplayName = "Restraint Room (拘束室)", BuildCost = 1500, UpkeepGold = 80, OutputResourceId = "comfort", OutputBonus = 12, Capacity = 4 });
+		Add(new FacilityDefinition { Id = "laboratory", DisplayName = "Laboratory (実験室)", BuildCost = 2500, UpkeepGold = 120, OutputResourceId = "magic_supplies", OutputBonus = 15, Capacity = 8 });
+		Add(new FacilityDefinition { Id = "magic_storage", DisplayName = "Magic Storage (魔力貯蔵器)", BuildCost = 3000, UpkeepGold = 150, OutputResourceId = "magic_storage", OutputBonus = 20, Capacity = 20 });
+		Add(new FacilityDefinition { Id = "magic_storage_2", DisplayName = "Magic Storage Mk.II (魔力貯蔵器改)", BuildCost = 5000, UpkeepGold = 250, OutputResourceId = "magic_storage", OutputBonus = 30, Capacity = 30 });
+		Add(new FacilityDefinition { Id = "magic_storage_3", DisplayName = "Magic Storage Mk.III (魔力貯蔵器弐)", BuildCost = 8000, UpkeepGold = 400, OutputResourceId = "magic_storage", OutputBonus = 50, Capacity = 50 });
+		Add(new FacilityDefinition { Id = "spirit_extractor", DisplayName = "Spirit Extractor (霊力抽出装置)", BuildCost = 4000, UpkeepGold = 200, OutputResourceId = "spirit_power", OutputBonus = 25, Capacity = 15 });
+		Add(new FacilityDefinition { Id = "spirit_extractor_2", DisplayName = "Spirit Extractor Pro (霊力抽出装置改)", BuildCost = 7000, UpkeepGold = 350, OutputResourceId = "spirit_power", OutputBonus = 40, Capacity = 25 });
+		Add(new FacilityDefinition { Id = "training_equipment", DisplayName = "Training Equipment (調教設備)", BuildCost = 1800, UpkeepGold = 90, OutputResourceId = "training_bonus", OutputBonus = 12, Capacity = 6 });
+		Add(new FacilityDefinition { Id = "home_type_extractor", DisplayName = "Home Spirit Extractor (家庭用霊力抽出装置)", BuildCost = 2000, UpkeepGold = 100, OutputResourceId = "spirit_power", OutputBonus = 15, Capacity = 8 });
+		Add(new FacilityDefinition { Id = "commercial_extractor", DisplayName = "Commercial Spirit Extractor (業務用霊力抽出装置)", BuildCost = 5000, UpkeepGold = 250, OutputResourceId = "spirit_power", OutputBonus = 35, Capacity = 20 });
+		Add(new FacilityDefinition { Id = "large_capacity_extractor", DisplayName = "Large Capacity Extractor (大容量霊力抽出装置)", BuildCost = 8000, UpkeepGold = 400, OutputResourceId = "spirit_power", OutputBonus = 55, Capacity = 35 });
+		Add(new FacilityDefinition { Id = "magic_reform_extractor", DisplayName = "Magic Reform Extractor (魔改造霊力抽出装置)", BuildCost = 12000, UpkeepGold = 600, OutputResourceId = "spirit_power", OutputBonus = 80, Capacity = 50 });
+		Add(new FacilityDefinition { Id = "teleport_gate", DisplayName = "Teleport Gate (転移門)", BuildCost = 3000, UpkeepGold = 150, OutputResourceId = "teleport", OutputBonus = 10, Capacity = 1 });
+		Add(new FacilityDefinition { Id = "teleport_gate_2", DisplayName = "Teleport Gate Mk.II (転移門改)", BuildCost = 6000, UpkeepGold = 300, OutputResourceId = "teleport", OutputBonus = 20, Capacity = 1 });
+		Add(new FacilityDefinition { Id = "tentacle_gear", DisplayName = "Tentacle Gear (触手装備)", BuildCost = 2500, UpkeepGold = 120, OutputResourceId = "tentacle_bonus", OutputBonus = 18, Capacity = 5 });
+		Add(new FacilityDefinition { Id = "brand_port", DisplayName = "Brand Port (淫紋接続ポート)", BuildCost = 3500, UpkeepGold = 180, OutputResourceId = "brand_control", OutputBonus = 25, Capacity = 8 });
+		Add(new FacilityDefinition { Id = "milk_tank", DisplayName = "Milk Tank (乳搾りタンク)", BuildCost = 1500, UpkeepGold = 70, OutputResourceId = "milk_bonus", OutputBonus = 15, Capacity = 10 });
+		Add(new FacilityDefinition { Id = "milk_tank_2", DisplayName = "Milk Tank Pro (乳搾りタンク改)", BuildCost = 3000, UpkeepGold = 150, OutputResourceId = "milk_bonus", OutputBonus = 25, Capacity = 20 });
+		Add(new FacilityDefinition { Id = "milk_tank_3", DisplayName = "Milk Tank Industrial (乳搾りタンク業務用)", BuildCost = 5000, UpkeepGold = 250, OutputResourceId = "milk_bonus", OutputBonus = 40, Capacity = 35 });
+		Add(new FacilityDefinition { Id = "training_room", DisplayName = "Training Room (訓練室)", BuildCost = 1000, UpkeepGold = 50, OutputResourceId = "training_bonus", OutputBonus = 8, Capacity = 4 });
+		Add(new FacilityDefinition { Id = "magic_training_room", DisplayName = "Magic Training Room (魔力訓練室)", BuildCost = 2000, UpkeepGold = 100, OutputResourceId = "magic_bonus", OutputBonus = 15, Capacity = 6 });
 	}
 
 	private void SeedMissions()
