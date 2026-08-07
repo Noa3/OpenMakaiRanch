@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using OpenMakaiRanch.Core.Resources;
 
 namespace OpenMakaiRanch.Core.Models;
 
@@ -480,17 +481,50 @@ public sealed class ResearchSkillDefinition
 
 public sealed class EquipmentState
 {
-    public int ClothesId { get; set; }
-    public int UnderwearTopId { get; set; }
-    public int UnderwearBottomId { get; set; }
-    public int ArmorId { get; set; }
-    public int EyesId { get; set; }
-    public int HeadId { get; set; }
-    public int ArmsId { get; set; }
-    public int LegsId { get; set; }
-    public int NeckId { get; set; }
-    public int JacketId { get; set; }
-    public int CollarId { get; set; }
+    public string ClothesId { get; set; } = string.Empty;
+    public string UnderwearTopId { get; set; } = string.Empty;
+    public string UnderwearBottomId { get; set; } = string.Empty;
+    public string ArmorId { get; set; } = string.Empty;
+    public string EyesId { get; set; } = string.Empty;
+    public string HeadId { get; set; } = string.Empty;
+    public string ArmsId { get; set; } = string.Empty;
+    public string LegsId { get; set; } = string.Empty;
+    public string NecklaceId { get; set; } = string.Empty;
+    public string CoatId { get; set; } = string.Empty;
+    public string AccessoryId { get; set; } = string.Empty;
+
+    // Computed bonuses
+    public int TotalBonusRanchSkill { get; set; }
+    public int TotalBonusCraftSkill { get; set; }
+    public int TotalBonusCombatSkill { get; set; }
+    public int TotalBonusMaxHp { get; set; }
+    public int TotalBonusMaxEnergy { get; set; }
+    public int TotalBonusMorale { get; set; }
+
+    // Computed clothing style (most prominent)
+    public ClothingStyle ActiveClothingStyle { get; set; } = ClothingStyle.Default;
+
+    public void Clear()
+    {
+        ClothesId = string.Empty;
+        UnderwearTopId = string.Empty;
+        UnderwearBottomId = string.Empty;
+        ArmorId = string.Empty;
+        EyesId = string.Empty;
+        HeadId = string.Empty;
+        ArmsId = string.Empty;
+        LegsId = string.Empty;
+        NecklaceId = string.Empty;
+        CoatId = string.Empty;
+        AccessoryId = string.Empty;
+        TotalBonusRanchSkill = 0;
+        TotalBonusCraftSkill = 0;
+        TotalBonusCombatSkill = 0;
+        TotalBonusMaxHp = 0;
+        TotalBonusMaxEnergy = 0;
+        TotalBonusMorale = 0;
+        ActiveClothingStyle = ClothingStyle.Default;
+    }
 }
 
 public sealed class TrainingRecord
