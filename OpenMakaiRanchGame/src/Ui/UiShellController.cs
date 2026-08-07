@@ -80,7 +80,25 @@ public partial class UiShellController : Control
 	public NodePath WorkloadLabelPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip/WorkloadLabel";
 
 	[Export]
+	public NodePath StaminaLabelPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow1/StaminaChip/StaminaLabel";
+
+	[Export]
+	public NodePath StaminaChipPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow1/StaminaChip";
+
+	[Export]
+	public NodePath HpChipPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow1/HpChip";
+
+	[Export]
+	public NodePath HealthChipPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow2/HealthChip";
+
+	[Export]
+	public NodePath WorkloadChipPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip";
+
+	[Export]
 	public NodePath BathtubLabelPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow2/BathtubChip/BathtubLabel";
+
+	[Export]
+	public NodePath BathtubChipPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow2/BathtubChip";
 
 	[Export]
 	public NodePath EndDayButtonPath { get; set; } = "Margin/RootPanel/Root/TopBar/TopBarRow2/EndDayButton";
@@ -106,6 +124,13 @@ public partial class UiShellController : Control
 	private Label _healthLabel = null!;
 	private Label _workloadLabel = null!;
 	private Label _bathtubLabel = null!;
+	private Label _staminaLabel = null!;
+	private PanelContainer _staminaChip = null!;
+	private ProgressBar _hpBar = null!;
+	private PanelContainer _hpBarChip = null!;
+	private ProgressBar _healthBar = null!;
+	private ProgressBar _workloadBar = null!;
+	private ProgressBar _staminaBar = null!;
 	private PanelContainer _dayChip = null!;
 	private PanelContainer _phaseChip = null!;
 	private PanelContainer _weatherChip = null!;
@@ -289,6 +314,7 @@ public partial class UiShellController : Control
 		_healthLabel = GetNodeOrNull<Label>(HealthLabelPath)!;
 		_workloadLabel = GetNodeOrNull<Label>(WorkloadLabelPath)!;
 		_bathtubLabel = GetNodeOrNull<Label>(BathtubLabelPath)!;
+		_staminaLabel = GetNodeOrNull<Label>(StaminaLabelPath)!;
 		_dayChip = _dayLabel?.GetParent() as PanelContainer ?? null!;
 		_phaseChip = _phaseLabel?.GetParent() as PanelContainer ?? null!;
 		_weatherChip = _weatherLabel?.GetParent() as PanelContainer ?? null!;
@@ -300,6 +326,12 @@ public partial class UiShellController : Control
 		_healthChip = _healthLabel?.GetParent() as PanelContainer ?? null!;
 		_workloadChip = _workloadLabel?.GetParent() as PanelContainer ?? null!;
 		_bathtubChip = _bathtubLabel?.GetParent() as PanelContainer ?? null!;
+		_staminaChip = GetNodeOrNull<PanelContainer>(StaminaChipPath)!;
+		_hpBarChip = GetNodeOrNull<PanelContainer>(HpChipPath)!;
+		_hpBar = GetNodeOrNull<ProgressBar>("Margin/RootPanel/Root/TopBar/TopBarRow1/HpChip/HpBar")!;
+		_healthBar = GetNodeOrNull<ProgressBar>("Margin/RootPanel/Root/TopBar/TopBarRow2/HealthChip/HealthBar")!;
+		_workloadBar = GetNodeOrNull<ProgressBar>("Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip/WorkloadBar")!;
+		_staminaBar = GetNodeOrNull<ProgressBar>("Margin/RootPanel/Root/TopBar/TopBarRow1/StaminaChip/StaminaBar")!;
 		_endDayButton = GetNodeOrNull<Button>(EndDayButtonPath)!;
 		_menuButton = GetNodeOrNull<Button>(MenuButtonPath)!;
 		_scroll = GetNodeOrNull<ScrollContainer>(ScrollPath)!;
@@ -660,11 +692,48 @@ public partial class UiShellController : Control
 
 		_goldLabel.Text = $"Gold {eco.Gold}";
 		_hpLabel.Text = $"HP {PlayerHp()}";
+		_hpBar.MinValue = 0;
+		_hpBar.MaxValue = PlayerMaxHp();
+		_hpBar.Value = (float)_game.State.Roster.Characters[0].Hp;
+		_hpBar.ShowPercentage = false;
+		_hpBar.AddThemeStyleboxOverride("fill", new StyleBoxFlat { BgColor = new Color(0.3333f, 0.8392f, 0.7451f, 1.0f), BorderColor = Colors.Transparent, BorderWidthLeft = 0, BorderWidthTop = 0, BorderWidthRight = 0, BorderWidthBottom = 0, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
+		_hpBar.AddThemeStyleboxOverride("background", new StyleBoxFlat { BgColor = Palette.StatBarBackground, BorderColor = Palette.StatBarBorder, BorderWidthLeft = 1, BorderWidthTop = 1, BorderWidthRight = 1, BorderWidthBottom = 1, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
+	_hpBar.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+	_hpBar.CustomMinimumSize = new Vector2(0, 4);
+
 		_spiritLabel.Text = $"Energy {eco.SpiritEnergy}";
 		_manaLabel.Text = $"Mana {eco.ManaReservoir}";
 		_healthLabel.Text = $"Health {ranch.CattleHealth}%";
+		_healthBar.MinValue = 0;
+		_healthBar.MaxValue = 100;
+		_healthBar.Value = (float)Math.Clamp(ranch.CattleHealth, 0, 100);
+		_healthBar.ShowPercentage = false;
+		_healthBar.AddThemeStyleboxOverride("fill", new StyleBoxFlat { BgColor = ranch.CattleHealth > 60 ? new Color(0.3333f, 0.8392f, 0.7451f, 1.0f) : ranch.CattleHealth > 30 ? new Color(0.9412f, 0.7529f, 0.3765f, 1.0f) : new Color(1.0f, 0.4f, 0.4f, 1.0f), BorderWidthLeft = 0, BorderWidthTop = 0, BorderWidthRight = 0, BorderWidthBottom = 0, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
+		_healthBar.AddThemeStyleboxOverride("background", new StyleBoxFlat { BgColor = Palette.StatBarBackground, BorderColor = Palette.StatBarBorder, BorderWidthLeft = 1, BorderWidthTop = 1, BorderWidthRight = 1, BorderWidthBottom = 1, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
+		_healthBar.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+		_healthBar.CustomMinimumSize = new Vector2(0, 4);
+
 		_workloadLabel.Text = $"Load {ranch.Workload}%";
-		_bathtubLabel.Text = ranch.BathtubClean ? "Bath: Clean" : "Bath: Dirty";
+		_workloadBar.MinValue = 0;
+		_workloadBar.MaxValue = 100;
+		_workloadBar.Value = (float)Math.Clamp(ranch.Workload, 0, 100);
+		_workloadBar.ShowPercentage = false;
+		_workloadBar.AddThemeStyleboxOverride("fill", new StyleBoxFlat { BgColor = ranch.Workload < 60 ? new Color(0.3333f, 0.8392f, 0.7451f, 1.0f) : ranch.Workload < 80 ? new Color(0.9412f, 0.7529f, 0.3765f, 1.0f) : new Color(1.0f, 0.4f, 0.4f, 1.0f), BorderWidthLeft = 0, BorderWidthTop = 0, BorderWidthRight = 0, BorderWidthBottom = 0, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
+		_workloadBar.AddThemeStyleboxOverride("background", new StyleBoxFlat { BgColor = Palette.StatBarBackground, BorderColor = Palette.StatBarBorder, BorderWidthLeft = 1, BorderWidthTop = 1, BorderWidthRight = 1, BorderWidthBottom = 1, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
+		_workloadBar.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+		_workloadBar.CustomMinimumSize = new Vector2(0, 4);
+
+		_staminaLabel.Text = $"Stamina {PlayerStamina()}";
+		_staminaBar.MinValue = 0;
+		_staminaBar.MaxValue = PlayerMaxStamina();
+		_staminaBar.Value = (float)Math.Clamp(PlayerStamina(), 0, PlayerMaxStamina());
+		_staminaBar.ShowPercentage = false;
+		_staminaBar.AddThemeStyleboxOverride("fill", new StyleBoxFlat { BgColor = new Color(0.3569f, 0.7961f, 1.0f, 1.0f), BorderWidthLeft = 0, BorderWidthTop = 0, BorderWidthRight = 0, BorderWidthBottom = 0, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
+	_staminaBar.AddThemeStyleboxOverride("background", new StyleBoxFlat { BgColor = Palette.StatBarBackground, BorderColor = Palette.StatBarBorder, BorderWidthLeft = 1, BorderWidthTop = 1, BorderWidthRight = 1, BorderWidthBottom = 1, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
+	_staminaBar.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+	_staminaBar.CustomMinimumSize = new Vector2(0, 4);
+
+	_bathtubLabel.Text = ranch.BathtubClean ? "Bath: Clean" : "Bath: Dirty";
 
 		_endDayButton.Text = cal.Phase == DayPhase.Night ? "End Day" : "Advance Phase";
 		_screenLabel.Text = ScreenTitle(_currentScreen);
@@ -685,6 +754,26 @@ public partial class UiShellController : Control
 		if (_game.State.Roster.Characters.Count == 0) return "--";
 		var pc = _game.State.Roster.Characters[0];
 		return pc.MaxHpOverride.HasValue ? $"{pc.Hp}/{pc.MaxHpOverride.Value}" : $"{pc.Hp}";
+	}
+
+	private int PlayerMaxHp()
+	{
+		if (_game.State.Roster.Characters.Count == 0) return 1;
+		var pc = _game.State.Roster.Characters[0];
+		return pc.MaxHpOverride.HasValue ? pc.MaxHpOverride.Value : Math.Max(1, pc.Hp);
+	}
+
+	private int PlayerStamina()
+	{
+		if (_game.State.Roster.Characters.Count == 0) return 0;
+		return _game.State.Roster.Characters[0].Energy;
+	}
+
+	private int PlayerMaxStamina()
+	{
+		if (_game.State.Roster.Characters.Count == 0) return 1;
+		var pc = _game.State.Roster.Characters[0];
+		return pc.MaxEnergyOverride.HasValue ? pc.MaxEnergyOverride.Value : Math.Max(1, pc.Energy);
 	}
 
 	private void UpdateNavigationState()

@@ -99,7 +99,55 @@ public enum EquipmentSlot
     Armor,
     Accessory,
     Head,
-    Feet
+    Feet,
+    UnderwearTop,
+    UnderwearBottom,
+    Necklace,
+    Coat,
+    Ears,
+    Arms,
+    Legs
+}
+
+public enum ClothingStyle
+{
+    Default,
+    Workwear,
+    Maid,
+    Bunny,
+    Nurse,
+    School,
+    Exorcist,
+    Slave,
+    CowGirl,
+    Swimsuit,
+    Lingerie,
+    Formal,
+    Casual,
+    Tactical
+}
+
+public enum ItemEffectType
+{
+    None,
+    EnergyRestore,
+    FatigueReduce,
+    MoraleBoost,
+    HpRestore,
+    SkillBoost,
+    BondBoost,
+    HairColorChange,
+    MilkCapacityIncrease,
+    MilkQualityIncrease,
+    BreastSizeIncrease,
+    SensitivityIncrease,
+    MilkConstitution,
+    MagicMilkConstitution,
+    ConcentrationThicken,
+    Transformation,
+    TalentGrant,
+    FacilityUnlock,
+    PetAdopt
 }
 
 [GlobalClass]
@@ -117,6 +165,11 @@ public partial class ItemDefinition : Resource
     public int BonusMaxHp { get; set; }
     public int BonusMaxEnergy { get; set; }
     public int BonusMorale { get; set; }
+    public ClothingStyle ClothingStyleValue { get; set; } = ClothingStyle.Default;
+    public ItemEffectType EffectType { get; set; } = ItemEffectType.None;
+    public string EffectTarget { get; set; } = string.Empty;
+    public int EffectValue { get; set; }
+    public string EffectDescription { get; set; } = string.Empty;
 }
 
 [GlobalClass]

@@ -89,22 +89,46 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="HpChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
-custom_minimum_size = Vector2(80, 30)
+custom_minimum_size = Vector2(100, 30)
 layout_mode = 2
+
+[node name="StaminaChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 2
+
+[node name="StaminaLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/StaminaChip"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StaminaBar" type="ProgressBar" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/StaminaChip"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+show_percentage = false
 
 [node name="HpLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/HpChip"]
 layout_mode = 2
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="HpBar" type="ProgressBar" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/HpChip"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+show_percentage = false
+
 [node name="WorkloadChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
 custom_minimum_size = Vector2(80, 30)
 layout_mode = 2
 
-[node name="WorkloadLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip"]
+[node name="WorkloadLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip/WorkloadLabel"]
 layout_mode = 2
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="WorkloadBar" type="ProgressBar" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+show_percentage = false
 
 [node name="TopBarRow1Spacer" type="Control" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
 layout_mode = 2
@@ -179,10 +203,15 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(76, 28)
 layout_mode = 2
 
-[node name="HealthLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/HealthChip"]
+[node name="HealthLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/HealthChip/HealthLabel"]
 layout_mode = 2
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="HealthBar" type="ProgressBar" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/HealthChip"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+show_percentage = false
 
 [node name="BathtubChip" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2"]
 custom_minimum_size = Vector2(76, 24)
