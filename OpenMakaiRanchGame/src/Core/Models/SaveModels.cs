@@ -427,6 +427,9 @@ public sealed class MentalState
     public int PleasureN { get; set; }
     public int LubricationV { get; set; }
     public int LubricationA { get; set; }
+
+    // Transformation marks (granted by potions, spells, etc.)
+    public List<string> Marks { get; set; } = new();
 }
 
 public sealed class MilkState
