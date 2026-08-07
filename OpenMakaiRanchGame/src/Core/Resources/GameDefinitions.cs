@@ -150,6 +150,35 @@ public enum ItemEffectType
     PetAdopt
 }
 
+public enum SpellType
+{
+    Drain,
+    Empower,
+    Transform,
+    Summon,
+    Enchant,
+    Curse,
+    Bless,
+    Teleport
+}
+
+[GlobalClass]
+public partial class SpellDefinition : Resource
+{
+    public string Id { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public SpellType Type { get; set; }
+    public int ManaCost { get; set; }
+    public int SpiritEnergyCost { get; set; }
+    public int CooldownDays { get; set; }
+    public int RequiredMagicPower { get; set; }
+    public string EffectTarget { get; set; } = string.Empty;
+    public int EffectValue { get; set; }
+    public string EffectDescription { get; set; } = string.Empty;
+    public bool RequiresTarget { get; set; }
+}
+
 [GlobalClass]
 public partial class ItemDefinition : Resource
 {
