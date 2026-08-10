@@ -171,6 +171,23 @@ public sealed class SaveStateFactory
         return CreateGeneratedRecruit(existingIds);
     }
 
+    public CharacterState CreateGeneratedRecruitWithPreferences(SaveState state, CapturePreferences prefs, IEnumerable<string>? reservedIds = null)
+    {
+        var existingIds = state.Roster.Characters.Select(character => character.Id).ToHashSet();
+        if (reservedIds is not null)
+        {
+            foreach (var reservedId in reservedIds)
+            {
+                if (!string.IsNullOrWhiteSpace(reservedId))
+                {
+                    existingIds.Add(reservedId);
+                }
+            }
+        }
+
+        return CreateGeneratedRecruit(existingIds, archetype: null, prefs);
+    }
+
     private IEnumerable<CharacterState> CreateGeneratedRecruits(ISet<string> existingIds)
     {
         var archetypes = _data.CharacterList().OrderBy(_ => _random.Next()).Take(2).ToList();
@@ -182,7 +199,7 @@ public sealed class SaveStateFactory
         }
     }
 
-    private CharacterState CreateGeneratedRecruit(ISet<string> existingIds, CharacterDefinition? archetype = null)
+    private CharacterState CreateGeneratedRecruit(ISet<string> existingIds, CharacterDefinition? archetype = null, CapturePreferences? prefs = null)
     {
         var allArchetypes = _data.CharacterList();
         if (allArchetypes.Count == 0)
@@ -191,6 +208,7 @@ public sealed class SaveStateFactory
         }
 
         var selectedArchetype = archetype ?? allArchetypes[_random.Next(allArchetypes.Count)];
+
         var bonusRanch = _random.Next(0, 3);
         var bonusCraft = _random.Next(0, 3);
         var bonusCombat = _random.Next(0, 3);
@@ -211,6 +229,7 @@ public sealed class SaveStateFactory
         existingIds.Add(recruitId);
         var (givenName, familyName) = CharacterGenerationPools.GenerateName(_random);
         var bustSize = CharacterGenerationPools.PickBreastSize(_random);
+        var jobClass = CharacterGenerationPools.PickJob(_random);
         var heightMm = CharacterGenerationPools.GenerateHeight(_random);
         var apparentAge = CharacterGenerationPools.GenerateApparentAge(_random);
         var race = CharacterGenerationPools.PickRace(_random);
@@ -222,6 +241,21 @@ public sealed class SaveStateFactory
         var eyeColor = CharacterGenerationPools.EyeColors[_random.Next(CharacterGenerationPools.EyeColors.Length)];
         var personality = CharacterGenerationPools.Personalities[_random.Next(CharacterGenerationPools.Personalities.Length)];
         var magicPower = selectedArchetype.MagicPower + _random.Next(0, 4);
+
+        // Apply capture preferences from the original game's target selection:
+        // pick race, bust size, job, and mana for the person you are trying to capture.
+        if (prefs is not null)
+        {
+            if (!string.IsNullOrWhiteSpace(prefs.Race) && !string.Equals(prefs.Race, "Any", StringComparison.OrdinalIgnoreCase))
+                race = prefs.Race;
+            if (!string.IsNullOrWhiteSpace(prefs.Job) && !string.Equals(prefs.Job, "Any", StringComparison.OrdinalIgnoreCase))
+                jobClass = prefs.Job;
+            if (int.TryParse(prefs.BustSize, out var requestedBust) && requestedBust >= 0 && requestedBust <= 15)
+                bustSize = requestedBust;
+            if (prefs.ManaAmount is >= 1 and <= 5)
+                magicPower = prefs.ManaAmount * 2;
+        }
+
         var genSkinIdx = PortraitLayerCatalog.MapSkinColorToIndex(skinColor);
         var genBreastIdx = PortraitLayerCatalog.MapBustSizeToBreastIndex(bustSize);
         return new CharacterState
@@ -258,7 +292,7 @@ public sealed class SaveStateFactory
             HairColor = hairColor,
             HairStyle = hairStyle,
             EyeColor = eyeColor,
-            JobClass = CharacterGenerationPools.PickJob(_random),
+            JobClass = jobClass,
             Personality = personality,
             BustSize = bustSize,
             Talents = talents

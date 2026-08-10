@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Godot;
 using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Core.Resources;
 using OpenMakaiRanch.Data;
 using OpenMakaiRanch.Gameplay;
 using OpenMakaiRanch.Locale;
@@ -42,6 +43,8 @@ public partial class GameRoot : Node
 	public IMatureContentHooks MatureContentHooks { get; private set; } = new MatureContentHooks();
 	public MentalStateService MentalState { get; private set; } = null!;
 	public EnhancedTrainingService EnhancedTraining { get; private set; } = null!;
+
+	public VisitService Visit { get; private set; } = null!;
 	public MilkEconomyService MilkEconomy { get; private set; } = null!;
 	public AddictionService Addiction { get; private set; } = null!;
 	public CombatService Combat { get; private set; } = null!;
@@ -49,6 +52,7 @@ public partial class GameRoot : Node
 	public MercenaryService Mercenary { get; private set; } = null!;
 	public WinConditionService WinCondition { get; private set; } = null!;
 	public EquipmentService Equipment { get; private set; } = null!;
+	public ClothingService Clothing { get; private set; } = null!;
 	public TalentService Talents { get; private set; } = null!;
 	public DailyReport? LastDailyReport { get; set; }
 	public CombatReport? LastCombatReport { get; set; }
@@ -76,14 +80,20 @@ public partial class GameRoot : Node
 
 		if (SmokeTestRunner.ShouldRun())
 		{
-			var result = SmokeTestRunner.Run();
-			foreach (var line in result.Lines)
-			{
-				GD.Print(line);
-			}
-
-			GetTree().Quit(result.Passed ? 0 : 1);
+			// Defer so the scene tree finishes setup; UI walk tests need a quiescent root.
+			CallDeferred(nameof(RunSmokeTestsAndExit));
 		}
+	}
+
+	private void RunSmokeTestsAndExit()
+	{
+		var result = SmokeTestRunner.Run();
+		foreach (var line in result.Lines)
+		{
+			GD.Print(line);
+		}
+
+		GetTree().Quit(result.Passed ? 0 : 1);
 	}
 
 	public void NewGame()
@@ -383,11 +393,20 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public void SetNightAction(string action)
+	{
+		if (action is not ("rest" or "train" or "admin")) return;
+		State.Calendar.NightAction = action;
+		StateChanged?.Invoke();
+	}
+
 	public DailyReport EndDay()
 	{
 		var dayCycle = new DayCycleService(State);
 		var settlement = new DailySettlementService(State, Data, Schedule, Ranch, Economy, dayCycle, Milestones, Inventory, Talents);
 		LastDailyReport = settlement.SettleDay();
+		State.Reports.RemoveAll(report => report.Day == LastDailyReport.Day);
+		State.Reports.Add(LastDailyReport);
 		DaySettled?.Invoke(LastDailyReport);
 		StateChanged?.Invoke();
 		if (WinCondition.IsGameComplete() && !State.VictoryDay.HasValue)
@@ -477,6 +496,42 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public (bool Success, string Error) EquipCharacterItem(string characterId, string itemId)
+	{
+		var character = Roster.Find(characterId);
+		if (character is null)
+		{
+			return (false, "Character not found.");
+		}
+
+		var result = Clothing.EquipItem(character, itemId);
+		if (!result.Success)
+		{
+			return result;
+		}
+
+		StateChanged?.Invoke();
+		return result;
+	}
+
+	public (bool Success, string Error) UnequipCharacterItem(string characterId, EquipmentSlot slot)
+	{
+		var character = Roster.Find(characterId);
+		if (character is null)
+		{
+			return (false, "Character not found.");
+		}
+
+		var result = Clothing.UnequipItem(character, slot);
+		if (!result.Success)
+		{
+			return result;
+		}
+
+		StateChanged?.Invoke();
+		return result;
+	}
+
 	public TrainingReport PerformTraining(string characterId, string actionId)
 	{
 		var report = EnhancedTraining.PerformAction(characterId, actionId);
@@ -511,6 +566,7 @@ public partial class GameRoot : Node
 		Roster = new RosterService(State, Data);
 		Schedule = new ScheduleService(State, Data);
 		Equipment = new EquipmentService(State, Data);
+		Clothing = new ClothingService(State, Data);
 		Talents = new TalentService(State, Data);
 		Ranch = new RanchService(State, Data, Equipment, Talents);
 		Economy = new EconomyService(State);
@@ -527,6 +583,7 @@ public partial class GameRoot : Node
 		Training = new TrainingService(State, Talents);
 		MentalState = new MentalStateService();
 		EnhancedTraining = new EnhancedTrainingService(State);
+		Visit = new VisitService(State, Data);
 		MilkEconomy = new MilkEconomyService(State);
 		Addiction = new AddictionService(State);
 		Combat = new CombatService(State, Data, Equipment, Talents);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using OpenMakaiRanch.Core.Models;
@@ -308,6 +309,110 @@ public partial class UiShellController
         }
     }
 
+    private int _reportHistoryIndex;
+    private const int MaxReportHistory = 10;
+
+    private void RenderDailyReport()
+    {
+        AddTitle(T("screen.report", "Daily Report"));
+
+        var history = _game.State.Reports
+            .OrderByDescending(report => report.Day)
+            .ToList();
+        if (history.Count == 0)
+        {
+            var empty = CardContainer();
+            _content.AddChild(empty);
+            empty.AddChild(AddStyledLine(T("screen.report.empty", "No daily reports yet. End your first day to see the daily summary.")));
+            return;
+        }
+
+        if (_reportHistoryIndex >= history.Count)
+        {
+            _reportHistoryIndex = 0;
+        }
+
+        var rpt = history[_reportHistoryIndex];
+
+        // Report header: day + summary toggle.
+        var header = CardContainer();
+        _content.AddChild(header);
+        var headerInner = CardContent();
+        header.AddChild(headerInner);
+        headerInner.AddChild(SubtitleLabel(T("screen.report.title_pattern", "Day {0} Report", rpt.Day)));
+        var milkSuffix = rpt.MilkRevenue > 0 ? $" | Milk: +{rpt.MilkRevenue}g" : string.Empty;
+        headerInner.AddChild(AddStyledLine($"Income: {rpt.Income}g | Expenses: {rpt.Expenses}g | Net: {rpt.NetGold}g{milkSuffix}"));
+        if (rpt.SkillGains > 0)
+        {
+            headerInner.AddChild(AddStyledLine(T("screen.report.skill_gains", "{0} character(s) leveled up!", rpt.SkillGains)));
+        }
+
+        // Day navigation to browse history instead of scrolling a wall of text.
+        var nav = FlowRow(8);
+        headerInner.AddChild(nav);
+        if (history.Count > 1)
+        {
+            var older = SecondaryButton(T("screen.report.older", "◀ Older Day"), "Browse the previous daily report");
+            older.Disabled = _reportHistoryIndex >= history.Count - 1;
+            older.Pressed += () =>
+            {
+                _reportHistoryIndex = Mathf.Min(history.Count - 1, _reportHistoryIndex + 1);
+                _game.Feedback.PlayNavigate();
+                ShowScreen("report");
+            };
+            nav.AddChild(older);
+
+            var newer = SecondaryButton(T("screen.report.newer", "Newer Day ▶"), "Browse the next daily report");
+            newer.Disabled = _reportHistoryIndex <= 0;
+            newer.Pressed += () =>
+            {
+                _reportHistoryIndex = Mathf.Max(0, _reportHistoryIndex - 1);
+                _game.Feedback.PlayNavigate();
+                ShowScreen("report");
+            };
+            nav.AddChild(newer);
+        }
+
+        var back = SecondaryButton(T("label.back", "Back to Overview"), T("tooltip.report_back", "Return to the ranch overview"));
+        back.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        nav.AddChild(back);
+
+        // Structured, grouped log instead of one flat wall of text.
+        RenderReportGroup(T("screen.report.section_events", "Events"), rpt.Events.Select(evt =>
+        {
+            var icon = evt.IsPositive ? "[+]" : "[-]";
+            var sign = Math.Sign(evt.GoldDelta) >= 0 ? "+" : string.Empty;
+            var goldSuffix = evt.GoldDelta == 0 ? string.Empty : " (" + sign + evt.GoldDelta + "g)";
+            return $"{icon} {evt.Title}: {evt.Description}{goldSuffix}";
+        }));
+
+        var growth = rpt.CharacterGrowth
+            .Select(growthEntry => $"{growthEntry.DisplayName}: {growthEntry.SkillGained} +{growthEntry.Amount}")
+            .ToList();
+        if (growth.Count > 0)
+        {
+            RenderReportGroup(T("screen.report.section_growth", "Skill Growth"), growth);
+        }
+
+        if (rpt.Lines.Count > 0)
+        {
+            RenderReportGroup(T("screen.report.section_log", "Ranch Log"), rpt.Lines);
+        }
+    }
+
+    private void RenderReportGroup(string title, IEnumerable<string> entries)
+    {
+        var card = CardContainer();
+        _content.AddChild(card);
+        var inner = CardContent();
+        card.AddChild(inner);
+        inner.AddChild(SubtitleLabel(title));
+        foreach (var entry in entries)
+        {
+            inner.AddChild(MutedLabel($"• {entry}"));
+        }
+    }
+
     private void RenderRoster()
     {
         AddTitle(T("screen.roster", "Characters"));
@@ -399,15 +504,15 @@ public partial class UiShellController
             var cId = character.Id;
             var milk = character.Milk;
 
-            // Visit Slave → open NSFW training with character pre-selected
-            var visitBtn = SecondaryButton("Visit Slave", "Open training room for this character");
+            // Visit Slave → open the caring/visit screen
+            var visitBtn = SecondaryButton("Visit Slave", "Visit and care for this character, or move on to training");
             var capturedVisitId = cId;
             visitBtn.Pressed += () =>
             {
                 var charList = _game.Roster.Characters.ToList();
                 var idx = charList.FindIndex(c => c.Id == capturedVisitId);
-                if (idx >= 0) _trainingCharIdx = idx;
-                ShowScreen("training");
+                if (idx >= 0) _visitCharIdx = idx;
+                ShowScreen("visit");
             };
             actionRow.AddChild(visitBtn);
 
@@ -524,6 +629,7 @@ public partial class UiShellController
         }
 
         var definition = _game.Roster.DefinitionFor(character);
+        _game.Clothing.SyncCharacterEquipment(character);
 
         var backBtn = SecondaryButton(T("label.back", "← Back to Roster"));
         backBtn.Pressed += () => ShowScreen("roster");
@@ -598,14 +704,61 @@ public partial class UiShellController
 
         // Equipment section
         _content.AddChild(SubtitleLabel(T("screen.character_detail.equipment", "Equipment")));
-        var equipGrid = new GridContainer { Columns = 5, SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        var equipGrid = new GridContainer { Columns = 2, SizeFlagsHorizontal = SizeFlags.ExpandFill };
         equipGrid.AddThemeConstantOverride("h_separation", 8);
+        equipGrid.AddThemeConstantOverride("v_separation", 6);
         _content.AddChild(equipGrid);
-        foreach (var slot in new[] { "weapon", "armor", "accessory", "head", "feet" })
+
+        foreach (var slot in CharacterDetailEquipmentSlots)
         {
-            var equipped = _game.Equipment.GetEquippedItem(character.Id, slot);
-            var label = equipped?.DisplayName ?? $"[{slot}]";
-            equipGrid.AddChild(StatChip(label));
+            var slotRow = new HBoxContainer();
+            slotRow.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            slotRow.AddThemeConstantOverride("separation", 8);
+
+            slotRow.AddChild(MutedLabel(slot.DisplayName));
+
+            var equippedItemId = _game.Clothing.GetEquippedItemId(character, slot.Slot);
+            var equipped = !string.IsNullOrWhiteSpace(equippedItemId) && _game.Data.Items.TryGetValue(equippedItemId, out var equippedDef)
+                ? equippedDef
+                : null;
+
+            var buttonText = equipped?.DisplayName ?? T("screen.character_detail.empty_slot", "[Empty]");
+            var button = SmallButton(buttonText);
+            button.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            button.TooltipText = equipped is null
+                ? T("tooltip.character_detail.equip", "Equip first available item for this slot")
+                : T("tooltip.character_detail.unequip", "Unequip this item and return it to inventory");
+            button.Pressed += () =>
+            {
+                var (success, message) = equipped is null
+                    ? EquipFirstInventoryItemForSlot(character, slot.Slot)
+                    : _game.UnequipCharacterItem(character.Id, slot.Slot);
+
+                if (!success)
+                {
+                    _game.Feedback.PlayError();
+                    SetStatus(message, true);
+                    RefreshCurrentScreen();
+                    return;
+                }
+
+                _game.Feedback.PlayConfirm();
+                SetStatus(equipped is null
+                    ? T("screen.character_detail.equipped", "Equipped {0}.", message)
+                    : T("screen.character_detail.unequipped", "Unequipped {0}.", buttonText));
+                RefreshCurrentScreen();
+            };
+            slotRow.AddChild(button);
+
+            equipGrid.AddChild(slotRow);
+
+            var bonusLine = EquippedBonusSummary(equipped);
+            equipGrid.AddChild(string.IsNullOrWhiteSpace(bonusLine) ? new Label() : MutedLabel(bonusLine));
+        }
+
+        if (character.Equipment.ActiveClothingStyle != ClothingStyle.Default)
+        {
+            _content.AddChild(MutedLabel($"{T("screen.character_detail.style", "Style")}: {character.Equipment.ActiveClothingStyle}"));
         }
 
         // Talents section
@@ -617,6 +770,64 @@ public partial class UiShellController
             talentRow.AddChild(new Label { Text = string.Join(", ", character.Talents) });
             _content.AddChild(talentRow);
         }
+    }
+
+    private static readonly (EquipmentSlot Slot, string DisplayName)[] CharacterDetailEquipmentSlots =
+    {
+        (EquipmentSlot.Weapon, "Clothes"),
+        (EquipmentSlot.Armor, "Armor"),
+        (EquipmentSlot.UnderwearTop, "Underwear Top"),
+        (EquipmentSlot.UnderwearBottom, "Underwear Bottom"),
+        (EquipmentSlot.Head, "Head"),
+        (EquipmentSlot.Ears, "Eyes/Ears"),
+        (EquipmentSlot.Arms, "Arms"),
+        (EquipmentSlot.Legs, "Legs"),
+        (EquipmentSlot.Feet, "Feet"),
+        (EquipmentSlot.Necklace, "Necklace"),
+        (EquipmentSlot.Coat, "Coat"),
+        (EquipmentSlot.Accessory, "Accessory")
+    };
+
+    private (bool Success, string Message) EquipFirstInventoryItemForSlot(CharacterState character, EquipmentSlot slot)
+    {
+        var candidateId = _game.State.Inventory.Items
+            .Where(kvp => kvp.Value > 0
+                          && _game.Data.Items.TryGetValue(kvp.Key, out var item)
+                          && item.Category == ItemCategory.Equipment
+                          && item.Slot == slot)
+            .Select(kvp => kvp.Key)
+            .FirstOrDefault();
+
+        if (string.IsNullOrWhiteSpace(candidateId))
+        {
+            return (false, T("screen.character_detail.no_item_for_slot", "No inventory item available for this slot."));
+        }
+
+        var result = _game.EquipCharacterItem(character.Id, candidateId);
+        if (!result.Success)
+        {
+            return (false, result.Error);
+        }
+
+        var itemName = _game.Data.Items.TryGetValue(candidateId, out var itemDef) ? itemDef.DisplayName : candidateId;
+        return (true, itemName);
+    }
+
+    private static string EquippedBonusSummary(ItemDefinition? item)
+    {
+        if (item is null)
+        {
+            return string.Empty;
+        }
+
+        var bonuses = new List<string>();
+        if (item.BonusRanchSkill != 0) bonuses.Add($"Ranch {(item.BonusRanchSkill > 0 ? "+" : string.Empty)}{item.BonusRanchSkill}");
+        if (item.BonusCraftSkill != 0) bonuses.Add($"Craft {(item.BonusCraftSkill > 0 ? "+" : string.Empty)}{item.BonusCraftSkill}");
+        if (item.BonusCombatSkill != 0) bonuses.Add($"Combat {(item.BonusCombatSkill > 0 ? "+" : string.Empty)}{item.BonusCombatSkill}");
+        if (item.BonusMaxHp != 0) bonuses.Add($"HP {(item.BonusMaxHp > 0 ? "+" : string.Empty)}{item.BonusMaxHp}");
+        if (item.BonusMaxEnergy != 0) bonuses.Add($"Energy {(item.BonusMaxEnergy > 0 ? "+" : string.Empty)}{item.BonusMaxEnergy}");
+        if (item.BonusMorale != 0) bonuses.Add($"Morale {(item.BonusMorale > 0 ? "+" : string.Empty)}{item.BonusMorale}");
+        return bonuses.Count == 0 ? string.Empty : string.Join(" | ", bonuses);
     }
 
     private void RenderSchedule()
@@ -850,6 +1061,114 @@ public partial class UiShellController
         if (_game.State.Adventure.ActiveMercenaryHpBonus > 0)
             mercCard.AddChild(AddStyledLine($"{T("screen.combat.merc_bonus", "Active merc bonus")}: +{_game.State.Adventure.ActiveMercenaryHpBonus} HP"));
 
+        // === Capture Target Preferences ===
+        var prefCard = CardContainer();
+        _content.AddChild(prefCard);
+        prefCard.AddChild(SubtitleLabel(T("screen.adventure.capture_target", "Capture Target")));
+
+        var prefs = _game.State.Adventure.CapturePrefs;
+
+        var raceRow = new HBoxContainer();
+        raceRow.AddThemeConstantOverride("separation", 8);
+        prefCard.AddChild(raceRow);
+        raceRow.AddChild(MutedLabel(T("screen.adventure.race", "Race")));
+        var racePicker = StyledPicker();
+        racePicker.AddItem(T("screen.adventure.any", "Any"));
+        foreach (var raceName in CharacterGenerationPools.Races)
+        {
+            racePicker.AddItem(raceName);
+        }
+
+        var raceIndex = 0;
+        for (int i = 1; i < racePicker.ItemCount; i++)
+        {
+            if (racePicker.GetItemText(i) == prefs.Race)
+            {
+                raceIndex = i;
+                break;
+            }
+        }
+        racePicker.Select(raceIndex);
+        racePicker.ItemSelected += index => prefs.Race = racePicker.GetItemText((int)index);
+        raceRow.AddChild(racePicker);
+
+        var bustRow = new HBoxContainer();
+        bustRow.AddThemeConstantOverride("separation", 8);
+        prefCard.AddChild(bustRow);
+        bustRow.AddChild(MutedLabel(T("screen.adventure.bust", "Bust Size")));
+        var bustPicker = StyledPicker();
+        bustPicker.AddItem(T("screen.adventure.any", "Any"));
+        for (var bust = 0; bust <= 15; bust++)
+        {
+            bustPicker.AddItem(bust.ToString());
+        }
+        var bustIndex = 0;
+        for (var i = 1; i < bustPicker.ItemCount; i++)
+        {
+            if (int.TryParse(bustPicker.GetItemText(i), out var bustValue) && bustValue == (int.TryParse(prefs.BustSize, out var prefsBust) ? prefsBust : -1))
+            {
+                bustIndex = i;
+                break;
+            }
+        }
+        bustPicker.Select(bustIndex);
+        bustPicker.ItemSelected += index =>
+        {
+            prefs.BustSize = index == 0 ? "Any" : bustPicker.GetItemText((int)index);
+        };
+        bustRow.AddChild(bustPicker);
+
+        var jobRow = new HBoxContainer();
+        jobRow.AddThemeConstantOverride("separation", 8);
+        prefCard.AddChild(jobRow);
+        jobRow.AddChild(MutedLabel(T("screen.adventure.job", "Job")));
+        var jobPicker = StyledPicker();
+        jobPicker.AddItem(T("screen.adventure.any", "Any"));
+        foreach (var jobName in CharacterGenerationPools.AllJobs)
+        {
+            jobPicker.AddItem(jobName);
+        }
+        var jobIndex = 0;
+        for (var i = 1; i < jobPicker.ItemCount; i++)
+        {
+            if (jobPicker.GetItemText(i) == prefs.Job)
+            {
+                jobIndex = i;
+                break;
+            }
+        }
+        jobPicker.Select(jobIndex);
+        jobPicker.ItemSelected += index => prefs.Job = jobPicker.GetItemText((int)index);
+        jobRow.AddChild(jobPicker);
+
+        var manaRow = new HBoxContainer();
+        manaRow.AddThemeConstantOverride("separation", 8);
+        prefCard.AddChild(manaRow);
+        manaRow.AddChild(MutedLabel(T("screen.adventure.mana", "Mana (1-5)")));
+        var manaPicker = StyledPicker();
+        manaPicker.AddItem(T("screen.adventure.any", "Any"));
+        for (var mana = 1; mana <= 5; mana++)
+        {
+            manaPicker.AddItem(mana.ToString());
+        }
+        var manaIndex = 0;
+        for (var i = 1; i < manaPicker.ItemCount; i++)
+        {
+            if (int.TryParse(manaPicker.GetItemText(i), out var manaLevel) && manaLevel == prefs.ManaAmount)
+            {
+                manaIndex = i;
+                break;
+            }
+        }
+        manaPicker.Select(manaIndex);
+        manaPicker.ItemSelected += index =>
+        {
+            prefs.ManaAmount = index == 0 ? 0 : int.Parse(manaPicker.GetItemText((int)index));
+        };
+        manaRow.AddChild(manaPicker);
+
+        prefCard.AddChild(MutedLabel(T("screen.adventure.capture_target_hint", "A captured target will be generated with your chosen race, bust, job, and mana. Leave at Any to roll freely.")));
+
         // === Last mission result ===
         if (!string.IsNullOrEmpty(_game.State.Adventure.LastSummary) && _game.State.Adventure.LastSummary != "No adventure has been attempted yet.")
         {
@@ -914,7 +1233,7 @@ public partial class UiShellController
             };
             AddFlowButton(actionRow, fightBtn, 110);
 
-            var captureBtn = SecondaryButton(T("screen.adventure.capture", "Capture"), T("tooltip.capture_mission", "Battle with a capture attempt. Success may recruit a target."));
+            var captureBtn = SecondaryButton(T("screen.adventure.capture", "Capture"), T("tooltip.capture_mission", "Battle with a capture attempt. Requires a hired mercenary and 1 Mana Shackle. Success may recruit a target."));
             captureBtn.Pressed += () =>
             {
                 _game.StartNewCombat();
@@ -924,7 +1243,7 @@ public partial class UiShellController
             AddFlowButton(actionRow, captureBtn, 120);
         }
 
-        missions.AddChild(MutedLabel(T("screen.adventure.capture_hint", "Capture Battle: standard combat plus a post-battle capture check. High party control helps.")));
+        missions.AddChild(MutedLabel($"{T("screen.adventure.capture_hint", "Capture Battle: requires a hired mercenary and 1 Mana Shackle (held: ")}{(_game.State.Inventory.Items.TryGetValue("mana_shackle", out var shackles) ? shackles : 0)}{T("screen.adventure.capture_hint2", ", mercenary bonus ")}: +{_game.State.Adventure.ActiveMercenaryHpBonus}). High party control improves success."));
     }
 
     private void RenderCombat()
@@ -1033,7 +1352,21 @@ public partial class UiShellController
         var outcomeLabel = AddStyledLine($"{T("screen.combat.outcome", "Outcome")}: {report.Outcome}", true);
         outcomeLabel.AddThemeColorOverride("font_color", Color.FromHtml(outcomeColor));
         outcomeCard.AddChild(outcomeLabel);
-        outcomeCard.AddChild(AddStyledLine(report.Summary));
+        var combatSummary = new TypewriterLabel
+        {
+            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        combatSummary.Begin(string.IsNullOrWhiteSpace(report.Summary) ? T("screen.combat.no_summary", "The party returned from the mission.") : report.Summary);
+        _prologueLines.Add(combatSummary);
+        combatSummary.GuiInput += evt =>
+        {
+            if (evt.IsPressed())
+            {
+                FinishActiveTypewriting();
+            }
+        };
+        outcomeCard.AddChild(combatSummary);
 
         // Rewards
         if (report.RewardGold > 0)
@@ -1198,17 +1531,33 @@ public partial class UiShellController
                 narrativeBox.CustomMinimumSize = new Vector2(0, 60);
                 eventCard.AddChild(narrativeBox);
 
-                var narrativeLabel = new Label
+                var narrativeLabel = new TypewriterLabel
                 {
-                    Text = bondEvent.Description,
                     AutowrapMode = TextServer.AutowrapMode.WordSmart,
                     SizeFlagsHorizontal = SizeFlags.ExpandFill,
                     SizeFlagsVertical = SizeFlags.ExpandFill
                 };
+                narrativeLabel.Begin(bondEvent.Description);
+                _prologueLines.Add(narrativeLabel);
+                narrativeLabel.GuiInput += evt =>
+                {
+                    if (evt.IsPressed())
+                    {
+                        FinishActiveTypewriting();
+                    }
+                };
                 narrativeBox.AddChild(narrativeLabel);
 
                 var completeBtn = PrimaryButton("Complete Event", "Complete this bond event to earn rewards and progress the story");
-                completeBtn.Pressed += () => ExecuteUiAction(() => _game.Bond.CompleteEvent(bondEvent.Id), false);
+                completeBtn.Pressed += () =>
+                {
+                    if (FinishActiveTypewriting())
+                    {
+                        return;
+                    }
+
+                    ExecuteUiAction(() => _game.Bond.CompleteEvent(bondEvent.Id), false);
+                };
                 eventCard.AddChild(completeBtn);
             }
 
@@ -1483,6 +1832,7 @@ public partial class UiShellController
     // === Training state tracking ===
     private int _trainingCharIdx;
     private TrainingCategory _trainingCategory;
+    private int _visitCharIdx;
 
     private void RenderTraining()
     {
@@ -1495,6 +1845,11 @@ public partial class UiShellController
             card.AddChild(AddStyledLine(T("screen.training.no_characters", "No characters on the ranch.")));
             return;
         }
+
+        var slotsLeft = 2 - _game.State.Calendar.TrainedToday;
+        _content.AddChild(MutedLabel(slotsLeft <= 0
+            ? T("screen.training.no_slots", "Training limit reached for today. End the day to restore your 2 daily training slots.")
+            : T("screen.training.slots_left", "Training slots left today: ") + slotsLeft));
 
         _trainingCharIdx = Math.Clamp(_trainingCharIdx, 0, chars.Count - 1);
         var character = chars[_trainingCharIdx];
@@ -1557,6 +1912,16 @@ public partial class UiShellController
                     ? T("screen.training.low_energy", "Not enough energy.")
                     : T("screen.training.low_bond", $"Requires bond {action.MinBond}."))
                 : "";
+            if (reason.Length == 0 && action.RequiresConsent && !EnhancedTrainingService.HasConsent(character))
+                reason = T("screen.training.no_consent", "Character does not consent yet.");
+            if (reason.Length == 0 && !string.IsNullOrEmpty(action.ToolRequired))
+            {
+                var hasTool = _game.State.Inventory.Items.ContainsKey(action.ToolRequired)
+                    || (EnhancedTrainingService.ResolveToolId(action.ToolRequired) != action.ToolRequired
+                        && _game.State.Inventory.Items.ContainsKey(EnhancedTrainingService.ResolveToolId(action.ToolRequired)));
+                if (!hasTool)
+                    reason = T("screen.training.no_tool", $"Requires tool: {action.ToolRequired}.");
+            }
 
             var sensations = string.Join(", ", action.SensationTypes.Select(s => s.ToString()));
             var sensStr = sensations.Length > 0 ? $" [{sensations}]" : "";
@@ -1670,6 +2035,139 @@ public partial class UiShellController
         popup.CloseRequested += () => { if (IsInstanceValid(popup)) popup.QueueFree(); };
     }
 
+    private void RenderVisit()
+    {
+        AddTitle(T("screen.visit", "Visit Slave"));
+        var chars = _game.Roster.Characters;
+        if (!chars.Any())
+        {
+            var card = CardContainer();
+            _content.AddChild(card);
+            card.AddChild(AddStyledLine(T("screen.visit.no_characters", "No characters on the ranch.")));
+            return;
+        }
+
+        _visitCharIdx = Math.Clamp(_visitCharIdx, 0, chars.Count - 1);
+        var character = chars[_visitCharIdx];
+        var mental = character.Mature;
+
+        // === Character selector row ===
+        var selectorRow = FlowRow(8);
+        _content.AddChild(selectorRow);
+        selectorRow.AddChild(MutedLabel($"{T("label.character", "Character")}:"));
+        var charPicker = StyledPicker(240);
+        charPicker.TooltipText = T("tooltip.visit_char", "Select a character to visit");
+        for (var i = 0; i < chars.Count; i++)
+        {
+            charPicker.AddItem(CharacterPickerName(chars[i]));
+            if (i == _visitCharIdx) charPicker.Selected = i;
+        }
+        charPicker.ItemSelected += idx => { _visitCharIdx = (int)idx; _game.NotifyStateChanged(); };
+        selectorRow.AddChild(charPicker);
+
+        // === Character stats card ===
+        var statsCard = CardContainer();
+        _content.AddChild(statsCard);
+        statsCard.AddChild(AddStyledLine($"{CharacterPickerName(character)} - {T("label.energy", "Energy")} {character.Energy}  {T("label.fatigue", "Fatigue")} {character.Fatigue}  {T("label.bond", "Bond")} {character.Bond}", true));
+        statsCard.AddChild(AddStyledLine($"{T("label.morale", "Morale")} {character.Morale}  {T("label.hp", "HP")} {character.Hp}  {T("screen.visit.fall", "Fall State")}: {mental.FallState}", true));
+        statsCard.AddChild(AddStyledLine($"{T("label.favorability", "Favorability")} {mental.Favorability}  {T("label.lust", "Lust")} {mental.Lust}  {T("label.submission", "Submission")} {mental.Submission}"));
+
+        // === Care actions ===
+        var careRow = FlowRow(6);
+        _content.AddChild(careRow);
+
+        var feedBtn = PrimaryButton("Feed", T("tooltip.visit_feed", "Feed a meal_box: Fatigue-18, Energy+10, Morale+8, Bond+4"));
+        feedBtn.Pressed += () =>
+        {
+            var line = _game.Visit.CareFeed(character.Id);
+            SetStatus(line, false);
+            RefreshCurrentScreen();
+        };
+        careRow.AddChild(feedBtn);
+
+        var batheBtn = SecondaryButton("Bathe", T("tooltip.visit_bathe", "Wash and groom her: Fatigue-12, Morale+6, Bond+2"));
+        batheBtn.Pressed += () =>
+        {
+            var line = _game.Visit.CareBathe(character.Id);
+            SetStatus(line, false);
+            RefreshCurrentScreen();
+        };
+        careRow.AddChild(batheBtn);
+
+        var talkBtn = SecondaryButton("Talk", T("tooltip.visit_talk", "Talk and comfort: Morale+7, Bond+3, Favorability+150"));
+        talkBtn.Pressed += () =>
+        {
+            var line = _game.Visit.CareTalk(character.Id);
+            SetStatus(line, false);
+            RefreshCurrentScreen();
+        };
+        careRow.AddChild(talkBtn);
+
+        var groomBtn = SecondaryButton("Groom", T("tooltip.visit_groom", "Brush and groom: Morale+5, Bond+3"));
+        groomBtn.Pressed += () =>
+        {
+            var line = _game.Visit.CareGroom(character.Id);
+            SetStatus(line, false);
+            RefreshCurrentScreen();
+        };
+        careRow.AddChild(groomBtn);
+
+        var restBtn = SecondaryButton("Rest", T("tooltip.visit_rest", "Let her rest: Energy+25, Fatigue-10, Morale+3"));
+        restBtn.Pressed += () =>
+        {
+            var line = _game.Visit.CareRest(character.Id);
+            SetStatus(line, false);
+            RefreshCurrentScreen();
+        };
+        careRow.AddChild(restBtn);
+
+        // === Gift section (keepsake items) ===
+        var keepsakes = _game.State.Inventory.Items
+            .Where(kvp => kvp.Value > 0 && _game.Data.Items.TryGetValue(kvp.Key, out var def) && def.Category == ItemCategory.Keepsake)
+            .ToList();
+        if (keepsakes.Count > 0)
+        {
+            var giftCard = CardContainer();
+            _content.AddChild(giftCard);
+            giftCard.AddChild(SubtitleLabel(T("screen.visit.gift", "Give Gift")));
+            foreach (var (itemId, count) in keepsakes)
+            {
+                var def = _game.Data.Item(itemId);
+                var row = FlowRow(8);
+                giftCard.AddChild(row);
+                row.AddChild(AddStyledLine($"{def.DisplayName} x{count}", true));
+                var give = SecondaryButton(T("screen.visit.give", "Give"), $"Give {def.DisplayName}: Bond+8, Morale+5, Favorability+400");
+                give.Pressed += () =>
+                {
+                    var line = _game.Visit.CareGift(character.Id, itemId);
+                    SetStatus(line, false);
+                    RefreshCurrentScreen();
+                };
+                AddFlowButton(row, give, 92);
+            }
+        }
+        else
+        {
+            var giftCard = CardContainer();
+            _content.AddChild(giftCard);
+            giftCard.AddChild(MutedLabel(T("screen.visit.no_gifts", "Buy a keepsake gift at the General Store to gift it.")));
+        }
+
+        // === Link to training ===
+        var trainLink = CardContainer();
+        _content.AddChild(trainLink);
+        trainLink.AddChild(MutedLabel(T("screen.visit.training_hint", "For disciplined training, open the Training Room.")));
+        var toTraining = PrimaryButton(T("screen.visit.open_training", "Open Training Room"), T("tooltip.visit_training", "Perform training actions on this character"));
+        toTraining.Pressed += () =>
+        {
+            var charList = _game.Roster.Characters.ToList();
+            var idx = charList.FindIndex(c => c.Id == character.Id);
+            if (idx >= 0) _trainingCharIdx = idx;
+            ShowScreen("training");
+        };
+        trainLink.AddChild(toTraining);
+    }
+
     // === Milk state tracking ===
     private int _milkCharIdx;
 
@@ -1724,6 +2222,10 @@ public partial class UiShellController
             if (milk.HasMilkConstitution) traits.Add(T("screen.milk.milk_constitution", "Milk Constitution"));
             if (milk.HasMagicMilkConstitution) traits.Add(T("screen.milk.magic_milk", "Magic Milk Constit."));
             statsCard.AddChild(AddStyledLine($"{T("label.traits", "Traits")}: {string.Join(", ", traits)}"));
+        }
+        else if (!character.Talents.Contains("extreme_milk_pressure"))
+        {
+            statsCard.AddChild(AddStyledLine(T("screen.milk.no_constitution", "No milk constitution yet. Use a Lactation Drug on this character to start producing milk.")));
         }
 
         statsCard.AddChild(AddStyledLine($"{T("screen.milk.equipment", "Equipment")}: {(milk.EquippedMilkerId > 0 ? $"{T("screen.milk.milker", "Milker")} #{milk.EquippedMilkerId}" : T("screen.milk.no_milker", "None"))}"));
@@ -2207,6 +2709,19 @@ public partial class UiShellController
 
     // === Prologue state tracking ===
     private int _prologuePage;
+    private readonly System.Collections.Generic.List<TypewriterLabel> _prologueLines = new();
+
+    /// <summary>True when an interactive typewriter skipped the remaining text (first press shows full line, second press advances).</summary>
+    private bool FinishActiveTypewriting()
+    {
+        var hasPending = _prologueLines.Any(line => !line.IsComplete);
+        foreach (var line in _prologueLines)
+        {
+            line.Finish();
+        }
+
+        return hasPending;
+    }
 
     private void RenderPrologue()
     {
@@ -2217,6 +2732,7 @@ public partial class UiShellController
     private void ShowProloguePage()
     {
         ClearContent();
+        _prologueLines.Clear();
         AddTitle(T("screen.prologue", "Opening"));
         var player = _game.State.Player;
 
@@ -2274,10 +2790,14 @@ public partial class UiShellController
 
         foreach (var line in pages[_prologuePage])
         {
-            var label = new Label { Text = line };
-            label.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+            var label = new TypewriterLabel
+            {
+                Text = line,
+                AutowrapMode = TextServer.AutowrapMode.WordSmart,
+                SizeFlagsHorizontal = SizeFlags.ExpandFill
+            };
             label.AddThemeColorOverride("font_color", Palette.BodyText);
-            label.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            _prologueLines.Add(label);
             body.AddChild(label);
         }
 
@@ -2289,6 +2809,11 @@ public partial class UiShellController
         back.Disabled = _prologuePage == 0;
         back.Pressed += () =>
         {
+            if (FinishPrologueTyping())
+            {
+                return;
+            }
+
             _prologuePage--;
             _game.Feedback.PlayConfirm();
             ShowProloguePage();
@@ -2300,6 +2825,11 @@ public partial class UiShellController
             var next = PrimaryButton(T("prologue.continue", "Continue"));
             next.Pressed += () =>
             {
+                if (FinishPrologueTyping())
+                {
+                    return;
+                }
+
                 _prologuePage++;
                 _game.Feedback.PlayConfirm();
                 ShowProloguePage();
@@ -2309,13 +2839,22 @@ public partial class UiShellController
         else
         {
             var begin = PrimaryButton(T("prologue.begin", "Begin Game"));
-            begin.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+            begin.Pressed += () => { if (FinishPrologueTyping()) return; _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
             actions.AddChild(begin);
         }
 
         var skip = SecondaryButton(T("prologue.skip", "Skip"));
         skip.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
         actions.AddChild(skip);
+    }
+
+    /// <summary>
+    /// Completes any typewriter text that is still animating and reports whether one was skipped.
+    /// Returns true (blocking navigation) when the player pressed to skip typing; a second press proceeds.
+    /// </summary>
+    private bool FinishPrologueTyping()
+    {
+        return FinishActiveTypewriting();
     }
 
     private static string MilestoneTriggerText(Core.Resources.MilestoneDefinition milestone)

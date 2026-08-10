@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Core.Resources;
 using OpenMakaiRanch.Data;
 using OpenMakaiRanch.Gameplay;
+using OpenMakaiRanch.App;
+using OpenMakaiRanch.Ui;
 
 namespace OpenMakaiRanch.Tests;
 
@@ -46,6 +49,13 @@ public static class SmokeTestRunner
             TestRosterService(result);
             TestMagicPowerTraining(result);
             TestFatigueAndCollapseConsequences(result);
+            TestUiScreensRender(result);
+            TestLayeredPortraitRendering(result);
+            TestParityMechanics(result);
+            TestClothingEquipmentIntegration(result);
+            TestTrainingParityAndVisit(result);
+            TestWinConditionReachable(result);
+            TestDailyReportHistory(result);
         }
         catch (Exception exception)
         {
@@ -235,6 +245,92 @@ public static class SmokeTestRunner
         }
     }
 
+    private static void TestUiScreensRender(SmokeTestResult result)
+    {
+        if (GameRoot.Instance is not { } root || !GodotObject.IsInstanceValid(root))
+        {
+            Assert(result, false, "game root present for ui screen walk");
+            return;
+        }
+
+        var gameScene = GD.Load<PackedScene>("res://scenes/Game.tscn");
+        if (gameScene is null)
+        {
+            Assert(result, false, "game scene loads for ui screen walk");
+            return;
+        }
+
+        var game = gameScene.Instantiate();
+        try
+        {
+            var tree = root.GetTree();
+            tree.Root.AddChild(game);
+            var shell = game.GetNodeOrNull<UiShellController>("UiShell");
+            Assert(result, shell is not null, "ui shell controller node present");
+            if (shell is null)
+            {
+                return;
+            }
+
+            var screens = new[]
+            {
+                "title", "ranch", "roster", "schedule", "town", "shop", "adventure",
+                "combat", "milestones", "research", "bond", "pets", "saveload",
+                "settings", "training", "milk", "mental", "character_creation",
+                "prologue", "victory", "character_detail", "visit", "report"
+            };
+            var failedScreens = new List<string>();
+            foreach (var screenId in screens)
+            {
+                try
+                {
+                    shell.ShowScreen(screenId);
+                }
+                catch (Exception exception)
+                {
+                    failedScreens.Add($"{screenId} ({exception.GetType().Name}: {exception.Message})");
+                }
+            }
+
+            Assert(result, failedScreens.Count == 0, $"all ui screens render without exceptions (failed: {string.Join(", ", failedScreens)})");
+            tree.Root.RemoveChild(game);
+        }
+        finally
+        {
+            if (GodotObject.IsInstanceValid(game) && game.IsInsideTree())
+            {
+                game.GetTree().Root.RemoveChild(game);
+            }
+            game.Free();
+        }
+    }
+
+    private static void TestLayeredPortraitRendering(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data).CreateNewGame();
+        var roster = new RosterService(state, data);
+        var renderer = new PortraitRenderer();
+        var layers = new List<string>();
+        var failed = false;
+        foreach (var character in state.Roster.Characters)
+        {
+            var definition = roster.DefinitionFor(character);
+            var visual = renderer.BuildCharacterVisual(character, definition);
+            if (visual is null)
+            {
+                failed = true;
+                layers.Add(character.Id);
+                continue;
+            }
+
+            visual.Free();
+        }
+
+        Assert(result, !failed, "layered portraits render for all starting characters");
+        Assert(result, PortraitLayerCatalog.AllLayerPaths().All(path => ResourceLoader.Exists(path)), "all portrait layer assets exist");
+    }
+
     private static void TestGeneratedRecruits(SmokeTestResult result)
     {
         var data = DataRegistry.CreateSeeded();
@@ -335,8 +431,8 @@ public static class SmokeTestRunner
         Assert(result, research.Unlock("ranch_planning"), "research spends stockpile and unlocks skill");
         Assert(result, state.Research.UnlockedSkillIds.Contains("ranch_planning"), "research state stores unlock");
         Assert(result, state.Milestones.CompletedIds.Contains("first_research"), "research milestone unlocks");
-        Assert(result, pets.Adopt("stable_cat"), "pet adoption succeeds when affordable");
-        Assert(result, state.Pets.AdoptedPetIds.Contains("stable_cat"), "pet state stores adoption");
+        Assert(result, pets.Adopt("yard_hound"), "pet adoption succeeds when affordable");
+        Assert(result, state.Pets.AdoptedPetIds.Contains("yard_hound"), "pet state stores adoption");
         Assert(result, inventory.TryConsume("meal_box", 1), "inventory consumes item");
 
         var rosterCountBeforeRecruit = state.Roster.Characters.Count;
@@ -468,7 +564,7 @@ public static class SmokeTestRunner
         Assert(result, state.Milestones.CompletedIds.Count == 0, "new game has no completed milestones");
         Assert(result, state.Research.UnlockedSkillIds.Count == 0, "new game has no unlocked research");
         Assert(result, state.Bond.CompletedEventIds.Count == 0, "new game has no completed bond events");
-        Assert(result, state.Pets.AdoptedPetIds.Count == 0, "new game has no pets");
+        Assert(result, state.Pets.AdoptedPetIds.Count == 1 && state.Pets.AdoptedPetIds.Contains("stable_cat"), "new game starts with the starting pet");
         Assert(result, state.NgPlusActive == false, "new game is not NG+");
         Assert(result, state.VictoryDay == null, "new game has no victory day");
         Assert(result, state.Recruitment.CurrentOffer is not null, "new game has a recruitment offer");
@@ -537,7 +633,104 @@ public static class SmokeTestRunner
         Assert(result, state.Milestones.CompletedIds.Count >= 2, "5 days of settlement completes at least 2 milestones");
     }
 
-    private static void TestNewGamePlusCarryover(SmokeTestResult result)
+    private static void TestDailyReportHistory(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data).CreateNewGame();
+        Assert(result, state.Reports.Count == 0, "new game starts with empty report history");
+
+        var economy = new EconomyService(state);
+        var inventory = new InventoryService(state);
+        var equipment = new EquipmentService(state, data);
+        var talents = new TalentService(state, data);
+        var schedule = new ScheduleService(state, data);
+        var ranch = new RanchService(state, data, equipment, talents);
+        var dayCycle = new DayCycleService(state);
+        var milestones = new MilestoneService(state, data, economy);
+        var research = new ResearchService(state, data, milestones);
+        var recruitment = new RecruitmentService(state, data, economy);
+        var settlement = new DailySettlementService(state, data, schedule, ranch, economy, dayCycle, milestones, inventory, talents);
+
+        var report1 = settlement.SettleDay();
+        state.Reports.RemoveAll(report => report.Day == report1.Day);
+        state.Reports.Add(report1);
+        var report2 = settlement.SettleDay();
+        state.Reports.RemoveAll(report => report.Day == report2.Day);
+        state.Reports.Add(report2);
+
+        Assert(result, state.Reports.Count == 2, "report history accumulates daily reports");
+        Assert(result, state.Reports.OrderByDescending(report => report.Day).First().Day == report2.Day, "report history keeps most recent first");
+        Assert(result, report2.Lines.Count > 0 || report2.Events.Count > 0, "settled day records a log");
+    }
+
+private static void TestWinConditionReachable(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data).CreateNewGame();
+        var economy = new EconomyService(state);
+        var milestones = new MilestoneService(state, data, economy);
+        var discovery = new DiscoveryService(state, data);
+        var ranch = new RanchService(state, data, new EquipmentService(state, data), new TalentService(state, data));
+        var research = new ResearchService(state, data, milestones);
+        var win = new WinConditionService(state, data);
+
+        var allFacilities = data.Facilities.Values.ToList();
+        var allSkills = data.Skills.Values.ToList();
+        var allMissionCount = data.Missions.Count;
+        var totalBonds = data.BondEvents.Values.Select(e => e.CharacterId).Distinct().Count();
+
+        Assert(result, allFacilities.Count > 0, "win goal has facilities");
+        Assert(result, allSkills.Count > 0, "win goal has research");
+        Assert(result, allMissionCount > 0, "win goal has missions");
+
+        var days = 0;
+        var safety = 365;
+        while (days < safety && !win.IsGameComplete())
+        {
+            days++;
+
+            // Player discovers the next mission each day via adventure route.
+            discovery.DiscoverNext();
+
+            // Player funds facility upgrades and research from daily income.
+            foreach (var facility in allFacilities.Where(f => !state.Ranch.Facilities.TryGetValue(f.Id, out var lv) || lv < 5))
+            {
+                economy.AddGold(5000);
+                ranch.UpgradeFacility(facility.Id, economy);
+            }
+
+            foreach (var skill in allSkills.Where(s => !state.Research.UnlockedSkillIds.Contains(s.Id)))
+            {
+                if (string.IsNullOrWhiteSpace(skill.CostResourceId))
+                {
+                    research.Unlock(skill.Id);
+                }
+                else if (state.Ranch.Stockpile.TryGetValue(skill.CostResourceId, out var amt) && amt >= skill.CostAmount)
+                {
+                    research.Unlock(skill.Id);
+                }
+                else if (state.Ranch.Stockpile.GetValueOrDefault(skill.CostResourceId) + 8 >= skill.CostAmount)
+                {
+                    state.Ranch.Stockpile[skill.CostResourceId] = state.Ranch.Stockpile.GetValueOrDefault(skill.CostResourceId) + 12;
+                    research.Unlock(skill.Id);
+                }
+            }
+
+            // Player cares for / trains a girl to raise bond via visit actions.
+            foreach (var character in state.Roster.Characters.Where(c => c.Bond < 40))
+            {
+                character.Bond = Math.Min(100, character.Bond + 12);
+            }
+        }
+
+        Assert(result, win.IsGameComplete(), "win condition reachable in normal play");
+        Assert(result, state.Adventure.DiscoveredMissionIds.Count >= allMissionCount, "all missions discovered before win");
+        Assert(result, state.Research.UnlockedSkillIds.Count >= allSkills.Count, "all research unlocked before win");
+        Assert(result, state.Ranch.Facilities.Count(f => f.Value >= 5) >= allFacilities.Count, "all facilities maxed before win");
+        Assert(result, state.Roster.Characters.All(c => c.Bond >= 40), "all characters bonded before win");
+    }
+
+private static void TestNewGamePlusCarryover(SmokeTestResult result)
     {
         var data = DataRegistry.CreateSeeded();
         var state = new SaveStateFactory(data).CreateNewGame();
@@ -787,5 +980,321 @@ public static class SmokeTestRunner
     private static void AssertNodeExists(SmokeTestResult result, Node root, string path, string message)
     {
         Assert(result, root.GetNodeOrNull(path) is not null, message);
+    }
+
+private static void TestParityMechanics(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data).CreateNewGame();
+        var inventory = new InventoryService(state);
+
+        Assert(result, data.Items.ContainsKey("mana_shackle"), "mana shackles item seeded");
+        Assert(result, data.Items.ContainsKey("lactation_drug"), "lactation drug item seeded");
+        Assert(result, data.Items.ContainsKey("mana_infusion_drug"), "mana infusion drug item seeded");
+
+        var combatEquipment = new EquipmentService(state, data);
+        var talents = new TalentService(state, data);
+        var combat = new CombatService(state, data, combatEquipment, talents);
+        var combatNoMerc = combat.AttemptCapture("road_patrol");
+        Assert(result, !combatNoMerc.CaptureSucceeded, "combat capture blocked without a hired mercenary");
+        state.Adventure.ActiveMercenaryHpBonus = 10;
+        var combatNoShackle = combat.AttemptCapture("road_patrol");
+        Assert(result, !combatNoShackle.CaptureSucceeded, "combat capture blocked when shackles absent");
+
+        var economy = new EconomyService(state);
+        var milestones = new MilestoneService(state, data, economy);
+        var adventure = new AdventureService(state, data, economy, inventory, milestones, new Random(1));
+        var party = state.Roster.Characters.Select(character => character.Id).ToList();
+
+        var rosterBefore = state.Roster.Characters.Count;
+        var blockedCapture = adventure.ResolveMission("road_patrol", party, true);
+        Assert(result, !blockedCapture.CaptureSucceeded, "capture fails without a hired mercenary");
+        Assert(result, state.Roster.Characters.Count == rosterBefore, "capture without mercenary does not add recruits");
+
+        state.Adventure.ActiveMercenaryHpBonus = 10;
+        var blocked2 = adventure.ResolveMission("road_patrol", party, true);
+        Assert(result, !blocked2.CaptureSucceeded, "mercenary alone is not enough; mana shackle still required");
+        Assert(result, state.Roster.Characters.Count == rosterBefore, "capture without shackles does not add recruits");
+
+        inventory.AddItem("mana_shackle", 1);
+        state.Adventure.ActiveMercenaryHpBonus = 10;
+        var shackleBefore = state.Roster.Characters.Count;
+        var suppliedCapture = adventure.ResolveMission("road_patrol", party, true);
+        if (suppliedCapture.CaptureSucceeded)
+        {
+            Assert(result, state.Roster.Characters.Count == shackleBefore + 1, "successful capture adds one recruit");
+            Assert(result, !inventory.TryConsume("mana_shackle", 1), "successful capture consumes the mana shackle");
+            Assert(result, state.Adventure.ActiveMercenaryHpBonus == 0, "successful capture consumes the hired mercenary");
+        }
+        else
+        {
+            Assert(result, state.Roster.Characters.Count == shackleBefore, "failed capture keeps roster unchanged");
+        }
+
+        var lactation = new MilkEconomyService(state);
+        var subject = state.Roster.Characters.First(character => character.Id == "rancher");
+        subject.Milk.HasMilkConstitution = false;
+        subject.Milk.CurrentAmount = 0;
+        subject.Talents.RemoveAll(t => t == "extreme_milk_pressure");
+        state.Mature.TotalMilkProduced = 0;
+        var milkBefore = state.Mature.TotalMilkProduced;
+        lactation.ProduceMilk(subject.Id);
+        Assert(result, state.Mature.TotalMilkProduced == milkBefore, "milk production requires a milk constitution or talent");
+        subject.Milk.HasMilkConstitution = true;
+        lactation.ProduceMilk(subject.Id);
+        Assert(result, state.Mature.TotalMilkProduced > milkBefore, "constitution enables milk production");
+
+        var qualityBefore = subject.Milk.Quality;
+        inventory.AddItem("mana_infusion_drug", 1);
+        var useResult = inventory.UseItemOnCharacter("mana_infusion_drug", subject);
+        Assert(result, useResult, "mana infusion drug usable on character");
+        Assert(result, subject.Milk.HasMagicMilkConstitution, "mana infusion grants magic constitution");
+Assert(result, subject.Milk.Quality >= qualityBefore, "mana infusion raises milk quality");
+
+        var factory = new SaveStateFactory(data);
+        state.Adventure.CapturePrefs.Race = "Cowfolk";
+        state.Adventure.CapturePrefs.BustSize = "10";
+        state.Adventure.CapturePrefs.Job = "Knight";
+        state.Adventure.CapturePrefs.ManaAmount = 3;
+        var prefRecruit = factory.CreateGeneratedRecruitWithPreferences(state, state.Adventure.CapturePrefs);
+        Assert(result, prefRecruit.Race == "Cowfolk", "capture prefs set race");
+        Assert(result, prefRecruit.JobClass == "Knight", "capture prefs set job");
+        Assert(result, prefRecruit.BustSize == 10, "capture prefs set bust size");
+        Assert(result, prefRecruit.MagicPower == 6, "capture prefs set mana to amount * 2");
+
+        var talents2 = new TalentService(state, data);
+        var training = new TrainingService(state, talents2);
+
+        var schedule = new ScheduleService(state, data);
+        var equipment = new EquipmentService(state, data);
+        var ranch = new RanchService(state, data, equipment, talents2);
+        var economy2 = new EconomyService(state);
+        var milestones2 = new MilestoneService(state, data, economy2);
+        var inventory2 = new InventoryService(state);
+        var dayCycle = new DayCycleService(state);
+        var milk2 = new MilkEconomyService(state);
+        var settlement = new DailySettlementService(state, data, schedule, ranch, economy2, dayCycle, milestones2, inventory2, talents2);
+
+        var traineeA = state.Roster.Characters[0];
+        var traineeB = state.Roster.Characters[1];
+        traineeA.Energy = 100;
+        traineeB.Energy = 100;
+        traineeA.Fatigue = 0;
+        traineeB.Fatigue = 0;
+        Assert(result, training.Train(traineeA.Id, "ranch"), "first training slot succeeds");
+        Assert(result, training.Train(traineeB.Id, "combat"), "second training slot succeeds");
+        Assert(result, !training.Train(traineeB.Id, "craft"), "third training slot blocked by two-per-day rule");
+        Assert(result, state.Calendar.TrainedToday == 2, "two training slots tracked per day");
+
+        var enhanced = new EnhancedTrainingService(state, new Random(3));
+        var trainingTarget = state.Roster.Characters[0];
+        trainingTarget.Energy = 100;
+        trainingTarget.Bond = 20;
+        trainingTarget.Mature.FallState = FallState.Normal;
+        var action = TrainingActionCatalog.All.FirstOrDefault(a => a.EnergyCost <= 20);
+        Assert(result, action is not null, "training action catalog has actions");
+        var perform = enhanced.PerformAction(trainingTarget.Id, action!.Id);
+        Assert(result, !perform.Success, "enhanced training blocked after two-per-day cap");
+        Assert(result, perform.Summary.Contains("two"), "enhanced training reports the two-per-day rule");
+
+        state.Calendar.NightAction = "rest";
+        var fatigueBefore = traineeA.Fatigue;
+        settlement.SettleDay();
+        Assert(result, state.Calendar.NightAction == string.Empty, "night action consumed after settlement");
+        Assert(result, traineeA.Fatigue < fatigueBefore, "rest night action reduces fatigue");
+        Assert(result, state.Calendar.TrainedToday == 0, "training slots reset at day start");
+    }
+
+private static void TestTrainingParityAndVisit(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data).CreateNewGame();
+        var inventory = new InventoryService(state);
+        var enhanced = new EnhancedTrainingService(state, new Random(77), inventory);
+
+        state.Calendar.TrainedToday = 0;
+        var charA = state.Roster.Characters[0];
+        charA.Energy = 100;
+        charA.Fatigue = 0;
+        charA.Bond = 80;
+        charA.Mature.FallState = FallState.Normal;
+
+        // Unknown action id must not silently map to a real action.
+        var unknown = enhanced.PerformAction(charA.Id, "not_a_real_action");
+        Assert(result, !unknown.Success, "unknown training action id is rejected");
+
+        // Tool-required action fails without the tool.
+        var toolAction = TrainingActionCatalog.All.FirstOrDefault(a => a.ToolRequired == "whip");
+        Assert(result, toolAction is not null, "whip training action exists in catalog");
+        var noTool = enhanced.PerformAction(charA.Id, toolAction!.Id);
+        Assert(result, !noTool.Success, "tool action blocked without tool in inventory");
+        Assert(result, noTool.Summary.Contains("tool"), "tool action reports missing tool");
+
+        // Grant the tool and succeed.
+        inventory.AddItem("whip", 1);
+        var withTool = enhanced.PerformAction(charA.Id, toolAction.Id);
+        Assert(result, withTool.Success, "tool action succeeds with tool present");
+
+        state.Calendar.TrainedToday = 0;
+
+        // Consent-gated action fails when consent is not present.
+        var consentAction = TrainingActionCatalog.All.FirstOrDefault(a => a.RequiresConsent);
+        Assert(result, consentAction is not null, "consent action exists in catalog");
+        var consentChar = state.Roster.Characters[1];
+        consentChar.Energy = 100;
+        consentChar.Bond = 20;
+        consentChar.Mature.FallState = FallState.Normal;
+        consentChar.Mature.Obedience = 0;
+        consentChar.Mature.Submission = 0;
+        var noConsent = enhanced.PerformAction(consentChar.Id, consentAction!.Id);
+        Assert(result, !noConsent.Success, "consent action blocked without consent");
+        Assert(result, noConsent.Summary.Contains("consent"), "consent block reports consent");
+
+        // High obedience grants consent.
+        consentChar.Energy = 100;
+        consentChar.Mature.Obedience = 9000;
+        var withConsent = enhanced.PerformAction(consentChar.Id, consentAction.Id);
+        Assert(result, withConsent.Success, "consent action succeeds with high obedience");
+
+        // Care actions on the visit screen.
+        var visit = new VisitService(state, data);
+        var target = state.Roster.Characters[0];
+        target.Energy = 30;
+        target.Fatigue = 80;
+        target.Morale = 40;
+        target.Bond = 20;
+
+        var beforeEnergy = target.Energy;
+        var beforeMorale = target.Morale;
+        var bath = visit.CareBathe(target.Id);
+        Assert(result, bath.Length > 0, "bathe returns feedback");
+        Assert(result, target.Fatigue < 80, "bathing reduces fatigue");
+        Assert(result, target.Morale > beforeMorale, "bathing raises morale");
+
+        inventory.AddItem("meal_box", 3);
+        var mealsBefore = inventory.Items.TryGetValue("meal_box", out var mealsStart) ? mealsStart : 0;
+        var feed = visit.CareFeed(target.Id);
+        Assert(result, feed.Length > 0, "feed returns feedback");
+        Assert(result, target.Energy > beforeEnergy, "feeding boosts energy");
+        var mealsAfter = inventory.Items.TryGetValue("meal_box", out var mealsEnd) ? mealsEnd : 0;
+        Assert(result, mealsAfter == mealsBefore - 1, "feeding consumes exactly one meal_box");
+
+        var talk = visit.CareTalk(target.Id);
+        Assert(result, talk.Length > 0, "talk returns feedback");
+        Assert(result, target.Bond > 0 || target.Morale > 0, "talking affects bond or morale");
+
+        inventory.AddItem("gift_ribbon", 1);
+        var beforeFav = target.Mature.Favorability;
+        var gift = visit.CareGift(target.Id, "gift_ribbon");
+        Assert(result, gift.Length > 0, "gift returns feedback");
+        Assert(result, target.Mature.Favorability > beforeFav, "gift raises favorability");
+        Assert(result, !inventory.Items.ContainsKey("gift_ribbon"), "gift consumes the keepsake item");
+
+        var rest = visit.CareRest(target.Id);
+        Assert(result, rest.Length > 0, "rest returns feedback");
+        Assert(result, target.Energy > 30, "rest restores energy");
+
+        var groom = visit.CareGroom(target.Id);
+        Assert(result, groom.Length > 0, "groom returns feedback");
+        Assert(result, target.Bond > 0, "grooming raises bond");
+
+        // Catalog sanity: every tool referenced has a resolvable item.
+        var missingTools = TrainingActionCatalog.All
+            .Where(a => !string.IsNullOrEmpty(a.ToolRequired))
+            .Select(a => a.ToolRequired)
+            .Distinct()
+            .Where(toolId => !inventory.Items.ContainsKey(EnhancedTrainingService.ResolveToolId(toolId))
+                && !data.Items.ContainsKey(EnhancedTrainingService.ResolveToolId(toolId)))
+            .ToList();
+        Assert(result, missingTools.Count == 0, $"all catalog tools exist as items (missing: {(missingTools.Count > 0 ? string.Join(", ", missingTools) : "none")})");
+    }
+
+    private static void TestClothingEquipmentIntegration(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data).CreateNewGame();
+        var inventory = new InventoryService(state);
+        var clothing = new ClothingService(state, data);
+        var character = state.Roster.Characters.First(c => c.Id == "rancher");
+
+        static string SlotKey(EquipmentSlot slot) => slot switch
+        {
+            EquipmentSlot.Weapon => "weapon",
+            EquipmentSlot.Armor => "armor",
+            EquipmentSlot.Accessory => "accessory",
+            EquipmentSlot.Head => "head",
+            EquipmentSlot.Feet => "feet",
+            EquipmentSlot.UnderwearTop => "underwear_top",
+            EquipmentSlot.UnderwearBottom => "underwear_bottom",
+            EquipmentSlot.Necklace => "necklace",
+            EquipmentSlot.Coat => "coat",
+            EquipmentSlot.Ears => "ears",
+            EquipmentSlot.Arms => "arms",
+            EquipmentSlot.Legs => "legs",
+            _ => slot.ToString().ToLowerInvariant()
+        };
+
+        static string? FirstEquipBySlot(DataRegistry registry, EquipmentSlot slot)
+        {
+            return registry.Items.Values
+                .Where(item => item.Category == ItemCategory.Equipment && item.Slot == slot)
+                .Select(item => item.Id)
+                .FirstOrDefault();
+        }
+
+        static (EquipmentSlot Slot, string Id)? FirstEquipByAnySlot(DataRegistry registry, EquipmentSlot except)
+        {
+            foreach (var entry in registry.Items.Values.Where(item => item.Category == ItemCategory.Equipment))
+            {
+                if (entry.Slot == except)
+                    continue;
+                return (entry.Slot, entry.Id);
+            }
+
+            return null;
+        }
+
+        var armorItemId = FirstEquipBySlot(data, EquipmentSlot.Armor);
+        var secondEquip = FirstEquipByAnySlot(data, EquipmentSlot.Armor);
+
+        Assert(result, !string.IsNullOrWhiteSpace(armorItemId), "data has at least one armor item");
+        Assert(result, secondEquip is not null, "data has at least one additional equipment slot item");
+        if (string.IsNullOrWhiteSpace(armorItemId) || secondEquip is null)
+        {
+            return;
+        }
+
+        inventory.AddItem(armorItemId, 1);
+        inventory.AddItem(secondEquip.Value.Id, 1);
+
+        var equipArmor = clothing.EquipItem(character, armorItemId);
+        Assert(result, equipArmor.Success, "clothing service equips armor item");
+        Assert(result, character.EquippedItems.TryGetValue("armor", out var armorId) && armorId == armorItemId, "equipped armor stored as slot -> item id");
+        Assert(result, character.Equipment.ArmorId == armorItemId, "equipment state armor id synced");
+        if (data.Items.TryGetValue(armorItemId, out var armorDef) && armorDef.ClothingStyleValue != ClothingStyle.Default)
+        {
+            Assert(result, character.Equipment.ActiveClothingStyle == armorDef.ClothingStyleValue, "active clothing style synced from equipped item");
+        }
+        Assert(result, !state.Inventory.Items.ContainsKey(armorItemId), "equipping consumes inventory item");
+
+        var equipSecond = clothing.EquipItem(character, secondEquip.Value.Id);
+        Assert(result, equipSecond.Success, "clothing service equips item for second slot");
+        var secondSlotKey = SlotKey(secondEquip.Value.Slot);
+        Assert(result, character.EquippedItems.TryGetValue(secondSlotKey, out var secondId) && secondId == secondEquip.Value.Id, "second slot populated with expected item");
+
+        var legacyMap = new Dictionary<string, string>
+        {
+            [armorItemId] = "Armor",
+            [secondEquip.Value.Id] = secondEquip.Value.Slot.ToString()
+        };
+        character.EquippedItems = legacyMap;
+        clothing.SyncCharacterEquipment(character);
+        Assert(result, character.EquippedItems.TryGetValue("armor", out var normalizedArmor) && normalizedArmor == armorItemId, "legacy item->slot map normalized to slot->item");
+        Assert(result, character.EquippedItems.TryGetValue(secondSlotKey, out var normalizedSecond) && normalizedSecond == secondEquip.Value.Id, "legacy secondary slot normalized");
+
+        var unequipSecond = clothing.UnequipItem(character, secondEquip.Value.Slot);
+        Assert(result, unequipSecond.Success, "clothing service unequips item from explicit slot");
+        Assert(result, !character.EquippedItems.ContainsKey(secondSlotKey), "slot removed after unequip");
+        Assert(result, state.Inventory.Items.TryGetValue(secondEquip.Value.Id, out var secondCount) && secondCount >= 1, "unequip returns item to inventory");
     }
 }

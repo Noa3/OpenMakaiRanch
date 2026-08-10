@@ -191,6 +191,31 @@ public sealed class CombatService
 
     public CombatReport AttemptCapture(string missionId)
     {
+        // Original-game rule: capture requires a hired mercenary and a mana shackle.
+        if (_state.Adventure.ActiveMercenaryHpBonus <= 0)
+        {
+            return new CombatReport
+            {
+                MissionId = missionId,
+                Outcome = MissionOutcome.None,
+                CaptureAttempted = true,
+                CaptureSucceeded = false,
+                Summary = "Capture blocked: a hired mercenary is required for capture. Hire one from the Adventure Guild."
+            };
+        }
+
+        if (!_state.Inventory.Items.TryGetValue("mana_shackle", out var shackles) || shackles <= 0)
+        {
+            return new CombatReport
+            {
+                MissionId = missionId,
+                Outcome = MissionOutcome.None,
+                CaptureAttempted = true,
+                CaptureSucceeded = false,
+                Summary = "Capture blocked: no mana shackles available. Buy them at the shop or earn from missions."
+            };
+        }
+
         var report = ResolveMissionRounds(missionId, true);
         if (report.Outcome == MissionOutcome.Failure)
         {
@@ -217,12 +242,19 @@ public sealed class CombatService
         {
             report.CaptureSucceeded = true;
             var factory = new SaveStateFactory(_data);
-            var recruit = factory.CreateGeneratedRecruit(_state);
+            var recruit = factory.CreateGeneratedRecruitWithPreferences(_state, _state.Adventure.CapturePrefs);
             recruit.TraitOverride = $"Captured{(string.IsNullOrEmpty(recruit.TraitOverride) ? "" : ", " + recruit.TraitOverride)}";
+            recruit.IsCaptured = true;
             _state.Roster.Characters.Add(recruit);
+            _state.Schedule.AssignedJobs[recruit.Id] = "rest";
             report.CapturedCharacterId = recruit.Id;
             report.Summary += $" Capture successful! {recruit.DisplayNameOverride} recruited.";
             _state.Adventure.LastCaptureSummary = $"Captured {recruit.DisplayNameOverride}";
+
+            // The mana shackle and hired mercenary are spent on the capture (original-game rule).
+            if (_state.Inventory.Items.TryGetValue("mana_shackle", out var shackleCount) && shackleCount > 0)
+                _state.Inventory.Items["mana_shackle"] = shackleCount - 1;
+            _state.Adventure.ActiveMercenaryHpBonus = 0;
         }
         else
         {

@@ -17,6 +17,7 @@ public sealed class DayCycleService
         _state.Calendar.Day += 1;
         _state.Calendar.Phase = DayPhase.Morning;
         _state.Calendar.CurrentWeather = RandomWeather();
+        _state.Calendar.TrainedToday = 0;
     }
 
     private static Weather RandomWeather()

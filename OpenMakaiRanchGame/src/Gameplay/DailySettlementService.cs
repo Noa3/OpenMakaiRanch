@@ -44,6 +44,7 @@ public sealed class DailySettlementService
         var income = 0;
 
         _resources.ConsumeResources(report);
+        ApplyNightAction(report);
 
         foreach (var character in _state.Roster.Characters)
         {
@@ -60,6 +61,20 @@ public sealed class DailySettlementService
         }
 
         var expenses = _ranch.FacilityUpkeep() + PetCareCost();
+
+        // Original-game rule: at least one slave must be assigned to Dairy
+        // to keep the farm maintained. Without it the herd degrades and upkeep costs more.
+        var hasDairyWorker = _state.Roster.Characters.Any(character => _schedule.GetAssignment(character.Id) == "dairy");
+        if (!hasDairyWorker)
+        {
+            expenses += 15;
+            report.Lines.Add("No one was assigned to Dairy work. Farm maintenance suffers (+15g upkeep).");
+            foreach (var character in _state.Roster.Characters)
+            {
+                character.Morale = Math.Clamp(character.Morale - 1, 0, 100);
+            }
+        }
+
         _economy.ApplySettlement(income, expenses);
         report.Income = income;
         report.Expenses = expenses;
@@ -105,6 +120,54 @@ public sealed class DailySettlementService
         _state.Adventure.ActiveMercenaryHpBonus = 0;
 
         return report;
+    }
+
+    /// <summary>
+    /// Original-game night phase: players pick one nightly workload —
+    /// rest, training, or administrative duties — before the day settles.
+    /// </summary>
+    private void ApplyNightAction(DailyReport report)
+    {
+        var action = _state.Calendar.NightAction;
+        switch (action)
+        {
+            case "train":
+            {
+                // Training at night: everyone gets a small stat gain and a day off fatigue
+                foreach (var character in _state.Roster.Characters)
+                {
+                    character.Bond = Math.Clamp(character.Bond + 1, 0, 100);
+                    character.Morale = Math.Clamp(character.Morale + 2, 0, 100);
+                    // Static workload: night training leans on stamina instead
+                    _growth.ApplyGrowth(report);
+                }
+
+                report.Lines.Add("Night training: everyone practiced. Effort improves growth.");
+                break;
+            }
+            case "admin":
+            {
+                // Administrative work cuts facility expenses this day
+                _state.Ranch.Workload = Math.Max(0, _state.Ranch.Workload - 10);
+                report.Lines.Add("Night administrative work: paperwork handled, workload reduced.");
+                break;
+            }
+            case "rest":
+            default:
+            {
+                foreach (var character in _state.Roster.Characters)
+                {
+                    character.Fatigue = Math.Clamp(character.Fatigue - 20, 0, 100);
+                    character.Morale = Math.Clamp(character.Morale + 4, 0, 100);
+                    character.Energy = Math.Clamp(character.Energy + 15, 0, (character.MaxEnergyOverride ?? 150) + 0);
+                }
+
+                report.Lines.Add("The ranch rested at night. Energy restored.");
+                break;
+            }
+        }
+
+        _state.Calendar.NightAction = string.Empty;
     }
 
     private int PetCareCost()

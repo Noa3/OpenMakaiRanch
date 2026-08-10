@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Godot;
 using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Core.Resources;
 
 namespace OpenMakaiRanch.Gameplay;
 
@@ -15,7 +16,7 @@ public sealed class SaveService
     {
         WriteIndented = true,
         MaxDepth = 32,
-        Converters = { new JsonStringEnumConverter() }
+        Converters = { new JsonStringEnumConverter(), new LegacyEquipmentConverter() }
     };
 
     public bool Save(SaveState state, int slot)
@@ -198,3 +199,122 @@ public sealed class SaveService
 }
 
 public sealed record SaveSlotMetadata(int Day, int Gold, int CharacterCount, DateTime? SavedAt, int? VictoryDay);
+
+public sealed class LegacyEquipmentConverter : JsonConverter<EquipmentState>
+{
+    public override EquipmentState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var result = new EquipmentState();
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            reader.Skip();
+            return result;
+        }
+
+        static string StringOrEmpty(ref Utf8JsonReader reader)
+        {
+            return reader.TokenType switch
+            {
+                JsonTokenType.String => reader.GetString() ?? string.Empty,
+                JsonTokenType.Number => string.Empty,
+                _ => string.Empty
+            };
+        }
+
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                break;
+            }
+
+            if (reader.TokenType != JsonTokenType.PropertyName)
+            {
+                continue;
+            }
+
+            var propertyName = reader.GetString();
+            reader.Read();
+
+            switch (propertyName)
+            {
+                case "ClothesId":
+                    result.ClothesId = StringOrEmpty(ref reader);
+                    break;
+                case "UnderwearTopId":
+                    result.UnderwearTopId = StringOrEmpty(ref reader);
+                    break;
+                case "UnderwearBottomId":
+                    result.UnderwearBottomId = StringOrEmpty(ref reader);
+                    break;
+                case "ArmorId":
+                    result.ArmorId = StringOrEmpty(ref reader);
+                    break;
+                case "EyesId":
+                    result.EyesId = StringOrEmpty(ref reader);
+                    break;
+                case "HeadId":
+                    result.HeadId = StringOrEmpty(ref reader);
+                    break;
+                case "ArmsId":
+                    result.ArmsId = StringOrEmpty(ref reader);
+                    break;
+                case "LegsId":
+                    result.LegsId = StringOrEmpty(ref reader);
+                    break;
+                case "NeckId":
+                    result.NecklaceId = StringOrEmpty(ref reader);
+                    break;
+                case "JacketId":
+                    result.CoatId = StringOrEmpty(ref reader);
+                    break;
+                case "CollarId":
+                    result.AccessoryId = StringOrEmpty(ref reader);
+                    break;
+                case "NecklaceId":
+                    result.NecklaceId = StringOrEmpty(ref reader);
+                    break;
+                case "CoatId":
+                    result.CoatId = StringOrEmpty(ref reader);
+                    break;
+                case "AccessoryId":
+                    result.AccessoryId = StringOrEmpty(ref reader);
+                    break;
+                case "ActiveClothingStyle":
+                    result.ActiveClothingStyle = Enum.TryParse<ClothingStyle>(reader.TokenType == JsonTokenType.String ? reader.GetString() ?? string.Empty : string.Empty, out var style) ? style : ClothingStyle.Default;
+                    break;
+                default:
+                    if (propertyName is "TotalBonusRanchSkill" or "TotalBonusCraftSkill" or "TotalBonusCombatSkill" or "TotalBonusMaxHp" or "TotalBonusMaxEnergy" or "TotalBonusMorale"
+                        && reader.TokenType == JsonTokenType.Number)
+                    {
+                        result.GetType().GetProperty(propertyName)?.SetValue(result, reader.GetInt32());
+                    }
+                    else
+                    {
+                        reader.Skip();
+                    }
+                    break;
+            }
+        }
+
+        return result;
+    }
+
+    private static string StringOrEmpty(ref Utf8JsonReader reader)
+    {
+        return reader.TokenType switch
+        {
+            JsonTokenType.String => reader.GetString() ?? string.Empty,
+            JsonTokenType.Number => string.Empty,
+            _ => string.Empty
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, EquipmentState value, JsonSerializerOptions options)
+    {
+        // Clone options without this converter to avoid re-entering it during write.
+        var cleanOptions = new JsonSerializerOptions(options);
+        cleanOptions.Converters.Remove(this);
+        JsonSerializer.Serialize(writer, value, cleanOptions);
+    }
+}

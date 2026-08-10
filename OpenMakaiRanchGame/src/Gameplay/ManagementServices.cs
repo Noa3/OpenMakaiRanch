@@ -123,6 +123,16 @@ public sealed class InventoryService
             case "spirit_water":
                 character.Energy = Math.Clamp(character.Energy + 30, 0, character.MaxEnergyOverride ?? 150);
                 return true;
+            case "lactation_drug":
+                character.Milk.HasMilkConstitution = true;
+                character.Milk.Production = Math.Max(character.Milk.Production, 40);
+                character.Fatigue = Math.Clamp(character.Fatigue + 5, 0, 100);
+                return true;
+            case "mana_infusion_drug":
+                character.Milk.HasMagicMilkConstitution = true;
+                character.Milk.Quality = Math.Min(100, character.Milk.Quality + 20);
+                character.Milk.Concentration = "rich";
+                return true;
             default:
                 return false;
         }
@@ -239,20 +249,39 @@ public sealed class AdventureService
         var capturedCharacterId = string.Empty;
         if (attemptCapture)
         {
+            // Original-game rule: capture needs both a mana shackle and a hired mercenary.
+            if (_state.Adventure.ActiveMercenaryHpBonus <= 0)
+            {
+                turnLog.Add("Capture: blocked — no mercenary hired. Hire one from the Adventure Guild first.");
+                _state.Adventure.LastCaptureSummary = "Capture attempt blocked: a hired mercenary is required for capture.";
+            }
+            else if (!_inventory.TryConsume("mana_shackle", 1))
+            {
+                turnLog.Add("Capture: blocked — no mana shackles in inventory. Buy them at the shop or earn from missions.");
+                _state.Adventure.LastCaptureSummary = "Capture attempt blocked: no mana shackles available.";
+            }
+            else
+            {
             var captureControl = party.Sum(character => character.CraftSkill + character.CombatSkill + character.Morale / 15);
             var captureRoll = DeterministicRoll(_state.Calendar.Day, mission.Id, 4);
             var captureScore = captureControl + captureRoll;
             var captureThreshold = mission.Difficulty * 3 + 18;
             captureSucceeded = outcome != MissionOutcome.Failure && captureScore >= captureThreshold;
             turnLog.Add($"Capture: control {captureScore} vs threshold {captureThreshold} ({(captureSucceeded ? "SUCCESS" : "FAILED")}).");
+            turnLog.Add("Capture: 1 mana shackle consumed, 1 mercenary spent.");
+
+            // The hired mercenary is spent on the capture attempt (original-game rule).
+            _state.Adventure.ActiveMercenaryHpBonus = 0;
 
             if (captureSucceeded)
             {
-                var recruit = _factory.CreateGeneratedRecruit(_state, new[] { _state.Recruitment.CurrentOffer?.Id ?? string.Empty });
+                var recruit = _factory.CreateGeneratedRecruitWithPreferences(_state, _state.Adventure.CapturePrefs, new[] { _state.Recruitment.CurrentOffer?.Id ?? string.Empty });
                 recruit.TraitOverride = string.IsNullOrWhiteSpace(recruit.TraitOverride) ? "Captured" : $"Captured {recruit.TraitOverride}";
+                recruit.IsCaptured = true;
                 _state.Roster.Characters.Add(recruit);
                 _state.Schedule.AssignedJobs[recruit.Id] = "rest";
                 capturedCharacterId = recruit.Id;
+            }
             }
         }
 
@@ -641,6 +670,12 @@ public sealed class TrainingService
             return false;
         }
 
+        // Original-game rule: only two slaves can be trained per day.
+        if (_state.Calendar.TrainedToday >= 2)
+        {
+            return false;
+        }
+
         if (character.Fatigue >= 80)
         {
             return false;
@@ -677,6 +712,7 @@ public sealed class TrainingService
                 return false;
         }
 
+        _state.Calendar.TrainedToday += 1;
         return true;
     }
 }
@@ -757,7 +793,7 @@ public sealed class PetService
         return $"Trained successfully. Training +10, Bond +1, Hunger -10, Mood -5";
     }
 
-    public string Status(string petId)
+public string Status(string petId)
     {
         if (!_state.Pets.Entries.TryGetValue(petId, out var entry))
             return "Not adopted";
@@ -766,5 +802,128 @@ public sealed class PetService
         var hungerDesc = entry.Hunger switch { >= 80 => "sated", >= 50 => "peckish", >= 25 => "hungry", _ => "starving" };
         var bondDesc = entry.Bond switch { >= 80 => "devoted", >= 50 => "friendly", >= 25 => "wary", _ => "distrustful" };
         return $"{moodDesc}, {hungerDesc}, {bondDesc} (Bond {entry.Bond}, Training {entry.Training})";
+    }
+}
+
+public sealed class VisitService
+{
+    private readonly SaveState _state;
+    private readonly DataRegistry _data;
+
+    public VisitService(SaveState state, DataRegistry data)
+    {
+        _state = state;
+        _data = data;
+    }
+
+    /// <summary>
+    /// Feeding restores energy, reduces fatigue, and nudges bond/morale.
+    /// Costs a meal_box if one is available.
+    /// </summary>
+    public string CareFeed(string characterId)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+            return "Character not found.";
+
+        var hasMeal = _state.Inventory.Items.TryGetValue("meal_box", out var meals) && meals > 0;
+        if (!hasMeal)
+            return "No meal_box available. Buy one at the General Store.";
+
+        _state.Inventory.Items["meal_box"] = meals - 1;
+        if (_state.Inventory.Items["meal_box"] <= 0)
+            _state.Inventory.Items.Remove("meal_box");
+
+        character.Fatigue = Math.Clamp(character.Fatigue - 18, 0, 100);
+        character.Morale = Math.Clamp(character.Morale + 8, 0, 100);
+        character.Bond = Math.Clamp(character.Bond + 4, 0, 100);
+        character.Energy = Math.Clamp(character.Energy + 10, 0, character.MaxEnergyOverride ?? 150);
+        return "Fed. Fatigue-18, Energy+10, Morale+8, Bond+4.";
+    }
+
+    /// <summary>
+    /// Bathing cleans and relaxes: fatigue down, morale up, small bond gain.
+    /// </summary>
+    public string CareBathe(string characterId)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+            return "Character not found.";
+
+        character.Fatigue = Math.Clamp(character.Fatigue - 12, 0, 100);
+        character.Morale = Math.Clamp(character.Morale + 6, 0, 100);
+        character.Bond = Math.Clamp(character.Bond + 2, 0, 100);
+        return "You wash and groom them. Fatigue ↓12, Morale+6, Bond+2.";
+    }
+
+    /// <summary>
+    /// Talking comforts and builds trust.
+    /// </summary>
+    public string CareTalk(string characterId)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+            return "Character not found.";
+
+        character.Morale = Math.Clamp(character.Morale + 7, 0, 100);
+        character.Bond = Math.Clamp(character.Bond + 3, 0, 100);
+        var m = character.Mature;
+        m.Favorability = Math.Clamp(m.Favorability + 150, 0, 20000);
+        return "You talk to her. Morale+7, Bond+3, Favorability+150.";
+    }
+
+    /// <summary>
+    /// Gift increases bond and favorability, consuming a keepsake item.
+    /// </summary>
+    public string CareGift(string characterId, string giftItemId)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+            return "Character not found.";
+
+        if (!_data.Items.TryGetValue(giftItemId, out var gift) || gift.Category != ItemCategory.Keepsake)
+            return "That is not a gift item.";
+
+        if (!_state.Inventory.Items.TryGetValue(giftItemId, out var count) || count <= 0)
+            return $"No {gift.DisplayName} in inventory.";
+
+        _state.Inventory.Items[giftItemId] = count - 1;
+        if (_state.Inventory.Items[giftItemId] <= 0)
+            _state.Inventory.Items.Remove(giftItemId);
+
+        character.Bond = Math.Clamp(character.Bond + 8, 0, 100);
+        character.Morale = Math.Clamp(character.Morale + 5, 0, 100);
+        character.Mature.Favorability = Math.Clamp(character.Mature.Favorability + 400, 0, 20000);
+        return $"You present the {gift.DisplayName}. Bond+8, Morale+5, Favorability+400.";
+    }
+
+    /// <summary>
+    /// Let them rest: energy recovers, fatigue drops.
+    /// </summary>
+    public string CareRest(string characterId)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+            return "Character not found.";
+
+        character.Energy = Math.Clamp(character.Energy + 25, 0, character.MaxEnergyOverride ?? 150);
+        character.Fatigue = Math.Clamp(character.Fatigue - 10, 0, 100);
+        character.Morale = Math.Clamp(character.Morale + 3, 0, 100);
+        return "You let her rest. Energy+25, Fatigue-10, Morale+3.";
+    }
+
+    /// <summary>
+    /// Grooming: brush hair and freshen up — morale/bond.
+    /// </summary>
+    public string CareGroom(string characterId)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+            return "Character not found.";
+
+        character.Morale = Math.Clamp(character.Morale + 5, 0, 100);
+        character.Bond = Math.Clamp(character.Bond + 3, 0, 100);
+        character.Fatigue = Math.Clamp(character.Fatigue + 1, 0, 100);
+        return "You brush and groom her. Morale+5, Bond+3.";
+    }
+
+    private bool TryGetCharacter(string characterId, out CharacterState character)
+    {
+character = _state.Roster.Characters.FirstOrDefault(c => c.Id == characterId)!;
+        return character is not null;
     }
 }

@@ -15,7 +15,7 @@
     "Tier": 0,
     "Difficulty": 14,
     "RewardGold": 100,
-    "RewardItemId": "feed_bundle",
+    "RewardItemId": "mana_shackle",
     "EnemyGroupId": "group_bandit_regional",
     "_id": "bandit_supply"
   },

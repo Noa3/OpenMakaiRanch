@@ -399,6 +399,7 @@ public partial class UiShellController
         {
             "title" => T("screen.title", "Main Menu"),
             "ranch" => T("screen.ranch", "Ranch Overview"),
+            "report" => T("screen.report", "Daily Report"),
             "roster" => T("screen.roster", "Characters"),
             "schedule" => T("screen.schedule", "Daily Schedule"),
             "town" => T("screen.town", "Town Hub"),

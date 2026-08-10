@@ -92,13 +92,14 @@ public sealed class PortraitRenderer
         stack.AddChild(CreateTextureRect(bgTexture, new Vector2(24, 0), new Vector2(64, 112)));
 
         // Z-ordered layers: body → race → breast → face → mouth → hair → clothing
-        AddLayeredChild(stack, bodyBase, LayerOrder.BodyBase);
-        AddLayeredChild(stack, race, LayerOrder.Race);
-        AddLayeredChild(stack, breast, LayerOrder.Breast);
-        AddLayeredChild(stack, face, LayerOrder.Face);
-        AddLayeredChild(stack, mouth, LayerOrder.Mouth);
-        AddLayeredChild(stack, hair, LayerOrder.Hair);
-        AddLayeredChild(stack, cloth, LayerOrder.Clothing);
+        // Godot draws CanvasItem children in sibling order, so add order == draw order.
+        AddTextureChild(stack, bodyBase);
+        AddTextureChild(stack, race);
+        AddTextureChild(stack, breast);
+        AddTextureChild(stack, face);
+        AddTextureChild(stack, mouth);
+        AddTextureChild(stack, hair);
+        AddTextureChild(stack, cloth);
 
         return stack;
     }
@@ -231,63 +232,14 @@ public sealed class PortraitRenderer
     }
 
     /// <summary>
-    /// Add a child Control at the correct Z-order position in the stack.
-    /// Maintains layer compositing order regardless of insertion sequence.
+    /// Append a texture layer to the stack. Godot draws siblings in node order,
+    /// so later additions render on top of earlier ones.
     /// </summary>
-    private void AddLayeredChild(Control stack, TextureRect? layer, LayerOrder order)
+    private static void AddTextureChild(Control stack, TextureRect? layer)
     {
-        if (layer is null) return;
-
-        // Find the correct insertion point based on Z-order
-        int insertIndex = 0;
-        for (int i = 0; i < stack.GetChildCount(); i++)
+        if (layer is not null)
         {
-            var child = stack.GetChild(i);
-            if (child is TextureRect texRect)
-            {
-                // Determine this child's layer order by comparing position to known layer positions
-                var childOrder = GetLayerOrderForChild(texRect);
-                if (childOrder > order)
-                {
-                    insertIndex = i;
-                    break;
-                }
-            }
-            else if (child is Control c && c != layer)
-            {
-                // Non-texture children (like background) are always at the bottom
-                insertIndex = i + 1;
-            }
+            stack.AddChild(layer);
         }
-
-        stack.AddChild(layer);
-        stack.MoveChild(layer, insertIndex);
-    }
-
-    private LayerOrder GetLayerOrderForChild(TextureRect child)
-    {
-        // Determine layer order by checking the child's position and size
-        // against known layer positions from the catalog
-        var pos = child.Position;
-        var size = child.Size;
-
-        // Background is at (24, 0) with size (64, 112)
-        if (pos == new Vector2(24, 0) && size == new Vector2(64, 112))
-            return LayerOrder.Background;
-
-        // Body base is at (32, 0) with size (48, 128)
-        if (pos.X == PortraitBodyOriginX && pos.Y == 0 && size == new Vector2(48, 128))
-            return LayerOrder.BodyBase;
-
-        // Race layers are at (32, -16) with size (48, 48)
-        if (pos.X == PortraitBodyOriginX && pos.Y == -16 && size == new Vector2(48, 48))
-            return LayerOrder.Race;
-
-        // Hair layers are at (32, -2) with size (48, 112)
-        if (pos.X == PortraitBodyOriginX && pos.Y == -2 && size == new Vector2(48, 112))
-            return LayerOrder.Hair;
-
-        // Default to clothing (highest layer)
-        return LayerOrder.Clothing;
     }
 }

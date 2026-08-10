@@ -93,6 +93,7 @@ public sealed class SaveState
     public SettingsState Settings { get; set; } = new();
     public MatureState Mature { get; set; } = new();
     public PlayerState Player { get; set; } = new();
+    public List<DailyReport> Reports { get; set; } = new();
     public bool NgPlusActive { get; set; }
     public int? VictoryDay { get; set; }
 }
@@ -130,6 +131,8 @@ public sealed class CalendarState
     public int Day { get; set; } = 1;
     public DayPhase Phase { get; set; } = DayPhase.Morning;
     public Weather CurrentWeather { get; set; } = Weather.Clear;
+    public string NightAction { get; set; } = string.Empty;
+    public int TrainedToday { get; set; }
 
     [JsonIgnore]
     public Season Season => (Season)(((Day - 1) / 30) % 4);
@@ -164,6 +167,7 @@ public sealed class CharacterState
     public string DefinitionId { get; set; } = string.Empty;
     public bool IsGenerated { get; set; }
     public bool IsStartingRecruit { get; set; }
+    public bool IsCaptured { get; set; }
     public string DisplayNameOverride { get; set; } = string.Empty;
     public string PortraitPathOverride { get; set; } = string.Empty;
     public string BodyImagePathOverride { get; set; } = string.Empty;
@@ -229,6 +233,15 @@ public sealed class AdventureState
     public List<string> DiscoveredMissionIds { get; set; } = new();
     public List<MercenaryOffer> AvailableMercenaries { get; set; } = new();
     public int ActiveMercenaryHpBonus { get; set; }
+    public CapturePreferences CapturePrefs { get; set; } = new();
+}
+
+public sealed class CapturePreferences
+{
+    public string Race { get; set; } = "Any";
+    public string BustSize { get; set; } = "Any";
+    public string Job { get; set; } = "Any";
+    public int ManaAmount { get; set; } = 0;
 }
 
 public sealed class MercenaryOffer

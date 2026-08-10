@@ -120,7 +120,7 @@ show_percentage = false
 custom_minimum_size = Vector2(80, 30)
 layout_mode = 2
 
-[node name="WorkloadLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip/WorkloadLabel"]
+[node name="WorkloadLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/WorkloadChip"]
 layout_mode = 2
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -203,7 +203,7 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(76, 28)
 layout_mode = 2
 
-[node name="HealthLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/HealthChip/HealthLabel"]
+[node name="HealthLabel" type="Label" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/HealthChip"]
 layout_mode = 2
 horizontal_alignment = 1
 vertical_alignment = 1

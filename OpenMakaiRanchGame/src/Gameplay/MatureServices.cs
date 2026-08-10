@@ -44,8 +44,8 @@ public static class TrainingActionCatalog
     public static IReadOnlyList<TrainingActionDefinition> All =>
         _actions ??= BuildCatalog();
 
-    public static TrainingActionDefinition Get(string id) =>
-        All.FirstOrDefault(a => a.Id == id) ?? All[0];
+    public static TrainingActionDefinition? Get(string id) =>
+        All.FirstOrDefault(a => a.Id == id);
 
     public static IReadOnlyList<TrainingActionDefinition> ByCategory(TrainingCategory category) =>
         All.Where(a => a.Category == category).ToList();
@@ -369,22 +369,28 @@ public sealed class EnhancedTrainingService
     private readonly SaveState _state;
     private readonly MentalStateService _mental;
     private readonly Random _random;
+    private readonly InventoryService _inventory;
 
-    public EnhancedTrainingService(SaveState state, Random? random = null)
+    public EnhancedTrainingService(SaveState state, Random? random = null, InventoryService? inventory = null)
     {
         _state = state;
         _mental = new MentalStateService();
         _random = random ?? Random.Shared;
+        _inventory = inventory ?? new InventoryService(state);
     }
 
-    public TrainingReport PerformAction(string characterId, string actionId)
+public TrainingReport PerformAction(string characterId, string actionId)
     {
         var character = _state.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
         if (character is null)
             return new TrainingReport { Success = false, Summary = "Character not found." };
 
+        // Original-game rule: only two slaves can be trained per day.
+        if (_state.Calendar.TrainedToday >= 2)
+            return new TrainingReport { Success = false, Summary = "Only two characters can be trained per day. Rest to reset the counter." };
+
         var action = TrainingActionCatalog.Get(actionId);
-        if (action is null || action.Id == "breast_massage" && actionId != "breast_massage")
+        if (action is null)
             return new TrainingReport { Success = false, Summary = "Training action not found." };
 
         if (character.Energy < action.EnergyCost)
@@ -396,12 +402,30 @@ public sealed class EnhancedTrainingService
         if (character.Mature.FallState == FallState.Collapse)
             return new TrainingReport { Success = false, Summary = "Character is collapsed and cannot be trained." };
 
+        if (action.RequiresConsent && !HasConsent(character))
+            return new TrainingReport { Success = false, Summary = "Character does not consent to this action. Raise favorability, obedience, or bond first." };
+
+        if (!string.IsNullOrEmpty(action.ToolRequired))
+        {
+            var toolId = ResolveToolId(action.ToolRequired);
+            var toolCount = _state.Inventory.Items.TryGetValue(toolId, out var appliedTools) ? appliedTools : 0;
+            if (toolCount <= 0)
+                toolCount = _state.Inventory.Items.TryGetValue(action.ToolRequired, out var rawTools) ? rawTools : 0;
+            if (toolCount <= 0)
+                return new TrainingReport { Success = false, Summary = $"Requires tool '{action.ToolRequired}'. Buy one at the General Store." };
+        }
+
         // Apply effects
-        character.Energy -= action.EnergyCost;
+        var maxEnergy = character.MaxEnergyOverride ?? 150;
+        character.Energy = Math.Clamp(character.Energy - action.EnergyCost, 0, maxEnergy);
         character.Fatigue = Clamp100(character.Fatigue + action.FatigueCost);
 
         var effects = _mental.ResolveEffects(action, character);
         _mental.ApplyEffects(character, effects);
+
+        // Consume consumable tools (single-use)
+        if (!string.IsNullOrEmpty(action.ToolRequired) && IsConsumableTool(action.ToolRequired))
+            _inventory.TryConsume(ResolveToolId(action.ToolRequired), 1);
 
         // Record training
         _state.Mature.TrainingHistory.Add(new TrainingRecord
@@ -416,6 +440,7 @@ public sealed class EnhancedTrainingService
             Summary = $"{action.DisplayName}: +{action.BasePleasure} pleasure, {action.BasePain} pain"
         });
         _state.Mature.TotalTrainingSessions++;
+        _state.Calendar.TrainedToday += 1;
 
         return new TrainingReport
         {
@@ -426,6 +451,33 @@ public sealed class EnhancedTrainingService
             NewFallState = character.Mature.FallState
         };
     }
+
+    public static bool HasConsent(CharacterState character)
+    {
+        var m = character.Mature;
+        return m.FallState is FallState.Love or FallState.Devotion or FallState.Slave or FallState.MilkCow
+            || character.Bond >= 60
+            || m.Obedience >= 8000
+            || m.Submission >= 8000;
+    }
+
+    public static bool IsConsumableTool(string toolId) => toolId switch
+    {
+        "lube" or "vaginal_lube" or "anal_lube" or "breast_lube" or "condom" or "lotion"
+            or "aphrodisiac" or "aphrodisiac_slime" or "energy_drink" => true,
+        _ => false
+    };
+
+    public static string ResolveToolId(string toolId) => toolId switch
+    {
+        "livestock_milker" => "milking_kit",
+        "magic_milker" => "magic_milker",
+        "tentacle_milker" => "tentacle_milker",
+        "spirit_extractor" => "spirit_extractor",
+        "spreader_bar" => "spreader_bar",
+        "massage_oil" => "massage_oil",
+        _ => toolId
+    };
 
     private static int Clamp100(int value) => value < 0 ? 0 : value > 100 ? 100 : value;
 }
@@ -456,6 +508,17 @@ public sealed class MilkEconomyService
         if (character is null) return;
 
         var milk = character.Milk;
+
+        // Only characters with a milk constitution (lactation drug) or
+        // the natural "extreme milk pressure" talent produce milk.
+        var hasConstitution = milk.HasMilkConstitution || milk.HasMagicMilkConstitution;
+        var hasTalent = character.Talents.Contains("extreme_milk_pressure");
+        if (!hasConstitution && !hasTalent)
+        {
+            milk.CurrentAmount = 0;
+            return;
+        }
+
         var produced = milk.Production + milk.BaseOutput;
 
         // Quality bonus from concentration
@@ -465,6 +528,10 @@ public sealed class MilkEconomyService
         // Magic milk bonus
         if (milk.HasMagicMilkConstitution)
             produced += produced / 2;
+
+        // Virginity bonus: virgins carry a milk-quality edge from the original game
+        if (character.Talents.Contains("virgin") || character.Talents.Contains("a_virgin") || character.Talents.Contains("m_virgin"))
+            produced += produced / 4;
 
         milk.CurrentAmount += produced;
         milk.TotalProduced += produced;
@@ -492,6 +559,17 @@ public sealed class MilkEconomyService
             _ => 0
         };
         var pricePerUnit = basePrice + qualityBonus + concentrationBonus;
+
+        // Mana-rich characters command higher milk prices (original: quality depends on race and mana)
+        var manaRipeness = character.MagicPower / 3;
+        pricePerUnit += Math.Clamp(manaRipeness, 0, 6);
+
+        // Virginity bonus on milk price
+        var isVirgin = character.Talents.Contains("virgin") || character.Talents.Contains("a_virgin") || character.Talents.Contains("m_virgin");
+        if (isVirgin && (milk.HasMilkConstitution || milk.HasMagicMilkConstitution || character.Talents.Contains("extreme_milk_pressure")))
+        {
+            pricePerUnit += 1;
+        }
 
         var revenue = amount * pricePerUnit;
         milk.CurrentAmount = 0;

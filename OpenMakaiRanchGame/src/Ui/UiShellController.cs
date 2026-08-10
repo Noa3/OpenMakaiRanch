@@ -256,6 +256,7 @@ public partial class UiShellController : Control
 		{
 			case "title": RenderTitle(); break;
 			case "ranch": RenderRanch(); break;
+			case "report": RenderDailyReport(); break;
 			case "roster": RenderRoster(); break;
 			case "schedule": RenderSchedule(); break;
 			case "town": RenderTown(); break;
@@ -269,6 +270,7 @@ public partial class UiShellController : Control
 			case "saveload": RenderSaveLoad(); break;
 			case "settings": RenderSettings(); break;
 			case "training": RenderTraining(); break;
+			case "visit": RenderVisit(); break;
 			case "milk": RenderMilkEconomy(); break;
 			case "mental": RenderMentalState(); break;
 			case "character_creation": RenderCharacterCreation(); break;
@@ -278,11 +280,56 @@ public partial class UiShellController : Control
 			default: RenderRanch(); break;
 		}
 
+		RenderNightActionBanner();
+
 		if (sameScreenRefresh && IsInstanceValid(_scroll))
 		{
 			_scroll.ScrollVertical = previousScroll;
 		}
 	}
+
+	private void RenderNightActionBanner()
+	{
+		if (_game.State.Calendar.Phase != DayPhase.Night) return;
+		if (_currentScreen is "title" or "character_creation" or "prologue" or "victory") return;
+		if (_content is null || !IsInstanceValid(_content)) return;
+
+		var selected = _game.State.Calendar.NightAction;
+		var hasChoice = selected is "rest" or "train" or "admin";
+
+		var banner = CardContainer();
+		banner.AddThemeConstantOverride("separation", 6);
+		_content.AddChild(banner);
+
+		var title = AddStyledLine(T("screen.night.title", "Night Phase — Choose Tonight's Work"), true);
+		title.TooltipText = T("tooltip.night", "Pick how the ranch spends the night. Applied when you End Day.");
+		banner.AddChild(title);
+
+		if (hasChoice)
+		{
+			banner.AddChild(MutedLabel($"{T("screen.night.selected", "Selected")}: {NightActionLabel(selected)}"));
+			return;
+		}
+
+		void AddNightButton(string action, string label)
+		{
+			var button = PrimaryButton(label, "");
+			button.Pressed += () => { _game.SetNightAction(action); ShowScreen(_currentScreen); };
+			banner.AddChild(button);
+		}
+
+		AddNightButton("rest", T("screen.night.rest", "Rest (restore energy)"));
+		AddNightButton("train", T("screen.night.train", "Train (growth practice)"));
+		AddNightButton("admin", T("screen.night.admin", "Admin (reduce workload)"));
+	}
+
+	private static string NightActionLabel(string action) => action switch
+	{
+		"rest" => "Rest (restore energy)",
+		"train" => "Train (growth practice)",
+		"admin" => "Admin (reduce workload)",
+		_ => action
+	};
 
 	private bool BuildShell()
 	{
@@ -384,7 +431,15 @@ public partial class UiShellController : Control
 		ApplyChipPanelStyle(_workloadChip);
 		ApplyChipPanelStyle(_bathtubChip);
 		ApplyPrimaryButtonStyle(_endDayButton);
-		_endDayButton.Pressed += () => ExecuteUiAction(() => _game.AdvanceTime(), true);
+		_endDayButton.Pressed += () =>
+		{
+			var dayBefore = _game.State.Calendar.Day;
+			ExecuteUiAction(() => _game.AdvanceTime(), true);
+			if (_game.State.Calendar.Day != dayBefore && _game.State.Calendar.Phase == DayPhase.Morning)
+			{
+				ShowScreen("report");
+			}
+		};
 
 		if (_menuButton is not null)
 		{
@@ -778,7 +833,7 @@ public partial class UiShellController : Control
 
 	private void UpdateNavigationState()
 	{
-		var hiddenScreens = new HashSet<string> { "training", "milk", "mental" };
+		var hiddenScreens = new HashSet<string> { "training", "milk", "mental", "visit", "report" };
 		foreach (var pair in _navButtons)
 		{
 			UpdateNavigationButton(pair.Value, pair.Key, hiddenScreens.Contains(pair.Key));
@@ -870,6 +925,7 @@ public partial class UiShellController : Control
 
 	private void ClearContent()
 	{
+		_prologueLines.Clear();
 		var children = System.Linq.Enumerable.ToList(_content.GetChildren());
 		foreach (var child in children)
 		{
