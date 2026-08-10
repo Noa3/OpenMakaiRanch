@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +31,7 @@ public sealed class DataRegistry
 		var registry = new DataRegistry();
 		if (registry.TryLoadDatabase())
 		{
+			registry.ValidateRegistryData();
 			return registry;
 		}
 
@@ -45,6 +47,7 @@ public sealed class DataRegistry
 		registry.SeedBondEvents();
 		registry.SeedTalents();
 		registry.SeedTrainingActions();
+		registry.ValidateRegistryData();
 		return registry;
 	}
 
@@ -747,14 +750,20 @@ public sealed class DataRegistry
 		Add(new MissionDefinition { Id = "road_patrol", DisplayName = "Road Patrol", Tier = MissionTier.Local, Difficulty = 10, RewardGold = 80, RewardItemId = "feed_bundle", EnemyGroupId = "group_wild_local" });
 		Add(new MissionDefinition { Id = "field_clear", DisplayName = "Field Clear", Tier = MissionTier.Local, Difficulty = 8, RewardGold = 60, RewardItemId = "feed_bundle", EnemyGroupId = "group_wild_local" });
 		Add(new MissionDefinition { Id = "beast_hunt", DisplayName = "Beast Hunt", Tier = MissionTier.Local, Difficulty = 12, RewardGold = 90, RewardItemId = "pet_jerky", EnemyGroupId = "group_beast_local" });
+		Add(new MissionDefinition { Id = "river_watch", DisplayName = "River Watch", Tier = MissionTier.Local, Difficulty = 11, RewardGold = 85, RewardItemId = "bandage", EnemyGroupId = "group_wild_local" });
+		Add(new MissionDefinition { Id = "beast_den_scout", DisplayName = "Beast Den Scout", Tier = MissionTier.Local, Difficulty = 15, RewardGold = 110, RewardItemId = "protein_bar", EnemyGroupId = "group_beast_local" });
 		Add(new MissionDefinition { Id = "forest_survey", DisplayName = "Forest Survey", Tier = MissionTier.Regional, Difficulty = 16, RewardGold = 130, RewardItemId = "tool_kit", EnemyGroupId = "group_forest_regional" });
 		Add(new MissionDefinition { Id = "trade_escort", DisplayName = "Trade Escort", Tier = MissionTier.Regional, Difficulty = 18, RewardGold = 150, RewardItemId = "camping_gear", EnemyGroupId = "group_bandit_regional" });
+		Add(new MissionDefinition { Id = "caravan_waystation", DisplayName = "Caravan Waystation", Tier = MissionTier.Regional, Difficulty = 19, RewardGold = 160, RewardItemId = "tool_kit", EnemyGroupId = "group_bandit_regional" });
 		Add(new MissionDefinition { Id = "ruin_delve", DisplayName = "Ruin Delve", Tier = MissionTier.Regional, Difficulty = 22, RewardGold = 200, RewardItemId = "travel_gear", EnemyGroupId = "group_ruin_regional" });
+		Add(new MissionDefinition { Id = "ruins_supply_recovery", DisplayName = "Ruins Supply Recovery", Tier = MissionTier.Regional, Difficulty = 23, RewardGold = 230, RewardItemId = "travel_gear", EnemyGroupId = "group_ruin_regional" });
 		Add(new MissionDefinition { Id = "dragon_outcrop", DisplayName = "Dragon Outcrop", Tier = MissionTier.Dangerous, Difficulty = 30, RewardGold = 350, RewardItemId = "keepsake", EnemyGroupId = "group_dragon_dangerous" });
+		Add(new MissionDefinition { Id = "drake_frontier", DisplayName = "Drake Frontier", Tier = MissionTier.Dangerous, Difficulty = 32, RewardGold = 370, RewardItemId = "keepsake", EnemyGroupId = "group_dragon_dangerous" });
 		Add(new MissionDefinition { Id = "bandit_supply", DisplayName = "Bandit Supply Raid", Tier = MissionTier.Local, Difficulty = 14, RewardGold = 100, RewardItemId = "feed_bundle", EnemyGroupId = "group_bandit_regional" });
 		Add(new MissionDefinition { Id = "mountain_pass", DisplayName = "Mountain Pass Survey", Tier = MissionTier.Regional, Difficulty = 20, RewardGold = 170, RewardItemId = "herb_pack", EnemyGroupId = "group_forest_regional" });
 		Add(new MissionDefinition { Id = "moonlight_grove", DisplayName = "Moonlight Grove", Tier = MissionTier.Regional, Difficulty = 24, RewardGold = 220, RewardItemId = "magic_crystal", EnemyGroupId = "group_ruin_regional" });
 		Add(new MissionDefinition { Id = "abyssal_cavern", DisplayName = "Abyssal Cavern", Tier = MissionTier.Dangerous, Difficulty = 35, RewardGold = 400, RewardItemId = "magic_ring", EnemyGroupId = "group_dragon_dangerous" });
+		Add(new MissionDefinition { Id = "obsidian_ridge", DisplayName = "Obsidian Ridge", Tier = MissionTier.Dangerous, Difficulty = 38, RewardGold = 460, RewardItemId = "magic_ring", EnemyGroupId = "group_dragon_dangerous" });
 		Add(new MissionDefinition { Id = "demon_tower", DisplayName = "Demon Tower Approach", Tier = MissionTier.Dangerous, Difficulty = 40, RewardGold = 500, RewardItemId = "lucky_amulet", EnemyGroupId = "group_dragon_dangerous" });
 	}
 
@@ -905,7 +914,191 @@ public sealed class DataRegistry
 		Add(new TalentDefinition { Id = "cleaning_clumsy", DisplayName = "Cleaning Clumsy" });
 		Add(new TalentDefinition { Id = "indifferent", DisplayName = "Indifferent" });
 		Add(new TalentDefinition { Id = "animal_ears", DisplayName = "Animal Ears" });
-		Add(new TalentDefinition { Id = "instigator", DisplayName = "Instigator" });
+
+		Add(new TalentDefinition { Id = "talent_0", DisplayName = "Virgin (処女)" });
+		Add(new TalentDefinition { Id = "talent_1", DisplayName = "A-Virgin (Ａ処女)" });
+		Add(new TalentDefinition { Id = "talent_2", DisplayName = "Virgin Barrier (処女結界)" });
+		Add(new TalentDefinition { Id = "talent_3", DisplayName = "Kiss-Experienced (キス未経験)" });
+		Add(new TalentDefinition { Id = "talent_4", DisplayName = "Breastfeeding-Experienced (授乳未経験)" });
+		Add(new TalentDefinition { Id = "talent_5", DisplayName = "Paizuri-Experienced (パイズリ未経験)" });
+		Add(new TalentDefinition { Id = "talent_6", DisplayName = "M-Virgin (Ｍ処女)" });
+		Add(new TalentDefinition { Id = "talent_10", DisplayName = "Flat Chest (絶壁)" });
+		Add(new TalentDefinition { Id = "talent_11", DisplayName = "Small Breasts (貧乳)" });
+		Add(new TalentDefinition { Id = "talent_12", DisplayName = "Medium Breasts (並乳)" });
+		Add(new TalentDefinition { Id = "talent_13", DisplayName = "Large Breasts (巨乳)" });
+		Add(new TalentDefinition { Id = "talent_14", DisplayName = "Full Breasts (豊乳)" });
+		Add(new TalentDefinition { Id = "talent_15", DisplayName = "Explosive Breasts (爆乳)" });
+		Add(new TalentDefinition { Id = "talent_16", DisplayName = "Divine Breasts (神乳)" });
+		Add(new TalentDefinition { Id = "talent_17", DisplayName = "Demon Breasts (魔乳)" });
+		Add(new TalentDefinition { Id = "talent_18", DisplayName = "Super Breasts (超乳)" });
+		Add(new TalentDefinition { Id = "talent_20", DisplayName = "Male (オトコ)" });
+		Add(new TalentDefinition { Id = "talent_21", DisplayName = "Owner (オーナー)" });
+		Add(new TalentDefinition { Id = "talent_22", DisplayName = "Male Virgin (童貞)" });
+		Add(new TalentDefinition { Id = "talent_23", DisplayName = "A-Male Virgin (Ａ童貞)" });
+		Add(new TalentDefinition { Id = "talent_24", DisplayName = "M-Male Virgin (Ｍ童貞)" });
+		Add(new TalentDefinition { Id = "talent_30", DisplayName = "Precious Orifice (名器)" });
+		Add(new TalentDefinition { Id = "talent_31", DisplayName = "A-Precious Orifice (Ａ名器)" });
+		Add(new TalentDefinition { Id = "talent_32", DisplayName = "Natural Milk Constitution (先天的母乳体質)" });
+		Add(new TalentDefinition { Id = "talent_33", DisplayName = "Mouth Orifice (おくちまんこ)" });
+		Add(new TalentDefinition { Id = "talent_34", DisplayName = "Ultimate Breast Pressure (極上乳圧)" });
+		Add(new TalentDefinition { Id = "talent_50", DisplayName = "Makai Race (魔界種族)" });
+		Add(new TalentDefinition { Id = "talent_51", DisplayName = "Heavenly Race (天界種族)" });
+		Add(new TalentDefinition { Id = "talent_52", DisplayName = "Divinity (神格)" });
+		Add(new TalentDefinition { Id = "talent_53", DisplayName = "Animal Ears (動物耳)" });
+		Add(new TalentDefinition { Id = "talent_54", DisplayName = "Tail (尻尾)" });
+		Add(new TalentDefinition { Id = "talent_55", DisplayName = "Double Horns (二本角)" });
+		Add(new TalentDefinition { Id = "talent_56", DisplayName = "Elf Ears (エルフ耳)" });
+		Add(new TalentDefinition { Id = "talent_57", DisplayName = "Halfling Ears (ハーフリング耳)" });
+		Add(new TalentDefinition { Id = "talent_70", DisplayName = "Makai Adaptation (魔界適応)" });
+		Add(new TalentDefinition { Id = "talent_71", DisplayName = "Poison Resistance (薬毒耐性)" });
+		Add(new TalentDefinition { Id = "talent_72", DisplayName = "Sun-Weak (太陽苦手)" });
+		Add(new TalentDefinition { Id = "talent_73", DisplayName = "Hot-Sensitive (猫舌)" });
+		Add(new TalentDefinition { Id = "talent_74", DisplayName = "Serrated Teeth (ギザ歯)" });
+		Add(new TalentDefinition { Id = "talent_75", DisplayName = "Inverted Nipples (陥没乳首)" });
+		Add(new TalentDefinition { Id = "talent_76", DisplayName = "Puffy Nipple (パフィーニップル)" });
+		Add(new TalentDefinition { Id = "talent_77", DisplayName = "Baby Face (童顔)" });
+		Add(new TalentDefinition { Id = "talent_100", DisplayName = "Pain-Resistant (痛みに強い)" });
+		Add(new TalentDefinition { Id = "talent_101", DisplayName = "Easily Wet (濡れやすい)" });
+		Add(new TalentDefinition { Id = "talent_102", DisplayName = "Fast Recovery (回復早い)" });
+		Add(new TalentDefinition { Id = "talent_103", DisplayName = "Gluttonous (食いしん坊)" });
+		Add(new TalentDefinition { Id = "talent_104", DisplayName = "Fast Learner (習得早い)" });
+		Add(new TalentDefinition { Id = "talent_105", DisplayName = "Animal-Loved (動物に好かれる)" });
+		Add(new TalentDefinition { Id = "talent_106", DisplayName = "Smell-Sensitive (汚臭敏感)" });
+		Add(new TalentDefinition { Id = "talent_107", DisplayName = "Addiction-Prone (中毒しやすい)" });
+		Add(new TalentDefinition { Id = "talent_150", DisplayName = "Pain-Weak (痛みに弱い)" });
+		Add(new TalentDefinition { Id = "talent_151", DisplayName = "Hardly Wet (濡れにくい)" });
+		Add(new TalentDefinition { Id = "talent_152", DisplayName = "Slow Recovery (回復遅い)" });
+		Add(new TalentDefinition { Id = "talent_153", DisplayName = "Small Appetite (少食)" });
+		Add(new TalentDefinition { Id = "talent_154", DisplayName = "Slow Learner (習得遅い)" });
+		Add(new TalentDefinition { Id = "talent_155", DisplayName = "Animal-Hated (動物に嫌われる)" });
+		Add(new TalentDefinition { Id = "talent_156", DisplayName = "Smell-Insensitive (汚臭鈍感)" });
+		Add(new TalentDefinition { Id = "talent_157", DisplayName = "Addiction-Resistant (中毒しにくい)" });
+		Add(new TalentDefinition { Id = "talent_200", DisplayName = "Good Teacher (教え上手)" });
+		Add(new TalentDefinition { Id = "talent_201", DisplayName = "Sex Knowledge Abundant (性知識豊富)" });
+		Add(new TalentDefinition { Id = "talent_210", DisplayName = "Potion Knowledge (調合知識)" });
+		Add(new TalentDefinition { Id = "talent_211", DisplayName = "Engineering Knowledge (工学知識)" });
+		Add(new TalentDefinition { Id = "talent_212", DisplayName = "Sex Toy Knowledge (淫具知識)" });
+		Add(new TalentDefinition { Id = "talent_213", DisplayName = "Medical Knowledge (医療知識)" });
+		Add(new TalentDefinition { Id = "talent_214", DisplayName = "Plant Knowledge (植物知識)" });
+		Add(new TalentDefinition { Id = "talent_215", DisplayName = "Sewing Knowledge (裁縫知識)" });
+		Add(new TalentDefinition { Id = "talent_220", DisplayName = "Instigator (煽動)" });
+		Add(new TalentDefinition { Id = "talent_221", DisplayName = "Armed Maiden (武装乙女)" });
+		Add(new TalentDefinition { Id = "talent_250", DisplayName = "Bad Teacher (教え下手)" });
+		Add(new TalentDefinition { Id = "talent_251", DisplayName = "Sex Knowledge Poor (性知識乏しい)" });
+		Add(new TalentDefinition { Id = "talent_260", DisplayName = "Exercise-Deficient (運動不足)" });
+		Add(new TalentDefinition { Id = "talent_261", DisplayName = "Weak Constitution (虚弱体質)" });
+		Add(new TalentDefinition { Id = "talent_262", DisplayName = "Bad Cook (料理下手)" });
+		Add(new TalentDefinition { Id = "talent_263", DisplayName = "Bad Cleaner (掃除下手)" });
+		Add(new TalentDefinition { Id = "talent_264", DisplayName = "Bad Hospitality (接客下手)" });
+		Add(new TalentDefinition { Id = "talent_265", DisplayName = "Tone-Deaf (音痴)" });
+		Add(new TalentDefinition { Id = "talent_270", DisplayName = "Clumsy (ドジっ子)" });
+		Add(new TalentDefinition { Id = "talent_300", DisplayName = "High Pride (プライド高い)" });
+		Add(new TalentDefinition { Id = "talent_301", DisplayName = "Arrogant (高慢)" });
+		Add(new TalentDefinition { Id = "talent_302", DisplayName = "Brave (勇敢)" });
+		Add(new TalentDefinition { Id = "talent_303", DisplayName = "Rebellious (反抗的)" });
+		Add(new TalentDefinition { Id = "talent_304", DisplayName = "Steadfast (気丈)" });
+		Add(new TalentDefinition { Id = "talent_305", DisplayName = "Chastity (貞操観念)" });
+		Add(new TalentDefinition { Id = "talent_306", DisplayName = "Liberation (解放)" });
+		Add(new TalentDefinition { Id = "talent_307", DisplayName = "Shameless (恥薄い)" });
+		Add(new TalentDefinition { Id = "talent_308", DisplayName = "Optimistic (楽観的)" });
+		Add(new TalentDefinition { Id = "talent_309", DisplayName = "Curiosity (好奇心)" });
+		Add(new TalentDefinition { Id = "talent_310", DisplayName = "Pleasure-Honest (快感に素直)" });
+		Add(new TalentDefinition { Id = "talent_311", DisplayName = "Pure (清楚)" });
+		Add(new TalentDefinition { Id = "talent_312", DisplayName = "Frugal (倹約家)" });
+		Add(new TalentDefinition { Id = "talent_313", DisplayName = "Breast-Proud (乳自慢)" });
+		Add(new TalentDefinition { Id = "talent_314", DisplayName = "Fresh (生意気)" });
+		Add(new TalentDefinition { Id = "talent_315", DisplayName = "Attention-Seeking (目立ちたがり)" });
+		Add(new TalentDefinition { Id = "talent_316", DisplayName = "Emotional (感情豊か)" });
+		Add(new TalentDefinition { Id = "talent_350", DisplayName = "Low Pride (プライド低い)" });
+		Add(new TalentDefinition { Id = "talent_351", DisplayName = "Submissive (卑屈)" });
+		Add(new TalentDefinition { Id = "talent_352", DisplayName = "Cowardly (臆病)" });
+		Add(new TalentDefinition { Id = "talent_353", DisplayName = "Obedient (素直)" });
+		Add(new TalentDefinition { Id = "talent_354", DisplayName = "Weak-Willed (弱気)" });
+		Add(new TalentDefinition { Id = "talent_355", DisplayName = "Chastity-Indifferent (貞操無頓着)" });
+		Add(new TalentDefinition { Id = "talent_356", DisplayName = "Suppressed (抑圧)" });
+		Add(new TalentDefinition { Id = "talent_357", DisplayName = "Shy (恥じらい)" });
+		Add(new TalentDefinition { Id = "talent_358", DisplayName = "Pessimistic (悲観的)" });
+		Add(new TalentDefinition { Id = "talent_359", DisplayName = "Indifferent (無関心)" });
+		Add(new TalentDefinition { Id = "talent_360", DisplayName = "Pleasure-Denial (快感の否定)" });
+		Add(new TalentDefinition { Id = "talent_361", DisplayName = "Rough (粗野)" });
+		Add(new TalentDefinition { Id = "talent_362", DisplayName = "Spendthrift (浪費癖)" });
+		Add(new TalentDefinition { Id = "talent_363", DisplayName = "Breast-Abuse-Hatred (乳責め嫌悪)" });
+		Add(new TalentDefinition { Id = "talent_364", DisplayName = "Docile (大人しい)" });
+		Add(new TalentDefinition { Id = "talent_365", DisplayName = "Modest (慎ましい)" });
+		Add(new TalentDefinition { Id = "talent_366", DisplayName = "Emotion-Poor (感情乏しい)" });
+		Add(new TalentDefinition { Id = "talent_400", DisplayName = "Elegance (気品)" });
+		Add(new TalentDefinition { Id = "talent_401", DisplayName = "Humble (謙虚)" });
+		Add(new TalentDefinition { Id = "talent_402", DisplayName = "Doesnt Cross Line (一線越えない)" });
+		Add(new TalentDefinition { Id = "talent_403", DisplayName = "Self-Control (自制心)" });
+		Add(new TalentDefinition { Id = "talent_404", DisplayName = "Devoted (献身的)" });
+		Add(new TalentDefinition { Id = "talent_405", DisplayName = "Masturbation-Prone (自慰しやすい)" });
+		Add(new TalentDefinition { Id = "talent_406", DisplayName = "Jealousy-Prone (嫉妬しやすい)" });
+		Add(new TalentDefinition { Id = "talent_407", DisplayName = "Vain (見栄っ張り)" });
+		Add(new TalentDefinition { Id = "talent_408", DisplayName = "Conservative (保守的)" });
+		Add(new TalentDefinition { Id = "talent_409", DisplayName = "Slob (ズボラ)" });
+		Add(new TalentDefinition { Id = "talent_410", DisplayName = "Lazy Habit (サボり癖)" });
+		Add(new TalentDefinition { Id = "talent_411", DisplayName = "Perversion (倒錯的)" });
+		Add(new TalentDefinition { Id = "talent_412", DisplayName = "Tsundere (ツンデレ)" });
+		Add(new TalentDefinition { Id = "talent_413", DisplayName = "Breast Inferiority (乳劣等感)" });
+		Add(new TalentDefinition { Id = "talent_414", DisplayName = "Sadist (サド)" });
+		Add(new TalentDefinition { Id = "talent_415", DisplayName = "Charisma (カリスマ)" });
+		Add(new TalentDefinition { Id = "talent_416", DisplayName = "Moody (気分屋)" });
+		Add(new TalentDefinition { Id = "talent_417", DisplayName = "Justice (正義感)" });
+		Add(new TalentDefinition { Id = "talent_418", DisplayName = "Maiden Heart (乙女心)" });
+		Add(new TalentDefinition { Id = "talent_419", DisplayName = "Submission Desire (隷属願望)" });
+		Add(new TalentDefinition { Id = "talent_420", DisplayName = "Maternal Instinct (母性本能)" });
+		Add(new TalentDefinition { Id = "talent_421", DisplayName = "Easily Seduced (チョロイン)" });
+		Add(new TalentDefinition { Id = "talent_422", DisplayName = "Faith (信仰心)" });
+		Add(new TalentDefinition { Id = "talent_423", DisplayName = "Little Devil (小悪魔)" });
+		Add(new TalentDefinition { Id = "talent_424", DisplayName = "Childish (幼稚)" });
+		Add(new TalentDefinition { Id = "talent_500", DisplayName = "Cow-Lover (牛好き)" });
+		Add(new TalentDefinition { Id = "talent_501", DisplayName = "Horse-Lover (馬好き)" });
+		Add(new TalentDefinition { Id = "talent_502", DisplayName = "Dog-Lover (犬好き)" });
+		Add(new TalentDefinition { Id = "talent_503", DisplayName = "Cat-Lover (猫好き)" });
+		Add(new TalentDefinition { Id = "talent_504", DisplayName = "Hamster-Lover (ハムスター好き)" });
+		Add(new TalentDefinition { Id = "talent_505", DisplayName = "Sheep-Lover (羊好き)" });
+		Add(new TalentDefinition { Id = "talent_520", DisplayName = "Man-Lover (男好き)" });
+		Add(new TalentDefinition { Id = "talent_521", DisplayName = "Woman-Lover (女好き)" });
+		Add(new TalentDefinition { Id = "talent_522", DisplayName = "Child-Lover (子供好き)" });
+		Add(new TalentDefinition { Id = "talent_523", DisplayName = "Noble-Lover (貴族好き)" });
+		Add(new TalentDefinition { Id = "talent_524", DisplayName = "Royal-Lover (王族好き)" });
+		Add(new TalentDefinition { Id = "talent_525", DisplayName = "Kin-Lover (同族好き)" });
+		Add(new TalentDefinition { Id = "talent_526", DisplayName = "Heavenly-Lover (天界族好き)" });
+		Add(new TalentDefinition { Id = "talent_527", DisplayName = "Demon-Lover (魔族好き)" });
+		Add(new TalentDefinition { Id = "talent_530", DisplayName = "Bath-Lover (お風呂好き)" });
+		Add(new TalentDefinition { Id = "talent_531", DisplayName = "Cleaning-Lover (掃除好き)" });
+		Add(new TalentDefinition { Id = "talent_532", DisplayName = "Cooking-Lover (料理好き)" });
+		Add(new TalentDefinition { Id = "talent_533", DisplayName = "Reading-Lover (読書好き)" });
+		Add(new TalentDefinition { Id = "talent_534", DisplayName = "Plant-Lover (植物好き)" });
+		Add(new TalentDefinition { Id = "talent_535", DisplayName = "Machine-Lover (機械好き)" });
+		Add(new TalentDefinition { Id = "talent_536", DisplayName = "Experiment-Lover (実験好き)" });
+		Add(new TalentDefinition { Id = "talent_537", DisplayName = "Fashion-Lover (おしゃれ好き)" });
+		Add(new TalentDefinition { Id = "talent_550", DisplayName = "Milk-Lover (ミルク好き)" });
+		Add(new TalentDefinition { Id = "talent_551", DisplayName = "Western Sweets-Lover (洋菓子好き)" });
+		Add(new TalentDefinition { Id = "talent_552", DisplayName = "Japanese Sweets-Lover (和菓子好き)" });
+		Add(new TalentDefinition { Id = "talent_553", DisplayName = "Alcohol-Lover (お酒好き)" });
+		Add(new TalentDefinition { Id = "talent_554", DisplayName = "Tea-Lover (お茶好き)" });
+		Add(new TalentDefinition { Id = "talent_555", DisplayName = "Sour-Lover (酸味好き)" });
+		Add(new TalentDefinition { Id = "talent_556", DisplayName = "Spicy-Lover (辛味好き)" });
+		Add(new TalentDefinition { Id = "talent_557", DisplayName = "Fish-Lover (魚好き)" });
+		Add(new TalentDefinition { Id = "talent_558", DisplayName = "Meat-Lover (肉好き)" });
+		Add(new TalentDefinition { Id = "talent_559", DisplayName = "Vegetable-Lover (野菜好き)" });
+		Add(new TalentDefinition { Id = "talent_600", DisplayName = "Needle-Weak (注射苦手)" });
+		Add(new TalentDefinition { Id = "talent_610", DisplayName = "Trauma-Demon (トラウマ／魔族)" });
+		Add(new TalentDefinition { Id = "talent_611", DisplayName = "Trauma-Tentacle (トラウマ／触手)" });
+		Add(new TalentDefinition { Id = "talent_612", DisplayName = "Trauma-Goblin (トラウマ／ゴブリン)" });
+		Add(new TalentDefinition { Id = "talent_613", DisplayName = "Trauma-Orc (トラウマ／オーク)" });
+		Add(new TalentDefinition { Id = "talent_614", DisplayName = "Trauma-Slime (トラウマ／スライム)" });
+		Add(new TalentDefinition { Id = "talent_615", DisplayName = "Trauma-Worm (トラウマ／ワーム)" });
+		Add(new TalentDefinition { Id = "talent_650", DisplayName = "Elementary Student (ＪＳ)" });
+		Add(new TalentDefinition { Id = "talent_651", DisplayName = "Middle School Student (ＪＣ)" });
+		Add(new TalentDefinition { Id = "talent_652", DisplayName = "High School Student (ＪＫ)" });
+		Add(new TalentDefinition { Id = "talent_653", DisplayName = "College Student (ＪＤ)" });
+		Add(new TalentDefinition { Id = "talent_654", DisplayName = "Modern Tool Knowledge (現代道具知識)" });
+		Add(new TalentDefinition { Id = "talent_655", DisplayName = "Modern Science Knowledge (現代科学知識)" });
+		Add(new TalentDefinition { Id = "talent_660", DisplayName = "Natural Idol (天性のアイドル)" });
+		Add(new TalentDefinition { Id = "talent_661", DisplayName = "Total Bottom (総受け)" });
+		Add(new TalentDefinition { Id = "talent_662", DisplayName = "Protagonist Privilege (主人公特権)" });
 	}
 
 	private void SeedTrainingActions()
@@ -1044,6 +1237,74 @@ public sealed class DataRegistry
 		Add(new TrainingActionDefinition { Id = "magic_18", DisplayName = "Mana Injection", Category = TrainingCategory.ForbiddenMagic, ActionId = 906, FatigueDelta = -6, MoraleDelta = 2, XpTypes = new List<string> { "combat_skill" }, Description = "Mana injection" });
 		Add(new TrainingActionDefinition { Id = "magic_19", DisplayName = "Force Service", Category = TrainingCategory.ForbiddenMagic, ActionId = 907, FatigueDelta = 12, MoraleDelta = -5, XpTypes = new List<string> { "craft_skill" }, Description = "Force service" });
 		Add(new TrainingActionDefinition { Id = "magic_20", DisplayName = "Mana Sucking", Category = TrainingCategory.ForbiddenMagic, ActionId = 910, FatigueDelta = 10, MoraleDelta = -3, XpTypes = new List<string> { "combat_skill" }, Description = "Mana sucking" });
+	}
+
+	private void ValidateRegistryData()
+	{
+		var errors = new List<string>();
+
+		ValidateDefinitionKeys(Items, item => item.Id, "item", errors);
+		ValidateDefinitionKeys(Missions, mission => mission.Id, "mission", errors);
+		ValidateDefinitionKeys(Enemies, enemy => enemy.Id, "enemy", errors);
+
+		var enemyGroups = Enemies.Values
+			.Where(enemy => !string.IsNullOrWhiteSpace(enemy.GroupId))
+			.Select(enemy => enemy.GroupId)
+			.ToHashSet();
+
+		foreach (var mission in Missions.Values)
+		{
+			if (!string.IsNullOrWhiteSpace(mission.RewardItemId) && !Items.ContainsKey(mission.RewardItemId))
+			{
+				errors.Add($"Mission '{mission.Id}' references unknown reward item '{mission.RewardItemId}'.");
+			}
+
+			if (string.IsNullOrWhiteSpace(mission.EnemyGroupId) || !enemyGroups.Contains(mission.EnemyGroupId))
+			{
+				errors.Add($"Mission '{mission.Id}' references unknown enemy group '{mission.EnemyGroupId}'.");
+			}
+		}
+
+		foreach (var tier in Enum.GetValues<MissionTier>())
+		{
+			if (!Missions.Values.Any(mission => mission.Tier == tier))
+			{
+				errors.Add($"Mission tier '{tier}' has no entries.");
+			}
+		}
+
+		if (errors.Count > 0)
+		{
+			throw new InvalidOperationException($"DataRegistry validation failed: {string.Join(" | ", errors)}");
+		}
+	}
+
+	private static void ValidateDefinitionKeys<TDefinition>(
+		IReadOnlyDictionary<string, TDefinition> definitions,
+		Func<TDefinition, string> idSelector,
+		string label,
+		List<string> errors)
+	{
+		var seenIds = new HashSet<string>();
+		foreach (var pair in definitions)
+		{
+			var id = idSelector(pair.Value);
+			if (string.IsNullOrWhiteSpace(id))
+			{
+				errors.Add($"{label} entry with key '{pair.Key}' has empty id.");
+				continue;
+			}
+
+			if (!string.Equals(pair.Key, id, StringComparison.Ordinal))
+			{
+				errors.Add($"{label} key '{pair.Key}' does not match id '{id}'.");
+			}
+
+			if (!seenIds.Add(id))
+			{
+				errors.Add($"Duplicate {label} id '{id}'.");
+			}
+		}
 	}
 
 	private void Add(CharacterDefinition definition)

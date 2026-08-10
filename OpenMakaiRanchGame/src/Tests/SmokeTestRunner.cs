@@ -32,6 +32,7 @@ public static class SmokeTestRunner
             TestEconomyBounds(result);
             TestSettlementAndMilestone(result);
             TestAdventureResolution(result);
+            TestMissionCatalogIntegrity(result);
             TestManagementLoops(result);
             TestBondEventsAndResearchEffects(result);
             TestGeneratedRecruits(result);
@@ -128,6 +129,63 @@ public static class SmokeTestRunner
 
         _ = adventure.ResolveMission("road_patrol", party, false);
         Assert(result, state.Adventure.LastCaptureSummary == captureSummary, "non-capture mission preserves last capture summary");
+    }
+
+    private static void TestMissionCatalogIntegrity(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        Assert(result, data.Missions.Count > 0, "mission catalog has entries");
+
+        var missionIds = data.Missions.Values.Select(mission => mission.Id).ToList();
+        Assert(result, missionIds.Distinct(StringComparer.Ordinal).Count() == missionIds.Count, "mission ids are unique");
+
+        var enemyGroups = data.Enemies.Values
+            .Where(enemy => !string.IsNullOrWhiteSpace(enemy.GroupId))
+            .Select(enemy => enemy.GroupId)
+            .ToHashSet(StringComparer.Ordinal);
+
+        foreach (var mission in data.Missions.Values)
+        {
+            Assert(result, !string.IsNullOrWhiteSpace(mission.Id), "mission id is not empty");
+
+            var rewardExists = string.IsNullOrWhiteSpace(mission.RewardItemId) || data.Items.ContainsKey(mission.RewardItemId);
+            Assert(result, rewardExists, $"mission '{mission.Id}' reward item exists");
+
+            Assert(result, enemyGroups.Contains(mission.EnemyGroupId), $"mission '{mission.Id}' enemy group exists");
+        }
+
+        Assert(result, data.Missions.Values.Any(mission => mission.Tier == MissionTier.Local), "mission catalog includes Local tier");
+        Assert(result, data.Missions.Values.Any(mission => mission.Tier == MissionTier.Regional), "mission catalog includes Regional tier");
+        Assert(result, data.Missions.Values.Any(mission => mission.Tier == MissionTier.Dangerous), "mission catalog includes Dangerous tier");
+
+        var state = new SaveStateFactory(data).CreateNewGame();
+        foreach (var character in state.Roster.Characters)
+        {
+            character.CombatSkill = Math.Max(character.CombatSkill, 20);
+            character.CraftSkill = Math.Max(character.CraftSkill, 20);
+            character.RanchSkill = Math.Max(character.RanchSkill, 20);
+            character.Morale = 100;
+            character.Fatigue = 0;
+        }
+
+        var economy = new EconomyService(state);
+        var inventory = new InventoryService(state);
+        var milestones = new MilestoneService(state, data, economy);
+        var adventure = new AdventureService(state, data, economy, inventory, milestones, new Random(17));
+        var party = state.Roster.Characters.Select(character => character.Id).ToList();
+        var guaranteedMission = data.Missions.Values
+            .Where(mission => mission.Tier == MissionTier.Local)
+            .OrderBy(mission => mission.Difficulty)
+            .First();
+
+        var goldBefore = state.Economy.Gold;
+        var report = adventure.ResolveMission(guaranteedMission.Id, party);
+        Assert(result, report.Outcome == MissionOutcome.Success, "resolve mission returns success for prepared party path");
+        Assert(result, report.RewardGold > 0 && state.Economy.Gold > goldBefore, "successful resolve mission grants gold");
+        if (!string.IsNullOrWhiteSpace(guaranteedMission.RewardItemId))
+        {
+            Assert(result, state.Inventory.Items.GetValueOrDefault(guaranteedMission.RewardItemId) >= 1, "successful resolve mission grants reward item");
+        }
     }
 
     private static void TestSaveRoundTrip(SmokeTestResult result)

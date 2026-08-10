@@ -57,8 +57,9 @@
   - Fehlt: Quest-Flags, Charakter-Flags, Event-Flags
 
 - [ ] **Mission-System erweitern (50+ Missions)**
-  - Status: ~10 Missions
-  - Fehlt: 40+ Missions aus dem Original
+  - Status: 18 Missions (SFW, Local/Regional/Dangerous)
+  - Verifiziert: Registry-Validierung aktiv + Smoke-Regressions für Mission-IDs/RewardItems/EnemyGroups/Tier-Abdeckung/ResolveMission-Erfolg
+  - Fehlt: 32+ Missions aus dem Original
 
 - [ ] **Clothing-UI**
   - [x] Equipment-Slot-UI für Character-Detail (inkl. Equip/Unequip für bestehende Slots + ClothingStyle-Anzeige)

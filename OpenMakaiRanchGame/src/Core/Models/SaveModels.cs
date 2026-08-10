@@ -96,6 +96,36 @@ public sealed class SaveState
     public List<DailyReport> Reports { get; set; } = new();
     public bool NgPlusActive { get; set; }
     public int? VictoryDay { get; set; }
+    public FlagStorage Flags { get; set; } = new();
+}
+
+/// <summary>
+/// Serializable flag storage for SaveState persistence.
+/// Mirrors FlagService's three-tier flag system.
+/// </summary>
+public sealed class FlagStorage
+{
+    // Global flags (Flag.csv) - 537 flags
+    public Dictionary<int, bool> GlobalBoolFlags { get; set; } = new();
+    public Dictionary<int, int> GlobalIntFlags { get; set; } = new();
+    
+    // Temporary flags (Tflag.csv) - 104 flags
+    public Dictionary<int, bool> TempBoolFlags { get; set; } = new();
+    public Dictionary<int, int> TempIntFlags { get; set; } = new();
+    
+    // Character flags (Cflag.csv) - 125 flags per character
+    public Dictionary<string, Dictionary<int, bool>> CharBoolFlags { get; set; } = new();
+    public Dictionary<string, Dictionary<int, int>> CharIntFlags { get; set; } = new();
+    
+    public void Clear()
+    {
+        GlobalBoolFlags.Clear();
+        GlobalIntFlags.Clear();
+        TempBoolFlags.Clear();
+        TempIntFlags.Clear();
+        CharBoolFlags.Clear();
+        CharIntFlags.Clear();
+    }
 }
 
 public sealed class PlayerState

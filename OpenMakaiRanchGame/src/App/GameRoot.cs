@@ -54,6 +54,7 @@ public partial class GameRoot : Node
 	public EquipmentService Equipment { get; private set; } = null!;
 	public ClothingService Clothing { get; private set; } = null!;
 	public TalentService Talents { get; private set; } = null!;
+	public FlagService Flags { get; private set; } = null!;
 	public DailyReport? LastDailyReport { get; set; }
 	public CombatReport? LastCombatReport { get; set; }
 	public CombatPhase CurrentCombatPhase { get; set; } = CombatPhase.PreBattle;
@@ -590,6 +591,8 @@ public partial class GameRoot : Node
 		Discovery = new DiscoveryService(State, Data);
 		Mercenary = new MercenaryService(State, Economy);
 		WinCondition = new WinConditionService(State, Data);
+		Flags = new FlagService();
+		Flags.SyncFromStorage(State.Flags);
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 	}
