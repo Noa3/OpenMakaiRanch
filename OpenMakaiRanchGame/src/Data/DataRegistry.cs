@@ -764,7 +764,20 @@ public sealed class DataRegistry
 		Add(new MissionDefinition { Id = "moonlight_grove", DisplayName = "Moonlight Grove", Tier = MissionTier.Regional, Difficulty = 24, RewardGold = 220, RewardItemId = "magic_crystal", EnemyGroupId = "group_ruin_regional" });
 		Add(new MissionDefinition { Id = "abyssal_cavern", DisplayName = "Abyssal Cavern", Tier = MissionTier.Dangerous, Difficulty = 35, RewardGold = 400, RewardItemId = "magic_ring", EnemyGroupId = "group_dragon_dangerous" });
 		Add(new MissionDefinition { Id = "obsidian_ridge", DisplayName = "Obsidian Ridge", Tier = MissionTier.Dangerous, Difficulty = 38, RewardGold = 460, RewardItemId = "magic_ring", EnemyGroupId = "group_dragon_dangerous" });
-		Add(new MissionDefinition { Id = "demon_tower", DisplayName = "Demon Tower Approach", Tier = MissionTier.Dangerous, Difficulty = 40, RewardGold = 500, RewardItemId = "lucky_amulet", EnemyGroupId = "group_dragon_dangerous" });
+
+		Add(new MissionDefinition { Id = "slime_swamp", DisplayName = "Slime Swamp Patrol", Tier = MissionTier.Local, Difficulty = 10, RewardGold = 80, RewardItemId = "bandage", EnemyGroupId = "group_slime_easy" });
+		Add(new MissionDefinition { Id = "goblin_outpost", DisplayName = "Goblin Outpost Raid", Tier = MissionTier.Local, Difficulty = 15, RewardGold = 120, RewardItemId = "iron_boots", EnemyGroupId = "group_goblin_easy" });
+		Add(new MissionDefinition { Id = "orc_scouting", DisplayName = "Orc Scouting Mission", Tier = MissionTier.Local, Difficulty = 18, RewardGold = 150, RewardItemId = "leather_armor", EnemyGroupId = "group_orc_easy" });
+		Add(new MissionDefinition { Id = "demon_forest", DisplayName = "Demon Forest Exploration", Tier = MissionTier.Regional, Difficulty = 25, RewardGold = 200, RewardItemId = "mana_root", EnemyGroupId = "group_demon_normal" });
+		Add(new MissionDefinition { Id = "treasure_ruins", DisplayName = "Treasure Ruin Dive", Tier = MissionTier.Regional, Difficulty = 30, RewardGold = 350, RewardItemId = "magic_crystal", EnemyGroupId = "group_ruin_normal" });
+		Add(new MissionDefinition { Id = "desert_caravan", DisplayName = "Desert Caravan Escort", Tier = MissionTier.Regional, Difficulty = 28, RewardGold = 280, RewardItemId = "travel_gear", EnemyGroupId = "group_bandit_normal" });
+		Add(new MissionDefinition { Id = "underground_cave", DisplayName = "Underground Cave Survey", Tier = MissionTier.Regional, Difficulty = 32, RewardGold = 300, RewardItemId = "first_aid", EnemyGroupId = "group_worm_normal" });
+		Add(new MissionDefinition { Id = "lava_chasm", DisplayName = "Lava Chasm Expedition", Tier = MissionTier.Dangerous, Difficulty = 45, RewardGold = 600, RewardItemId = "reinforced_vest", EnemyGroupId = "group_dragon_dangerous" });
+		Add(new MissionDefinition { Id = "phantom_castle", DisplayName = "Phantom Castle Assault", Tier = MissionTier.Dangerous, Difficulty = 50, RewardGold = 800, RewardItemId = "fortitude_ring", EnemyGroupId = "group_demon_dangerous" });
+		Add(new MissionDefinition { Id = "abyssal_pit", DisplayName = "Abyssal Pit Descent", Tier = MissionTier.Dangerous, Difficulty = 55, RewardGold = 900, RewardItemId = "magic_ring", EnemyGroupId = "group_abyssal_dangerous" });
+		Add(new MissionDefinition { Id = "sacred_temple", DisplayName = "Sacred Temple Purification", Tier = MissionTier.Dangerous, Difficulty = 60, RewardGold = 1200, RewardItemId = "necronomicon", EnemyGroupId = "group_holy_special" });
+		Add(new MissionDefinition { Id = "demon_lord", DisplayName = "Demon Lord Confrontation", Tier = MissionTier.Dangerous, Difficulty = 80, RewardGold = 5000, RewardItemId = "heavenly_robe", EnemyGroupId = "group_demon_lord_special" });
+		Add(new MissionDefinition { Id = "dragon_nest", DisplayName = "Dragon Nest Infiltration", Tier = MissionTier.Dangerous, Difficulty = 70, RewardGold = 3000, RewardItemId = "dragon_egg", EnemyGroupId = "group_dragon_special" });
 	}
 
 	private void SeedEnemies()
