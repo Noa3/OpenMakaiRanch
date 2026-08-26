@@ -277,6 +277,17 @@ public partial class UiShellController : Control
 			case "prologue": RenderPrologue(); break;
 			case "victory": RenderVictory(); break;
 			case "character_detail": RenderCharacterDetail(); break;
+			case "clothing_list": RenderClothingList(); break;
+			case "clothing_change": RenderClothingChange(); break;
+			case "clothing_strip": RenderClothingStrip(); break;
+			case "room_assign": RenderRoomAssign(); break;
+			case "options": RenderOptions(); break;
+			case "ability": RenderAbility(); break;
+			case "pharmacy_list": RenderPharmacyList(); break;
+			case "pharmacy_craft": RenderPharmacyCraft(); break;
+			case "magic_basic": RenderMagicBasic(); break;
+			case "magic_forbidden": RenderMagicForbidden(); break;
+			case "magic_tentacle": RenderMagicTentacle(); break;
 			default: RenderRanch(); break;
 		}
 

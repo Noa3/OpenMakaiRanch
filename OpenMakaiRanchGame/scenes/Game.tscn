@@ -333,86 +333,203 @@ theme_override_constants/separation = 6
 [node name="CoreSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-text = "RANCH"
+text = "Farm"
 
 [node name="OverviewButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Overview"
+text = "Ranch Overview"
+screen_id = "ranch"
+compact_screen_id = "ranch"
 
 [node name="ScheduleButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Schedule"
+screen_id = "schedule"
+compact_screen_id = "schedule"
 
 [node name="TownButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Town"
+screen_id = "town"
+compact_screen_id = "town"
 
 [node name="ShopButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Shop"
+text = "●SHOP"
+screen_id = "shop"
+compact_screen_id = "shop"
 
-[node name="ProgressSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+[node name="ClothingSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-text = "CHARACTERS"
+text = "Clothing"
+
+[node name="ClothingListButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Clothing List"
+screen_id = "clothing_list"
+compact_screen_id = "clothing"
+
+[node name="ClothingChangeButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Change Clothing"
+screen_id = "clothing_change"
+compact_screen_id = "clothing"
+
+[node name="ClothingStripButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Undress"
+screen_id = "clothing_strip"
+compact_screen_id = "clothing"
+
+[node name="CharacterSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Characters"
 
 [node name="CharactersButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Roster"
+text = "Character Roster"
+screen_id = "roster"
+compact_screen_id = "roster"
 
 [node name="TrainingButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Training"
+screen_id = "training"
+compact_screen_id = "training"
 
-[node name="BondButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+[node name="VisitButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Bond"
+text = "Visit"
+screen_id = "visit"
+compact_screen_id = "visit"
 
-[node name="MilkButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+[node name="RoomAssignButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Milk"
+text = "Rooms"
+screen_id = "room_assign"
+compact_screen_id = "room"
+
+[node name="FallSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Corruption"
 
 [node name="MentalButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Mental"
+text = "Corruption Status"
+screen_id = "mental"
+compact_screen_id = "mental"
 
-[node name="AdventureSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+[node name="MilkCowButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Milk Cow"
+screen_id = "milk"
+compact_screen_id = "milk"
+
+[node name="MagicSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-text = "ADVENTURE"
+text = "Magic"
+
+[node name="MagicBasicButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Basic Magic"
+screen_id = "magic_basic"
+compact_screen_id = "magic"
+
+[node name="MagicForbiddenButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Forbidden Magic"
+screen_id = "magic_forbidden"
+compact_screen_id = "magic"
+
+[node name="MagicTentacleButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Tentacle Magic"
+screen_id = "magic_tentacle"
+compact_screen_id = "magic"
+
+[node name="AbilitySection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Abilities"
+
+[node name="AbilityButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Trained Abilities"
+screen_id = "ability"
+compact_screen_id = "ability"
+
+[node name="PharmacySection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Pharmacy"
+
+[node name="PharmacyButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Potions"
+screen_id = "pharmacy_list"
+compact_screen_id = "pharmacy"
+
+[node name="PharmacyCraftButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Craft Potions"
+screen_id = "pharmacy_craft"
+compact_screen_id = "pharmacy"
+
+[node name="CombatSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Combat"
 
 [node name="AdventureButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Adventure"
+screen_id = "adventure"
+compact_screen_id = "adventure"
 
 [node name="CombatButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Combat"
+text = "Combat Results"
+screen_id = "combat"
+compact_screen_id = "combat"
 
 [node name="MilestonesButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Milestones"
+text = "到達目標"
+screen_id = "milestones"
+compact_screen_id = "milestones"
 
 [node name="ResearchButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Research"
-
-[node name="PetsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
-layout_mode = 2
-text = "Pets"
+screen_id = "research"
+compact_screen_id = "research"
 
 [node name="SystemSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-text = "SYSTEM"
+text = "オプション"
 
 [node name="SaveLoadButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Save And Load"
+text = "セーブ/ロード"
+screen_id = "saveload"
+compact_screen_id = "save"
 
 [node name="SettingsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "Settings"
+text = "コンフィグ"
+screen_id = "settings"
+compact_screen_id = "settings"
+
+[node name="OptionsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "オプション"
+screen_id = "options"
+compact_screen_id = "options"
 
 [node name="ContentPanel" type="PanelContainer" parent="UiShell/Margin/RootPanel/Root/Body"]
 layout_mode = 2

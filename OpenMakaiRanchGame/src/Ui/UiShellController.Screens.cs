@@ -2921,4 +2921,143 @@ public partial class UiShellController
         title.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("title"); };
         actions.AddChild(title);
     }
+
+    // === Milk Cow (Milk Processing) ===
+
+    private void RenderMilkCow()
+    {
+        AddTitle(T("screen.milk_cow", "Milk Cow"));
+
+        var chars = _game.Roster.Characters.ToList();
+        if (!chars.Any())
+        {
+            _content.AddChild(MutedLabel("No characters available."));
+            return;
+        }
+
+        var charPicker = StyledPicker(240);
+        var selectorRow = FlowRow(8);
+        _content.AddChild(selectorRow);
+        selectorRow.AddChild(MutedLabel("Character"));
+        for (var i = 0; i < chars.Count; i++)
+        {
+            charPicker.AddItem(CharacterPickerName(chars[i]));
+            if (i == 0) charPicker.Selected = 0;
+        }
+        selectorRow.AddChild(charPicker);
+
+        var character = chars[0];
+
+        // MilkState: Capacity, Production, CurrentAmount, Quality, HasMilkConstitution, Concentration
+        var milk = character.Milk;
+        _content.AddChild(AddStyledLine($"Milk Capacity: {milk.Capacity}", true));
+        _content.AddChild(AddStyledLine($"Milk Production: {milk.Production}"));
+        _content.AddChild(AddStyledLine($"Current Stock: {milk.CurrentAmount}"));
+        _content.AddChild(AddStyledLine($"Milk Quality: {milk.Quality}%"));
+        _content.AddChild(MutedLabel($"Constitution: {(milk.HasMilkConstitution ? "Yes" : "No")} {(milk.HasMagicMilkConstitution ? "+Magic" : "")}"));
+        _content.AddChild(MutedLabel($"Concentration: {milk.Concentration}"));
+
+        if (milk.CurrentAmount > 0)
+        {
+            var collectBtn = PrimaryButton("Collect Milk");
+            collectBtn.Pressed += () =>
+            {
+                var amount = milk.CurrentAmount;
+                _game.State.Inventory.Items["milk"] = _game.State.Inventory.Items.GetValueOrDefault("milk", 0) + amount;
+                _game.NotifyStateChanged();
+                _game.Feedback.PlayConfirm();
+                ShowScreen("milk");
+            };
+            _content.AddChild(collectBtn);
+        }
+
+        // MilkCow corruption influence (from MentalState.MilkCow)
+        var mental = character.Mature;
+        if (mental != null)
+        {
+            var milkCowLevel = mental.MilkCow;
+            if (milkCowLevel > 3000)
+            {
+                _content.AddChild(MutedLabel($"Milk Cow influence: {milkCowLevel}/20000"));
+                _content.AddChild(MutedLabel($"Production boost: +{(milkCowLevel / 20000 * 50):F0}%"));
+            }
+
+            if (milkCowLevel > 8000)
+            {
+                _content.AddChild(AddStyledLine($"Corruption progress: {milkCowLevel / 200}%%", true));
+            }
+        }
+    }
+
+    // === Corruption Status (Fall State) ===
+
+    private void RenderFallState()
+    {
+        AddTitle(T("screen.fall_state", "Corruption Status"));
+
+        var chars = _game.Roster.Characters.ToList();
+        if (!chars.Any())
+        {
+            _content.AddChild(MutedLabel("No characters available."));
+            return;
+        }
+
+        foreach (var character in chars)
+        {
+            var definition = _game.Roster.DefinitionFor(character);
+            var card = CardContainer();
+            _content.AddChild(card);
+            card.AddChild(SubtitleLabel(definition.DisplayName));
+
+            var mental = character.Mature;
+            if (mental == null)
+            {
+                card.AddChild(MutedLabel("No mental state data."));
+                continue;
+            }
+
+            // Corruption level derived from Resistance + Dignity + Reason + MentalStrength
+            var totalMental = mental.Resistance + mental.Dignity + mental.Reason + mental.MentalStrength;
+            var maxMental = 40000;
+            var corruptionPercent = Math.Max(0, (maxMental - totalMental) / maxMental * 100);
+
+            card.AddChild(AddStyledLine($"Corruption Level: {corruptionPercent}% {mental.FallState}", true));
+            card.AddChild(MutedLabel($"Resistance: {mental.Resistance}/10000"));
+            card.AddChild(MutedLabel($"Dignity: {mental.Dignity}/10000"));
+            card.AddChild(MutedLabel($"Submission: {mental.Submission}/20000"));
+            card.AddChild(MutedLabel($"Lust: {mental.Lust}/20000"));
+            card.AddChild(MutedLabel($"Milk Cow: {mental.MilkCow}/20000"));
+
+            card.AddChild(MutedLabel($"Is Collapsed: {mental.IsCollapsed}"));
+            card.AddChild(MutedLabel($"Is Brainwashed: {mental.IsBrainwashed}"));
+
+            if (mental.Marks.Any())
+            {
+                card.AddChild(AddStyledLine($"Marks: {string.Join(", ", mental.Marks)}", true));
+            }
+
+            if (mental.FallState != Core.Models.FallState.Normal)
+            {
+                var recoveryBtn = SecondaryButton("Recovery Training");
+                recoveryBtn.Pressed += () =>
+                {
+                    var effects = new Gameplay.MentalStateEffects
+                    {
+                        ResistanceDelta = 500,
+                        DignityDelta = 500,
+                        ReasonDelta = 300,
+                        MentalStrengthDelta = 400,
+                        ObedienceDelta = -200,
+                        LustDelta = -100
+                    };
+                    _game.MentalState.ApplyEffects(character, effects);
+                    _game.NotifyStateChanged();
+                    _game.Feedback.PlayConfirm();
+                    ShowScreen("mental");
+                };
+                card.AddChild(recoveryBtn);
+            }
+        }
+    }
+
 }
