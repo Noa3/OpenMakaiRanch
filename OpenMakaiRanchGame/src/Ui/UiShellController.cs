@@ -291,20 +291,6 @@ public partial class UiShellController : Control
 			default: RenderRanch(); break;
 		}
 
-		RenderNightActionBanner();
-
-		if (sameScreenRefresh && IsInstanceValid(_scroll))
-		{
-			_scroll.ScrollVertical = previousScroll;
-		}
-	}
-
-	private void RenderNightActionBanner()
-	{
-		if (_game.State.Calendar.Phase != DayPhase.Night) return;
-		if (_currentScreen is "title" or "character_creation" or "prologue" or "victory") return;
-		if (_content is null || !IsInstanceValid(_content)) return;
-
 		var selected = _game.State.Calendar.NightAction;
 		var hasChoice = selected is "rest" or "train" or "admin";
 

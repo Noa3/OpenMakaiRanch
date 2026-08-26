@@ -3060,4 +3060,883 @@ public partial class UiShellController
         }
     }
 
+
+    // ==================== Clothing Screens ====================
+
+    private void RenderClothingList()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.clothing.title", "Clothing"));
+
+        if (_detailCharacterId.Length == 0)
+        {
+            _content.AddChild(MutedLabel(T("screen.clothing.no_character", "No character selected.")));
+            return;
+        }
+
+        var character = _game.State.Roster.Characters.FirstOrDefault(c => c.Id == _detailCharacterId);
+        if (character is null)
+        {
+            _content.AddChild(MutedLabel(T("screen.clothing.character_not_found", "Character not found.")));
+            return;
+        }
+
+        var equippedCard = CardContainer();
+        _content.AddChild(equippedCard);
+        var equippedInner = CardContent();
+        equippedCard.AddChild(equippedInner);
+        equippedInner.AddChild(SubtitleLabel(T("screen.clothing.equipped", "Currently Equipped")));
+
+        if (character.EquippedItems is null || character.EquippedItems.Count == 0)
+        {
+            equippedInner.AddChild(MutedLabel(T("screen.clothing.equipped_empty", "Nothing equipped.")));
+        }
+        else
+        {
+            foreach (var slotAndItem in character.EquippedItems)
+            {
+                var itemDef = _game.Data.Items.TryGetValue(slotAndItem.Value, out var item) ? item.DisplayName : slotAndItem.Value;
+                equippedInner.AddChild(AddStyledLine(slotAndItem.Key + ": " + itemDef));
+            }
+        }
+
+        var availableCard = CardContainer();
+        _content.AddChild(availableCard);
+        var availableInner = CardContent();
+        availableCard.AddChild(availableInner);
+        availableInner.AddChild(SubtitleLabel(T("screen.clothing.available", "Available Clothing")));
+
+        var clothingItems = _game.Data.Items.Values
+            .Where(item => item.Category == OpenMakaiRanch.Core.Resources.ItemCategory.Equipment)
+            .ToList();
+
+        if (clothingItems.Count == 0)
+        {
+            availableInner.AddChild(MutedLabel(T("screen.clothing.no_clothing", "No clothing items available.")));
+        }
+        else
+        {
+            foreach (var item in clothingItems)
+            {
+                var isEquipped = character.EquippedItems is not null && character.EquippedItems.Any(e => e.Value == item.Id);
+
+                if (!isEquipped)
+                {
+                    var equipBtn = PrimaryButton(T("screen.clothing.equip", "Equip"), "Equip " + item.DisplayName);
+                    equipBtn.Disabled = _game.Economy.Gold < item.Price;
+                    var capturedItem = item;
+                    var capturedChar = character;
+                    equipBtn.Pressed += () =>
+                    {
+                        ExecuteUiAction(() =>
+                        {
+                            var successResult = _game.Clothing.EquipItem(capturedChar, capturedItem.Id);
+                            if (successResult.Success)
+                            {
+                                _game.NotifyStateChanged();
+                                _game.Feedback.PlayConfirm();
+                                ShowScreen("clothing_change");
+                            }
+                            else
+                            {
+                                _game.Feedback.PlayError();
+                                SetStatus(successResult.Error, true);
+                            }
+                        }, true, "clothing_change");
+                    };
+                    availableInner.AddChild(equipBtn);
+                    if (equipBtn.Disabled)
+                    {
+                        availableInner.AddChild(RequirementLabel("Need " + (capturedItem.Price - _game.Economy.Gold) + "g"));
+                    }
+                }
+                else
+                {
+                    var unequipBtn = SecondaryButton(T("screen.clothing.unequip", "Unequip"), "Remove " + item.DisplayName);
+                    var capturedSlotKey = item.Slot.ToString();
+                    var capturedChar2 = character;
+                    unequipBtn.Pressed += () =>
+                    {
+                        ExecuteUiAction(() =>
+                        {
+                            if (Enum.TryParse<OpenMakaiRanch.Core.Resources.EquipmentSlot>(capturedSlotKey, true, out var slot))
+                            {
+                                var successResult = _game.Clothing.UnequipItem(capturedChar2, slot);
+                                if (successResult.Success)
+                                {
+                                    _game.NotifyStateChanged();
+                                    _game.Feedback.PlayConfirm();
+                                    ShowScreen("clothing_change");
+                                }
+                                else
+                                {
+                                    _game.Feedback.PlayError();
+                                    SetStatus(successResult.Error, true);
+                                }
+                            }
+                        }, true, "clothing_change");
+                    };
+                    availableInner.AddChild(unequipBtn);
+                }
+            }
+        }
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.clothing_back", "Return to ranch overview"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderClothingChange()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.clothing.change_title", "Change Clothing"));
+
+        if (_detailCharacterId.Length == 0)
+        {
+            _content.AddChild(MutedLabel(T("screen.clothing.no_character", "No character selected.")));
+            return;
+        }
+
+        var character = _game.State.Roster.Characters.FirstOrDefault(c => c.Id == _detailCharacterId);
+        if (character is null)
+        {
+            _content.AddChild(MutedLabel(T("screen.clothing.character_not_found", "Character not found.")));
+            return;
+        }
+
+        var definition = _game.Roster.DefinitionFor(character);
+
+        var outfitCard = CardContainer();
+        _content.AddChild(outfitCard);
+        var outfitInner = CardContent();
+        outfitCard.AddChild(outfitInner);
+        outfitInner.AddChild(SubtitleLabel(T("screen.clothing.outfit", "Current Outfit")));
+
+        if (character.EquippedItems is null || character.EquippedItems.Count == 0)
+        {
+            outfitInner.AddChild(MutedLabel(T("screen.clothing.outfit_empty", "Nothing equipped.")));
+        }
+        else
+        {
+            var bonuses = _game.Clothing.GetTotalBonuses(character);
+            foreach (var slotAndItem in character.EquippedItems)
+            {
+                var itemDef = _game.Data.Items.TryGetValue(slotAndItem.Value, out var item) ? item.DisplayName : slotAndItem.Value;
+                outfitInner.AddChild(AddStyledLine(slotAndItem.Key + ": " + itemDef + " | Ranch +" + bonuses.Item1 + " Craft +" + bonuses.Item2 + " Combat +" + bonuses.Item3));
+            }
+        }
+
+        var visualCard = CardContainer();
+        _content.AddChild(visualCard);
+        var portrait = BuildCharacterVisual(character, definition);
+        if (portrait is not null) visualCard.AddChild(portrait);
+
+        var changeCard = CardContainer();
+        _content.AddChild(changeCard);
+        var changeInner = CardContent();
+        changeCard.AddChild(changeInner);
+        changeInner.AddChild(SubtitleLabel(T("screen.clothing.available_items", "Available Items")));
+
+        var availableItems = _game.Data.Items.Values
+            .Where(item => item.Category == OpenMakaiRanch.Core.Resources.ItemCategory.Equipment)
+            .ToList();
+
+        if (availableItems.Count == 0)
+        {
+            changeInner.AddChild(MutedLabel(T("screen.clothing.no_items", "No items available.")));
+        }
+        else
+        {
+            foreach (var item in availableItems)
+            {
+                var isEquipped = character.EquippedItems is not null && character.EquippedItems.Any(e => e.Value == item.Id);
+                var itemCard = CardContainer();
+                itemCard.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                _content.AddChild(itemCard);
+                var itemInner = CardContent();
+                itemCard.AddChild(itemInner);
+                itemInner.AddChild(SubtitleLabel(item.DisplayName + (isEquipped ? " (Equipped)" : "")));
+                itemInner.AddChild(MutedLabel(item.Description));
+
+                if (!isEquipped)
+                {
+                    var equipBtn = PrimaryButton(T("screen.clothing.equip", "Equip"), "Equip " + item.DisplayName);
+                    equipBtn.Disabled = _game.Economy.Gold < item.Price;
+                    var capturedItem2 = item;
+                    var capturedChar3 = character;
+                    equipBtn.Pressed += () =>
+                    {
+                        ExecuteUiAction(() =>
+                        {
+                            var successResult = _game.Clothing.EquipItem(capturedChar3, capturedItem2.Id);
+                            if (successResult.Success)
+                            {
+                                _game.NotifyStateChanged();
+                                _game.Feedback.PlayConfirm();
+                                ShowScreen("clothing_change");
+                            }
+                            else
+                            {
+                                _game.Feedback.PlayError();
+                                SetStatus(successResult.Error, true);
+                            }
+                        }, true, "clothing_change");
+                    };
+                    itemInner.AddChild(equipBtn);
+                    if (equipBtn.Disabled)
+                    {
+                        itemInner.AddChild(RequirementLabel("Need " + (capturedItem2.Price - _game.Economy.Gold) + "g"));
+                    }
+                }
+            }
+        }
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.clothing_back", "Return to clothing list"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("clothing_list"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderClothingStrip()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.clothing.strip_title", "Remove Clothing"));
+
+        if (_detailCharacterId.Length == 0)
+        {
+            _content.AddChild(MutedLabel(T("screen.clothing.no_character", "No character selected.")));
+            return;
+        }
+
+        var character = _game.State.Roster.Characters.FirstOrDefault(c => c.Id == _detailCharacterId);
+        if (character is null)
+        {
+            _content.AddChild(MutedLabel(T("screen.clothing.character_not_found", "Character not found.")));
+            return;
+        }
+
+        var definition = _game.Roster.DefinitionFor(character);
+
+        var outfitCard = CardContainer();
+        _content.AddChild(outfitCard);
+        var outfitInner = CardContent();
+        outfitCard.AddChild(outfitInner);
+        outfitInner.AddChild(SubtitleLabel(T("screen.clothing.current_outfit", "Current Outfit")));
+
+        if (character.EquippedItems is null || character.EquippedItems.Count == 0)
+        {
+            outfitInner.AddChild(MutedLabel(T("screen.clothing.no_equipment", "No equipment equipped.")));
+            outfitInner.AddChild(AddStyledLine(T("screen.clothing.already_stripped", "Character has nothing to remove.")));
+        }
+        else
+        {
+            foreach (var slotAndItem in character.EquippedItems)
+            {
+                var itemDef = _game.Data.Items.TryGetValue(slotAndItem.Value, out var item) ? item.DisplayName : slotAndItem.Value;
+                var itemCard = CardContainer();
+                itemCard.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                _content.AddChild(itemCard);
+                var itemInner = CardContent();
+                itemCard.AddChild(itemInner);
+                itemInner.AddChild(SubtitleLabel(slotAndItem.Key + ": " + itemDef));
+
+                var removeBtn = PrimaryButton(T("screen.clothing.remove", "Remove"), "Remove " + itemDef);
+                var capturedItem3 = item;
+                var capturedSlotKey2 = slotAndItem.Key;
+                var capturedChar4 = character;
+                removeBtn.Pressed += () =>
+                {
+                    ExecuteUiAction(() =>
+                    {
+                        if (Enum.TryParse<OpenMakaiRanch.Core.Resources.EquipmentSlot>(capturedSlotKey2, true, out var slot2))
+                        {
+                            var successResult = _game.Clothing.UnequipItem(capturedChar4, slot2);
+                            if (successResult.Success)
+                            {
+                                _game.NotifyStateChanged();
+                                _game.Feedback.PlayConfirm();
+                                ShowScreen("clothing_change");
+                            }
+                            else
+                            {
+                                _game.Feedback.PlayError();
+                                SetStatus(successResult.Error, true);
+                            }
+                        }
+                    }, true, "clothing_change");
+                };
+                itemInner.AddChild(removeBtn);
+            }
+        }
+
+        var visualCard = CardContainer();
+        _content.AddChild(visualCard);
+        var portrait2 = BuildCharacterVisual(character, definition);
+        if (portrait2 is not null) visualCard.AddChild(portrait2);
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.clothing_back", "Return to clothing list"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("clothing_list"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderRoomAssign()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.room.title", "Room Assignment"));
+
+        var buildingsCard = CardContainer();
+        _content.AddChild(buildingsCard);
+        var buildingsInner = CardContent();
+        buildingsCard.AddChild(buildingsInner);
+        buildingsInner.AddChild(SubtitleLabel(T("screen.room.buildings", "Available Buildings")));
+
+        foreach (var buildingId in LivingBuildingIds)
+        {
+            var cap = BuildingCapacities.TryGetValue(buildingId, out var capacity) ? capacity : 2;
+            var isBuilt = buildingId switch
+            {
+                "office" => true,
+                "private_room" => true,
+                "barn" => true,
+                "dormitory" => true,
+                _ => _game.State.Ranch.Facilities.TryGetValue(buildingId, out var level) && level > 0
+            };
+            var nameDef = _game.Data.Facilities.TryGetValue(buildingId, out var facDef) ? facDef.DisplayName : buildingId;
+
+            var buildingRow = CardContainer();
+            buildingRow.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            _content.AddChild(buildingRow);
+            var buildingInner = CardContent();
+            buildingRow.AddChild(buildingInner);
+            buildingInner.AddChild(SubtitleLabel(nameDef));
+            buildingInner.AddChild(MutedLabel("Capacity: " + cap + " | " + (isBuilt ? T("screen.room.open", "Open") : T("screen.room.locked", "Locked"))));
+
+            if (!isBuilt && facDef is not null)
+            {
+                var cost = _game.Ranch.FacilityUpgradeCost(facDef, 0);
+                var buildBtn = PrimaryButton("Build (" + cost + "g)");
+                buildBtn.Disabled = _game.Economy.Gold < cost;
+                var capturedBldId = buildingId;
+                var capturedBldFac = facDef;
+                buildBtn.Pressed += () =>
+                {
+                    ExecuteUiAction(() =>
+                    {
+                        if (_game.Ranch.UpgradeFacility(capturedBldId, _game.Economy))
+                        {
+                            _game.NotifyStateChanged();
+                            _game.Feedback.PlayConfirm();
+                            ShowScreen("room_assign");
+                        }
+                        else
+                        {
+                            _game.Feedback.PlayError();
+                            SetStatus(T("screen.room.build_failed", "Building failed."), true);
+                        }
+                    }, true, "room_assign");
+                };
+                buildingInner.AddChild(buildBtn);
+                if (buildBtn.Disabled)
+                {
+                    buildingInner.AddChild(RequirementLabel("Need " + (cost - _game.Economy.Gold) + "g"));
+                }
+            }
+        }
+
+        var assignmentCard = CardContainer();
+        _content.AddChild(assignmentCard);
+        var assignmentInner = CardContent();
+        assignmentCard.AddChild(assignmentInner);
+        assignmentInner.AddChild(SubtitleLabel(T("screen.room.assignments", "Current Assignments")));
+
+        foreach (var character in _game.Roster.Characters)
+        {
+            var jobId = _game.Schedule.GetAssignment(character.Id);
+            var jobName = _game.Data.Jobs.TryGetValue(jobId, out var jobDef) ? jobDef.DisplayName : jobId;
+            var def = _game.Roster.DefinitionFor(character);
+            var assignmentRow = CardContainer();
+            assignmentRow.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            _content.AddChild(assignmentRow);
+            var assignmentRowInner = CardContent();
+            assignmentRow.AddChild(assignmentRowInner);
+            assignmentRowInner.AddChild(SubtitleLabel(def.DisplayName));
+            assignmentRowInner.AddChild(MutedLabel("Current Job: " + jobName));
+
+            var assignBtn = SecondaryButton(T("screen.room.assign", "Assign"), T("tooltip.room_assign", "Assign this character to a different job"));
+            var capturedCharId = character.Id;
+            assignBtn.Pressed += () => { _detailCharacterId = capturedCharId; ShowScreen("schedule"); };
+            assignmentRowInner.AddChild(assignBtn);
+        }
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.room_back", "Return to ranch overview"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderOptions()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.options.title", "Options"));
+
+        var settings = _game.State.Settings;
+
+        var uiCard = CardContainer();
+        _content.AddChild(uiCard);
+        var uiInner = CardContent();
+        uiCard.AddChild(uiInner);
+        uiInner.AddChild(SubtitleLabel(T("screen.options.ui", "UI Settings")));
+
+        uiInner.AddChild(AddStyledLine("UI Scale: " + (settings.UiScale * 100).ToString("F0") + "%"));
+        var scaleUpBtn = PrimaryButton(T("screen.options.scale_up", "Scale Up"));
+        scaleUpBtn.Pressed += () =>
+        {
+            var newScale = Mathf.Min(2.0f, settings.UiScale + 0.1f);
+            _game.SetUiScale(newScale);
+            _rootPanel.Scale = Vector2.One * newScale;
+            _game.NotifyStateChanged();
+            _game.Feedback.PlayConfirm();
+            ShowScreen("options");
+        };
+        uiInner.AddChild(scaleUpBtn);
+
+        var scaleDownBtn = SecondaryButton(T("screen.options.scale_down", "Scale Down"));
+        scaleDownBtn.Pressed += () =>
+        {
+            var newScale2 = Mathf.Max(0.5f, settings.UiScale - 0.1f);
+            _game.SetUiScale(newScale2);
+            _rootPanel.Scale = Vector2.One * newScale2;
+            _game.NotifyStateChanged();
+            _game.Feedback.PlayConfirm();
+            ShowScreen("options");
+        };
+        uiInner.AddChild(scaleDownBtn);
+
+        var dataCard = CardContainer();
+        _content.AddChild(dataCard);
+        var dataInner = CardContent();
+        dataCard.AddChild(dataInner);
+        dataInner.AddChild(SubtitleLabel(T("screen.options.data", "Data & Save")));
+
+        var exportBtn = PrimaryButton(T("screen.options.export", "Export Save Data"), T("tooltip.export", "Export the current save as JSON"));
+        exportBtn.Pressed += () =>
+        {
+            try
+            {
+                var json = System.Text.Json.JsonSerializer.Serialize(_game.State, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                var exportDir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "exports");
+                System.IO.Directory.CreateDirectory(exportDir);
+                var exportPath = System.IO.Path.Combine(exportDir, "save_day" + _game.State.Calendar.Day + ".json");
+                System.IO.File.WriteAllText(exportPath, json);
+                _game.NotifyStateChanged();
+                _game.Feedback.PlayConfirm();
+                SetStatus("Save exported to: " + exportPath, true);
+            }
+            catch (System.Exception ex)
+            {
+                _game.Feedback.PlayError();
+                SetStatus("Export failed: " + ex.Message, true);
+            }
+        };
+        dataInner.AddChild(exportBtn);
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.options_back", "Return to ranch overview"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderAbility()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.ability.title", "Abilities & Talents"));
+
+        if (_detailCharacterId.Length == 0)
+        {
+            _content.AddChild(MutedLabel(T("screen.ability.no_character", "No character selected.")));
+            return;
+        }
+
+        var character = _game.State.Roster.Characters.FirstOrDefault(c => c.Id == _detailCharacterId);
+        if (character is null)
+        {
+            _content.AddChild(MutedLabel(T("screen.ability.character_not_found", "Character not found.")));
+            return;
+        }
+
+        var definition = _game.Roster.DefinitionFor(character);
+
+        var talentsCard = CardContainer();
+        _content.AddChild(talentsCard);
+        var talentsInner = CardContent();
+        talentsCard.AddChild(talentsInner);
+        talentsInner.AddChild(SubtitleLabel(T("screen.ability.talents", "Talents")));
+
+        if (definition.Talents is null || definition.Talents.Count == 0)
+        {
+            talentsInner.AddChild(MutedLabel(T("screen.ability.no_talents", "No talents defined.")));
+        }
+        else
+        {
+            foreach (var talentId in definition.Talents)
+            {
+                var talentDef = _game.Data.Talents.TryGetValue(talentId, out var talent) ? talent : null;
+                var talentName = talentDef != null ? talentDef.DisplayName : talentId;
+                var talentDesc = talentDef != null ? talentDef.Description : "";
+                var talentRow = CardContainer();
+                talentRow.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                _content.AddChild(talentRow);
+                var talentRowInner = CardContent();
+                talentRow.AddChild(talentRowInner);
+                talentRowInner.AddChild(SubtitleLabel(talentName));
+                talentRowInner.AddChild(MutedLabel(talentDesc));
+            }
+        }
+
+        var skillsCard = CardContainer();
+        _content.AddChild(skillsCard);
+        var skillsInner = CardContent();
+        skillsCard.AddChild(skillsInner);
+        skillsInner.AddChild(SubtitleLabel(T("screen.ability.skills", "Skills")));
+
+        var effectiveRanch = character.RanchSkill + _game.Equipment.BonusRanchSkill(_detailCharacterId);
+        var effectiveCraft = character.CraftSkill + _game.Equipment.BonusCraftSkill(_detailCharacterId);
+        var effectiveCombat = character.CombatSkill + _game.Equipment.BonusCombatSkill(_detailCharacterId);
+
+        skillsInner.AddChild(AddStyledLine("Ranch: " + character.RanchSkill + " (" + effectiveRanch + " effective)"));
+        skillsInner.AddChild(AddStyledLine("Craft: " + character.CraftSkill + " (" + effectiveCraft + " effective)"));
+        skillsInner.AddChild(AddStyledLine("Combat: " + character.CombatSkill + " (" + effectiveCombat + " effective)"));
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.ability_back", "Return to ranch overview"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderPharmacyList()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.pharmacy.title", "Pharmacy"));
+
+        var itemsCard = CardContainer();
+        _content.AddChild(itemsCard);
+        var itemsInner = CardContent();
+        itemsCard.AddChild(itemsInner);
+        itemsInner.AddChild(SubtitleLabel(T("screen.pharmacy.items", "Available Items")));
+
+        var consumables = _game.Data.Items.Values
+            .Where(item => item.Category == OpenMakaiRanch.Core.Resources.ItemCategory.Consumable || item.Category == OpenMakaiRanch.Core.Resources.ItemCategory.Material)
+            .ToList();
+
+        if (consumables.Count == 0)
+        {
+            itemsInner.AddChild(MutedLabel(T("screen.pharmacy.no_items", "No pharmacy items available.")));
+        }
+        else
+        {
+            foreach (var item in consumables)
+            {
+                var itemCard = CardContainer();
+                itemCard.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                _content.AddChild(itemCard);
+                var itemInner = CardContent();
+                itemCard.AddChild(itemInner);
+                itemInner.AddChild(SubtitleLabel(item.DisplayName));
+                itemInner.AddChild(MutedLabel(item.Description));
+                itemInner.AddChild(MutedLabel("Price: " + item.Price + "g"));
+            }
+        }
+
+        var inventoryCard = CardContainer();
+        _content.AddChild(inventoryCard);
+        var inventoryInner = CardContent();
+        inventoryCard.AddChild(inventoryInner);
+        inventoryInner.AddChild(SubtitleLabel(T("screen.pharmacy.inventory", "Current Inventory")));
+
+        var inventory = _game.Inventory.Items;
+        if (inventory is null || inventory.Count == 0)
+        {
+            inventoryInner.AddChild(MutedLabel(T("screen.pharmacy.empty_inventory", "Inventory is empty.")));
+        }
+        else
+        {
+            foreach (var kvp in inventory)
+            {
+                var itemDef = _game.Data.Items.TryGetValue(kvp.Key, out var item) ? item.DisplayName : kvp.Key;
+                inventoryInner.AddChild(AddStyledLine(itemDef + ": x" + kvp.Value));
+            }
+        }
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.pharmacy_back", "Return to ranch overview"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderPharmacyCraft()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.pharmacy.craft_title", "Craft Items"));
+
+        var materials = _game.Data.Items.Values
+            .Where(item => item.Category == OpenMakaiRanch.Core.Resources.ItemCategory.Material)
+            .ToList();
+
+        var craftCard = CardContainer();
+        _content.AddChild(craftCard);
+        var craftInner = CardContent();
+        craftCard.AddChild(craftInner);
+        craftInner.AddChild(SubtitleLabel(T("screen.pharmacy.craftable", "Craftable Items")));
+
+        if (materials.Count == 0)
+        {
+            craftInner.AddChild(MutedLabel(T("screen.pharmacy.no_materials", "No craftable materials available.")));
+        }
+        else
+        {
+            foreach (var material in materials)
+            {
+                var craftRow = CardContainer();
+                craftRow.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                _content.AddChild(craftRow);
+                var craftRowInner = CardContent();
+                craftRow.AddChild(craftRowInner);
+                craftRowInner.AddChild(SubtitleLabel(material.DisplayName));
+                craftRowInner.AddChild(MutedLabel(material.Description));
+
+                var craftBtn = PrimaryButton(T("screen.pharmacy.craft", "Craft"), "Craft " + material.DisplayName);
+                craftBtn.Disabled = _game.Economy.Gold < material.Price;
+                var capturedMat = material;
+                craftBtn.Pressed += () =>
+                {
+                    ExecuteUiAction(() =>
+                    {
+                        if (_game.Economy.Spend(capturedMat.Price))
+                        {
+                            _game.Inventory.AddItem(capturedMat.Id, 1);
+                            _game.NotifyStateChanged();
+                            _game.Feedback.PlayConfirm();
+                            ShowScreen("pharmacy_craft");
+                        }
+                        else
+                        {
+                            _game.Feedback.PlayError();
+                            SetStatus(T("screen.pharmacy.craft_failed", "Crafting failed — not enough gold."), true);
+                        }
+                    }, true, "pharmacy_craft");
+                };
+                craftRowInner.AddChild(craftBtn);
+                if (craftBtn.Disabled)
+                {
+                    craftRowInner.AddChild(RequirementLabel("Need " + (capturedMat.Price - _game.Economy.Gold) + "g"));
+                }
+            }
+        }
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.pharmacy_back", "Return to pharmacy list"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("pharmacy_list"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderMagicBasic()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.magic.title", "Magic"));
+
+        var spells = _game.Data.Spells.Values.ToList();
+
+        if (spells.Count == 0)
+        {
+            _content.AddChild(MutedLabel(T("screen.magic.no_spells", "No spells available.")));
+            return;
+        }
+
+        var spellsCard = CardContainer();
+        _content.AddChild(spellsCard);
+        var spellsInner = CardContent();
+        spellsCard.AddChild(spellsInner);
+        spellsInner.AddChild(SubtitleLabel(T("screen.magic.spells", "Available Spells")));
+
+        foreach (var spell in spells)
+        {
+            var spellCard = CardContainer();
+            spellCard.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            _content.AddChild(spellCard);
+            var spellInner = CardContent();
+            spellCard.AddChild(spellInner);
+            spellInner.AddChild(SubtitleLabel(spell.DisplayName));
+            spellInner.AddChild(MutedLabel(spell.Description));
+            spellInner.AddChild(MutedLabel("Type: " + spell.Type));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+
+            var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
+            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            var capturedSpell = spell;
+            castBtn.Pressed += () =>
+            {
+                ExecuteUiAction(() =>
+                {
+                    if (_game.State.Economy.ManaReservoir >= capturedSpell.ManaCost)
+                    {
+                        _game.State.Economy.ManaReservoir -= capturedSpell.ManaCost;
+                        _game.NotifyStateChanged();
+                        _game.Feedback.PlayConfirm();
+                        SetStatus("Cast: " + capturedSpell.DisplayName + " - " + capturedSpell.EffectDescription, true);
+                        ShowScreen("magic_basic");
+                    }
+                    else
+                    {
+                        _game.Feedback.PlayError();
+                        SetStatus("Need " + (capturedSpell.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                    }
+                }, true, "magic_basic");
+            };
+            spellInner.AddChild(castBtn);
+            if (castBtn.Disabled)
+            {
+                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+            }
+        }
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.magic_back", "Return to ranch overview"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderMagicForbidden()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.magic.forbidden_title", "Magic — Restricted Spells"));
+
+        var spells = _game.Data.Spells.Values.ToList();
+
+        if (spells.Count == 0)
+        {
+            _content.AddChild(MutedLabel(T("screen.magic.no_spells", "No spells available.")));
+            return;
+        }
+
+        var spellsCard = CardContainer();
+        _content.AddChild(spellsCard);
+        var spellsInner = CardContent();
+        spellsCard.AddChild(spellsInner);
+        spellsInner.AddChild(SubtitleLabel(T("screen.magic.spells", "Available Spells")));
+
+        foreach (var spell in spells)
+        {
+            var spellCard = CardContainer();
+            spellCard.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            _content.AddChild(spellCard);
+            var spellInner = CardContent();
+            spellCard.AddChild(spellInner);
+            spellInner.AddChild(SubtitleLabel(spell.DisplayName));
+            spellInner.AddChild(MutedLabel(spell.Description));
+            spellInner.AddChild(MutedLabel("Type: " + spell.Type));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+
+            var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
+            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            var capturedSpell2 = spell;
+            castBtn.Pressed += () =>
+            {
+                ExecuteUiAction(() =>
+                {
+                    if (_game.State.Economy.ManaReservoir >= capturedSpell2.ManaCost)
+                    {
+                        _game.State.Economy.ManaReservoir -= capturedSpell2.ManaCost;
+                        _game.NotifyStateChanged();
+                        _game.Feedback.PlayConfirm();
+                        SetStatus("Cast: " + capturedSpell2.DisplayName + " - " + capturedSpell2.EffectDescription, true);
+                        ShowScreen("magic_forbidden");
+                    }
+                    else
+                    {
+                        _game.Feedback.PlayError();
+                        SetStatus("Need " + (capturedSpell2.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                    }
+                }, true, "magic_forbidden");
+            };
+            spellInner.AddChild(castBtn);
+            if (castBtn.Disabled)
+            {
+                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell2.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+            }
+        }
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.magic_back", "Return to ranch overview"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        _content.AddChild(backBtn);
+    }
+
+    private void RenderMagicTentacle()
+    {
+        ClearContent();
+        UpdateTopBar();
+        AddTitle(T("screen.magic.tentacle_title", "Magic — Special Spells"));
+
+        var spells = _game.Data.Spells.Values.ToList();
+
+        if (spells.Count == 0)
+        {
+            _content.AddChild(MutedLabel(T("screen.magic.no_spells", "No spells available.")));
+            return;
+        }
+
+        var spellsCard = CardContainer();
+        _content.AddChild(spellsCard);
+        var spellsInner = CardContent();
+        spellsCard.AddChild(spellsInner);
+        spellsInner.AddChild(SubtitleLabel(T("screen.magic.spells", "Available Spells")));
+
+        foreach (var spell in spells)
+        {
+            var spellCard = CardContainer();
+            spellCard.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            _content.AddChild(spellCard);
+            var spellInner = CardContent();
+            spellCard.AddChild(spellInner);
+            spellInner.AddChild(SubtitleLabel(spell.DisplayName));
+            spellInner.AddChild(MutedLabel(spell.Description));
+            spellInner.AddChild(MutedLabel("Type: " + spell.Type));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+
+            var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
+            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            var capturedSpell3 = spell;
+            castBtn.Pressed += () =>
+            {
+                ExecuteUiAction(() =>
+                {
+                    if (_game.State.Economy.ManaReservoir >= capturedSpell3.ManaCost)
+                    {
+                        _game.State.Economy.ManaReservoir -= capturedSpell3.ManaCost;
+                        _game.NotifyStateChanged();
+                        _game.Feedback.PlayConfirm();
+                        SetStatus("Cast: " + capturedSpell3.DisplayName + " - " + capturedSpell3.EffectDescription, true);
+                        ShowScreen("magic_tentacle");
+                    }
+                    else
+                    {
+                        _game.Feedback.PlayError();
+                        SetStatus("Need " + (capturedSpell3.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                    }
+                }, true, "magic_tentacle");
+            };
+            spellInner.AddChild(castBtn);
+            if (castBtn.Disabled)
+            {
+                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell3.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+            }
+        }
+
+        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.magic_back", "Return to ranch overview"));
+        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        _content.AddChild(backBtn);
+    }
+
 }
