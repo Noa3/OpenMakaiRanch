@@ -498,7 +498,7 @@ compact_screen_id = "combat"
 
 [node name="MilestonesButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "到達目標"
+text = "Goals"
 screen_id = "milestones"
 compact_screen_id = "milestones"
 
@@ -511,23 +511,23 @@ compact_screen_id = "research"
 [node name="SystemSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-text = "オプション"
+text = "Settings"
 
 [node name="SaveLoadButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "セーブ/ロード"
+text = "Save/Load"
 screen_id = "saveload"
 compact_screen_id = "save"
 
 [node name="SettingsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "コンフィグ"
+text = "Config"
 screen_id = "settings"
 compact_screen_id = "settings"
 
 [node name="OptionsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
-text = "オプション"
+text = "Options"
 screen_id = "options"
 compact_screen_id = "options"
 

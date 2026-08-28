@@ -136,7 +136,11 @@ public sealed class PortraitRenderer
     /// </summary>
     public Control BuildCharacterVisual(CharacterState character, CharacterDefinition definition)
     {
-        var wrap = new VBoxContainer { CustomMinimumSize = new Vector2(PortraitDisplaySize, PortraitDisplaySize) };
+        var wrap = new VBoxContainer 
+        { 
+            CustomMinimumSize = new Vector2(PortraitDisplaySize, PortraitDisplaySize),
+            CustomMaximumSize = new Vector2(PortraitDisplaySize, PortraitDisplaySize)
+        };
         wrap.AddThemeConstantOverride("separation", 6);
 
         var layered = BuildLayeredPortrait(character, definition);
