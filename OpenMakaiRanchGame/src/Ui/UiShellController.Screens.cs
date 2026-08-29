@@ -1443,9 +1443,54 @@ public partial class UiShellController
 
     private void RenderCombatOutro()
     {
-        var btn = PrimaryButton(T("common.back", "Back"));
-        btn.Pressed += () => ShowScreen("adventure");
-        _content.AddChild(btn);
+        var summaryCard = CardContainer();
+        _content.AddChild(summaryCard);
+        var summaryInner = CardContent();
+        summaryCard.AddChild(summaryInner);
+        summaryInner.AddChild(SubtitleLabel(T("screen.combat.outro", "Mission Summary")));
+
+        if (_game.LastCombatReport is not null)
+        {
+            var report = _game.LastCombatReport;
+            summaryInner.AddChild(AddStyledLine($"Mission: {report.MissionId}", true));
+            summaryInner.AddChild(MutedLabel($"Outcome: {report.Outcome}"));
+            summaryInner.AddChild(MutedLabel($"Summary: {report.Summary}"));
+
+            if (report.RewardGold > 0)
+                summaryInner.AddChild(AddStyledLine($"Gold reward: +{report.RewardGold}{T("unit.g", "g")}", true));
+
+            if (!string.IsNullOrEmpty(report.RewardItemId))
+                summaryInner.AddChild(AddStyledLine($"Item received: {report.RewardItemId} x1", true));
+
+            if (report.CaptureAttempted && report.CaptureSucceeded)
+                summaryInner.AddChild(AddStyledLine($"Capture: {report.CapturedCharacterId}", true));
+
+            if (report.TurnLog.Count > 0)
+            {
+                summaryInner.AddChild(MutedLabel("--- Battle Log ---"));
+                foreach (var line in report.TurnLog)
+                {
+                    summaryInner.AddChild(MutedLabel(line));
+                }
+            }
+
+            if (report.PartyState.Count > 0)
+            {
+                summaryInner.AddChild(MutedLabel("--- Party Status ---"));
+                foreach (var snap in report.PartyState)
+                {
+                    summaryInner.AddChild(MutedLabel($"{snap.DisplayName}: HP {snap.CurrentHp}/{snap.MaxHp} | SP {snap.CurrentSp}/{snap.MaxSp} | Alive: {snap.IsAlive}"));
+                }
+            }
+        }
+        else
+        {
+            summaryInner.AddChild(MutedLabel(T("screen.combat.outro.no_report", "No combat report available.")));
+        }
+
+        var backBtn = SecondaryButton(T("common.back", "Back"), T("tooltip.back_adventure", "Return to the Adventure Guild"));
+        backBtn.Pressed += () => ShowScreen("adventure");
+        _content.AddChild(backBtn);
     }
 
     private void RenderMilestones()
