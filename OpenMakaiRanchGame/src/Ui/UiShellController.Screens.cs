@@ -833,13 +833,18 @@ public partial class UiShellController
     private void RenderSchedule()
     {
         AddTitle(T("screen.schedule", "Daily Schedule"));
+
         foreach (var character in _game.Roster.Characters)
         {
             var definition = _game.Roster.DefinitionFor(character);
             var card = CardContainer();
             _content.AddChild(card);
 
-            card.AddChild(SubtitleLabel($"{definition.DisplayName}: {_game.Schedule.GetAssignment(character.Id)}"));
+            var currentJob = _game.Schedule.GetAssignment(character.Id);
+            var currentJobName = _game.Data.Jobs.TryGetValue(currentJob, out var jDef) ? jDef.DisplayName : "Rest";
+            card.AddChild(SubtitleLabel($"{definition.DisplayName} — {currentJobName}"));
+            card.AddChild(MutedLabel($"HP {character.Hp}/{definition.MaxHp} | {T("label.energy", "E")}: {character.Energy}/{definition.MaxEnergy} | {T("label.morale", "M")}: {character.Morale}"));
+
             var row = FlowRow(8);
             card.AddChild(row);
 
@@ -853,7 +858,17 @@ public partial class UiShellController
                 if (job.MoraleDelta != 0) tooltipBits.Add($"{(job.MoraleDelta > 0 ? "+" : "")}{job.MoraleDelta} morale");
                 if (job.BondDelta > 0) tooltipBits.Add($"+{job.BondDelta} bond");
                 var tooltip = string.Join(", ", tooltipBits);
-                var button = SecondaryButton(job.DisplayName, tooltip);
+                var isCurrent = job.Id == currentJob;
+
+                Button button;
+                if (isCurrent)
+                {
+                    button = PrimaryButton(job.DisplayName, $"{tooltip} (current)");
+                }
+                else
+                {
+                    button = SecondaryButton(job.DisplayName, tooltip);
+                }
                 button.Pressed += () => ExecuteUiAction(() => _game.Schedule.AssignJob(character.Id, job.Id), false);
                 AddFlowButton(row, button, 150);
             }

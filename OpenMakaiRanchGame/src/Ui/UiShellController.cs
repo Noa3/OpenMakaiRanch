@@ -834,7 +834,7 @@ public partial class UiShellController : Control
 
 	private void UpdateNavigationState()
 	{
-		var hiddenScreens = new HashSet<string> { "training", "milk", "mental", "visit", "report" };
+		var hiddenScreens = new HashSet<string> { "training", "milk", "mental", "visit", "report", "saveload", "settings", "character_creation", "prologue", "victory", "title" };
 		foreach (var pair in _navButtons)
 		{
 			UpdateNavigationButton(pair.Value, pair.Key, hiddenScreens.Contains(pair.Key));
