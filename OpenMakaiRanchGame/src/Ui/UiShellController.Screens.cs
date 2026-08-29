@@ -2991,10 +2991,12 @@ public partial class UiShellController
         }
         selectorRow.AddChild(charPicker);
 
-        var character = chars[0];
+        var character = chars[charPicker.Selected];
+        if (character == null) character = chars[0];
 
         // MilkState: Capacity, Production, CurrentAmount, Quality, HasMilkConstitution, Concentration
         var milk = character.Milk;
+        _content.AddChild(AddStyledLine($"Selected: {CharacterPickerName(character)}", true));
         _content.AddChild(AddStyledLine($"Milk Capacity: {milk.Capacity}", true));
         _content.AddChild(AddStyledLine($"Milk Production: {milk.Production}"));
         _content.AddChild(AddStyledLine($"Current Stock: {milk.CurrentAmount}"));
@@ -3009,9 +3011,11 @@ public partial class UiShellController
             {
                 var amount = milk.CurrentAmount;
                 _game.State.Inventory.Items["milk"] = _game.State.Inventory.Items.GetValueOrDefault("milk", 0) + amount;
+                milk.CurrentAmount = 0;
+                milk.TotalShipped += amount;
+                _game.State.Economy.Gold += amount / 2;
                 _game.NotifyStateChanged();
                 _game.Feedback.PlayConfirm();
-                ShowScreen("milk");
             };
             _content.AddChild(collectBtn);
         }
