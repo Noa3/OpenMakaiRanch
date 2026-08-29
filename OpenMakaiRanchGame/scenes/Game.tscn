@@ -405,13 +405,35 @@ text = "Visit"
 screen_id = "visit"
 compact_screen_id = "visit"
 
-[node name="RoomAssignButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+|[node name="RoomAssignButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 layout_mode = 2
 text = "Rooms"
 screen_id = "room_assign"
 compact_screen_id = "room"
 
-[node name="FallSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+|[node name="BondSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Bond"
+
+|[node name="BondEventButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Bond Events"
+screen_id = "bond"
+compact_screen_id = "bond"
+
+|[node name="PetsSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Pets"
+
+|[node name="PetsButton" type="Button" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
+layout_mode = 2
+text = "Pet Management"
+screen_id = "pets"
+compact_screen_id = "pets"
+
+|[node name="FallSection" type="Label" parent="UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 text = "Corruption"
