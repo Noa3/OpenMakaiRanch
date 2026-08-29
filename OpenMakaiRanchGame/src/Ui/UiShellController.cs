@@ -787,6 +787,10 @@ public partial class UiShellController : Control
 
 	_bathtubLabel.Text = ranch.BathtubClean ? "Bath: Clean" : "Bath: Dirty";
 
+		_statusLabel.Text = cal.Phase == DayPhase.Night && !string.IsNullOrWhiteSpace(cal.NightAction)
+			? $"Night: {NightActionLabel(cal.NightAction)}"
+			: "";
+
 		_endDayButton.Text = cal.Phase == DayPhase.Night ? "End Day" : "Advance Phase";
 		_screenLabel.Text = ScreenTitle(_currentScreen);
 		_endDayButton.Disabled = _currentScreen == "title";
@@ -848,6 +852,9 @@ public partial class UiShellController : Control
 		if (hidden)
 		{
 			button.Disabled = true;
+			button.RemoveThemeStyleboxOverride("normal");
+			button.RemoveThemeStyleboxOverride("hover");
+			button.RemoveThemeStyleboxOverride("pressed");
 			return;
 		}
 
@@ -861,9 +868,31 @@ public partial class UiShellController : Control
 		button.Text = canEnter ? baseText : $"{baseText} {LockedSuffix()}";
 		button.TooltipText = canEnter ? ScreenTitle(screenId) : requirement;
 		button.Disabled = screenId == _currentScreen || !canEnter;
+
+		if (screenId == _currentScreen)
+		{
+			button.RemoveThemeStyleboxOverride("normal");
+			button.AddThemeStyleboxOverride("normal", CardStyle(new Color("0a1a3a"), new Color("2a5a9a"), 1, 8));
+			button.RemoveThemeStyleboxOverride("hover");
+			button.AddThemeStyleboxOverride("hover", CardStyle(new Color("1a2a4a"), new Color("3a6aaa"), 1, 8));
+		}
+		else
+		{
+			button.RemoveThemeStyleboxOverride("normal");
+			button.RemoveThemeStyleboxOverride("hover");
+		}
 	}
 
 	private string LockedSuffix() => T("label.locked_suffix", "(Locked)");
+
+	private void ApplyActiveNavStyle(Button button)
+	{
+		if (IsInstanceValid(button))
+		{
+			button.RemoveThemeStyleboxOverride("normal");
+			button.AddThemeStyleboxOverride("normal", CardStyle(new Color("0a1a3a"), new Color("2a5a9a"), 1, 8));
+		}
+	}
 
 	private bool CanEnterScreen(string screenId, out string requirement)
 	{
