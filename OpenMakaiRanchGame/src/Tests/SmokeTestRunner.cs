@@ -65,6 +65,8 @@ public static class SmokeTestRunner
             TestWorldGreybox(result);
             TestWorldSharedSimulation(result);
             TestCharacterAvatar(result);
+            TestEventDialogueStaging(result);
+            TestWorldPanelCoordinator(result);
         }
         catch (Exception exception)
         {
@@ -1192,6 +1194,83 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, avatar.Body!.MaterialOverride is StandardMaterial3D { } m2 && m2.AlbedoColor.IsEqualApprox(minorProfile.BodyColor), "avatar: rebuild reflects new profile colors");
 
         avatar.QueueFree();
+    }
+
+    private static void TestEventDialogueStaging(SmokeTestResult result)
+    {
+        // EVENT-001: dialogue staging is pure presentation. It frames camera/look-at/pose for a
+        // mentorship or bond event, but structurally CANNOT carry or move simulation state — the
+        // plan's "must not duplicate event state" rule. The test asserts the staging is valid,
+        // deterministic, and that a second staging call does not mutate anything it did not own.
+        var anchor = new Vector3(2f, 0f, 3f);
+
+        var mentorship = DialogueStager.BuildMentorship("ayaka", anchor);
+        Assert(result, mentorship.IsValid, "staging: mentorship framing is valid (speaker + text on every line)");
+        Assert(result, ReferenceEquals(mentorship.CharacterId, "ayaka"), "staging: bound to the framed character id");
+        Assert(result, mentorship.CameraTarget == anchor + new Vector3(0f, 1.2f, 0f), "staging: camera target = anchor + head offset");
+        Assert(result, mentorship.LookAt == mentorship.CameraTarget, "staging: look-at equals camera target (conversational framing)");
+        Assert(result, mentorship.Lines.Count >= 2, "staging: mentorship has at least a greeting and a reply");
+
+        // Determinism: the same anchor yields the identical framing (no hidden randomness in presentation).
+        var mentorshipAgain = DialogueStager.BuildMentorship("ayaka", anchor);
+        Assert(result, mentorshipAgain.CameraTarget == mentorship.CameraTarget && mentorshipAgain.LookAt == mentorship.LookAt,
+            "staging: framing is a pure function of the anchor (deterministic)");
+
+        var bondEvent = DialogueStager.BuildBondEvent("noir", "Tea by the forge", anchor);
+        Assert(result, bondEvent.IsValid, "staging: bond-event framing is valid");
+        Assert(result, bondEvent.Lines[0].Text.Contains("Tea by the forge", StringComparison.Ordinal),
+            "staging: bond event name is presentation metadata, not a reward");
+
+        // The load-bearing guarantee: the staging type has NO Bond/Morale/Stockpile/CompletedEvent
+        // fields. Reflect over its public surface to prove it cannot move a second reward.
+        var stagingFields = typeof(DialoguePresentation)
+            .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+            .Select(p => p.Name)
+            .ToList();
+        Assert(result,
+            !stagingFields.Any(f => f.Contains("Bond", StringComparison.Ordinal)
+                || f.Contains("Morale", StringComparison.Ordinal)
+                || f.Contains("Stockpile", StringComparison.Ordinal)
+                || f.Contains("Completed", StringComparison.Ordinal)),
+            "staging: type has no bond/morale/stockpile/completed fields (cannot duplicate event state)");
+    }
+
+    private static void TestWorldPanelCoordinator(SmokeTestResult result)
+    {
+        // EVENT-001: opening a management panel from the world suspends world input; closing it
+        // resumes world input *safely* — the gate is never left UI-owned, which would freeze
+        // world movement. This is the "closing them resumes world input safely" rule.
+        var gate = new WorldInputGate();
+        var known = new[] { "schedule", "roster", "character_detail", "report", "saveload" };
+        var coordinator = new WorldPanelCoordinator(gate, known);
+
+        Assert(result, coordinator.WorldInputEnabled, "panel: world input enabled before any panel is open");
+        Assert(result, !coordinator.IsOpen, "panel: no panel open initially");
+
+        // Open a known management panel → world input suspended, UI owns input.
+        Assert(result, coordinator.Open("schedule"), "panel: known management panel opens");
+        Assert(result, coordinator.IsOpen && coordinator.ActivePanel == "schedule", "panel: schedule is the active panel");
+        Assert(result, !coordinator.WorldInputEnabled && gate.UiOwnsInput, "panel: world input suspended while a panel is open");
+
+        // Opening a second known panel closes the first (single-panel rule), input stays suspended.
+        Assert(result, coordinator.Open("roster"), "panel: switching to another known panel");
+        Assert(result, coordinator.ActivePanel == "roster", "panel: roster is now active (previous closed)");
+        Assert(result, gate.UiOwnsInput, "panel: input still UI-owned across a panel switch");
+
+        // Close → world input resumed.
+        Assert(result, coordinator.Close(), "panel: close returns true when a panel was open");
+        Assert(result, !coordinator.IsOpen && coordinator.ActivePanel is null, "panel: no panel active after close");
+        Assert(result, coordinator.WorldInputEnabled && !gate.UiOwnsInput, "panel: world input resumed safely after close");
+
+        // Safety: closing again (nothing to close) still returns world input to enabled — it can
+        // never be left frozen in the UI-owned state.
+        Assert(result, !coordinator.Close(), "panel: closing with nothing open returns false");
+        Assert(result, coordinator.WorldInputEnabled && !gate.UiOwnsInput, "panel: repeated close keeps world input safely enabled");
+
+        // Safety: a world interaction must not be able to open an arbitrary/unknown screen.
+        Assert(result, !coordinator.Open("__arbitrary__"), "panel: unknown panel id is rejected");
+        Assert(result, !coordinator.IsOpen, "panel: state unchanged after a rejected open");
+        Assert(result, coordinator.WorldInputEnabled, "panel: world input still enabled after a rejected open");
     }
 
     private static void Assert(SmokeTestResult result, bool condition, string message)
