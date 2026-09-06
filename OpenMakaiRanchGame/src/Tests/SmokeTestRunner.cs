@@ -67,6 +67,7 @@ public static class SmokeTestRunner
             TestCharacterAvatar(result);
             TestEventDialogueStaging(result);
             TestWorldPanelCoordinator(result);
+            TestSaveLoadRoundTrip(result);
         }
         catch (Exception exception)
         {
@@ -1271,6 +1272,103 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, !coordinator.Open("__arbitrary__"), "panel: unknown panel id is rejected");
         Assert(result, !coordinator.IsOpen, "panel: state unchanged after a rejected open");
         Assert(result, coordinator.WorldInputEnabled, "panel: world input still enabled after a rejected open");
+    }
+
+    private static void TestSaveLoadRoundTrip(SmokeTestResult result)
+    {
+        // SAVE-002: a full 3D world session — job assignment, mentorship (social action), and a day
+        // transition — must survive Save/Load on the disposable smoke slot (99) with no data loss.
+        // The world path (station -> dispatcher -> GameRoot) is the one exercised; save/load is the
+        // current-version round-trip, not an old-save migration (D-011: fresh starts expected).
+        const int slot = 99;
+        var root = GameRoot.Instance;
+        root.NewGame();
+        var station = new WorldStation
+        {
+            TargetId = "STATION_SAVE_ROUNDTRIP",
+            Label = "Save Round-Trip Station",
+        };
+        try
+        {
+            var character = root.Roster.Characters.First();
+            var characterId = character.Id;
+
+            // 1) Job assignment through the 3D world path.
+            station.CommandKind = WorldCommandKind.AssignJob;
+            var current = root.Schedule.GetAssignment(characterId);
+            var job = root.Schedule.AssignableJobs.First(value => value.Id != current);
+            station.CommandTargetId = job.Id;
+            station.Dispatcher = new GameRootCommandDispatcher();
+            Assert(result, station.Activate(new WorldInteractionContext(characterId, root.StateGeneration)),
+                "save round-trip: world assignment succeeds");
+            Assert(result, root.Schedule.GetAssignment(characterId) == job.Id,
+                "save round-trip: world assignment mutates the shared schedule");
+
+            // 2) Social action (mentorship) through the same world path — moves Bond, Morale, Fatigue.
+            var bondBefore = root.Roster.Find(characterId)!.Bond;
+            var moraleBefore = root.Roster.Find(characterId)!.Morale;
+            station.CommandKind = WorldCommandKind.Mentorship;
+            station.CommandTargetId = characterId;
+            Assert(result, station.Activate(new WorldInteractionContext(characterId, root.StateGeneration)),
+                "save round-trip: world mentorship succeeds");
+            Assert(result, root.Roster.Find(characterId)!.Bond > bondBefore,
+                "save round-trip: mentorship raises the character's bond");
+            Assert(result, root.Roster.Find(characterId)!.Morale > moraleBefore,
+                "save round-trip: mentorship raises the character's morale");
+
+            // 3) Full day transition: Morning -> Afternoon -> Evening -> Night -> (settle) -> Morning.
+            // Settlement may adjust bond/morale, so capture the FINAL state (post-transition) for
+            // the round-trip assertion — that is the exact state being persisted.
+            var dayBefore = root.State.Calendar.Day;
+            root.AdvanceTime(); // -> Afternoon
+            root.AdvanceTime(); // -> Evening
+            root.AdvanceTime(); // -> Night
+            root.AdvanceTime(); // Night + settle -> new day, Morning
+            Assert(result, root.State.Calendar.Day == dayBefore + 1,
+                "save round-trip: a full day transition advances to the next day");
+            Assert(result, root.State.Calendar.Phase == DayPhase.Morning,
+                "save round-trip: the new day starts in the morning");
+            var bondFinal = root.Roster.Find(characterId)!.Bond;
+            var moraleFinal = root.Roster.Find(characterId)!.Morale;
+            var dayAfterTransition = root.State.Calendar.Day;
+
+            // 4) Persist the whole session, then start a fresh game and load it back.
+            Assert(result, root.SaveSlot(slot), "save round-trip: the session persists to the slot");
+            root.NewGame(); // fresh start: assignment/bond/day are all reset
+            var freshCharacter = root.Roster.Characters.First(value => value.Id == characterId);
+            Assert(result, freshCharacter.Bond <= bondBefore,
+                "save round-trip: a fresh game does not carry the old bond");
+            Assert(result, root.Save.Load(slot) is not null,
+                "save round-trip: the saved session still exists on disk");
+
+            // 5) Load it back: every world-path mutation must be intact.
+            Assert(result, root.LoadSlot(slot), "save round-trip: the session loads back");
+            Assert(result, root.Schedule.GetAssignment(characterId) == job.Id,
+                "save round-trip: the world assignment survives save/load");
+            Assert(result, root.Roster.Find(characterId)!.Bond == bondFinal,
+                "save round-trip: the mentorship bond survives save/load");
+            Assert(result, root.Roster.Find(characterId)!.Morale == moraleFinal,
+                "save round-trip: the mentorship morale survives save/load");
+            Assert(result, root.State.Calendar.Day == dayAfterTransition,
+                "save round-trip: the day counter survives save/load");
+            Assert(result, root.State.Calendar.Phase == DayPhase.Morning,
+                "save round-trip: the phase survives save/load");
+
+            // 6) StateGeneration guard: a pre-load generation must now be rejected via the world path.
+            var staleGeneration = root.StateGeneration - 1;
+            station.CommandKind = WorldCommandKind.Mentorship;
+            Assert(result, !station.Activate(new WorldInteractionContext(characterId, staleGeneration)),
+                "save round-trip: a stale (pre-load) generation is rejected");
+        }
+        finally
+        {
+            if (station.IsInsideTree())
+            {
+                station.GetParent()?.RemoveChild(station);
+            }
+            station.Free();
+            root.Save.Delete(slot); // leave no disposable save behind
+        }
     }
 
     private static void Assert(SmokeTestResult result, bool condition, string message)
