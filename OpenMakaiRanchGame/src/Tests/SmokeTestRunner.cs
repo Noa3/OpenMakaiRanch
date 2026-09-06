@@ -68,6 +68,7 @@ public static class SmokeTestRunner
             TestEventDialogueStaging(result);
             TestWorldPanelCoordinator(result);
             TestSaveLoadRoundTrip(result);
+            TestWorldDaylightAndRoster(result);
         }
         catch (Exception exception)
         {
@@ -1369,6 +1370,140 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             station.Free();
             root.Save.Delete(slot); // leave no disposable save behind
         }
+    }
+
+    private static void TestWorldDaylightAndRoster(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        // --- DaylightMath: deterministic, phase-derived, no second clock -------------------------
+        var morning = DaylightMath.For(DayPhase.Morning);
+        var afternoon = DaylightMath.For(DayPhase.Afternoon);
+        var evening = DaylightMath.For(DayPhase.Evening);
+        var night = DaylightMath.For(DayPhase.Night);
+
+        Assert(result, morning.SunEnergy > 0f && afternoon.SunEnergy > 0f && evening.SunEnergy > 0f,
+            "daylight: day phases carry direct sunlight");
+        Assert(result, night.SunEnergy == 0f, "daylight: night has no direct sun");
+        Assert(result, night.IsNight, "daylight: night is flagged as night");
+        Assert(result, !morning.IsNight && !afternoon.IsNight && !evening.IsNight,
+            "daylight: day phases are not night");
+        Assert(result, afternoon.SunElevationDegrees > morning.SunElevationDegrees
+                   && morning.SunElevationDegrees > evening.SunElevationDegrees,
+            "daylight: sun elevation orders afternoon > morning > evening (hand-tuned table)");
+        // Deterministic: same phase -> same state (no hidden clock, no randomness).
+        Assert(result, DaylightMath.For(DayPhase.Morning) == morning,
+            "daylight: mapping is deterministic (pure function of the shared phase)");
+
+        // --- DaylightRig: applies the resolved state to a real sun node ---------------------------
+        var parent = game; // GameRoot is the autoload, already in the scene tree.
+        var dayRig = new DaylightRig();
+        var sun = new DirectionalLight3D();
+        var worldEnvironment = new WorldEnvironment { Environment = new Godot.Environment() };
+        parent.AddChild(sun);
+        parent.AddChild(worldEnvironment);
+        parent.AddChild(dayRig);
+        try
+        {
+            dayRig.Bind(sun, worldEnvironment);
+            Assert(result, dayRig.Wired, "daylight rig binds sun + environment");
+
+            var applied = dayRig.Apply(DayPhase.Evening);
+            Assert(result, applied == DaylightMath.For(DayPhase.Evening),
+                "daylight rig applies the resolved evening state");
+            Assert(result, Math.Abs(sun.LightEnergy - evening.SunEnergy) < 0.0001f,
+                "daylight rig writes the sun energy to the node");
+            Assert(result, worldEnvironment.Environment.AmbientLightEnergy == evening.AmbientEnergy,
+                "daylight rig writes the ambient energy to the environment");
+            Assert(result, worldEnvironment.Environment.TonemapExposure == evening.TonemapExposure,
+                "daylight rig writes the tonemap exposure to the environment");
+
+            var fromGame = dayRig.ApplyFrom(game);
+            Assert(result, fromGame == DaylightMath.For(game.State.Calendar.Phase),
+                "daylight rig reads the shared phase (single source of truth, no second clock)");
+        }
+        finally
+        {
+            dayRig.Free();
+            sun.Free();
+            worldEnvironment.Free();
+        }
+
+        // --- RosterPlacementMath: job -> in-bounds anchor, deterministic spread --------------------
+        foreach (JobCategory category in Enum.GetValues<JobCategory>())
+        {
+            var anchor = RosterPlacementMath.AnchorForJob(category);
+            Assert(result, IsInGreyboxBounds(anchor.Position),
+                $"placement: category {category} resolves an in-bounds anchor ({anchor.AnchorId})");
+        }
+        Assert(result, RosterPlacementMath.AnchorForJob(JobCategory.Dairy).AnchorId == "DAIRY",
+            "placement: dairy maps to the milk-station anchor");
+        Assert(result, RosterPlacementMath.AnchorForJob(JobCategory.Rest).AnchorId == "REST_AREA",
+            "placement: rest maps to the rest area");
+        Assert(result, RosterPlacementMath.AnchorForJob((JobCategory)999).AnchorId == "REST_AREA",
+            "placement: unknown category falls back to the rest area (always a logical place)");
+        var spread0 = RosterPlacementMath.SpreadOffset(RosterPlacementMath.Pasture, 0);
+        var spread1 = RosterPlacementMath.SpreadOffset(RosterPlacementMath.Pasture, 1);
+        var spread2 = RosterPlacementMath.SpreadOffset(RosterPlacementMath.Pasture, 2);
+        Assert(result, spread0 == Vector3.Zero, "placement: first mate stands at the anchor");
+        Assert(result, spread1 != spread0 && spread2 != spread0,
+            "placement: later mates stand side by side (no overlap)");
+        Assert(result, IsInGreyboxBounds(RosterPlacementMath.Pasture.Position + spread2),
+            "placement: the spread stays in bounds");
+
+        // --- RosterRig: places CHAR-001 stand-ins for the live roster, idempotent ------------------
+        var rosterRig = new RosterRig();
+        parent.AddChild(rosterRig);
+        try
+        {
+            var count = rosterRig.Refresh(game);
+            Assert(result, count == game.Roster.Characters.Count,
+                "roster rig places one avatar per roster character");
+            Assert(result, count > 0, "roster rig places at least one avatar");
+
+            // Idempotent: a second refresh keeps the same set, no duplicates.
+            var countAgain = rosterRig.Refresh(game);
+            Assert(result, countAgain == count, "roster rig refresh is idempotent (no duplicate avatars)");
+
+            // Every placed avatar is in-bounds and is an honest CHAR-001 stand-in (presentation only).
+            bool allInBounds = true;
+            bool allStandIn = true;
+            foreach (var child in rosterRig.GetChildren())
+            {
+                if (child is CharacterAvatar3D avatar)
+                {
+                    if (!IsInGreyboxBounds(avatar.Position))
+                    {
+                        allInBounds = false;
+                    }
+                    if (avatar.Profile is null || !avatar.Profile.IsDebugStandIn)
+                    {
+                        allStandIn = false;
+                    }
+                }
+            }
+            Assert(result, allInBounds, "roster rig keeps every avatar in the greybox bounds");
+            Assert(result, allStandIn, "roster rig uses CHAR-001 stand-in avatars (presentation only)");
+
+            // No second work economy: placing avatars must not mutate the shared schedule.
+            var assignmentBefore = game.Schedule.GetAssignment(game.Roster.Characters.First().Id);
+            rosterRig.Refresh(game);
+            Assert(result, game.Schedule.GetAssignment(game.Roster.Characters.First().Id) == assignmentBefore,
+                "roster rig moves presentation only — the shared schedule is untouched");
+        }
+        finally
+        {
+            rosterRig.Free();
+        }
+
+        game.NewGame();
+    }
+
+    private static bool IsInGreyboxBounds(Vector3 position)
+    {
+        // Greybox ground is 40 x 30 centred on the origin: |x| <= 15, |z| <= 10.
+        return Math.Abs(position.X) <= 15f && Math.Abs(position.Z) <= 10f;
     }
 
     private static void Assert(SmokeTestResult result, bool condition, string message)
