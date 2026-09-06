@@ -72,6 +72,7 @@ public static class SmokeTestRunner
             TestWorldDaylightAndRoster(result);
             TestRanchWorldComposition(result);
             TestFullPlayableDay(result);
+            TestStandInNavigation(result);
         }
         catch (Exception exception)
         {
@@ -1785,6 +1786,96 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             }
             root.Free();
             game.Save.Delete(slot); // leave no disposable save behind
+            game.NewGame();
+        }
+    }
+
+    private static void TestStandInNavigation(SmokeTestResult result)
+    {
+        // AI-001: stand-in navigation — step toward a target, detect arrival, detect a stuck
+        // (no-progress) step, and recover by snapping to the anchor. Pure, deterministic, no
+        // simulation state, no work economy. Then one integration test drives the RosterRig in
+        // walk mode and shows a stand-in actually reaches its logical anchor (in-bounds).
+        var origin = Godot.Vector3.Zero;
+        var target = new Godot.Vector3(4f, 0f, 3f);
+
+        // StepToward: moves at most maxStep toward the target, never overshoots.
+        var stepped = StandInNavigationMath.StepToward(origin, target, 1.0f);
+        Assert(result, (stepped - origin).Length() <= 1.0f + 1e-4f, "navigation: a step is bounded by maxStep");
+        Assert(result, (target - stepped).Length() < (target - origin).Length(),
+            "navigation: a step reduces the distance to the target");
+        Assert(result, StandInNavigationMath.IsArrived(origin, target, 0f) == false,
+            "navigation: a distant origin is not arrived");
+        Assert(result, StandInNavigationMath.IsArrived(target, target, 0.1f),
+            "navigation: the target is arrived");
+
+        // StepToward with zero step snaps to the target (no movement allowed -> land there).
+        Assert(result, StandInNavigationMath.StepToward(origin, target, 0f).IsEqualApprox(target),
+            "navigation: zero maxStep snaps to the target");
+
+        // Tick: a clean (unblocked) step progresses; it is not treated as stuck.
+        var ticked = StandInNavigationMath.Tick(origin, target, 1.0f, 0.1f, 1e-3f);
+        Assert(result, (ticked - origin).Length() > 1e-4f, "navigation: tick moves the stand-in toward the anchor");
+        Assert(result, !StandInNavigationMath.IsStuck(origin, ticked, target, 1e-3f),
+            "navigation: a progressing step is not stuck");
+
+        // IsStuck: a step that makes no progress (e.g. blocked by a wall) is detected.
+        Assert(result, StandInNavigationMath.IsStuck(origin, origin, target, 1e-3f),
+            "navigation: a no-progress step is stuck");
+        // Recover: give up steering and snap straight to the anchor (bounded stuck recovery).
+        Assert(result, StandInNavigationMath.Recover(origin, target).IsEqualApprox(target),
+            "navigation: stuck recovery snaps the stand-in to the anchor");
+        // Tick: already within the arrival tolerance snaps straight to the anchor.
+        var nearTarget = target - new Godot.Vector3(0.05f, 0f, 0f);
+        Assert(result, StandInNavigationMath.Tick(nearTarget, target, 1.0f, 0.1f, 1e-3f).IsEqualApprox(target),
+            "navigation: an arrived tick snaps to the anchor");
+
+        // Integration: drive the RosterRig in walk mode and show a stand-in walks to its anchor.
+        var game = GameRoot.Instance;
+        game.NewGame();
+        var rosterRig = new RosterRig();
+        game.AddChild(rosterRig);
+        try
+        {
+            rosterRig.WalkSpeed = 2.5f; // opt-in navigation (default 0 = snap)
+            rosterRig.ArrivalTolerance = 0.15f;
+            rosterRig.MinProgress = 1e-3f;
+            rosterRig.Refresh(game);
+
+            var character = game.Roster.Characters.First();
+            var avatar = rosterRig.GetAvatar(character.Id);
+            var anchor = rosterRig.GetTarget(character.Id);
+            Assert(result, avatar is not null, "navigation: the roster rig has a stand-in for the character");
+            Assert(result, anchor is not null, "navigation: the stand-in has a logical anchor target");
+            if (avatar is null || anchor is null)
+            {
+                return;
+            }
+
+            var start = avatar.GlobalPosition;
+            var distanceToAnchor = (start - anchor.Value).Length();
+            // Drive enough frames to guarantee arrival regardless of step size.
+            var frames = 0;
+            while (distanceToAnchor > rosterRig.ArrivalTolerance && frames < 1000)
+            {
+                rosterRig._Process(1.0 / 30.0);
+                distanceToAnchor = (avatar.GlobalPosition - anchor.Value).Length();
+                frames++;
+            }
+
+            Assert(result, frames < 1000, "navigation: the stand-in reaches its anchor within a bounded frame budget");
+            Assert(result, distanceToAnchor <= rosterRig.ArrivalTolerance,
+                "navigation: the stand-in arrives at its logical anchor");
+            Assert(result, IsInGreyboxBounds(avatar.GlobalPosition),
+                "navigation: the stand-in stays inside the greybox bounds while walking");
+        }
+        finally
+        {
+            if (GodotObject.IsInstanceValid(rosterRig) && rosterRig.IsInsideTree())
+            {
+                rosterRig.GetTree().Root.RemoveChild(rosterRig);
+            }
+            rosterRig.Free();
             game.NewGame();
         }
     }
