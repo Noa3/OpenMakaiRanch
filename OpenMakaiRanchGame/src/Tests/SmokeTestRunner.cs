@@ -8,6 +8,7 @@ using OpenMakaiRanch.Data;
 using OpenMakaiRanch.Gameplay;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Ui;
+using OpenMakaiRanch.Character;
 using OpenMakaiRanch.World;
 
 namespace OpenMakaiRanch.Tests;
@@ -63,6 +64,7 @@ public static class SmokeTestRunner
             GameCommandTests.Run(result);
             TestWorldGreybox(result);
             TestWorldSharedSimulation(result);
+            TestCharacterAvatar(result);
         }
         catch (Exception exception)
         {
@@ -1132,6 +1134,64 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             station.Free();
             root.NewGame();
         }
+    }
+
+    private static void TestCharacterAvatar(SmokeTestResult result)
+    {
+        // CHAR-001: gate-safe, honest stand-in avatars bound by stable DefinitionId.
+        // Per 3D_REMAKE_PLAN: "Missing art gets an honest debug stand-in, not a random hero
+        // model." and "Adult-specific presentation has a separate fail-closed identity/design
+        // gate; this plan does not grant content approval."
+
+        // ---- Fail-closed gate: real avatar requires ConfirmedAdult ----
+        Assert(result, !CharacterAvatarFactory.CanUseRealAvatar(new CharacterDefinition { Id = "c_unknown", AdultEligibility = AdultEligibility.Unknown }), "gate: Unknown denies real avatar");
+        Assert(result, !CharacterAvatarFactory.CanUseRealAvatar(new CharacterDefinition { Id = "c_minor", AdultEligibility = AdultEligibility.Minor }), "gate: Minor denies real avatar");
+        Assert(result, !CharacterAvatarFactory.CanUseRealAvatar(new CharacterDefinition { Id = "c_ambiguous", AdultEligibility = AdultEligibility.Ambiguous }), "gate: Ambiguous denies real avatar");
+        Assert(result, CharacterAvatarFactory.CanUseRealAvatar(new CharacterDefinition { Id = "c_adult", AdultEligibility = AdultEligibility.ConfirmedAdult }), "gate: ConfirmedAdult permits real avatar");
+        Assert(result, !CharacterAvatarFactory.CanUseRealAvatar(null), "gate: null definition denies real avatar");
+
+        // ---- Profile: stable DefinitionId binding, no gameplay state ----
+        var adult = new CharacterDefinition
+        {
+            Id = "slay",
+            DisplayName = "Slay",
+            AdultEligibility = AdultEligibility.ConfirmedAdult,
+            Provenance = CharacterProvenance.OriginalHero,
+            SkinColor = "pale",
+            HairColor = "silver",
+        };
+        var profile = CharacterAvatarFactory.CreateProfile(adult);
+        Assert(result, profile.DefinitionId == "slay", "profile: stable DefinitionId binding");
+        Assert(result, profile.DisplayName == "Slay", "profile: display name carried");
+        Assert(result, profile.IsDebugStandIn, "profile: CHAR-001 ships honest stand-in, not real model");
+        Assert(result, profile.AdultEligibility == AdultEligibility.ConfirmedAdult, "profile: fail-closed eligibility carried forward");
+        // Presentation ≠ gameplay state: no HP, skill, bond, reward fields exist.
+        Assert(result, !typeof(CharacterVisualProfile).GetProperties().Any(p =>
+            p.Name is "MaxHp" or "RanchSkill" or "BondLevel" or "RewardGold" or "Energy"),
+            "profile: no gameplay numbers on presentation type (separate from simulation state)");
+
+        // ---- Node: stand-in geometry generated, material overridden ----
+        var avatar = CharacterAvatarFactory.BuildAvatar(profile);
+        Assert(result, avatar is not null && ReferenceEquals(avatar.Profile, profile), "avatar: built with bound profile");
+        avatar!.Rebuild(); // deterministic, no tree required
+        Assert(result, avatar.Body is not null, "avatar: body capsule generated");
+        Assert(result, avatar.Head is not null, "avatar: head sphere generated");
+        Assert(result, avatar.Body!.Mesh is CapsuleMesh, "avatar: body is capsule stand-in");
+        Assert(result, avatar.Head!.Mesh is SphereMesh, "avatar: head is sphere stand-in");
+        var bodyMat = avatar.Body!.MaterialOverride as StandardMaterial3D;
+        Assert(result, bodyMat is not null && bodyMat.AlbedoColor.IsEqualApprox(profile.BodyColor), "avatar: body tint matches profile skin mapping");
+        var headMat = avatar.Head!.MaterialOverride as StandardMaterial3D;
+        Assert(result, headMat is not null && headMat.AlbedoColor.IsEqualApprox(profile.HeadColor), "avatar: head tint matches profile hair mapping");
+
+        // ---- Rebuild idempotency: swapping profile regenerates, no stale children ----
+        var minor = new CharacterDefinition { Id = "c_minor", AdultEligibility = AdultEligibility.Minor, HairColor = "black" };
+        var minorProfile = CharacterAvatarFactory.CreateProfile(minor);
+        avatar.Profile = minorProfile;
+        avatar.Rebuild();
+        Assert(result, avatar.Body is not null && avatar.Head is not null, "avatar: rebuild after profile swap regenerates geometry");
+        Assert(result, avatar.Body!.MaterialOverride is StandardMaterial3D { } m2 && m2.AlbedoColor.IsEqualApprox(minorProfile.BodyColor), "avatar: rebuild reflects new profile colors");
+
+        avatar.QueueFree();
     }
 
     private static void Assert(SmokeTestResult result, bool condition, string message)
