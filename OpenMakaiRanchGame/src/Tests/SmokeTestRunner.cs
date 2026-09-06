@@ -70,6 +70,7 @@ public static class SmokeTestRunner
             TestSaveLoadRoundTrip(result);
             TestGreyboxSceneIsLive(result);
             TestWorldDaylightAndRoster(result);
+            TestRanchWorldComposition(result);
         }
         catch (Exception exception)
         {
@@ -1572,6 +1573,97 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         finally
         {
             rosterRig.Free();
+        }
+
+        game.NewGame();
+    }
+
+    private static void TestRanchWorldComposition(SmokeTestResult result)
+    {
+        // WORLD-003c: the boot world composes the 3D greybox and the existing 2D management UI
+        // (Game.tscn) into one scene, both on the single shared GameRoot — no second simulation.
+        // The composition is authored in RanchWorld.tscn (scene instances, not runtime Instantiate).
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        var scene = GD.Load<PackedScene>("res://scenes/RanchWorld.tscn");
+        Assert(result, scene is not null, "RanchWorld boot scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var root = scene.Instantiate();
+        game.AddChild(root);
+        try
+        {
+            var world = root as RanchWorldController;
+            Assert(result, world is not null, "RanchWorld root is the composition controller");
+            if (world is null)
+            {
+                return;
+            }
+
+            // Authored children: the 3D world instance and the 2D management overlay instance.
+            var greybox = world.GetNodeOrNull<RanchGreyboxController>("RanchWorld3D");
+            Assert(result, greybox is not null, "boot scene instantiates the 3D world");
+            Assert(result, greybox?.Wired == true, "boot scene 3D world is wired");
+            var overlay = world.GetNodeOrNull<Control>("ManagementCanvas/Game");
+            Assert(result, overlay is not null, "boot scene instantiates the 2D management UI");
+            var shell = world.GetNodeOrNull<UiShellController>("ManagementCanvas/Game/UiShell");
+            Assert(result, shell is not null, "boot scene exposes the management UiShell");
+
+            // Single simulation: the management shell binds to the same GameRoot the world uses.
+            Assert(result, GodotObject.IsInstanceValid(game), "shared GameRoot present");
+
+            // Boot in world mode: world visible, overlay hidden, world owns input.
+            Assert(result, world.CurrentMode == RanchWorldController.Mode.World, "boot starts in world mode");
+            Assert(result, overlay is null || !overlay.Visible, "management overlay hidden at world boot");
+            Assert(result, world.InputGate is not null && world.InputGate.WorldInputEnabled,
+                "world owns input at boot");
+
+            // Open the management UI: the shared gate suspends world input (movement + camera stop).
+            var opened = world.EnterManagement();
+            Assert(result, opened, "EnterManagement succeeds");
+            Assert(result, world.CurrentMode == RanchWorldController.Mode.Management, "EnterManagement switches mode");
+            Assert(result, overlay is null || overlay.Visible, "management overlay revealed");
+            Assert(result, world.InputGate is not null && world.InputGate.UiOwnsInput && !world.InputGate.WorldInputEnabled,
+                "opening management suspends world input via the shared gate");
+
+            // Return to the world: the shared gate resumes world input (never left UI-owned).
+            var back = world.ReturnToWorld();
+            Assert(result, back, "ReturnToWorld succeeds");
+            Assert(result, world.CurrentMode == RanchWorldController.Mode.World, "ReturnToWorld switches mode");
+            Assert(result, overlay is null || !overlay.Visible, "management overlay hidden again");
+            Assert(result, world.InputGate is not null && world.InputGate.WorldInputEnabled,
+                "world input resumes after returning");
+
+            // Authored button path: pressing the in-world button (TSCN connection) opens management.
+            var button = world.GetNodeOrNull<Button>("RanchWorld3D/ButtonLayer/OpenManagementButton");
+            Assert(result, button is not null, "boot scene 3D world has the management button");
+            if (button is not null)
+            {
+                button.EmitSignal("pressed");
+                Assert(result, world.CurrentMode == RanchWorldController.Mode.Management,
+                    "authored button press opens the management overlay");
+                world.ReturnToWorld();
+            }
+
+            // Esc returns from management to the world (the composition's _UnhandledInput handler).
+            world.EnterManagement();
+            Assert(result, world.CurrentMode == RanchWorldController.Mode.Management, "management open before Esc");
+            world._UnhandledInput(new InputEventAction { Action = "ui_cancel", Pressed = true });
+            Assert(result, world.CurrentMode == RanchWorldController.Mode.World, "Esc returns to the world");
+            Assert(result, world.InputGate is not null && world.InputGate.WorldInputEnabled,
+                "Esc resumes world input");
+        }
+        finally
+        {
+            if (GodotObject.IsInstanceValid(root) && root.IsInsideTree())
+            {
+                root.GetTree().Root.RemoveChild(root);
+            }
+            root.Free();
         }
 
         game.NewGame();

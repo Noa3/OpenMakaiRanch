@@ -32,6 +32,14 @@ public partial class MainMenuController : Control
 	[Export]
 	public NodePath LangLabelPath { get; set; } = "Root/Center/Panel/Content/LangRow/LangLabel";
 
+	/// <summary>
+	/// The boot world the menu transitions into after New Game / Continue / New Game+.
+	/// Defaults to the composed <c>scenes/RanchWorld.tscn</c> (3D world + management overlay on the
+	/// shared GameRoot). Overridable per-scene for the 2D-only path if ever needed.
+	/// </summary>
+	[Export]
+	public string GameScenePath { get; set; } = "res://scenes/RanchWorld.tscn";
+
 	private Button _continueButton = null!;
 	private Button _newGameButton = null!;
 	private Button _newGamePlusButton = null!;
@@ -230,10 +238,10 @@ public partial class MainMenuController : Control
 
 	private void GoToGameScene()
 	{
-		var error = GetTree().ChangeSceneToFile("res://scenes/Game.tscn");
+		var error = GetTree().ChangeSceneToFile(GameScenePath);
 		if (error != Error.Ok)
 		{
-			GD.PushError($"MainMenu failed to open Game scene: {error}");
+			GD.PushError($"MainMenu failed to open game scene '{GameScenePath}': {error}");
 		}
 	}
 }

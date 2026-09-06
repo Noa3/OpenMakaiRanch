@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using OpenMakaiRanch.App;
 
@@ -20,11 +21,17 @@ public partial class RanchGreyboxController : Node3D
     private ThirdPersonPlayerController? _player;
     private WorldStation? _station;
     private Label? _prompt;
+    private Button? _openManagementButton;
     private bool _wired;
 
     public ThirdPersonPlayerController? Player => _player;
     public WorldStation? Station => _station;
     public bool Wired => _wired;
+
+    /// <summary>Raised when the player presses the in-world "Open Management UI" button. The
+    /// composition (RanchWorldController) listens and shows the management overlay; the gate is
+    /// flipped here so the world input suspends regardless of the host.</summary>
+    public event Action? ManagementUiRequested;
 
     /// <summary>Applies the shared phase to the scene's sun + environment (WORLD-003 lighting).</summary>
     public DaylightRig? Daylight { get; private set; }
@@ -41,6 +48,12 @@ public partial class RanchGreyboxController : Node3D
         if (_player is not null)
         {
             _player.InputGate = InputGate;
+        }
+
+        // The camera rig must be suspended too when the management UI owns input.
+        if (GetNodeOrNull<WorldCameraRig>("CameraRig") is { } cameraRig)
+        {
+            cameraRig.InputGate = InputGate;
         }
 
         // Production dispatcher binding the station to GameRoot.
@@ -110,7 +123,8 @@ public partial class RanchGreyboxController : Node3D
 
     /// <summary>
     /// Open the management UI: the world loses input ownership. Called by the scene's
-    /// "Open Management UI" button.
+    /// "Open Management UI" button (TSCN connection) and re-broadcast via
+    /// <see cref="ManagementUiRequested"/> so the composition can show the overlay.
     /// </summary>
     public void EnterManagementUi()
     {
@@ -123,6 +137,16 @@ public partial class RanchGreyboxController : Node3D
     public void LeaveManagementUi()
     {
         InputGate.SetUiOwnsInput(false);
+    }
+
+    /// <summary>
+    /// The in-world "Open Management UI" button handler (authored TSCN connection): flip the
+    /// shared gate and notify the composition so it can reveal the management overlay.
+    /// </summary>
+    public void RequestManagementUi()
+    {
+        EnterManagementUi();
+        ManagementUiRequested?.Invoke();
     }
 
     public override void _Input(InputEvent @event)

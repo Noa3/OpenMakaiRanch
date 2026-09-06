@@ -120,6 +120,9 @@ Acceleration = 40.0
 Gravity = 20.0
 HeadHeight = 1.6
 
+[node name="CameraTarget" type="Node3D" parent="Player"]
+position = Vector3(0, 1.6, 0)
+
 [node name="Mesh" type="MeshInstance3D" parent="Player"]
 mesh = SubResource("player_mesh")
 
@@ -134,6 +137,7 @@ RecenterSpeed = 6.0
 Yaw = -1.5708
 Pitch = 0.5236
 Distance = 7.0
+Target = NodePath("../Player/CameraTarget")
 
 [node name="Camera" type="Camera3D" parent="CameraRig"]
 current = true
@@ -164,3 +168,5 @@ offset_top = 12.0
 offset_right = 180.0
 offset_bottom = 44.0
 text = "Open Management UI"
+
+[connection signal="pressed" from="ButtonLayer/OpenManagementButton" to="." method="RequestManagementUi"]

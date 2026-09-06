@@ -16,6 +16,12 @@ public partial class WorldCameraRig : Node3D
     [Export] public float ZoomSensitivity { get; set; } = 1.5f;
     [Export] public float RecenterSpeed { get; set; } = 6f;
 
+    /// <summary>
+    /// The world input gate. When set and the UI owns input (management open, window unfocused),
+    /// camera look/zoom/recenter are suspended. Null (standalone scene) = always allowed.
+    /// </summary>
+    public WorldInputGate? InputGate { get; set; }
+
     /// <summary>The node the camera orbits around (the player's head).</summary>
     [Export] public Node3D? Target { get; set; }
 
@@ -28,6 +34,9 @@ public partial class WorldCameraRig : Node3D
 
     public Camera3D? Camera => _camera;
     public Vector3 DesiredPosition => _desiredPosition;
+
+    /// <summary>True when camera input actions are allowed (no gate, or the world owns input).</summary>
+    public bool CameraInputEnabled => InputGate is null || InputGate.WorldInputEnabled;
 
     public override void _Ready()
     {
@@ -56,6 +65,13 @@ public partial class WorldCameraRig : Node3D
     public override void _Process(double delta)
     {
         var dt = (float)delta;
+
+        // Camera input only when the world owns it (management overlay / focus loss suspends it).
+        if (!CameraInputEnabled)
+        {
+            UpdateCameraTransform();
+            return;
+        }
 
         if (Input.IsActionJustPressed("camera_recenter"))
         {

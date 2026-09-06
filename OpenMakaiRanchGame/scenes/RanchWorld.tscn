@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/App/RanchWorldController.cs" id="1_root"]
+[ext_resource type="PackedScene" path="res://scenes/dev/RanchGreybox.tscn" id="2_world"]
+[ext_resource type="PackedScene" path="res://scenes/Game.tscn" id="3_management"]
+
+[node name="RanchWorld" type="Node3D"]
+script = ExtResource("1_root")
+WorldPath = NodePath("RanchWorld3D")
+ManagementOverlayPath = NodePath("ManagementCanvas/Game")
+
+[node name="RanchWorld3D" parent="." instance=ExtResource("2_world")]
+
+[node name="ManagementCanvas" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Game" parent="ManagementCanvas" instance=ExtResource("3_management")]
+visible = false
