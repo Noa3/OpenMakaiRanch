@@ -62,6 +62,7 @@ public static class SmokeTestRunner
             SaveRegressionTests.Run(result);
             GameCommandTests.Run(result);
             TestWorldGreybox(result);
+            TestWorldSharedSimulation(result);
         }
         catch (Exception exception)
         {
@@ -1077,6 +1078,59 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         finally
         {
             greybox.Free();
+        }
+    }
+
+    private static void TestWorldSharedSimulation(SmokeTestResult result)
+    {
+        // WORLD-002: a world station must mutate the SAME Schedule state the management UI reads,
+        // through the production GameRootCommandDispatcher -> GameRoot boundary. No second reward.
+        var root = GameRoot.Instance;
+        root.NewGame();
+        var station = new WorldStation
+        {
+            TargetId = "STATION_WORLD_SIM",
+            Label = "Shared Simulation Station",
+            CommandKind = WorldCommandKind.AssignJob,
+        };
+        try
+        {
+            // Production dispatcher: routes to GameRoot.Instance (no stub).
+            station.Dispatcher = new GameRootCommandDispatcher();
+            Assert(result, station.IsAvailable, "world station available with production dispatcher");
+
+            var character = root.Roster.Characters.First();
+            var characterId = character.Id;
+            var current = root.Schedule.GetAssignment(characterId);
+            var job = root.Schedule.AssignableJobs.First(value => value.Id != current);
+            station.CommandTargetId = job.Id;
+
+            var gold = root.State.Economy.Gold;
+            var day = root.State.Calendar.Day;
+            var generation = root.StateGeneration;
+
+            // Shared simulation: the world interaction changes the same assignment the UI reads.
+            var ok = station.Activate(new WorldInteractionContext(characterId, generation));
+            Assert(result, ok, "world station dispatches an assignment through GameRoot");
+            Assert(result, root.Schedule.GetAssignment(characterId) == job.Id,
+                "world interaction mutates the same Schedule state the management UI reads");
+            Assert(result, root.State.Economy.Gold == gold && root.State.Calendar.Day == day,
+                "world interaction neither pays work nor advances time (no second reward)");
+
+            // Stale generation must be rejected (StateGeneration guard), even via the world path.
+            root.NewGame(); // StateGeneration++
+            var staleGeneration = root.StateGeneration - 1;
+            var staleOk = station.Activate(new WorldInteractionContext(characterId, staleGeneration));
+            Assert(result, !staleOk, "world interaction with a stale generation is rejected");
+            Assert(result, root.StateGeneration == staleGeneration + 1,
+                "stale world interaction leaves the generation intact");
+        }
+        finally
+        {
+            if (station.IsInsideTree())
+                station.GetParent()?.RemoveChild(station);
+            station.Free();
+            root.NewGame();
         }
     }
 
