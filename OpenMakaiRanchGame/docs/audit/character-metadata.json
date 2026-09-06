@@ -1,0 +1,2243 @@
+{
+  "schema_version": 1,
+  "scope": "Neutral identity/age/height/race/occupation/hair/eye metadata only. Source read-only. No imagery or sexual dialogue reproduced. Static audit; no runtime safety certification.",
+  "source_glob": "eraMakaiRanch-game-eng-translation/**/Chara*.csv (case-insensitive filename comparison)",
+  "age_semantics_evidence": {
+    "file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+    "line": 316,
+    "summary": "Comment states this is apparent age; actual age is not implemented because races and elapsed years complicate it."
+  },
+  "source_characters": [
+    {
+      "source_id": 0,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+      "source_sha256": "dad9271970fd915fc3bc1aa8d55f9b04a6b5c07352acb3e42b7e3978bd52b44c",
+      "role": "player",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 0,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 4,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Anon",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 5,
+            "source_key": "呼び名"
+          }
+        ],
+        "race": [
+          {
+            "value": "魔界人",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 41,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "race_category": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 44,
+            "source_key": "CSTR,カテゴリ／種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "酪農家",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 48,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "height_label": [
+          {
+            "value": "大柄",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 51,
+            "source_key": "CSTR,身長"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "黒髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 53,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "ショート",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 54,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "赤",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 55,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1900,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 59,
+            "source_key": "フラグ,身長"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 20,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara0_あなた.csv",
+            "line": 60,
+            "source_key": "フラグ,外見年齢"
+          }
+        ]
+      },
+      "height_cm": 190.0,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 20,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": "anon",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "display name and neutral race/height/hair/eye/occupation correspondence"
+    },
+    {
+      "source_id": 1,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+      "source_sha256": "bc27d4ba6cf32d4bd59dad440e59e364744e48efafd43688e35c125b95ed9b25",
+      "role": "hero",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 1,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 5,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Surei",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 6,
+            "source_key": "呼び名"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "スレイ",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 7,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "era魔界牧場",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 8,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 28,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "捨て子",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 29,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "青",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 32,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "金髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 33,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "ショート",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 34,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1440,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 57,
+            "source_key": "フラグ,身長"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 13,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara1_スレイ.csv",
+            "line": 60,
+            "source_key": "フラグ,外見年齢"
+          }
+        ]
+      },
+      "height_cm": 144.0,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 13,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_minor_apparent_age",
+      "remake_id": "slay",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "Chara1 identity スレイ, blonde short hair, blue eyes, 144cm, foundling correspond to slay; Surei and Slay are retained as distinct source/remake labels"
+    },
+    {
+      "source_id": 2,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+      "source_sha256": "b0d56b7680fc71cb3d01abdc582340fe0c602899815c49df5e0b4458018566e7",
+      "role": "template_or_sample",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 2,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+            "line": 3,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Default-Chan",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+            "line": 4,
+            "source_key": "呼び名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+            "line": 18,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "黒",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+            "line": 21,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "黒髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+            "line": 22,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "ロング",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+            "line": 23,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1600,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+            "line": 37,
+            "source_key": "フラグ,身長"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 18,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara2_デフォ子.csv",
+            "line": 38,
+            "source_key": "フラグ,外見年齢"
+          }
+        ]
+      },
+      "height_cm": 160.0,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 18,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": null,
+      "mapping_confidence": "no_supported_match",
+      "mapping_basis": "No matching definition in characters.json; do not force template mapping"
+    },
+    {
+      "source_id": 3,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+      "source_sha256": "3bd0f1d3715e2d60de17ae8e3b5a59ee49cf98ad7f86a443846368106a51a00c",
+      "role": "hero",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 3,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 7,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Kagura",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 8,
+            "source_key": "呼び名"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "かぐら",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 9,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "era魔界牧場",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 10,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 49,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "退魔巫女",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 50,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "黒",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 54,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "黒髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 55,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "セミロング",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 56,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 18,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 79,
+            "source_key": "フラグ,外見年齢"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1510,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara3_かぐら.csv",
+            "line": 83,
+            "source_key": "フラグ,身長"
+          }
+        ]
+      },
+      "height_cm": 151.0,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 18,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": "kagura",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "display name and neutral race/height/hair/eye/occupation correspondence"
+    },
+    {
+      "source_id": 4,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+      "source_sha256": "8fa7002838f2e53872ea1e932b8a214ce6fb1f6e4fc6e739a8e96a23493a8ae6",
+      "role": "hero",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 4,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 8,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Maria",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 9,
+            "source_key": "呼び名"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "マリア",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 10,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "era魔界牧場",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 11,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 45,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "バトルシスター",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 46,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "青",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 50,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "金髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 51,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "一本結び",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 52,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 15,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 67,
+            "source_key": "フラグ,外見年齢"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1580,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+            "line": 68,
+            "source_key": "フラグ,身長"
+          }
+        ]
+      },
+      "height_cm": 158.0,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 15,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [
+        {
+          "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara4_マリア.csv",
+          "line": 63,
+          "source_value": "童顔",
+          "meaning": "baby-faced/youthful-face trait"
+        }
+      ],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_minor_apparent_age",
+      "remake_id": "maria",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "display name and neutral race/height/hair/eye/occupation correspondence"
+    },
+    {
+      "source_id": 5,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+      "source_sha256": "28552b83e37e02688cedb2c6bdbfc2b2ad79bc0c749a7bd5a399773a284a7841",
+      "role": "hero",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 5,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 10,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Sharon",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 11,
+            "source_key": "呼び名"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "シャロン",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 12,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "era魔界牧場",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 13,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 47,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "白魔術士",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 48,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "空",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 52,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "eye_feature": [
+          {
+            "value": "タレ目",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 53,
+            "source_key": "CSTR,目の特徴"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "桃髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 54,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_feature": [
+          {
+            "value": "片目隠れ",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 55,
+            "source_key": "CSTR,髪特徴"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "ロング",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 56,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1490,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 69,
+            "source_key": "フラグ,身長"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 21,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara5_シャロン.csv",
+            "line": 72,
+            "source_key": "フラグ,外見年齢"
+          }
+        ]
+      },
+      "height_cm": 149.0,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 21,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": "sharon",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "display name and neutral race/height/hair/eye/occupation correspondence"
+    },
+    {
+      "source_id": 6,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+      "source_sha256": "b4e37343d4ae5612b30176f362ef03c4dc2e4f131bbc57cac8f1605e0750b8ff",
+      "role": "hero",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 6,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 8,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Noir",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 9,
+            "source_key": "呼び名"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "ノワール",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 10,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "era魔界牧場",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 11,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 45,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "黒魔術士",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 46,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "赤",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 50,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "eye_feature": [
+          {
+            "value": "ツリ目",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 51,
+            "source_key": "CSTR,目の特徴"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "銀髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 52,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "ベリーロング",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 53,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1620,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 66,
+            "source_key": "フラグ,身長"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 26,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/000～魔界牧場およびシステムキャラ/Chara6_ノワール.csv",
+            "line": 69,
+            "source_key": "フラグ,外見年齢"
+          }
+        ]
+      },
+      "height_cm": 162.0,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 26,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": "noir",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "display name and neutral race/height/hair/eye/occupation correspondence"
+    },
+    {
+      "source_id": 100,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+      "source_sha256": "1aa881642e48a0002dfb61a88a2f14c7aa1848c4c2fd9e7591625e77dfeea67d",
+      "role": "hero",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 100,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 4,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Ayaka",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 5,
+            "source_key": "呼び名"
+          }
+        ],
+        "full_name": [
+          {
+            "value": "Sasara Ayaka",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 6,
+            "source_key": "名前"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "彩華",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 7,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "オリジナル",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 8,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 39,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "退魔師",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 40,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "青",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 44,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "赤髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 45,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_feature": [
+          {
+            "value": "ストレート",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 46,
+            "source_key": "CSTR,髪特徴"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "セミロング",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 47,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "hair_color_code": [
+          {
+            "value": "0xdc143c",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 48,
+            "source_key": "フラグ,カラーコード／髪"
+          }
+        ],
+        "right_eye_color_code": [
+          {
+            "value": "0x1e90ff",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 49,
+            "source_key": "フラグ,カラーコード／右目"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 18,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 72,
+            "source_key": "フラグ,外見年齢"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1546,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+            "line": 75,
+            "source_key": "フラグ,身長"
+          }
+        ]
+      },
+      "height_cm": 154.6,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 18,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [
+        {
+          "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara100_彩華.csv",
+          "line": 70,
+          "source_value": "ＪＫ",
+          "meaning": "schoolgirl/high-school-girl context marker"
+        }
+      ],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": "ayaka",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "display name and neutral race/height/hair/eye/occupation correspondence"
+    },
+    {
+      "source_id": 101,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+      "source_sha256": "a36ef5f77dfb973b8a78daa02fbaa080887e4d1b1c36686edbd5c38a0a7f9c68",
+      "role": "hero",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 101,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 4,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "En",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 5,
+            "source_key": "呼び名"
+          }
+        ],
+        "full_name": [
+          {
+            "value": "Enomoto En",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 6,
+            "source_key": "名前"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "縁",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 7,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "オリジナル",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 8,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "ダンピール",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 41,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "退魔師",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 42,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "茶",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 46,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "栗毛",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 47,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_feature": [
+          {
+            "value": "エアリー",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 48,
+            "source_key": "CSTR,髪特徴"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "セミロング",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 49,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "hair_color_code": [
+          {
+            "value": "0xa0522d",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 50,
+            "source_key": "フラグ,カラーコード／髪"
+          }
+        ],
+        "right_eye_color_code": [
+          {
+            "value": "0xcd853f",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 51,
+            "source_key": "フラグ,カラーコード／右目"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 18,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 74,
+            "source_key": "フラグ,外見年齢"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1654,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara101_縁.csv",
+            "line": 79,
+            "source_key": "フラグ,身長"
+          }
+        ]
+      },
+      "height_cm": 165.4,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 18,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": "en",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "display name and neutral race/height/hair/eye/occupation correspondence"
+    },
+    {
+      "source_id": 102,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+      "source_sha256": "bbe5e6993c52d3b65cf485d3a6a1621cea515be180a16a25df197ce8cd218b45",
+      "role": "hero",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 102,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 4,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Yukina",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 5,
+            "source_key": "呼び名"
+          }
+        ],
+        "full_name": [
+          {
+            "value": "Hiiragi Yukina",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 6,
+            "source_key": "名前"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "雪菜",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 7,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "オリジナル",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 8,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人狼",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 41,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "race_category": [
+          {
+            "value": "犬耳族",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 42,
+            "source_key": "CSTR,カテゴリ／種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "退魔師",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 43,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "赤",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 47,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "銀髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 48,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_feature": [
+          {
+            "value": "ナチュラル",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 49,
+            "source_key": "CSTR,髪特徴"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "一本結び",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 50,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "eye_feature": [
+          {
+            "value": "タレ目",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 51,
+            "source_key": "CSTR,目の特徴"
+          }
+        ],
+        "hair_color_code": [
+          {
+            "value": "0xd3d3d3",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 52,
+            "source_key": "フラグ,カラーコード／髪"
+          }
+        ],
+        "right_eye_color_code": [
+          {
+            "value": "0xdc143c",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 53,
+            "source_key": "フラグ,カラーコード／右目"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 18,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 75,
+            "source_key": "フラグ,外見年齢"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1582,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/100～オリジナル/Chara102_雪菜.csv",
+            "line": 78,
+            "source_key": "フラグ,身長"
+          }
+        ]
+      },
+      "height_cm": 158.2,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 18,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": "yukina",
+      "mapping_confidence": "supported_metadata_correspondence_not_explicit_numeric_foreign_key",
+      "mapping_basis": "display name and neutral race/height/hair/eye/occupation correspondence"
+    },
+    {
+      "source_id": 200,
+      "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+      "source_sha256": "15749567afabb87383794235dafb09611baadac43fbd667b12e60d8c34c9ea73",
+      "role": "template_or_sample",
+      "metadata": {
+        "source_id": [
+          {
+            "value": 200,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 24,
+            "source_key": "番号"
+          }
+        ],
+        "display_name": [
+          {
+            "value": "Kai",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 41,
+            "source_key": "呼び名"
+          }
+        ],
+        "identity_name": [
+          {
+            "value": "カイ",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 47,
+            "source_key": "CSTR,識別名"
+          }
+        ],
+        "origin_work": [
+          {
+            "value": "ドルアーガの塔",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 48,
+            "source_key": "CSTR,出典作品名"
+          }
+        ],
+        "race": [
+          {
+            "value": "人間",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 209,
+            "source_key": "CSTR,種族"
+          }
+        ],
+        "occupation": [
+          {
+            "value": "イシターの巫女",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 210,
+            "source_key": "CSTR,ジョブ"
+          }
+        ],
+        "right_eye_color": [
+          {
+            "value": "赤",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 228,
+            "source_key": "CSTR,右目の色"
+          }
+        ],
+        "hair_color": [
+          {
+            "value": "黒髪",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 231,
+            "source_key": "CSTR,髪色"
+          }
+        ],
+        "hair_style": [
+          {
+            "value": "ロング",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 233,
+            "source_key": "CSTR,髪型"
+          }
+        ],
+        "right_eye_color_code": [
+          {
+            "value": "0xFF2020",
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 235,
+            "source_key": "フラグ,カラーコード／右目"
+          }
+        ],
+        "apparent_age": [
+          {
+            "value": 20,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 317,
+            "source_key": "フラグ,外見年齢"
+          }
+        ],
+        "height_mm": [
+          {
+            "value": 1560,
+            "source_file": "eraMakaiRanch-game-eng-translation/CSV/200～版権少数枠/Chara200_カイ_ドルアーガ（サンプル）.csv",
+            "line": 344,
+            "source_key": "フラグ,身長"
+          }
+        ]
+      },
+      "height_cm": 156.0,
+      "height_cm_basis": "source millimeters divided by 10; sample Chara200 line 340 documents millimeters",
+      "apparent_age": 20,
+      "confirmed_age": null,
+      "confirmed_age_status": "unknown; apparent age is not chronological age",
+      "age_context_cues": [],
+      "visual_review": "not_performed; no images loaded",
+      "adult_presentation_status": "blocked_pending_age_and_design_review",
+      "remake_id": null,
+      "mapping_confidence": "no_supported_match",
+      "mapping_basis": "No matching definition in characters.json; do not force template mapping"
+    }
+  ],
+  "remake_characters": [
+    {
+      "id": "anon",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 3,
+      "metadata": {
+        "Id": {
+          "value": "anon",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 3
+        },
+        "DisplayName": {
+          "value": "Anon",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 4
+        },
+        "Race": {
+          "value": "Makai-jin",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 14
+        },
+        "JobClass": {
+          "value": "Ranch Owner",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 16
+        },
+        "Height": {
+          "value": "Tall (190cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 17
+        },
+        "HairColor": {
+          "value": "Black",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 19
+        },
+        "HairStyle": {
+          "value": "Short",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 20
+        },
+        "EyeColor": {
+          "value": "Red",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 21
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 22
+        }
+      },
+      "mapped_source_ids": [
+        0
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_pending_validation",
+      "note": null
+    },
+    {
+      "id": "ayaka",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 41,
+      "metadata": {
+        "Id": {
+          "value": "ayaka",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 41
+        },
+        "DisplayName": {
+          "value": "Ayaka",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 42
+        },
+        "Race": {
+          "value": "Human",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 52
+        },
+        "JobClass": {
+          "value": "Exorcist",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 54
+        },
+        "Height": {
+          "value": "Short (155cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 55
+        },
+        "HairColor": {
+          "value": "Red",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 57
+        },
+        "HairStyle": {
+          "value": "Semi-long",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 58
+        },
+        "EyeColor": {
+          "value": "Blue",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 59
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 60
+        }
+      },
+      "mapped_source_ids": [
+        100
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_pending_validation",
+      "note": null
+    },
+    {
+      "id": "en",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 84,
+      "metadata": {
+        "Id": {
+          "value": "en",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 84
+        },
+        "DisplayName": {
+          "value": "En",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 85
+        },
+        "Race": {
+          "value": "Dhampir",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 95
+        },
+        "JobClass": {
+          "value": "Exorcist",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 97
+        },
+        "Height": {
+          "value": "Standard (165cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 98
+        },
+        "HairColor": {
+          "value": "Chestnut",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 100
+        },
+        "HairStyle": {
+          "value": "Semi-long",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 101
+        },
+        "EyeColor": {
+          "value": "Brown",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 102
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 103
+        }
+      },
+      "mapped_source_ids": [
+        101
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_pending_validation",
+      "note": null
+    },
+    {
+      "id": "kagura",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 127,
+      "metadata": {
+        "Id": {
+          "value": "kagura",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 127
+        },
+        "DisplayName": {
+          "value": "Kagura",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 128
+        },
+        "Race": {
+          "value": "Human",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 138
+        },
+        "JobClass": {
+          "value": "Exorcist Miko",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 140
+        },
+        "Height": {
+          "value": "Short (151cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 141
+        },
+        "HairColor": {
+          "value": "Black",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 143
+        },
+        "HairStyle": {
+          "value": "Semi-long",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 144
+        },
+        "EyeColor": {
+          "value": "Black",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 145
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 146
+        }
+      },
+      "mapped_source_ids": [
+        3
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_pending_validation",
+      "note": null
+    },
+    {
+      "id": "maria",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 166,
+      "metadata": {
+        "Id": {
+          "value": "maria",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 166
+        },
+        "DisplayName": {
+          "value": "Maria",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 167
+        },
+        "Race": {
+          "value": "Human",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 177
+        },
+        "JobClass": {
+          "value": "Battle Sister",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 179
+        },
+        "Height": {
+          "value": "Standard (158cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 180
+        },
+        "HairColor": {
+          "value": "Blonde",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 182
+        },
+        "HairStyle": {
+          "value": "Ponytail",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 183
+        },
+        "EyeColor": {
+          "value": "Blue",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 184
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 185
+        }
+      },
+      "mapped_source_ids": [
+        4
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_source_minor_apparent_age",
+      "note": null
+    },
+    {
+      "id": "noir",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 205,
+      "metadata": {
+        "Id": {
+          "value": "noir",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 205
+        },
+        "DisplayName": {
+          "value": "Noir",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 206
+        },
+        "Race": {
+          "value": "Human",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 216
+        },
+        "JobClass": {
+          "value": "Black Mage",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 218
+        },
+        "Height": {
+          "value": "Standard (162cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 219
+        },
+        "HairColor": {
+          "value": "Silver",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 221
+        },
+        "HairStyle": {
+          "value": "Very Long",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 222
+        },
+        "EyeColor": {
+          "value": "Red",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 223
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 224
+        }
+      },
+      "mapped_source_ids": [
+        6
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_pending_validation",
+      "note": null
+    },
+    {
+      "id": "rancher",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 244,
+      "metadata": {
+        "Id": {
+          "value": "rancher",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 244
+        },
+        "DisplayName": {
+          "value": "Rancher",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 245
+        },
+        "Race": {
+          "value": "Makai-jin",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 255
+        },
+        "JobClass": {
+          "value": "Rancher",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 257
+        },
+        "Height": {
+          "value": "Tall",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 258
+        },
+        "HairColor": {
+          "value": "Black",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 260
+        },
+        "HairStyle": {
+          "value": "Short",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 261
+        },
+        "EyeColor": {
+          "value": "Red",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 262
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 263
+        }
+      },
+      "mapped_source_ids": [],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_pending_validation",
+      "note": "Remake player-role definition; similar to Chara0/anon but no independently supported source-ID mapping. Not Chara2."
+    },
+    {
+      "id": "sharon",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 279,
+      "metadata": {
+        "Id": {
+          "value": "sharon",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 279
+        },
+        "DisplayName": {
+          "value": "Sharon",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 280
+        },
+        "Race": {
+          "value": "Human",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 290
+        },
+        "JobClass": {
+          "value": "White Mage",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 292
+        },
+        "Height": {
+          "value": "Short (149cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 293
+        },
+        "HairColor": {
+          "value": "Pink",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 295
+        },
+        "HairStyle": {
+          "value": "Long",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 296
+        },
+        "EyeColor": {
+          "value": "Sky Blue",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 297
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 298
+        }
+      },
+      "mapped_source_ids": [
+        5
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_pending_validation",
+      "note": null
+    },
+    {
+      "id": "slay",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 318,
+      "metadata": {
+        "Id": {
+          "value": "slay",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 318
+        },
+        "DisplayName": {
+          "value": "Slay",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 319
+        },
+        "Race": {
+          "value": "Human",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 329
+        },
+        "JobClass": {
+          "value": "Foundling",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 331
+        },
+        "Height": {
+          "value": "Short (144cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 332
+        },
+        "HairColor": {
+          "value": "Blonde",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 334
+        },
+        "HairStyle": {
+          "value": "Short",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 335
+        },
+        "EyeColor": {
+          "value": "Blue",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 336
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 337
+        }
+      },
+      "mapped_source_ids": [
+        1
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_source_minor_apparent_age",
+      "note": null
+    },
+    {
+      "id": "yukina",
+      "source_file": "OpenMakaiRanchGame/data/characters.json",
+      "id_line": 355,
+      "metadata": {
+        "Id": {
+          "value": "yukina",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 355
+        },
+        "DisplayName": {
+          "value": "Yukina",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 356
+        },
+        "Race": {
+          "value": "Werewolf",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 366
+        },
+        "JobClass": {
+          "value": "Exorcist",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 368
+        },
+        "Height": {
+          "value": "Standard (158cm)",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 369
+        },
+        "HairColor": {
+          "value": "Silver",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 371
+        },
+        "HairStyle": {
+          "value": "Ponytail",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 372
+        },
+        "EyeColor": {
+          "value": "Red",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 373
+        },
+        "EyeFeature": {
+          "value": "",
+          "source_file": "OpenMakaiRanchGame/data/characters.json",
+          "line": 374
+        }
+      },
+      "mapped_source_ids": [
+        102
+      ],
+      "age_fields_present": [],
+      "confirmed_age": null,
+      "visual_review": "not_performed",
+      "adult_presentation_status": "blocked_pending_validation",
+      "note": null
+    }
+  ],
+  "input_manifest": [
+    {
+      "file": "OpenMakaiRanchGame/data/characters.json",
+      "sha256": "a41d49f4d26b4271980db1de85b37697130074d86c169c9c31da5bd6038d45ff"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Core/Resources/GameDefinitions.cs",
+      "sha256": "10af1e91068196baf60868600bff25240761bcecd2792c7ce1b6813b3bcf6d3e"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Core/Models/SaveModels.cs",
+      "sha256": "154d824f17866a458b1a2fd5f0b9d828ebdbc6fe322c3f0f0d7c1c1105f396a3"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Data/DataRegistry.cs",
+      "sha256": "6a243e13c04b6dff93812ce8fb1f5349e615628c87aa2fd345ce9c231159bfa9"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Gameplay/CharacterGenerationPools.cs",
+      "sha256": "b3a1e30bf6fff4fc6650110697b1a9f14b51568a7ab1bf2bd1c4df04be8619bb"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Gameplay/SaveStateFactory.cs",
+      "sha256": "63cad3d1c99488b8f6cebb4bff23214634110b50f131436479e8afc0e77250b5"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Gameplay/SaveService.cs",
+      "sha256": "b1a955cb8972da7c573ade8f24ff53b06a53b997d6b9f1b8f62ab059974bf851"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Gameplay/SaveMigrator.cs",
+      "sha256": "6c7aa940831505cf40d1059831e7e7a926a28c45cb4fa8ee059e236a5526a9f4"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/App/GameRoot.cs",
+      "sha256": "36907535cc214891f80d88991525496191e7395000303b3a4485b1e850299817"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Ui/UiShellController.Screens.cs",
+      "sha256": "5477f6bee3256ab3ae55e69b47880b4da8bbc39cd72d8388ebc1e2dde592d3ad"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Gameplay/MatureServices.cs",
+      "sha256": "d98af7094651d808e5e830f5cbc98195bc0b9fecd3c1bb7b4f9a407e9139b8af"
+    },
+    {
+      "file": "OpenMakaiRanchGame/src/Gameplay/PortraitRenderer.cs",
+      "sha256": "344beb208b8dd8851be164c777c6842b9aec2404356e921662a20c7577581d85"
+    }
+  ],
+  "counts": {
+    "source_files": 11,
+    "unique_source_paths": 11,
+    "unique_source_ids": 11,
+    "hero_definitions": 8,
+    "player_definitions": 1,
+    "templates_or_samples": 2,
+    "source_apparent_age_below_18": 2,
+    "source_confirmed_age_unknown": 11,
+    "source_visuals_reviewed": 0,
+    "source_cleared_for_adult_presentation": 0,
+    "remake_definitions": 10,
+    "source_definitions_mapped": 9,
+    "unmapped_source_definitions": 2,
+    "unmapped_remake_definitions": 1,
+    "remake_definitions_without_age_fields": 10
+  },
+  "extraction_python": "from pathlib import Path\nimport csv, hashlib, json, re\nroot = Path('E:/OpenMakaiRanch')\nsource = root / 'eraMakaiRanch-game-eng-translation'\nremake_path = root / 'OpenMakaiRanchGame/data/characters.json'\nremake_text = remake_path.read_text(encoding='utf-8-sig')\nremake = json.loads(remake_text)\nrel = lambda p: p.relative_to(root).as_posix()\nsha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()\nfields = {'種族':'race','カテゴリ／種族':'race_category','ジョブ':'occupation','所属身分':'affiliation','身長':'height_label','髪色':'hair_color','髪型':'hair_style','髪特徴':'hair_feature','右目の色':'right_eye_color','左目の色':'left_eye_color','目の特徴':'eye_feature','瞳の形':'eye_shape','識別名':'identity_name','出典作品名':'origin_work'}\nflag_fields = {'外見年齢':'apparent_age','身長':'height_mm','カラーコード／髪':'hair_color_code','カラーコード／右目':'right_eye_color_code'}\nmapping = {0:'anon',1:'slay',3:'kagura',4:'maria',5:'sharon',6:'noir',100:'ayaka',101:'en',102:'yukina'}\nrows = []\nfiles = sorted((p for p in source.rglob('*') if p.is_file() and re.fullmatch(r'Chara.*\\.csv',p.name,re.I)),key=lambda p:rel(p))\nfor p in files:\n    metadata = {}\n    cues = []\n    for line,s in enumerate(p.read_text(encoding='utf-8-sig').splitlines(),1):\n        if not s.strip() or s.lstrip().startswith(';'): continue\n        row = [x.strip() for x in next(csv.reader([s]),[])]\n        key = value = None\n        if len(row)>=2 and row[0] in {'番号','名前','呼び名'}:\n            key={'番号':'source_id','名前':'full_name','呼び名':'display_name'}[row[0]]; value=row[1]\n        elif len(row)>=3 and row[0]=='CSTR' and row[1] in fields:\n            key=fields[row[1]]; value=row[2]\n        elif len(row)>=3 and row[0]=='フラグ' and row[1] in flag_fields:\n            key=flag_fields[row[1]]; value=row[2]\n        elif len(row)>=2 and row[0]=='素質' and row[1] in {'童顔','ＪＫ'}:\n            cues.append({'source_file':rel(p),'line':line,'source_value':row[1], 'meaning':{'童顔':'baby-faced/youthful-face trait','ＪＫ':'schoolgirl/high-school-girl context marker'}[row[1]]})\n        if key is not None:\n            if key in {'source_id','apparent_age','height_mm'}: value=int(value)\n            metadata.setdefault(key,[]).append({'value':value,'source_file':rel(p),'line':line,'source_key':','.join(row[:-1])})\n    sid=metadata['source_id'][0]['value']; age=metadata.get('apparent_age',[{'value':None}])[0]['value']\n    mm=metadata.get('height_mm',[{'value':None}])[0]['value']\n    rid=mapping.get(sid)\n    rows.append({'source_id':sid,'source_file':rel(p),'source_sha256':sha(p),'role':'player' if sid==0 else 'template_or_sample' if sid in (2,200) else 'hero','metadata':metadata,'height_cm':mm/10 if mm is not None else None,'height_cm_basis':'source millimeters divided by 10; sample Chara200 line 340 documents millimeters','apparent_age':age,'confirmed_age':None,'confirmed_age_status':'unknown; apparent age is not chronological age','age_context_cues':cues,'visual_review':'not_performed; no images loaded','adult_presentation_status':'blocked_minor_apparent_age' if age is not None and age<18 else 'blocked_pending_age_and_design_review','remake_id':rid,'mapping_confidence':'supported_metadata_correspondence_not_explicit_numeric_foreign_key' if rid else 'no_supported_match','mapping_basis':'Chara1 identity スレイ, blonde short hair, blue eyes, 144cm, foundling correspond to slay; Surei and Slay are retained as distinct source/remake labels' if sid==1 else 'display name and neutral race/height/hair/eye/occupation correspondence' if rid else 'No matching definition in characters.json; do not force template mapping'})\nrows.sort(key=lambda x:x['source_id'])\nallowed = {'Id','DisplayName','Race','JobClass','Height','HairColor','HairStyle','EyeColor','EyeFeature','Age','ApparentAge','ConfirmedAge'}\nremake_rows=[]\nfor c in remake:\n    rid=c['Id']; line=next(i for i,s in enumerate(remake_text.splitlines(),1) if re.search(r'\"Id\"\\s*:\\s*\"'+re.escape(rid)+r'\"',s))\n    neutral={}\n    for k,v in c.items():\n        if k in allowed:\n            field_line=next((i for i,s in enumerate(remake_text.splitlines(),1) if i>=line and re.search(r'\"'+re.escape(k)+r'\"\\s*:',s)),None)\n            neutral[k]={'value':v,'source_file':rel(remake_path),'line':field_line}\n    remake_rows.append({'id':rid,'source_file':rel(remake_path),'id_line':line,'metadata':neutral,'mapped_source_ids':[x['source_id'] for x in rows if x['remake_id']==rid],'age_fields_present':[k for k in c if 'age' in k.lower() and k not in {'BodyImagePath'}], 'confirmed_age':None,'visual_review':'not_performed','adult_presentation_status':'blocked_pending_validation','note':'Remake player-role definition; similar to Chara0/anon but no independently supported source-ID mapping. Not Chara2.' if rid=='rancher' else None})\ncode_files=['src/Core/Resources/GameDefinitions.cs','src/Core/Models/SaveModels.cs','src/Data/DataRegistry.cs','src/Gameplay/CharacterGenerationPools.cs','src/Gameplay/SaveStateFactory.cs','src/Gameplay/SaveService.cs','src/Gameplay/SaveMigrator.cs','src/App/GameRoot.cs','src/Ui/UiShellController.Screens.cs','src/Gameplay/MatureServices.cs','src/Gameplay/PortraitRenderer.cs']\nmanifest=[{'file':rel(remake_path),'sha256':sha(remake_path)}]+[{'file':'OpenMakaiRanchGame/'+n,'sha256':sha(root/'OpenMakaiRanchGame'/n)} for n in code_files]\nprint(json.dumps({'schema_version':1,'scope':'Neutral identity/age/height/race/occupation/hair/eye metadata only. Source read-only. No imagery or sexual dialogue reproduced. Static audit; no runtime safety certification.','source_glob':'eraMakaiRanch-game-eng-translation/**/Chara*.csv (case-insensitive filename comparison)','age_semantics_evidence':{'file':next(x['source_file'] for x in rows if x['source_id']==200),'line':316,'summary':'Comment states this is apparent age; actual age is not implemented because races and elapsed years complicate it.'},'source_characters':rows,'remake_characters':remake_rows,'input_manifest':manifest},ensure_ascii=False))\n",
+  "reproducibility": {
+    "root": "E:/OpenMakaiRanch",
+    "encoding": "utf-8-sig, strict decoding",
+    "line_numbers": "1-based physical source lines, including comments and blank lines; comments are not parsed as definitions",
+    "allowlist": "extraction_python is the exact read-only extraction used; no images or dialogue included",
+    "stable_order": "source rows sorted by numeric source_id; source paths unique ignoring case; remake rows retain JSON order",
+    "rerun": "Execute extraction_python from this JSON with Python 3. Compare source_characters, remake_characters, and input_manifest; findings are human static-review conclusions, not automatically recertified."
+  },
+  "age_reference_scan": {
+    "root": "OpenMakaiRanchGame/src",
+    "glob": "**/*.cs",
+    "files_scanned": 41,
+    "identifier": "ApparentAge",
+    "references": [
+      {
+        "file": "OpenMakaiRanchGame/src/Core/Models/SaveModels.cs",
+        "lines": [
+          138,
+          242
+        ]
+      },
+      {
+        "file": "OpenMakaiRanchGame/src/Gameplay/CharacterGenerationPools.cs",
+        "lines": [
+          380,
+          420,
+          422
+        ]
+      },
+      {
+        "file": "OpenMakaiRanchGame/src/Gameplay/SaveStateFactory.cs",
+        "lines": [
+          81,
+          234,
+          289
+        ]
+      },
+      {
+        "file": "OpenMakaiRanchGame/src/Ui/UiShellController.Screens.cs",
+        "lines": [
+          2617,
+          2618,
+          2621,
+          2622
+        ]
+      }
+    ],
+    "limitation": "Identifier scan supports inspected boundaries; it does not prove universal absence of alternate-named checks or certify runtime behavior."
+  },
+  "findings": [
+    {
+      "id": "AGE-01",
+      "severity": "blocker",
+      "status": "observed",
+      "summary": "Source Surei (remake slay) has apparent age 13; Maria has apparent age 15. Both are blocked from adult presentation. Their confirmed chronological ages remain unknown, not 13/15 asserted as chronology.",
+      "source_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "AGE-02",
+      "severity": "blocker",
+      "status": "observed",
+      "summary": "All source definitions provide apparent age only. Chara200 comment explicitly says actual age is not implemented. Apparent age >=18 is not adulthood evidence or visual clearance. Ayaka has a schoolgirl context marker; Maria also has a youthful-face marker.",
+      "source_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        100,
+        101,
+        102,
+        200
+      ]
+    },
+    {
+      "id": "AGE-03",
+      "severity": "blocker",
+      "status": "observed",
+      "summary": "Remake character JSON and CharacterDefinition do not retain a source age or confirmed-age/review status. Missing age cannot be interpreted as adult. Default ApparentAge values in save models do not establish adulthood.",
+      "evidence": [
+        {
+          "file": "OpenMakaiRanchGame/src/Core/Resources/GameDefinitions.cs",
+          "line_start": 50,
+          "line_end": 79
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/Core/Models/SaveModels.cs",
+          "line_start": 138,
+          "line_end": 138
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/Core/Models/SaveModels.cs",
+          "line_start": 242,
+          "line_end": 242
+        }
+      ]
+    },
+    {
+      "id": "AGE-04",
+      "severity": "blocker",
+      "status": "observed_static",
+      "summary": "Generation pool includes apparent ages 12, 14 and 16. The weighted selector can return all three; generated recruit creation stores the result without an adult eligibility gate.",
+      "evidence": [
+        {
+          "file": "OpenMakaiRanchGame/src/Gameplay/CharacterGenerationPools.cs",
+          "line_start": 379,
+          "line_end": 384
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/Gameplay/CharacterGenerationPools.cs",
+          "line_start": 420,
+          "line_end": 435
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/Gameplay/SaveStateFactory.cs",
+          "line_start": 202,
+          "line_end": 234
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/Gameplay/SaveStateFactory.cs",
+          "line_start": 289,
+          "line_end": 289
+        }
+      ]
+    },
+    {
+      "id": "AGE-05",
+      "severity": "blocker",
+      "status": "observed_static",
+      "summary": "Player age picker exposes the entire apparent-age pool and passes selection to ModifyPlayer, which applies the callback without validation. Player is in scope, not exempt.",
+      "evidence": [
+        {
+          "file": "OpenMakaiRanchGame/src/Ui/UiShellController.Screens.cs",
+          "line_start": 2617,
+          "line_end": 2623
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/App/GameRoot.cs",
+          "line_start": 277,
+          "line_end": 281
+        }
+      ]
+    },
+    {
+      "id": "AGE-06",
+      "severity": "blocker",
+      "status": "observed_static",
+      "summary": "Registry validation checks items/missions/enemies rather than character age; save loading deserializes and migrates, then checks schema. Migration normalizes state without age or design review. Malformed/legacy/custom age data have no inspected adult eligibility rejection boundary.",
+      "evidence": [
+        {
+          "file": "OpenMakaiRanchGame/src/Data/DataRegistry.cs",
+          "line_start": 1361,
+          "line_end": 1399
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/Gameplay/SaveService.cs",
+          "line_start": 116,
+          "line_end": 132
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/Gameplay/SaveMigrator.cs",
+          "line_start": 85,
+          "line_end": 165
+        }
+      ]
+    },
+    {
+      "id": "AGE-07",
+      "severity": "blocker",
+      "status": "observed_static",
+      "summary": "Inspected mature-action entry point checks character existence, daily capacity, energy, bond, condition, consent and tools, but not adult eligibility. Those checks are not substitutes for adulthood. Inspected visual wrapper chooses layered or fallback portraits without adult review status.",
+      "evidence": [
+        {
+          "file": "OpenMakaiRanchGame/src/Gameplay/MatureServices.cs",
+          "line_start": 382,
+          "line_end": 424
+        },
+        {
+          "file": "OpenMakaiRanchGame/src/Gameplay/PortraitRenderer.cs",
+          "line_start": 137,
+          "line_end": 156
+        }
+      ]
+    },
+    {
+      "id": "AGE-08",
+      "severity": "review_required",
+      "status": "uncertain",
+      "summary": "rancher resembles the player-role archetype but has no supported independent numeric CSV mapping. Chara2 and Chara200 are not mapped to remake definitions. Neither omission nor player-role similarity supplies adult clearance."
+    }
+  ],
+  "generator_static_verification": {
+    "method": "Exhaustive Python replay of each integer roll in Random.Next(sum(weights)); not execution of C# or rendering",
+    "apparent_ages": [
+      12,
+      14,
+      16,
+      18,
+      22,
+      28,
+      50
+    ],
+    "weights": [
+      5,
+      8,
+      15,
+      25,
+      20,
+      12,
+      5
+    ],
+    "weight_total": 90,
+    "roll_count": 90,
+    "outcomes": {
+      "12": 5,
+      "14": 8,
+      "16": 15,
+      "18": 25,
+      "22": 20,
+      "28": 12,
+      "50": 5
+    },
+    "under_18_rolls": 28,
+    "under_18_fraction": "28/90",
+    "under_18_percent": 31.11111111111111,
+    "note": "Code comment says percentages, but these are relative weights totaling 90, not 100."
+  },
+  "required_policy": {
+    "implemented_by_this_audit": false,
+    "decision": "BLOCK adult presentation for minors, minor-apparent-age designs, unknown/ambiguous age or design, and unreviewed assets. All catalog entries remain uncleared.",
+    "numeric_relabeling": "Changing age to 18+ or relying on supernatural chronology is not sufficient to clear a minor-coded or ambiguous design.",
+    "author_decisions_needed": [
+      "Document actual adult identity with provenance separately from apparent age.",
+      "Resolve school-age context and other ambiguity through an authorized eligibility decision; exclude blocked characters from adult presentation.",
+      "Record independent, non-explicit design review and asset-specific approval before any adult use.",
+      "Choose safe non-adult handling for missing, conflicting, legacy or unreviewed data."
+    ],
+    "required_boundaries": [
+      "CSV/JSON import and fallback seed validation",
+      "generated recruits, rerolls, capture/preferences and archetype selection",
+      "player creation and mutation",
+      "save load and migration",
+      "mature action entry points",
+      "portrait/body/layer/fallback presentation and asset changes"
+    ],
+    "visual_certification": "None; no art generated, modified or reviewed."
+  }
+}

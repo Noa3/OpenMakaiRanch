@@ -13,7 +13,9 @@ The main target is to rebuild the gameplay framework from `eraMakaiRanch-game-en
 
 ## Content Scope
 
-NSFW systems-first remake of eraMakaiRanch. Mature content (training mechanics, bond events, character progression) is fully integrated as a core gameplay pillar. The original game's adult content is faithfully recreated — not abstracted or placeholdered.
+The existing simulation includes mature-related state/services, alongside ranch management, relationships and adventures. Full original-game parity is **not verified**. The 3D migration is additive and begins with non-explicit gameplay. Adult-specific presentation requires identity and visual-age validation; see `OpenMakaiRanchGame/docs/ADULT_CHARACTER_VALIDATION.md`.
+
+Current evidence and continuity: [project state](OpenMakaiRanchGame/docs/CURRENT_PROJECT_STATE.md), [3D migration plan](OpenMakaiRanchGame/docs/3D_REMAKE_PLAN.md), [handoff](OpenMakaiRanchGame/docs/ASTRA_HANDOFF.md).
 
 ## Repository Layout
 
@@ -28,8 +30,8 @@ From the repository root:
 
 ```powershell
 dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
-.\Godot_v4.6.3-stable_mono_win64_console.exe --headless --path OpenMakaiRanchGame --build-solutions --quit
-.\Godot_v4.6.3-stable_mono_win64_console.exe --headless --path OpenMakaiRanchGame --quit-after 5
+python Tools/Godot/launch.py --mode check
+python Tools/Godot/launch.py --mode smoke
 ```
 
 ## Open In Godot (Shortcut)
@@ -40,10 +42,7 @@ Use the launcher script from repo root:
 .\OpenMakaiRanchGame-Editor.bat
 ```
 
-The script opens `OpenMakaiRanchGame` using:
-
-1. Local editor binary in repo root (`Godot_v4.6.3-stable_mono_win64.exe`), or
-2. `godot` from your PATH.
+The script opens the editor for `OpenMakaiRanchGame`, verifies stable Godot 4.7 .NET, and prints the selected executable. Discovery supports explicit `GODOT_BIN`/`GODOT_PATH`, `GODOT_HOME`, repository-relative installs, bounded installed locations and PATH. See [tooling](Tools/Godot/README.md) for isolated tests and verified Universal MCP access. No engine upgrade is performed.
 
 ## Large Editor Binary Strategy
 

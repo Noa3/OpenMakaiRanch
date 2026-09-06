@@ -52,7 +52,13 @@ public sealed class SaveStateFactory
                 RaceLayerIndex = raceLayer,
                 HairLayerIndex = hairLayer,
                 ClothLayerIndex = clothLayer,
-                FaceLayerIndex = 0
+                FaceLayerIndex = 0,
+                // Preserve provenance/eligibility from the validated definition so the
+                // starting roster carries the same audit trail as generated recruits.
+                ApparentAge = definition.ApparentAge,
+                AdultEligibility = definition.AdultEligibility,
+                Provenance = definition.Provenance,
+                AgeContextNote = definition.AgeContextNote
             });
             state.Schedule.AssignedJobs[definition.Id] = "rest";
         }
@@ -231,7 +237,7 @@ public sealed class SaveStateFactory
         var bustSize = CharacterGenerationPools.PickBreastSize(_random);
         var jobClass = CharacterGenerationPools.PickJob(_random);
         var heightMm = CharacterGenerationPools.GenerateHeight(_random);
-        var apparentAge = CharacterGenerationPools.GenerateApparentAge(_random);
+        var (apparentAge, adultEligibility, ageContextNote) = CharacterGenerationPools.GenerateApparentAgeWithEligibility(_random);
         var race = CharacterGenerationPools.PickRace(_random);
         var talents = CharacterGenerationPools.GenerateTalents(_random, 3);
         var bodyTypeLabel = CharacterGenerationPools.BodyTypes[_random.Next(CharacterGenerationPools.BodyTypes.Length)];
@@ -295,7 +301,10 @@ public sealed class SaveStateFactory
             JobClass = jobClass,
             Personality = personality,
             BustSize = bustSize,
-            Talents = talents
+            Talents = talents,
+            AdultEligibility = adultEligibility,
+            Provenance = CharacterProvenance.Generated,
+            AgeContextNote = ageContextNote
         };
     }
 

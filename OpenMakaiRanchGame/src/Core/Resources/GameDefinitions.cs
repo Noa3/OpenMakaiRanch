@@ -18,6 +18,26 @@ public enum JobCategory
     CustomerService
 }
 
+public enum AdultEligibility
+{
+    Unknown = 0,
+    ConfirmedAdult = 1,
+    Minor = 2,
+    Ambiguous = 3
+}
+
+public enum CharacterProvenance
+{
+    Unknown = 0,
+    OriginalHero = 1,
+    OriginalPlayer = 2,
+    OriginalTemplate = 3,
+    Generated = 4,
+    PlayerCreated = 5,
+    RemakeFallback = 6,
+    RemakeOnly = 7
+}
+
 public enum ItemCategory
 {
     Consumable,
@@ -76,6 +96,12 @@ public partial class CharacterDefinition : Resource
     public int MagicPower { get; set; }
     public List<string> Talents { get; set; } = new();
     public List<string> StartingItems { get; set; } = new();
+
+    // Adult eligibility and provenance (fail-closed)
+    public AdultEligibility AdultEligibility { get; set; } = AdultEligibility.Unknown;
+    public CharacterProvenance Provenance { get; set; } = CharacterProvenance.Unknown;
+    public int ApparentAge { get; set; } = 0;
+    public string AgeContextNote { get; set; } = string.Empty;
 }
 
 [GlobalClass]

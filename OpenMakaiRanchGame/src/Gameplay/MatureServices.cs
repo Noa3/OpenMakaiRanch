@@ -385,6 +385,13 @@ public TrainingReport PerformAction(string characterId, string actionId)
         if (character is null)
             return new TrainingReport { Success = false, Summary = "Character not found." };
 
+        // Fail-closed: adult eligibility check
+        if (!AdultEligibilityGate.IsEligibleForAdult(character))
+        {
+            var reason = AdultEligibilityGate.GetDenialReason(character);
+            return new TrainingReport { Success = false, Summary = $"Character not eligible for adult actions: {reason}" };
+        }
+
         // Original-game rule: only two slaves can be trained per day.
         if (_state.Calendar.TrainedToday >= 2)
             return new TrainingReport { Success = false, Summary = "Only two characters can be trained per day. Rest to reset the counter." };

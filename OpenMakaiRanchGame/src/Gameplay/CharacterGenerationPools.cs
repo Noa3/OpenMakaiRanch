@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenMakaiRanch.Core.Resources;
 
 namespace OpenMakaiRanch.Gameplay;
 
@@ -383,6 +384,48 @@ public static class CharacterGenerationPools
         ("Adult", 22), ("Mature", 28), ("Elderly", 50)
     };
 
+    /// <summary>
+    /// Player avatar age pool. Fail-closed: the player is not exempt from the
+    /// adult policy (audit ADULT_CHARACTER_VALIDATION.md line 95) — the picker
+    /// may only offer adult apparent ages.
+    /// </summary>
+    public static (string Label, int Age)[] PlayerApparentAges =>
+        ApparentAges.Where(a => a.Age >= 18).ToArray();
+
+    /// <summary>
+    /// Generates an apparent age with eligibility context.
+    /// Fail-closed: ages below 18 are Minor; ages 18+ with Unknown eligibility.
+    /// Caller must explicitly approve before adult presentation.
+    /// </summary>
+    public static (int Age, AdultEligibility Eligibility, string ContextNote) GenerateApparentAgeWithEligibility(Random random)
+    {
+        var ages = ApparentAges;
+        var weights = new[] { 5, 8, 15, 25, 20, 12, 5 };
+        var total = weights.Sum();
+        var roll = random.Next(total);
+        var cumulative = 0;
+        for (var i = 0; i < ages.Length; i++)
+        {
+            cumulative += weights[i];
+            if (roll < cumulative)
+            {
+                var age = ages[i].Age;
+                if (age < 18)
+                {
+                    return (age, AdultEligibility.Minor, $"Generated apparent age {age}; minor");
+                }
+                return (age, AdultEligibility.Unknown, $"Generated apparent age {age}; requires explicit review");
+            }
+        }
+        return (18, AdultEligibility.Unknown, "Generated apparent age 18; requires explicit review");
+    }
+
+    public static int GenerateApparentAge(Random random)
+    {
+        var result = GenerateApparentAgeWithEligibility(random);
+        return result.Age;
+    }
+
     // === Name Pool Selector ===
     public static readonly string[] NamePoolCategories = { "Japanese", "English", "French", "German", "Italian", "Russian", "Fantasy" };
 
@@ -415,23 +458,6 @@ public static class CharacterGenerationPools
     {
         var range = HeightRanges[random.Next(HeightRanges.Length)];
         return random.Next(range.Min, range.Max + 1);
-    }
-
-    public static int GenerateApparentAge(Random random)
-    {
-        var ages = ApparentAges;
-        // Weight toward 16-22
-        var weights = new[] { 5, 8, 15, 25, 20, 12, 5 }; // percentages
-        var total = weights.Sum();
-        var roll = random.Next(total);
-        var cumulative = 0;
-        for (var i = 0; i < ages.Length; i++)
-        {
-            cumulative += weights[i];
-            if (roll < cumulative)
-                return ages[i].Age;
-        }
-        return 18;
     }
 
     public static int PickBreastSize(Random random)

@@ -23,6 +23,8 @@ public partial class GameRoot : Node
 
 	public DataRegistry Data { get; private set; } = null!;
 	public SaveState State { get; private set; } = null!;
+	// Presentation callbacks capture this value, never a state-bound service reference.
+	public ulong StateGeneration { get; private set; }
 	public FeedbackService Feedback { get; private set; } = null!;
 	public SettingsStorage SettingsStorage { get; private set; } = new();
 	public SaveService Save { get; private set; } = new();
@@ -277,14 +279,89 @@ public partial class GameRoot : Node
 	public void ModifyPlayer(Action<PlayerState> modify)
 	{
 		modify(State.Player);
+		EnsurePlayerEligibility();
 		StateChanged?.Invoke();
+	}
+
+	/// <summary>
+	/// Fail-closed player eligibility (audit ADULT_CHARACTER_VALIDATION.md line 95:
+	/// "Players are not exempt"). Clamps a below-18 apparent age to 18 and records
+	/// the denial. A legacy/custom mutation that tries to set the player to a minor
+	/// age cannot acquire an adult-coded design.
+	/// </summary>
+	private void EnsurePlayerEligibility()
+	{
+		const int minAge = 18;
+		if (State.Player.ApparentAge < minAge)
+		{
+			GD.PrintErr($"[EligibilityGate] Player apparent age {State.Player.ApparentAge} below {minAge}; clamped to {minAge} (fail-closed).");
+			State.Player.ApparentAge = minAge;
+		}
+	}
+
+	/// <summary>
+	/// Fail-closed save-load guard (audit ADULT_CHARACTER_VALIDATION.md line 96):
+	/// legacy or missing metadata must not acquire approval through defaults.
+	/// A minor-apparent-age character can never be ConfirmedAdult on load;
+	/// any such corrupt/legacy record is downgraded to Minor (denied).
+	/// </summary>
+	private void EnsureLoadedEligibility()
+	{
+		EnsurePlayerEligibility();
+		foreach (var character in State.Roster.Characters)
+		{
+			if (character is null) continue;
+			if (character.ApparentAge < 18 && character.AdultEligibility == AdultEligibility.ConfirmedAdult)
+			{
+				GD.PrintErr($"[EligibilityGate] Character {character.Id} has ConfirmedAdult with apparent age {character.ApparentAge}; downgraded to Minor (fail-closed).");
+				character.AdultEligibility = AdultEligibility.Minor;
+			}
+		}
 	}
 
 	public bool SaveSlot(int slot)
 	{
+		Flags.SyncToStorage(State.Flags);
 		var saved = Save.Save(State, slot);
 		StateChanged?.Invoke();
 		return saved;
+	}
+
+	public bool TryAssignJob(string? characterId, string? jobId, ulong expectedGeneration)
+	{
+		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(jobId)
+			|| Roster.Find(characterId) is null || !Data.Jobs.ContainsKey(jobId)
+			|| Schedule.GetAssignment(characterId) == jobId)
+		{
+			return false;
+		}
+
+		Schedule.AssignJob(characterId, jobId);
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool TryConductMentorship(string? characterId, ulong expectedGeneration)
+	{
+		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(characterId) || Roster.Find(characterId) is null)
+		{
+			return false;
+		}
+
+		Bond.ConductMentorship(characterId);
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool TryCompleteBondEvent(string? eventId, ulong expectedGeneration)
+	{
+		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(eventId) || !Bond.CompleteEvent(eventId))
+		{
+			return false;
+		}
+
+		StateChanged?.Invoke();
+		return true;
 	}
 
 	public bool LoadSlot(int slot)
@@ -296,6 +373,7 @@ public partial class GameRoot : Node
 		}
 
 		State = loaded;
+		EnsureLoadedEligibility();
 		State.Settings = SettingsStorage.Load();
 		LastDailyReport = null;
 		LastCombatReport = null;
@@ -595,6 +673,7 @@ public partial class GameRoot : Node
 		Flags.SyncFromStorage(State.Flags);
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
+		StateGeneration++;
 	}
 
 	private void SyncFeedbackSettings()

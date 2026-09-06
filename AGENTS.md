@@ -4,16 +4,23 @@ Godot 4.7 .NET (C#) game — a NSFW remake of eraMakaiRanch.
 
 ## Commands
 - **Build**: `dotnet build` from `OpenMakaiRanchGame/`
-- **Run**: Launch `Godot_v4.7-stable_mono_win64.exe` with project
-- **Test**: Godot unit tests in `OpenMakaiRanchGame/src/Tests/`
+- **Run**: `python Tools/Godot/launch.py --mode editor` from repository root; `--mode runtime --isolated` for disposable playtests
+- **Test**: `python Tools/Godot/launch.py --mode smoke` from repository root. Never run the raw smoke flag against personal saves (slot 99 is overwritten/deleted).
 
 ## Architecture
 - **GameRoot** (autoload): Entry point, owns all services, starts NewGame / LoadGame
 - **SceneRouter** (autoload): Scene navigation
 - **UiShellController**: All UI screens in a single scene, controlled via `Screen` state
-- **DataRegistry**: Seeds typed `Resource` subclasses (characters, items, jobs, etc.) — no CSV at runtime
+- **DataRegistry**: Loads JSON first into typed `Resource` subclasses; seeded fallback remains. No CSV at runtime.
 - **Services**: `RanchService`, `DailySettlementService`, `InventoryService`, `AdventureService`, `MilestoneService`, `BondService`, etc.
-- **Save System**: `SaveState` POCO with `SchemaVersion` (current: 11), JSON serialization with `System.Text.Json`
+- **Save System**: `SaveState` POCO with `SchemaVersion` (current: 14), JSON serialization with `System.Text.Json`
+
+## 3D Migration Continuity
+- Canonical docs live in `OpenMakaiRanchGame/docs/`, not a second root-level docs tree.
+- Resume by reading `ASTRA_HANDOFF.md`, `KANBAN.md`, `DECISIONS.md`, and `KNOWN_ISSUES.md` there, then inspect Git/build state.
+- Preserve the existing simulation and management UI. 3D presentation derives from it; no second economy, clock, or job-reward path.
+- Pre-release project: fresh games are expected. Do not spend development effort on old-save migrations or backwards compatibility unless explicitly requested. Keep current-version save/load working; never delete existing user files implicitly.
+- Original `eraMakaiRanch-game-eng-translation/` is read-only. Adult-specific visuals remain blocked pending per-character identity/design validation; see `ADULT_CHARACTER_VALIDATION.md`.
 
 ## Conventions
 - C# with GodotSharp, not GDScript
@@ -25,8 +32,9 @@ Godot 4.7 .NET (C#) game — a NSFW remake of eraMakaiRanch.
 ## MCP Servers
 - **godot-mcp** (Coding-Solo/godot-mcp): Launches Godot editor, runs projects, captures debug output
   - Config: `opencode.json` and `.vscode/mcp.json`
-  - Godot exe: `E:\OpenMakaiRanch\Godot_v4.6.3-stable_mono_win64.exe`
+  - Godot executable: discover stable 4.7 .NET via `Tools/Godot/launch.py`; do not reuse stale 4.6 paths.
   - Command: `npx @coding-solo/godot-mcp`
+- **Project Universal MCP addon**: distinct custom protocol on loopback 9500/9501. Verified local adapter: `node Tools/Godot/bridge_server.mjs`. Client owns stdio. Read `Tools/Godot/README.md`; installed Coding-Solo tools are not proof of addon connectivity.
 - **comfyui-mcp** (artokun/comfyui-mcp): Full ComfyUI control (image gen, workflows, models)
   - 96 tools: generate_image, workflow authoring, model management
   - Config: `opencode.json` — auto-detects local ComfyUI at D:\ComfyUI

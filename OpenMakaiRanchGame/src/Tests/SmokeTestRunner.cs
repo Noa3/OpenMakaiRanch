@@ -55,8 +55,11 @@ public static class SmokeTestRunner
             TestParityMechanics(result);
             TestClothingEquipmentIntegration(result);
             TestTrainingParityAndVisit(result);
+            TestAdultEligibilityGate(result);
             TestWinConditionReachable(result);
             TestDailyReportHistory(result);
+            SaveRegressionTests.Run(result);
+            GameCommandTests.Run(result);
         }
         catch (Exception exception)
         {
@@ -275,19 +278,26 @@ public static class SmokeTestRunner
                 "CombatButton",
                 "MilestonesButton",
                 "ResearchButton",
-                "BondButton",
+                "BondEventButton",
                 "PetsButton",
                 "TrainingButton",
-                "MilkButton",
+                "MilkCowButton",
                 "MentalButton",
                 "SaveLoadButton",
-                "SettingsButton"
+                "SettingsButton",
+                "ClothingListButton", "ClothingChangeButton", "ClothingStripButton",
+                "VisitButton", "RoomAssignButton",
+                "MagicBasicButton", "MagicForbiddenButton", "MagicTentacleButton",
+                "AbilityButton", "PharmacyButton", "PharmacyCraftButton", "OptionsButton"
             };
             var actualNavButtons = navigation?.GetChildren()
                 .OfType<Button>()
                 .Select(button => button.Name.ToString())
                 .ToHashSet() ?? new HashSet<string>();
-            Assert(result, expectedNavButtons.SetEquals(actualNavButtons), "game shell has expected navigation button set");
+            Assert(result, expectedNavButtons.SetEquals(actualNavButtons),
+                $"game shell has expected navigation button set (missing: {string.Join(", ", expectedNavButtons.Except(actualNavButtons))}; unexpected: {string.Join(", ", actualNavButtons.Except(expectedNavButtons))})");
+            AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation/BondSection", "game shell has bond section");
+            AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/Body/NavPanel/NavScroll/Navigation/PetsSection", "game shell has pets section");
 
             var compactNavigation = game.GetNodeOrNull<HBoxContainer>("UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation");
             Assert(result, compactNavigation is not null, "game shell has compact navigation node");
@@ -295,7 +305,16 @@ public static class SmokeTestRunner
                 .OfType<Button>()
                 .Select(button => button.Name.ToString())
                 .ToHashSet() ?? new HashSet<string>();
-            Assert(result, actualCompactButtons.Count == expectedNavButtons.Count, "game shell has compact button for each side navigation button");
+            // Compact navigation intentionally exposes the original management shortcuts,
+            // not every detailed sidebar action. Check names, not merely a matching count.
+            var expectedCompactButtons = new HashSet<string>
+            {
+                "OverviewCompactButton", "CharactersCompactButton", "ScheduleCompactButton",
+                "TownCompactButton", "ShopCompactButton", "AdventureCompactButton", "CombatCompactButton",
+                "MilestonesCompactButton", "ResearchCompactButton", "BondCompactButton", "PetsCompactButton",
+                "TrainingCompactButton", "MilkCompactButton", "MentalCompactButton", "SaveLoadCompactButton", "SettingsCompactButton"
+            };
+            Assert(result, expectedCompactButtons.SetEquals(actualCompactButtons), "game shell has expected compact management shortcuts");
         }
         finally
         {
@@ -1149,6 +1168,9 @@ Assert(result, subject.Milk.Quality >= qualityBefore, "mana infusion raises milk
         trainingTarget.Energy = 100;
         trainingTarget.Bond = 20;
         trainingTarget.Mature.FallState = FallState.Normal;
+        // Test fixture: grant the reviewed-approval record so the fail-closed gate
+        // passes and we exercise the two-per-day mechanic (not the gate itself).
+        trainingTarget.AdultEligibility = AdultEligibility.ConfirmedAdult;
         var action = TrainingActionCatalog.All.FirstOrDefault(a => a.EnergyCost <= 20);
         Assert(result, action is not null, "training action catalog has actions");
         var perform = enhanced.PerformAction(trainingTarget.Id, action!.Id);
@@ -1176,6 +1198,9 @@ private static void TestTrainingParityAndVisit(SmokeTestResult result)
         charA.Fatigue = 0;
         charA.Bond = 80;
         charA.Mature.FallState = FallState.Normal;
+        // Test fixture: grant the reviewed-approval record so the fail-closed gate
+        // passes and we exercise the tool/consent mechanics (not the gate itself).
+        charA.AdultEligibility = AdultEligibility.ConfirmedAdult;
 
         // Unknown action id must not silently map to a real action.
         var unknown = enhanced.PerformAction(charA.Id, "not_a_real_action");
@@ -1204,6 +1229,9 @@ private static void TestTrainingParityAndVisit(SmokeTestResult result)
         consentChar.Mature.FallState = FallState.Normal;
         consentChar.Mature.Obedience = 0;
         consentChar.Mature.Submission = 0;
+        // Test fixture: grant the reviewed-approval record so the fail-closed gate
+        // passes and we exercise the consent mechanic (not the gate itself).
+        consentChar.AdultEligibility = AdultEligibility.ConfirmedAdult;
         var noConsent = enhanced.PerformAction(consentChar.Id, consentAction!.Id);
         Assert(result, !noConsent.Success, "consent action blocked without consent");
         Assert(result, noConsent.Summary.Contains("consent"), "consent block reports consent");
@@ -1265,6 +1293,44 @@ private static void TestTrainingParityAndVisit(SmokeTestResult result)
                 && !data.Items.ContainsKey(EnhancedTrainingService.ResolveToolId(toolId)))
             .ToList();
         Assert(result, missingTools.Count == 0, $"all catalog tools exist as items (missing: {(missingTools.Count > 0 ? string.Join(", ", missingTools) : "none")})");
+    }
+
+    private static void TestAdultEligibilityGate(SmokeTestResult result)
+    {
+        // Fail-closed at definition import: a minor apparent age is never eligible.
+        var minor = new CharacterDefinition { Id = "gate_minor" };
+        AdultEligibilityGate.ValidateAndSetEligibility(minor, 13, "Source apparent age 13; minor");
+        Assert(result, minor.AdultEligibility == AdultEligibility.Minor, "gate classifies minor apparent age as Minor");
+        Assert(result, !AdultEligibilityGate.IsEligibleForAdult(minor), "gate denies adult presentation for a minor");
+        Assert(result, !AdultEligibilityGate.IsEligibleForAdult(minor), "gate denies adult presentation for a minor (definition)");
+
+        // Ambiguous context (school-age marker) with age 18+ is not confirmed adult.
+        var ambiguous = new CharacterDefinition { Id = "gate_ambiguous" };
+        AdultEligibilityGate.ValidateAndSetEligibility(ambiguous, 18, "JK (schoolgirl) marker; ambiguous");
+        Assert(result, ambiguous.AdultEligibility == AdultEligibility.Ambiguous, "gate classifies school-age context as Ambiguous");
+        Assert(result, !AdultEligibilityGate.IsEligibleForAdult(ambiguous), "gate denies adult presentation for ambiguous context");
+
+        // Age 18+ with clean context is NOT auto-approved: it is Unknown (pending review).
+        var unknown = new CharacterDefinition { Id = "gate_unknown" };
+        AdultEligibilityGate.ValidateAndSetEligibility(unknown, 21, "Source apparent age 21; pending design review");
+        Assert(result, unknown.AdultEligibility == AdultEligibility.Unknown, "gate defaults clean-context age 18+ to Unknown (no implicit approval)");
+        Assert(result, !AdultEligibilityGate.IsEligibleForAdult(unknown), "gate denies adult presentation for unreviewed Unknown");
+
+        // Only an explicit ConfirmedAdult record grants eligibility.
+        var approved = new CharacterDefinition { Id = "gate_approved", AdultEligibility = AdultEligibility.ConfirmedAdult };
+        Assert(result, AdultEligibilityGate.IsEligibleForAdult(approved), "gate grants adult presentation for ConfirmedAdult");
+
+        // Runtime state path: fail-closed for a minor character state.
+        var minorState = new CharacterState { Id = "gate_state_minor" };
+        AdultEligibilityGate.ValidateAndSetEligibility(minorState, 15, "baby_face trait; minor");
+        Assert(result, minorState.AdultEligibility == AdultEligibility.Minor, "gate classifies minor character state");
+        Assert(result, !AdultEligibilityGate.IsEligibleForAdult(minorState), "gate denies adult presentation for minor state");
+        Assert(result, !AdultEligibilityGate.CanPerformAdultAction(minorState), "gate denies adult action for minor state");
+
+        // Denial reasons are present and specific for each blocked state.
+        Assert(result, AdultEligibilityGate.GetDenialReason(minorState).Contains("15"), "minor denial reason carries the apparent age");
+        Assert(result, AdultEligibilityGate.GetDenialReason(ambiguous).Contains("schoolgirl"), "ambiguous denial reason carries the context note");
+        Assert(result, AdultEligibilityGate.GetDenialReason(unknown).Contains("Unknown"), "unknown denial reason names the state");
     }
 
     private static void TestClothingEquipmentIntegration(SmokeTestResult result)

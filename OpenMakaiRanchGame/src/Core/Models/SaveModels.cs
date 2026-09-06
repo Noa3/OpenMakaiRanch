@@ -226,22 +226,27 @@ public sealed class CharacterState
     public Dictionary<string, string> EquippedItems { get; set; } = new();
 
     // NSFW fields
-    public MentalState Mature { get; set; } = new();
-    public MilkState Milk { get; set; } = new();
-    public AddictionState Addictions { get; set; } = new();
-    public EquipmentState Equipment { get; set; } = new();
-    public List<string> Talents { get; set; } = new();
-    public string Race { get; set; } = string.Empty;
-    public string Personality { get; set; } = string.Empty;
-    public string JobClass { get; set; } = string.Empty;
-    public string HairColor { get; set; } = string.Empty;
-    public string HairStyle { get; set; } = string.Empty;
-    public string EyeColor { get; set; } = string.Empty;
-    public string SkinColor { get; set; } = string.Empty;
-    public int Height { get; set; } = 1600;
-    public int ApparentAge { get; set; } = 18;
-    public int BustSize { get; set; } = 3;
-}
+        public MentalState Mature { get; set; } = new();
+        public MilkState Milk { get; set; } = new();
+        public AddictionState Addictions { get; set; } = new();
+        public EquipmentState Equipment { get; set; } = new();
+        public List<string> Talents { get; set; } = new();
+        public string Race { get; set; } = string.Empty;
+        public string Personality { get; set; } = string.Empty;
+        public string JobClass { get; set; } = string.Empty;
+        public string HairColor { get; set; } = string.Empty;
+        public string HairStyle { get; set; } = string.Empty;
+        public string EyeColor { get; set; } = string.Empty;
+        public string SkinColor { get; set; } = string.Empty;
+        public int Height { get; set; } = 1600;
+        public int ApparentAge { get; set; } = 18;
+        public int BustSize { get; set; } = 3;
+
+        // Adult eligibility (fail-closed)
+        public AdultEligibility AdultEligibility { get; set; } = AdultEligibility.Unknown;
+                public CharacterProvenance Provenance { get; set; } = CharacterProvenance.Unknown;
+                public string AgeContextNote { get; set; } = string.Empty;
+            }
 
 public sealed class ScheduleState
 {

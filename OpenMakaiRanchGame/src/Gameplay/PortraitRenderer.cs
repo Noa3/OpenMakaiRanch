@@ -43,6 +43,10 @@ public sealed class PortraitRenderer
     /// <summary>
     /// Build a layered portrait Control for a character.
     /// Returns null if critical layers are missing or textures fail to load.
+    /// NOTE: This renders the standard clothed character depiction. It is NOT
+    /// gated by adult eligibility — a standard portrait is not adult content.
+    /// Adult/undressed presentation (when implemented) must call
+    /// AdultEligibilityGate.CanRenderAdultPortrait before rendering.
     /// </summary>
     public Control? BuildLayeredPortrait(CharacterState character, CharacterDefinition definition)
     {

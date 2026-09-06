@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Core.Resources;
 
 namespace OpenMakaiRanch.Gameplay;
 
@@ -72,16 +74,6 @@ public static class SaveMigrator
             state.SchemaVersion = 13;
         }
 
-        if (state.SchemaVersion == 13)
-        {
-            foreach (var character in state.Roster.Characters)
-            {
-                character.SkinColorIndex = PortraitLayerCatalog.MapSkinColorToIndex(character.SkinColor);
-                character.BreastSizeIndex = PortraitLayerCatalog.MapBustSizeToBreastIndex(character.BustSize);
-            }
-            state.SchemaVersion = 14;
-        }
-
         state.Calendar ??= new CalendarState();
         state.Economy ??= new EconomyState();
         state.Ranch ??= new RanchState();
@@ -95,6 +87,18 @@ public static class SaveMigrator
         state.Bond ??= new BondState();
         state.Recruitment ??= new RecruitmentState();
         state.Settings ??= new SettingsState();
+        state.Reports ??= new List<DailyReport>();
+        state.Flags ??= new FlagStorage();
+        state.Flags.GlobalBoolFlags ??= new Dictionary<int, bool>();
+        state.Flags.GlobalIntFlags ??= new Dictionary<int, int>();
+        state.Flags.TempBoolFlags ??= new Dictionary<int, bool>();
+        state.Flags.TempIntFlags ??= new Dictionary<int, int>();
+        state.Flags.CharBoolFlags ??= new Dictionary<string, Dictionary<int, bool>>();
+        state.Flags.CharIntFlags ??= new Dictionary<string, Dictionary<int, int>>();
+        foreach (var characterId in state.Flags.CharBoolFlags.Keys.ToArray())
+            state.Flags.CharBoolFlags[characterId] ??= new Dictionary<int, bool>();
+        foreach (var characterId in state.Flags.CharIntFlags.Keys.ToArray())
+            state.Flags.CharIntFlags[characterId] ??= new Dictionary<int, int>();
         state.Settings.ThemeId = string.IsNullOrWhiteSpace(state.Settings.ThemeId) ? "midnight" : state.Settings.ThemeId;
         state.Settings.Locale = string.IsNullOrWhiteSpace(state.Settings.Locale) ? "en" : state.Settings.Locale;
         state.Settings.UiScale = Math.Clamp(state.Settings.UiScale <= 0 ? 1.0f : state.Settings.UiScale, 0.85f, 1.35f);
@@ -102,6 +106,17 @@ public static class SaveMigrator
         state.Ranch.Stockpile ??= new Dictionary<string, int>();
         state.Ranch.Facilities ??= new Dictionary<string, int>();
         state.Roster.Characters ??= new List<CharacterState>();
+        // Explicit JSON nulls must be normalized before migration reads the roster.
+        if (state.SchemaVersion == 13)
+        {
+            foreach (var character in state.Roster.Characters)
+            {
+                character.SkinColorIndex = PortraitLayerCatalog.MapSkinColorToIndex(character.SkinColor);
+                character.BreastSizeIndex = PortraitLayerCatalog.MapBustSizeToBreastIndex(character.BustSize);
+            }
+            state.SchemaVersion = 14;
+        }
+
         state.Schedule.AssignedJobs ??= new Dictionary<string, string>();
         state.Inventory.Items ??= new Dictionary<string, int>();
         state.Adventure.SelectedPartyIds ??= new List<string>();
@@ -119,33 +134,43 @@ public static class SaveMigrator
         state.Bond.CompletedEventIds ??= new List<string>();
         state.Adventure.LastCaptureSummary ??= string.Empty;
         foreach (var character in state.Roster.Characters)
-        {
-            character.SkillXp ??= new Dictionary<string, int>();
-            if (string.IsNullOrWhiteSpace(character.BodyImagePathOverride) && !string.IsNullOrWhiteSpace(character.PortraitPathOverride))
-            {
-                character.BodyImagePathOverride = character.PortraitPathOverride;
-            }
+                    {
+                        character.SkillXp ??= new Dictionary<string, int>();
+                        if (string.IsNullOrWhiteSpace(character.BodyImagePathOverride) && !string.IsNullOrWhiteSpace(character.PortraitPathOverride))
+                        {
+                            character.BodyImagePathOverride = character.PortraitPathOverride;
+                        }
 
-            if (string.IsNullOrWhiteSpace(character.BodyTypeOverride))
-            {
-                character.BodyTypeOverride = "Balanced";
-            }
+                        if (string.IsNullOrWhiteSpace(character.BodyTypeOverride))
+                        {
+                            character.BodyTypeOverride = "Balanced";
+                        }
 
-            character.BodyLayerIndex = PortraitLayerCatalog.ClampIndex(character.BodyLayerIndex, PortraitLayerCatalog.BodyTypeCount);
-            character.SkinColorIndex = PortraitLayerCatalog.ClampIndex(character.SkinColorIndex, PortraitLayerCatalog.SkinColorCount);
-            character.BreastSizeIndex = PortraitLayerCatalog.ClampIndex(character.BreastSizeIndex, PortraitLayerCatalog.BreastSizeCount);
-            character.FaceLayerIndex = 0;
-            character.RaceLayerIndex = PortraitLayerCatalog.ClampIndex(character.RaceLayerIndex, PortraitLayerCatalog.RaceLayers.Length);
-            character.HairLayerIndex = PortraitLayerCatalog.ClampIndex(character.HairLayerIndex, PortraitLayerCatalog.HairLayers.Length);
-            character.ClothLayerIndex = PortraitLayerCatalog.ClampIndex(character.ClothLayerIndex, PortraitLayerCatalog.ClothLayers.Length);
+                        character.BodyLayerIndex = PortraitLayerCatalog.ClampIndex(character.BodyLayerIndex, PortraitLayerCatalog.BodyTypeCount);
+                        character.SkinColorIndex = PortraitLayerCatalog.ClampIndex(character.SkinColorIndex, PortraitLayerCatalog.SkinColorCount);
+                        character.BreastSizeIndex = PortraitLayerCatalog.ClampIndex(character.BreastSizeIndex, PortraitLayerCatalog.BreastSizeCount);
+                        character.FaceLayerIndex = 0;
+                        character.RaceLayerIndex = PortraitLayerCatalog.ClampIndex(character.RaceLayerIndex, PortraitLayerCatalog.RaceLayers.Length);
+                        character.HairLayerIndex = PortraitLayerCatalog.ClampIndex(character.HairLayerIndex, PortraitLayerCatalog.HairLayers.Length);
+                        character.ClothLayerIndex = PortraitLayerCatalog.ClampIndex(character.ClothLayerIndex, PortraitLayerCatalog.ClothLayers.Length);
 
-            character.Mature ??= new MentalState();
-            character.Milk ??= new MilkState();
-            character.Addictions ??= new AddictionState();
-            character.Equipment ??= new EquipmentState();
-            character.EquippedItems ??= new Dictionary<string, string>();
-            character.Talents ??= new List<string>();
-        }
+                        character.Mature ??= new MentalState();
+                        character.Milk ??= new MilkState();
+                        character.Addictions ??= new AddictionState();
+                        character.Equipment ??= new EquipmentState();
+                        character.EquippedItems ??= new Dictionary<string, string>();
+                        character.Talents ??= new List<string>();
+
+                        // Adult eligibility migration (fail-closed)
+                        if (character.AdultEligibility == AdultEligibility.Unknown)
+                        {
+                            AdultEligibilityGate.ValidateAndSetEligibility(character, character.ApparentAge, character.AgeContextNote);
+                        }
+                        if (character.Provenance == CharacterProvenance.Unknown)
+                        {
+                            character.Provenance = character.IsGenerated ? CharacterProvenance.Generated : CharacterProvenance.RemakeFallback;
+                        }
+                    }
 
         state.Mature ??= new MatureState();
         state.Mature.TrainingHistory ??= new List<TrainingRecord>();

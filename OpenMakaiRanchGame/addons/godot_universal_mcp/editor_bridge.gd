@@ -103,10 +103,17 @@ func _handle_request(msg: Dictionary) -> Dictionary:
 	var tool: String = msg.get("tool", "")
 	var params: Dictionary = msg.get("params", {})
 	
-	var result := _dispatch_tool(tool, params)
+	var project_path := ProjectSettings.globalize_path("res://")
+	var expected: String = msg.get("expected_project_path", project_path)
+	var result: Dictionary
+	if expected.replace("\\", "/").trim_suffix("/").to_lower() != project_path.trim_suffix("/").to_lower():
+		result = _err("PROJECT_MISMATCH", "Request targets a different project")
+	else:
+		result = _dispatch_tool(tool, params)
 	
 	return {
 		"id": id,
+		"projectPath": project_path,
 		"type": "response",
 		"ok": result.get("ok", true),
 		"result": result.get("result", null),
@@ -151,6 +158,7 @@ func _tool_editor_status() -> Dictionary:
 			"projectPath": ProjectSettings.globalize_path("res://"),
 			"projectName": ProjectSettings.get_setting("application/config/name", ""),
 			"openScenes": _get_open_scenes(),
+			"currentScene": EditorInterface.get_edited_scene_root().scene_file_path if EditorInterface.get_edited_scene_root() else "",
 		}
 	}
 
@@ -274,6 +282,8 @@ func _tool_open_scene(params: Dictionary) -> Dictionary:
 	var scene_path: String = params.get("scene_path", "")
 	if scene_path.is_empty():
 		return _err("VALIDATION_ERROR", "scene_path is required")
+	if not ResourceLoader.exists(scene_path, "PackedScene"):
+		return _err("INVALID_PROJECT", "Scene does not exist: " + scene_path)
 	EditorInterface.open_scene_from_path(scene_path)
 	return {"ok": true, "result": {"opened": scene_path}}
 

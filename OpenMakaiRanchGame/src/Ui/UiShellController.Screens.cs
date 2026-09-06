@@ -832,6 +832,7 @@ public partial class UiShellController
 
     private void RenderSchedule()
     {
+        var generation = _game.StateGeneration;
         AddTitle(T("screen.schedule", "Daily Schedule"));
 
         foreach (var character in _game.Roster.Characters)
@@ -869,7 +870,8 @@ public partial class UiShellController
                 {
                     button = SecondaryButton(job.DisplayName, tooltip);
                 }
-                button.Pressed += () => ExecuteUiAction(() => _game.Schedule.AssignJob(character.Id, job.Id), false);
+                button.Disabled = isCurrent;
+                button.Pressed += () => ExecuteUiAction(() => _game.TryAssignJob(character.Id, job.Id, generation), true);
                 AddFlowButton(row, button, 150);
             }
         }
@@ -1544,6 +1546,7 @@ public partial class UiShellController
 
     private void RenderBond()
     {
+        var generation = _game.StateGeneration;
         AddTitle(T("screen.bond", "Bond Events"));
         foreach (var character in _game.Roster.Characters)
         {
@@ -1566,7 +1569,7 @@ public partial class UiShellController
             info.AddChild(SubtitleLabel($"{definition.DisplayName} — Bond {character.Bond}"));
 
             var mentorBtn = SecondaryButton("Mentorship (+4 bond, -4 fatigue)", "Spend 4 fatigue: +5 bond, +4 morale");
-            mentorBtn.Pressed += () => ExecuteUiAction(() => _game.Bond.ConductMentorship(character.Id), false);
+            mentorBtn.Pressed += () => ExecuteUiAction(() => _game.TryConductMentorship(character.Id, generation), true);
             info.AddChild(mentorBtn);
 
             var events = _game.Bond.AvailableEvents(character.Id).ToList();
@@ -1611,12 +1614,13 @@ public partial class UiShellController
                 var completeBtn = PrimaryButton("Complete Event", "Complete this bond event to earn rewards and progress the story");
                 completeBtn.Pressed += () =>
                 {
+                    if (generation != _game.StateGeneration) return;
                     if (FinishActiveTypewriting())
                     {
                         return;
                     }
 
-                    ExecuteUiAction(() => _game.Bond.CompleteEvent(bondEvent.Id), false);
+                    ExecuteUiAction(() => _game.TryCompleteBondEvent(bondEvent.Id, generation), true);
                 };
                 eventCard.AddChild(completeBtn);
             }
@@ -2614,11 +2618,11 @@ public partial class UiShellController
                 _game.ModifyPlayer(p => { p.Height = (range.Min + range.Max) / 2; });
             });
 
-            var ageLabels = CharacterGenerationPools.ApparentAges.Select(a => a.Label).ToArray();
-            var currentAgeLabel = CharacterGenerationPools.ApparentAges.FirstOrDefault(a => a.Age == player.ApparentAge).Label ?? "Adult";
+            var ageLabels = CharacterGenerationPools.PlayerApparentAges.Select(a => a.Label).ToArray();
+            var currentAgeLabel = CharacterGenerationPools.PlayerApparentAges.FirstOrDefault(a => a.Age == player.ApparentAge).Label ?? "Adult";
             PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/AgePicker"), ageLabels, currentAgeLabel, val =>
             {
-                var entry = CharacterGenerationPools.ApparentAges.FirstOrDefault(a => a.Label == val);
+                var entry = CharacterGenerationPools.PlayerApparentAges.FirstOrDefault(a => a.Label == val);
                 _game.ModifyPlayer(p => p.ApparentAge = entry.Age);
             });
 
@@ -3591,7 +3595,7 @@ public partial class UiShellController
             try
             {
                 var json = System.Text.Json.JsonSerializer.Serialize(_game.State, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-                var exportDir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "exports");
+                var exportDir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? System.IO.Directory.GetCurrentDirectory(), "exports");
                 System.IO.Directory.CreateDirectory(exportDir);
                 var exportPath = System.IO.Path.Combine(exportDir, "save_day" + _game.State.Calendar.Day + ".json");
                 System.IO.File.WriteAllText(exportPath, json);

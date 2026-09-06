@@ -60,14 +60,17 @@ D:/ComfyUI/
 
 # Local archives
 .archive/
+.artifacts/
+**/__pycache__/
+
+# Local stable Godot distributions (hyphenated filenames)
+Godot_v*-stable_mono_win64*.exe
 
 # MCP test outputs
 mcp-test-*.txt
 
-# Build scripts (local only)
-build-and-verify.bat
+# Machine-local helpers; portable Godot launchers are tracked.
 start-comfyui.bat
-start-godot-mcp.bat
 
 # Solution file (local only)
 **/*.sln
