@@ -1,6 +1,6 @@
 # Kanban
 
-Updated 2026-09-05. Status is evidence-based; DONE applies only to the named scope. Long-term 3D remake remains incomplete. See `3D_REMAKE_PLAN.md` for execution details and `KNOWN_ISSUES.md` for defect evidence.
+Updated 2026-09-06. Status is evidence-based; DONE applies only to the named scope. Long-term 3D remake remains incomplete. See `3D_REMAKE_PLAN.md` for execution details and `KNOWN_ISSUES.md` for defect evidence.
 
 ## Done — baseline scope
 
@@ -21,13 +21,15 @@ Updated 2026-09-05. Status is evidence-based; DONE applies only to the named sco
 - **WORLD-003b (greybox = live view of the shared simulation)** `RanchGreyboxController.WireLiveWorld`/`RefreshLiveWorld`: on entering the tree the greybox binds its daylight + roster rigs to the shared `GameRoot` (lighting reflects the current phase, CHAR-001 stand-ins placed for the live roster — no manual wiring). Scene carries `DaylightRig` + `RosterRig`. `TestGreyboxSceneIsLive` proves the composition: scene instantiates into a live view (lighting == shared phase, one avatar per character, in-bounds, player/station intact, re-derives after a phase change). 14 dedicated smoke assertions. Full isolated smoke **1153 assertions PASS** on Godot 4.7.2 mono.
 - **DATA-003 (abgesagt)** No original-CSV import: the game is 100% self-contained — runtime reads only `res://data/*.json` + seed fallback; every CSV hit in `src/` is a comment, not a read. The curated `data/characters.json` (10 chars) + seed is the sole source. `Tools/EraDataImporter` stays `.csproj`-only.
 - **WORLD-003c (boot-world composition, authored scenes)** The boot world is an **authored scene** (`scenes/RanchWorld.tscn`) — scene instances, not runtime `Instantiate()`: the 3D greybox instance + the **existing** `Game.tscn` (2D management UI) instance on a CanvasLayer, both on the single shared `GameRoot` autoload — no second economy/clock/job path. `RanchWorldController` only switches the active presentation and routes input through the greybox's single `WorldInputGate` (open/closing management suspends/resumes world movement + camera + interaction safely; Esc returns to the world; in-world "Open Management UI" button is an authored TSCN `[connection]`). Also fixed two authored-scene defects: `CameraRig.Target` was never authored (camera never followed the player) — now `Player/CameraTarget` NodePath in the TSCN; the management button was unwired. `MainMenuController.GoToGameScene` routes to the composed boot world (exported `GameScenePath`). `TestRanchWorldComposition`: 23 dedicated smoke assertions. Full isolated smoke **1176 assertions PASS** on Godot 4.7.2 mono.
+- **WORLD-003d (first complete playable day, end-to-end)** The greybox is a live view for the **whole day**: `RanchGreyboxController` subscribes to `GameRoot.StateChanged` and re-derives daylight + roster automatically on every phase advance, assignment, mentorship, settlement, save, load, and new game — no manual refresh from any caller. `TestFullPlayableDay` proves one complete day on a single `GameRoot`: management assign → social mentorship → 3D live view → lighting across Morning/Afternoon/Evening/Night → settlement report → save/load round-trip (assignment, bond, morale, calendar intact; live view re-derives from the loaded state) → stale-generation rejection. 25 dedicated smoke assertions; also hardened `OnSharedStateChange` against a node freed without `_ExitTree` (self-detaches; closes an ObjectDisposedException regression). Full isolated smoke **1201 assertions PASS** on Godot 4.7.2 mono.
 
 ## Next — priority order
 
 Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe`. `launch.py` auto-discovers it (rejects the 198 KB `*_console.exe` stub by size, prefers the highest 4.7.x). No `GODOT_BIN` needed.
 
-1. **WORLD-003d (first complete playable day, end-to-end)** Full session from the boot world (WORLD-003c, done): management UI → assign jobs → NPC work/social/event in the 3D view → lighting across the day → settlement → report → save/load, all on one `GameRoot`, verified by an isolated full-day smoke.
-2. **CHAR-002 / ART-002 (gate-blocked)** One real character (candidate: Noir) — master source/context review, non-explicit identity references, .blend/GLB + material/rig/export validation, shared Godot toon prototype. Gate-safe: only `ConfirmedAdult` after **independent design review**; no age renumbering. Blocked: `data/characters.json` has no `AdultEligibility` field, no ConfirmedAdult character, no design review yet. Needs CHAR-001 (done) + ComfyUI asset generation + design clearance.
+1. **CHAR-002 / ART-002 (gate-blocked)** One real character (candidate: Noir) — master source/context review, non-explicit identity references, .blend/GLB + material/rig/export validation, shared Godot toon prototype. Gate-safe: only `ConfirmedAdult` after **independent design review**; no age renumbering. Blocked: `data/characters.json` has no `AdultEligibility` field, no ConfirmedAdult character, no design review yet. Needs CHAR-001 (done) + ComfyUI asset generation + design clearance.
+2. **AI-001 (ready)** Nearby navigation + distant logical simulation for roster stand-ins (placement core already shipped in WORLD-003a).
+3. **UI-001 (ready)** Full management visual/action playthrough and narrow-viewport coverage.
 
 ## Ready after prerequisites
 
@@ -36,7 +38,6 @@ Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_w
 - **MORPH-001** Gameplay-to-visual curves, matching body/clothing shapes, extreme-combination lab. No mesh internals in saves.
 - **ANIM-001** Shared rig and idle/walk/run/work/talk animation validation at gameplay camera.
 - **AI-001** Derive logical NPC locations from existing assignments/phases; nearby navigation, distant logical simulation, bounded stuck recovery. No second work economy. (WORLD-003a already ships `RosterPlacementMath` + `RosterRig` as the placement core.)
-- **WORLD-003d** First complete playable day end-to-end (tracked in "Next"; 003a/003b/003c done).
 
 ## Backlog / isolated follow-ups
 
