@@ -68,6 +68,7 @@ public static class SmokeTestRunner
             TestEventDialogueStaging(result);
             TestWorldPanelCoordinator(result);
             TestSaveLoadRoundTrip(result);
+            TestGreyboxSceneIsLive(result);
             TestWorldDaylightAndRoster(result);
         }
         catch (Exception exception)
@@ -1370,6 +1371,82 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             station.Free();
             root.Save.Delete(slot); // leave no disposable save behind
         }
+    }
+
+    private static void TestGreyboxSceneIsLive(SmokeTestResult result)
+    {
+        // WORLD-003b: instantiating the greybox scene must make it a live view of the shared
+        // simulation — lighting bound to the current DayPhase and roster stand-ins placed — without
+        // any manual wiring. The scene stays opt-in; this proves the composition, not a boot swap.
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        var scene = GD.Load<PackedScene>("res://scenes/dev/RanchGreybox.tscn");
+        Assert(result, scene is not null, "greybox scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var root = (Node3D)scene.Instantiate();
+        game.AddChild(root);
+        try
+        {
+            var controller = root as RanchGreyboxController;
+            Assert(result, controller is not null, "greybox scene root is the controller");
+            Assert(result, controller?.Wired == true, "greybox controller is wired after entering the tree");
+
+            // Lighting: bound to the scene's sun + environment, and reflecting the shared phase.
+            var daylight = controller?.Daylight;
+            Assert(result, daylight is not null, "greybox scene exposes a bound daylight rig");
+            Assert(result, daylight?.Wired == true, "greybox daylight rig is wired to sun + environment");
+            if (daylight is not null)
+            {
+                Assert(result, daylight.LastApplied == DaylightMath.For(game.State.Calendar.Phase),
+                    "greybox scene lighting matches the shared phase (single source of truth)");
+            }
+
+            // Roster: CHAR-001 stand-ins placed for the live roster, in-bounds.
+            var roster = controller?.Roster;
+            Assert(result, roster is not null, "greybox scene exposes a bound roster rig");
+            Assert(result, roster?.AvatarCount == game.Roster.Characters.Count,
+                "greybox scene places one avatar per roster character");
+            if (roster is not null)
+            {
+                bool allInBounds = true;
+                foreach (var child in roster.GetChildren())
+                {
+                    if (child is CharacterAvatar3D avatar && !IsInGreyboxBounds(avatar.Position))
+                    {
+                        allInBounds = false;
+                    }
+                }
+                Assert(result, allInBounds, "greybox scene avatars are in the greybox bounds");
+            }
+
+            // Player + camera + station still present (the world is intact, not just the rigs).
+            Assert(result, controller?.Player is not null, "greybox scene has a player");
+            Assert(result, controller?.Station is not null, "greybox scene has the milk station");
+
+            // RefreshLiveWorld re-derives from the shared state after a phase change.
+            var phaseBefore = game.State.Calendar.Phase;
+            var dayBefore = game.State.Calendar.Day;
+            game.AdvanceTime(); // advance one phase (or settle) in the shared simulation
+            controller?.RefreshLiveWorld();
+            if (daylight is not null)
+            {
+                Assert(result, daylight.LastApplied == DaylightMath.For(game.State.Calendar.Phase),
+                    "greybox scene re-derives lighting from the shared state after a phase change");
+            }
+            Assert(result, game.State.Calendar.Phase != phaseBefore || game.State.Calendar.Day != dayBefore,
+                "greybox scene refresh runs against a changed shared state");
+        }
+        finally
+        {
+            root.Free();
+        }
+
+        game.NewGame();
     }
 
     private static void TestWorldDaylightAndRoster(SmokeTestResult result)
