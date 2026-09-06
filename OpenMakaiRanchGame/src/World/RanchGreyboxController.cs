@@ -89,6 +89,11 @@ public partial class RanchGreyboxController : Node3D
             return;
         }
 
+        // React to every shared-simulation change (phase advance, settlement, assignment,
+        // mentorship, load/new game) so the scene is a live view across the whole day —
+        // no manual refresh needed from any caller (WORLD-003d).
+        game.StateChanged += OnSharedStateChange;
+
         var dayRig = GetNodeOrNull<DaylightRig>("DaylightRig");
         if (dayRig is not null)
         {
@@ -102,6 +107,29 @@ public partial class RanchGreyboxController : Node3D
         {
             rosterRig.Refresh(game);
             Roster = rosterRig;
+        }
+    }
+
+    private void OnSharedStateChange()
+    {
+        if (!GodotObject.IsInstanceValid(this))
+        {
+            // The node was freed without going through _ExitTree (e.g. a headless test drives
+            // _Ready manually, then Free()). Detach so we don't linger on the shared event.
+            if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+            {
+                game.StateChanged -= OnSharedStateChange;
+            }
+            return;
+        }
+        RefreshLiveWorld();
+    }
+
+    public override void _ExitTree()
+    {
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        {
+            game.StateChanged -= OnSharedStateChange;
         }
     }
 

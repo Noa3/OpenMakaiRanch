@@ -71,6 +71,7 @@ public static class SmokeTestRunner
             TestGreyboxSceneIsLive(result);
             TestWorldDaylightAndRoster(result);
             TestRanchWorldComposition(result);
+            TestFullPlayableDay(result);
         }
         catch (Exception exception)
         {
@@ -1667,6 +1668,125 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         }
 
         game.NewGame();
+    }
+
+    private static void TestFullPlayableDay(SmokeTestResult result)
+    {
+        // WORLD-003d: the first complete playable day, end-to-end, on one GameRoot.
+        //   management -> assign job -> social (mentorship) -> 3D live view ->
+        //   lighting across the day -> settlement -> report -> save/load.
+        // The 3D world is a live view: it re-derives lighting + roster from the shared state
+        // automatically (via GameRoot.StateChanged) — no manual RefreshLiveWorld call is made
+        // here, which is the point of the test.
+        const int slot = 99;
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        var scene = GD.Load<PackedScene>("res://scenes/RanchWorld.tscn");
+        Assert(result, scene is not null, "full-day: boot scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var root = scene.Instantiate();
+        game.AddChild(root);
+        try
+        {
+            var world = root as RanchWorldController;
+            var greybox = world?.GetNodeOrNull<RanchGreyboxController>("RanchWorld3D");
+            var daylight = greybox?.Daylight;
+            var roster = greybox?.Roster;
+            Assert(result, greybox is not null && greybox.Wired, "full-day: 3D world wired");
+            Assert(result, daylight is not null && daylight.Wired, "full-day: daylight rig bound");
+
+            var character = game.Roster.Characters.First();
+            var characterId = character.Id;
+
+            // 1) Management: assign a job through the shared command boundary.
+            var current = game.Schedule.GetAssignment(characterId);
+            var job = game.Schedule.AssignableJobs.First(value => value.Id != current);
+            Assert(result, game.TryAssignJob(characterId, job.Id, game.StateGeneration),
+                "full-day: management assigns a job via the shared boundary");
+            Assert(result, game.Schedule.GetAssignment(characterId) == job.Id,
+                "full-day: assignment is in the shared schedule");
+            // Live view: the roster rig re-derived automatically (StateChanged) — avatar count stable, in bounds.
+            Assert(result, roster is not null && roster.AvatarCount == game.Roster.Characters.Count,
+                "full-day: roster live view keeps one avatar per character after assignment");
+            Assert(result, daylight is not null && daylight.LastApplied == DaylightMath.For(game.State.Calendar.Phase),
+                "full-day: lighting reflects the shared phase after assignment (auto)");
+
+            // 2) Social: mentorship through the shared boundary (moves bond/morale).
+            var bondBefore = game.Roster.Find(characterId)!.Bond;
+            var moraleBefore = game.Roster.Find(characterId)!.Morale;
+            Assert(result, game.TryConductMentorship(characterId, game.StateGeneration),
+                "full-day: mentorship succeeds via the shared boundary");
+            Assert(result, game.Roster.Find(characterId)!.Bond > bondBefore,
+                "full-day: mentorship raises bond");
+            Assert(result, game.Roster.Find(characterId)!.Morale > moraleBefore,
+                "full-day: mentorship raises morale");
+
+            // 3) Lighting across the day: each phase advance re-derives lighting automatically
+            //    (no manual refresh). Capture that the lighting state actually changes.
+            var lightMorning = DaylightMath.For(game.State.Calendar.Phase);
+            var phaseBefore = game.State.Calendar.Phase;
+            game.AdvanceTime(); // Morning -> Afternoon
+            var lightAfternoon = DaylightMath.For(game.State.Calendar.Phase);
+            Assert(result, daylight is not null && daylight.LastApplied == lightAfternoon,
+                "full-day: lighting auto re-derives after a phase advance");
+            Assert(result, lightAfternoon != lightMorning || game.State.Calendar.Phase != phaseBefore,
+                "full-day: the phase advanced");
+            game.AdvanceTime(); // Afternoon -> Evening
+            Assert(result, daylight is not null && daylight.LastApplied == DaylightMath.For(game.State.Calendar.Phase),
+                "full-day: lighting tracks evening automatically");
+            game.AdvanceTime(); // Evening -> Night
+            game.AdvanceTime(); // Night -> settle -> new day, Morning
+            Assert(result, daylight is not null && daylight.LastApplied == DaylightMath.For(DayPhase.Morning),
+                "full-day: lighting re-derives for the new morning automatically");
+
+            // 4) Settlement produced a report (the one reward authority).
+            Assert(result, game.LastDailyReport is not null, "full-day: settlement produced a daily report");
+            Assert(result, game.LastDailyReport is { Lines.Count: > 0 },
+                "full-day: the report carries lines");
+
+            // 5) Capture the FINAL state (post-settlement) for the round-trip assertion.
+            var bondFinal = game.Roster.Find(characterId)!.Bond;
+            var moraleFinal = game.Roster.Find(characterId)!.Morale;
+            var dayFinal = game.State.Calendar.Day;
+            var phaseFinal = game.State.Calendar.Phase;
+
+            // 6) Save, then load back: every world-path mutation must be intact and the live view re-derives.
+            Assert(result, game.SaveSlot(slot), "full-day: session persists to the slot");
+            game.NewGame(); // fresh start resets the live simulation
+            Assert(result, game.LoadSlot(slot), "full-day: session loads back");
+            Assert(result, game.Schedule.GetAssignment(characterId) == job.Id,
+                "full-day: assignment survives save/load");
+            Assert(result, game.Roster.Find(characterId)!.Bond == bondFinal,
+                "full-day: bond survives save/load");
+            Assert(result, game.Roster.Find(characterId)!.Morale == moraleFinal,
+                "full-day: morale survives save/load");
+            Assert(result, game.State.Calendar.Day == dayFinal && game.State.Calendar.Phase == phaseFinal,
+                "full-day: calendar survives save/load");
+            // The scene is still in the tree; the LoadSlot StateChanged re-derived the live view.
+            Assert(result, daylight is not null && daylight.LastApplied == DaylightMath.For(phaseFinal),
+                "full-day: live view re-derives lighting from the loaded state");
+            Assert(result, roster is not null && roster.AvatarCount == game.Roster.Characters.Count,
+                "full-day: live view re-derives the roster from the loaded state");
+
+            // 7) Stale generation is rejected via the shared boundary after the reload.
+            Assert(result, !game.TryConductMentorship(characterId, game.StateGeneration - 1),
+                "full-day: a stale generation is rejected");
+        }
+        finally
+        {
+            if (GodotObject.IsInstanceValid(root) && root.IsInsideTree())
+            {
+                root.GetTree().Root.RemoveChild(root);
+            }
+            root.Free();
+            game.Save.Delete(slot); // leave no disposable save behind
+            game.NewGame();
+        }
     }
 
     private static bool IsInGreyboxBounds(Vector3 position)
