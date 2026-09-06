@@ -20,7 +20,7 @@ Updated 2026-09-05. Status is evidence-based; DONE applies only to the named sco
 
 Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe`. `launch.py` auto-discovers it (rejects the 198 KB `*_console.exe` stub by size, prefers the highest 4.7.x). No `GODOT_BIN` needed.
 
-1. **DATA-003** EraDataImporter — the bottleneck. CHAR-002/ART-002, WORLD-003, SAVE-002 all need imported character/facility data. Implement a bounded read-only importer (CSV/JSON eraMakaiRanch → typed `Resource` definitions) with fixtures + provenance, writing only to a test output directory first. Current importer project has only a `.csproj`, no source. Do not overwrite existing JSON.
+1. **DATA-003 — abgeschafft (kein Original-Import).** Der Game-Runtime liest nur `res://data/*.json` + Seed-Fallback; die CSV-Treffer in `src/` sind Kommentare, keine Reads. Das Spiel ist 100% eigenständig. CHAR-002/ART-002, WORLD-003, SAVE-002 brauchen **eigene** (nicht importierte) Charakter-/Facility-Daten — die curated `data/characters.json` (10 Chars) + Seed ist die einzige Quelle. Kein EraDataImporter, kein CSV→JSON-Pipeline.
 2. **CHAR-002 / ART-002** One real character (candidate: Noir) — master source/context review, non-explicit identity references, .blend/GLB + material/rig/export validation, shared Godot toon prototype. Gate-safe: only `ConfirmedAdult`, independent design review, no age renumbering. Needs CHAR-001 (done) + DATA-003 + ComfyUI asset generation.
 3. **EVENT-001** One social interaction/event with camera/dialogue presentation and existing service completion rules.
 4. **SAVE-002** Current-version 3D interaction/day-transition save-load tests. Fresh starts expected (D-011), no old-save migration.
