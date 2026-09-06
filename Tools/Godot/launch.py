@@ -26,6 +26,22 @@ def version_of(executable: Path) -> str:
     return result.stdout.strip()
 
 
+# A real Godot mono win64 build is ~150-200 MB. A file far smaller than this is a
+# truncated/partial download (a "stub") that passes --version but crashes Mono init
+# with "Assemblies not found". Reject it so discovery continues to a valid engine.
+MIN_ENGINE_BYTES = 50 * 1024 * 1024  # 50 MB
+
+
+def _version_tuple(version: str):
+    parts = []
+    for token in version.split("."):
+        if token.isdigit():
+            parts.append(int(token))
+        else:
+            break
+    return tuple(parts)
+
+
 def candidates(root: Path, environ: dict[str, str]):
     # Explicit paths fail closed. A typo must not silently select another engine.
     configured = environ.get("GODOT_BIN") or environ.get("GODOT_PATH")
@@ -62,19 +78,40 @@ def candidates(root: Path, environ: dict[str, str]):
 
 
 def resolve_godot(root: Path, environ: dict[str, str], probe=version_of):
+    explicit = environ.get("GODOT_BIN") or environ.get("GODOT_PATH")
     rejected = []
+    valid = {}
     for candidate in candidates(root, environ):
         try:
             if not candidate.is_file():
                 raise RuntimeError("file does not exist")
+            size = candidate.stat().st_size
+            if size < MIN_ENGINE_BYTES:
+                raise RuntimeError(
+                    f"stub/partial download ({size} bytes < {MIN_ENGINE_BYTES}); "
+                    "passes --version but crashes Mono init")
             version = probe(candidate)
             if not VERSION.match(version):
                 raise RuntimeError(f"expected stable Godot 4.7 .NET, got {version!r}")
-            return candidate.resolve(), version
+            key = str(candidate.resolve()).casefold()
+            if key not in valid:
+                valid[key] = (candidate.resolve(), version)
         except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
             rejected.append(f"{candidate}: {error}")
-    raise RuntimeError("No compatible Godot found. Set GODOT_BIN to a stable 4.7 .NET executable.\n"
-                       + "\n".join(rejected))
+    if explicit:
+        # Fail closed: an explicit path must be the one we run.
+        for key, (path, version) in valid.items():
+            if key == str(Path(explicit).expanduser().resolve()).casefold():
+                return path, version
+        raise RuntimeError(
+            f"Explicit Godot {explicit} was rejected.\n" + "\n".join(rejected))
+    if not valid:
+        raise RuntimeError(
+            "No compatible Godot found. Set GODOT_BIN to a stable 4.7 .NET executable.\n"
+            + "\n".join(rejected))
+    # Prefer the newest engine (e.g. 4.7.2 over a broken 4.7.0 in the repo root).
+    best = max(valid.values(), key=lambda item: _version_tuple(item[1]))
+    return best[0], best[1]
 
 
 def assert_port_available(port: int):

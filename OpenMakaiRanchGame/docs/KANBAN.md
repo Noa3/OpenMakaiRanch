@@ -12,14 +12,16 @@ Updated 2026-09-05. Status is evidence-based; DONE applies only to the named sco
 - **DATA-002** Fail-closed adult eligibility gates implemented in code (not assets, not numeric relabeling). `AdultEligibilityGate` enforces Unknown/Minor/Ambiguous denial at definition import, generation, mature-action dispatch, player mutation, player picker, and save-load. 12 dedicated gate smoke assertions added. Full isolated smoke **998 assertions PASS**. See WORK_LOG for scope and evidence.
 - **CORE-001** Current state, additive 3D migration plan and resumable repository documents established.
 - **SAVE-001** Flag roundtrips and explicit-null migration repaired. 81 root regression assertions; full isolated smoke 949 PASS. Invalid-load fixtures preserve live references and original file contents. No schema bump.
+- **WORLD-001 (greybox slice)** Opt-in ranch greybox against the ART-001 floor plan. `src/World/` holds the deterministic, Node-free math + guard layer (`WorldMovementMath`, `WorldCameraMath`, `WorldInputGate`, `WorldInteractionGuard`) and the node layer (`ThirdPersonPlayerController`, `WorldCameraRig`, `WorldStation`, `RanchGreyboxController`, `WorldInputBootstrap`). The `IWorldCommandDispatcher` boundary routes every station interaction to `GameRoot` (no second reward calculator). `scenes/dev/RanchGreybox.tscn` is opt-in (not the boot scene) with ground/walls/interior/station/player/camera/prompt/management button. 40+ dedicated world smoke assertions cover diagonal-vs-straight speed, camera clamps, input ownership, double-activation, dispatcher dispatch, and the scene node contract. Full isolated smoke **1038 assertions PASS** on Godot 4.7.2 mono.
 
 ## Next — priority order
 
-CORE-002 foundation completed: three root commands, live UI integration, generation guards and 35 regression assertions; full smoke 984 PASS. Actual world navigation/reservation cancellation belongs to WORLD-001 when those objects exist.
-2. **DATA-002 (closed)** — fail-closed adult eligibility gates complete and verified (see Done). Starting roster now carries provenance/eligibility from the validated definition, matching the recruit path. Clean build: 0 warnings, 0 errors; smoke 998 PASS.
-3. **ART-001 (floor plan done, visual direction pending)** — source-grounded ranch floor plan drafted (`docs/art/RANCH_FLOORPLAN.md`): 11 facilities, entry, routes, work stations, camera clearance, event space. Remaining: user selects daytime/evening/interior concept direction before WORLD-001 greybox.
-4. **DATA-003** Recover importer from history or implement a bounded read-only importer with fixtures and provenance, writing only to a test output directory first. Current importer project has no source files (csproj only); do not overwrite existing JSON.
-5. **WORLD-001** Opt-in ranch greybox against the ART-001 floor plan: third-person movement/camera/collision/input ownership, one interior entrance, one work station. Acceptance: keyboard/gamepad, walls/camera, focus/UI transitions, actual screenshot/playtest.
+Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe` (full, no-console build; the 198 KB `*_console.exe` is a broken stub that crashes Mono with "Assemblies not found"). The repo-root 4.7.0 binaries are not valid for Mono headless runs. Pass the working exe via `GODOT_BIN`.
+1. **DATA-003** Recover importer from history or implement a bounded read-only importer with fixtures and provenance, writing only to a test output directory first. Current importer project has no source files (csproj only); do not overwrite existing JSON.
+2. **CHAR-001** Avatar/visual-profile stable-ID adapter and useful CharacterLab on the WORLD-001 greybox (reuses the third-person controller + camera). Missing assets use explicit debug stand-ins.
+3. **WORLD-002** Bind the greybox station to a real `GameRoot.TryAssignJob` target so a world interaction dispatches an existing job assignment; exactly one settlement reward authority.
+4. **EVENT-001** One social interaction/event with camera/dialogue presentation and existing service completion rules.
+5. **WORLD-003** First complete playable day: management UI, inventory, NPC schedules, work/social/event, lighting and save/load — the greybox becomes the boot world.
 
 ## Ready after prerequisites
 

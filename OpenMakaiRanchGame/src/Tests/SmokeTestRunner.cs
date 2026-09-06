@@ -8,6 +8,7 @@ using OpenMakaiRanch.Data;
 using OpenMakaiRanch.Gameplay;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Ui;
+using OpenMakaiRanch.World;
 
 namespace OpenMakaiRanch.Tests;
 
@@ -60,6 +61,7 @@ public static class SmokeTestRunner
             TestDailyReportHistory(result);
             SaveRegressionTests.Run(result);
             GameCommandTests.Run(result);
+            TestWorldGreybox(result);
         }
         catch (Exception exception)
         {
@@ -932,6 +934,152 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, generatedDefinition.DisplayName == generated.DisplayNameOverride, "roster uses display name override for generated characters");
     }
 
+    private static void TestWorldGreybox(SmokeTestResult result)
+    {
+        // ---- World movement math (deterministic, headless) ----
+        // Diagonal movement must not be faster than straight-line (3D_REMAKE_PLAN AC).
+        var straight = WorldMovementMath.ClampSpeed(new Vector3(5f, 0f, 0f), 5f);
+        var diagonal = WorldMovementMath.ClampSpeed(new Vector3(5f, 0f, 5f), 5f);
+        Assert(result, diagonal.Length() <= straight.Length() + 0.001f,
+            "world diagonal movement is not faster than straight-line");
+
+        // Camera-relative forward maps input.Y to the flattened forward vector.
+        // Godot 4: Vector3.Forward = (0,0,-1) (camera looks along -Z).
+        var camFwd = new Vector3(0f, 0f, -1f);
+        var camRgt = new Vector3(1f, 0f, 0f);
+        var fwd = WorldMovementMath.ComputeMovementDirection(camFwd, camRgt, new Vector2(0f, 1f));
+        Assert(result, Math.Abs(fwd.Z - (-1f)) < 0.001f && Math.Abs(fwd.X) < 0.001f,
+            "world forward input maps to camera-forward XZ plane");
+
+        // Dead zone: a sub-threshold input yields zero velocity, not jitter.
+        Assert(result, WorldMovementMath.ComputeMovementDirection(camFwd, camRgt, new Vector2(0.0001f, 0.0001f)).IsEqualApprox(Vector3.Zero),
+            "world input dead zone produces zero direction");
+
+        // Gravity only affects the vertical component.
+        var grav = WorldMovementMath.ApplyGravity(new Vector3(2f, 0f, 3f), 20f, 0.1f);
+        Assert(result, Math.Abs(grav.Y - (-2f)) < 0.001f && Math.Abs(grav.X - 2f) < 0.001f && Math.Abs(grav.Z - 3f) < 0.001f,
+            "world gravity only changes vertical velocity");
+
+        // ---- World camera math (deterministic, headless) ----
+        // Orbit distance is clamped to the supported range.
+        var camPos = WorldCameraMath.ComputeCameraPosition(Vector3.Zero, 0f, 0f, 1000f);
+        Assert(result, camPos.Length() <= WorldCameraMath.MaxDistance + 0.001f,
+            "world camera zoom clamps to max distance");
+
+        // Zoom in never goes below min distance.
+        Assert(result, WorldCameraMath.ApplyZoom(10f, 100f) == WorldCameraMath.MinDistance,
+            "world camera zoom clamps to min distance");
+
+        // Camera must not penetrate geometry: a ray hit at 2m clamps the camera in front of it.
+        var target = Vector3.Zero;
+        var desired = new Vector3(0f, 0f, 10f);
+        var clamped = WorldCameraMath.ClampToGeometry(target, desired, 2f);
+        Assert(result, clamped.Z <= 2f + 0.001f, "world camera clamps in front of geometry");
+
+        // Pitch is clamped so the camera never under-runs the floor.
+        Assert(result, WorldCameraMath.ClampPitch(Mathf.DegToRad(200f)) <= Mathf.DegToRad(WorldCameraMath.MaxPitchDegrees) + 0.001f,
+            "world camera pitch clamps below floor");
+
+        // ---- World input gate ----
+        var gate = new WorldInputGate();
+        Assert(result, gate.WorldInputEnabled, "world input enabled by default");
+        gate.SetUiOwnsInput(true);
+        Assert(result, !gate.WorldInputEnabled && gate.UiOwnsInput,
+            "world input stops while management UI owns input");
+        gate.SetUiOwnsInput(false);
+        Assert(result, gate.WorldInputEnabled, "world input resumes when UI releases");
+        gate.SetWindowFocused(false);
+        Assert(result, !gate.WorldInputEnabled && gate.WindowFocused == false,
+            "world input stops when window loses focus");
+        gate.Reset();
+        Assert(result, gate.WorldInputEnabled, "world input gate reset restores world ownership");
+
+        // ---- World interaction guard (double-activation + missing target) ----
+        var guard = new WorldInteractionGuard();
+        Assert(result, guard.CanInteract, "world guard allows interaction when idle");
+        Assert(result, guard.BeginCommand(), "world guard begins a command once");
+        Assert(result, !guard.CanInteract, "world guard blocks re-entrancy during a command");
+        Assert(result, !guard.BeginCommand(), "world guard rejects a second concurrent command");
+        guard.EndCommand();
+        Assert(result, guard.CanInteract, "world guard allows interaction again after command ends");
+        guard.SetTargetPresent(false);
+        Assert(result, !guard.CanInteract, "world guard rejects interaction when target is despawned");
+        guard.SetTargetPresent(true);
+        Assert(result, guard.CanInteract, "world guard re-allows interaction when target is present");
+
+        // ---- World station (smart object) with a stub dispatcher ----
+        // Verifies the station's availability + dispatch + double-activation contract
+        // without touching the real simulation.
+        var station = new WorldStation();
+        try
+        {
+            Assert(result, station.UnavailableReason is not null,
+                "world station is unavailable with no dispatcher bound");
+            Assert(result, !station.IsAvailable, "world station reports unavailable with no dispatcher");
+
+            var calls = new System.Collections.Generic.List<WorldCommand>();
+            station.Dispatcher = new RecordingDispatcher(calls);
+            station.CommandTargetId = "JOB_MILK_TEST";
+            Assert(result, station.IsAvailable, "world station becomes available with a dispatcher");
+            Assert(result, station.UnavailableReason == string.Empty,
+                "world station has no unavailable reason when ready");
+
+            var context = new WorldInteractionContext("rancher", 42UL);
+            Assert(result, station.Activate(context), "world station dispatches a command on activate");
+            Assert(result, calls.Count == 1 && calls[0].Kind == WorldCommandKind.AssignJob,
+                "world station dispatches the configured command kind");
+            Assert(result, calls[0].TargetId == "JOB_MILK_TEST", "world station dispatches the configured target");
+
+            // Double activation is rejected by the guard (already released here, so it is the
+            // missing-target / re-entrancy contract that must hold across rapid presses).
+            var second = station.Activate(context);
+            Assert(result, second && calls.Count == 2, "world station allows sequential activations");
+        }
+        finally
+        {
+            station.Free();
+        }
+
+        // ---- Ranch greybox scene loads and exposes the expected node contract ----
+        var scene = GD.Load<PackedScene>("res://scenes/dev/RanchGreybox.tscn");
+        Assert(result, scene is not null, "ranch greybox scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var greybox = scene.Instantiate();
+        try
+        {
+            AssertNodeExists(result, greybox, "WorldInputBootstrap", "greybox registers world input bootstrap");
+            AssertNodeExists(result, greybox, "Player", "greybox has a third-person player");
+            AssertNodeExists(result, greybox, "CameraRig/Camera", "greybox has a follow camera");
+            AssertNodeExists(result, greybox, "Station", "greybox has an interactable station");
+            AssertNodeExists(result, greybox, "PromptLayer/Prompt", "greybox shows an interaction prompt");
+            AssertNodeExists(result, greybox, "ButtonLayer/OpenManagementButton", "greybox has a management UI button");
+
+            // The greybox root node carries the controller script. In Godot 4 C# the
+            // instantiated root reports the C# extension type, so an `as` cast resolves it.
+            var controller = greybox as RanchGreyboxController;
+            Assert(result, controller is not null, "greybox root is the controller");
+            if (controller is not null)
+            {
+                // _Ready() normally fires on tree entry; invoke it directly so the
+                // wiring (player / station / dispatcher) is verified headlessly.
+                controller._Ready();
+                Assert(result, controller.Wired, "greybox controller wires player + station");
+                Assert(result, controller.Player is not null, "greybox controller resolves the player");
+                Assert(result, controller.Station is not null, "greybox controller resolves the station");
+                Assert(result, controller.Station is not null && controller.Station.Dispatcher is not null,
+                    "greybox station has a production dispatcher bound");
+            }
+        }
+        finally
+        {
+            greybox.Free();
+        }
+    }
+
     private static void Assert(SmokeTestResult result, bool condition, string message)
     {
         if (condition)
@@ -1420,5 +1568,27 @@ private static void TestTrainingParityAndVisit(SmokeTestResult result)
         Assert(result, unequipSecond.Success, "clothing service unequips item from explicit slot");
         Assert(result, !character.EquippedItems.ContainsKey(secondSlotKey), "slot removed after unequip");
         Assert(result, state.Inventory.Items.TryGetValue(secondEquip.Value.Id, out var secondCount) && secondCount >= 1, "unequip returns item to inventory");
+    }
+
+    /// <summary>
+    /// Test double that records every dispatched world command so the station's dispatch
+    /// contract can be verified without touching the real GameRoot simulation.
+    /// </summary>
+    private sealed class RecordingDispatcher : IWorldCommandDispatcher
+    {
+        private readonly System.Collections.Generic.List<WorldCommand> _recorded;
+        private readonly bool _shouldFail;
+
+        public RecordingDispatcher(System.Collections.Generic.List<WorldCommand> recorded, bool shouldFail = false)
+        {
+            _recorded = recorded;
+            _shouldFail = shouldFail;
+        }
+
+        public bool Dispatch(WorldCommand command, WorldInteractionContext context)
+        {
+            _recorded.Add(command);
+            return !_shouldFail;
+        }
     }
 }

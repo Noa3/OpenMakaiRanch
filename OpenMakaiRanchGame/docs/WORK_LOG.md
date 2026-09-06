@@ -1,5 +1,23 @@
 # Work Log
 
+## WORLD-001 greybox slice + engine path fix (2026-09-06)
+
+### Engine path root cause
+The repo-root 4.7.0 binaries were broken for Mono: `Godot_v4.7-stable_mono_win64_console.exe` is a **198 KB stub** (a real build is ~179 MB) that crashes Mono with "Assemblies not found" (signal 11) the moment it inits. `launch.py` prefers the `*_console` name (first in `NAMES`) and only validates via `--version`, so it silently selected the broken stub. The working engine is **Godot 4.7.2 mono** at `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe` (full build + bundled GodotSharp API). Pass it via `GODOT_BIN` or `GODOT_HOME`. This unblocks all headless smoke/import runs.
+
+### WORLD-001 greybox slice (playable, opt-in)
+Built against the ART-001 floor plan. Two layers, both in `src/World/`:
+
+- **Deterministic, Node-free** (unit-testable headlessly): `WorldMovementMath` (camera-relative XZ movement, dead zone, bounded accel, gravity, diagonal speed clamp), `WorldCameraMath` (orbit position, zoom clamp, pitch clamp, geometry clamp so the camera never penetrates walls), `WorldInputGate` (world vs UI ownership), `WorldInteractionGuard` (double-activation + despawn guard).
+- **Node layer**: `ThirdPersonPlayerController` (CharacterBody3D, camera-relative, gravity, collision), `WorldCameraRig` (yaw/pitch/zoom, collision-aware follow, recenter), `WorldStation` (smart object: stable `TargetId`, `Label`, `CommandKind`/`CommandTargetId`, one reserved slot), `RanchGreyboxController` (wiring, interact prompt, management-UI enter/leave), `WorldInputBootstrap` (idempotent InputMap: WASD/arrows, F/Space interact, R recenter).
+- **Command boundary**: `IWorldCommandDispatcher` + `GameRootCommandDispatcher` route every station interaction to `GameRoot.TryAssignJob/TryConductMentorship/TryCompleteBondEvent` with the `StateGeneration` guard. The station never computes income/exp/bond — the plan's "no second reward calculator" rule holds.
+- **Scene**: `scenes/dev/RanchGreybox.tscn` — opt-in (NOT the boot scene), ground/walls/interior/station/player/camera/prompt/management button.
+
+### Verification
+- `dotnet build OpenMakaiRanch.sln`: **0 warnings, 0 errors**.
+- `GODOT_BIN=E:/GodotEditor/Godot_v4.7.2-stable_mono_win64.exe python Tools/Godot/launch.py --mode smoke`: **SMOKE PASS, 1038 assertions OK, 0 FAIL** (was 998 before the world slice — +40 world assertions: diagonal speed, camera clamps, input ownership, double-activation, dispatcher dispatch, scene node contract).
+- Committed on `main`, pushed to `origin/main`.
+
 ## Quality audit + BUG-001 fix + ART-001 floor plan (2026-09-06)
 
 Continued after DATA-002 gate was verified. Three scoped slices:

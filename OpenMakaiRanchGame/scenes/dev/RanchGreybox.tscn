@@ -1,0 +1,158 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
+[ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
+[ext_resource type="Script" path="res://src/World/WorldCameraRig.cs" id="3_rig"]
+[ext_resource type="Script" path="res://src/World/WorldStation.cs" id="4_station"]
+[ext_resource type="Script" path="res://src/World/WorldInputBootstrap.cs" id="5_input"]
+
+[sub_resource type="BoxMesh" id="ground_mesh"]
+size = Vector3(40, 1, 30)
+
+[sub_resource type="BoxShape3D" id="ground_shape"]
+size = Vector3(40, 1, 30)
+
+[sub_resource type="BoxMesh" id="wall1_mesh"]
+size = Vector3(1, 3, 30)
+
+[sub_resource type="BoxShape3D" id="wall1_shape"]
+size = Vector3(1, 3, 30)
+
+[sub_resource type="BoxMesh" id="wall2_mesh"]
+size = Vector3(1, 3, 30)
+
+[sub_resource type="BoxShape3D" id="wall2_shape"]
+size = Vector3(1, 3, 30)
+
+[sub_resource type="BoxMesh" id="interior_mesh"]
+size = Vector3(20, 3, 1)
+
+[sub_resource type="BoxShape3D" id="interior_shape"]
+size = Vector3(20, 3, 1)
+
+[sub_resource type="BoxMesh" id="station_mesh"]
+size = Vector3(1.5, 1, 1.5)
+
+[sub_resource type="BoxShape3D" id="station_shape"]
+size = Vector3(1.5, 1, 1.5)
+
+[sub_resource type="BoxMesh" id="player_mesh"]
+size = Vector3(0.5, 1.6, 0.5)
+
+[sub_resource type="BoxShape3D" id="player_shape"]
+size = Vector3(0.5, 1.6, 0.5)
+
+[node name="RanchGreybox" type="Node3D"]
+script = ExtResource("1_controller")
+
+[node name="WorldInputBootstrap" type="Node" parent="."]
+script = ExtResource("5_input")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0.71, 0, -0.71, 0.7, 0, 8, 0)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("ground_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("ground_shape")
+
+[node name="Wall1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Wall1"]
+mesh = SubResource("wall1_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Wall1"]
+shape = SubResource("wall1_shape")
+
+[node name="Wall2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Wall2"]
+mesh = SubResource("wall2_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Wall2"]
+shape = SubResource("wall2_shape")
+
+[node name="InteriorWall" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -15)
+
+[node name="Mesh" type="MeshInstance3D" parent="InteriorWall"]
+mesh = SubResource("interior_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="InteriorWall"]
+shape = SubResource("interior_shape")
+
+[node name="Station" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+script = ExtResource("4_station")
+TargetId = "STATION_MILK"
+Label = "Milk Station"
+CommandKind = 0
+CommandTargetId = "JOB_MILK"
+
+[node name="Mesh" type="MeshInstance3D" parent="Station"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Station"]
+shape = SubResource("station_shape")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
+script = ExtResource("2_player")
+MaxWalkSpeed = 5.0
+Acceleration = 40.0
+Gravity = 20.0
+HeadHeight = 1.6
+
+[node name="Mesh" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("player_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Player"]
+shape = SubResource("player_shape")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("3_rig")
+LookSensitivity = 0.0025
+ZoomSensitivity = 1.5
+RecenterSpeed = 6.0
+Yaw = -1.5708
+Pitch = 0.5236
+Distance = 7.0
+
+[node name="Camera" type="Camera3D" parent="CameraRig"]
+current = true
+fov = 70.0
+
+[node name="PromptLayer" type="CanvasLayer" parent="."]
+
+[node name="Prompt" type="Label" parent="PromptLayer"]
+anchors_preset = 10
+anchor_top = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = -60.0
+offset_right = 200.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "Walk with WASD / arrows. Look with camera keys. Press F near a station to interact."
+
+[node name="ButtonLayer" type="CanvasLayer" parent="."]
+
+[node name="OpenManagementButton" type="Button" parent="ButtonLayer"]
+anchors_preset = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 180.0
+offset_bottom = 44.0
+text = "Open Management UI"
