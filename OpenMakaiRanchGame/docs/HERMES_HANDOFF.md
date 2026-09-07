@@ -9,17 +9,19 @@ corners.** Preserve the existing C# simulation, services, save system, and ERA-i
 3D is *presentation* over the same simulation, not a second economy/clock.
 
 ## Current Task
-SOFT-ANIME-001 **GPU-verified + fixed** (BUG-001) and NPC 3D interaction (AC #10) shipped.
-Next unblocked: **PERF-001** (GPU frame-time baseline) and the AC #8/#12 character pipeline
-(both currently gate-blocked — see Known Problems).
+SOFT-ANIME-001 **GPU-verified + fixed** (BUG-001), NPC 3D interaction (AC #10 + AC #11 + AC #7
+player-driven) shipped, and **PERF-001 GPU baseline measured** (4,143 draw calls / 393k tris /
+2.44 GB video mem — see `docs/PERF_BASELINE.md`). Next unblocked: AC #8/#12 character pipeline
+(both currently gate-blocked — see Known Problems) + optional polish (AVATAR-001 grounding,
+UI-002 interaction prompt).
 
 ## Current Git Branch
 `dev`
 
 ## Current Commit
-`1a43379` — `feat: NPC 3D interaction (AC #10)` (latest committed).
-Uncommitted working tree: SOFT-ANIME-001 shader fix + GPU verification + dev capture tools
-(see Files Changed).
+`c7417cb` — `fix: SOFT-ANIME-001 GPU shader (BUG-001) + GPU verification tools` (latest
+committed). Uncommitted working tree: PERF-001 (`src/Dev/PerfCapture.cs`,
+`scenes/dev/PerfCapture.tscn`, `run_perf.sh`, `docs/PERF_BASELINE.md`) + KANBAN PERF-001 entry.
 
 ## Completed Recently
 1. **NPC 3D interaction (AC #10 + AC #11 + AC #7 player-driven)** — `CharacterAvatar3D` now
@@ -48,15 +50,15 @@ Uncommitted working tree: SOFT-ANIME-001 shader fix + GPU verification + dev cap
 None known. (See Known Problems for gate-blocked + unverified items.)
 
 ## Files Changed (uncommitted)
-- `src/Character/SoftShaderSource.cs` — idiomatic GLSL (ALBEDO/SPECULAR/RIM), no `-LIGHT`.
-- `src/Character/SoftMaterialFactory.cs` — `base_color` + `rim_strength` uniforms; accessors.
-- `src/Character/SoftShadingMath.cs` — rim default 0.25→0.12 (C# reference stays headless-verified).
-- `src/Tests/SmokeTestRunner.cs` — soft-shader assertions updated (18), NPC interaction (14).
-- `src/Dev/WorldCapture.cs` (new) — whole-world GPU capture for visual inspection.
-- `src/Dev/ShadingAB.cs` (new) — controlled Standard-vs-soft A/B render.
-- `scenes/dev/WorldCapture.tscn` (new), `scenes/dev/ShadingAB.tscn` (new).
-- `docs/KANBAN.md` — SOFT-ANIME-001 GPU-verified, BUG-001, WORLD-004, AC #10/#11/#13/#22 done.
-- `docs/HERMES_HANDOFF.md` (this file, new).
+- `src/Dev/PerfCapture.cs` (new) — PERF-001 real-GPU baseline tool (`Performance.GetMonitor`).
+- `scenes/dev/PerfCapture.tscn` (new) — capture node wrapper.
+- `run_perf.sh` (new) — one-shot runner (isolated profile, logs to temp).
+- `docs/PERF_BASELINE.md` (new) — the measured baseline + decision gate.
+- `docs/KANBAN.md` — PERF-001 moved to Done (measured).
+- `docs/HERMES_HANDOFF.md` (this file) — current state.
+
+(Committed in `c7417cb`: SOFT-ANIME-001 shader fix + `WorldCapture`/`ShadingAB` GPU tools +
+BUG-001 + AC #13/#22 evidence. Committed in `1a43379`: NPC 3D interaction AC #10/#11/#7.)
 
 ## Assets In Progress
 - `assets/3d/` — 14 GLB props + PBR maps (barn, fence, tree, well, hay, trough, path stones,
@@ -64,9 +66,13 @@ None known. (See Known Problems for gate-blocked + unverified items.)
 - Soft-shader materials (runtime, built by `SoftMaterialFactory`).
 
 ## Tests Performed
-- `dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj` → **0 warnings / 0 errors**.
+- `dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj` → **0 warnings / 0 errors**
+  (verified after the PERF-001 `PerfCapture` additions — the compiler confirmed every
+  `Performance.Monitor` enum member used exists in GodotSharp 4.7.2).
 - `python Tools/Godot/launch.py --mode smoke` → **SMOKE PASS, 1311 assertions** (was 1298;
   +14 NPC interaction, soft-shader assertions updated to the fixed idiom).
+- **PERF-001 real-GPU baseline** — `bash run_perf.sh` → 120 sampled frames: 4,143 draw calls,
+  393,403 primitives, 5,553 objects, 2.44 GB video memory, 2,833 nodes, ~320 FPS engine cap.
 - 18 soft-shader assertions (math contract, shader-source guards incl. "no invalid LIGHT",
   factory uniform mapping, avatar opt-in + rebuild idempotency).
 - 14 NPC-interaction assertions (IWorldInteractable contract, guard double-activation, stub
@@ -86,21 +92,23 @@ None known. (See Known Problems for gate-blocked + unverified items.)
   and proves it is lit + soft.
 
 ## Known Problems
-1. **PERF-001 (unblocked, needs GPU)** — 3D frame-time/draw-call/triangle baseline not yet
-   measured. Not verifiable in the headless smoke path; needs the real-GPU render harness
-   (now available via `WorldCapture`).
-2. **CHAR-002 / ART-002 (AC #8, AC #12) — gate-blocked.** `data/characters.json` has **no
+1. **CHAR-002 / ART-002 (AC #8, AC #12) — gate-blocked.** `data/characters.json` has **no
    `AdultEligibility` field**, no ConfirmedAdult character, no independent design review.
    Roster contains minors (Slay 13, Maria 15, minor-coded Ayaka). **Will not generate
    explicit character art/text for this roster** until a clearly-adult character (candidate
    Noir, 26) clears independent human design review (`ADULT_CHARACTER_VALIDATION.md`).
    Non-adult world art + fail-closed gates + gate-safe data model are all in place.
-3. **MORPH-001 / ANIM-001** — blocked on CHAR-002/ART-002 (no rigged/morphed character yet).
-4. **Visual end-quality of soft shading** — technically GPU-verified; final aesthetic sign-off
-   (whether the soft look is "anime-natural" enough at gameplay camera) still needs a human
-   design review, especially once a real character model exists.
-5. **Avatar grounding in the full world** — avatars near the tree read as floating (no contact
+2. **MORPH-001 / ANIM-001** — blocked on CHAR-002/ART-002 (no rigged/morphed character yet).
+3. **Visual end-quality of soft shading** — technically GPU-verified (A/B measured +
+   vision-confirmed soft, no hard corners); final aesthetic sign-off (whether the soft look is
+   "anime-natural" enough at gameplay camera) still needs a human design review, especially once
+   a real character model exists.
+4. **Avatar grounding in the full world** — avatars near the tree read as floating (no contact
    shadow) in the close-up; a contact-shadow / grounding pass is a candidate ART polish item.
+5. **PERF-001 frame-delta caveat** — the baseline's frame-delta (72 ms) is OS-compositor-throttled
+   (isolated capture window is not foreground). The stable, decision-relevant signals are the
+   GPU-cost metrics (draw calls / tris / video mem). Re-measure in a foreground window before
+   any LOD/instancing decision. See `docs/PERF_BASELINE.md`.
 
 ## Important Decisions
 - **No hard toon/cel shader** (user: "dont use a toon shader... i dont want to have it hard
@@ -117,22 +125,25 @@ None known. (See Known Problems for gate-blocked + unverified items.)
 - ERA source `eraMakaiRanch-game-eng-translation/` stays read-only.
 
 ## Next Exact Action
-1. **Commit** the SOFT-ANIME-001 GPU fix + BUG-001 + GPU verification tools (currently
-   uncommitted) — a verified green slice (build 0/0, smoke 1311 PASS).
-2. Then **PERF-001**: measure representative 3D frame-time / draw calls / triangles / memory at
-   the `RanchGreybox.tscn` composition using the real-GPU `WorldCapture` harness (add a
-   `RenderingServer` stats read before the quit). Establish the baseline before LOD/instancing.
+1. **Commit** the PERF-001 slice (build 0/0, smoke 1311 PASS, GPU baseline measured) — a
+   verified green slice.
+2. Then the next unblocked value: **AVATAR-001 (grounding/contact shadow)** and/or
+   **UI-002 (in-world "Press F — {name}" interaction prompt)** are low-risk polish.
+   **CHAR-002 / ART-002** (AC #8/#12) is the big remaining gap but **gate-blocked** until a
+   clearly-adult character clears independent design review — do NOT generate explicit adult
+   art for the current roster (see Known Problems #1).
 
 ## Next Recommended Tasks
-- **PERF-001** — GPU frame-time / draw-call / triangle baseline (unblocked, next).
+- **AVATAR-001 (polish)** — contact shadow / grounding for placed avatars in the full world
+  (currently read as floating near the tree).
+- **UI-002 (polish)** — in-world interaction prompt (show "Press F — {name}" when near an NPC);
+  cheap, high polish, no new simulation.
 - **AC #8 / CHAR-002 / ART-002** — ONE clearly-adult master character (candidate Noir) through
   the full production pipeline, **only after** independent design review clears
   `ConfirmedAdult` + `VISUALLY_UNAMBIGUOUSLY_ADULT`. Gate-safe fail-closed state is already in
-  place.
+  place. (Stop condition: this requires a human design-review decision the agent cannot make.)
 - **MORPH-001 / ANIM-001** — gameplay→visual morph curves + shared rig/animation, once CHAR-002
   is unblocked.
-- **AVATAR-001 (polish)** — grounding/contact shadow for placed avatars in the full world.
-- **UI-002 (polish)** — in-world interaction prompt (show "Press F — {name}" when near an NPC).
 
 ## Useful Commands
 - **Build:** `cd OpenMakaiRanchGame && dotnet build OpenMakaiRanchGame.csproj` (expect 0/0).
@@ -142,6 +153,8 @@ None known. (See Known Problems for gate-blocked + unverified items.)
   `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe --path OpenMakaiRanchGame res://scenes/dev/WorldCapture.tscn`
   → saves `C:\Users\noa3\AppData\Local\OpenMakaiRanchCapture\world_capture.png`.
 - **A/B shading test:** `... res://scenes/dev/ShadingAB.tscn` → `shading_ab.png`.
+- **PERF-001 GPU baseline:** `bash run_perf.sh` (isolated profile) → `PERF_STATS` lines +
+  `PERF_STATS_OK`; or `... res://scenes/dev/PerfCapture.tscn` directly.
   (Isolated-profile env: set `APPDATA`/`LOCALAPPDATA`/`OMR_EXPECTED_USER_ROOT` to a temp dir so
   the personal save profile is untouched.)
 - **Editor:** `python Tools/Godot/launch.py --mode editor`. **Isolated playtest:**
@@ -150,12 +163,13 @@ None known. (See Known Problems for gate-blocked + unverified items.)
   → `gltf` GLB export (ART-001a path).
 
 ## Resume Instructions
-1. `git status` — confirm the SOFT-ANIME-001 GPU fix + GPU tools are still uncommitted (or
-   already committed if a later session landed it).
-2. Build (0/0) + smoke (expect ~1311 PASS).
-3. If the user wants to continue: commit the green slice, then **PERF-001** (unblocked) or
-   **CHAR-002** (only after design-review clearance — do NOT generate explicit adult art for the
-   current roster; see Known Problems #2).
+1. `git status` — confirm the PERF-001 slice is still uncommitted (or already committed if a
+   later session landed it).
+2. Build (0/0) + smoke (expect ~1311 PASS) + `bash run_perf.sh` (PERF baseline reproducible).
+3. If the user wants to continue: commit the PERF-001 green slice, then **AVATAR-001**
+   (grounding) / **UI-002** (interaction prompt) for polish, or **CHAR-002** (only after
+   design-review clearance — do NOT generate explicit adult art for the current roster; see
+   Known Problems #1).
 4. Do NOT re-introduce a hard toon/cel shader or a hand-rolled `LIGHT` dot product — the user's
    direction is soft/natural, and `LIGHT` in `fragment()` fails GPU compile.
 5. Keep the ERA source read-only; never delete user save files; keep the simulation as the single
