@@ -80,3 +80,4 @@ start-comfyui.bat
 
 # UID files (re-generated)
 **/*.uid
+.dream-loop/
