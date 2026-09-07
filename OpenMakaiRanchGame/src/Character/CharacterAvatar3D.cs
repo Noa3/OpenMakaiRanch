@@ -25,6 +25,22 @@ public partial class CharacterAvatar3D : Node3D
     /// <summary>Head mesh (sphere stand-in). Null when no profile or before Rebuild.</summary>
     public MeshInstance3D? Head { get; private set; }
 
+    /// <summary>
+    /// When true, the stand-in geometry renders with the soft-anime shader
+    /// (<see cref="SoftMaterialFactory"/>) — a smooth, natural lighting model
+    /// (soft diffuse ramp + hemisphere ambient + gentle rim), NOT a hard toon/cel
+    /// band. Off by default: the CHAR-001 stand-in stays an honest debug material,
+    /// and the soft path is opt-in so the existing StandardMaterial3D smoke
+    /// assertion is unaffected. Enabling it is the CHAR-002/ART-002 presentation
+    /// upgrade.
+    /// </summary>
+    [Export] public bool UseSoftShading { get; set; } = false;
+
+    /// <summary>Soft-shading parameters used when <see cref="UseSoftShading"/> is on.
+    /// Plain property (not <c>[Export]</c>): a C# struct is not a Godot-serializable
+    /// Variant, so it stays a code-only knob; the defaults are deterministic.</summary>
+    public SoftShadingMath.SoftParameters? SoftParams { get; set; }
+
     public override void _Ready()
     {
         Rebuild();
@@ -53,16 +69,32 @@ public partial class CharacterAvatar3D : Node3D
         // Honest debug stand-in: neutral capsule body + sphere head.
         // No adult geometry, no clothing, no morphs, no skeleton.
         // This is a placeholder for scale/collision/travel — not a character model.
+        Material bodyMaterial;
+        Material headMaterial;
+        if (UseSoftShading)
+        {
+            // Soft-anime path: smooth diffuse + hemisphere ambient + gentle rim,
+            // rendered by the Godot spatial shader (SoftShaderSource). No hard
+            // cel band, no hard corners — the user's explicit direction.
+            bodyMaterial = SoftMaterialFactory.Create(Profile.BodyColor, SoftParams);
+            headMaterial = SoftMaterialFactory.Create(Profile.HeadColor, SoftParams);
+        }
+        else
+        {
+            bodyMaterial = new StandardMaterial3D { AlbedoColor = Profile.BodyColor };
+            headMaterial = new StandardMaterial3D { AlbedoColor = Profile.HeadColor };
+        }
+
         Body = new MeshInstance3D
         {
             Mesh = new CapsuleMesh { Radius = 0.3f, Height = 1.4f },
-            MaterialOverride = new StandardMaterial3D { AlbedoColor = Profile.BodyColor },
+            MaterialOverride = bodyMaterial,
             Position = new Vector3(0f, 0.9f, 0f),
         };
         Head = new MeshInstance3D
         {
             Mesh = new SphereMesh { Radius = 0.22f },
-            MaterialOverride = new StandardMaterial3D { AlbedoColor = Profile.HeadColor },
+            MaterialOverride = headMaterial,
             Position = new Vector3(0f, 1.85f, 0f),
         };
         AddChild(Body);

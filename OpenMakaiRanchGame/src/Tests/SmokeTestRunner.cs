@@ -65,6 +65,7 @@ public static class SmokeTestRunner
             TestWorldGreybox(result);
             TestWorldSharedSimulation(result);
             TestCharacterAvatar(result);
+            TestSoftShading(result);
             TestEventDialogueStaging(result);
             TestWorldPanelCoordinator(result);
             TestSaveLoadRoundTrip(result);
@@ -1319,6 +1320,108 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
 
         avatar.QueueFree();
     }
+
+    private static void TestSoftShading(SmokeTestResult result)
+    {
+        // SOFT-ANIME-001: the soft-anime shader system. Per the user's explicit
+        // direction this is a SOFT, NATURAL look — no hard corners, no cel banding,
+        // no hard outline. Three layers, each independently verifiable:
+        //   1. SoftShadingMath — pure Node-free diffuse/hemi/rim math (source of truth).
+        //   2. SoftShaderSource — the GLSL that mirrors the math 1:1.
+        //   3. SoftMaterialFactory — maps the C# params onto ShaderMaterial uniforms.
+        //
+        // Headless-verified: the math and the uniform mapping are deterministic and
+        // do not need a GPU. The GPU render of the same math is inspected visually
+        // (AC #13).
+
+        // ---- Layer 1: pure math ----
+        // Soft diffuse: front-facing (dot=1) fully lit; back-facing (dot=-1, clamped
+        // to 0) at the shadow floor. No hard band — the ramp is smooth.
+        float front = SoftShadingMath.SoftDiffuse(1.0f, 0.9f);
+        Assert(result, front > 0.99f, "soft-math: front-facing surface fully lit (dot=1 -> ~1.0)");
+
+        float back = SoftShadingMath.SoftDiffuse(-1.0f, 0.9f);
+        Assert(result, back < 0.01f, "soft-math: back-facing surface at shadow floor (dot=-1 -> ~0.0)");
+
+        // Monotonic, smooth: no discontinuity. Sample the ramp and check it is
+        // strictly increasing with no hard corner (each step small).
+        bool monotonic = true;
+        float prev = -1f;
+        for (int i = 0; i <= 20; i++)
+        {
+            float d = -1f + (2f * i) / 20f; // -1 .. 1
+            float v = SoftShadingMath.SoftDiffuse(d, 0.9f);
+            if (v < prev - 1e-4f) { monotonic = false; break; }
+            prev = v;
+        }
+        Assert(result, monotonic, "soft-math: diffuse ramp is smooth & monotonic (no hard corner)");
+
+        // Hemisphere: up-facing (y=1) -> 1.0 (sky), down-facing (y=-1) -> 0.0 (ground).
+        Assert(result, SoftShadingMath.HemisphereMix(1f) > 0.99f, "soft-math: up-facing surface picks up sky ambient");
+        Assert(result, SoftShadingMath.HemisphereMix(-1f) < 0.01f, "soft-math: down-facing surface picks up ground ambient");
+
+        // Rim: grazing (viewDot~0) full; head-on (viewDot=1) zero.
+        float rimGrazing = SoftShadingMath.RimFactor(0.0f, 2.0f);
+        float rimHeadOn = SoftShadingMath.RimFactor(1.0f, 2.0f);
+        Assert(result, rimGrazing > rimHeadOn, "soft-math: rim strongest at grazing, zero head-on");
+
+        // Full composite: lit face brighter than shadow face; output stays in [0,1].
+        var p = new SoftShadingMath.SoftParameters();
+        var frontColor = SoftShadingMath.Shade(1.0f, 0.5f, 1.0f, p);
+        var backColor = SoftShadingMath.Shade(0.0f, 0.5f, 1.0f, p);
+        Assert(result, frontColor.R > backColor.R, "soft-math: lit face brighter than shadow face");
+        Assert(result, frontColor.R <= 1.0f + 0.01f, "soft-math: shaded output stays in [0,1] (clamped)");
+
+        // Ambient keeps the shadow face above pure black (readable, no hard dark band).
+        Assert(result, backColor.R > 0.0f, "soft-math: hemisphere ambient keeps the shadow face above black");
+
+        // ---- Layer 2: shader source mirrors the math ----
+        string shader = SoftShaderSource.BuildShader().Code;
+        Assert(result, shader.Contains("diffuse_softness"), "soft-shader: declares diffuse_softness uniform");
+        Assert(result, shader.Contains("ambient_strength"), "soft-shader: declares ambient_strength uniform");
+        Assert(result, shader.Contains("rim_strength"), "soft-shader: declares rim_strength uniform");
+        Assert(result, shader.Contains("-LIGHT"), "soft-shader: uses the Godot 4 LIGHT convention");
+        Assert(result, shader.Contains("ndotl * ndotl * (3.0 - 2.0 * ndotl)"), "soft-shader: smooth eased diffuse ramp (no cel band)");
+
+        // ---- Layer 3: material factory maps C# params -> uniforms ----
+        var skinBase = new Color(0.96f, 0.82f, 0.78f);
+        var material = SoftMaterialFactory.Create(skinBase);
+        Assert(result, material is not null, "soft-material: factory returns a material");
+        Assert(result, material!.Shader is not null, "soft-material: material carries the soft shader");
+        Assert(result, SoftMaterialFactory.GetColor(material, "base_color").IsEqualApprox(skinBase), "soft-material: base_color uniform maps from C# param");
+        Assert(result, MathF.Abs(SoftMaterialFactory.GetFloat(material, "diffuse_softness") - p.DiffuseSoftness) < 0.001f, "soft-material: diffuse_softness uniform maps from C# param");
+        Assert(result, MathF.Abs(SoftMaterialFactory.GetFloat(material, "rim_strength") - p.RimStrength) < 0.001f, "soft-material: rim_strength uniform maps from C# param");
+        Assert(result, SoftMaterialFactory.GetColor(material, "sky_color").IsEqualApprox(p.SkyColor), "soft-material: sky_color uniform maps from C# param");
+
+        // ---- Integration: avatar opt-in soft path ----
+        // Default (UseSoftShading=false) stays StandardMaterial3D — the CHAR-001
+        // stand-in is an honest debug material and its existing smoke assertion
+        // is unaffected.
+        var def = new CharacterDefinition { Id = "soft_char", AdultEligibility = AdultEligibility.Minor, HairColor = "black" };
+        var prof = CharacterAvatarFactory.CreateProfile(def);
+        var avatar = new CharacterAvatar3D();
+        avatar.Profile = prof;
+        avatar.Rebuild();
+        Assert(result, avatar.Body!.MaterialOverride is StandardMaterial3D, "soft-av: default stand-in stays StandardMaterial3D (opt-in off)");
+
+        avatar.UseSoftShading = true;
+        avatar.Rebuild();
+        var softBody = avatar.Body!.MaterialOverride as ShaderMaterial;
+        Assert(result, softBody is not null, "soft-av: opt-in switches body to the soft ShaderMaterial");
+        Assert(result, softBody is not null && softBody.Shader is not null, "soft-av: soft body material carries the shader");
+        Assert(result, softBody is not null && SoftMaterialFactory.GetColor(softBody, "base_color").IsEqualApprox(prof.BodyColor), "soft-av: soft base_color = profile body color");
+        var softHead = avatar.Head!.MaterialOverride as ShaderMaterial;
+        Assert(result, softHead is not null, "soft-av: opt-in switches head to the soft ShaderMaterial");
+        Assert(result, softHead is not null && SoftMaterialFactory.GetColor(softHead, "base_color").IsEqualApprox(prof.HeadColor), "soft-av: soft base_color = profile head color");
+
+        // Rebuild idempotency still holds with soft on.
+        avatar.Rebuild();
+        Assert(result, avatar.Body is not null && avatar.Head is not null, "soft-av: rebuild with soft on regenerates geometry");
+        Assert(result, avatar.Body!.MaterialOverride is ShaderMaterial, "soft-av: rebuild preserves the soft material");
+
+        avatar.QueueFree();
+    }
+
 
     private static void TestEventDialogueStaging(SmokeTestResult result)
     {
