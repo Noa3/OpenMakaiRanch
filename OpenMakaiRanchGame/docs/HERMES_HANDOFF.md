@@ -1,6 +1,6 @@
 # HERMES_HANDOFF — OpenMakaiRanchGame
 
-> A new session can continue from this file alone. State verified 2026-09-07.
+> A new session can continue from this file alone. State verified 2026-09-08.
 
 ## Current Objective
 Production-quality **first 3D anime vertical slice** of the eraMakaiRanch remake.
@@ -9,19 +9,23 @@ corners.** Preserve the existing C# simulation, services, save system, and ERA-i
 3D is *presentation* over the same simulation, not a second economy/clock.
 
 ## Current Task
-SOFT-ANIME-001 **GPU-verified + fixed** (BUG-001), NPC 3D interaction (AC #10 + AC #11 + AC #7
-player-driven) shipped, and **PERF-001 GPU baseline measured** (4,143 draw calls / 393k tris /
-2.44 GB video mem — see `docs/PERF_BASELINE.md`). Next unblocked: AC #8/#12 character pipeline
-(both currently gate-blocked — see Known Problems) + optional polish (AVATAR-001 grounding,
-UI-002 interaction prompt).
+Two unblocked P1 slices just landed this session (both green + committed): **NSFW-GATE-002**
+(training-dispatch fail-closed negative tests — the last untested gate boundary) and
+**WORLD-INPUT** (gamepad/controller support — the P1 "controller mappings" that was promised but
+never implemented). Prior sessions this branch already shipped UI-002 (interaction prompt),
+PERF-001 (GPU baseline), SOFT-ANIME-001 + BUG-001 (soft shader, GPU-verified), AC #10/#11/#13/#22,
+and the dream-loop capture+judge pipeline (scene at 4.5/10, **Tier-2 ceiling — blocked by
+greybox asset fidelity, NOT lighting**).
 
 ## Current Git Branch
 `dev`
 
 ## Current Commit
-`c7417cb` — `fix: SOFT-ANIME-001 GPU shader (BUG-001) + GPU verification tools` (latest
-committed). Uncommitted working tree: PERF-001 (`src/Dev/PerfCapture.cs`,
-`scenes/dev/PerfCapture.tscn`, `run_perf.sh`, `docs/PERF_BASELINE.md`) + KANBAN PERF-001 entry.
+`427ff5d` — `feat: WORLD-INPUT gamepad support (buttons + analog stick, 4.7.0 API)` (latest).
+`c46c43d` — `test: NSFW-GATE-002 training-dispatch fail-closed negative tests (26 assertions)`.
+`67f4e19` — `feat: dream-loop capture+judge pipeline (WorldCapture golden-hour env, 2-shot)`.
+`590cf73` — `feat: UI-002 in-world interaction prompt`. `454c7fc` PERF-001. `c7417cb` BUG-001.
+`1a43379` NPC AC #10. `87400b6` Wood-PBR. Working tree clean.
 
 ## Completed Recently
 1. **NPC 3D interaction (AC #10 + AC #11 + AC #7 player-driven)** — `CharacterAvatar3D` now
@@ -39,8 +43,9 @@ committed). Uncommitted working tree: PERF-001 (`src/Dev/PerfCapture.cs`,
 - C# simulation: RanchService, BondService, ScheduleService, EconomyService, DayCycle, Save
   (SchemaVersion 14), DataRegistry, ERA import — all intact.
 - 3D world: `RanchGreybox.tscn` (barn, fences, trees, well, ground, walls, PBR, sun,
-  world environment), `WorldCameraRig`, `ThirdPersonPlayerController` (WASD + camera-relative +
-  sprint + F-interact), `WorldInputBootstrap` (runtime input map).
+  world environment), `WorldCameraRig`, `ThirdPersonPlayerController` (keyboard **and
+  gamepad left stick** + camera-relative + F/A-interact), `WorldInputBootstrap` (runtime input
+  map — keyboard + gamepad buttons), `WorldCameraRig` (right-stick look + zoom).
 - NPCs: roster avatars placed via `RosterRig` (roster=2 in a fresh game), now **interactable**.
 - Soft-anime shading (opt-in per avatar), GPU-verified soft + no hard corners.
 - Management UI (UiShellController) available in-world ("Open Management UI" button) — same
@@ -50,15 +55,11 @@ committed). Uncommitted working tree: PERF-001 (`src/Dev/PerfCapture.cs`,
 None known. (See Known Problems for gate-blocked + unverified items.)
 
 ## Files Changed (uncommitted)
-- `src/Dev/PerfCapture.cs` (new) — PERF-001 real-GPU baseline tool (`Performance.GetMonitor`).
-- `scenes/dev/PerfCapture.tscn` (new) — capture node wrapper.
-- `run_perf.sh` (new) — one-shot runner (isolated profile, logs to temp).
-- `docs/PERF_BASELINE.md` (new) — the measured baseline + decision gate.
-- `docs/KANBAN.md` — PERF-001 moved to Done (measured).
-- `docs/HERMES_HANDOFF.md` (this file) — current state.
+None — working tree clean (all slices committed; see Current Commit).
 
-(Committed in `c7417cb`: SOFT-ANIME-001 shader fix + `WorldCapture`/`ShadingAB` GPU tools +
-BUG-001 + AC #13/#22 evidence. Committed in `1a43379`: NPC 3D interaction AC #10/#11/#7.)
+(Recent commits: `427ff5d` WORLD-INPUT gamepad; `c46c43d` NSFW-GATE-002 dispatch negative tests;
+`67f4e19` dream-loop capture+judge pipeline; `590cf73` UI-002 prompt; `454c7fc` PERF-001;
+`c7417cb` SOFT-ANIME-001 + BUG-001 + GPU tools; `1a43379` NPC AC #10; `87400b6` Wood-PBR.)
 
 ## Assets In Progress
 - `assets/3d/` — 14 GLB props + PBR maps (barn, fence, tree, well, hay, trough, path stones,
@@ -67,10 +68,14 @@ BUG-001 + AC #13/#22 evidence. Committed in `1a43379`: NPC 3D interaction AC #10
 
 ## Tests Performed
 - `dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj` → **0 warnings / 0 errors**
-  (verified after the PERF-001 `PerfCapture` additions — the compiler confirmed every
-  `Performance.Monitor` enum member used exists in GodotSharp 4.7.2).
-- `python Tools/Godot/launch.py --mode smoke` → **SMOKE PASS, 1311 assertions** (was 1298;
-  +14 NPC interaction, soft-shader assertions updated to the fixed idiom).
+  (verified after WORLD-INPUT — the compiler confirmed `JoyAxis`/`JoyButton`/`Input.GetJoyAxis`
+  exist in the GodotSharp 4.7.0 binding; `JoypadAxis`/`JoypadButton` do NOT).
+- `python Tools/Godot/launch.py --mode smoke` → **SMOKE PASS, 1354 assertions** (1341 after
+  NSFW-GATE-002; +13 gamepad input assertions for WORLD-INPUT).
+- **NSFW-GATE-002** — 26 dispatch-boundary negative assertions (Minor/Unknown/Ambiguous deny
+  `PerformAction`; ConfirmedAdult passes the eligibility gate) in `TestAdultEligibilityGate`.
+- **WORLD-INPUT** — 13 assertions: 8 world actions registered + 5 gamepad button bindings present
+  in the InputMap (A/Start→interact, B→recenter, L1/R1→zoom).
 - **PERF-001 real-GPU baseline** — `bash run_perf.sh` → 120 sampled frames: 4,143 draw calls,
   393,403 primitives, 5,553 objects, 2.44 GB video memory, 2,833 nodes, ~320 FPS engine cap.
 - 18 soft-shader assertions (math contract, shader-source guards incl. "no invalid LIGHT",
@@ -109,6 +114,21 @@ BUG-001 + AC #13/#22 evidence. Committed in `1a43379`: NPC 3D interaction AC #10
    (isolated capture window is not foreground). The stable, decision-relevant signals are the
    GPU-cost metrics (draw calls / tris / video mem). Re-measure in a foreground window before
    any LOD/instancing decision. See `docs/PERF_BASELINE.md`.
+6. **WORLD-INPUT analog-stick sign is live-only** — the gamepad left/right stick direction signs
+   (`-LeftY` = forward, `-RightY` = look up) follow the standard Godot convention but **cannot be
+   verified headlessly** (no physical joypad in CI; this binding lacks `Input.PushEvent`/
+   `ParseInputEvent`). The **button** mapping is headless-verified (13 smoke assertions). Confirm
+   stick direction with a real controller before marking controller support fully verified.
+7. **Dream-loop visual ceiling** — the ranch world scores **4.5/10 (Tier 2)** under the
+   `vision_analyze` judge. Tier 1 (shape) PASS, Tier 2 (light/color) near-ceiling, **Tier 3
+   (asset fidelity) is the blocker**. Real on-disk state (verified): **8 of 13 GLBs already
+   carry baked PBR** (fence, well, tree, tree_broadleaf, signpost, pasture_boundary, path_stones,
+   crates — each ~1.8–4 MB with albedo+normal+ORM maps) + the grass field uses `grass_field.tres`
+   PBR. The texture-less ones are the small props: **barn (15 KB, 0 textures)**, hay_bale, hedge,
+   water_trough, grass_tufts. All are low-poly (68–240 tris) so even the PBR'd ones read flat in
+   the wide capture. Lighting alone cannot push past this (anti-loop stopped after 3 rounds
+   4.0→4.5→4.5). Next lever = **barn texture + higher-poly hero props**, or a cleared concept
+   reference — the barn being the single most visible texture-less element.
 
 ## Important Decisions
 - **No hard toon/cel shader** (user: "dont use a toon shader... i dont want to have it hard
@@ -125,19 +145,26 @@ BUG-001 + AC #13/#22 evidence. Committed in `1a43379`: NPC 3D interaction AC #10
 - ERA source `eraMakaiRanch-game-eng-translation/` stays read-only.
 
 ## Next Exact Action
-1. **Commit** the PERF-001 slice (build 0/0, smoke 1311 PASS, GPU baseline measured) — a
-   verified green slice.
-2. Then the next unblocked value: **AVATAR-001 (grounding/contact shadow)** and/or
-   **UI-002 (in-world "Press F — {name}" interaction prompt)** are low-risk polish.
+1. **Verify the gamepad stick direction live** (only thing that can't be checked headlessly) —
+   attach a controller, confirm left-stick = forward/strafe and right-stick = look feel correct;
+   flip the sign in `ThirdPersonPlayerController`/`WorldCameraRig` if inverted. (Button mapping
+   is already headless-verified.)
+2. Then the next unblocked value by priority: **barn texture** (the single most visible
+   texture-less element — the 15 KB barn is the anchor of the whole ranch; it has zero PBR while
+   8 sibling props already do) to break the dream-loop 4.5/10 Tier-3 ceiling, OR a P0/P1 system
+   card if one is higher priority than art.
    **CHAR-002 / ART-002** (AC #8/#12) is the big remaining gap but **gate-blocked** until a
    clearly-adult character clears independent design review — do NOT generate explicit adult
    art for the current roster (see Known Problems #1).
 
 ## Next Recommended Tasks
-- **AVATAR-001 (polish)** — contact shadow / grounding for placed avatars in the full world
-  (currently read as floating near the tree).
-- **UI-002 (polish)** — in-world interaction prompt (show "Press F — {name}" when near an NPC);
-  cheap, high polish, no new simulation.
+- **BARN-001 (art, unblocked)** — author a painted-wood-siding PBR map for the barn (the 15 KB
+  anchor prop has zero textures while 8 sibling props do) and bake it into `barn.glb`; the single
+  highest-impact fix toward the dream-loop 4.5/10 Tier-3 ceiling. Non-adult asset.
+- **WORLD-INPUT live-verify** — confirm gamepad stick direction with a real controller (buttons
+  already headless-verified); flip signs if inverted.
+- **AVATAR-001 (polish)** — contact shadow / grounding for placed avatars (read as floating near
+  the tree in the close-up).
 - **AC #8 / CHAR-002 / ART-002** — ONE clearly-adult master character (candidate Noir) through
   the full production pipeline, **only after** independent design review clears
   `ConfirmedAdult` + `VISUALLY_UNAMBIGUOUSLY_ADULT`. Gate-safe fail-closed state is already in
@@ -163,14 +190,16 @@ BUG-001 + AC #13/#22 evidence. Committed in `1a43379`: NPC 3D interaction AC #10
   → `gltf` GLB export (ART-001a path).
 
 ## Resume Instructions
-1. `git status` — confirm the PERF-001 slice is still uncommitted (or already committed if a
-   later session landed it).
-2. Build (0/0) + smoke (expect ~1311 PASS) + `bash run_perf.sh` (PERF baseline reproducible).
-3. If the user wants to continue: commit the PERF-001 green slice, then **AVATAR-001**
-   (grounding) / **UI-002** (interaction prompt) for polish, or **CHAR-002** (only after
-   design-review clearance — do NOT generate explicit adult art for the current roster; see
+1. `git status` — working tree should be **clean** (WORLD-INPUT + NSFW-GATE-002 committed).
+2. Build (0/0) + smoke (expect **1354 PASS**).
+3. Continue: **BARN-001** (author a barn PBR map — the highest-impact unblocked art fix) and/or
+   **WORLD-INPUT live-verify** (confirm gamepad stick direction on a real controller).
+   **CHAR-002 / ART-002** stays **gate-blocked** — do NOT generate explicit adult art for the
+   current roster until independent design review clears a clearly-adult character (see
    Known Problems #1).
 4. Do NOT re-introduce a hard toon/cel shader or a hand-rolled `LIGHT` dot product — the user's
    direction is soft/natural, and `LIGHT` in `fragment()` fails GPU compile.
-5. Keep the ERA source read-only; never delete user save files; keep the simulation as the single
+5. GodotSharp 4.7.0 binding: use `JoyAxis`/`JoyButton`/`Input.GetJoyAxis` (NOT
+   `JoypadAxis`/`JoypadButton` — those do not exist in this version).
+6. Keep the ERA source read-only; never delete user save files; keep the simulation as the single
    source of truth (3D is presentation).
