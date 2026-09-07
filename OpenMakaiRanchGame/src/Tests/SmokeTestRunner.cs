@@ -2159,9 +2159,19 @@ private static void TestParityMechanics(SmokeTestResult result)
 
         var lactation = new MilkEconomyService(state);
         var subject = state.Roster.Characters.First(character => character.Id == "rancher");
+
+        // Gate (new, fail-closed): minor is blocked from milk production even with a constitution.
+        subject.AdultEligibility = AdultEligibility.Minor;
+        subject.Milk.HasMilkConstitution = true;
+        subject.Talents.RemoveAll(t => t == "extreme_milk_pressure");
+        state.Mature.TotalMilkProduced = 0;
+        lactation.ProduceMilk(subject.Id);
+        Assert(result, state.Mature.TotalMilkProduced == 0, "milk production blocked for minor-coded character (fail-closed gate)");
+
+        // Original behaviour, now on a confirmed adult:
+        subject.AdultEligibility = AdultEligibility.ConfirmedAdult;
         subject.Milk.HasMilkConstitution = false;
         subject.Milk.CurrentAmount = 0;
-        subject.Talents.RemoveAll(t => t == "extreme_milk_pressure");
         state.Mature.TotalMilkProduced = 0;
         var milkBefore = state.Mature.TotalMilkProduced;
         lactation.ProduceMilk(subject.Id);

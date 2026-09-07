@@ -1,6 +1,6 @@
 # Kanban
 
-Updated 2026-09-06. Status is evidence-based; DONE applies only to the named scope. Long-term 3D remake remains incomplete. See `3D_REMAKE_PLAN.md` for execution details and `KNOWN_ISSUES.md` for defect evidence.
+Updated 2026-09-07. Status is evidence-based; DONE applies only to the named scope. Long-term 3D remake remains incomplete. See `3D_REMAKE_PLAN.md` for execution details and `KNOWN_ISSUES.md` for defect evidence.
 
 ## Done — baseline scope
 
@@ -23,13 +23,14 @@ Updated 2026-09-06. Status is evidence-based; DONE applies only to the named sco
 - **WORLD-003c (boot-world composition, authored scenes)** The boot world is an **authored scene** (`scenes/RanchWorld.tscn`) — scene instances, not runtime `Instantiate()`: the 3D greybox instance + the **existing** `Game.tscn` (2D management UI) instance on a CanvasLayer, both on the single shared `GameRoot` autoload — no second economy/clock/job path. `RanchWorldController` only switches the active presentation and routes input through the greybox's single `WorldInputGate` (open/closing management suspends/resumes world movement + camera + interaction safely; Esc returns to the world; in-world "Open Management UI" button is an authored TSCN `[connection]`). Also fixed two authored-scene defects: `CameraRig.Target` was never authored (camera never followed the player) — now `Player/CameraTarget` NodePath in the TSCN; the management button was unwired. `MainMenuController.GoToGameScene` routes to the composed boot world (exported `GameScenePath`). `TestRanchWorldComposition`: 23 dedicated smoke assertions. Full isolated smoke **1176 assertions PASS** on Godot 4.7.2 mono.
 - **WORLD-003d (first complete playable day, end-to-end)** The greybox is a live view for the **whole day**: `RanchGreyboxController` subscribes to `GameRoot.StateChanged` and re-derives daylight + roster automatically on every phase advance, assignment, mentorship, settlement, save, load, and new game — no manual refresh from any caller. `TestFullPlayableDay` proves one complete day on a single `GameRoot`: management assign → social mentorship → 3D live view → lighting across Morning/Afternoon/Evening/Night → settlement report → save/load round-trip (assignment, bond, morale, calendar intact; live view re-derives from the loaded state) → stale-generation rejection. 25 dedicated smoke assertions; also hardened `OnSharedStateChange` against a node freed without `_ExitTree` (self-detaches; closes an ObjectDisposedException regression). Full isolated smoke **1201 assertions PASS** on Godot 4.7.2 mono.
 - **AI-001 (stand-in navigation + bounded stuck recovery)** `StandInNavigationMath` (pure, Node-free, headless-testable: `StepToward`, `IsArrived`, `IsStuck` = no-progress detection, `Recover` = snap to anchor, deterministic `Tick`) + opt-in walk layer in `RosterRig` (`WalkSpeed` 0 = original snap behavior the suite asserts; > 0 = stand-ins *walk* to their logical anchor each frame, bounded by `ArrivalTolerance` + `MinProgress` with bounded stuck recovery; `GetAvatar`/`GetTarget` for clean testing). Presentation only — reads the shared assignment, computes no work, never leaves the greybox bounds. `TestStandInNavigation`: 15 assertions (pure-math contract + one integration test driving the RosterRig in walk mode to prove a stand-in reaches its anchor within a bounded frame budget, in-bounds). Full isolated smoke **1216 assertions PASS** on Godot 4.7.2 mono.
+- **UI-001 (management playthrough + narrow-viewport coverage)** Full management playthrough via the **real** UI shell (sidebar nav buttons + End Day button) and narrow-viewport compact-nav coverage. Fixed a real reachability defect: `hiddenScreens` hid 7 screens from **both** nav bars, but 3 of them (Save/Load, Settings, Milk) had no contextual entry point — `settings` was unreachable from anywhere in the game; now only screens with a guaranteed contextual path (report/visit/training/mental) stay hidden, while gated-but-nav-reachable screens (combat/research/milk) show as locked and are still reachable in the compact bar. Added a read-only `CurrentScreen` accessor. `TestManagementPlaythroughAndCompactNav`: 15 dedicated smoke assertions (sidebar nav navigates to the right screen, End Day button → report screen, compact bar visible + 13 of 13 management shortcuts reachable, no duplicate nav for non-nav screens). Full isolated smoke **1231 assertions PASS** on Godot 4.7.2 mono.
 
 ## Next — priority order
 
 Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe`. `launch.py` auto-discovers it (rejects the 198 KB `*_console.exe` stub by size, prefers the highest 4.7.x). No `GODOT_BIN` needed.
 
 1. **CHAR-002 / ART-002 (gate-blocked)** One real character (candidate: Noir) — master source/context review, non-explicit identity references, .blend/GLB + material/rig/export validation, shared Godot toon prototype. Gate-safe: only `ConfirmedAdult` after **independent design review**; no age renumbering. Blocked: `data/characters.json` has no `AdultEligibility` field, no ConfirmedAdult character, no design review yet. Needs CHAR-001 (done) + ComfyUI asset generation + design clearance.
-2. **UI-001 (ready)** Full management visual/action playthrough and narrow-viewport coverage.
+2. **MORPH-001 / ANIM-001** Gameplay-to-visual curves + shared rig/animation, once CHAR-002 is unblocked.
 
 ## Ready after prerequisites
 
@@ -45,7 +46,7 @@ Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_w
 - **CORE-004** Settlement idempotency, effective-job semantics and report ledger tests.
 - **TOOLS-002** Raw MCP request limits/authentication/development-only export policy; do not equate adapter policy with endpoint security.
 - **TOOLS-003** Isolate engine editor-shutdown warning; no engine upgrade mixed into game work.
-- **UI-001** Full management visual/action playthrough and narrow-viewport coverage.
+- **UI-001 (done)** Management playthrough + narrow-viewport coverage shipped — see Done list.
 - **BUG-001 (fixed)** CS8604 in UiShellController.Screens.cs:3598 (nullable Path.Combine path1) resolved with `?? Directory.GetCurrentDirectory()` fallback; clean `--no-incremental` build now 0 warnings / 0 errors.
 - **DATA-004** Replace placeholder ContentValidator with actual bounded JSON/reference validation.
 - **PARITY-001** Original formula/fixture comparison matrix; no blanket parity claims.
