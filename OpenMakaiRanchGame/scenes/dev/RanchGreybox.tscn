@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=32 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -15,6 +15,10 @@
 [ext_resource type="PackedScene" path="res://assets/3d/water_trough.glb" id="13_trough"]
 [ext_resource type="PackedScene" path="res://assets/3d/tree_broadleaf.glb" id="14_btree"]
 [ext_resource type="PackedScene" path="res://assets/3d/path_stones.glb" id="15_stones"]
+[ext_resource type="PackedScene" path="res://assets/3d/signpost.glb" id="16_sign"]
+[ext_resource type="PackedScene" path="res://assets/3d/crates_woodpile.glb" id="17_crates"]
+[ext_resource type="PackedScene" path="res://assets/3d/grass_tufts.glb" id="18_grass"]
+[ext_resource type="PackedScene" path="res://assets/3d/hedge.glb" id="19_hedge"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -154,6 +158,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 9)
 
 [node name="PathStones" parent="Scenery" instance=ExtResource("15_stones")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.6, 0, 5.5)
+
+[node name="Signpost" parent="Scenery" instance=ExtResource("16_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 12)
+
+[node name="Crates" parent="Scenery" instance=ExtResource("17_crates")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, -10.5)
+
+[node name="Grass_A" parent="Scenery" instance=ExtResource("18_grass")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 6)
+
+[node name="Grass_B" parent="Scenery" instance=ExtResource("18_grass")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -3)
+
+[node name="Hedge" parent="Scenery" instance=ExtResource("19_hedge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -14)
 
 [node name="Mesh" type="MeshInstance3D" parent="Station"]
 mesh = SubResource("station_mesh")

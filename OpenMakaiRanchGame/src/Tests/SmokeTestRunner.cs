@@ -1108,6 +1108,26 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 }
             }
             Assert(result, propsInBounds, "scenery props stay within the greybox bounds");
+            // ART-001d props: signpost, crates, grass tufts, hedge instantiated + in-bounds.
+            AssertNodeExists(result, greybox, "Scenery/Signpost", "scenery instantiates the signpost");
+            AssertNodeExists(result, greybox, "Scenery/Crates", "scenery instantiates the crates/woodpile");
+            AssertNodeExists(result, greybox, "Scenery/Grass_A", "scenery instantiates a grass tuft patch");
+            AssertNodeExists(result, greybox, "Scenery/Hedge", "scenery instantiates the hedge");
+            var propDNames = new[] { "Signpost", "Crates", "Grass_A", "Grass_B", "Hedge" };
+            bool propsDInBounds = true;
+            if (scenery is not null)
+            {
+                foreach (var pn in propDNames)
+                {
+                    var pnNode = scenery.GetNodeOrNull(pn) as Node3D;
+                    if (pnNode is not null)
+                    {
+                        var pp = pnNode.GlobalPosition;
+                        if (pp.X < -20 || pp.X > 20 || pp.Z < -15 || pp.Z > 15) propsDInBounds = false;
+                    }
+                }
+            }
+            Assert(result, propsDInBounds, "scenery props (d-batch) stay within the greybox bounds");
 
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.
