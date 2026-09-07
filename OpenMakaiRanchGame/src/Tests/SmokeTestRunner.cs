@@ -1151,6 +1151,42 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             var grassOrm = GD.Load<Texture2D>("res://assets/3d/grass_field_orm.png");
             Assert(result, grassOrm is not null && grassOrm.GetWidth() > 0, "grass ORM/roughness map is a valid authored PBR asset");
 
+            // ART-001f wood PBR: the wooden props (fences, signpost, crates, enclosure)
+            // carry the Material Maker painted-wood-siding material (albedo + normal)
+            // baked into each GLB's material slot — self-contained, so it survives
+            // instantiation regardless of node type. Verify the fence GLB exposes a
+            // standard material with an albedo + normal map.
+            var fenceGlb = GD.Load<PackedScene>("res://assets/3d/fence.glb");
+            Assert(result, fenceGlb is not null, "fence GLB authored PBR asset loads");
+            // The baked PBR material lives inside the GLB (glTF JSON chunk): at least one
+            // material slot must reference a baseColorTexture AND a normalTexture.
+            var woodOk = false; var woodNormal = false;
+            try
+            {
+                var bytes = Godot.FileAccess.Open("res://assets/3d/fence.glb", Godot.FileAccess.ModeFlags.Read);
+                if (bytes is not null)
+                {
+                    byte[] buf = bytes.GetBuffer((int)bytes.GetLength());
+                    bytes.Dispose();
+                    // GLB: 12B header, then chunk(len, type, payload). Chunk 0 = JSON.
+                    int len = buf[12] | buf[13] << 8 | buf[14] << 16 | buf[15] << 24;
+                    string json = System.Text.Encoding.UTF8.GetString(buf, 20, len);
+                    using var doc = System.Text.Json.JsonDocument.Parse(json);
+                    if (doc.RootElement.TryGetProperty("materials", out var mats))
+                    {
+                        foreach (var mat in mats.EnumerateArray())
+                        {
+                            if (mat.TryGetProperty("pbrMetallicRoughness", out var pbr)
+                                && pbr.TryGetProperty("baseColorTexture", out _)) woodOk = true;
+                            if (mat.TryGetProperty("normalTexture", out _)) woodNormal = true;
+                        }
+                    }
+                }
+            }
+            catch { }
+            Assert(result, woodOk, "fence GLB material slot carries a baked wood albedo texture");
+            Assert(result, woodNormal, "fence GLB material slot carries a baked wood normal map");
+
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.
             var controller = greybox as RanchGreyboxController;
