@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -19,9 +19,15 @@
 [ext_resource type="PackedScene" path="res://assets/3d/crates_woodpile.glb" id="17_crates"]
 [ext_resource type="PackedScene" path="res://assets/3d/grass_tufts.glb" id="18_grass"]
 [ext_resource type="PackedScene" path="res://assets/3d/hedge.glb" id="19_hedge"]
+[ext_resource type="Texture2D" path="res://assets/3d/ground_grass.png" id="20_grass"]
+[ext_resource type="PackedScene" path="res://assets/3d/pasture_boundary.glb" id="21_fenceloop"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
+
+[sub_resource type="StandardMaterial3D" id="ground_material"]
+albedo_texture = ExtResource("20_grass")
+roughness = 0.95
 
 [sub_resource type="BoxShape3D" id="ground_shape"]
 size = Vector3(40, 1, 30)
@@ -79,6 +85,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("ground_mesh")
+surface_material_override/0 = SubResource("ground_material")
 
 [node name="Collision" type="CollisionShape3D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -173,6 +180,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -3)
 
 [node name="Hedge" parent="Scenery" instance=ExtResource("19_hedge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -14)
+
+[node name="PastureFence" parent="Scenery" instance=ExtResource("21_fenceloop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Station"]
 mesh = SubResource("station_mesh")

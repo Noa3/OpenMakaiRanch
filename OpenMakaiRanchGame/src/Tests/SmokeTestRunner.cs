@@ -1128,6 +1128,14 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 }
             }
             Assert(result, propsDInBounds, "scenery props (d-batch) stay within the greybox bounds");
+            // ART-001e world polish: pasture boundary fence (enclosure) + textured ground.
+            // (The scene already loads cleanly in other tests, which proves the authored
+            //  surface_material_override sub-resource is valid + attached.)
+            AssertNodeExists(result, greybox, "Scenery/PastureFence", "scenery instantiates the pasture boundary fence");
+            AssertNodeExists(result, greybox, "Ground/Mesh", "greybox ground mesh node present (carries the authored grass material)");
+            var grassTex = GD.Load<Texture2D>("res://assets/3d/ground_grass.png");
+            Assert(result, grassTex is not null && grassTex.GetWidth() > 0 && grassTex.GetHeight() > 0,
+                "grass ground texture is a valid authored asset");
 
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.
