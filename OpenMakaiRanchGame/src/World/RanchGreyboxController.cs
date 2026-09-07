@@ -191,7 +191,7 @@ public partial class RanchGreyboxController : Node3D
         }
     }
 
-    private void HandleInteract()
+    public void HandleInteract()
     {
         if (_player is null)
         {
@@ -199,10 +199,37 @@ public partial class RanchGreyboxController : Node3D
         }
 
         var generation = ResolveGeneration();
+        var (bestDistance, nearestStation, nearestAvatar, label) = FindNearestInteractable();
 
-        // Nearest interactable target within range: station or NPC avatar.
+        if (bestDistance > InteractionRange)
+        {
+            return; // no target in range
+        }
+
+        bool ok = nearestStation
+            ? _station!.Activate(new WorldInteractionContext(_station.TargetId, generation))
+            : nearestAvatar!.Activate(new WorldInteractionContext(nearestAvatar.CharacterId!, generation));
+
+        if (_prompt is not null)
+        {
+            _prompt.Text = ok ? $"{label}: done" : $"{label}: unavailable";
+            _promptCooldown = 1.5f; // hold the result message briefly (UI-002)
+        }
+    }
+
+    /// <summary>
+    /// Find the nearest in-range interactable (station or NPC avatar). Returns
+    /// (distance, isStation, avatar, label). distance > InteractionRange when none in range.
+    /// </summary>
+    private (float distance, bool station, CharacterAvatar3D? avatar, string label) FindNearestInteractable()
+    {
+        if (_player is null)
+        {
+            return (float.MaxValue, false, null, string.Empty);
+        }
+
         var bestDistance = float.MaxValue;
-        var nearestStation = false;
+        bool nearestStation = false;
         CharacterAvatar3D? nearestAvatar = null;
         string label = string.Empty;
 
@@ -229,8 +256,6 @@ public partial class RanchGreyboxController : Node3D
                 {
                     var avatar = Roster.GetAvatar(id);
                     if (avatar is null || !avatar.IsInteractable) continue;
-                    // Bind dispatcher lazily (headless tests that skip _Ready can still
-                    // interact by setting Dispatcher explicitly beforehand).
                     if (avatar.Dispatcher is null)
                     {
                         avatar.Dispatcher = new GameRootCommandDispatcher();
@@ -247,19 +272,29 @@ public partial class RanchGreyboxController : Node3D
             }
         }
 
-        if (bestDistance > InteractionRange)
+        return (bestDistance, nearestStation, nearestAvatar, label);
+    }
+
+    // ── UI-002: in-world interaction prompt ──────────────────────────────
+
+    private float _promptCooldown;
+
+    public override void _Process(double delta)
+    {
+        if (_prompt is null || _player is null) return;
+
+        // After a successful/failed interaction, hold the "done"/"unavailable"
+        // message briefly, then return to the proximity prompt.
+        if (_promptCooldown > 0f)
         {
-            return; // no target in range
+            _promptCooldown -= (float)delta;
+            return;
         }
 
-        bool ok = nearestStation
-            ? _station!.Activate(new WorldInteractionContext(_station.TargetId, generation))
-            : nearestAvatar!.Activate(new WorldInteractionContext(nearestAvatar.CharacterId!, generation));
-
-        if (_prompt is not null)
-        {
-            _prompt.Text = ok ? $"{label}: done" : $"{label}: unavailable";
-        }
+        var (distance, isStation, avatar, label) = FindNearestInteractable();
+        _prompt.Text = distance <= InteractionRange
+            ? $"Press F — {label}"
+            : string.Empty;
     }
 
     private ulong ResolveGeneration()

@@ -1104,6 +1104,43 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             npcAvatar.Free();
         }
 
+        // ---- UI-002: in-world interaction prompt ("Press F — {name}") ----
+        // The controller shows a proximity prompt for the nearest in-range interactable
+        // (station or NPC) before the press, then a brief "done"/"unavailable" result.
+        var promptCtrl = new RanchGreyboxController { InteractionRange = 3f };
+        var promptPlayer = new ThirdPersonPlayerController { Name = "Player", Position = new Vector3(0f, 0f, 0f) };
+        var promptLayer = new CanvasLayer { Name = "PromptLayer" };
+        var promptLabel = new Label { Name = "Prompt", Text = "placeholder" };
+        promptLayer.AddChild(promptLabel);
+        var promptStation = new WorldStation { Name = "Station", Label = "Workbench", Position = new Vector3(2f, 0f, 0f) };
+        var promptCalls = new System.Collections.Generic.List<WorldCommand>();
+        promptStation.Dispatcher = new RecordingDispatcher(promptCalls);
+        promptCtrl.AddChild(promptPlayer);
+        promptCtrl.AddChild(promptLayer);
+        promptCtrl.AddChild(promptStation);
+        try
+        {
+            // Wire (headless test drives _Ready manually).
+            promptCtrl._Ready();
+            // In range → proximity prompt shows the nearest target's name.
+            promptCtrl._Process(0.016);
+            Assert(result, promptLabel.Text == "Press F — Workbench",
+                "UI-002: proximity prompt shows 'Press F — {name}' for the nearest in-range station");
+
+            // After an interaction, the result message holds briefly.
+            promptCtrl.HandleInteract();
+            Assert(result, promptLabel.Text == "Workbench: done",
+                "UI-002: interaction result message shows on the prompt");
+            // While the cooldown is active, _Process holds the result message.
+            promptCtrl._Process(0.016);
+            Assert(result, promptLabel.Text == "Workbench: done",
+                "UI-002: result message holds during cooldown before returning to the proximity prompt");
+        }
+        finally
+        {
+            promptCtrl.Free();
+        }
+
         // ---- Ranch greybox scene loads and exposes the expected node contract ----
         var scene = GD.Load<PackedScene>("res://scenes/dev/RanchGreybox.tscn");
         Assert(result, scene is not null, "ranch greybox scene loads");
