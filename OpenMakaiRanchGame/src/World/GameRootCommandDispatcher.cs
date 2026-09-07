@@ -49,6 +49,8 @@ public sealed class GameRootCommandDispatcher : IWorldCommandDispatcher
                 return game.TryCompleteBondEvent(characterId, context.ExpectedGeneration);
             case WorldCommandKind.ShopBuy:
                 return game.TryBuyItem(characterId, 1, context.ExpectedGeneration);
+            case WorldCommandKind.Recruit:
+                return game.TryRecruit(context.ExpectedGeneration);
             default:
                 return false;
         }

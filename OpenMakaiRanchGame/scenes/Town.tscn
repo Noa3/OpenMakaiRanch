@@ -52,6 +52,20 @@ mesh = SubResource("counter_mesh")
 [node name="Collision" type="CollisionShape3D" parent="ShopCounter"]
 shape = SubResource("counter_shape")
 
+[node name="GuildCounter" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.55, -6)
+script = ExtResource("1_station")
+TargetId = "STATION_TOWN_GUILD"
+Label = "Guild (Recruit)"
+CommandKind = 4
+CommandTargetId = ""
+
+[node name="Mesh" type="MeshInstance3D" parent="GuildCounter"]
+mesh = SubResource("counter_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="GuildCounter"]
+shape = SubResource("counter_shape")
+
 [node name="Scenery" type="Node3D" parent="."]
 
 [node name="Signpost" parent="Scenery" instance=ExtResource("2_sign")]

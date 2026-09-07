@@ -39,5 +39,7 @@ public enum WorldCommandKind
     /// <summary>Complete <see cref="WorldCommand.TargetId"/> (a bond event id).</summary>
     BondEvent,
     /// <summary>Buy one unit of <see cref="WorldCommand.TargetId"/> (an item id) at the town shop counter.</summary>
-    ShopBuy
+    ShopBuy,
+    /// <summary>Hire the current recruitment offer at the town guild counter (existing <c>RecruitmentService</c>).</summary>
+    Recruit
 }

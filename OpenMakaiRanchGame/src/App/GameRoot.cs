@@ -381,6 +381,23 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool TryRecruit(ulong expectedGeneration)
+	{
+		if (expectedGeneration != StateGeneration)
+		{
+			return false;
+		}
+
+		// Single roster: the recruitment service owns the spend + roster add. The world path adds no reward math.
+		if (!Recruitment.HireOffer())
+		{
+			return false;
+		}
+
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool LoadSlot(int slot)
 	{
 		var loaded = Save.Load(slot);

@@ -65,6 +65,7 @@ public static class SmokeTestRunner
             TestWorldGreybox(result);
             TestWorldSharedSimulation(result);
             TestTownShopCounter(result);
+            TestTownGuildCounter(result);
             TestTownSceneIsLive(result);
             TestCharacterAvatar(result);
             TestSoftShading(result);
@@ -1475,6 +1476,75 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 var staleGeneration = root.StateGeneration - 1;
                 var staleOk = station.Activate(new WorldInteractionContext(item.Id, staleGeneration));
                 Assert(result, !staleOk, "town purchase with a stale generation is rejected");
+            }
+            finally
+            {
+                if (broke.IsInsideTree())
+                    broke.GetParent()?.RemoveChild(broke);
+                broke.Free();
+            }
+        }
+        finally
+        {
+            if (station.IsInsideTree())
+                station.GetParent()?.RemoveChild(station);
+            station.Free();
+            root.NewGame();
+        }
+    }
+
+    private static void TestTownGuildCounter(SmokeTestResult result)
+    {
+        // WORLD-TOWN-002: a guild/recruitment counter must hire through the SAME RecruitmentService
+        // the management UI uses, via the production GameRootCommandDispatcher -> GameRoot boundary.
+        // No second roster path.
+        var root = GameRoot.Instance;
+        root.NewGame();
+
+        var station = new WorldStation
+        {
+            TargetId = "STATION_TOWN_GUILD",
+            Label = "Guild (Recruit)",
+            CommandKind = WorldCommandKind.Recruit,
+            CommandTargetId = string.Empty,
+        };
+        try
+        {
+            station.Dispatcher = new GameRootCommandDispatcher();
+            Assert(result, station.IsAvailable, "town guild counter available with production dispatcher");
+
+            var goldBefore = root.State.Economy.Gold;
+            var rosterBefore = root.State.Roster.Characters.Count;
+
+            // Shared roster: the world hire spends the recruit cost and adds a character, exactly like the UI.
+            var ok = station.Activate(new WorldInteractionContext(string.Empty, root.StateGeneration));
+            Assert(result, ok, "town guild counter hires through GameRoot");
+            Assert(result, root.State.Roster.Characters.Count == rosterBefore + 1,
+                "town hire adds a character to the same roster the UI reads");
+            Assert(result, root.State.Economy.Gold == goldBefore - RecruitmentService.DefaultRecruitCost,
+                "town hire spends the recruit cost (single economy)");
+
+            // Insufficient funds must be denied with no state mutation (fail-closed boundary).
+            var broke = new WorldStation
+            {
+                TargetId = "STATION_TOWN_GUILD_BROKE",
+                Label = "Guild (Recruit, broke)",
+                CommandKind = WorldCommandKind.Recruit,
+            };
+            try
+            {
+                broke.Dispatcher = new GameRootCommandDispatcher();
+                root.State.Economy.Gold = 0;
+                var brokeRoster = root.State.Roster.Characters.Count;
+                var brokeOk = broke.Activate(new WorldInteractionContext(string.Empty, root.StateGeneration));
+                Assert(result, !brokeOk, "town hire with no gold is denied");
+                Assert(result, root.State.Roster.Characters.Count == brokeRoster && root.State.Economy.Gold == 0,
+                    "denied town hire mutates neither roster nor gold");
+
+                // Stale generation must be rejected (StateGeneration guard) even via the world guild path.
+                root.NewGame(); // StateGeneration++
+                var staleOk = station.Activate(new WorldInteractionContext(string.Empty, root.StateGeneration - 1));
+                Assert(result, !staleOk, "town hire with a stale generation is rejected");
             }
             finally
             {
