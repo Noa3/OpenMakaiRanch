@@ -9,24 +9,26 @@ corners.** Preserve the existing C# simulation, services, save system, and ERA-i
 3D is *presentation* over the same simulation, not a second economy/clock.
 
 ## Current Task
-Landing **WORLD-TOWN-001** — the first original area beyond the ranch made physically present:
-a walkable **town 3D scene** (`scenes/Town.tscn`) with a **shop counter** wired to the *existing*
-`ShopService` (single economy, no second shop). This is the top READY world-design card from
-`docs/WORLD_DESIGN.md` (the area-inventory + world Kanban authored earlier this branch). This
-session also shipped WORLD-CAMERA (mouse/keyboard camera control — AC #6) and the WORLD_DESIGN
-area inventory/plan. Prior: NSFW-GATE-002 (gate negative tests), WORLD-INPUT (gamepad), UI-002,
-PERF-001, SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline
-(scene 4.5/10, **Tier-2 ceiling — blocked by greybox asset fidelity, NOT lighting**).
+WORLD-TOWN-001 + 002 landed (both green + committed): the **town** — the original's
+`街にお出かけ` area — is now a real 3D area (`scenes/Town.tscn`) with **two service POIs**, each
+wired to the *existing* simulation (no second economy/roster): a **shop counter** → `ShopService`
+(buy) and a **guild counter** → `RecruitmentService` (hire). Next READY card: **WORLD-TOWN-003**
+= walkable traversal between ranch + town (self-directed area access). This session also shipped
+WORLD-CAMERA (mouse/keyboard camera control — AC #6) + the WORLD_DESIGN area inventory/plan.
+Prior: NSFW-GATE-002 (gate negative tests), WORLD-INPUT (gamepad), UI-002, PERF-001,
+SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline (4.5/10,
+**Tier-2 ceiling — blocked by greybox asset fidelity, NOT lighting**).
 
 ## Current Git Branch
 `dev`
 
 ## Current Commit
-`6409eaf` — `feat: WORLD-CAMERA mouse/keyboard camera control (look signs verified)` (latest pre-town).
+`77172b0` — `feat: WORLD-TOWN-002 town guild/recruitment counter wired to existing RecruitmentService` (HEAD).
+`e7e40b2` — `feat: WORLD-TOWN-001 town area + shop counter wired to existing ShopService`.
 `dca6a34` — `docs: WORLD_DESIGN area inventory + design + world Kanban`.
-`c46c43d` — `test: NSFW-GATE-002 ...`. `427ff5d` — WORLD-INPUT. `67f4e19` dream-loop. `590cf73` UI-002.
-`454c7fc` PERF-001. `c7417cb` BUG-001. `1a43379` NPC AC #10. `87400b6` Wood-PBR.
-WORLD-TOWN-001 (this slice) is staged below once committed.
+`6409eaf` — WORLD-CAMERA. `acf725e` — handoff. `427ff5d` WORLD-INPUT. `c46c43d` NSFW-GATE-002.
+`67f4e19` dream-loop. `590cf73` UI-002. `454c7fc` PERF-001. `c7417cb` BUG-001. `1a43379` NPC AC #10.
+`87400b6` Wood-PBR.
 
 ## Completed Recently
 0. **WORLD-TOWN-001 (town + shop counter → existing economy)** — `scenes/Town.tscn` + new
