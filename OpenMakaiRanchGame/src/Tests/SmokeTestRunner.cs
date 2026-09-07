@@ -73,6 +73,7 @@ public static class SmokeTestRunner
             TestRanchWorldComposition(result);
             TestFullPlayableDay(result);
             TestStandInNavigation(result);
+            TestManagementPlaythroughAndCompactNav(result);
         }
         catch (Exception exception)
         {
@@ -1877,6 +1878,100 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             }
             rosterRig.Free();
             game.NewGame();
+        }
+    }
+
+    private static void TestManagementPlaythroughAndCompactNav(SmokeTestResult result)
+    {
+        // UI-001: full management playthrough + narrow-viewport (compact bar) coverage.
+        // Drives the real navigation buttons (not just ShowScreen) so the narrow-viewport
+        // compact bar is proven reachable and functional — the exact gap in KNOWN_ISSUES.
+        var root = GameRoot.Instance;
+        if (root is null || !GodotObject.IsInstanceValid(root))
+        {
+            Assert(result, false, "game root present for compact-nav playthrough");
+            return;
+        }
+        root.NewGame();
+
+        var scene = GD.Load<PackedScene>("res://scenes/Game.tscn");
+        if (scene is null)
+        {
+            Assert(result, false, "game scene loads for compact-nav playthrough");
+            return;
+        }
+        var game = scene.Instantiate();
+        try
+        {
+            root.GetTree().Root.AddChild(game);
+            var shell = game.GetNodeOrNull<UiShellController>("UiShell");
+            Assert(result, shell is not null, "ui shell present for compact-nav playthrough");
+            if (shell is null)
+            {
+                return;
+            }
+
+            // Enter a management screen (leaves the full-screen title), then collapse to the
+            // narrow-viewport layout via the Menu (nav-collapse) button.
+            shell.ShowScreen("ranch");
+            var menuButton = game.GetNodeOrNull<Button>("UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/MenuButton");
+            Assert(result, menuButton is not null, "menu (nav-collapse) button present");
+            menuButton?.EmitSignal(BaseButton.SignalName.Pressed);
+
+            var compactScroll = game.GetNodeOrNull<ScrollContainer>("UiShell/Margin/RootPanel/Root/CompactNavigationScroll");
+            var compactBar = game.GetNodeOrNull<HBoxContainer>("UiShell/Margin/RootPanel/Root/CompactNavigationScroll/CompactNavigation");
+            var sidebar = game.GetNodeOrNull<PanelContainer>("UiShell/Margin/RootPanel/Root/Body/NavPanel");
+            Assert(result, compactScroll?.Visible == true, "narrow viewport shows the compact navigation bar");
+            Assert(result, sidebar?.Visible == false, "narrow viewport hides the full sidebar");
+            Assert(result, compactBar is not null, "compact navigation bar is authored");
+            if (compactBar is null)
+            {
+                return;
+            }
+
+            // The compact bar's management shortcuts must be reachable in narrow mode.
+            var visibleShortcuts = new[]
+            {
+                "OverviewCompactButton", "CharactersCompactButton", "ScheduleCompactButton",
+                "TownCompactButton", "ShopCompactButton", "AdventureCompactButton",
+                "MilestonesCompactButton", "ResearchCompactButton", "BondCompactButton", "PetsCompactButton",
+                "SaveLoadCompactButton", "SettingsCompactButton", "MilkCompactButton"
+            };
+            foreach (var name in visibleShortcuts)
+            {
+                var button = compactBar.GetNodeOrNull<Button>(name);
+                Assert(result, button is not null && button.Visible,
+                    $"compact shortcut '{name}' is present and visible in the narrow viewport");
+            }
+
+            // A real narrow-viewport playthrough: press compact shortcuts and verify navigation.
+            compactBar.GetNodeOrNull<Button>("ScheduleCompactButton")?.EmitSignal(BaseButton.SignalName.Pressed);
+            Assert(result, shell.CurrentScreen == "schedule", "compact schedule shortcut navigates to the schedule screen");
+
+            compactBar.GetNodeOrNull<Button>("TownCompactButton")?.EmitSignal(BaseButton.SignalName.Pressed);
+            Assert(result, shell.CurrentScreen == "town", "compact town shortcut navigates to the town screen");
+
+            compactBar.GetNodeOrNull<Button>("OverviewCompactButton")?.EmitSignal(BaseButton.SignalName.Pressed);
+            Assert(result, shell.CurrentScreen == "ranch", "compact overview shortcut returns to the ranch overview");
+
+            // The compact top bar still drives the shared simulation (End Day advances the calendar).
+            var endDay = game.GetNodeOrNull<Button>("UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/EndDayButton");
+            Assert(result, endDay is not null, "end day button present in the compact top bar");
+            var dayBefore = root.State.Calendar.Day;
+            for (var i = 0; i < 4 && root.State.Calendar.Day == dayBefore; i++)
+            {
+                endDay?.EmitSignal(BaseButton.SignalName.Pressed);
+            }
+            Assert(result, root.State.Calendar.Day > dayBefore, "compact end-day advances the shared calendar");
+        }
+        finally
+        {
+            if (game.IsInsideTree())
+            {
+                game.GetTree().Root.RemoveChild(game);
+            }
+            game.Free();
+            root.NewGame();
         }
     }
 

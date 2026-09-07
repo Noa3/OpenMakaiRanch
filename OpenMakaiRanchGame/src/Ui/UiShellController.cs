@@ -214,6 +214,9 @@ public partial class UiShellController : Control
 		}
 	}
 
+	/// <summary>The screen currently rendered by the shell. Read-only; for tests and tooling.</summary>
+	public string CurrentScreen => _currentScreen;
+
 	public void ShowScreen(string screenId)
 	{
 		if (!CanEnterScreen(screenId, out var blockedReason))
@@ -834,7 +837,11 @@ public partial class UiShellController : Control
 
 	private void UpdateNavigationState()
 	{
-		var hiddenScreens = new HashSet<string> { "training", "milk", "mental", "visit", "report", "saveload", "settings", "character_creation", "prologue", "victory", "title" };
+		// Only hide screens that have a guaranteed contextual entry point (report, visit,
+		// training, mental) or are full-screen modes (title, character_creation, prologue,
+		// victory). saveload / settings have NO other entry point and milk is gated (like
+		// combat / research, it must show as locked, not vanish) — so all three stay reachable.
+		var hiddenScreens = new HashSet<string> { "report", "visit", "training", "mental", "character_creation", "prologue", "victory", "title" };
 		foreach (var pair in _navButtons)
 		{
 			UpdateNavigationButton(pair.Value, pair.Key, hiddenScreens.Contains(pair.Key));
