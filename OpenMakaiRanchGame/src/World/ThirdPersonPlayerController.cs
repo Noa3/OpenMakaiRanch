@@ -70,8 +70,10 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
     }
 
     /// <summary>
-    /// Compute the input vector for this frame from the InputMap. Returns (0,0) when the
-    /// input gate is closed (UI owns input or the window lost focus).
+    /// Compute the input vector for this frame. Returns (0,0) when the input gate is
+    /// closed (UI owns input or the window lost focus). Blends keyboard actions with
+    /// the gamepad left stick (read directly, the canonical pattern for directional
+    /// analog input) and takes the larger magnitude per axis so either device works.
     /// </summary>
     public Vector2 ReadMovementInput()
     {
@@ -80,8 +82,18 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
             return Vector2.Zero;
         }
 
-        var forward = (Input.IsActionPressed("move_forward") ? 1f : 0f) - (Input.IsActionPressed("move_backward") ? 1f : 0f);
-        var strafe = (Input.IsActionPressed("move_right") ? 1f : 0f) - (Input.IsActionPressed("move_left") ? 1f : 0f);
+        var keyboardForward = (Input.IsActionPressed("move_forward") ? 1f : 0f) - (Input.IsActionPressed("move_backward") ? 1f : 0f);
+        var keyboardStrafe  = (Input.IsActionPressed("move_right") ? 1f : 0f) - (Input.IsActionPressed("move_left") ? 1f : 0f);
+
+        // Gamepad left stick, read directly. Godot convention: LeftY negative = up (forward),
+        // LeftX positive = right (strafe right).
+        var stickForward = -Mathf.Clamp(Input.GetJoyAxis(0, JoyAxis.LeftY), -1f, 1f);
+        var stickStrafe  =  Mathf.Clamp(Input.GetJoyAxis(0, JoyAxis.LeftX), -1f, 1f);
+
+        // Per axis take the input with the larger magnitude so keyboard and stick don't fight.
+        var forward = Mathf.Abs(stickForward) > Mathf.Abs(keyboardForward) ? stickForward : keyboardForward;
+        var strafe  = Mathf.Abs(stickStrafe)  > Mathf.Abs(keyboardStrafe)  ? stickStrafe  : keyboardStrafe;
+
         var input = new Vector2(strafe, forward);
         if (input.Length() > 1f)
         {

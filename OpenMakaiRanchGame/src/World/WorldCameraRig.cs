@@ -12,7 +12,7 @@ namespace OpenMakaiRanch.World;
 /// </summary>
 public partial class WorldCameraRig : Node3D
 {
-    [Export] public float LookSensitivity { get; set; } = 0.0025f;
+    [Export] public float LookRate { get; set; } = 1.5f;
     [Export] public float ZoomSensitivity { get; set; } = 1.5f;
     [Export] public float RecenterSpeed { get; set; } = 6f;
 
@@ -80,23 +80,18 @@ public partial class WorldCameraRig : Node3D
             Pitch = Mathf.Lerp(Pitch, Mathf.DegToRad(30f), t);
         }
 
-        // Mouse look (only when the world owns input — the input gate is checked by the scene
-        // via WorldInputGate; here we only react to the mapped actions).
-        if (Input.IsActionJustPressed("camera_look_up"))
+        // Camera look — driven by the gamepad right stick read directly (the canonical
+        // pattern for analog look). Full deflection rotates at LookRate rad/s.
+        var lookUp   = -Mathf.Clamp(Input.GetJoyAxis(0, JoyAxis.RightY), -1f, 1f);
+        var lookLeft =  Mathf.Clamp(Input.GetJoyAxis(0, JoyAxis.RightX), -1f, 1f);
+
+        if (lookUp != 0f)
         {
-            Pitch = WorldCameraMath.ClampPitch(Pitch + LookSensitivity);
+            Pitch = WorldCameraMath.ClampPitch(Pitch + lookUp * LookRate * dt);
         }
-        if (Input.IsActionJustPressed("camera_look_down"))
+        if (lookLeft != 0f)
         {
-            Pitch = WorldCameraMath.ClampPitch(Pitch - LookSensitivity);
-        }
-        if (Input.IsActionJustPressed("camera_look_left"))
-        {
-            Yaw += LookSensitivity;
-        }
-        if (Input.IsActionJustPressed("camera_look_right"))
-        {
-            Yaw -= LookSensitivity;
+            Yaw += lookLeft * LookRate * dt;
         }
 
         if (Input.IsActionJustPressed("camera_zoom_in"))

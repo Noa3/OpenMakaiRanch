@@ -1291,10 +1291,65 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 Assert(result, controller.Station is not null && controller.Station.Dispatcher is not null,
                     "greybox station has a production dispatcher bound");
             }
+
+            // WORLD-INPUT (controller support): the world actions must be registered and the
+            // discrete gamepad buttons must be bound to them (movement/look are analog and
+            // read directly via Input.GetJoyAxis, so they have no InputMap events by design).
+            var bootstrap = greybox.GetNodeOrNull("WorldInputBootstrap") as WorldInputBootstrap;
+            Assert(result, bootstrap is not null, "greybox has a world input bootstrap node");
+            if (bootstrap is not null)
+            {
+                bootstrap._Ready(); // _Ready fires on tree entry; invoke directly so the mapping is set headlessly.
+                AssertGamepadInputMap(result);
+            }
         }
         finally
         {
             greybox.Free();
+        }
+    }
+
+    /// <summary>
+    /// Verifies the world InputMap: every world action is registered, and each discrete
+    /// gamepad button is bound to its action (movement/look are analog, read directly via
+    /// Input.GetJoyAxis, so they legitimately have no InputMap button events).
+    /// </summary>
+    private static void AssertGamepadInputMap(SmokeTestResult result)
+    {
+        // The actions that must exist (keyboard + gamepad).
+        var requiredActions = new[]
+        {
+            "move_forward", "move_backward", "move_left", "move_right",
+            "interact", "camera_recenter", "camera_zoom_in", "camera_zoom_out"
+        };
+        foreach (var action in requiredActions)
+        {
+            Assert(result, InputMap.HasAction(action), $"world input: action '{action}' is registered");
+        }
+
+        // Discrete gamepad buttons must be bound to their actions.
+        var buttonBindings = new (string action, Godot.JoyButton button)[]
+        {
+            ("interact",        Godot.JoyButton.A),
+            ("interact",        Godot.JoyButton.Start),
+            ("camera_recenter", Godot.JoyButton.B),
+            ("camera_zoom_in",  Godot.JoyButton.LeftShoulder),
+            ("camera_zoom_out", Godot.JoyButton.RightShoulder)
+        };
+        foreach (var (action, button) in buttonBindings)
+        {
+            var events = InputMap.ActionGetEvents(action);
+            bool found = false;
+            foreach (var ev in events)
+            {
+                if (ev is InputEventJoypadButton jb && jb.ButtonIndex == button)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            Assert(result, found,
+                $"world input: gamepad {button} is bound to action '{action}'");
         }
     }
 

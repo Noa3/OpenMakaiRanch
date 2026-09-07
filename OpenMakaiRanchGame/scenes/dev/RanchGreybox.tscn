@@ -205,7 +205,7 @@ shape = SubResource("player_shape")
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("3_rig")
-LookSensitivity = 0.0025
+LookRate = 1.5
 ZoomSensitivity = 1.5
 RecenterSpeed = 6.0
 Yaw = -1.5708
