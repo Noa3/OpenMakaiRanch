@@ -1077,6 +1077,16 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 ? barn.FindChildren("*", "MeshInstance3D", true, false).Count
                 : 0;
             Assert(result, barnMeshes >= 1, "barn model exposes rendered meshes");
+            // ART-001b scenery: well, 3 trees, 2 fence segments instantiated + in-bounds.
+            var scenery = greybox.GetNodeOrNull("Scenery");
+            Assert(result, scenery is not null, "greybox has a Scenery node");
+            AssertNodeExists(result, greybox, "Scenery/Well", "scenery instantiates the well");
+            AssertNodeExists(result, greybox, "Scenery/Tree_A", "scenery instantiates trees");
+            AssertNodeExists(result, greybox, "Scenery/Fence_A", "scenery instantiates fence segments");
+            var wellNode = scenery is not null ? scenery.GetNodeOrNull("Well") as Node3D : null;
+            var wellPos = wellNode?.GlobalPosition ?? Vector3.Zero;
+            Assert(result, wellPos.X >= -20 && wellPos.X <= 20 && wellPos.Z >= -15 && wellPos.Z <= 15,
+                "scenery stays within the greybox bounds");
 
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.

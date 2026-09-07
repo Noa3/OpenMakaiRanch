@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -8,6 +8,9 @@
 [ext_resource type="Script" path="res://src/World/DaylightRig.cs" id="6_daylight"]
 [ext_resource type="Script" path="res://src/World/RosterRig.cs" id="7_roster"]
 [ext_resource type="PackedScene" path="res://assets/3d/barn.glb" id="8_barn"]
+[ext_resource type="PackedScene" path="res://assets/3d/fence.glb" id="9_fence"]
+[ext_resource type="PackedScene" path="res://assets/3d/tree.glb" id="10_tree"]
+[ext_resource type="PackedScene" path="res://assets/3d/well.glb" id="11_well"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -109,6 +112,26 @@ CommandTargetId = "JOB_MILK"
 
 [node name="Barn" parent="." instance=ExtResource("8_barn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9)
+
+[node name="Scenery" type="Node3D" parent="."]
+
+[node name="Well" parent="Scenery" instance=ExtResource("11_well")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -4)
+
+[node name="Tree_A" parent="Scenery" instance=ExtResource("10_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 2)
+
+[node name="Tree_B" parent="Scenery" instance=ExtResource("10_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 6)
+
+[node name="Tree_C" parent="Scenery" instance=ExtResource("10_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -8)
+
+[node name="Fence_A" parent="Scenery" instance=ExtResource("9_fence")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 8)
+
+[node name="Fence_B" parent="Scenery" instance=ExtResource("9_fence")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 4)
 
 [node name="Mesh" type="MeshInstance3D" parent="Station"]
 mesh = SubResource("station_mesh")
