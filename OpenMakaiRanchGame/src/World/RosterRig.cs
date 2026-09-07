@@ -31,6 +31,9 @@ public partial class RosterRig : Node3D
 
     public int AvatarCount => _avatars.Count;
 
+    /// <summary>Stable set of character ids currently placed (for iteration by the interaction layer).</summary>
+    public IEnumerable<string> AvatarIds => _avatars.Keys;
+
     /// <summary>The logical anchor a character's stand-in is steering to, or null if it has no target.</summary>
     public Godot.Vector3? GetTarget(string characterId)
     {
@@ -144,6 +147,8 @@ public partial class RosterRig : Node3D
         var profile = CharacterAvatarFactory.CreateProfile(definition);
         var avatar = CharacterAvatarFactory.BuildAvatar(profile);
         avatar.Name = $"Avatar_{characterId}";
+        avatar.CharacterId = characterId;
+        avatar.DisplayName = definition.DisplayName;
         AddChild(avatar);
         return avatar;
     }

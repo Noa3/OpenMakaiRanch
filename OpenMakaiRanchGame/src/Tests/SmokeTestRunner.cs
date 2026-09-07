@@ -1053,6 +1053,57 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             station.Free();
         }
 
+        // ---- NPC avatar interaction (AC #10) with a stub dispatcher ----
+        // The avatar is an IWorldInteractable like the station: it dispatches a mentorship
+        // command through the shared command boundary. Verify availability, dispatch contract,
+        // mentorship kind, double-activation guard, and the fail-closed (no dispatcher) case.
+        var npcDefinition = new CharacterDefinition { Id = "c_npc_test", DisplayName = "Test NPC", AdultEligibility = AdultEligibility.ConfirmedAdult };
+        var npcProfile = CharacterAvatarFactory.CreateProfile(npcDefinition);
+        var npcAvatar = CharacterAvatarFactory.BuildAvatar(npcProfile);
+        try
+        {
+            npcAvatar.CharacterId = "c_npc_test";
+            npcAvatar.DisplayName = npcProfile.DisplayName;
+
+            // Fail-closed: no dispatcher bound → not interactable, Activate rejected.
+            Assert(result, !npcAvatar.IsInteractable, "npc avatar is not interactable with no dispatcher bound");
+            Assert(result, (IWorldInteractable)npcAvatar is not { IsAvailable: true },
+                "npc avatar reports unavailable through IWorldInteractable with no dispatcher");
+            Assert(result, !npcAvatar.Activate(new WorldInteractionContext("c_npc_test", 7UL)),
+                "npc avatar Activate is rejected with no dispatcher bound");
+
+            // Bind a recording stub → becomes interactable, dispatches a mentorship.
+            var npcCalls = new System.Collections.Generic.List<WorldCommand>();
+            npcAvatar.Dispatcher = new RecordingDispatcher(npcCalls);
+            Assert(result, npcAvatar.IsInteractable, "npc avatar becomes interactable with a dispatcher");
+            Assert(result, ((IWorldInteractable)npcAvatar).IsAvailable,
+                "npc avatar reports available through IWorldInteractable");
+            Assert(result, ((IWorldInteractable)npcAvatar).TargetId == "c_npc_test",
+                "npc avatar exposes its character id as the interactable target");
+
+            var npcCtx = new WorldInteractionContext("c_npc_test", 7UL);
+            Assert(result, npcAvatar.Activate(npcCtx), "npc avatar dispatches a mentorship on activate");
+            Assert(result, npcCalls.Count == 1, "npc avatar records exactly one dispatched command");
+            Assert(result, npcCalls[0].Kind == WorldCommandKind.Mentorship,
+                "npc avatar dispatches a mentorship command kind");
+            Assert(result, npcCalls[0].TargetId == "c_npc_test",
+                "npc avatar dispatches its own character id as the target");
+            Assert(result, npcCtx.ExpectedGeneration == 7UL,
+                "npc avatar passes the expected generation through the context");
+
+            // Re-entrancy guard: BeginCommand while a command runs is rejected.
+            Assert(result, npcAvatar.InteractionGuard.BeginCommand(),
+                "npc guard accepts a manual command begin");
+            Assert(result, !npcAvatar.InteractionGuard.CanInteract,
+                "npc avatar is not interactable while a command is running");
+            npcAvatar.InteractionGuard.EndCommand();
+            Assert(result, npcAvatar.IsInteractable, "npc avatar is interactable again after the command ends");
+        }
+        finally
+        {
+            npcAvatar.Free();
+        }
+
         // ---- Ranch greybox scene loads and exposes the expected node contract ----
         var scene = GD.Load<PackedScene>("res://scenes/dev/RanchGreybox.tscn");
         Assert(result, scene is not null, "ranch greybox scene loads");

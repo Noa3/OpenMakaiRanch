@@ -1,4 +1,5 @@
 using Godot;
+using OpenMakaiRanch.World;
 
 namespace OpenMakaiRanch.Character;
 
@@ -12,9 +13,15 @@ namespace OpenMakaiRanch.Character;
 ///
 /// This node owns no simulation state. It reads only the profile (presentation parameters)
 /// and emits no reward/economy/bond signals. All gameplay effects flow through GameRoot.
+///
+/// NPC interaction (AC #10): the avatar implements <see cref="IWorldInteractable"/> exactly
+/// like <see cref="WorldStation"/>. When <see cref="CharacterId"/> and <see cref="Dispatcher"/>
+/// are set, <see cref="IWorldInteractable.Activate"/> dispatches a
+/// <see cref="WorldCommandKind.Mentorship"/> through the shared command boundary — the same
+/// path as the station. The avatar computes no rewards, bond, or economy itself.
 /// </summary>
 [GlobalClass]
-public partial class CharacterAvatar3D : Node3D
+public partial class CharacterAvatar3D : Node3D, IWorldInteractable
 {
     /// <summary>The presentation profile this avatar renders. Null → no geometry.</summary>
     [Export] public CharacterVisualProfile? Profile { get; set; }
@@ -40,6 +47,61 @@ public partial class CharacterAvatar3D : Node3D
     /// Plain property (not <c>[Export]</c>): a C# struct is not a Godot-serializable
     /// Variant, so it stays a code-only knob; the defaults are deterministic.</summary>
     public SoftShadingMath.SoftParameters? SoftParams { get; set; }
+
+    // ── NPC interaction (AC #10) — IWorldInteractable ─────────────────────
+
+    /// <summary>Roster character id this avatar represents. Null/empty → not interactable.</summary>
+    public string? CharacterId { get; set; }
+
+    /// <summary>Display name shown on the interaction prompt.</summary>
+    public string DisplayName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The dispatcher routing the command to GameRoot. The scene injects the production binding;
+    /// headless tests inject a stub. Null → the avatar is not interactable.
+    /// </summary>
+    public IWorldCommandDispatcher? Dispatcher { get; set; }
+
+    /// <summary>Per-avatar guard preventing double activation.</summary>
+    public WorldInteractionGuard InteractionGuard { get; } = new();
+
+    // IWorldInteractable members.
+    string IWorldInteractable.TargetId => CharacterId ?? string.Empty;
+    string IWorldInteractable.Label => DisplayName;
+    bool IWorldInteractable.IsAvailable => !string.IsNullOrEmpty(CharacterId) && Dispatcher is not null && InteractionGuard.CanInteract;
+    string? IWorldInteractable.UnavailableReason => Dispatcher is null ? "no command dispatcher bound" : string.Empty;
+
+    /// <summary>Convenience: true when the avatar can accept an interaction right now.</summary>
+    public bool IsInteractable =>
+        !string.IsNullOrEmpty(CharacterId) && Dispatcher is not null && InteractionGuard.CanInteract;
+
+    /// <summary>
+    /// Dispatch the mentorship interaction through the guard + command boundary. Returns the
+    /// command result (true = success). Rejects double activation and a missing dispatcher.
+    /// Mirrors <see cref="WorldStation.Activate"/>.
+    /// </summary>
+    public bool Activate(WorldInteractionContext context)
+    {
+        if (!IsInteractable || Dispatcher is null)
+        {
+            return false;
+        }
+
+        if (!InteractionGuard.BeginCommand())
+        {
+            return false;
+        }
+
+        try
+        {
+            var command = new WorldCommand(WorldCommandKind.Mentorship, CharacterId);
+            return Dispatcher.Dispatch(command, context);
+        }
+        finally
+        {
+            InteractionGuard.EndCommand();
+        }
+    }
 
     public override void _Ready()
     {

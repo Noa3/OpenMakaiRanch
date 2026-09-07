@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using OpenMakaiRanch.App;
+using OpenMakaiRanch.Character;
 
 namespace OpenMakaiRanch.World;
 
@@ -192,23 +193,72 @@ public partial class RanchGreyboxController : Node3D
 
     private void HandleInteract()
     {
-        if (_player is null || _station is null)
-        {
-            return;
-        }
-
-        var distance = _player.GlobalPosition.DistanceTo(_station.GlobalPosition);
-        if (distance > InteractionRange || !_station.IsAvailable)
+        if (_player is null)
         {
             return;
         }
 
         var generation = ResolveGeneration();
-        var context = new WorldInteractionContext(_station.TargetId, generation);
-        var ok = _station.Activate(context);
+
+        // Nearest interactable target within range: station or NPC avatar.
+        var bestDistance = float.MaxValue;
+        var nearestStation = false;
+        CharacterAvatar3D? nearestAvatar = null;
+        string label = string.Empty;
+
+        // Station
+        if (_station is not null && _station.IsAvailable)
+        {
+            var sd = _player.GlobalPosition.DistanceTo(_station.GlobalPosition);
+            if (sd <= InteractionRange && sd < bestDistance)
+            {
+                bestDistance = sd;
+                nearestStation = true;
+                nearestAvatar = null;
+                label = _station.Label;
+            }
+        }
+
+        // Nearest NPC avatar
+        if (Roster is not null)
+        {
+            var game = GameRoot.Instance;
+            if (game is not null && GodotObject.IsInstanceValid(game))
+            {
+                foreach (var id in Roster.AvatarIds)
+                {
+                    var avatar = Roster.GetAvatar(id);
+                    if (avatar is null || !avatar.IsInteractable) continue;
+                    // Bind dispatcher lazily (headless tests that skip _Ready can still
+                    // interact by setting Dispatcher explicitly beforehand).
+                    if (avatar.Dispatcher is null)
+                    {
+                        avatar.Dispatcher = new GameRootCommandDispatcher();
+                    }
+                    var ad = _player.GlobalPosition.DistanceTo(avatar.GlobalPosition);
+                    if (ad <= InteractionRange && ad < bestDistance)
+                    {
+                        bestDistance = ad;
+                        nearestStation = false;
+                        nearestAvatar = avatar;
+                        label = avatar.DisplayName;
+                    }
+                }
+            }
+        }
+
+        if (bestDistance > InteractionRange)
+        {
+            return; // no target in range
+        }
+
+        bool ok = nearestStation
+            ? _station!.Activate(new WorldInteractionContext(_station.TargetId, generation))
+            : nearestAvatar!.Activate(new WorldInteractionContext(nearestAvatar.CharacterId!, generation));
+
         if (_prompt is not null)
         {
-            _prompt.Text = ok ? $"{_station.Label}: done" : $"{_station.Label}: {_station.UnavailableReason}";
+            _prompt.Text = ok ? $"{label}: done" : $"{label}: unavailable";
         }
     }
 
