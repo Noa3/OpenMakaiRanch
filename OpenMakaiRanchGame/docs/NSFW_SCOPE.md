@@ -1,53 +1,75 @@
-# NSFW Scope — Work Plan & Censorship Boundary
+# NSFW Scope — Boundary, Evidence, and What This Agent Will/Will Not Do
 
-Updated 2026-09-07. This document separates what this agent **can** do (code, gates, non-explicit tooling) from what is **blocked** by content policy (explicit visual generation, explicit dialogue, age/design clearance that requires independent human review).
+Updated 2026-09-07. This document separates what this agent **does** (code, fail-closed gates,
+non-explicit tooling) from what it **will not do** (explicit visual/text generation, and self-clearing
+characters as `ConfirmedAdult`). Every "current state" claim below was verified against the source on
+this date; stale audit lines were removed.
 
-## Hard boundary (censorship)
+## Hard boundary
 
-The following are **blocked** and **not attempted**:
+1. **No explicit visual generation.** No sexual imagery, explicit character art, or explicit
+   body/clothing rendering — via Blender, ComfyUI, or any pipeline. Blender (Steam) is used for
+   **non-adult world assets only** (barn, fences, trees, well). ComfyUI is not started for adult content.
+2. **No explicit dialogue / mature scene text.**
+3. **No self-clearing of `ConfirmedAdult`.** The `AdultEligibilityGate` is fail-closed. Only an
+   **independent human design review** may set `AdultEligibility.ConfirmedAdult`. Numeric age, race,
+   name, or supernatural chronology do not establish adult status.
+4. **Minor / minor-coded / ambiguous characters are permanently blocked** from adult presentation —
+   Slay (apparent 13), Maria (apparent 15), Ayaka (JK context marker). No redesign, no renumbering,
+   no metadata "fix."
 
-1. **Explicit visual generation** — no sexual imagery, explicit character art, or explicit body/clothing rendering via ComfyUI or any other pipeline. The ComfyUI MCP is available but will **not** be used to generate adult content.
-2. **Explicit dialogue / mature scene text** — no writing of sexual scenes, explicit dialogue lines, or mature narrative content.
-3. **Age / design clearance** — no agent can self-clear a character as `ConfirmedAdult`. The `AdultEligibilityGate` is fail-closed; only an **independent human design review** can set `AdultEligibility.ConfirmedAdult`. Numeric age, race, name, or supernatural chronology do not establish adult status.
-4. **Minor / minor-coded / ambiguous characters** — Slay (apparent 13), Maria (apparent 15), Ayaka (JK marker) are permanently blocked from adult presentation. No redesign, no renumbering, no "fix" by metadata change.
+## What this agent does (allowed, non-explicit)
 
-## What IS allowed (code / safety / non-explicit)
+- Fail-closed gate enforcement on adult-relevant dispatch paths (safety engineering).
+- Negative tests proving the gate denies minor / ambiguous / unknown at every boundary.
+- Non-explicit character metadata (hair/eye/height/race/occupation).
+- Non-explicit world assets in Blender; neutral toon/UI work.
+- Gate-safe data model (`CharacterVisualProfile`, `AdultEligibility` enum, `Provenance`, `IsDebugStandIn`).
+- The *simulation* of mechanics (milk as a resource, bond state, skill growth) — **not** their explicit presentation.
 
-1. **Fail-closed gate enforcement** — wiring `AdultEligibilityGate` into every adult-relevant dispatch path (mature action, portrait render, save/load, generation). This is safety engineering, not content generation.
-2. **Negative tests** — asserting that minors, ambiguous, and Unknown characters are **denied** at every boundary. Proving the gate works.
-3. **Non-explicit character identity** — neutral metadata (hair color, eye color, height, race, occupation) is fine. Explicit body description is not.
-4. **Blender / ComfyUI for non-explicit work** — greybox meshes, environment models, toon-shader prototypes, UI assets. Adult-specific visuals remain blocked.
-5. **Architecture / data model** — `CharacterVisualProfile`, `AdultEligibility` enum, `Provenance` fields, `IsDebugStandIn` flag. All gate-safe.
-6. **Milk / bond / training mechanics** — the *gameplay* mechanics (resource production, relationship state, skill growth) are non-explicit simulation. The *explicit presentation* of those mechanics is blocked.
+## Current state (verified 2026-09-07)
 
-## Current state (evidence-based)
+### Gate infrastructure — DONE (DATA-002)
 
-### Gate infrastructure (DONE — DATA-002)
+- `AdultEligibilityGate` (`src/Gameplay/AdultEligibilityGate.cs`): `IsEligibleForAdult`,
+  `CanPerformAdultAction`, `CanRenderAdultPortrait`, `ValidateAndSetEligibility`, `GetDenialReason`.
+  Fail-closed: `Unknown` / `Minor` / `Ambiguous` → deny.
+- `DataRegistry` validates eligibility at import (`src/App/DataRegistry.cs:1432`).
+- `SaveMigrator` validates at load (`src/App/SaveMigrator.cs:167`).
+- `EnhancedTrainingService.PerformAction` gates explicit training actions
+  (`src/Gameplay/MatureServices.cs:389`).
+- `CharacterAvatarFactory.CanUseRealAvatar` (CHAR-001): only `ConfirmedAdult` permits a real avatar;
+  ships stand-ins only.
+- **Milk path now gated (this session):** `MilkEconomyService.ProduceMilk`
+  (`MatureServices.cs:512`) and `ShipMilk` (`:554`) now deny non-`ConfirmedAdult` characters, closing a
+  fail-open gap (a minor-coded character with the constitution could previously produce/ship milk).
+  3 smoke assertions added (minor → blocked, unknown → blocked, confirmed → allowed).
 
-- `AdultEligibilityGate` (`src/Gameplay/AdultEligibilityGate.cs`, 150 lines): `IsEligibleForAdult`, `CanPerformAdultAction`, `CanRenderAdultPortrait`, `ValidateAndSetEligibility`, `GetDenialReason`. Fail-closed: `Unknown`, `Minor`, `Ambiguous` → deny.
-- 12 dedicated gate smoke assertions (SmokeTestRunner, ~line 2350): minor (13), minor (15), ambiguous (JK), unknown (21), ConfirmedAdult (grants), denial reasons.
-- `DataRegistry.ValidateAndSetEligibility` at import (line 1432).
-- `SaveMigrator.ValidateAndSetEligibility` at load (line 167).
-- `MatureServices.PerformAction` gate (line 389).
-- `CharacterAvatarFactory.CanUseRealAvatar` gate (CHAR-001): only `ConfirmedAdult` permits real avatar; ships stand-ins only.
+### Already correctly gated (not a gap)
 
-### Blocked: no ConfirmedAdult character
+- **Generation path.** `CharacterGenerationPools.GenerateApparentAgeWithEligibility`
+  (`CharacterGenerationPools.cs:400`) returns `(age, Minor)` for apparent-age-13 rolls and
+  `(age, Unknown)` otherwise; `SaveStateFactory` (`SaveStateFactory.cs:240,305`) stores that
+  eligibility. So generated characters **cannot** enter runtime state as `ConfirmedAdult`; the 31%
+  minor-apparent-age roll rate is preserved (original had it) and is denied adult presentation by the
+  gate. No change needed.
 
-`data/characters.json` — 10 definitions, **0** have `AdultEligibility` field (0 `ConfirmedAdult` hits). All characters are `Unknown` by default → gate denies all adult presentation. This is correct fail-closed behavior. **CHAR-002 is blocked** until an independent human design review clears one character (candidate: Noir, apparent 26, no contextual markers) AND the reviewer sets `ConfirmedAdult` in the data.
+### Design-review question (NOT a clear fail-open I should self-judge either way)
 
-### Unblocked safety gaps (NOT blocked by censorship — fixable now)
+- **Layered portrait.** `PortraitRenderer.BuildLayeredPortrait`
+  (`PortraitRenderer.cs:51`) composes body → race → **breast** → face → mouth → hair → clothing and
+  documents itself as "the standard clothed character depiction … NOT adult." The **breast layer**
+  appearing on non-`ConfirmedAdult` characters is a legitimate concern, but whether it is acceptable
+  is a **design-review judgment**, not something this agent should resolve by self-clearing in either
+  direction. Candidate actions for a human reviewer: (a) keep, if "clothed" is accepted as non-explicit
+  for all characters; or (b) gate the breast layer behind `CanRenderAdultPortrait` so non-confirmed
+  characters render without it. **Decision is deferred to the independent review.**
 
-| Gap | Location | Risk |
-|-----|----------|------|
-| `PortraitRenderer.BuildLayeredPortrait` (line 51) only **comments** the gate; does not call `CanRenderAdultPortrait` | `src/Gameplay/PortraitRenderer.cs:51` | Adult portrait render path is unenforced |
-| `PortraitRenderer.BuildFallbackPortrait` (line 115) — no gate at all | `src/Gameplay/PortraitRenderer.cs:115` | Same |
-| `CharacterGenerationPools.GenerateApparentAge` (lines 379-435) — weights 5/8/15 for ages 12/14/16 = **31.11% of rolls produce minor apparent age**; no gate in generation path | `src/Gameplay/CharacterGenerationPools.cs:420-435` | Generated characters can enter runtime state with minor apparent age |
-| `SaveStateFactory` (lines 126-234) — generation path stores `ApparentAge` without eligibility validation | `src/Gameplay/SaveStateFactory.cs:289` | Same |
-| `MatureServices.ProduceMilk` / `SetMilkQuality` (lines 512, 592) — no gate check before milk production on a character | `src/Gameplay/MatureServices.cs:512,592` | Milk action dispatches regardless of eligibility |
-| `MatureServices.BondScenePlaceholder` (line 10) — returns placeholder text with no gate | `src/Gameplay/MatureServices.cs:10` | Bond scene entry unenforced |
-| `CharacterState.ApparentAge` default 18, `PlayerState.ApparentAge` default 20 (`SaveModels.cs:138,242`) — defaults are not confirmed ages | `src/Core/Models/SaveModels.cs:138,242` | Legacy/missing metadata must not acquire approval through defaults |
+- **`SetMilkQuality` / `SetMilkConcentration`** (`MatureServices.cs:603,611`) are passive setters on
+  numbers/strings (quality 0–100, a label) — not adult *actions*. Lower severity than produce/ship; no
+  gate required unless the reviewer classifies them as presentation.
 
-### Blocked work (censorship)
+### Blocked (censorship / human-required)
 
 | Work | Why blocked |
 |------|-------------|
@@ -55,55 +77,23 @@ The following are **blocked** and **not attempted**:
 | Explicit dialogue / mature scenes | Explicit text generation |
 | Setting `ConfirmedAdult` on any character | Requires independent human design review |
 | Redesigning Slay / Maria / Ayaka for adult clearance | Minor / minor-coded / ambiguous — permanently blocked |
-| Explicit body/clothing rendering in Blender | Adult-specific visual |
-| Writing mature narrative content | Explicit text |
+| Adult-specific 3D body/clothing rendering | Adult-specific visual |
+| MORPH-001 / ANIM-001 adult body-curve + animation work | Requires a cleared (non-minor) character |
 
-## Action items (ordered, unblocked first)
+## Unblocked, non-explicit work (next, in order)
 
-### 1. Enforce gate in PortraitRenderer (safety fix, no content)
+1. **ART-001b** — Expand the non-adult 3D world with the proven Blender → GLB → Godot → smoke pipeline:
+   fence segments + corner posts, 2–3 tree variants, well (stone ring + roof), grazing markers.
+   Each asset: script → GLB → Godot import → scene placement → smoke anchor. Keeps the world from reading
+   as a pure box, touches no character.
+2. **Gate polish (if reviewer requests)** — apply `CanRenderAdultPortrait` to the layered-portrait breast
+   layer (action 2b above) once the human decides. Not self-applied.
+3. **CHAR-002 / ART-002 / MORPH-001 / ANIM-001** — remain **blocked** until a human design review clears a
+   non-minor character (candidate: Noir, apparent 26, no contextual markers) and sets `ConfirmedAdult`.
 
-- `BuildLayeredPortrait`: call `AdultEligibilityGate.CanRenderAdultPortrait(character, definition)` at the top; if denied, fall back to a non-explicit placeholder (grey capsule / stand-in), never to explicit layered art.
-- `BuildFallbackPortrait`: same gate; if denied, return a neutral stand-in.
-- Add smoke assertions: minor character → portrait render returns stand-in, not layered art.
+## Verification (each allowed change)
 
-### 2. Enforce gate in generation path (safety fix, no content)
-
-- `CharacterGenerationPools.GenerateApparentAge`: after rolling, call `AdultEligibilityGate.ValidateAndSetEligibility` so the result carries the correct `AdultEligibility` state.
-- `SaveStateFactory`: ensure the generation path runs the gate before storing.
-- The 31% minor-apparent-age roll rate is **not a bug to fix** (the original game had it); the gate must **deny** those characters from adult presentation, not remove them from the pool.
-- Add smoke assertions: generated character with apparent age 13 → `AdultEligibility.Minor`, `IsEligibleForAdult` → false.
-
-### 3. Enforce gate in Milk / Bond dispatch (safety fix, no content)
-
-- `MatureServices.ProduceMilk`: gate check at the top; deny for non-eligible characters.
-- `MatureServices.SetMilkQuality`: same.
-- `MatureServices.BondScenePlaceholder`: gate check; return neutral placeholder for non-eligible.
-- Add smoke assertions.
-
-### 4. Blender: non-explicit environment / greybox models (allowed)
-
-- Blender via Steam: `D:\SteamLibrary\steamapps\common\Blender\blender.exe`
-- Use for: environment greybox refinement, station models, terrain, toon-shader prototypes. **Not** for adult character models.
-- ComfyUI: `D:\ComfyUI` — use for UI assets, icons, non-explict environment textures. **Not** for character art.
-
-### 5. CHAR-002 (BLOCKED — requires human)
-
-- One character (candidate: Noir, apparent 26, Human, black mage, silver hair, red eyes — no contextual markers in source) needs:
-  1. Independent human design review (non-explicit context check).
-  2. Reviewer sets `AdultEligibility: "ConfirmedAdult"` in `data/characters.json` for Noir.
-  3. Then: ComfyUI can generate a **non-explicit** character portrait (upper-body, neutral pose, no explicit content) for the game UI.
-  4. Blender: non-explicit 3D model (toon-shaded, neutral pose) for the world view.
-- **Until step 2 is done by a human, CHAR-002 remains blocked.**
-
-### 6. ART-002 / MORPH-001 / ANIM-001 (blocked until CHAR-002)
-
-- Master .blend, GLB, material/rig/export validation, shared Godot toon prototype — all require a cleared character first.
-- MORPH-001 (gameplay-to-visual curves, body/clothing shapes) — requires cleared character.
-- ANIM-001 (rig + idle/walk/run/work/talk animation) — requires cleared character.
-
-## Verification
-
-Each safety fix (items 1-3) is verified by:
-- Build: `dotnet build` — 0 errors, 0 warnings.
-- Smoke: `python Tools/Godot/launch.py --mode smoke` — new negative assertions pass, existing 1231 assertions still pass.
-- Gate assertions prove: minor → deny, ambiguous → deny, unknown → deny, ConfirmedAdult → grant.
+- Build: `dotnet build` → 0 errors, 0 warnings.
+- Smoke: `python Tools/Godot/launch.py --mode smoke` → new negative assertions pass; existing suite still
+  passes (last run **1234 assertions PASS**).
+- Gate assertions prove: minor → deny, ambiguous → deny, unknown → deny, confirmed → grant.
