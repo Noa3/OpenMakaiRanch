@@ -1426,23 +1426,26 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         // Ambient keeps the shadow face above pure black (readable, no hard dark band).
         Assert(result, backColor.R > 0.0f, "soft-math: hemisphere ambient keeps the shadow face above black");
 
-        // ---- Layer 2: shader source mirrors the math ----
+        // ---- Layer 2: shader source is the Godot 4 spatial idiom ----
+        // No hand-rolled LIGHT math (LIGHT is only valid inside light(), not
+        // fragment()). The engine does soft diffuse + hemisphere ambient; we
+        // only set SPECULAR (matte) and RIM (soft edge glow). This is the
+        // idiomatic, GPU-valid soft-anime path.
         string shader = SoftShaderSource.BuildShader().Code;
-        Assert(result, shader.Contains("diffuse_softness"), "soft-shader: declares diffuse_softness uniform");
-        Assert(result, shader.Contains("ambient_strength"), "soft-shader: declares ambient_strength uniform");
+        Assert(result, shader.Contains("base_color"), "soft-shader: declares base_color uniform (drives ALBEDO)");
+        Assert(result, shader.Contains("ALBEDO = base_color.rgb"), "soft-shader: ALBEDO driven by base_color (engine soft diffuse + hemi)");
         Assert(result, shader.Contains("rim_strength"), "soft-shader: declares rim_strength uniform");
-        Assert(result, shader.Contains("-LIGHT"), "soft-shader: uses the Godot 4 LIGHT convention");
-        Assert(result, shader.Contains("ndotl * ndotl * (3.0 - 2.0 * ndotl)"), "soft-shader: smooth eased diffuse ramp (no cel band)");
+        Assert(result, shader.Contains("SPECULAR = 0.0"), "soft-shader: soft matte finish (no hard specular)");
+        Assert(result, shader.Contains("RIM = rim_strength"), "soft-shader: soft rim edge glow (engine-computed fresnel)");
+        Assert(result, !shader.Contains("-LIGHT"), "soft-shader: no invalid LIGHT reference (would fail GPU compile)");
 
-        // ---- Layer 3: material factory maps C# params -> uniforms ----
+        // ---- Layer 3: material factory maps C# params -> material ----
         var skinBase = new Color(0.96f, 0.82f, 0.78f);
         var material = SoftMaterialFactory.Create(skinBase);
         Assert(result, material is not null, "soft-material: factory returns a material");
         Assert(result, material!.Shader is not null, "soft-material: material carries the soft shader");
-        Assert(result, SoftMaterialFactory.GetColor(material, "base_color").IsEqualApprox(skinBase), "soft-material: base_color uniform maps from C# param");
-        Assert(result, MathF.Abs(SoftMaterialFactory.GetFloat(material, "diffuse_softness") - p.DiffuseSoftness) < 0.001f, "soft-material: diffuse_softness uniform maps from C# param");
-        Assert(result, MathF.Abs(SoftMaterialFactory.GetFloat(material, "rim_strength") - p.RimStrength) < 0.001f, "soft-material: rim_strength uniform maps from C# param");
-        Assert(result, SoftMaterialFactory.GetColor(material, "sky_color").IsEqualApprox(p.SkyColor), "soft-material: sky_color uniform maps from C# param");
+        Assert(result, SoftMaterialFactory.GetAlbedo(material).IsEqualApprox(skinBase), "soft-material: albedo maps from C# param");
+        Assert(result, MathF.Abs(SoftMaterialFactory.GetRimStrength(material) - p.RimStrength) < 0.001f, "soft-material: rim_strength maps from C# param");
 
         // ---- Integration: avatar opt-in soft path ----
         // Default (UseSoftShading=false) stays StandardMaterial3D — the CHAR-001
@@ -1460,10 +1463,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         var softBody = avatar.Body!.MaterialOverride as ShaderMaterial;
         Assert(result, softBody is not null, "soft-av: opt-in switches body to the soft ShaderMaterial");
         Assert(result, softBody is not null && softBody.Shader is not null, "soft-av: soft body material carries the shader");
-        Assert(result, softBody is not null && SoftMaterialFactory.GetColor(softBody, "base_color").IsEqualApprox(prof.BodyColor), "soft-av: soft base_color = profile body color");
+        Assert(result, softBody is not null && SoftMaterialFactory.GetAlbedo(softBody).IsEqualApprox(prof.BodyColor), "soft-av: soft albedo = profile body color");
         var softHead = avatar.Head!.MaterialOverride as ShaderMaterial;
         Assert(result, softHead is not null, "soft-av: opt-in switches head to the soft ShaderMaterial");
-        Assert(result, softHead is not null && SoftMaterialFactory.GetColor(softHead, "base_color").IsEqualApprox(prof.HeadColor), "soft-av: soft base_color = profile head color");
+        Assert(result, softHead is not null && SoftMaterialFactory.GetAlbedo(softHead).IsEqualApprox(prof.HeadColor), "soft-av: soft albedo = profile head color");
 
         // Rebuild idempotency still holds with soft on.
         avatar.Rebuild();

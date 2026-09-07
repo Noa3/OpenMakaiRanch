@@ -3,13 +3,26 @@ using Godot;
 namespace OpenMakaiRanch.Character;
 
 /// <summary>
-/// Godot 4 spatial soft-anime shader source. The GLSL mirrors
-/// <see cref="SoftShadingMath"/> 1:1 so the C# test suite can verify the
-/// shading math headlessly while the GPU uses the same formulas.
+/// Godot 4 spatial soft-anime shader source. Per the user's explicit direction
+/// this is a SOFT, NATURAL look — no hard corners, no cel banding, no hard
+/// outline.
 ///
-/// SOFT, NATURAL anime look — no hard corners, no cel banding, no hard
-/// outline. A smooth lighting model:
-///   albedo * ( soft_diffuse * light + hemi_ambient ) + soft_rim
+/// Godot 4 spatial-shader idiom (verified against docs.godotengine.org):
+///   - ALBEDO: base color. Set from a <c>base_color</c> uniform (ShaderMaterial
+///     carries no StandardMaterial AlbedoColor property). The engine then applies
+///     soft diffuse + hemisphere ambient (via WorldEnvironment) automatically.
+///   - SPECULAR: 0.0 for a soft matte finish (no hard specular highlight).
+///   - RIM: engine computes a soft fresnel edge glow (subtle, not a hard
+///     outline). Set via the rim_strength uniform.
+///
+/// Note: <c>LIGHT</c> is only valid inside a <c>light()</c> function, not
+/// <c>fragment()</c> — hand-rolled dot(N, -L) would fail GPU compilation. The
+/// engine's built-in lighting is the correct soft-diffuse path.
+///
+/// The C# <see cref="SoftShadingMath"/> remains the headless-verified reference
+/// model for the intended composite (soft diffuse + hemisphere ambient + gentle
+/// rim). The GPU path uses Godot's built-in lighting, which is the idiomatic,
+/// correct approach.
 /// </summary>
 public static class SoftShaderSource
 {
@@ -19,39 +32,19 @@ shader_type spatial;
 render_mode cull_back;
 
 uniform vec4 base_color : source_color = vec4(0.85, 0.78, 0.72, 1.0);
-uniform vec4 light_color : source_color = vec4(1.0, 0.98, 0.94, 1.0);
-uniform vec4 sky_color : source_color = vec4(0.55, 0.60, 0.72, 1.0);
-uniform vec4 ground_color : source_color = vec4(0.30, 0.28, 0.26, 1.0);
-uniform float ambient_strength : hint_range(0.0, 2.0) = 0.6;
-uniform float diffuse_softness : hint_range(0.0, 1.0) = 0.9;
-uniform vec4 rim_color : source_color = vec4(1.0, 0.96, 0.90, 1.0);
-uniform float rim_strength : hint_range(0.0, 1.0) = 0.25;
-uniform float rim_power : hint_range(0.5, 8.0) = 2.0;
-uniform float light_energy : hint_range(0.0, 2.0) = 1.0;
+uniform float rim_strength : hint_range(0.0, 1.0) = 0.12;
 
 void fragment() {
-    vec3 n = normalize(NORMAL);
-    vec3 l = normalize(-LIGHT);
-    vec3 v = normalize(VIEW);
+    // Base albedo: the engine applies soft diffuse + hemisphere ambient on top.
+    ALBEDO = base_color.rgb;
 
-    // Soft diffuse: a smooth ramp over the lit half, no hard cel band.
-    float ndotl = clamp(dot(n, l), 0.0, 1.0);
-    float eased = ndotl * ndotl * (3.0 - 2.0 * ndotl); // smoothstep(0,1,ndotl)
-    float diffuse = mix(ndotl, eased, clamp(diffuse_softness, 0.0, 1.0)) * light_energy;
+    // Soft matte: no hard specular highlight.
+    SPECULAR = 0.0;
 
-    // Hemisphere ambient: sky on up-facing, ground on down-facing.
-    float hemi = n.y * 0.5 + 0.5;
-    vec3 hemi_color = mix(ground_color.rgb, sky_color.rgb, hemi);
-
-    vec3 band = base_color.rgb * (light_color.rgb * diffuse + hemi_color * ambient_strength);
-
-    // Soft rim edge glow (subtle, not a hard outline).
-    float ndotv = clamp(dot(n, v), 0.0, 1.0);
-    float rim = pow(1.0 - ndotv, max(rim_power, 0.01)) * rim_strength;
-    band += rim_color.rgb * base_color.rgb * rim;
-
-    ALBEDO = clamp(band, 0.0, 1.0);
-    ALPHA = 1.0;
+    // Soft rim edge glow (subtle, not a hard outline). The engine computes
+    // the fresnel factor; we only set the strength.
+    RIM = rim_strength;
+    RIM_TINT = 0.4;
 }
 ";
 

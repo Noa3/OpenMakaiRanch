@@ -53,9 +53,11 @@ public static class SoftShadingMath
 
         /// <summary>
         /// Rim strength. Kept LOW for a subtle, natural edge — not a hard
-        /// outline. 0.0 = no rim.
+        /// outline. 0.0 = no rim. (Empirically 0.25 washed the surface out
+        /// flat against Godot's built-in diffuse; 0.12 keeps a gentle anime
+        /// edge glow without flattening the form.)
         /// </summary>
-        public float RimStrength { get; set; } = 0.25f;
+        public float RimStrength { get; set; } = 0.12f;
 
         /// <summary>
         /// Rim falloff power: rim = (1 - dot(N,V))^power. Higher = tighter rim

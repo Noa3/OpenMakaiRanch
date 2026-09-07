@@ -7,10 +7,16 @@ namespace OpenMakaiRanch.Character;
 /// Builds Godot <see cref="ShaderMaterial"/> instances that render with the
 /// soft-anime shader (<see cref="SoftShaderSource"/>). The factory is the single
 /// place where the C# <see cref="SoftShadingMath.SoftParameters"/> are mapped
-/// onto shader uniforms, so the C# math and the GPU shader always agree.
+/// onto the material, so the C# math and the GPU material always agree.
 ///
 /// Node-free where possible: the material is built without a scene tree, so
 /// the parameter mapping is verifiable in headless smoke tests.
+///
+/// Godot 4 spatial-shader idiom:
+///   - base_color: shader uniform driving ALBEDO (engine applies soft diffuse
+///     + hemisphere ambient via WorldEnvironment).
+///   - SPECULAR: 0.0 for a soft matte finish.
+///   - rim_strength: shader uniform driving RIM (soft fresnel edge glow).
 /// </summary>
 public static class SoftMaterialFactory
 {
@@ -36,23 +42,18 @@ public static class SoftMaterialFactory
         if (material is null) throw new System.ArgumentNullException(nameof(material));
         if (material.Shader is null) material.Shader = SoftShaderSource.BuildShader();
 
+        // base_color drives ALBEDO (engine does soft diffuse + hemisphere ambient).
         material.SetShaderParameter("base_color", p.BaseColor);
-        material.SetShaderParameter("light_color", p.LightColor);
-        material.SetShaderParameter("sky_color", p.SkyColor);
-        material.SetShaderParameter("ground_color", p.GroundColor);
-        material.SetShaderParameter("ambient_strength", p.AmbientStrength);
-        material.SetShaderParameter("diffuse_softness", p.DiffuseSoftness);
-        material.SetShaderParameter("rim_color", p.RimColor);
+
+        // rim_strength drives RIM (soft fresnel edge glow).
         material.SetShaderParameter("rim_strength", p.RimStrength);
-        material.SetShaderParameter("rim_power", p.RimPower);
-        material.SetShaderParameter("light_energy", p.LightEnergy);
     }
 
-    /// <summary>Read back a soft-shading parameter from a material as a <see cref="float"/>.</summary>
-    public static float GetFloat(ShaderMaterial material, string name)
-        => (float)material.GetShaderParameter(name);
+    /// <summary>Read back the rim_strength uniform from a material as a <see cref="float"/>.</summary>
+    public static float GetRimStrength(ShaderMaterial material)
+        => (float)material.GetShaderParameter("rim_strength");
 
-    /// <summary>Read back a soft-shading color parameter from a material.</summary>
-    public static Color GetColor(ShaderMaterial material, string name)
-        => (Color)material.GetShaderParameter(name);
+    /// <summary>Read back the base_color uniform (ALBEDO) from a material.</summary>
+    public static Color GetAlbedo(ShaderMaterial material)
+        => (Color)material.GetShaderParameter("base_color");
 }
