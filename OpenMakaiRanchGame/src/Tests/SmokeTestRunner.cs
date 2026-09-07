@@ -2701,6 +2701,59 @@ private static void TestTrainingParityAndVisit(SmokeTestResult result)
         Assert(result, AdultEligibilityGate.GetDenialReason(minorState).Contains("15"), "minor denial reason carries the apparent age");
         Assert(result, AdultEligibilityGate.GetDenialReason(ambiguous).Contains("schoolgirl"), "ambiguous denial reason carries the context note");
         Assert(result, AdultEligibilityGate.GetDenialReason(unknown).Contains("Unknown"), "unknown denial reason names the state");
+
+        // ---- Dispatch boundary (main gameplay entry): fail-closed at PerformAction ----
+        // Every existing training test grants ConfirmedAdult to exercise OTHER mechanics.
+        // This is the negative boundary: a Minor/Unknown/Ambiguous character must be
+        // denied at the dispatch layer with no state mutation, even though eligibility
+        // is the first gate (fires before energy/bond/tool/consent).
+        var gateData = DataRegistry.CreateSeeded();
+        var gateState = new SaveStateFactory(gateData).CreateNewGame();
+        gateState.Calendar.TrainedToday = 0;
+        var gateTarget = gateState.Roster.Characters[0];
+        gateTarget.Energy = 100;
+        gateTarget.Bond = 80;
+        gateTarget.Fatigue = 0;
+        gateTarget.Mature.FallState = FallState.Normal;
+
+        var gateAction = TrainingActionCatalog.All.FirstOrDefault(a => a.EnergyCost <= 20);
+        Assert(result, gateAction is not null, "dispatch gate: training catalog has an action");
+
+        Func<(int history, int sessions, int pleasure, int pain, FallState fall)> Snapshot = ()
+            => (gateState.Mature.TrainingHistory.Count, gateState.Mature.TotalTrainingSessions,
+                gateTarget.Mature.PleasureA, gateTarget.Mature.PleasureB, gateTarget.Mature.FallState);
+
+        foreach (var (eligibility, label) in new[]
+        {
+            (AdultEligibility.Minor, "Minor"),
+            (AdultEligibility.Unknown, "Unknown"),
+            (AdultEligibility.Ambiguous, "Ambiguous"),
+        })
+        {
+            gateTarget.AdultEligibility = eligibility;
+            var before = Snapshot();
+            var milkBefore = gateState.Mature.TotalMilkProduced;
+
+            var report = new EnhancedTrainingService(gateState, new Random(5)).PerformAction(gateTarget.Id, gateAction!.Id);
+
+            Assert(result, !report.Success, $"dispatch gate: {label} is denied by PerformAction (fail-closed)");
+            Assert(result, report.Summary.Contains("not eligible"), $"dispatch gate: {label} denial names the eligibility block");
+            Assert(result, report.Action is null, $"dispatch gate: {label} denial does not resolve an action");
+            Assert(result, report.Effects is null, $"dispatch gate: {label} denial produces no mental-state effects");
+            Assert(result, report.PleasureGained == 0 && report.PainGained == 0, $"dispatch gate: {label} denial gains no pleasure/pain");
+            Assert(result, report.NewFallState == before.fall, $"dispatch gate: {label} denial leaves FallState unchanged");
+            Assert(result, Snapshot() == before, $"dispatch gate: {label} denial does not mutate mature state");
+            Assert(result, gateState.Mature.TotalMilkProduced == milkBefore, $"dispatch gate: {label} denial does not touch milk economy");
+        }
+
+        // Positive control at the SAME boundary: a ConfirmedAdult is not denied by the
+        // eligibility gate (it may still be blocked by other rules, but not eligibility).
+        gateTarget.AdultEligibility = AdultEligibility.ConfirmedAdult;
+        gateState.Calendar.TrainedToday = 0;
+        var granted = new EnhancedTrainingService(gateState, new Random(9)).PerformAction(gateTarget.Id, gateAction!.Id);
+        Assert(result, granted.Summary != "Character not eligible for adult actions: Eligible"
+               && !granted.Summary.Contains("not eligible"),
+               "dispatch gate: ConfirmedAdult is not denied by the eligibility gate");
     }
 
     private static void TestClothingEquipmentIntegration(SmokeTestResult result)
