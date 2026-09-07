@@ -64,6 +64,8 @@ public static class SmokeTestRunner
             GameCommandTests.Run(result);
             TestWorldGreybox(result);
             TestWorldSharedSimulation(result);
+            TestTownShopCounter(result);
+            TestTownSceneIsLive(result);
             TestCharacterAvatar(result);
             TestSoftShading(result);
             TestEventDialogueStaging(result);
@@ -1413,6 +1415,136 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 station.GetParent()?.RemoveChild(station);
             station.Free();
             root.NewGame();
+        }
+    }
+
+    private static void TestTownShopCounter(SmokeTestResult result)
+    {
+        // WORLD-TOWN-001: a town shop counter must buy through the SAME ShopService the management UI
+        // uses, via the production GameRootCommandDispatcher -> GameRoot boundary. No second economy.
+        var root = GameRoot.Instance;
+        root.NewGame();
+
+        var item = root.Data.Items.Values.First(value => value.Price > 0);
+        var station = new WorldStation
+        {
+            TargetId = "STATION_TOWN_SHOP",
+            Label = "Town Shop",
+            CommandKind = WorldCommandKind.ShopBuy,
+            CommandTargetId = item.Id,
+        };
+        try
+        {
+            station.Dispatcher = new GameRootCommandDispatcher();
+            Assert(result, station.IsAvailable, "town shop counter available with production dispatcher");
+
+            var goldBefore = root.State.Economy.Gold;
+            var itemBefore = root.State.Inventory.Items.GetValueOrDefault(item.Id, 0);
+            var generation = root.StateGeneration;
+
+            // Shared economy: the world purchase spends gold and grants the item, exactly like the UI.
+            var ok = station.Activate(new WorldInteractionContext(item.Id, generation));
+            Assert(result, ok, "town shop counter buys an item through GameRoot");
+            Assert(result, root.State.Economy.Gold == goldBefore - item.Price,
+                "town purchase spends the item price (single economy)");
+            Assert(result, root.State.Inventory.Items.GetValueOrDefault(item.Id, 0) == itemBefore + 1,
+                "town purchase grants the item to the same inventory the UI reads");
+
+            // Insufficient funds must be denied with no state mutation (fail-closed boundary).
+            var broke = new WorldStation
+            {
+                TargetId = "STATION_TOWN_SHOP_BROKE",
+                Label = "Town Shop (broke)",
+                CommandKind = WorldCommandKind.ShopBuy,
+                CommandTargetId = item.Id,
+            };
+            try
+            {
+                broke.Dispatcher = new GameRootCommandDispatcher();
+                root.State.Economy.Gold = 0;
+                var brokeGold = 0;
+                var brokeItem = root.State.Inventory.Items.GetValueOrDefault(item.Id, 0);
+                var brokeOk = broke.Activate(new WorldInteractionContext(item.Id, root.StateGeneration));
+                Assert(result, !brokeOk, "town purchase with no gold is denied");
+                Assert(result, root.State.Economy.Gold == brokeGold &&
+                    root.State.Inventory.Items.GetValueOrDefault(item.Id, 0) == brokeItem,
+                    "denied town purchase mutates neither gold nor inventory");
+
+                // Stale generation must be rejected (StateGeneration guard) even via the world shop path.
+                root.NewGame(); // StateGeneration++
+                var staleGeneration = root.StateGeneration - 1;
+                var staleOk = station.Activate(new WorldInteractionContext(item.Id, staleGeneration));
+                Assert(result, !staleOk, "town purchase with a stale generation is rejected");
+            }
+            finally
+            {
+                if (broke.IsInsideTree())
+                    broke.GetParent()?.RemoveChild(broke);
+                broke.Free();
+            }
+        }
+        finally
+        {
+            if (station.IsInsideTree())
+                station.GetParent()?.RemoveChild(station);
+            station.Free();
+            root.NewGame();
+        }
+    }
+
+    private static void TestTownSceneIsLive(SmokeTestResult result)
+    {
+        // WORLD-TOWN-001: the town scene is a real 3D area with a working shop counter.
+        // Loading it must expose a ShopBuy station; activating it (production dispatcher) must
+        // buy through the shared ShopService. No second economy, no manual wiring.
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        var scene = GD.Load<PackedScene>("res://scenes/Town.tscn");
+        Assert(result, scene is not null, "town scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var root = (Node3D)scene.Instantiate();
+        game.AddChild(root);
+        try
+        {
+            var counter = root.GetNodeOrNull<WorldStation>("ShopCounter");
+            Assert(result, counter is not null, "town scene has a shop counter station");
+            if (counter is null)
+            {
+                return;
+            }
+
+            Assert(result, counter.TargetId == "STATION_TOWN_SHOP", "counter is the town shop (stable id)");
+            Assert(result, counter.CommandKind == WorldCommandKind.ShopBuy, "counter dispatches ShopBuy");
+            Assert(result, string.IsNullOrEmpty(counter.CommandTargetId) == false, "counter names an item to buy");
+
+            // Bind the production dispatcher (routes to GameRoot.Instance) and prove the purchase works.
+            counter.Dispatcher = new GameRootCommandDispatcher();
+            Assert(result, counter.IsAvailable, "town counter available once a dispatcher is bound");
+
+            var itemId = counter.CommandTargetId;
+            var item = game.Data.Items[itemId];
+            var goldBefore = game.State.Economy.Gold;
+            var itemBefore = game.State.Inventory.Items.GetValueOrDefault(itemId, 0);
+            var generation = game.StateGeneration;
+
+            var ok = counter.Activate(new WorldInteractionContext(itemId, generation));
+            Assert(result, ok, "activating the town counter buys the item through GameRoot");
+            Assert(result, game.State.Economy.Gold == goldBefore - item.Price,
+                "town counter purchase spends the item price (single economy)");
+            Assert(result, game.State.Inventory.Items.GetValueOrDefault(itemId, 0) == itemBefore + 1,
+                "town counter purchase grants the item to the shared inventory");
+        }
+        finally
+        {
+            if (root.IsInsideTree())
+                root.GetParent()?.RemoveChild(root);
+            root.Free();
+            game.NewGame();
         }
     }
 

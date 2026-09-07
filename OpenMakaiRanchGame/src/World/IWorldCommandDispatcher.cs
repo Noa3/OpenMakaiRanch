@@ -37,5 +37,7 @@ public enum WorldCommandKind
     /// <summary>Conduct a mentorship with <see cref="WorldCommand.TargetId"/> (a character id).</summary>
     Mentorship,
     /// <summary>Complete <see cref="WorldCommand.TargetId"/> (a bond event id).</summary>
-    BondEvent
+    BondEvent,
+    /// <summary>Buy one unit of <see cref="WorldCommand.TargetId"/> (an item id) at the town shop counter.</summary>
+    ShopBuy
 }

@@ -9,35 +9,36 @@ corners.** Preserve the existing C# simulation, services, save system, and ERA-i
 3D is *presentation* over the same simulation, not a second economy/clock.
 
 ## Current Task
-Two unblocked P1 slices just landed this session (both green + committed): **NSFW-GATE-002**
-(training-dispatch fail-closed negative tests — the last untested gate boundary) and
-**WORLD-INPUT** (gamepad/controller support — the P1 "controller mappings" that was promised but
-never implemented). Prior sessions this branch already shipped UI-002 (interaction prompt),
-PERF-001 (GPU baseline), SOFT-ANIME-001 + BUG-001 (soft shader, GPU-verified), AC #10/#11/#13/#22,
-and the dream-loop capture+judge pipeline (scene at 4.5/10, **Tier-2 ceiling — blocked by
-greybox asset fidelity, NOT lighting**).
+Landing **WORLD-TOWN-001** — the first original area beyond the ranch made physically present:
+a walkable **town 3D scene** (`scenes/Town.tscn`) with a **shop counter** wired to the *existing*
+`ShopService` (single economy, no second shop). This is the top READY world-design card from
+`docs/WORLD_DESIGN.md` (the area-inventory + world Kanban authored earlier this branch). This
+session also shipped WORLD-CAMERA (mouse/keyboard camera control — AC #6) and the WORLD_DESIGN
+area inventory/plan. Prior: NSFW-GATE-002 (gate negative tests), WORLD-INPUT (gamepad), UI-002,
+PERF-001, SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline
+(scene 4.5/10, **Tier-2 ceiling — blocked by greybox asset fidelity, NOT lighting**).
 
 ## Current Git Branch
 `dev`
 
 ## Current Commit
-`427ff5d` — `feat: WORLD-INPUT gamepad support (buttons + analog stick, 4.7.0 API)` (latest).
-`c46c43d` — `test: NSFW-GATE-002 training-dispatch fail-closed negative tests (26 assertions)`.
-`67f4e19` — `feat: dream-loop capture+judge pipeline (WorldCapture golden-hour env, 2-shot)`.
-`590cf73` — `feat: UI-002 in-world interaction prompt`. `454c7fc` PERF-001. `c7417cb` BUG-001.
-`1a43379` NPC AC #10. `87400b6` Wood-PBR. Working tree clean.
+`6409eaf` — `feat: WORLD-CAMERA mouse/keyboard camera control (look signs verified)` (latest pre-town).
+`dca6a34` — `docs: WORLD_DESIGN area inventory + design + world Kanban`.
+`c46c43d` — `test: NSFW-GATE-002 ...`. `427ff5d` — WORLD-INPUT. `67f4e19` dream-loop. `590cf73` UI-002.
+`454c7fc` PERF-001. `c7417cb` BUG-001. `1a43379` NPC AC #10. `87400b6` Wood-PBR.
+WORLD-TOWN-001 (this slice) is staged below once committed.
 
 ## Completed Recently
-1. **NPC 3D interaction (AC #10 + AC #11 + AC #7 player-driven)** — `CharacterAvatar3D` now
-   implements `IWorldInteractable` (same contract as `WorldStation`); `RosterRig` stamps
-   id/name/dispatcher on every placed avatar; `RanchGreyboxController.HandleInteract` picks the
-   nearest interactable (station OR avatar) → `F` near an NPC dispatches `Mentorship` through
-   the shared `IWorldCommandDispatcher` → `GameRoot.TryConductMentorship`. Committed `1a43379`.
-2. **SOFT-ANIME-001 GPU fix (BUG-001)** — the hand-rolled `dot(NORMAL,-LIGHT)` shader failed
-   Godot 4 GPU compile (avatars flat unlit gray). Rewrote to idiomatic `ALBEDO`+`SPECULAR=0`+
-   `RIM`; rim 0.25→0.12. A/B render objectively measured + vision-confirmed the soft look.
-3. **GPU render verification pipeline** — `WorldCapture` (whole-world capture) + `ShadingAB`
-   (controlled Standard-vs-soft A/B), both `src/Dev/` + `scenes/dev/`.
+0. **WORLD-TOWN-001 (town + shop counter → existing economy)** — `scenes/Town.tscn` + new
+   `WorldCommandKind.ShopBuy` → `GameRootCommandDispatcher` → `GameRoot.TryBuyItem` (generation-
+   guarded, calls the single `Shop.Buy`). 16 new smoke assertions incl. fail-closed (broke = no
+   mutation) + stale-generation rejection + scene-liveness. Build 0/0, full smoke **1373 PASS**.
+1. **WORLD-CAMERA (AC #6)** — mouse (RMB-hold relative look, **signs verified**) + Q/E + wheel zoom
+   + right-stick look; camera rotation was previously **dead code** (actions registered, never bound).
+   Committed `6409eaf`.
+2. **WORLD_DESIGN** — `docs/WORLD_DESIGN.md`: original area inventory (9 facilities + Town +
+   Adventure + Training/Bath) → remake equivalents + status; world Kanban (WORLD-TOWN-### etc.).
+   Key finding: original Town/Adventure exist only as management UI, not 3D areas. Committed `dca6a34`.
 
 ## Systems Currently Working
 - C# simulation: RanchService, BondService, ScheduleService, EconomyService, DayCycle, Save

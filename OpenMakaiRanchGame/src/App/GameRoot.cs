@@ -364,6 +364,23 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool TryBuyItem(string? itemId, int quantity, ulong expectedGeneration)
+	{
+		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(itemId) || quantity <= 0)
+		{
+			return false;
+		}
+
+		// Single economy: the shop service owns the spend + grant. The world path adds no reward math.
+		if (!Shop.Buy(itemId, quantity))
+		{
+			return false;
+		}
+
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool LoadSlot(int slot)
 	{
 		var loaded = Save.Load(slot);
