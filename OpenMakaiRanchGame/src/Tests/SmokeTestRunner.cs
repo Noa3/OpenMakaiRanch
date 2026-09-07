@@ -1129,13 +1129,27 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             }
             Assert(result, propsDInBounds, "scenery props (d-batch) stay within the greybox bounds");
             // ART-001e world polish: pasture boundary fence (enclosure) + textured ground.
-            // (The scene already loads cleanly in other tests, which proves the authored
-            //  surface_material_override sub-resource is valid + attached.)
+            // ART-001f PBR ground: Material Maker grass field (albedo + normal + ORM).
             AssertNodeExists(result, greybox, "Scenery/PastureFence", "scenery instantiates the pasture boundary fence");
-            AssertNodeExists(result, greybox, "Ground/Mesh", "greybox ground mesh node present (carries the authored grass material)");
-            var grassTex = GD.Load<Texture2D>("res://assets/3d/ground_grass.png");
-            Assert(result, grassTex is not null && grassTex.GetWidth() > 0 && grassTex.GetHeight() > 0,
-                "grass ground texture is a valid authored asset");
+            AssertNodeExists(result, greybox, "Ground/Mesh", "greybox ground mesh node present (carries the authored PBR grass material)");
+            // The ground surface must now reference the authored PBR material (grass_field.tres),
+            // which wires albedo + roughness(ORM) + normal maps. Load each map and confirm it
+            // is a valid authored asset with real dimensions.
+            var groundMat = GD.Load<StandardMaterial3D>("res://assets/3d/grass_field.tres");
+            Assert(result, groundMat is not null, "PBR grass material resource loads (grass_field.tres)");
+            if (groundMat is not null)
+            {
+                Assert(result, groundMat.AlbedoTexture is not null, "ground PBR material has an albedo texture");
+                Assert(result, groundMat.NormalTexture is not null, "ground PBR material has a normal map");
+                Assert(result, groundMat.RoughnessTexture is not null, "ground PBR material has an ORM/roughness map");
+            }
+            var grassAlbedo = GD.Load<Texture2D>("res://assets/3d/grass_field_albedo.png");
+            Assert(result, grassAlbedo is not null && grassAlbedo.GetWidth() > 0 && grassAlbedo.GetHeight() > 0,
+                "grass albedo texture is a valid authored PBR asset");
+            var grassNormal = GD.Load<Texture2D>("res://assets/3d/grass_field_normal.png");
+            Assert(result, grassNormal is not null && grassNormal.GetWidth() > 0, "grass normal map is a valid authored PBR asset");
+            var grassOrm = GD.Load<Texture2D>("res://assets/3d/grass_field_orm.png");
+            Assert(result, grassOrm is not null && grassOrm.GetWidth() > 0, "grass ORM/roughness map is a valid authored PBR asset");
 
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.
