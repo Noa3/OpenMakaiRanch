@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://src/World/WorldInputBootstrap.cs" id="5_input"]
 [ext_resource type="Script" path="res://src/World/DaylightRig.cs" id="6_daylight"]
 [ext_resource type="Script" path="res://src/World/RosterRig.cs" id="7_roster"]
+[ext_resource type="PackedScene" path="res://assets/3d/barn.glb" id="8_barn"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -105,6 +106,9 @@ TargetId = "STATION_MILK"
 Label = "Milk Station"
 CommandKind = 0
 CommandTargetId = "JOB_MILK"
+
+[node name="Barn" parent="." instance=ExtResource("8_barn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9)
 
 [node name="Mesh" type="MeshInstance3D" parent="Station"]
 mesh = SubResource("station_mesh")

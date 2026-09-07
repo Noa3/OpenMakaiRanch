@@ -1069,6 +1069,14 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             AssertNodeExists(result, greybox, "Station", "greybox has an interactable station");
             AssertNodeExists(result, greybox, "PromptLayer/Prompt", "greybox shows an interaction prompt");
             AssertNodeExists(result, greybox, "ButtonLayer/OpenManagementButton", "greybox has a management UI button");
+            // Real 3D asset (Blender-built GLB) replaces the pure-box world; the barn
+            // must be instantiated and carry at least one rendered mesh.
+            AssertNodeExists(result, greybox, "Barn", "greybox instantiates the authored barn model");
+            var barn = greybox.GetNodeOrNull("Barn");
+            var barnMeshes = barn is not null
+                ? barn.FindChildren("*", "MeshInstance3D", true, false).Count
+                : 0;
+            Assert(result, barnMeshes >= 1, "barn model exposes rendered meshes");
 
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.
