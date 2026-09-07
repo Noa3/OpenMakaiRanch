@@ -24,6 +24,8 @@ public partial class WorldInputBootstrap : Node
         ("interact",      (int)Key.F),
         ("interact",      (int)Key.Space),
         ("camera_recenter", (int)Key.R),
+        ("camera_zoom_in",  (int)Key.Q),
+        ("camera_zoom_out", (int)Key.E),
     };
 
     /// <summary>

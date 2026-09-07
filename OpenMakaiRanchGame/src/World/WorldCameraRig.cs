@@ -13,6 +13,9 @@ namespace OpenMakaiRanch.World;
 public partial class WorldCameraRig : Node3D
 {
     [Export] public float LookRate { get; set; } = 1.5f;
+    /// <summary>Mouse-look sensitivity (radians per pixel of relative motion), applied while
+    /// the right mouse button is held. Separate from the stick <see cref="LookRate"/>.</summary>
+    [Export] public float MouseSensitivity { get; set; } = 0.003f;
     [Export] public float ZoomSensitivity { get; set; } = 1.5f;
     [Export] public float RecenterSpeed { get; set; } = 6f;
 
@@ -60,6 +63,50 @@ public partial class WorldCameraRig : Node3D
         Yaw = yaw;
         Pitch = WorldCameraMath.ClampPitch(pitch);
         Distance = WorldCameraMath.ApplyZoom(distance, 0f);
+    }
+
+    /// <summary>
+    /// Apply a look delta to the current orbit (used by mouse-look and the gamepad stick).
+    /// Pure math via <see cref="WorldCameraMath.ApplyLook"/> so the clamp behavior is
+    /// verifiable headlessly.
+    /// </summary>
+    public void ApplyLookDelta(float yawDelta, float pitchDelta)
+    {
+        (Yaw, Pitch) = WorldCameraMath.ApplyLook(Yaw, Pitch, yawDelta, pitchDelta);
+    }
+
+    private bool _rmbHeld;
+
+    /// <summary>
+    /// Mouse-look: while the right mouse button is held, relative mouse motion rotates the
+    /// orbit. This coexists with the cursor-based management UI (the cursor is never hidden,
+    /// so the world only looks while RMB is down). Zoom is bound to keys (Q/E) and gamepad
+    /// shoulders (L1/R1) via the <c>camera_zoom_in</c>/<c>camera_zoom_out</c> actions and
+    /// handled in <see cref="_Process"/>. (This GodotSharp 4.7.0 binding has no
+    /// <c>InputEventMouseWheel</c>, so wheel zoom is not wired — keys/shoulders cover it.)
+    /// </summary>
+    public override void _UnhandledInput(InputEvent e)
+    {
+        if (!CameraInputEnabled)
+        {
+            return;
+        }
+
+        if (e is InputEventMouseButton mb)
+        {
+            if (mb.ButtonIndex == MouseButton.Right)
+            {
+                _rmbHeld = mb.Pressed;
+            }
+            return;
+        }
+
+        if (e is InputEventMouseMotion motion && _rmbHeld)
+        {
+            // Mouse right = look right, mouse up = look up (verified against the
+            // camera position/look-at math in WorldCameraMath).
+            ApplyLookDelta(-motion.Relative.X * MouseSensitivity, motion.Relative.Y * MouseSensitivity);
+        }
     }
 
     public override void _Process(double delta)

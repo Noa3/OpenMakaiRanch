@@ -77,6 +77,16 @@ public static class WorldCameraMath
     }
 
     /// <summary>
+    /// Apply a look delta to an orbit (yaw/pitch in radians), clamping pitch to the supported
+    /// range. Pure and deterministic so the mouse-look / stick-look math can be verified
+    /// headlessly. Yaw is unbounded (full 360° orbit); pitch is clamped.
+    /// </summary>
+    public static (float yaw, float pitch) ApplyLook(float yaw, float pitch, float yawDelta, float pitchDelta)
+    {
+        return (yaw + yawDelta, ClampPitch(pitch + pitchDelta));
+    }
+
+    /// <summary>
     /// Apply a zoom delta to a distance, keeping it within the supported range.
     /// </summary>
     public static float ApplyZoom(float currentDistance, float delta)

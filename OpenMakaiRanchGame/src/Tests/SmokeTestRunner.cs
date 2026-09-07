@@ -993,6 +993,16 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, WorldCameraMath.ClampPitch(Mathf.DegToRad(200f)) <= Mathf.DegToRad(WorldCameraMath.MaxPitchDegrees) + 0.001f,
             "world camera pitch clamps below floor");
 
+        // ApplyLook: yaw/pitch deltas apply and pitch stays within the clamped range,
+        // regardless of how large the incoming delta is (mouse / stick look).
+        var look = WorldCameraMath.ApplyLook(yaw: 0f, pitch: 0f, yawDelta: 0.3f, pitchDelta: 10f);
+        Assert(result, Math.Abs(look.yaw - 0.3f) < 0.001f, "world camera ApplyLook adds yaw delta");
+        Assert(result, Math.Abs(look.pitch) <= Mathf.DegToRad(WorldCameraMath.MaxPitchDegrees) + 0.001f,
+            "world camera ApplyLook clamps pitch to max");
+        var look2 = WorldCameraMath.ApplyLook(yaw: 0f, pitch: 0f, yawDelta: 0f, pitchDelta: -10f);
+        Assert(result, Math.Abs(look2.pitch - Mathf.DegToRad(WorldCameraMath.MinPitchDegrees)) < 0.001f,
+            "world camera ApplyLook clamps pitch to min");
+
         // ---- World input gate ----
         var gate = new WorldInputGate();
         Assert(result, gate.WorldInputEnabled, "world input enabled by default");
