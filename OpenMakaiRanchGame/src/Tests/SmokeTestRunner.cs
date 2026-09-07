@@ -1087,6 +1087,27 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             var wellPos = wellNode?.GlobalPosition ?? Vector3.Zero;
             Assert(result, wellPos.X >= -20 && wellPos.X <= 20 && wellPos.Z >= -15 && wellPos.Z <= 15,
                 "scenery stays within the greybox bounds");
+            // ART-001c props: hay bales, water trough, broadleaf trees, path stones instantiated + in-bounds.
+            AssertNodeExists(result, greybox, "Scenery/Hay_A", "scenery instantiates the hay bale");
+            AssertNodeExists(result, greybox, "Scenery/Trough", "scenery instantiates the water trough");
+            AssertNodeExists(result, greybox, "Scenery/Broadleaf_A", "scenery instantiates the broadleaf tree");
+            AssertNodeExists(result, greybox, "Scenery/Broadleaf_B", "scenery instantiates a second broadleaf tree");
+            AssertNodeExists(result, greybox, "Scenery/PathStones", "scenery instantiates the path stones");
+            var propNames = new[] { "Hay_B", "Trough", "Broadleaf_B", "PathStones" };
+            bool propsInBounds = true;
+            if (scenery is not null)
+            {
+                foreach (var propName in propNames)
+                {
+                    var propNode = scenery.GetNodeOrNull(propName) as Node3D;
+                    if (propNode is not null)
+                    {
+                        var p = propNode.GlobalPosition;
+                        if (p.X < -20 || p.X > 20 || p.Z < -15 || p.Z > 15) propsInBounds = false;
+                    }
+                }
+            }
+            Assert(result, propsInBounds, "scenery props stay within the greybox bounds");
 
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.

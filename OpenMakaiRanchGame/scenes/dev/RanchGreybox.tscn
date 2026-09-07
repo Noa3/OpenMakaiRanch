@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -11,6 +11,10 @@
 [ext_resource type="PackedScene" path="res://assets/3d/fence.glb" id="9_fence"]
 [ext_resource type="PackedScene" path="res://assets/3d/tree.glb" id="10_tree"]
 [ext_resource type="PackedScene" path="res://assets/3d/well.glb" id="11_well"]
+[ext_resource type="PackedScene" path="res://assets/3d/hay_bale.glb" id="12_hay"]
+[ext_resource type="PackedScene" path="res://assets/3d/water_trough.glb" id="13_trough"]
+[ext_resource type="PackedScene" path="res://assets/3d/tree_broadleaf.glb" id="14_btree"]
+[ext_resource type="PackedScene" path="res://assets/3d/path_stones.glb" id="15_stones"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -132,6 +136,24 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 8)
 
 [node name="Fence_B" parent="Scenery" instance=ExtResource("9_fence")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 4)
+
+[node name="Hay_A" parent="Scenery" instance=ExtResource("12_hay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, -6)
+
+[node name="Hay_B" parent="Scenery" instance=ExtResource("12_hay")]
+transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, 4.7, 0, -5.4)
+
+[node name="Trough" parent="Scenery" instance=ExtResource("13_trough")]
+transform = Transform3D(0.71, 0, 0.7, 0, 1, 0, -0.7, 0, 0.71, 7, 0, 6)
+
+[node name="Broadleaf_A" parent="Scenery" instance=ExtResource("14_btree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -6)
+
+[node name="Broadleaf_B" parent="Scenery" instance=ExtResource("14_btree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 9)
+
+[node name="PathStones" parent="Scenery" instance=ExtResource("15_stones")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.6, 0, 5.5)
 
 [node name="Mesh" type="MeshInstance3D" parent="Station"]
 mesh = SubResource("station_mesh")
