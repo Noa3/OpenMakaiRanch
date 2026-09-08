@@ -67,6 +67,7 @@ public static class SmokeTestRunner
             TestTownShopCounter(result);
             TestTownGuildCounter(result);
             TestTownSceneIsLive(result);
+            TestTravelRoundTrip(result);
             TestCharacterAvatar(result);
             TestSoftShading(result);
             TestEventDialogueStaging(result);
@@ -1608,6 +1609,100 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "town counter purchase spends the item price (single economy)");
             Assert(result, game.State.Inventory.Items.GetValueOrDefault(itemId, 0) == itemBefore + 1,
                 "town counter purchase grants the item to the shared inventory");
+        }
+        finally
+        {
+            if (root.IsInsideTree())
+                root.GetParent()?.RemoveChild(root);
+            root.Free();
+            game.NewGame();
+        }
+    }
+
+    private static void TestTravelRoundTrip(SmokeTestResult result)
+    {
+        // WORLD-TOWN-003: walkable traversal between ranch and town through travel gates.
+        // The player travels ranch → town → ranch using the WorldTravelGate smart objects.
+        // Travel is presentation: no gold, no clock, no job changes. The composition (RanchWorldController)
+        // swaps active area, repositions the player, and preserves the single simulation.
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        var scene = GD.Load<PackedScene>("res://scenes/RanchWorld.tscn");
+        Assert(result, scene is not null, "travel: boot scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var root = (Node3D)scene.Instantiate();
+        game.AddChild(root);
+        try
+        {
+            var world = root as RanchWorldController;
+            Assert(result, world is not null, "travel: composition is the controller");
+            if (world is null) return;
+
+            // Boot: active area is the ranch.
+            Assert(result, world.ActiveAreaId == "ranch", "travel: boots in the ranch area");
+            var ranch = world.GetNodeOrNull<RanchGreyboxController>("RanchWorld3D");
+            var town = world.GetNodeOrNull<RanchGreyboxController>("TownWorld");
+            Assert(result, ranch is not null, "travel: ranch area present");
+            Assert(result, town is not null, "travel: town area present");
+            if (ranch is null || town is null) return;
+
+            // Ranch gate is bound and available.
+            Assert(result, ranch.TravelGates.Count == 1, "travel: ranch has exactly one travel gate");
+            var gate = ranch.TravelGates[0];
+            Assert(result, gate is not null && gate.Handler is not null, "travel: ranch gate has a handler bound");
+            Assert(result, gate is not null && gate.Destination == "town", "travel: ranch gate targets the town area");
+            if (gate is null) return;
+
+            // Player starts at the ranch entry position.
+            var ranchPlayer = ranch.Player;
+            Assert(result, ranchPlayer is not null, "travel: ranch has a player");
+            if (ranchPlayer is null) return;
+            Assert(result, ranchPlayer.GlobalPosition.DistanceTo(ranch.EntryPosition) < 0.5f,
+                "travel: ranch player starts near the entry position");
+
+            // Activate the gate → travel to town.
+            var generation = game.StateGeneration;
+            var ok = gate.Activate(new WorldInteractionContext("", generation));
+            Assert(result, ok, "travel: activating the ranch gate travels to town");
+            Assert(result, world.ActiveAreaId == "town", "travel: active area is now town");
+            Assert(result, town.Visible, "travel: town area is visible after travel");
+            Assert(result, !ranch.Visible, "travel: ranch area is hidden after travel");
+
+            // Town player repositioned to the town entry.
+            var townPlayer = town.Player;
+            Assert(result, townPlayer is not null, "travel: town has a player");
+            if (townPlayer is null) return;
+            Assert(result, townPlayer.GlobalPosition.DistanceTo(town.EntryPosition) < 0.5f,
+                "travel: town player is at the town entry position after travel");
+
+            // No simulation side effects from travel.
+            Assert(result, game.StateGeneration == generation, "travel: travel does not advance the generation");
+
+            // Return: activate the town gate → travel back to ranch.
+            Assert(result, town.TravelGates.Count == 1, "travel: town has exactly one travel gate");
+            var backGate = town.TravelGates[0];
+            Assert(result, backGate is not null && backGate.Destination == "ranch", "travel: town gate targets the ranch area");
+            if (backGate is null) return;
+
+            var genBeforeReturn = game.StateGeneration;
+            var okBack = backGate.Activate(new WorldInteractionContext("", genBeforeReturn));
+            Assert(result, okBack, "travel: activating the town gate travels back to ranch");
+            Assert(result, world.ActiveAreaId == "ranch", "travel: active area is ranch after return");
+            Assert(result, ranch.Visible, "travel: ranch area is visible after return");
+            Assert(result, !town.Visible, "travel: town area is hidden after return");
+
+            // Ranch player repositioned back.
+            Assert(result, ranchPlayer.GlobalPosition.DistanceTo(ranch.EntryPosition) < 0.5f,
+                "travel: ranch player is back at the ranch entry after return");
+
+            // Guard: re-activating the same gate while already in that area is a no-op.
+            var noopResult = world.TravelTo("ranch");
+            Assert(result, !noopResult, "travel: travel to the current area is a no-op");
         }
         finally
         {

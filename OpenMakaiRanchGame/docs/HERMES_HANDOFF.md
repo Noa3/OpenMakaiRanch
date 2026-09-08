@@ -9,12 +9,14 @@ corners.** Preserve the existing C# simulation, services, save system, and ERA-i
 3D is *presentation* over the same simulation, not a second economy/clock.
 
 ## Current Task
-WORLD-TOWN-001 + 002 landed (both green + committed): the **town** — the original's
-`街にお出かけ` area — is now a real 3D area (`scenes/Town.tscn`) with **two service POIs**, each
-wired to the *existing* simulation (no second economy/roster): a **shop counter** → `ShopService`
-(buy) and a **guild counter** → `RecruitmentService` (hire). Next READY card: **WORLD-TOWN-003**
-= walkable traversal between ranch + town (self-directed area access). This session also shipped
-WORLD-CAMERA (mouse/keyboard camera control — AC #6) + the WORLD_DESIGN area inventory/plan.
+WORLD-TOWN-001 + 002 + **003** landed (all green + committed): the **town** — the original's
+`街にお出かけ` area — is a real 3D area (`scenes/Town.tscn`) with **two service POIs** wired to the
+*existing* simulation (shop → `ShopService`, guild → `RecruitmentService`), AND **walkable
+traversal** between the ranch and town via **travel-gate smart objects** (`WorldTravelGate`,
+`ITravelHandler` presentation boundary — no gold/clock/job moves). Each area is now a
+self-contained `RanchGreyboxController` root with its own player + camera (the town gained both —
+genuinely walkable). `RanchWorld.tscn` instantiates both areas. Next READY: **WORLD-TOWN-004**
+(town env art), **WORLD-TOWN-005** (adventure area — original `冒険` zone).
 Prior: NSFW-GATE-002 (gate negative tests), WORLD-INPUT (gamepad), UI-002, PERF-001,
 SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline (4.5/10,
 **Tier-2 ceiling — blocked by greybox asset fidelity, NOT lighting**).
@@ -23,14 +25,26 @@ SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline
 `dev`
 
 ## Current Commit
-`77172b0` — `feat: WORLD-TOWN-002 town guild/recruitment counter wired to existing RecruitmentService` (HEAD).
-`e7e40b2` — `feat: WORLD-TOWN-001 town area + shop counter wired to existing ShopService`.
+`77172b0` — WORLD-TOWN-002 guild/recruitment counter → `RecruitmentService`.
+`e7e40b2` — WORLD-TOWN-001 town area + shop counter → `ShopService`.
+**HEAD** — WORLD-TOWN-003 travel gates (see Completed Recently #0).
 `dca6a34` — `docs: WORLD_DESIGN area inventory + design + world Kanban`.
 `6409eaf` — WORLD-CAMERA. `acf725e` — handoff. `427ff5d` WORLD-INPUT. `c46c43d` NSFW-GATE-002.
 `67f4e19` dream-loop. `590cf73` UI-002. `454c7fc` PERF-001. `c7417cb` BUG-001. `1a43379` NPC AC #10.
 `87400b6` Wood-PBR.
 
 ## Completed Recently
+0. **WORLD-TOWN-003 (walkable traversal ranch ↔ town)** — `WorldTravelGate : Area3D,
+   IWorldInteractable` (a world smart object reusing `WorldInteractionGuard`) + new
+   `ITravelHandler` presentation boundary. `RanchWorldController` implements
+   `ITravelHandler.TravelTo(areaId)`: swaps `Visible` + `ProcessMode`, repositions the active
+   area's player to its `EntryPosition`, re-derives daylight + roster. `Town.tscn` is now a
+   self-contained `RanchGreyboxController` root (gained player + camera — genuinely walkable)
+   with a travel gate back to the ranch; `RanchWorld.tscn` instantiates both areas.
+   `RanchGreyboxController` generalised to multi-station. `TestTravelRoundTrip` (25 assertions):
+   ranch → town → ranch round-trip, visibility, player reposition, generation unchanged,
+   no-op on same-area. Build 0/0, full smoke **1405 PASS** (was 1380). No second simulation.
+   **HEAD — commit pending in this slice.**
 0. **WORLD-TOWN-001 (town + shop counter → existing economy)** — `scenes/Town.tscn` + new
    `WorldCommandKind.ShopBuy` → `GameRootCommandDispatcher` → `GameRoot.TryBuyItem` (generation-
    guarded, calls the single `Shop.Buy`). 16 new smoke assertions incl. fail-closed (broke = no

@@ -5,76 +5,86 @@ using OpenMakaiRanch.World;
 namespace OpenMakaiRanch.App;
 
 /// <summary>
-/// Composes the 3D ranch world and the existing 2D management UI into one boot world, both on the
-/// shared <see cref="GameRoot"/> (autoload — a single simulation).
+/// Composes the 3D world areas (ranch + town, …) and the existing 2D management UI into one boot
+/// world, all on the shared <see cref="GameRoot"/> (autoload — a single simulation).
 ///
 /// Design (no second economy / clock / job path):
-///   - The 3D world (<c>scenes/dev/RanchGreybox.tscn</c>) is the primary view: player, camera,
-///     stations, day-phase lighting, and CHAR-001 roster stand-ins, all derived from the shared state.
+///   - Each authored area (<c>scenes/dev/RanchGreybox.tscn</c>, <c>scenes/Town.tscn</c>, …) is a
+///     self-contained <see cref="RanchGreyboxController"/> root: its own player, camera, stations,
+///     day-phase lighting, roster stand-ins, and travel gates — all derived from the shared state.
 ///   - The management UI is the *existing* <c>scenes/Game.tscn</c> (the tested 2D game: economy,
-///     clock, jobs, save/load) — not a duplicate. It opens as a full-viewport overlay over the world.
-///   - World input ownership stays in the greybox controller's single <see cref="WorldInputGate"/>.
-///     This controller drives it through the greybox's tested <c>EnterManagementUi</c> /
-///     <c>LeaveManagementUi</c>, so opening management suspends world input (movement, camera,
-///     interaction) and closing resumes it safely — one gate, never left dangling.
-///
-/// Presentation only: this controller holds no economy/clock/job state — it only switches which
-/// presentation is active and routes input. The simulation stays in <see cref="GameRoot"/>.
+///     clock, jobs, save/load) — not a duplicate. It opens as a full-viewport overlay.
+///   - <b>Travel is presentation</b>: <see cref="TravelTo"/> switches which area is active
+///     (visible + processed) and repositions that area's player to its entry point. It spends no
+///     gold, advances no clock, and grants nothing — so it lives here, not in the GameRoot command
+///     boundary. This is the "natural traversal / gate" the world-design goal calls for.
+///   - World input ownership stays in the active area controller's <see cref="WorldInputGate"/>.
+///     This composition drives it through the tested <c>EnterManagementUi</c> /
+///     <c>LeaveManagementUi</c>, so opening management suspends world input and closing resumes it
+///     safely — one gate per area, never left dangling.
 /// </summary>
-public partial class RanchWorldController : Node3D
+public partial class RanchWorldController : Node3D, ITravelHandler
 {
-    [Export] public NodePath WorldPath { get; set; } = "RanchWorld3D";
+    [Export] public NodePath RanchAreaPath { get; set; } = "RanchWorld3D";
+    [Export] public NodePath TownAreaPath { get; set; } = "TownWorld";
     [Export] public NodePath ManagementOverlayPath { get; set; } = "ManagementCanvas/Game";
+
+    /// <summary>The area the player must be in at boot (default: the ranch).</summary>
+    [Export] public string InitialAreaId { get; set; } = "ranch";
 
     public enum Mode { World, Management }
 
     public Mode CurrentMode { get; private set; } = Mode.World;
     public bool ManagementOpen => CurrentMode == Mode.Management;
 
-    /// <summary>The single world-input gate (owned by the greybox controller) — exposed for tests/UI.</summary>
-    public WorldInputGate? InputGate => _greybox?.InputGate;
+    /// <summary>The active area id (e.g. "ranch", "town") — <see cref="ITravelHandler.ActiveAreaId"/>.</summary>
+    public string? ActiveAreaId => _activeArea?.AreaId;
 
-    private RanchGreyboxController? _greybox;
+    bool ITravelHandler.TravelTo(string areaId) => TravelTo(areaId, 0);
+
+    /// <summary>The primary (ranch) input gate — exposed for tests/UI (stable across areas).</summary>
+    public WorldInputGate? InputGate => _primaryArea?.InputGate;
+
+    private readonly System.Collections.Generic.List<RanchGreyboxController> _areas = new();
+    private RanchGreyboxController? _primaryArea;
+    private RanchGreyboxController? _activeArea;
     private CanvasItem? _overlay;
     private UiShellController? _uiShell;
-
-    /// <summary>Captured before the UiShell consumes it: a pending initial screen (e.g. character
-    /// creation) means the player must start in management mode, not the 3D world.</summary>
     private bool _bootInManagement;
 
     public override void _EnterTree()
     {
         // Parent _EnterTree runs before children, so the pending screen is still set here.
-        // UiShell._Ready consumes it afterwards; we only record the boot intent.
         _bootInManagement = GameRoot.PendingInitialScreen is not null;
     }
 
     public override void _Ready()
     {
-        _greybox = GetNodeOrNull<RanchGreyboxController>(WorldPath);
+        CollectAreas();
+
         _overlay = GetNodeOrNull<CanvasItem>(ManagementOverlayPath);
         _uiShell = GetNodeOrNull<UiShellController>(ManagementOverlayPath + "/UiShell");
 
-        if (_greybox is null)
+        foreach (var area in _areas)
         {
-            GD.PushError("RanchWorldController: 3D world not found at " + WorldPath);
-        }
-        else
-        {
-            // The in-world "Open Management UI" button (greybox TSCN connection) requests the
-            // overlay through this composition; the greybox already flipped the shared gate.
-            _greybox.ManagementUiRequested += HandleManagementUiRequested;
+            if (area is null) continue;
+            // In-world "Open Management UI" requests the overlay through this composition.
+            area.ManagementUiRequested += HandleManagementUiRequested;
         }
 
-        // Boot in world mode: 3D visible, management overlay hidden, world owns input —
-        // except when the player must complete a setup screen first (new game / character creation).
+        // Activate the initial area (default: ranch).
+        var initial = FindArea(InitialAreaId) ?? _primaryArea;
+        SetActiveArea(initial, reposition: true);
+
+        // Boot in world mode: 3D visible, management overlay hidden — unless the player must
+        // complete a setup screen first (new game / character creation).
         if (_overlay is not null)
         {
             _overlay.Visible = _bootInManagement;
         }
         if (_bootInManagement)
         {
-            _greybox?.EnterManagementUi();
+            _activeArea?.EnterManagementUi();
             CurrentMode = Mode.Management;
         }
         else
@@ -83,24 +93,114 @@ public partial class RanchWorldController : Node3D
         }
     }
 
-    /// <summary>Open the management UI over the 3D world (world input suspended via the shared gate).</summary>
+    private void CollectAreas()
+    {
+        _areas.Clear();
+        var ranch = GetNodeOrNull<RanchGreyboxController>(RanchAreaPath);
+        var town = GetNodeOrNull<RanchGreyboxController>(TownAreaPath);
+        if (ranch is not null) _areas.Add(ranch);
+        if (town is not null) _areas.Add(town);
+        _primaryArea = ranch;
+        if (_primaryArea is null && _areas.Count > 0) _primaryArea = _areas[0];
+        if (_primaryArea is null)
+        {
+            GD.PushError("RanchWorldController: no 3D world area found (" + RanchAreaPath + ", " + TownAreaPath + ")");
+        }
+    }
+
+    // ── ITravelHandler ──────────────────────────────────────────────────
+
+    /// <summary>
+    /// Travel the player to another authored area. Pure presentation: swaps visibility/process,
+    /// repositions the destination's player to its entry point, and re-derives that area's
+    /// lighting/roster from the shared state. No gold/clock/job change.
+    /// </summary>
+    public bool TravelTo(string areaId, ulong _expectedGeneration = 0)
+    {
+        if (string.IsNullOrEmpty(areaId))
+        {
+            return false;
+        }
+        var area = FindArea(areaId);
+        if (area is null)
+        {
+            GD.PushWarning($"RanchWorldController: travel to unknown area '{areaId}' ignored");
+            return false;
+        }
+        if (ReferenceEquals(area, _activeArea))
+        {
+            return false; // already here — no-op (don't reposition / no double work)
+        }
+        SetActiveArea(area, reposition: true);
+        return true;
+    }
+
+    private RanchGreyboxController? FindArea(string areaId)
+    {
+        foreach (var area in _areas)
+        {
+            if (area is not null && string.Equals(area.AreaId, areaId, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return area;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Make one area active (visible + processed) and the rest inactive (hidden + process-disabled),
+    /// reposition the active area's player/camera to its entry point, and promote its environment so
+    /// the right sky/fog wins while that area is on screen.
+    /// </summary>
+    private void SetActiveArea(RanchGreyboxController? area, bool reposition)
+    {
+        if (area is null)
+        {
+            return;
+        }
+
+        foreach (var a in _areas)
+        {
+            if (a is null)
+            {
+                continue;
+            }
+            bool active = ReferenceEquals(a, area);
+            a.Visible = active;
+            a.ProcessMode = active ? Node.ProcessModeEnum.Inherit : Node.ProcessModeEnum.Disabled;
+        }
+
+        _activeArea = area;
+        area.RefreshFromGame(); // re-derive daylight + roster from shared state for the active area
+
+        if (reposition && area.Player is not null)
+        {
+            // The third-person camera rig follows the player each frame, so moving the player
+            // to the entry position is enough for the camera to settle on it.
+            area.Player.GlobalPosition = area.EntryPosition;
+        }
+    }
+
+    // ── Management UI (existing behavior, now area-aware) ───────────────
+
+    /// <summary>Open the management UI over the active world area (world input suspended via the shared gate).</summary>
     public bool EnterManagement()
     {
         if (CurrentMode == Mode.Management)
         {
             return true; // already open
         }
-        if (_greybox is null)
+        if (_activeArea is null)
         {
             return false;
         }
 
-        _greybox.EnterManagementUi(); // shared gate -> UI owns input (movement + camera + interaction stop)
+        _activeArea.EnterManagementUi(); // shared gate -> UI owns input (movement + camera + interaction stop)
         if (_overlay is not null)
         {
             _overlay.Visible = true;
         }
-        _uiShell?.ShowScreen("ranch"); // the ranch overview is the management home
+        _uiShell?.ShowScreen("ranch");
         CurrentMode = Mode.Management;
         return true;
     }
@@ -112,7 +212,7 @@ public partial class RanchWorldController : Node3D
         {
             return true; // already in world
         }
-        _greybox?.LeaveManagementUi(); // shared gate -> world owns input again (never left UI-owned)
+        _activeArea?.LeaveManagementUi(); // shared gate -> world owns input again (never left UI-owned)
         if (_overlay is not null)
         {
             _overlay.Visible = false;
@@ -129,8 +229,8 @@ public partial class RanchWorldController : Node3D
 
     private void HandleManagementUiRequested()
     {
-        // The greybox already flipped the shared gate (EnterManagementUi). Reveal the overlay and
-        // record the mode. No double gate flip — EnterManagement would be a no-op on the gate.
+        // The area controller already flipped its shared gate (EnterManagementUi). Reveal the
+        // overlay and record the mode. No double gate flip — EnterManagement would be a no-op.
         if (CurrentMode == Mode.Management)
         {
             return;
@@ -145,9 +245,9 @@ public partial class RanchWorldController : Node3D
 
     public override void _ExitTree()
     {
-        if (_greybox is not null)
+        foreach (var area in _areas)
         {
-            _greybox.ManagementUiRequested -= HandleManagementUiRequested;
+            area?.ManagementUiRequested -= HandleManagementUiRequested;
         }
     }
 

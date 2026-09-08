@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" path="res://assets/3d/hedge.glb" id="19_hedge"]
 [ext_resource type="PackedScene" path="res://assets/3d/pasture_boundary.glb" id="21_fenceloop"]
 [ext_resource type="Material" path="res://assets/3d/grass_field.tres" id="22_groundmat"]
+[ext_resource type="Script" path="res://src/World/WorldTravelGate.cs" id="23_gate"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -120,6 +121,19 @@ TargetId = "STATION_MILK"
 Label = "Milk Station"
 CommandKind = 0
 CommandTargetId = "JOB_MILK"
+
+[node name="TravelToTown" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 12)
+script = ExtResource("23_gate")
+TargetId = "GATE_RANCH_TO_TOWN"
+Destination = "town"
+Label = "Travel to Town"
+
+[node name="Mesh" type="MeshInstance3D" parent="TravelToTown"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="TravelToTown"]
+shape = SubResource("station_shape")
 
 [node name="Barn" parent="." instance=ExtResource("8_barn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9)
