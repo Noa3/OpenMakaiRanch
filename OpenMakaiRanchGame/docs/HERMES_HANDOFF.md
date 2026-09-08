@@ -22,17 +22,35 @@ adventure); the adventure has a travel gate back to the ranch. `TestAdventureSce
 **1431 PASS** (was 1415).
 
 WORLD-TOWN-001 + 002 + 003 already landed (town + shop/guild POIs + walkable traversal ranch
-↔ town, AC #16 area persistence).
-Next READY: **WORLD-TOWN-004** (town env art), **WORLD-ADVENTURE-002** (adventure env art).
-Prior: NSFW-GATE-002 (gate negative tests), WORLD-INPUT (gamepad), UI-002, PERF-001,
-SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline (4.5/10,
-**Tier-2 ceiling — blocked by greybox asset fidelity, NOT lighting**).
+↔ town, AC #16 area persistence). **All three original areas (ranch, town, adventure) now
+exist as real 3D areas with traversal + save/load area persistence** — the world structure is
+complete and fully green (build 0/0, **1431 smoke PASS**).
+
+**ART ANTI-LOOP STOP (important for next session):** the "soft anime / no hard corners" visual
+target is the remaining acceptance gap, but **three art rounds have been tried and the score
+*regressed***: dream-loop lighting grind → 4.5/10; BARN-001 barn PBR → ~4/10; barn re-model
+(rounded/beveled anime silhouette, 190→936 tris) → **~3/10**. The judge's consistent root
+diagnosis is **holistic, not per-prop**: "total absence of atmosphere (white sky, flat light) +
+diorama framing (hard 90° slab edge + two flat backdrop walls + void sky)." Per-prop fixes
+can't solve that. **Per the user's anti-loop rule, the art grind is STOPPED.** Best state kept:
+**PBR barn** (BARN-001, commit `e364bb1`); the regressed re-model was **reverted** (not
+committed). The white sky is *not* a missing-env bug — `WorldCapture`'s golden-hour env
+**is** applied (verified: "environment applied / key sun applied / cool rim fill" all print);
+it renders pale due to the procedural-sky + framing. Next art push must be a *different,
+holistic* strategy (real authored environment/sky/ground + diorama framing), not another tuning
+round.
+
+Next READY (art, **paused until a holistic strategy is chosen**): **WORLD-TOWN-004** (town env
+art), **WORLD-ADVENTURE-002** (adventure env art).
+Prior (all done + committed): NSFW-GATE-002 (gate negative tests), WORLD-INPUT (gamepad), UI-002,
+PERF-001, SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#16/#22, dream-loop pipeline.
 
 ## Current Git Branch
 `dev`
 
 ## Current Commit
-**HEAD** — WORLD-ADVENTURE-001 adventure area + patrol gate → `AdventureService` (see below).
+**HEAD** — `e364bb1` BARN-001 barn PBR (15KB→1.8MB; art ceiling is geometry/atmosphere, not material).
+`f58d60c` — WORLD-ADVENTURE-001 adventure area + patrol gate → `AdventureService` (see below).
 `9f354a9` — WORLD-TOWN-003 travel gates + AC #16 area persistence (save/load).
 `6a9b8b4` — WORLD-TOWN-003 travel foundation.
 `77172b0` — WORLD-TOWN-002 guild/recruitment counter → `RecruitmentService`.
@@ -44,6 +62,24 @@ SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline
 `87400b6` Wood-PBR.
 
 ## Completed Recently
+0. **BARN-001 (barn PBR material — verified; art ceiling is geometry/atmosphere)** — `barn.glb`
+   went from 15 KB / 0 textures to **1.8 MB** carrying the shared `w03_painted_wood_siding`
+   PBR set (albedo+normal+ORM) on the 4 wood meshes (Barn_Body/Door/Loft/Trim) + clean
+   Principled solids (dark roof, grey metal silo) on the rest. Reused already-verified sibling
+   assets — no new generation. Verified in Blender (7 meshes, 4 with 3 PBR maps each), clean
+   Godot reimport (104 steps, no errors), scene picks it up via the `barn.glb` instance.
+   Judge (wide capture): barn now has material, but score stayed **~4/10** and the dominant
+   weakness is the **hard boxy low-poly geometry + diorama framing** — "texturing can't fix
+   geometry." A follow-up **re-model** (rounded/beveled anime silhouette, 190→936 tris) was
+   built but **regressed to ~3/10** and was **reverted** (anti-loop). Committed `e364bb1`.
+   Backups + scripts in `.dream-loop/` (gitignored).
+0. **WORLD-ADVENTURE-001 (adventure area — the original's 3rd major area)** — `scenes/Adventure.tscn`
+   (`AreaId="adventure"`) + `WorldCommandKind.RunMission` (5) → `GameRootCommandDispatcher` →
+   **`GameRoot.TryRunMission`** (generation-guarded, calls the single `RunMission` →
+   `AdventureService.ResolveMission`). Patrol gate (`field_clear` mission). `RanchWorldController`
+   now discovers areas by child (any `RanchGreyboxController` child auto-registers). Ranch has two
+   travel gates (town + adventure); adventure has a travel gate back. `TestAdventureSceneIsLive`
+   (16) + updated `TestTravelRoundTrip`. Build 0/0, full smoke **1431 PASS**. Committed `f58d60c`.
 0. **WORLD-TOWN-003 (walkable traversal ranch ↔ town)** — `WorldTravelGate : Area3D,
    IWorldInteractable` (a world smart object reusing `WorldInteractionGuard`) + new
    `ITravelHandler` presentation boundary. `RanchWorldController` implements
