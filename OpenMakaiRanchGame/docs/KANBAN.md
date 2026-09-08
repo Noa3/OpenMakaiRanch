@@ -70,6 +70,23 @@ Updated 2026-09-07. Status is evidence-based; DONE applies only to the named sco
   - **Follow-up (READY):** WORLD-ADVENTURE-002 = adventure **environment art pass** (greybox →
     themed wilderness) once asset-fidelity budget allows.
 
+- **BARN-001 (barn PBR material — verified; art ceiling is geometry) — DONE (material).** The
+  barn was the single most visible texture-less element (15 KB, 0 textures while 8 sibling props
+  carry baked PBR). Reused the **already-verified** `w03_painted_wood_siding` PBR set (albedo +
+  normal + ORM) — no new generation — and baked it into the barn's 4 wood meshes (Barn_Body,
+  Barn_Door, Barn_DoorFrame, Barn_LoftWindow); a dark solid for the roof and a galvanized-metal
+  solid for the silo. Blender 5.2.1 headless export → self-contained **15 KB → 1.8 MB** GLB with
+  embedded PBR (verified via Blender re-import: 3 textures present on every wood mesh, 190 tris,
+  7 meshes). Godot `--import` clean (104 steps, 0 errors); the scene instances `barn.glb`
+  directly so the PBR flows through with no scene change. **Honest judge result:** a fresh
+  golden-hour wide capture (vision_analyze) scores **~4/10** — the barn now *does* read as a
+  wood structure (a real improvement over the flat grey box), but the texture reads washed-out
+  on a 12-tri box and the **dominant weakness is the hard boxy low-poly geometry** (90° cubes),
+  which directly contradicts the "no hard corners" target and **no texture pass can fix**. This
+  confirms the dream-loop ceiling is **asset-geometry fidelity, not material** — the next real
+  lever is re-modeling the hero props (barn/roof/crates) with rounded/beveled silhouettes, a
+  much larger effort, deferred behind P0/P1 systems. Non-adult asset.
+
 ## Next — priority order
 
 Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe`. `launch.py` auto-discovers it (rejects the 198 KB `*_console.exe` stub by size, prefers the highest 4.7.x). No `GODOT_BIN` needed.
