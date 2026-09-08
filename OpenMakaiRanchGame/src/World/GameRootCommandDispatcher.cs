@@ -51,6 +51,8 @@ public sealed class GameRootCommandDispatcher : IWorldCommandDispatcher
                 return game.TryBuyItem(characterId, 1, context.ExpectedGeneration);
             case WorldCommandKind.Recruit:
                 return game.TryRecruit(context.ExpectedGeneration);
+            case WorldCommandKind.RunMission:
+                return game.TryRunMission(characterId, context.ExpectedGeneration);
             default:
                 return false;
         }

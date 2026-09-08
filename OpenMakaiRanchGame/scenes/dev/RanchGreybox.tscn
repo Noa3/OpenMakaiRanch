@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3]
+[gd_scene load_steps=36 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -133,6 +133,19 @@ Label = "Travel to Town"
 mesh = SubResource("station_mesh")
 
 [node name="Collision" type="CollisionShape3D" parent="TravelToTown"]
+shape = SubResource("station_shape")
+
+[node name="TravelToAdventure" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.6, 12)
+script = ExtResource("23_gate")
+TargetId = "GATE_RANCH_TO_ADVENTURE"
+Destination = "adventure"
+Label = "Travel to Adventure"
+
+[node name="Mesh" type="MeshInstance3D" parent="TravelToAdventure"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="TravelToAdventure"]
 shape = SubResource("station_shape")
 
 [node name="Barn" parent="." instance=ExtResource("8_barn")]

@@ -383,19 +383,36 @@ public partial class GameRoot : Node
 
 	public bool TryRecruit(ulong expectedGeneration)
 	{
-		if (expectedGeneration != StateGeneration)
-		{
-			return false;
-		}
+	    if (expectedGeneration != StateGeneration)
+	    {
+	        return false;
+	    }
 
-		// Single roster: the recruitment service owns the spend + roster add. The world path adds no reward math.
-		if (!Recruitment.HireOffer())
-		{
-			return false;
-		}
+	    // Single roster: the recruitment service owns the spend + roster add. The world path adds no reward math.
+	    if (!Recruitment.HireOffer())
+	    {
+	        return false;
+	    }
 
-		StateChanged?.Invoke();
-		return true;
+	    StateChanged?.Invoke();
+	    return true;
+	}
+
+	/// <summary>
+	/// Generation-guarded world entry for running a mission (adventure patrol gate).
+	/// Routes to the single existing <c>AdventureService</c> via <see cref="RunMission"/>;
+	/// no second combat/economy path. The party is the player-selected one, else the full
+	/// roster — exactly the existing behavior.
+	/// </summary>
+	public bool TryRunMission(string? missionId, ulong expectedGeneration)
+	{
+	    if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(missionId))
+	    {
+	        return false;
+	    }
+
+	    var report = RunMission(missionId);
+	    return report.Outcome != MissionOutcome.None;
 	}
 
 	public bool LoadSlot(int slot)

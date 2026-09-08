@@ -41,5 +41,7 @@ public enum WorldCommandKind
     /// <summary>Buy one unit of <see cref="WorldCommand.TargetId"/> (an item id) at the town shop counter.</summary>
     ShopBuy,
     /// <summary>Hire the current recruitment offer at the town guild counter (existing <c>RecruitmentService</c>).</summary>
-    Recruit
+    Recruit,
+    /// <summary>Run <see cref="WorldCommand.TargetId"/> (a mission id) at the adventure patrol gate (existing <c>AdventureService</c>).</summary>
+    RunMission
 }

@@ -52,6 +52,24 @@ Updated 2026-09-07. Status is evidence-based; DONE applies only to the named sco
 - **WORLD-TOWN-003 (walkable traversal ranch ↔ town) — DONE.** The player can now travel between the ranch and town via **travel-gate smart objects** (`WorldTravelGate : Area3D, IWorldInteractable`), a new `ITravelHandler` presentation boundary. Design: travel is **presentation** — no gold, no clock, no job, no simulation number moves. The composition (`RanchWorldController`) implements `ITravelHandler.TravelTo(areaId)`: swaps `Visible` + `ProcessMode` across all areas, repositions the active area's player to its `EntryPosition`, re-derives daylight + roster. Each area is now a self-contained `RanchGreyboxController` root with its own player/camera (the town scene gained both — it is genuinely walkable, not just an inert counter set). `RanchWorld.tscn` now instantiates **both** areas. `RanchGreyboxController` generalised to multi-station (`CollectStations`) so the town's two counters are discovered + bound. `WorldTravelGate` reuses the same `WorldInteractionGuard` + `IWorldInteractable` contract as `WorldStation` but routes to `ITravelHandler` (presentation) instead of `IWorldCommandDispatcher` (simulation) — a deliberate separation: activating a gate must never move a simulation number. `TestTravelRoundTrip` (35 assertions): boot in ranch → gate activates → town visible / ranch hidden / town player at entry / generation unchanged → return gate → ranch visible / town hidden / ranch player back at entry / no-op on same-area → **save/load round-trip (AC #16)**: travel to town → `PlayerState.CurrentArea` = "town" → save → load → fresh world boots in the town with town visible / ranch hidden / player at entry. Build 0/0, full smoke **1415 PASS** (was 1380). No second simulation.
   - **Follow-ups (READY):** WORLD-TOWN-004 = town **environment art pass** (greybox → themed plaza) once asset-fidelity budget allows. WORLD-TOWN-005 = **adventure area** as a third authored area (original `冒険` zone). Design + area inventory + all world cards live in `docs/WORLD_DESIGN.md`.
 
+- **WORLD-ADVENTURE-001 (adventure area + patrol gate → existing AdventureService) — DONE.**
+  The original's third major area (`冒険`) is now a real 3D area: `scenes/Adventure.tscn`
+  (`AreaId="adventure"`, player + camera, ground + sun + world environment, adventure props
+  reusing existing GLBs). Its **patrol gate** (`WorldStation`, `CommandKind=5` `RunMission`,
+  `CommandTargetId="field_clear"`) routes through the canonical `WorldCommand` boundary →
+  `GameRootCommandDispatcher` → **`GameRoot.TryRunMission`** (generation-guarded, calls the
+  single existing `RunMission` → `AdventureService.ResolveMission`). **No second combat/economy
+  path.** `RanchWorldController` now discovers areas by child (any `RanchGreyboxController`
+  child auto-registers) — the ranch stays primary; town + adventure register by their `AreaId`.
+  Ranch has two travel gates (town + adventure); the adventure has a travel gate back to the
+  ranch. `TestAdventureSceneIsLive` (16 assertions): scene loads, area id correct, patrol gate
+  present + bound + dispatches `RunMission` with a mission id, travel gate back to ranch,
+  mission runs through GameRoot (shared `AdventureState` updated — not a second sim), stale
+  generation rejected. `TestTravelRoundTrip` updated: ranch has two travel gates, adventure
+  area present. Build 0/0, full smoke **1431 PASS** (was 1415). No second simulation.
+  - **Follow-up (READY):** WORLD-ADVENTURE-002 = adventure **environment art pass** (greybox →
+    themed wilderness) once asset-fidelity budget allows.
+
 ## Next — priority order
 
 Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe`. `launch.py` auto-discovers it (rejects the 198 KB `*_console.exe` stub by size, prefers the highest 4.7.x). No `GODOT_BIN` needed.

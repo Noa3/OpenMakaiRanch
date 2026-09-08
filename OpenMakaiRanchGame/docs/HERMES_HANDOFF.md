@@ -9,14 +9,21 @@ corners.** Preserve the existing C# simulation, services, save system, and ERA-i
 3D is *presentation* over the same simulation, not a second economy/clock.
 
 ## Current Task
-WORLD-TOWN-001 + 002 + **003** landed (all green + committed): the **town** — the original's
-`街にお出かけ` area — is a real 3D area (`scenes/Town.tscn`) with **two service POIs** wired to the
-*existing* simulation (shop → `ShopService`, guild → `RecruitmentService`), AND **walkable
-traversal** between the ranch and town via **travel-gate smart objects** (`WorldTravelGate`,
-`ITravelHandler` presentation boundary — no gold/clock/job moves). Each area is now a
-self-contained `RanchGreyboxController` root with its own player + camera (the town gained both —
-genuinely walkable). `RanchWorld.tscn` instantiates both areas. Next READY: **WORLD-TOWN-004**
-(town env art), **WORLD-TOWN-005** (adventure area — original `冒険` zone).
+**WORLD-ADVENTURE-001 landed (green + committed):** the **adventure** — the original's third
+major area (`冒険`) — is a real 3D area (`scenes/Adventure.tscn`, `AreaId="adventure"`) with a
+**patrol gate** (`WorldStation`, `CommandKind=5` `RunMission`, `CommandTargetId="field_clear"`)
+wired to the *existing* simulation via the canonical `WorldCommand` boundary → `GameRootCommandDispatcher`
+→ **`GameRoot.TryRunMission`** (generation-guarded, calls the single `RunMission` →
+`AdventureService.ResolveMission`). **No second combat/economy path.** `RanchWorldController`
+now discovers areas by child (any `RanchGreyboxController` child auto-registers) — the ranch
+stays primary; town + adventure register by `AreaId`. Ranch has two travel gates (town +
+adventure); the adventure has a travel gate back to the ranch. `TestAdventureSceneIsLive`
+(16 assertions) + updated `TestTravelRoundTrip` (ranch has two gates). Build 0/0, full smoke
+**1431 PASS** (was 1415).
+
+WORLD-TOWN-001 + 002 + 003 already landed (town + shop/guild POIs + walkable traversal ranch
+↔ town, AC #16 area persistence).
+Next READY: **WORLD-TOWN-004** (town env art), **WORLD-ADVENTURE-002** (adventure env art).
 Prior: NSFW-GATE-002 (gate negative tests), WORLD-INPUT (gamepad), UI-002, PERF-001,
 SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline (4.5/10,
 **Tier-2 ceiling — blocked by greybox asset fidelity, NOT lighting**).
@@ -25,9 +32,12 @@ SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline
 `dev`
 
 ## Current Commit
+**HEAD** — WORLD-ADVENTURE-001 adventure area + patrol gate → `AdventureService` (see below).
+`9f354a9` — WORLD-TOWN-003 travel gates + AC #16 area persistence (save/load).
+`6a9b8b4` — WORLD-TOWN-003 travel foundation.
 `77172b0` — WORLD-TOWN-002 guild/recruitment counter → `RecruitmentService`.
 `e7e40b2` — WORLD-TOWN-001 town area + shop counter → `ShopService`.
-**HEAD** — WORLD-TOWN-003 travel gates (see Completed Recently #0).
+`485bb00` — HERMES_HANDOFF refresh after town 001/002.
 `dca6a34` — `docs: WORLD_DESIGN area inventory + design + world Kanban`.
 `6409eaf` — WORLD-CAMERA. `acf725e` — handoff. `427ff5d` WORLD-INPUT. `c46c43d` NSFW-GATE-002.
 `67f4e19` dream-loop. `590cf73` UI-002. `454c7fc` PERF-001. `c7417cb` BUG-001. `1a43379` NPC AC #10.

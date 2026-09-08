@@ -67,6 +67,7 @@ public static class SmokeTestRunner
             TestTownShopCounter(result);
             TestTownGuildCounter(result);
             TestTownSceneIsLive(result);
+            TestAdventureSceneIsLive(result);
             TestTravelRoundTrip(result);
             TestCharacterAvatar(result);
             TestSoftShading(result);
@@ -1619,6 +1620,72 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         }
     }
 
+    private static void TestAdventureSceneIsLive(SmokeTestResult result)
+    {
+        // WORLD-ADVENTURE-001: the adventure area is a real 3D area (the original's third major
+        // area, 冒険). Its patrol gate must run a mission through the SAME AdventureService the
+        // management UI uses (RunMission), via the production GameRootCommandDispatcher. No second
+        // combat/economy path. Also reachable by travel (ranch gate -> adventure).
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        var scene = GD.Load<PackedScene>("res://scenes/Adventure.tscn");
+        Assert(result, scene is not null, "adventure scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var root = (Node3D)scene.Instantiate();
+        game.AddChild(root);
+        try
+        {
+            var area = root as RanchGreyboxController;
+            Assert(result, area is not null, "adventure scene is a world area root");
+            Assert(result, area is not null && area.AreaId == "adventure", "adventure area id is 'adventure'");
+            if (area is null) return;
+
+            // The patrol gate station.
+            var gate = root.GetNodeOrNull<WorldStation>("PatrolGate");
+            Assert(result, gate is not null, "adventure scene has a patrol gate station");
+            if (gate is null) return;
+            Assert(result, gate.TargetId == "STATION_ADVENTURE_PATROL", "patrol gate has a stable id");
+            Assert(result, gate.CommandKind == WorldCommandKind.RunMission, "patrol gate dispatches RunMission");
+            Assert(result, string.IsNullOrEmpty(gate.CommandTargetId) == false, "patrol gate names a mission id");
+
+            // Travel gate back to the ranch.
+            var travelGate = root.GetNodeOrNull<WorldTravelGate>("TravelToRanch");
+            Assert(result, travelGate is not null, "adventure scene has a travel gate back to the ranch");
+            Assert(result, travelGate is not null && travelGate.Destination == "ranch", "adventure travel gate targets the ranch");
+
+            // Bind the production dispatcher and prove the mission runs through GameRoot.
+            gate.Dispatcher = new GameRootCommandDispatcher();
+            Assert(result, gate.IsAvailable, "patrol gate available once a dispatcher is bound");
+
+            var missionId = gate.CommandTargetId;
+            Assert(result, game.Data.Missions.ContainsKey(missionId), "patrol gate mission exists in the data registry");
+
+            var ok = gate.Activate(new WorldInteractionContext(missionId, game.StateGeneration));
+            Assert(result, ok, "activating the patrol gate runs the mission through GameRoot");
+            Assert(result, game.State.Adventure.LastMissionId == missionId,
+                "adventure state records the mission (shared state, not a second sim)");
+            Assert(result, game.State.Adventure.LastOutcome != MissionOutcome.None,
+                "adventure state records a real outcome (existing AdventureService)");
+
+            // Stale generation must be rejected (StateGeneration guard) even via the world patrol path.
+            game.NewGame();
+            var staleOk = gate.Activate(new WorldInteractionContext(missionId, game.StateGeneration - 1));
+            Assert(result, !staleOk, "patrol gate with a stale generation is rejected");
+        }
+        finally
+        {
+            if (root.IsInsideTree())
+                root.GetParent()?.RemoveChild(root);
+            root.Free();
+            game.NewGame();
+        }
+    }
+
     private static void TestTravelRoundTrip(SmokeTestResult result)
     {
         // WORLD-TOWN-003: walkable traversal between ranch and town through travel gates.
@@ -1647,15 +1714,17 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             Assert(result, world.ActiveAreaId == "ranch", "travel: boots in the ranch area");
             var ranch = world.GetNodeOrNull<RanchGreyboxController>("RanchWorld3D");
             var town = world.GetNodeOrNull<RanchGreyboxController>("TownWorld");
+            var adventure = world.GetNodeOrNull<RanchGreyboxController>("AdventureWorld");
             Assert(result, ranch is not null, "travel: ranch area present");
             Assert(result, town is not null, "travel: town area present");
+            Assert(result, adventure is not null, "travel: adventure area present");
             if (ranch is null || town is null) return;
 
-            // Ranch gate is bound and available.
-            Assert(result, ranch.TravelGates.Count == 1, "travel: ranch has exactly one travel gate");
-            var gate = ranch.TravelGates[0];
-            Assert(result, gate is not null && gate.Handler is not null, "travel: ranch gate has a handler bound");
-            Assert(result, gate is not null && gate.Destination == "town", "travel: ranch gate targets the town area");
+            // Ranch has two travel gates (town + adventure). Find the town gate.
+            Assert(result, ranch.TravelGates.Count == 2, "travel: ranch has two travel gates (town + adventure)");
+            var gate = ranch.TravelGates.FirstOrDefault(g => g is not null && g.Destination == "town");
+            Assert(result, gate is not null, "travel: ranch town gate present");
+            Assert(result, gate is not null && gate.Handler is not null, "travel: ranch town gate has a handler bound");
             if (gate is null) return;
 
             // Player starts at the ranch entry position.

@@ -25,8 +25,6 @@ namespace OpenMakaiRanch.App;
 /// </summary>
 public partial class RanchWorldController : Node3D, ITravelHandler
 {
-    [Export] public NodePath RanchAreaPath { get; set; } = "RanchWorld3D";
-    [Export] public NodePath TownAreaPath { get; set; } = "TownWorld";
     [Export] public NodePath ManagementOverlayPath { get; set; } = "ManagementCanvas/Game";
 
     /// <summary>The area the player must be in at boot (default: the ranch).</summary>
@@ -96,15 +94,28 @@ public partial class RanchWorldController : Node3D, ITravelHandler
     private void CollectAreas()
     {
         _areas.Clear();
-        var ranch = GetNodeOrNull<RanchGreyboxController>(RanchAreaPath);
-        var town = GetNodeOrNull<RanchGreyboxController>(TownAreaPath);
-        if (ranch is not null) _areas.Add(ranch);
-        if (town is not null) _areas.Add(town);
-        _primaryArea = ranch;
-        if (_primaryArea is null && _areas.Count > 0) _primaryArea = _areas[0];
+        // Discover every authored area that is a direct child (RanchGreyboxController root).
+        // The ranch is the primary area (input gate, boot default); the rest register by their AreaId.
+        foreach (var child in GetChildren())
+        {
+            if (child is RanchGreyboxController area)
+            {
+                _areas.Add(area);
+            }
+        }
+        _primaryArea = null;
+        foreach (var area in _areas)
+        {
+            if (string.Equals(area.AreaId, "ranch", System.StringComparison.OrdinalIgnoreCase))
+            {
+                _primaryArea = area;
+                break;
+            }
+        }
+        _primaryArea ??= _areas.Count > 0 ? _areas[0] : null;
         if (_primaryArea is null)
         {
-            GD.PushError("RanchWorldController: no 3D world area found (" + RanchAreaPath + ", " + TownAreaPath + ")");
+            GD.PushError("RanchWorldController: no 3D world area found (expected RanchGreyboxController children).");
         }
     }
 
