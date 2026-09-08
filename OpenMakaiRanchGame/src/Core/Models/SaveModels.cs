@@ -154,6 +154,12 @@ public sealed class PlayerState
     public string StartingMountId { get; set; } = "none";
     public string TailType { get; set; } = "None";
     public string BodyFur { get; set; } = "None";
+    /// <summary>
+    /// The 3D world area the player is in (e.g. "ranch", "town"). Presentation state — the
+    /// composition reads it on boot so a save/load restores the player to the area they were in,
+    /// not always the ranch (AC #16: "load doesn't break because of the new 3D layer").
+    /// </summary>
+    public string CurrentArea { get; set; } = "ranch";
 }
 
 public sealed class CalendarState

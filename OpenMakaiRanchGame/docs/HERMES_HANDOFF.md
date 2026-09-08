@@ -41,10 +41,12 @@ SOFT-ANIME-001 + BUG-001 (GPU-verified), AC #10/#11/#13/#22, dream-loop pipeline
    area's player to its `EntryPosition`, re-derives daylight + roster. `Town.tscn` is now a
    self-contained `RanchGreyboxController` root (gained player + camera — genuinely walkable)
    with a travel gate back to the ranch; `RanchWorld.tscn` instantiates both areas.
-   `RanchGreyboxController` generalised to multi-station. `TestTravelRoundTrip` (25 assertions):
-   ranch → town → ranch round-trip, visibility, player reposition, generation unchanged,
-   no-op on same-area. Build 0/0, full smoke **1405 PASS** (was 1380). No second simulation.
-   **HEAD — commit pending in this slice.**
+   `RanchGreyboxController` generalised to multi-station. `PlayerState.CurrentArea` persisted
+   on travel → save/load restores the player in the area they left in (**AC #16**).
+   `TestTravelRoundTrip` (35 assertions): ranch → town → ranch round-trip, visibility,
+   player reposition, generation unchanged, no-op on same-area, + save/load round-trip
+   (fresh world boots in the town). Build 0/0, full smoke **1415 PASS** (was 1380).
+   No second simulation.
 0. **WORLD-TOWN-001 (town + shop counter → existing economy)** — `scenes/Town.tscn` + new
    `WorldCommandKind.ShopBuy` → `GameRootCommandDispatcher` → `GameRoot.TryBuyItem` (generation-
    guarded, calls the single `Shop.Buy`). 16 new smoke assertions incl. fail-closed (broke = no

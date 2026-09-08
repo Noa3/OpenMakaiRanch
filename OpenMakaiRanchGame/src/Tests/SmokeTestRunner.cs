@@ -1703,6 +1703,58 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             // Guard: re-activating the same gate while already in that area is a no-op.
             var noopResult = world.TravelTo("ranch");
             Assert(result, !noopResult, "travel: travel to the current area is a no-op");
+
+            // ── AC #16: active area persists through save/load ──
+            // Travel to the town, save, load, verify the composition boots in the town.
+            world.TravelTo("town");
+            Assert(result, world.ActiveAreaId == "town", "save-load: active area is town after travel");
+
+            // Verify the persisted field is correct before save.
+            Assert(result, game.State.Player.CurrentArea == "town",
+                "save-load: CurrentArea is 'town' in state after travel");
+
+            // Save to an isolated test slot.
+            const int testSlot = 99;
+            Assert(result, game.SaveSlot(testSlot), "save-load: save to slot succeeds");
+
+            // Load back.
+            Assert(result, game.LoadSlot(testSlot), "save-load: load from slot succeeds");
+            Assert(result, game.State.Player.CurrentArea == "town",
+                "save-load: CurrentArea is 'town' after load");
+
+            // Now instantiate a FRESH world — the composition should boot in the town (AC #16).
+            var freshRoot = (Node3D)scene.Instantiate();
+            game.AddChild(freshRoot);
+            try
+            {
+                var freshWorld = freshRoot as RanchWorldController;
+                Assert(result, freshWorld is not null, "save-load: fresh composition loads");
+                if (freshWorld is null) return;
+
+                Assert(result, freshWorld.ActiveAreaId == "town",
+                    "save-load: fresh world boots in the town (AC #16)");
+
+                var freshTown = freshWorld.GetNodeOrNull<RanchGreyboxController>("TownWorld");
+                var freshRanch = freshWorld.GetNodeOrNull<RanchGreyboxController>("RanchWorld3D");
+                Assert(result, freshTown is not null && freshTown.Visible,
+                    "save-load: town area is visible in the fresh world");
+                Assert(result, freshRanch is not null && !freshRanch.Visible,
+                    "save-load: ranch area is hidden in the fresh world");
+
+                var freshTownPlayer = freshTown?.Player;
+                Assert(result, freshTown is not null && freshTownPlayer is not null
+                    && freshTownPlayer.GlobalPosition.DistanceTo(freshTown.EntryPosition) < 0.5f,
+                    "save-load: fresh town player is at the entry position");
+            }
+            finally
+            {
+                if (freshRoot.IsInsideTree())
+                    freshRoot.GetParent()?.RemoveChild(freshRoot);
+                freshRoot.Free();
+            }
+
+            // Cleanup: delete the test save slot.
+            game.Save.Delete(testSlot);
         }
         finally
         {

@@ -72,8 +72,8 @@ public partial class RanchWorldController : Node3D, ITravelHandler
             area.ManagementUiRequested += HandleManagementUiRequested;
         }
 
-        // Activate the initial area (default: ranch).
-        var initial = FindArea(InitialAreaId) ?? _primaryArea;
+        // Activate the initial area (persisted player location, else the authored default).
+        var initial = FindArea(ResolveInitialAreaId()) ?? _primaryArea;
         SetActiveArea(initial, reposition: true);
 
         // Boot in world mode: 3D visible, management overlay hidden — unless the player must
@@ -132,6 +132,11 @@ public partial class RanchWorldController : Node3D, ITravelHandler
             return false; // already here — no-op (don't reposition / no double work)
         }
         SetActiveArea(area, reposition: true);
+
+        // Persist the new area so a save/load restores the player here, not always the ranch (AC #16).
+        // No StateGeneration bump: travel is pure presentation, not a simulation change.
+        GameRoot.Instance?.State.Player.CurrentArea = area.AreaId;
+
         return true;
     }
 
@@ -145,6 +150,21 @@ public partial class RanchWorldController : Node3D, ITravelHandler
             }
         }
         return null;
+    }
+
+    /// <summary>
+    /// Resolve the initial area id: prefer the persisted player location (save/load), fall back
+    /// to the authored <see cref="InitialAreaId"/> export. This is how a save that was made in
+    /// the town restores the player to the town, not always the ranch (AC #16).
+    /// </summary>
+    private string ResolveInitialAreaId()
+    {
+        var saved = GameRoot.Instance?.State?.Player?.CurrentArea;
+        if (!string.IsNullOrWhiteSpace(saved) && FindArea(saved) is not null)
+        {
+            return saved;
+        }
+        return InitialAreaId;
     }
 
     /// <summary>
