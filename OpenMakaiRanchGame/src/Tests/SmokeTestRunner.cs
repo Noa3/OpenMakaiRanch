@@ -69,6 +69,7 @@ public static class SmokeTestRunner
             TestWorldPanelCoordinator(result);
             TestSaveLoadRoundTrip(result);
             TestGreyboxSceneIsLive(result);
+            TestWorldBootComposition(result);
             TestWorldDaylightAndRoster(result);
         }
         catch (Exception exception)
@@ -1490,6 +1491,81 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         }
 
         game.NewGame();
+    }
+
+    private static void TestWorldBootComposition(SmokeTestResult result)
+    {
+        // WORLD-003c: the actual gameplay host composes the 3D ranch and the existing Game.tscn
+        // management shell over one GameRoot. This test verifies visibility/input ownership only;
+        // it does not duplicate any UI action or simulation logic.
+        var game = GameRoot.Instance;
+        game.NewGame();
+        GameRoot.PendingInitialScreen = null;
+
+        var scene = GD.Load<PackedScene>("res://scenes/WorldGame.tscn");
+        Assert(result, scene is not null, "world boot composition scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var root = scene.Instantiate();
+        game.AddChild(root);
+        try
+        {
+            var controller = root as WorldGameController;
+            Assert(result, controller is not null, "world boot root is WorldGameController");
+            AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
+            AssertNodeExists(result, root, "ManagementLayer/ManagementUi/UiShell",
+                "world boot contains the existing management shell as overlay");
+
+            if (controller is null)
+            {
+                return;
+            }
+
+            Assert(result, controller.Ranch is not null, "world boot binds ranch controller");
+            Assert(result, controller.Shell is not null, "world boot binds existing UiShellController");
+            Assert(result, !controller.IsManagementVisible,
+                "ordinary ranch boot starts with the 3D world visible");
+            Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
+                "ordinary ranch boot gives input to the 3D world");
+
+            Assert(result, controller.OpenManagement(), "world boot opens existing management overlay");
+            Assert(result, controller.IsManagementVisible, "management overlay becomes visible");
+            Assert(result, controller.Ranch?.InputGate.UiOwnsInput == true,
+                "management overlay suspends world input");
+
+            Assert(result, controller.CloseManagement(), "world boot closes ordinary management overlay");
+            Assert(result, !controller.IsManagementVisible, "management overlay hides on close");
+            Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
+                "closing management safely restores 3D world input");
+
+            if (controller.Shell is not null)
+            {
+                controller.Shell.ShowScreen("character_creation");
+                Assert(result, controller.FlowLocksUi && controller.IsManagementVisible,
+                    "character creation forces the management layer visible");
+                Assert(result, !controller.CloseManagement(),
+                    "mandatory character-creation flow cannot be hidden behind the world");
+
+                controller.Shell.ShowScreen("prologue");
+                Assert(result, controller.FlowLocksUi && controller.IsManagementVisible,
+                    "prologue keeps the mandatory overlay visible");
+
+                controller.Shell.ShowScreen("ranch");
+                Assert(result, !controller.FlowLocksUi && !controller.IsManagementVisible,
+                    "finishing the mandatory new-game flow automatically reveals the 3D ranch");
+                Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
+                    "new-game flow completion returns input to the world");
+            }
+        }
+        finally
+        {
+            root.Free();
+            GameRoot.PendingInitialScreen = null;
+            game.NewGame();
+        }
     }
 
     private static void TestWorldDaylightAndRoster(SmokeTestResult result)
