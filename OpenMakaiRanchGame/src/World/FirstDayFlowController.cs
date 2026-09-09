@@ -517,9 +517,7 @@ public partial class FirstDayFlowController : Control
             return;
         }
 
-        FinishFirstDay(_game.State.Ranch.BathtubClean
-            ? "You wash up and head to bed."
-            : "You take a quiet bath, then head to bed.");
+        FinishFirstDay("You wash up, relax for a moment, then head to bed.");
     }
 
     private void ChooseNight(string action)
