@@ -53,6 +53,7 @@ public partial class WorldGameController : Node
         }
 
         _shell.ScreenChanged += OnShellScreenChanged;
+        _shell.WorldTravelRequested += OnUiWorldTravelRequested;
         _ranch.CharacterInteractionRequested += OnCharacterInteractionRequested;
         _ranch.TravelRequested += OnTravelRequested;
         _town.TravelRequested += OnTravelRequested;
@@ -84,6 +85,7 @@ public partial class WorldGameController : Node
         if (_shell is not null && GodotObject.IsInstanceValid(_shell))
         {
             _shell.ScreenChanged -= OnShellScreenChanged;
+            _shell.WorldTravelRequested -= OnUiWorldTravelRequested;
         }
 
         if (_ranch is not null && GodotObject.IsInstanceValid(_ranch))
@@ -248,6 +250,16 @@ public partial class WorldGameController : Node
 
         _shell.ShowScreen(screenId);
         OpenManagement();
+    }
+
+    private void OnUiWorldTravelRequested(string destinationId)
+    {
+        if (IsManagementVisible && !_flowLocksUi)
+        {
+            CloseManagement();
+        }
+
+        TravelTo(destinationId);
     }
 
     private void OnTravelRequested(string destinationId)
