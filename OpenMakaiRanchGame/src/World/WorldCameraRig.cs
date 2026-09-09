@@ -1,4 +1,5 @@
 using Godot;
+using OpenMakaiRanch.App;
 
 namespace OpenMakaiRanch.World;
 
@@ -27,6 +28,8 @@ public partial class WorldCameraRig : Node3D
 
     private Camera3D? _camera;
     private Vector3 _desiredPosition;
+    private float _userSensitivity = 1f;
+    private bool _invertY;
 
     public Camera3D? Camera => _camera;
     public Vector3 DesiredPosition => _desiredPosition;
@@ -42,6 +45,35 @@ public partial class WorldCameraRig : Node3D
         {
             _camera = new Camera3D { Name = "Camera", Current = true };
             AddChild(_camera);
+        }
+
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        {
+            game.StateChanged += ApplyUserSettings;
+        }
+        ApplyUserSettings();
+    }
+
+    public override void _ExitTree()
+    {
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        {
+            game.StateChanged -= ApplyUserSettings;
+        }
+    }
+
+    public void ApplyUserSettings()
+    {
+        if (GameRoot.Instance is not { } game)
+        {
+            return;
+        }
+
+        _userSensitivity = Mathf.Clamp(game.State.Settings.CameraSensitivity, 0.35f, 2.50f);
+        _invertY = game.State.Settings.InvertCameraY;
+        if (_camera is not null)
+        {
+            _camera.Fov = Mathf.Clamp(game.State.Settings.CameraFov, 55f, 95f);
         }
     }
 
@@ -65,8 +97,7 @@ public partial class WorldCameraRig : Node3D
             var canLook = !RequireRightMouseButtonForLook || Input.IsMouseButtonPressed(MouseButton.Right);
             if (canLook)
             {
-                Yaw -= motion.Relative.X * LookSensitivity;
-                Pitch = WorldCameraMath.ClampPitch(Pitch - motion.Relative.Y * LookSensitivity);
+                ApplyLookDelta(motion.Relative);
             }
             return;
         }
@@ -82,6 +113,19 @@ public partial class WorldCameraRig : Node3D
                 Distance = WorldCameraMath.ApplyZoom(Distance, -ZoomSensitivity);
             }
         }
+    }
+
+    public void ApplyLookDelta(Vector2 relative)
+    {
+        if (!InputGate.WorldInputEnabled)
+        {
+            return;
+        }
+
+        var sensitivity = LookSensitivity * _userSensitivity;
+        Yaw -= relative.X * sensitivity;
+        var y = relative.Y * sensitivity * (_invertY ? -1f : 1f);
+        Pitch = WorldCameraMath.ClampPitch(Pitch - y);
     }
 
     public override void _Process(double delta)
@@ -102,19 +146,19 @@ public partial class WorldCameraRig : Node3D
             // InputEventAction events.
             if (Input.IsActionPressed("camera_look_up"))
             {
-                Pitch = WorldCameraMath.ClampPitch(Pitch + LookSensitivity * 60f * dt);
+                Pitch = WorldCameraMath.ClampPitch(Pitch + LookSensitivity * _userSensitivity * 60f * dt * (_invertY ? -1f : 1f));
             }
             if (Input.IsActionPressed("camera_look_down"))
             {
-                Pitch = WorldCameraMath.ClampPitch(Pitch - LookSensitivity * 60f * dt);
+                Pitch = WorldCameraMath.ClampPitch(Pitch - LookSensitivity * _userSensitivity * 60f * dt * (_invertY ? -1f : 1f));
             }
             if (Input.IsActionPressed("camera_look_left"))
             {
-                Yaw += LookSensitivity * 60f * dt;
+                Yaw += LookSensitivity * _userSensitivity * 60f * dt;
             }
             if (Input.IsActionPressed("camera_look_right"))
             {
-                Yaw -= LookSensitivity * 60f * dt;
+                Yaw -= LookSensitivity * _userSensitivity * 60f * dt;
             }
 
             if (Input.IsActionJustPressed("camera_zoom_in"))
