@@ -529,6 +529,23 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool SetWindowSize(int width, int height)
+	{
+		var w = Mathf.Clamp(width, 960, 7680);
+		var h = Mathf.Clamp(height, 540, 4320);
+		if (State.Settings.WindowWidth == w && State.Settings.WindowHeight == h)
+		{
+			return false;
+		}
+
+		State.Settings.WindowWidth = w;
+		State.Settings.WindowHeight = h;
+		State.Settings.Fullscreen = false;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool SetFullscreen(bool enabled)
 	{
 		if (State.Settings.Fullscreen == enabled) return false;
