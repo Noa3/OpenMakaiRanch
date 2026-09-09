@@ -81,24 +81,32 @@ public partial class RuntimeSettingsService : Node
                 settings.GraphicsQuality = "Low";
                 settings.RenderScale = 0.60f;
                 settings.ShadowsEnabled = false;
+                settings.AtmosphereEffectsEnabled = false;
+                settings.WeatherEffectsEnabled = true;
                 settings.FrameRateLimit = 45;
                 break;
             case "high":
                 settings.GraphicsQuality = "High";
                 settings.RenderScale = 1.00f;
                 settings.ShadowsEnabled = true;
+                settings.AtmosphereEffectsEnabled = true;
+                settings.WeatherEffectsEnabled = true;
                 settings.FrameRateLimit = 60;
                 break;
             case "ultra":
                 settings.GraphicsQuality = "Ultra";
                 settings.RenderScale = 1.00f;
                 settings.ShadowsEnabled = true;
+                settings.AtmosphereEffectsEnabled = true;
+                settings.WeatherEffectsEnabled = true;
                 settings.FrameRateLimit = 120;
                 break;
             default:
                 settings.GraphicsQuality = "Medium";
                 settings.RenderScale = 0.80f;
                 settings.ShadowsEnabled = true;
+                settings.AtmosphereEffectsEnabled = true;
+                settings.WeatherEffectsEnabled = true;
                 settings.FrameRateLimit = 60;
                 break;
         }
