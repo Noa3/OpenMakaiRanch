@@ -1,31 +1,84 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Character;
-using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Core.Resources;
 using OpenMakaiRanch.Gameplay;
 
 namespace OpenMakaiRanch.World;
 
 /// <summary>
-/// Places CHAR-001 stand-in avatars at the logical greybox anchors for the current roster. Pure
-/// presentation: it reads the shared simulation (each character's job + the phase) and positions
-/// avatars via <see cref="RosterPlacementMath"/>. It moves no simulation state, assigns no work, and
-/// owns no schedules — the avatars are honest stand-ins (CHAR-001), not a second work economy.
+/// Places CHAR-001 stand-in avatars at the logical ranch anchors for the current roster.
 ///
-/// <see cref="Refresh"/> is idempotent: it reuses existing avatar nodes by character id and only adds
-/// or removes what changed, so it is safe to call from the UI when assignments change.
+/// This remains presentation-only: assignments are read from the shared ScheduleService and
+/// movement only changes transient Node3D transforms. Walking/arrival never pays rewards, changes
+/// jobs, advances time, or affects settlement.
+///
+/// New avatars spawn at their current logical anchor. When an existing character's assignment
+/// changes, its target changes and the stand-in walks toward that target instead of teleporting.
+/// The current greybox has open traversal space; obstacle-aware NavigationAgent3D remains a later
+/// environment slice once authored navigation geometry exists.
 /// </summary>
 public partial class RosterRig : Node3D
 {
+    [Export] public bool AnimateTravel { get; set; } = true;
+    [Export] public float TravelSpeed { get; set; } = 2.4f;
+    [Export] public float ArrivalDistance { get; set; } = 0.08f;
+
     private readonly Dictionary<string, CharacterAvatar3D> _avatars = new();
+    private readonly Dictionary<string, Vector3> _targets = new();
 
     public int AvatarCount => _avatars.Count;
 
+    public int TravelingCount => _avatars.Count(pair =>
+        _targets.TryGetValue(pair.Key, out var target)
+        && pair.Value.GlobalPosition.DistanceTo(target) > ArrivalDistance);
+
+    public bool TryGetTarget(string characterId, out Vector3 target)
+    {
+        return _targets.TryGetValue(characterId, out target);
+    }
+
+    public override void _Process(double delta)
+    {
+        if (!AnimateTravel || _avatars.Count == 0)
+        {
+            return;
+        }
+
+        var step = Mathf.Max(0f, TravelSpeed) * (float)delta;
+        foreach (var (id, avatar) in _avatars)
+        {
+            if (!_targets.TryGetValue(id, out var target) || !GodotObject.IsInstanceValid(avatar))
+            {
+                continue;
+            }
+
+            var current = avatar.GlobalPosition;
+            var distance = current.DistanceTo(target);
+            if (distance <= ArrivalDistance)
+            {
+                avatar.GlobalPosition = target;
+                continue;
+            }
+
+            var next = current.MoveToward(target, step);
+            var travel = target - current;
+            travel.Y = 0f;
+            if (travel.LengthSquared() > 0.0001f)
+            {
+                var yaw = Mathf.Atan2(-travel.X, -travel.Z);
+                avatar.Rotation = new Vector3(avatar.Rotation.X, yaw, avatar.Rotation.Z);
+            }
+
+            avatar.GlobalPosition = next;
+        }
+    }
+
     /// <summary>
-    /// Rebuild the avatar set for the current roster. Stable per-character id; deterministic spread.
-    /// Returns the number of avatars placed.
+    /// Re-derive targets from the current roster/schedule. Stable per-character id and deterministic
+    /// spread. Existing avatars keep their current transform and walk toward changed targets.
     /// </summary>
     public int Refresh(GameRoot game)
     {
@@ -33,7 +86,6 @@ public partial class RosterRig : Node3D
         var schedule = game.Schedule;
         var data = game.Data;
 
-        // Group roster order by anchor so mates stand side by side (stable ordinal = roster index).
         var seenPerAnchor = new Dictionary<string, int>();
         var desired = new Dictionary<string, (RosterPlacement placement, CharacterDefinition definition)>();
 
@@ -54,20 +106,27 @@ public partial class RosterRig : Node3D
             desired[character.Id] = (placement, roster.DefinitionFor(character));
         }
 
-        // Remove avatars no longer in the roster.
         foreach (var stale in _avatars.Keys.Where(id => !desired.ContainsKey(id)).ToList())
         {
             RemoveAvatar(stale);
         }
 
-        // Add or reposition avatars for the current roster.
         foreach (var (id, (placement, definition)) in desired)
         {
-            var avatar = _avatars.TryGetValue(id, out var existing)
-                ? existing
-                : CreateAvatar(id, definition);
+            if (_avatars.TryGetValue(id, out var existing))
+            {
+                _targets[id] = placement.Position;
+                if (!AnimateTravel)
+                {
+                    existing.GlobalPosition = placement.Position;
+                }
+                continue;
+            }
+
+            var avatar = CreateAvatar(id, definition);
             avatar.GlobalPosition = placement.Position;
             _avatars[id] = avatar;
+            _targets[id] = placement.Position;
         }
 
         return _avatars.Count;
@@ -88,6 +147,8 @@ public partial class RosterRig : Node3D
         {
             avatar.QueueFree();
         }
+
         _avatars.Remove(characterId);
+        _targets.Remove(characterId);
     }
 }
