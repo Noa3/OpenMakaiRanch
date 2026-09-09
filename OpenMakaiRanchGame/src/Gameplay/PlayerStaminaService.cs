@@ -44,13 +44,13 @@ public sealed class PlayerStaminaService
 
     public int Cost(PlayerActivityKind kind) => kind switch
     {
-        PlayerActivityKind.Mentorship => 15,
-        PlayerActivityKind.BondEvent => 10,
+        PlayerActivityKind.Mentorship => 20,
+        PlayerActivityKind.BondEvent => 15,
         PlayerActivityKind.PetFeed => 5,
         PlayerActivityKind.PetPlay => 10,
         PlayerActivityKind.PetTraining => 15,
-        PlayerActivityKind.VisitCare => 8,
-        PlayerActivityKind.VisitFeed => 5,
+        PlayerActivityKind.VisitCare => 10,
+        PlayerActivityKind.VisitFeed => 8,
         PlayerActivityKind.VisitGift => 5,
         PlayerActivityKind.Adventure => 30,
         _ => 0
