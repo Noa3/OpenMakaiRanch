@@ -206,13 +206,13 @@ public sealed class PlayerState
     public string TailType { get; set; } = "None";
     public string BodyFur { get; set; } = "None";
     /// <summary>Current personal MP, separate from ranch-stored mana like the original BASE:0:魔力.</summary>
-    public int Mana { get; set; }
+    public int Mana { get; set; } = 100;
 
-    /// <summary>Personal MP capacity. Zero means the player has not unlocked mana yet.</summary>
-    public int MaxMana { get; set; }
+    /// <summary>Personal MP capacity. The original player character starts at 100.</summary>
+    public int MaxMana { get; set; } = 100;
 
-    /// <summary>Percent of MaxMana recovered at the start of a new day.</summary>
-    public int ManaRecoveryPercent { get; set; }
+    /// <summary>Percent of MaxMana recovered at rest/day rollover. Original Chara0 starts at 10%.</summary>
+    public int ManaRecoveryPercent { get; set; } = 10
 }
 
 public sealed class CalendarState
