@@ -1793,78 +1793,160 @@ public partial class UiShellController
     private void RenderSettings()
     {
         AddTitle(T("screen.settings", "Settings"));
-        var card = CardContainer();
-        _content.AddChild(card);
-        var inner = CardContent();
-        card.AddChild(inner);
-        inner.AddChild(AddStyledLine(T("screen.settings.menu_flow", "Menu flow has been simplified: grouped navigation, cards, and clear action priorities.")));
-        inner.AddChild(AddStyledLine(T("screen.settings.feedback_info", "Mobile and handheld feedback can use short UI tones and optional vibration.")));
+        var settings = _game.State.Settings;
 
-        var audioToggle = PrimaryButton($"{T("screen.settings.audio_feedback", "Audio Feedback")}: {(_game.Feedback.AudioEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        var platformCard = CardContainer();
+        _content.AddChild(platformCard);
+        var platform = CardContent();
+        platformCard.AddChild(platform);
+        platform.AddChild(SubtitleLabel(T("screen.settings.platform", "Platform & Recommended Setup")));
+        platform.AddChild(MutedLabel($"{OS.GetName()} • GL Compatibility • {GetViewportRect().Size.X:0}×{GetViewportRect().Size.Y:0}"));
+        platform.AddChild(MutedLabel(_game.RuntimeSettings.IsMobilePlatform
+            ? T("screen.settings.mobile_note", "Mobile mode favors lower render cost, touch controls and readable UI. Native Android/iOS builds are preferred over browser play.")
+            : T("screen.settings.desktop_note", "Desktop mode supports window/fullscreen, mouse/controller input and higher quality settings.")));
+        var recommended = PrimaryButton(T("screen.settings.recommended", "Apply Recommended Settings"),
+            T("tooltip.settings.recommended", "Choose a safe balanced preset for the current platform."));
+        recommended.Pressed += () =>
+        {
+            _game.ApplyRecommendedSettings();
+            ShowScreen("settings");
+        };
+        platform.AddChild(recommended);
+
+        var graphicsCard = CardContainer();
+        _content.AddChild(graphicsCard);
+        var graphics = CardContent();
+        graphicsCard.AddChild(graphics);
+        graphics.AddChild(SubtitleLabel(T("screen.settings.graphics", "Graphics & Performance")));
+
+        var qualityRow = FlowRow(8);
+        graphics.AddChild(qualityRow);
+        qualityRow.AddChild(AddStyledLine(T("screen.settings.quality", "Quality Preset"), true));
+        var qualityPicker = StyledPicker(180);
+        var qualities = new[] { "Low", "Medium", "High", "Ultra", "Custom" };
+        var qualitySelected = 1;
+        for (var q = 0; q < qualities.Length; q++)
+        {
+            qualityPicker.AddItem(qualities[q]);
+            if (string.Equals(qualities[q], settings.GraphicsQuality, StringComparison.OrdinalIgnoreCase))
+            {
+                qualitySelected = q;
+            }
+        }
+        qualityPicker.Selected = qualitySelected;
+        qualityPicker.ItemSelected += idx =>
+        {
+            var value = qualities[(int)idx];
+            if (value != "Custom")
+            {
+                ExecuteUiAction(() => _game.SetGraphicsQuality(value), false);
+            }
+        };
+        qualityRow.AddChild(qualityPicker);
+
+        var renderScaleRow = FlowRow(8);
+        graphics.AddChild(renderScaleRow);
+        renderScaleRow.AddChild(AddStyledLine($"{T("screen.settings.render_scale", "3D Render Scale")}: {settings.RenderScale * 100f:0}%", true));
+        var renderScale = new HSlider
+        {
+            MinValue = 0.50,
+            MaxValue = 1.00,
+            Step = 0.05,
+            Value = settings.RenderScale,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        renderScale.TooltipText = T("tooltip.settings.render_scale", "Lower this first if the 3D world runs slowly. UI remains at full resolution.");
+        renderScale.ValueChanged += value => ExecuteUiAction(() => _game.SetRenderScale((float)value), false);
+        renderScaleRow.AddChild(renderScale);
+
+        var fpsRow = FlowRow(8);
+        graphics.AddChild(fpsRow);
+        fpsRow.AddChild(AddStyledLine(T("screen.settings.fps", "Frame Rate Limit"), true));
+        var fpsPicker = StyledPicker(160);
+        var fpsValues = new[] { 30, 45, 60, 90, 120, 144, 0 };
+        var fpsSelected = 2;
+        for (var i = 0; i < fpsValues.Length; i++)
+        {
+            fpsPicker.AddItem(fpsValues[i] == 0 ? T("label.unlimited", "Unlimited") : $"{fpsValues[i]} FPS");
+            fpsPicker.SetItemMetadata(i, fpsValues[i]);
+            if (fpsValues[i] == settings.FrameRateLimit) fpsSelected = i;
+        }
+        fpsPicker.Selected = fpsSelected;
+        fpsPicker.ItemSelected += idx => ExecuteUiAction(
+            () => _game.SetFrameRateLimit((int)fpsPicker.GetItemMetadata((int)idx).AsInt64()), false);
+        fpsRow.AddChild(fpsPicker);
+
+        var shadows = PrimaryButton($"{T("screen.settings.shadows", "Dynamic Shadows")}: {(settings.ShadowsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        shadows.TooltipText = T("tooltip.settings.shadows", "Disable shadows for a substantial GPU saving on low-end or mobile hardware.");
+        shadows.Pressed += () => _game.SetShadowsEnabled(!settings.ShadowsEnabled);
+        graphics.AddChild(shadows);
+
+        var vsync = PrimaryButton($"{T("screen.settings.vsync", "VSync")}: {(settings.VSyncEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        vsync.Pressed += () => _game.SetVSyncEnabled(!settings.VSyncEnabled);
+        graphics.AddChild(vsync);
+
+        if (_game.RuntimeSettings.IsDesktopPlatform && !_game.RuntimeSettings.IsWebPlatform)
+        {
+            var fullscreen = PrimaryButton($"{T("screen.settings.fullscreen", "Exclusive Fullscreen")}: {(settings.Fullscreen ? T("label.on", "On") : T("label.off", "Off"))}");
+            fullscreen.Pressed += () => _game.SetFullscreen(!settings.Fullscreen);
+            graphics.AddChild(fullscreen);
+        }
+
+        var audioCard = CardContainer();
+        _content.AddChild(audioCard);
+        var audio = CardContent();
+        audioCard.AddChild(audio);
+        audio.AddChild(SubtitleLabel(T("screen.settings.audio", "Audio & Feedback")));
+
+        var audioToggle = PrimaryButton($"{T("screen.settings.audio_feedback", "Audio")}: {(_game.Feedback.AudioEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
         audioToggle.Pressed += () =>
         {
             _game.ToggleAudioFeedback();
-            if (_game.Feedback.AudioEnabled)
-            {
-                _game.Feedback.PlayConfirm();
-            }
+            if (_game.Feedback.AudioEnabled) _game.Feedback.PlayConfirm();
         };
-        inner.AddChild(audioToggle);
+        audio.AddChild(audioToggle);
+
+        AddVolumeSlider(audio, T("screen.settings.master_volume", "Master"), settings.MasterVolume, _game.SetMasterVolume);
+        AddVolumeSlider(audio, T("screen.settings.music_volume", "Music"), settings.MusicVolume, _game.SetMusicVolume);
+        AddVolumeSlider(audio, T("screen.settings.sfx_volume", "SFX"), settings.SfxVolume, _game.SetSfxVolume);
+        AddVolumeSlider(audio, T("screen.settings.ui_volume", "UI"), settings.UiVolume, _game.SetUiVolume);
+
+        var muteUnfocused = PrimaryButton($"{T("screen.settings.mute_unfocused", "Mute When Unfocused")}: {(settings.MuteWhenUnfocused ? T("label.on", "On") : T("label.off", "Off"))}");
+        muteUnfocused.Pressed += () => _game.SetMuteWhenUnfocused(!settings.MuteWhenUnfocused);
+        audio.AddChild(muteUnfocused);
 
         var hapticsToggle = PrimaryButton($"{T("screen.settings.handheld_vibration", "Handheld Vibration")}: {(_game.Feedback.HapticsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        hapticsToggle.Disabled = !_game.Feedback.SupportsHaptics;
         hapticsToggle.Pressed += () =>
         {
             _game.ToggleHapticsFeedback();
             _game.Feedback.PulseHaptics(40, 0.45f);
         };
-        inner.AddChild(hapticsToggle);
-
-        var tutorialToggle = PrimaryButton($"{T("screen.settings.tutorial_hints", "World Tutorial Hints")}: {(_game.State.Settings.TutorialHintsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
-        tutorialToggle.TooltipText = T("tooltip.tutorial_hints", "Show contextual first-run cards in the 3D ranch. F1 Help remains available even when hints are off.");
-        tutorialToggle.Pressed += () => _game.SetTutorialHintsEnabled(!_game.State.Settings.TutorialHintsEnabled);
-        inner.AddChild(tutorialToggle);
-
-        var resetTutorial = SecondaryButton(T("screen.settings.restart_tutorial", "Restart Basic Ranch Tutorial"));
-        resetTutorial.TooltipText = T("tooltip.restart_tutorial", "Clear completed basic world tutorial steps and enable tutorial hints again.");
-        resetTutorial.Pressed += () =>
-        {
-            _game.ResetTutorialProgress();
-            _game.SetTutorialHintsEnabled(true);
-            ShowScreen("settings");
-        };
-        inner.AddChild(resetTutorial);
-
-        inner.AddChild(MutedLabel(T("screen.settings.world_help", "In the 3D ranch, press F1 at any time for controls and the basic gameplay loop.")));
+        audio.AddChild(hapticsToggle);
 
         var previewFeedback = SecondaryButton(T("screen.settings.preview_confirm", "Preview Confirm Feedback"));
         previewFeedback.Pressed += () => _game.Feedback.PlayConfirm();
-        inner.AddChild(previewFeedback);
+        audio.AddChild(previewFeedback);
 
-        var previewError = SecondaryButton(T("screen.settings.preview_error", "Preview Error Feedback"));
-        previewError.Pressed += () => _game.Feedback.PlayError();
-        inner.AddChild(previewError);
+        var interfaceCard = CardContainer();
+        _content.AddChild(interfaceCard);
+        var ui = CardContent();
+        interfaceCard.AddChild(ui);
+        ui.AddChild(SubtitleLabel(T("screen.settings.interface", "Interface & Accessibility")));
 
         var themeRow = FlowRow(8);
-        inner.AddChild(themeRow);
+        ui.AddChild(themeRow);
         themeRow.AddChild(AddStyledLine(T("screen.settings.color_theme", "Color Theme"), true));
-
         var themePicker = StyledPicker(220);
-        themePicker.Name = "ThemeOption";
-        var currentThemeId = _game.State.Settings.ThemeId;
         var selectedThemeIndex = 0;
-        var index = 0;
+        var themeIndex = 0;
         foreach (var theme in UiThemeCatalog.All)
         {
             themePicker.AddItem(theme.DisplayName);
-            themePicker.SetItemMetadata(index, theme.Id);
-            if (string.Equals(theme.Id, currentThemeId, StringComparison.OrdinalIgnoreCase))
-            {
-                selectedThemeIndex = index;
-            }
-
-            index += 1;
+            themePicker.SetItemMetadata(themeIndex, theme.Id);
+            if (string.Equals(theme.Id, settings.ThemeId, StringComparison.OrdinalIgnoreCase)) selectedThemeIndex = themeIndex;
+            themeIndex++;
         }
-
         themePicker.Selected = selectedThemeIndex;
         themePicker.ItemSelected += selected =>
         {
@@ -1874,35 +1956,34 @@ public partial class UiShellController
         themeRow.AddChild(themePicker);
 
         var uiScaleRow = FlowRow(8);
-        inner.AddChild(uiScaleRow);
-        uiScaleRow.AddChild(AddStyledLine($"{T("screen.settings.ui_scale", "UI Scale")}: {_game.State.Settings.UiScale:0.00}x", true));
+        ui.AddChild(uiScaleRow);
+        uiScaleRow.AddChild(AddStyledLine($"{T("screen.settings.ui_scale", "UI Scale")}: {settings.UiScale:0.00}x", true));
         var uiScale = new HSlider
         {
-            Name = "UiScaleSlider",
-            MinValue = 0.85f,
-            MaxValue = 1.35f,
-            Step = 0.05f,
-            Value = _game.State.Settings.UiScale,
+            MinValue = 0.80,
+            MaxValue = 1.50,
+            Step = 0.05,
+            Value = settings.UiScale,
             CustomMinimumSize = new Vector2(240, 0)
         };
         uiScale.ValueChanged += value => ExecuteUiAction(() => _game.SetUiScale((float)value), false);
         uiScaleRow.AddChild(uiScale);
 
+        var reducedMotion = PrimaryButton($"{T("screen.settings.reduced_motion", "Reduced Motion")}: {(settings.ReducedMotion ? T("label.on", "On") : T("label.off", "Off"))}");
+        reducedMotion.Pressed += () => _game.SetReducedMotion(!settings.ReducedMotion);
+        ui.AddChild(reducedMotion);
+
         var localeRow = FlowRow(8);
-        inner.AddChild(localeRow);
+        ui.AddChild(localeRow);
         localeRow.AddChild(AddStyledLine(T("screen.settings.language", "Language"), true));
         var localePicker = StyledPicker(180);
-        localePicker.Name = "LocaleOption";
         var selectedLocaleIndex = 0;
         for (var localeIdx = 0; localeIdx < AvailableLocales.Length; localeIdx++)
         {
             var lc = AvailableLocales[localeIdx];
             localePicker.AddItem(LocaleDisplayName(lc));
             localePicker.SetItemMetadata(localeIdx, lc);
-            if (string.Equals(lc, _game.State.Settings.Locale, StringComparison.OrdinalIgnoreCase))
-            {
-                selectedLocaleIndex = localeIdx;
-            }
+            if (string.Equals(lc, settings.Locale, StringComparison.OrdinalIgnoreCase)) selectedLocaleIndex = localeIdx;
         }
         localePicker.Selected = selectedLocaleIndex;
         localePicker.ItemSelected += selected =>
@@ -1912,8 +1993,106 @@ public partial class UiShellController
         };
         localeRow.AddChild(localePicker);
 
-        inner.AddChild(MutedLabel($"{T("screen.settings.haptics_supported", "Haptics supported on this device")}: {(_game.Feedback.SupportsHaptics ? T("label.yes", "Yes") : T("label.no", "No"))}"));
-        inner.AddChild(MutedLabel(T("screen.settings.android_haptics", "Android exports need the VIBRATE permission enabled for handheld vibration.")));
+        var controlsCard = CardContainer();
+        _content.AddChild(controlsCard);
+        var controls = CardContent();
+        controlsCard.AddChild(controls);
+        controls.AddChild(SubtitleLabel(T("screen.settings.controls", "Camera & Controls")));
+
+        var sensitivityRow = FlowRow(8);
+        controls.AddChild(sensitivityRow);
+        sensitivityRow.AddChild(AddStyledLine($"{T("screen.settings.camera_sensitivity", "Camera Sensitivity")}: {settings.CameraSensitivity:0.00}x", true));
+        var sensitivity = new HSlider
+        {
+            MinValue = 0.35,
+            MaxValue = 2.50,
+            Step = 0.05,
+            Value = settings.CameraSensitivity,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        sensitivity.ValueChanged += value => ExecuteUiAction(() => _game.SetCameraSensitivity((float)value), false);
+        sensitivityRow.AddChild(sensitivity);
+
+        var fovRow = FlowRow(8);
+        controls.AddChild(fovRow);
+        fovRow.AddChild(AddStyledLine($"{T("screen.settings.camera_fov", "Camera FOV")}: {settings.CameraFov:0}°", true));
+        var fov = new HSlider
+        {
+            MinValue = 55,
+            MaxValue = 95,
+            Step = 1,
+            Value = settings.CameraFov,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        fov.ValueChanged += value => ExecuteUiAction(() => _game.SetCameraFov((float)value), false);
+        fovRow.AddChild(fov);
+
+        var invertY = PrimaryButton($"{T("screen.settings.invert_y", "Invert Camera Y")}: {(settings.InvertCameraY ? T("label.on", "On") : T("label.off", "Off"))}");
+        invertY.Pressed += () => _game.SetInvertCameraY(!settings.InvertCameraY);
+        controls.AddChild(invertY);
+
+        var touch = PrimaryButton($"{T("screen.settings.touch_controls", "On-screen Touch Controls")}: {((_game.RuntimeSettings.ShouldShowTouchControls) ? T("label.on", "On") : T("label.off", "Off"))}");
+        touch.TooltipText = _game.RuntimeSettings.IsMobilePlatform
+            ? T("tooltip.settings.touch_mobile", "Touch controls are always available on mobile; this switch also allows testing them on desktop.")
+            : T("tooltip.settings.touch_desktop", "Enable the mobile touch overlay for testing or touch-screen PCs.");
+        touch.Pressed += () => _game.SetTouchControlsEnabled(!settings.TouchControlsEnabled);
+        controls.AddChild(touch);
+
+        var touchScaleRow = FlowRow(8);
+        controls.AddChild(touchScaleRow);
+        touchScaleRow.AddChild(AddStyledLine($"{T("screen.settings.touch_scale", "Touch Control Size")}: {settings.TouchControlScale:0.00}x", true));
+        var touchScale = new HSlider
+        {
+            MinValue = 0.75,
+            MaxValue = 1.50,
+            Step = 0.05,
+            Value = settings.TouchControlScale,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        touchScale.ValueChanged += value => ExecuteUiAction(() => _game.SetTouchControlScale((float)value), false);
+        touchScaleRow.AddChild(touchScale);
+
+        var gameplayCard = CardContainer();
+        _content.AddChild(gameplayCard);
+        var gameplay = CardContent();
+        gameplayCard.AddChild(gameplay);
+        gameplay.AddChild(SubtitleLabel(T("screen.settings.gameplay", "Gameplay Assistance & Saving")));
+
+        var autosave = PrimaryButton($"{T("screen.settings.autosave", "Autosave")}: {(settings.AutosaveEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        autosave.TooltipText = T("tooltip.settings.autosave", "Autosave to slot 0 after each completed day and when a mobile app is suspended.");
+        autosave.Pressed += () => _game.SetAutosaveEnabled(!settings.AutosaveEnabled);
+        gameplay.AddChild(autosave);
+
+        var tutorialToggle = PrimaryButton($"{T("screen.settings.tutorial_hints", "World Tutorial Hints")}: {(settings.TutorialHintsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        tutorialToggle.Pressed += () => _game.SetTutorialHintsEnabled(!settings.TutorialHintsEnabled);
+        gameplay.AddChild(tutorialToggle);
+
+        var resetTutorial = SecondaryButton(T("screen.settings.restart_tutorial", "Restart Basic Ranch Tutorial"));
+        resetTutorial.Pressed += () =>
+        {
+            _game.ResetTutorialProgress();
+            _game.SetTutorialHintsEnabled(true);
+            ShowScreen("settings");
+        };
+        gameplay.AddChild(resetTutorial);
+        gameplay.AddChild(MutedLabel(T("screen.settings.world_help", "In the 3D world, press F1 at any time for controls and the basic gameplay loop.")));
+    }
+
+    private void AddVolumeSlider(VBoxContainer parent, string label, float value, Func<float, bool> setter)
+    {
+        var row = FlowRow(8);
+        parent.AddChild(row);
+        row.AddChild(AddStyledLine($"{label}: {value * 100f:0}%", true));
+        var slider = new HSlider
+        {
+            MinValue = 0,
+            MaxValue = 1,
+            Step = 0.05,
+            Value = value,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        slider.ValueChanged += changed => ExecuteUiAction(() => setter((float)changed), false);
+        row.AddChild(slider);
     }
 
     // === Training state tracking ===
