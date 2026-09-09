@@ -209,6 +209,25 @@ public partial class WorldHudController : CanvasLayer
         _promptLabel.TooltipText = $"Move within {interactionRange:0.0} m to interact with {target.Label}.";
     }
 
+    public void SetCharacterInteractionTarget(string characterName, float distance, float interactionRange)
+    {
+        if (_promptLabel is null)
+        {
+            return;
+        }
+
+        if (distance <= interactionRange)
+        {
+            _promptLabel.Text = $"[F] Talk to {characterName}";
+            _promptLabel.TooltipText = $"Open {characterName}'s existing character detail screen. This world interaction does not apply hidden rewards or relationship changes.";
+        }
+        else
+        {
+            _promptLabel.Text = $"{characterName}  {distance:0.0} m   •   move closer to talk";
+            _promptLabel.TooltipText = $"Move within {interactionRange:0.0} m to interact with {characterName}.";
+        }
+    }
+
     public void SetStatus(string message, double? seconds = null)
     {
         if (_statusLabel is null)
