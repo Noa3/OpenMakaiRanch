@@ -39,6 +39,7 @@ public partial class WorldInputBootstrap : Node
         EnsureAction("camera_recenter");
         EnsureAction("cycle_character");
         EnsureAction("toggle_management");
+        EnsureAction("open_help");
 
         foreach (var (action, _, keycode) in KeyboardMappings)
         {
@@ -53,6 +54,7 @@ public partial class WorldInputBootstrap : Node
         AddKeyIfAbsent("cycle_character", (int)Key.Tab);
         AddKeyIfAbsent("toggle_management", (int)Key.M);
         AddKeyIfAbsent("move_sprint", (int)Key.Shift);
+        AddKeyIfAbsent("open_help", (int)Key.F1);
     }
 
     private static void EnsureAction(string action)
