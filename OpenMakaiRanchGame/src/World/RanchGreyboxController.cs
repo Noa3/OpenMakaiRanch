@@ -51,6 +51,9 @@ public partial class RanchGreyboxController : Node3D
     /// <summary>Places stand-ins for the live roster from shared assignments.</summary>
     public RosterRig? Roster { get; private set; }
 
+    /// <summary>Collision-free stylized placeholder/readability layer.</summary>
+    public RanchPresentationBuilder? Presentation { get; private set; }
+
     public override void _Ready()
     {
         _player = GetNodeOrNull<ThirdPersonPlayerController>("Player");
@@ -168,6 +171,13 @@ public partial class RanchGreyboxController : Node3D
             rosterRig.Refresh(game);
             Roster = rosterRig;
         }
+
+        var presentation = GetNodeOrNull<RanchPresentationBuilder>("Presentation");
+        if (presentation is not null)
+        {
+            presentation.Refresh(game);
+            Presentation = presentation;
+        }
     }
 
     private void OnSharedStateChanged()
@@ -191,6 +201,7 @@ public partial class RanchGreyboxController : Node3D
 
         Daylight?.ApplyFrom(game);
         Roster?.Refresh(game);
+        Presentation?.Refresh(game);
         EnsureSelectedCharacter();
         UpdateNearbyStation();
         RefreshHud();
