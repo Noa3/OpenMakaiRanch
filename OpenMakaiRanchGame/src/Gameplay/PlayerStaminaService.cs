@@ -96,6 +96,9 @@ public sealed class PlayerStaminaService
         if (_state.Player.BathedToday)
             return new PlayerRecoveryResult(false, false, 0, "You already used today's bath/shower recovery.");
 
+        if (_state.Player.Stamina >= _state.Player.MaxStamina)
+            return new PlayerRecoveryResult(false, false, 0, "Your stamina is already full.");
+
         _state.Player.BathedToday = true;
         var usedCleanBath = cleanBathAvailable;
         var restored = Restore(usedCleanBath ? CleanBathRecovery : ShowerRecovery);
