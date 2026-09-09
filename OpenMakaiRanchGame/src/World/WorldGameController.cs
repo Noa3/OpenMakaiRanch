@@ -20,6 +20,7 @@ public partial class WorldGameController : Node
     [Export] public NodePath ReturnToWorldButtonPath { get; set; } = "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton";
     [Export] public NodePath TransitionPath { get; set; } = "TransitionLayer/Transition";
     [Export] public NodePath PauseMenuPath { get; set; } = "PauseLayer/PauseMenu";
+    [Export] public NodePath MobileControlsPath { get; set; } = "MobileControlsLayer/MobileControls";
 
     private RanchGreyboxController? _ranch;
     private TownWorldController? _town;
@@ -30,6 +31,7 @@ public partial class WorldGameController : Node
     private Button? _returnToWorldButton;
     private WorldTransitionController? _transition;
     private PauseMenuController? _pauseMenu;
+    private MobileWorldControls? _mobileControls;
     private bool _flowLocksUi;
     private string _activeAreaId = "ranch";
 
@@ -41,6 +43,7 @@ public partial class WorldGameController : Node
     public UiShellController? Shell => _shell;
     public PauseMenuController? PauseMenu => _pauseMenu;
     public WorldTransitionController? Transition => _transition;
+    public MobileWorldControls? MobileControls => _mobileControls;
 
     public override void _Ready()
     {
@@ -53,6 +56,7 @@ public partial class WorldGameController : Node
         _returnToWorldButton = GetNodeOrNull<Button>(ReturnToWorldButtonPath);
         _transition = GetNodeOrNull<WorldTransitionController>(TransitionPath);
         _pauseMenu = GetNodeOrNull<PauseMenuController>(PauseMenuPath);
+        _mobileControls = GetNodeOrNull<MobileWorldControls>(MobileControlsPath);
 
         if (_ranch is null || _town is null || _managementRoot is null || _shell is null)
         {
@@ -73,6 +77,12 @@ public partial class WorldGameController : Node
         if (_pauseMenu is not null)
         {
             _pauseMenu.ManagementScreenRequested += OnPauseManagementRequested;
+        }
+        if (_mobileControls is not null)
+        {
+            _mobileControls.InteractPressed += OnMobileInteractPressed;
+            _mobileControls.ManagementPressed += ToggleManagement;
+            _mobileControls.CycleWorkerPressed += OnMobileCycleWorker;
         }
 
         if (_managementButton is not null)
@@ -129,6 +139,12 @@ public partial class WorldGameController : Node
         {
             _transition.Completed -= OnTransitionCompleted;
         }
+        if (_mobileControls is not null && GodotObject.IsInstanceValid(_mobileControls))
+        {
+            _mobileControls.InteractPressed -= OnMobileInteractPressed;
+            _mobileControls.ManagementPressed -= ToggleManagement;
+            _mobileControls.CycleWorkerPressed -= OnMobileCycleWorker;
+        }
         if (_pauseMenu is not null && GodotObject.IsInstanceValid(_pauseMenu))
         {
             _pauseMenu.ManagementScreenRequested -= OnPauseManagementRequested;
@@ -154,6 +170,7 @@ public partial class WorldGameController : Node
 
     public override void _Process(double delta)
     {
+        RefreshMobileControls();
         if (Input.IsActionJustPressed("toggle_management") && _pauseMenu?.IsOpen != true)
         {
             ToggleManagement();
@@ -296,6 +313,31 @@ public partial class WorldGameController : Node
         OpenManagement();
     }
 
+    private void OnMobileInteractPressed()
+    {
+        if (IsManagementVisible || _pauseMenu?.IsOpen == true || _transition?.IsTransitioning == true)
+        {
+            return;
+        }
+
+        if (_activeAreaId == "town")
+        {
+            _town?.TryInteract();
+        }
+        else
+        {
+            _ranch?.TryInteractWithNearestWorldTarget();
+        }
+    }
+
+    private void OnMobileCycleWorker()
+    {
+        if (_activeAreaId == "ranch" && !IsManagementVisible)
+        {
+            _ranch?.CycleSelectedCharacter();
+        }
+    }
+
     private void OnPauseManagementRequested(string screenId)
     {
         OpenManagementScreen(screenId);
@@ -427,6 +469,11 @@ public partial class WorldGameController : Node
         _ranch.InputGate.Reset();
         _town.InputGate.Reset();
 
+        _mobileControls?.Bind(
+            ranchActive ? _ranch.Player : _town.Player,
+            ranchActive ? _ranch.CameraRig : _town.CameraRig,
+            showCycle: ranchActive);
+
         if (reposition)
         {
             if (ranchActive && _ranch.Player is not null)
@@ -522,6 +569,20 @@ public partial class WorldGameController : Node
         {
             _transition.CompleteImmediately();
         }
+    }
+
+    private void RefreshMobileControls()
+    {
+        if (_mobileControls is null)
+        {
+            return;
+        }
+
+        var blocked = _flowLocksUi
+            || IsManagementVisible
+            || _pauseMenu?.IsOpen == true
+            || _transition?.IsTransitioning == true;
+        _mobileControls.SetBlocked(blocked);
     }
 
     private void ActiveStatus(string message)
