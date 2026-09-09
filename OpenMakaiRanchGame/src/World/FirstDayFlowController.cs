@@ -158,6 +158,20 @@ public partial class FirstDayFlowController : Control
         TryStartOrResume();
     }
 
+    /// <summary>
+    /// Re-evaluate Day-1 ownership after another system changes the full-screen UI lock.
+    /// This makes the handoff deterministic regardless of ScreenChanged subscriber order.
+    /// </summary>
+    public void RefreshFromCurrentState()
+    {
+        if (!_initialized)
+        {
+            return;
+        }
+
+        TryStartOrResume();
+    }
+
     private void TryStartOrResume()
     {
         if (_host is null || _game is null || _host.Shell is null)
