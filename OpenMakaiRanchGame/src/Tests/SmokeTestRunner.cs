@@ -1711,9 +1711,20 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 }
             }
 
-            Assert(result, controller.TravelTo("ranch"), "town can return to the ranch");
-            Assert(result, controller.ActiveAreaId == "ranch" && game.State.WorldAreaId == "ranch",
-                "return travel restores ranch area and persisted location");
+            if (controller.Town?.Player is not null && controller.Town.ReturnPortal is not null)
+            {
+                controller.Town.Player.GlobalPosition = controller.Town.ReturnPortal.GlobalPosition;
+                Assert(result, controller.Town.TryInteract(), "town south gate can return to the ranch");
+                Assert(result, controller.ActiveAreaId == "ranch" && game.State.WorldAreaId == "ranch",
+                    "physical return gate restores ranch area and persisted location");
+            }
+
+            Assert(result, controller.TravelTo("town"), "world can revisit town for UI-travel test");
+            Assert(result, controller.OpenManagementScreen("town"), "town hub management opens while in town");
+            Assert(result, controller.Shell?.RequestWorldTravel("ranch") == true,
+                "Town Hub Return to Ranch requests physical world travel when hosted");
+            Assert(result, !controller.IsManagementVisible && controller.ActiveAreaId == "ranch",
+                "Town Hub travel request closes management and returns to the ranch");
 
             Assert(result, controller.OpenManagement(), "world boot opens existing management overlay");
             Assert(result, controller.IsManagementVisible, "management overlay becomes visible");
