@@ -190,6 +190,12 @@ public sealed class RanchService
             report.Lines.Add($"Craftsmanship: +{bonus} bonus output from skilled workshop work.");
         }
 
+        if (string.Equals(job.Id, "cleaning", StringComparison.OrdinalIgnoreCase) && !_state.Ranch.BathtubClean)
+        {
+            _state.Ranch.BathtubClean = true;
+            report.Lines.Add($"{character.DisplayNameOverride} cleaned and prepared the ranch bath.");
+        }
+
         _state.Ranch.Stockpile.TryGetValue(job.ResourceId, out var currentAmount);
         _state.Ranch.Stockpile[job.ResourceId] = currentAmount + amount;
         var displayName = !string.IsNullOrWhiteSpace(character.DisplayNameOverride) ? character.DisplayNameOverride : character.Id;
