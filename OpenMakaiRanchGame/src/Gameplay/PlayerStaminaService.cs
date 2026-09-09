@@ -7,6 +7,7 @@ public enum PlayerActivityKind
 {
     Mentorship,
     BondEvent,
+    PetFeed,
     PetPlay,
     PetTraining,
     VisitCare,
@@ -45,6 +46,7 @@ public sealed class PlayerStaminaService
     {
         PlayerActivityKind.Mentorship => 15,
         PlayerActivityKind.BondEvent => 10,
+        PlayerActivityKind.PetFeed => 5,
         PlayerActivityKind.PetPlay => 10,
         PlayerActivityKind.PetTraining => 15,
         PlayerActivityKind.VisitCare => 8,
