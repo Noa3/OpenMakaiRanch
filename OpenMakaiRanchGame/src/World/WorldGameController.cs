@@ -11,6 +11,7 @@ namespace OpenMakaiRanch.World;
 /// </summary>
 public partial class WorldGameController : Node
 {
+    [Export] public NodePath IntroHousePath { get; set; } = "IntroHouse";
     [Export] public NodePath RanchPath { get; set; } = "RanchWorld";
     [Export] public NodePath TownPath { get; set; } = "TownWorld";
     [Export] public NodePath ManagementRootPath { get; set; } = "ManagementLayer/ManagementUi";
@@ -22,6 +23,7 @@ public partial class WorldGameController : Node
     [Export] public NodePath PauseMenuPath { get; set; } = "PauseLayer/PauseMenu";
     [Export] public NodePath MobileControlsPath { get; set; } = "MobileControlsLayer/MobileControls";
 
+    private IntroHouseController? _introHouse;
     private RanchGreyboxController? _ranch;
     private TownWorldController? _town;
     private Control? _managementRoot;
@@ -38,6 +40,7 @@ public partial class WorldGameController : Node
     public bool IsManagementVisible => _managementRoot?.Visible == true;
     public bool FlowLocksUi => _flowLocksUi;
     public string ActiveAreaId => _activeAreaId;
+    public IntroHouseController? IntroHouse => _introHouse;
     public RanchGreyboxController? Ranch => _ranch;
     public TownWorldController? Town => _town;
     public UiShellController? Shell => _shell;
@@ -47,6 +50,7 @@ public partial class WorldGameController : Node
 
     public override void _Ready()
     {
+        _introHouse = GetNodeOrNull<IntroHouseController>(IntroHousePath);
         _ranch = GetNodeOrNull<RanchGreyboxController>(RanchPath);
         _town = GetNodeOrNull<TownWorldController>(TownPath);
         _managementRoot = GetNodeOrNull<Control>(ManagementRootPath);
@@ -58,9 +62,9 @@ public partial class WorldGameController : Node
         _pauseMenu = GetNodeOrNull<PauseMenuController>(PauseMenuPath);
         _mobileControls = GetNodeOrNull<MobileWorldControls>(MobileControlsPath);
 
-        if (_ranch is null || _town is null || _managementRoot is null || _shell is null)
+        if (_introHouse is null || _ranch is null || _town is null || _managementRoot is null || _shell is null)
         {
-            GD.PushError("WorldGameController could not bind RanchWorld + TownWorld + management UI composition.");
+            GD.PushError("WorldGameController could not bind IntroHouse + RanchWorld + TownWorld + management UI composition.");
             return;
         }
 
@@ -213,6 +217,12 @@ public partial class WorldGameController : Node
 
     public void ToggleManagement()
     {
+        if (_activeAreaId == "intro")
+        {
+            ActiveStatus("Finish getting ready and head outside first.");
+            return;
+        }
+
         if (IsManagementVisible)
         {
             CloseManagement();
@@ -229,6 +239,29 @@ public partial class WorldGameController : Node
     private void CloseManagementFromUi()
     {
         CloseManagement();
+    }
+
+    /// <summary>
+    /// Story-only area switch. Intro is never persisted as a normal travel destination; the
+    /// FirstDayStage determines whether a loaded game resumes there.
+    /// </summary>
+    public bool ActivateStoryArea(string areaId, bool reposition, bool firstArrival)
+    {
+        if (areaId is not ("intro" or "ranch"))
+        {
+            return false;
+        }
+
+        _transition?.CoverInstant();
+        if (!SetActiveArea(areaId, reposition))
+        {
+            _transition?.HideImmediately();
+            return false;
+        }
+
+        SetTransitionInputLock(true);
+        RevealArea(areaId, firstArrival);
+        return true;
     }
 
     /// <summary>
@@ -438,50 +471,62 @@ public partial class WorldGameController : Node
 
     private bool SetActiveArea(string destinationId, bool reposition)
     {
-        if (_ranch is null || _town is null)
+        if (_introHouse is null || _ranch is null || _town is null)
         {
             return false;
         }
 
-        if (destinationId is not ("ranch" or "town"))
+        if (destinationId is not ("intro" or "ranch" or "town"))
         {
             return false;
         }
 
         _activeAreaId = destinationId;
+        var introActive = destinationId == "intro";
         var ranchActive = destinationId == "ranch";
+        var townActive = destinationId == "town";
 
+        _introHouse.Visible = introActive;
+        _introHouse.ProcessMode = introActive ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
         _ranch.Visible = ranchActive;
         _ranch.ProcessMode = ranchActive ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
-        _town.Visible = !ranchActive;
-        _town.ProcessMode = ranchActive ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit;
+        _town.Visible = townActive;
+        _town.ProcessMode = townActive ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
 
+        if (_introHouse.CameraRig?.GetNodeOrNull<Camera3D>("Camera") is { } introCamera)
+        {
+            introCamera.Current = introActive;
+        }
         if (_ranch.CameraRig?.GetNodeOrNull<Camera3D>("Camera") is { } ranchCamera)
         {
             ranchCamera.Current = ranchActive;
         }
         if (_town.CameraRig?.GetNodeOrNull<Camera3D>("Camera") is { } townCamera)
         {
-            townCamera.Current = !ranchActive;
+            townCamera.Current = townActive;
         }
 
-        // Inactive areas never retain UI ownership.
+        _introHouse.InputGate.Reset();
         _ranch.InputGate.Reset();
         _town.InputGate.Reset();
 
         _mobileControls?.Bind(
-            ranchActive ? _ranch.Player : _town.Player,
-            ranchActive ? _ranch.CameraRig : _town.CameraRig,
+            introActive ? _introHouse.Player : ranchActive ? _ranch.Player : _town.Player,
+            introActive ? _introHouse.CameraRig : ranchActive ? _ranch.CameraRig : _town.CameraRig,
             showCycle: ranchActive);
 
         if (reposition)
         {
-            if (ranchActive && _ranch.Player is not null)
+            if (introActive && _introHouse.Player is not null)
+            {
+                _introHouse.Player.GlobalPosition = new Vector3(-1.2f, 0.8f, 0.4f);
+            }
+            else if (ranchActive && _ranch.Player is not null)
             {
                 _ranch.Player.GlobalPosition = new Vector3(0f, 0.8f, 10.5f);
-                _ranch.Hud?.SetStatus("Returned to the ranch.");
+                _ranch.Hud?.SetStatus("Entered the ranch grounds.");
             }
-            else if (!ranchActive && _town.Player is not null)
+            else if (townActive && _town.Player is not null)
             {
                 _town.Player.GlobalPosition = new Vector3(0f, 0.8f, 10.2f);
                 var game = GameRoot.Instance;
@@ -504,26 +549,16 @@ public partial class WorldGameController : Node
 
     private void ActiveEnterManagement()
     {
-        if (_activeAreaId == "town")
-        {
-            _town?.EnterManagementUi();
-        }
-        else
-        {
-            _ranch?.EnterManagementUi();
-        }
+        if (_activeAreaId == "town") _town?.EnterManagementUi();
+        else if (_activeAreaId == "intro") _introHouse?.EnterStoryUi();
+        else _ranch?.EnterManagementUi();
     }
 
     private void ActiveLeaveManagement()
     {
-        if (_activeAreaId == "town")
-        {
-            _town?.LeaveManagementUi();
-        }
-        else
-        {
-            _ranch?.LeaveManagementUi();
-        }
+        if (_activeAreaId == "town") _town?.LeaveManagementUi();
+        else if (_activeAreaId == "intro") _introHouse?.LeaveStoryUi();
+        else _ranch?.LeaveManagementUi();
     }
 
     private void OnTransitionCompleted()
@@ -533,14 +568,9 @@ public partial class WorldGameController : Node
 
     private void SetTransitionInputLock(bool locked)
     {
-        if (_activeAreaId == "town")
-        {
-            _town?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
-        }
-        else
-        {
-            _ranch?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
-        }
+        if (_activeAreaId == "town") _town?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
+        else if (_activeAreaId == "intro") _introHouse?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
+        else _ranch?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
     }
 
     private void RevealInitialWorld()
@@ -556,13 +586,18 @@ public partial class WorldGameController : Node
             return;
         }
 
-        var location = areaId == "town"
-            ? "Okachi Town"
-            : string.IsNullOrWhiteSpace(game.State.Player.RanchName) ? "Okachi Ranch" : game.State.Player.RanchName;
+        var location = areaId switch
+        {
+            "intro" => "Ranch House",
+            "town" => "Okachi Town",
+            _ => string.IsNullOrWhiteSpace(game.State.Player.RanchName) ? "Okachi Ranch" : game.State.Player.RanchName
+        };
 
-        var subtitle = firstArrival
-            ? $"Day {game.State.Calendar.Day} • {game.State.Calendar.Phase} — Your first morning at the ranch. Explore, check the HUD, and press F1 if you need guidance."
-            : $"Day {game.State.Calendar.Day} • {game.State.Calendar.Phase} — {(areaId == "town" ? "Town services are open." : "Welcome back to the ranch.")}";
+        var subtitle = areaId == "intro"
+            ? "Day 1 • Morning — A familiar voice is trying to wake you."
+            : firstArrival
+                ? $"Day {game.State.Calendar.Day} • {game.State.Calendar.Phase} — Your first guided day on the ranch begins."
+                : $"Day {game.State.Calendar.Day} • {game.State.Calendar.Phase} — {(areaId == "town" ? "Town services are open." : "Welcome back to the ranch.")}";
 
         _transition.Reveal(location, subtitle, firstArrival ? 1.15 : 0.55, firstArrival ? 1.05 : 0.65);
         if (game.State.Settings.ReducedMotion)
@@ -587,14 +622,9 @@ public partial class WorldGameController : Node
 
     private void ActiveStatus(string message)
     {
-        if (_activeAreaId == "town")
-        {
-            _town?.Hud?.SetStatus(message);
-        }
-        else
-        {
-            _ranch?.Hud?.SetStatus(message);
-        }
+        if (_activeAreaId == "town") _town?.Hud?.SetStatus(message);
+        else if (_activeAreaId == "intro") GD.Print($"Intro: {message}");
+        else _ranch?.Hud?.SetStatus(message);
     }
 
     private static bool RequiresFullScreenUi(string screenId)
