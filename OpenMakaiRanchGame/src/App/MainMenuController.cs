@@ -230,10 +230,10 @@ public partial class MainMenuController : Control
 
 	private void GoToGameScene()
 	{
-		var error = GetTree().ChangeSceneToFile("res://scenes/Game.tscn");
+		var error = GetTree().ChangeSceneToFile("res://scenes/WorldGame.tscn");
 		if (error != Error.Ok)
 		{
-			GD.PushError($"MainMenu failed to open Game scene: {error}");
+			GD.PushError($"MainMenu failed to open WorldGame scene: {error}");
 		}
 	}
 }
