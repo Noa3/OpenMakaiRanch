@@ -26,6 +26,8 @@ public partial class RanchGreyboxController : Node3D
     private Label? _legacyPrompt;
     private WorldStation? _nearbyStation;
     private float _nearbyDistance = float.PositiveInfinity;
+    private string _nearbyCharacterId = string.Empty;
+    private float _nearbyCharacterDistance = float.PositiveInfinity;
     private int _selectedCharacterIndex;
     private bool _wired;
 
@@ -35,6 +37,8 @@ public partial class RanchGreyboxController : Node3D
     public IReadOnlyList<WorldStation> Stations => _stations;
     public int StationCount => _stations.Count;
     public WorldStation? NearbyStation => _nearbyStation;
+    public string NearbyCharacterId => _nearbyCharacterId;
+    public float NearbyCharacterDistance => _nearbyCharacterDistance;
     public WorldHudController? Hud => _hud;
     public bool Wired => _wired;
     public string SelectedCharacterId => ResolveSelectedCharacterId();
@@ -44,6 +48,12 @@ public partial class RanchGreyboxController : Node3D
     /// mutated through GameRoot before this event fires.
     /// </summary>
     public event Action<string, string>? StationInteractionSucceeded;
+
+    /// <summary>
+    /// Requests the already-existing character detail UI for a nearby roster member. This event
+    /// never changes bond, stats, schedule, rewards or any other simulation state.
+    /// </summary>
+    public event Action<string>? CharacterInteractionRequested;
 
     /// <summary>Applies the shared phase to the scene's sun + environment.</summary>
     public DaylightRig? Daylight { get; private set; }
@@ -129,7 +139,7 @@ public partial class RanchGreyboxController : Node3D
             // previous InputEventAction-only path did not reliably receive ordinary F-key input.
             if (Input.IsActionJustPressed("interact"))
             {
-                TryInteractWithNearestStation();
+                TryInteractWithNearestWorldTarget();
             }
         }
 
@@ -222,6 +232,29 @@ public partial class RanchGreyboxController : Node3D
         var step = direction >= 0 ? 1 : -1;
         _selectedCharacterIndex = (_selectedCharacterIndex + step + count) % count;
         RefreshHud();
+    }
+
+    /// <summary>
+    /// Interact with the closest meaningful world target. Nearby roster members take precedence
+    /// only when they are actually closer than the nearest station and within interaction range.
+    /// </summary>
+    public bool TryInteractWithNearestWorldTarget()
+    {
+        UpdateNearbyStation();
+
+        var npcInRange = !string.IsNullOrWhiteSpace(_nearbyCharacterId)
+            && _nearbyCharacterDistance <= InteractionRange;
+        var stationInRange = _nearbyStation is not null && _nearbyDistance <= InteractionRange;
+
+        if (npcInRange && (!stationInRange || _nearbyCharacterDistance < _nearbyDistance))
+        {
+            var displayName = ResolveCharacterName(_nearbyCharacterId);
+            SetFeedback($"Opening {displayName}...");
+            CharacterInteractionRequested?.Invoke(_nearbyCharacterId);
+            return true;
+        }
+
+        return TryInteractWithNearestStation();
     }
 
     /// <summary>
@@ -321,21 +354,28 @@ public partial class RanchGreyboxController : Node3D
 
     private string ResolveSelectedCharacterName()
     {
-        var game = GameRoot.Instance;
         var id = ResolveSelectedCharacterId();
-        if (game is null || string.IsNullOrWhiteSpace(id))
+        return string.IsNullOrWhiteSpace(id) ? "worker" : ResolveCharacterName(id);
+    }
+
+    private static string ResolveCharacterName(string characterId)
+    {
+        var game = GameRoot.Instance;
+        if (game is null || string.IsNullOrWhiteSpace(characterId))
         {
-            return "worker";
+            return "resident";
         }
 
-        var character = game.Roster.Find(id);
-        return character is null ? id : game.Roster.DefinitionFor(character).DisplayName;
+        var character = game.Roster.Find(characterId);
+        return character is null ? characterId : game.Roster.DefinitionFor(character).DisplayName;
     }
 
     private void UpdateNearbyStation()
     {
         _nearbyStation = null;
         _nearbyDistance = float.PositiveInfinity;
+        _nearbyCharacterId = string.Empty;
+        _nearbyCharacterDistance = float.PositiveInfinity;
 
         if (_player is null)
         {
@@ -357,6 +397,14 @@ public partial class RanchGreyboxController : Node3D
             }
         }
 
+        if (Roster is not null
+            && Roster.TryFindNearest(_player.GlobalPosition, InteractionRange * 1.5f,
+                out var characterId, out _, out var characterDistance))
+        {
+            _nearbyCharacterId = characterId;
+            _nearbyCharacterDistance = characterDistance;
+        }
+
         UpdateLegacyPrompt();
     }
 
@@ -370,7 +418,21 @@ public partial class RanchGreyboxController : Node3D
 
         _hud.RefreshSimulation(game);
         _hud.SetSelectedCharacter(game, ResolveSelectedCharacterId());
-        _hud.SetInteractionTarget(_nearbyStation, _nearbyDistance, InteractionRange);
+
+        var npcInRange = !string.IsNullOrWhiteSpace(_nearbyCharacterId)
+            && _nearbyCharacterDistance <= InteractionRange
+            && (_nearbyStation is null || _nearbyCharacterDistance < _nearbyDistance);
+        if (npcInRange)
+        {
+            _hud.SetCharacterInteractionTarget(
+                ResolveCharacterName(_nearbyCharacterId),
+                _nearbyCharacterDistance,
+                InteractionRange);
+        }
+        else
+        {
+            _hud.SetInteractionTarget(_nearbyStation, _nearbyDistance, InteractionRange);
+        }
     }
 
     private void SetFeedback(string message)
