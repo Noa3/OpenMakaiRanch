@@ -491,6 +491,26 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool SetAtmosphereEffectsEnabled(bool enabled)
+	{
+		if (State.Settings.AtmosphereEffectsEnabled == enabled) return false;
+		State.Settings.AtmosphereEffectsEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetWeatherEffectsEnabled(bool enabled)
+	{
+		if (State.Settings.WeatherEffectsEnabled == enabled) return false;
+		State.Settings.WeatherEffectsEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool SetShadowsEnabled(bool enabled)
 	{
 		if (State.Settings.ShadowsEnabled == enabled) return false;
