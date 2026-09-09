@@ -89,7 +89,20 @@ public partial class RanchGreyboxController : Node3D
         UpdateNearbyStation();
         RefreshHud();
 
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        {
+            game.StateChanged += OnSharedStateChanged;
+        }
+
         _wired = _player is not null && _stations.Count > 0;
+    }
+
+    public override void _ExitTree()
+    {
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        {
+            game.StateChanged -= OnSharedStateChanged;
+        }
     }
 
     public override void _Process(double delta)
@@ -147,6 +160,14 @@ public partial class RanchGreyboxController : Node3D
             rosterRig.Refresh(game);
             Roster = rosterRig;
         }
+    }
+
+    private void OnSharedStateChanged()
+    {
+        // StateChanged is raised by assignments, time advancement, load/new game and management
+        // actions. Keeping this presentation subscribed means the hidden 3D world is already current
+        // when the overlay closes.
+        RefreshLiveWorld();
     }
 
     /// <summary>
