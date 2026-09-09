@@ -226,7 +226,6 @@ public partial class WorldGameController : Node
         }
 
         _transition?.CoverInstant();
-        SetTransitionInputLock(true);
         if (!SetActiveArea(destinationId, reposition: true))
         {
             _transition?.HideImmediately();
@@ -234,6 +233,7 @@ public partial class WorldGameController : Node
             return false;
         }
 
+        SetTransitionInputLock(true);
         GameRoot.Instance?.SetWorldArea(destinationId);
         RevealArea(destinationId, firstArrival: false);
         return true;
