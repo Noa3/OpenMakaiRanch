@@ -38,6 +38,7 @@ public partial class FirstDayFlowController : Control
     private Label? _speakerLabel;
     private Label? _bodyLabel;
     private HBoxContainer? _choiceRow;
+    private Button? _skipButton;
 
     private bool _active;
     private bool _pendingPresentation;
@@ -90,6 +91,11 @@ public partial class FirstDayFlowController : Control
         {
             _pendingPresentation = false;
             PresentCurrentStage();
+        }
+
+        if (_skipButton is not null)
+        {
+            _skipButton.Visible = _active && CurrentStage < StageNightRoutine;
         }
 
         if (_dialoguePanel?.Visible == true || _host is null || _game is null)
@@ -529,6 +535,51 @@ The tutorial opponent is intentionally weak; you can retry without changing the 
             }));
     }
 
+    private void RequestSkipToNight()
+    {
+        if (!_active || _game is null)
+        {
+            return;
+        }
+
+        ShowDialogue(
+            "Skip First Day",
+            "Skip the guided first-day story, ranch tour and intruder tutorial and continue directly at the first Night? No tutorial rewards are granted, and the normal night choice/day settlement still runs.",
+            ("Skip to Night", SkipToNight),
+            ("Cancel", PresentCurrentStage));
+    }
+
+    private void SkipToNight()
+    {
+        if (_game is null || _host is null)
+        {
+            return;
+        }
+
+        _game.State.Story.RanchTourCompleted = true;
+        _game.State.Story.IntruderEncounterCompleted = true;
+        _game.State.Story.PersonalEveningCompleted = true;
+        _game.State.Story.FirstDayStage = StageNightRoutine;
+
+        // Story skip moves only the shared phase. It does not settle jobs, produce resources, grant
+        // combat rewards or increment the day. The player still chooses the normal night action.
+        var guard = 0;
+        while (_game.State.Calendar.Phase != DayPhase.Night && guard++ < 4)
+        {
+            if (!_game.AdvanceTime())
+            {
+                break;
+            }
+        }
+
+        SetIntruderVisible(false);
+        _host.ActivateStoryArea("ranch", reposition: true, firstArrival: false);
+        _game.NotifyStateChanged();
+        _game.AutosaveCheckpoint("first-day tutorial skipped to night");
+        HideDialogue();
+        ShowNightRoutine();
+    }
+
     private void SetStage(int stage)
     {
         if (_game is null)
@@ -596,6 +647,21 @@ The tutorial opponent is intentionally weak; you can retry without changing the 
             HorizontalAlignment = HorizontalAlignment.Center
         };
         _objectivePanel.AddChild(_objectiveLabel);
+
+        _skipButton = new Button
+        {
+            Name = "SkipFirstDayButton",
+            Text = "Skip First Day → Night",
+            Visible = false,
+            TooltipText = "Experienced players can skip the guided first day without receiving tutorial rewards."
+        };
+        _skipButton.SetAnchorsPreset(LayoutPreset.TopRight);
+        _skipButton.OffsetLeft = -250;
+        _skipButton.OffsetTop = 24;
+        _skipButton.OffsetRight = -24;
+        _skipButton.OffsetBottom = 66;
+        _skipButton.Pressed += RequestSkipToNight;
+        AddChild(_skipButton);
 
         _dialoguePanel = new PanelContainer
         {
