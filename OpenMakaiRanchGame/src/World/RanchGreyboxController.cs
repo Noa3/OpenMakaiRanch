@@ -128,7 +128,15 @@ public partial class RanchGreyboxController : Node3D
         var dayRig = GetNodeOrNull<DaylightRig>("DaylightRig");
         if (dayRig is not null)
         {
-            dayRig.Bind(GetNodeOrNull<DirectionalLight3D>("Sun"), GetNodeOrNull<WorldEnvironment>("WorldEnvironment"));
+            var worldEnvironment = GetNodeOrNull<WorldEnvironment>("WorldEnvironment");
+            if (worldEnvironment is not null && worldEnvironment.Environment is null)
+            {
+                // The greybox authors the WorldEnvironment node, while the controller guarantees
+                // a runtime Environment resource so DaylightRig can apply ambient + tonemap values.
+                worldEnvironment.Environment = new Godot.Environment();
+            }
+
+            dayRig.Bind(GetNodeOrNull<DirectionalLight3D>("Sun"), worldEnvironment);
             dayRig.ApplyFrom(game);
             Daylight = dayRig;
         }
