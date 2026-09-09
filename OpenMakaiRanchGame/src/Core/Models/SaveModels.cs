@@ -21,12 +21,33 @@ public enum Season
     Winter
 }
 
+public enum Weekday
+{
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday
+}
+
 public enum Weather
 {
+    // Keep legacy numeric values 0-3 stable for existing saves.
     Clear,
     Cloudy,
     Rain,
-    Storm
+    Storm,
+
+    // Original eraMakaiRanch weather vocabulary, added without renumbering legacy values.
+    Drizzle,
+    HeavyRain,
+    StrongWind,
+    TorrentialRain,
+    Snow,
+    HeavySnow,
+    Blizzard
 }
 
 public enum MissionOutcome
@@ -188,14 +209,53 @@ public sealed class PlayerState
 
 public sealed class CalendarState
 {
+    public const int DaysPerWeek = 7;
+    public const int DaysPerSeason = 28;
+    public const int SeasonsPerYear = 4;
+    public const int DaysPerYear = DaysPerSeason * SeasonsPerYear;
+
+    /// <summary>Total elapsed game day. Day 1 is Spring 1, Year 1, Monday like the original.</summary>
     public int Day { get; set; } = 1;
     public DayPhase Phase { get; set; } = DayPhase.Morning;
     public Weather CurrentWeather { get; set; } = Weather.Clear;
+
+    /// <summary>
+    /// Original parity: today becomes yesterday's forecast at day rollover, then a new forecast is rolled.
+    /// Older saves safely default to Clear.
+    /// </summary>
+    public Weather TomorrowWeather { get; set; } = Weather.Clear;
+
     public string NightAction { get; set; } = string.Empty;
     public int TrainedToday { get; set; }
 
     [JsonIgnore]
-    public Season Season => (Season)(((Day - 1) / 30) % 4);
+    public int Year => ((Math.Max(1, Day) - 1) / DaysPerYear) + 1;
+
+    [JsonIgnore]
+    public Season Season => (Season)(((Math.Max(1, Day) - 1) / DaysPerSeason) % SeasonsPerYear);
+
+    [JsonIgnore]
+    public int DayOfSeason
+    {
+        get
+        {
+            var value = Math.Max(1, Day) % DaysPerSeason;
+            return value == 0 ? DaysPerSeason : value;
+        }
+    }
+
+    [JsonIgnore]
+    public Weekday Weekday => (Weekday)((Math.Max(1, Day) - 1) % DaysPerWeek);
+
+    [JsonIgnore]
+    public bool IsSeasonEnd => DayOfSeason == DaysPerSeason;
+
+    [JsonIgnore]
+    public bool IsSeasonStart => DayOfSeason == 1;
+
+    [JsonIgnore]
+    public string OriginalStyleDate =>
+        $"Year {Year} [{Season} Day {DayOfSeason:00} / {Weekday.ToString()[..3]}]";
 }
 
 public sealed class EconomyState
@@ -373,13 +433,16 @@ public sealed class SettingsState
     public string Locale { get; set; } = "en";
     public bool ReducedMotion { get; set; }
 
-    // Graphics / performance. These are intentionally renderer-agnostic so Compatibility remains
-    // the common target for desktop, low-end mobile and a future non-.NET web client.
+    // Graphics / performance. Desktop targets Forward+; mobile uses Mobile and web uses
+    // Compatibility. Runtime quality gates keep one settings model across all renderers.
     public string GraphicsQuality { get; set; } = "Medium";
     public float RenderScale { get; set; } = 0.85f;
     public bool ShadowsEnabled { get; set; } = true;
     public bool AtmosphereEffectsEnabled { get; set; } = true;
     public bool WeatherEffectsEnabled { get; set; } = true;
+    public bool AdvancedLightingEnabled { get; set; } = true;
+    public bool WorldParticlesEnabled { get; set; } = true;
+    public float WorldDetailScale { get; set; } = 1.0f;
     public int FrameRateLimit { get; set; } = 60;
     public bool VSyncEnabled { get; set; } = true;
     public bool Fullscreen { get; set; } = false;
@@ -425,6 +488,9 @@ public sealed class SettingsState
             ShadowsEnabled = ShadowsEnabled,
             AtmosphereEffectsEnabled = AtmosphereEffectsEnabled,
             WeatherEffectsEnabled = WeatherEffectsEnabled,
+            AdvancedLightingEnabled = AdvancedLightingEnabled,
+            WorldParticlesEnabled = WorldParticlesEnabled,
+            WorldDetailScale = WorldDetailScale,
             FrameRateLimit = FrameRateLimit,
             VSyncEnabled = VSyncEnabled,
             Fullscreen = Fullscreen,
