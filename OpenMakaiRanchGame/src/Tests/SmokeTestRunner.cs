@@ -348,9 +348,24 @@ public static class SmokeTestRunner
                     "character creation has a player avatar preview");
                 AssertNodeExists(result, creation, "CreationBody/SettingsColumn/BasicCard",
                     "character creation retains 2D settings beside the preview");
+
+                if (GameRoot.Instance is { } liveGame && GodotObject.IsInstanceValid(liveGame))
+                {
+                    liveGame.AddChild(creation);
+                    var preview = creation as CharacterCreationPreviewController;
+                    Assert(result, preview?.PreviewReady == true,
+                        "character creation 3D preview binds after entering the scene tree");
+                    Assert(result, preview?.Avatar?.Body is not null && preview.Avatar.Head is not null,
+                        "character creation builds visible neutral player geometry");
+                    liveGame.RemoveChild(creation);
+                }
             }
             finally
             {
+                if (creation.IsInsideTree())
+                {
+                    creation.GetParent()?.RemoveChild(creation);
+                }
                 creation.Free();
             }
         }
