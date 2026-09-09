@@ -28,6 +28,7 @@ public partial class MobileWorldControls : Control
     private float _controlScale = 1f;
     private bool _externallyBlocked;
     private bool _showCycle;
+    private ScreenLayoutMetrics _layout;
 
     public bool ControlsVisible => Visible;
 
@@ -73,7 +74,9 @@ public partial class MobileWorldControls : Control
         var radius = 72f * _controlScale;
         var baseCenter = _moveFinger >= 0
             ? _moveOrigin
-            : new Vector2(104f * _controlScale, Size.Y - 112f * _controlScale);
+            : new Vector2(
+                _layout.SafeLeft + 104f * _controlScale,
+                Size.Y - _layout.SafeBottom - 112f * _controlScale);
         var thumb = _moveFinger >= 0 ? _moveThumb : baseCenter;
 
         DrawCircle(baseCenter, radius, new Color(0.05f, 0.08f, 0.12f, 0.42f));
@@ -246,19 +249,23 @@ public partial class MobileWorldControls : Control
             return;
         }
 
+        _layout = ScreenLayout.Calculate(GetViewport());
         var buttonSize = 94f * _controlScale;
         var gap = 16f * _controlScale;
         var edge = 24f * _controlScale;
+        var right = edge + _layout.SafeRight;
+        var bottom = edge + _layout.SafeBottom;
+        var top = edge + _layout.SafeTop;
 
-        PlaceBottomRight(_sprintButton, edge, edge, buttonSize);
-        PlaceBottomRight(_interactButton, edge, edge + buttonSize + gap, buttonSize);
-        PlaceBottomRight(_cycleButton, edge + buttonSize + gap, edge, buttonSize);
+        PlaceBottomRight(_sprintButton, right, bottom, buttonSize);
+        PlaceBottomRight(_interactButton, right, bottom + buttonSize + gap, buttonSize);
+        PlaceBottomRight(_cycleButton, right + buttonSize + gap, bottom, buttonSize);
 
         _managementButton.SetAnchorsPreset(LayoutPreset.TopRight);
-        _managementButton.OffsetLeft = -(buttonSize + edge);
-        _managementButton.OffsetTop = edge;
-        _managementButton.OffsetRight = -edge;
-        _managementButton.OffsetBottom = edge + buttonSize * 0.72f;
+        _managementButton.OffsetLeft = -(buttonSize + right);
+        _managementButton.OffsetTop = top;
+        _managementButton.OffsetRight = -right;
+        _managementButton.OffsetBottom = top + buttonSize * 0.72f;
 
         _cycleButton.Visible = Visible && _showCycle;
     }
