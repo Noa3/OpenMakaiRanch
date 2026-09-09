@@ -215,7 +215,6 @@ public partial class TownWorldController : Node3D
         _hud.Refresh(GameRoot.Instance);
 
         var portalIsClosest = _returnPortal is not null
-            && _returnPortalDistance <= InteractionRange
             && (_nearbyService is null || _returnPortalDistance <= _nearbyServiceDistance);
 
         if (portalIsClosest)
