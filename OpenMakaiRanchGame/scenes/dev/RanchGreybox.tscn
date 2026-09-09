@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" path="res://src/World/WorldAtmosphereController.cs" id="16_atmosphere"]
 
 [ext_resource type="Script" path="res://src/World/WorldBoundaryBuilder.cs" id="17_boundary"]
+[ext_resource type="Script" path="res://src/World/WorldSurfaceInteractionController.cs" id="18_surface"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -269,6 +270,14 @@ outline_size = 6
 [node name="Atmosphere" type="Node3D" parent="."]
 script = ExtResource("16_atmosphere")
 PlayerPath = NodePath("../Player")
+
+[node name="SurfaceInteractions" type="Node3D" parent="."]
+script = ExtResource("18_surface")
+PlayerPath = NodePath("../Player")
+RosterPath = NodePath("../RosterRig")
+MaxMarks = 64
+MaxTrackedActors = 8
+MaxPuddles = 10
 
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
