@@ -16,6 +16,8 @@ public partial class WorldCameraRig : Node3D
     [Export] public float ZoomSensitivity { get; set; } = 1.5f;
     [Export] public float RecenterSpeed { get; set; } = 6f;
     [Export] public bool RequireRightMouseButtonForLook { get; set; } = true;
+    [Export] public float CameraNearClip { get; set; } = 0.03f;
+    [Export] public float CollisionClearance { get; set; } = 0.28f;
 
     /// <summary>The node the camera orbits around (normally the player's head target).</summary>
     [Export] public Node3D? Target { get; set; }
@@ -30,8 +32,11 @@ public partial class WorldCameraRig : Node3D
     private Vector3 _desiredPosition;
     private float _userSensitivity = 1f;
     private bool _invertY;
+    private bool _firstPerson;
+    private bool _mouseCapturedForFirstPerson;
 
     public Camera3D? Camera => _camera;
+    public bool IsFirstPerson => _firstPerson;
     public Vector3 DesiredPosition => _desiredPosition;
 
     public override void _Ready()
@@ -46,6 +51,8 @@ public partial class WorldCameraRig : Node3D
             _camera = new Camera3D { Name = "Camera", Current = true };
             AddChild(_camera);
         }
+
+        _camera.Near = Mathf.Clamp(CameraNearClip, 0.01f, 0.20f);
 
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
         {
@@ -74,6 +81,7 @@ public partial class WorldCameraRig : Node3D
         if (_camera is not null)
         {
             _camera.Fov = Mathf.Clamp(game.State.Settings.CameraFov, 55f, 95f);
+            _camera.Near = Mathf.Clamp(CameraNearClip, 0.01f, 0.20f);
         }
     }
 
@@ -94,7 +102,7 @@ public partial class WorldCameraRig : Node3D
 
         if (@event is InputEventMouseMotion motion)
         {
-            var canLook = !RequireRightMouseButtonForLook || Input.IsMouseButtonPressed(MouseButton.Right);
+            var canLook = _firstPerson || !RequireRightMouseButtonForLook || Input.IsMouseButtonPressed(MouseButton.Right);
             if (canLook)
             {
                 ApplyLookDelta(motion.Relative);
@@ -132,8 +140,15 @@ public partial class WorldCameraRig : Node3D
     {
         var dt = (float)delta;
 
+        UpdateFirstPersonMouseCapture();
+
         if (InputGate.WorldInputEnabled)
         {
+            if (Input.IsActionJustPressed("camera_first_person"))
+            {
+                SetFirstPerson(!_firstPerson);
+            }
+
             if (Input.IsActionJustPressed("camera_recenter"))
             {
                 var t = Mathf.Clamp(RecenterSpeed * dt, 0f, 1f);
@@ -174,6 +189,48 @@ public partial class WorldCameraRig : Node3D
         UpdateCameraTransform();
     }
 
+    public void SetFirstPerson(bool enabled)
+    {
+        if (_firstPerson == enabled)
+        {
+            return;
+        }
+
+        _firstPerson = enabled;
+        if (Target?.GetParent() is ThirdPersonPlayerController player)
+        {
+            player.SetFirstPersonVisualHidden(enabled);
+        }
+
+        if (!enabled && _mouseCapturedForFirstPerson)
+        {
+            Input.MouseMode = Input.MouseModeEnum.Visible;
+            _mouseCapturedForFirstPerson = false;
+        }
+    }
+
+    private void UpdateFirstPersonMouseCapture()
+    {
+        if (!_firstPerson)
+        {
+            return;
+        }
+
+        if (InputGate.WorldInputEnabled)
+        {
+            if (!_mouseCapturedForFirstPerson)
+            {
+                Input.MouseMode = Input.MouseModeEnum.Captured;
+                _mouseCapturedForFirstPerson = true;
+            }
+        }
+        else if (_mouseCapturedForFirstPerson)
+        {
+            Input.MouseMode = Input.MouseModeEnum.Visible;
+            _mouseCapturedForFirstPerson = false;
+        }
+    }
+
     private void UpdateCameraTransform()
     {
         if (_camera is null || Target is null)
@@ -182,6 +239,19 @@ public partial class WorldCameraRig : Node3D
         }
 
         var targetPos = Target.GlobalPosition;
+
+        if (_firstPerson)
+        {
+            var viewDirection = WorldCameraMath.ComputeViewDirection(Yaw, Pitch);
+            var basis = Basis.LookingAt(viewDirection, Vector3.Up);
+            // Small forward offset keeps the near plane away from the exact character origin while
+            // still behaving as a true eye-level camera.
+            var eye = targetPos + viewDirection * 0.04f;
+            _desiredPosition = eye;
+            _camera.GlobalTransform = new Transform3D(basis, eye);
+            return;
+        }
+
         _desiredPosition = WorldCameraMath.ComputeCameraPosition(targetPos, Yaw, Pitch, Distance);
 
         var hitDistance = float.PositiveInfinity;
@@ -195,7 +265,6 @@ public partial class WorldCameraRig : Node3D
             if (length > 0.0001f)
             {
                 var query = PhysicsRayQueryParameters3D.Create(from, to);
-                // Ignore the target player body when the camera target is parented to it.
                 if (Target.GetParent() is CollisionObject3D owner)
                 {
                     query.Exclude = new Godot.Collections.Array<Rid> { owner.GetRid() };
@@ -209,9 +278,14 @@ public partial class WorldCameraRig : Node3D
             }
         }
 
-        var clamped = WorldCameraMath.ClampToGeometry(targetPos, _desiredPosition, hitDistance);
+        var clamped = WorldCameraMath.ClampToGeometry(
+            targetPos,
+            _desiredPosition,
+            hitDistance,
+            Mathf.Clamp(CollisionClearance, 0.08f, 0.60f));
         var direction = (targetPos - clamped).Normalized();
-        var basis = Basis.LookingAt(direction, Vector3.Up);
-        _camera.GlobalTransform = new Transform3D(basis, clamped);
+        var cameraBasis = Basis.LookingAt(direction, Vector3.Up);
+        _camera.GlobalTransform = new Transform3D(cameraBasis, clamped);
     }
+
 }
