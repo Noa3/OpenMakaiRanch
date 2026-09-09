@@ -696,6 +696,12 @@ public static class SmokeTestRunner
         Assert(result, state.Recruitment.CurrentOffer is not null, "new game has a recruitment offer");
         Assert(result, state.Player.Name == "Anon", "new game player name is Anon");
         Assert(result, state.Player.RanchName == "Okachi Ranch", "new game ranch name is Okachi Ranch");
+        Assert(result, state.Settings.TutorialHintsEnabled, "tutorial hints default to enabled");
+        Assert(result, state.Settings.SeenTutorialIds.Count == 0, "new settings start with no tutorial acknowledgements");
+        var settingsClone = state.Settings.Clone();
+        settingsClone.SeenTutorialIds.Add("clone_only");
+        Assert(result, !state.Settings.SeenTutorialIds.Contains("clone_only"),
+            "settings clone owns an independent tutorial acknowledgement set");
     }
 
     private static void TestScheduleAssignments(SmokeTestResult result)
@@ -1501,9 +1507,16 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                     "building workshop through shared ranch service succeeds");
                 Assert(result, workshopStation.IsAvailable,
                     "shared management facility upgrade immediately unlocks the world station");
+                controller?.RefreshLiveWorld();
+                Assert(result, workshopStation.GetNodeOrNull<Label3D>("Label")?.Text.Contains("[Locked]", StringComparison.Ordinal) == false,
+                    "placeholder landmark label refreshes when a facility becomes built");
             }
             Assert(result, controller?.CameraRig?.Target is not null, "greybox live camera follows the player target");
             Assert(result, controller?.Hud is not null, "greybox live scene exposes the world HUD");
+            Assert(result, controller?.Presentation is not null,
+                "greybox live scene exposes the stylized placeholder presentation layer");
+            Assert(result, controller?.Presentation?.GeneratedNodeCount > 10,
+                "placeholder presentation builds paths, landmarks and boundary nature");
             Assert(result, !string.IsNullOrWhiteSpace(controller?.SelectedCharacterId),
                 "greybox selects a real roster worker for spatial job interactions");
 
@@ -1587,6 +1600,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "world boot management overlay has an explicit return-to-world control");
             AssertNodeExists(result, root, "RanchWorld/WorldHud/AdvanceTimeButton",
                 "world boot HUD exposes shared phase progression");
+            AssertNodeExists(result, root, "RanchWorld/WorldHud/TutorialOverlay",
+                "world boot HUD contains contextual onboarding");
+            AssertNodeExists(result, root, "RanchWorld/WorldHud/TutorialOverlay/HelpButton",
+                "world boot HUD exposes persistent F1 help");
+            AssertNodeExists(result, root, "RanchWorld/Presentation",
+                "world boot contains the stylized placeholder presentation layer");
 
             if (controller is null)
             {
@@ -1599,6 +1618,20 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "ordinary ranch boot starts with the 3D world visible");
             Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
                 "ordinary ranch boot gives input to the 3D world");
+            Assert(result, InputMap.HasAction("open_help"), "world boot registers the F1 help action");
+
+            var tutorial = root.GetNodeOrNull<WorldTutorialController>("RanchWorld/WorldHud/TutorialOverlay");
+            Assert(result, tutorial is not null, "world tutorial controller binds in composed gameplay");
+            if (tutorial is not null)
+            {
+                tutorial.ToggleHelp();
+                Assert(result, tutorial.HelpVisible, "F1 help surface can open from the world");
+                Assert(result, controller.Ranch?.InputGate.UiOwnsInput == true,
+                    "open help temporarily owns input instead of moving the player behind it");
+                tutorial.CloseHelp();
+                Assert(result, !tutorial.HelpVisible && controller.Ranch?.InputGate.WorldInputEnabled == true,
+                    "closing help safely restores world input");
+            }
 
             Assert(result, controller.OpenManagement(), "world boot opens existing management overlay");
             Assert(result, controller.IsManagementVisible, "management overlay becomes visible");
