@@ -128,3 +128,29 @@ Editor Game.tscn tree contains the repaired Rooms/Bond/Pets nodes. Headless smok
 Created CURRENT_PROJECT_STATE, 3D_REMAKE_PLAN, KANBAN, DECISIONS, KNOWN_ISSUES, this WORK_LOG and ASTRA_HANDOFF. Added neutral character audit/evidence, parity matrix seed and draft art bible/manifest. Drafts contain no fake approvals or generated assets.
 
 Next engineering task: SAVE-001, focused root flag roundtrip and null migration regression tests. CORE-002 follows for mutation notifications/rebinding before world implementation. Visual direction and source character review remain prerequisites for detailed art. See handoff for exact resume commands.
+
+
+## 2026-09-09 — WORLD-003c prep: world function + HUD pass
+
+Branch: `feat/world-hud-function-pass`.
+
+Scope is deliberately non-explicit and leaves all adult-content data/services untouched.
+
+Implemented:
+- Added `WorldHudController`: shared-simulation HUD for day/season/phase/weather, gold/spirit/mana, roster size, selected worker/current job, nearest station prompt and transient feedback.
+- Expanded the opt-in RanchGreybox from one job marker to six ordinary spatial job stations: Office, Kitchen, Workshop, Pasture, Pharmacy Lab and Dairy Barn. All dispatch through the existing `GameRootCommandDispatcher`; no second economy/reward path was added.
+- Fixed the actual controller interaction context: the old scene path passed the station target id as `CharacterId`; the world controller now maintains a selected roster worker and passes that real runtime id to `TryAssignJob`. Tab cycles the worker.
+- Fixed camera composition: `WorldCameraRig.Target` is now explicitly bound to the player's stable head target. Added hold-RMB mouse orbit and mouse-wheel zoom, gated by the same `WorldInputGate` used by movement/UI ownership.
+- Replaced the controller's `InputEventAction`-only interaction handling with `Input.IsActionJustPressed`, so ordinary mapped F input reaches the spatial interaction path.
+- Added smoke assertions for authored HUD nodes, multi-station discovery/dispatcher binding, camera target wiring, selected-worker binding and a controller-level station interaction that must mutate the selected roster worker's shared Schedule state.
+
+Validation status:
+- Repository diff reviewed through GitHub.
+- Local build/runtime cannot be executed from the ChatGPT runtime used for this patch (no local .NET/Godot toolchain available there).
+- Pull-request CI is the verification path; do not record a new smoke-pass count until CI/local Godot 4.7 verification actually succeeds.
+
+Still intentionally deferred:
+- Boot-world composition with the existing full management shell.
+- NavigationAgent3D travel/reservations.
+- Final ranch art/assets and concept selection.
+- Character model production.
