@@ -238,3 +238,45 @@ Still required before merge:
 - run the existing local Godot 4.7.x Mono / `build-and-verify.bat` validation;
 - visually inspect tutorial/help layout at several resolutions, placeholder landmark framing, NPC nameplates, contextual prompts and resident interaction;
 - after that validation, admit exact CC0 asset packages individually with recorded package/hash/source/license rather than copying untracked downloads.
+
+
+## 2026-09-09 — TOWN-001: playable Okachi Town + travel/navigation slice
+
+Branch: `feat/world-hud-function-pass`, PR #2. No GitHub workflow/build-pipeline files changed.
+
+Implemented after the previously recommended world-readability/onboarding work:
+- Added `SimpleNavigationRegionBuilder` and real `NavigationAgent3D` children to roster stand-ins. Pathfollowing now updates from `_PhysicsProcess()` using `TargetPosition` / `GetNextPathPosition()`; the current open ranch uses a simple rectangular nav region and keeps straight-line fallback behavior if no path is available.
+- Added `WorldTravelPortal`, Ranch south/town gate and persistent world-area composition.
+- Added `TownGreybox.tscn` as a second playable 3D area inside the same `WorldGame` / `GameRoot`.
+- `WorldGameController` now switches active area (ranch/town) by visibility, ProcessMode, camera and input ownership rather than creating a second game session.
+- Travel currently costs no extra gold/time because no existing shared rule defines such a cost.
+- Added additive `SaveState.WorldAreaId` plus validated `GameRoot.SetWorldArea`; old/unknown values normalize to `ranch`. Saving in Town and loading restores Town; closing a load/management overlay immediately applies the loaded area.
+- Added 3D Town services that route only to existing UI/service authorities: General Store -> shop, Adventure Guild -> adventure, Research Office -> research (existing Workshop prerequisite preserved), Tavern -> roster, Bathhouse -> bond, Town Hall -> milestones, Construction & Planning -> town/facility planning.
+- Added physical Town south gate and explicit Return-to-Ranch button. Existing 2D Town Hub `Return to Ranch` now requests physical travel when hosted by `WorldGame`, with legacy UI fallback otherwise.
+- Added `TownHudController`, contextual service/tooltips, state-aware suggested errands, first-visit tutorial and independent F1 Town Help.
+- Added `TownPresentationBuilder`: collision-free roads, plaza/fountain, service-building proxies, doors/signs, town gate, lamps and vegetation. Locked services are visually greyed and labelled.
+- Ranch tutorial now includes a dedicated Okachi Town travel step.
+- Added `docs/art/OKACHI_TOWN_WORLD.md` with layout, service mapping, travel rules, navigation plan, acceptance criteria and follow-up slices.
+- Extended CC0 candidate provenance with Kenney Fantasy Town Kit and Quaternius Medieval Village Pack. Exact binary archives remain unvendored pending local admission/hash/source records.
+
+Regression coverage added (runtime still pending locally):
+- Ranch NavigationRegion3D and NavigationAgent3D roster followers;
+- Ranch -> Town area persistence and active camera/input ownership;
+- Town authored services and DaylightRig;
+- Research Office Workshop lock;
+- General Store spatial interaction -> existing shop UI -> return to Town;
+- Town F1 Help input ownership;
+- physical Town south gate -> Ranch;
+- Town Hub UI Return to Ranch -> physical travel;
+- save/load preserves `WorldAreaId`.
+
+Static verification at branch HEAD:
+- 8 `.tscn` scenes re-read;
+- 0 missing Script/PackedScene ext_resources;
+- 0 invalid authored parent paths;
+- compare against `main`: 0 `.github/workflows/*` changes.
+
+Still required before merge:
+- run existing local Godot 4.7.x Mono / `build-and-verify.bat`;
+- manually verify NavigationAgent path behavior after NavigationServer sync, camera ownership during travel, Town service prompts, F1 layouts, save/load area restoration and UI-return travel;
+- when real CC0 building/fence collision is admitted, replace the simple navigation region with an editor-baked navmesh and add bounded stuck recovery.
