@@ -137,6 +137,13 @@ public partial class RuntimeSettingsService : Node
                 window.Mode = settings.Fullscreen
                     ? Window.ModeEnum.ExclusiveFullscreen
                     : Window.ModeEnum.Windowed;
+
+                if (!settings.Fullscreen)
+                {
+                    window.Size = new Vector2I(
+                        Mathf.Clamp(settings.WindowWidth, 960, 7680),
+                        Mathf.Clamp(settings.WindowHeight, 540, 4320));
+                }
             }
         }
     }
