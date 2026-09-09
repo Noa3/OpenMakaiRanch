@@ -22,6 +22,7 @@ public partial class WorldGameController : Node
     [Export] public NodePath TransitionPath { get; set; } = "TransitionLayer/Transition";
     [Export] public NodePath PauseMenuPath { get; set; } = "PauseLayer/PauseMenu";
     [Export] public NodePath MobileControlsPath { get; set; } = "MobileControlsLayer/MobileControls";
+    [Export] public NodePath FirstDayFlowPath { get; set; } = "StoryLayer/FirstDayFlow";
 
     private IntroHouseController? _introHouse;
     private RanchGreyboxController? _ranch;
@@ -34,6 +35,7 @@ public partial class WorldGameController : Node
     private WorldTransitionController? _transition;
     private PauseMenuController? _pauseMenu;
     private MobileWorldControls? _mobileControls;
+    private FirstDayFlowController? _firstDayFlow;
     private bool _flowLocksUi;
     private string _activeAreaId = "ranch";
 
@@ -47,6 +49,7 @@ public partial class WorldGameController : Node
     public PauseMenuController? PauseMenu => _pauseMenu;
     public WorldTransitionController? Transition => _transition;
     public MobileWorldControls? MobileControls => _mobileControls;
+    public FirstDayFlowController? FirstDayFlow => _firstDayFlow;
 
     public override void _Ready()
     {
@@ -61,6 +64,7 @@ public partial class WorldGameController : Node
         _transition = GetNodeOrNull<WorldTransitionController>(TransitionPath);
         _pauseMenu = GetNodeOrNull<PauseMenuController>(PauseMenuPath);
         _mobileControls = GetNodeOrNull<MobileWorldControls>(MobileControlsPath);
+        _firstDayFlow = GetNodeOrNull<FirstDayFlowController>(FirstDayFlowPath);
 
         if (_introHouse is null || _ranch is null || _town is null || _managementRoot is null || _shell is null)
         {
@@ -192,7 +196,7 @@ public partial class WorldGameController : Node
             return;
         }
 
-        if (_transition?.IsTransitioning == true)
+        if (_transition?.IsTransitioning == true || _firstDayFlow?.BlocksWorldInput == true)
         {
             return;
         }
@@ -217,6 +221,12 @@ public partial class WorldGameController : Node
 
     public void ToggleManagement()
     {
+        if (_firstDayFlow?.BlocksManagement == true)
+        {
+            ActiveStatus("Finish the current first-day tutorial step before opening Management.");
+            return;
+        }
+
         if (_activeAreaId == "intro")
         {
             ActiveStatus("Finish getting ready and head outside first.");
@@ -424,8 +434,18 @@ public partial class WorldGameController : Node
             SetActiveArea("ranch", reposition: false);
             GameRoot.Instance?.SetWorldArea("ranch");
             ApplyManagementVisibility(false);
-            SetTransitionInputLock(true);
-            RevealArea("ranch", firstArrival: true);
+
+            var game = GameRoot.Instance;
+            var firstDayPending = game is not null
+                && !game.State.NgPlusActive
+                && game.State.Calendar.Day == 1
+                && !game.State.Story.FirstDayCompleted;
+
+            if (!firstDayPending)
+            {
+                SetTransitionInputLock(true);
+                RevealArea("ranch", firstArrival: true);
+            }
         }
     }
 
@@ -616,7 +636,8 @@ public partial class WorldGameController : Node
         var blocked = _flowLocksUi
             || IsManagementVisible
             || _pauseMenu?.IsOpen == true
-            || _transition?.IsTransitioning == true;
+            || _transition?.IsTransitioning == true
+            || _firstDayFlow?.BlocksWorldInput == true;
         _mobileControls.SetBlocked(blocked);
     }
 
