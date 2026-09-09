@@ -64,6 +64,7 @@ public static class SmokeTestRunner
             GameCommandTests.Run(result);
             TestWorldGreybox(result);
             TestWorldSharedSimulation(result);
+            TestWorldAlerts(result);
             TestCharacterAvatar(result);
             TestEventDialogueStaging(result);
             TestWorldPanelCoordinator(result);
@@ -1208,6 +1209,34 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         }
     }
 
+    private static void TestWorldAlerts(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        var initial = WorldAlertEvaluator.Evaluate(game);
+        Assert(result, initial.Any(alert => alert.Id == "dairy_unstaffed"),
+            "alerts: missing Dairy assignment is surfaced because settlement penalizes it");
+        Assert(result, initial.Any(alert => alert.Id == "pasture_unstaffed"),
+            "alerts: unstaffed Pasture is surfaced as production guidance");
+
+        var worker = game.Roster.Characters.First();
+        Assert(result, game.TryAssignJob(worker.Id, "dairy", game.StateGeneration),
+            "alerts: test can assign Dairy through shared GameRoot");
+        var staffed = WorldAlertEvaluator.Evaluate(game);
+        Assert(result, staffed.All(alert => alert.Id != "dairy_unstaffed"),
+            "alerts: Dairy warning clears immediately after shared schedule assignment");
+
+        worker.Fatigue = 92;
+        worker.Energy = 5;
+        game.State.Pets.Entries["stable_cat"].Hunger = 10;
+        var critical = WorldAlertEvaluator.Evaluate(game);
+        Assert(result, critical.Any(alert => alert.Id == "roster_exhausted" && alert.Severity == WorldAlertSeverity.Critical),
+            "alerts: exhausted resident becomes critical");
+        Assert(result, critical.Any(alert => alert.Id == "pets_hungry" && alert.Severity == WorldAlertSeverity.Critical),
+            "alerts: starving pet becomes critical");
+    }
+
     private static void TestCharacterAvatar(SmokeTestResult result)
     {
         // CHAR-001: gate-safe, honest stand-in avatars bound by stable DefinitionId.
@@ -1237,6 +1266,9 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, profile.DisplayName == "Slay", "profile: display name carried");
         Assert(result, profile.IsDebugStandIn, "profile: CHAR-001 ships honest stand-in, not real model");
         Assert(result, profile.AdultEligibility == AdultEligibility.ConfirmedAdult, "profile: fail-closed eligibility carried forward");
+        Assert(result, !string.IsNullOrWhiteSpace(profile.PlaceholderModelPath)
+            && ResourceLoader.Exists(profile.PlaceholderModelPath),
+            "profile: admitted CC0 placeholder model path resolves");
         // Presentation ≠ gameplay state: no HP, skill, bond, reward fields exist.
         Assert(result, !typeof(CharacterVisualProfile).GetProperties().Any(p =>
             p.Name is "MaxHp" or "RanchSkill" or "BondLevel" or "RewardGold" or "Energy"),
@@ -1245,7 +1277,13 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         // ---- Node: stand-in geometry generated, material overridden ----
         var avatar = CharacterAvatarFactory.BuildAvatar(profile);
         Assert(result, avatar is not null && ReferenceEquals(avatar.Profile, profile), "avatar: built with bound profile");
-        avatar!.Rebuild(); // deterministic, no tree required
+        var sentinel = new Node3D { Name = "NavigationSentinel" };
+        avatar!.AddChild(sentinel);
+        avatar.Rebuild(); // deterministic, no tree required
+        Assert(result, avatar.GetNodeOrNull<Node3D>("NavigationSentinel") is not null,
+            "avatar: rebuild preserves navigation/nameplate-style external children");
+        Assert(result, avatar.UsesExternalPlaceholder,
+            "avatar: admitted CC0 placeholder scene is instantiated when available");
         Assert(result, avatar.Body is not null, "avatar: body capsule generated");
         Assert(result, avatar.Head is not null, "avatar: head sphere generated");
         Assert(result, avatar.Body!.Mesh is CapsuleMesh, "avatar: body is capsule stand-in");
@@ -1620,12 +1658,21 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "world boot HUD exposes persistent F1 help");
             AssertNodeExists(result, root, "RanchWorld/Presentation",
                 "world boot contains the stylized placeholder presentation layer");
+            AssertNodeExists(result, root, "RanchWorld/WorldHud/AlertPanel",
+                "ranch HUD contains the shared attention warning panel");
+            AssertNodeExists(result, root, "TownWorld/TownHud/AlertPanel",
+                "town HUD contains the shared attention warning panel");
+            AssertNodeExists(result, root, "TransitionLayer/Transition",
+                "world boot contains the location reveal overlay");
+            AssertNodeExists(result, root, "PauseLayer/PauseMenu",
+                "world boot contains the ESC pause menu");
 
             if (controller is null)
             {
                 return;
             }
 
+            controller.Transition?.CompleteImmediately();
             Assert(result, controller.Ranch is not null, "world boot binds ranch controller");
             Assert(result, controller.Shell is not null, "world boot binds existing UiShellController");
             Assert(result, !controller.IsManagementVisible,
@@ -1673,6 +1720,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "world boot starts in persisted ranch area");
 
             Assert(result, controller.TravelTo("town"), "ranch can travel to Okachi Town");
+            controller.Transition?.CompleteImmediately();
             Assert(result, controller.ActiveAreaId == "town" && game.State.WorldAreaId == "town",
                 "travel switches active world area and persists town location");
             Assert(result, controller.Town?.Visible == true && controller.Ranch?.Visible == false,
@@ -1715,16 +1763,30 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             {
                 controller.Town.Player.GlobalPosition = controller.Town.ReturnPortal.GlobalPosition;
                 Assert(result, controller.Town.TryInteract(), "town south gate can return to the ranch");
+                controller.Transition?.CompleteImmediately();
                 Assert(result, controller.ActiveAreaId == "ranch" && game.State.WorldAreaId == "ranch",
                     "physical return gate restores ranch area and persisted location");
             }
 
             Assert(result, controller.TravelTo("town"), "world can revisit town for UI-travel test");
+            controller.Transition?.CompleteImmediately();
             Assert(result, controller.OpenManagementScreen("town"), "town hub management opens while in town");
             Assert(result, controller.Shell?.RequestWorldTravel("ranch") == true,
                 "Town Hub Return to Ranch requests physical world travel when hosted");
+            controller.Transition?.CompleteImmediately();
             Assert(result, !controller.IsManagementVisible && controller.ActiveAreaId == "ranch",
                 "Town Hub travel request closes management and returns to the ranch");
+
+            Assert(result, controller.PauseMenu is not null, "world boot binds ESC pause menu");
+            if (controller.PauseMenu is not null)
+            {
+                controller.PauseMenu.Open("ranch");
+                Assert(result, controller.PauseMenu.IsOpen && root.GetTree().Paused,
+                    "ESC pause menu pauses the scene tree");
+                controller.PauseMenu.Close();
+                Assert(result, !controller.PauseMenu.IsOpen && !root.GetTree().Paused,
+                    "resume closes pause menu and unpauses the tree");
+            }
 
             Assert(result, controller.OpenManagement(), "world boot opens existing management overlay");
             Assert(result, controller.IsManagementVisible, "management overlay becomes visible");
