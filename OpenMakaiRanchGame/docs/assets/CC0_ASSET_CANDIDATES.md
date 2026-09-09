@@ -86,6 +86,37 @@ Important:
 
 Status: **approved source family for evaluation; no exact asset admitted yet**.
 
+### Kenney — Fantasy Town Kit
+
+Source: https://kenney.nl/assets/fantasy-town-kit
+
+Publisher page states:
+- 160 3D files;
+- Creative Commons CC0.
+
+Potential use:
+- Okachi Town building shells, walls and town props;
+- strong candidate for replacing the current generated service-building placeholders while keeping
+  the authored service positions/IDs.
+
+Status: **candidate only — not yet vendored**.
+
+### Quaternius — Medieval Village Pack
+
+Source: https://quaternius.com/packs/medievalvillage.html
+
+Publisher page states:
+- 44 models;
+- FBX / OBJ / Blend;
+- CC0;
+- free for personal and commercial projects.
+
+Potential use:
+- alternate/secondary Okachi Town buildings and props;
+- useful when a more anime-fantasy/rural silhouette fits better than Kenney's kit.
+
+Status: **candidate only — not yet vendored**.
+
 ## First recommended admission batch
 
 Before importing, inspect the exact downloaded archives and record the package filenames/hashes.
