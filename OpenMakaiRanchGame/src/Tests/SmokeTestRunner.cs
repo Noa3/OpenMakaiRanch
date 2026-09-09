@@ -1401,7 +1401,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             var moraleFinal = root.Roster.Find(characterId)!.Morale;
             var dayAfterTransition = root.State.Calendar.Day;
 
-            // 4) Persist the whole session, then start a fresh game and load it back.
+            // 4) Persist the whole session, including the current 3D presentation area.
+            Assert(result, root.SetWorldArea("town"), "save round-trip: world area can switch to town");
             Assert(result, root.SaveSlot(slot), "save round-trip: the session persists to the slot");
             root.NewGame(); // fresh start: assignment/bond/day are all reset
             var freshCharacter = root.Roster.Characters.First(value => value.Id == characterId);
@@ -1422,6 +1423,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "save round-trip: the day counter survives save/load");
             Assert(result, root.State.Calendar.Phase == DayPhase.Morning,
                 "save round-trip: the phase survives save/load");
+            Assert(result, root.State.WorldAreaId == "town",
+                "save round-trip: the current 3D world area survives save/load");
 
             // 6) StateGeneration guard: a pre-load generation must now be rejected via the world path.
             var staleGeneration = root.StateGeneration - 1;
@@ -1662,6 +1665,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             }
 
             Assert(result, controller.Town is not null, "world boot binds town controller");
+            Assert(result, controller.Town?.Services.Count >= 7, "town exposes all authored service points");
+            Assert(result, controller.Town?.Daylight?.Wired == true, "town daylight uses the shared day-phase rig");
+            Assert(result, root.GetNodeOrNull<TownPresentationBuilder>("TownWorld/Presentation")?.GeneratedNodeCount > 10,
+                "town builds readable roads, landmarks and service-building placeholders");
             Assert(result, controller.ActiveAreaId == "ranch" && game.State.WorldAreaId == "ranch",
                 "world boot starts in persisted ranch area");
 
