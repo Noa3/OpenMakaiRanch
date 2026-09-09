@@ -24,6 +24,7 @@ public partial class WorldHudController : CanvasLayer
     private Label? _assignmentLabel;
     private Label? _promptLabel;
     private Label? _statusLabel;
+    private Button? _advanceTimeButton;
 
     private double _refreshRemaining;
     private double _statusRemaining;
@@ -40,6 +41,7 @@ public partial class WorldHudController : CanvasLayer
         _assignmentLabel = GetNodeOrNull<Label>("WorkerPanel/AssignmentLabel");
         _promptLabel = GetNodeOrNull<Label>("Prompt");
         _statusLabel = GetNodeOrNull<Label>("StatusLabel");
+        _advanceTimeButton = GetNodeOrNull<Button>("AdvanceTimeButton");
 
         RefreshSimulation(GameRoot.Instance);
     }
@@ -78,6 +80,23 @@ public partial class WorldHudController : CanvasLayer
         if (_dayLabel is not null)
         {
             _dayLabel.Text = $"Day {calendar.Day}  •  {calendar.Season}  •  {calendar.Phase}  •  {calendar.CurrentWeather}";
+        }
+
+        if (_advanceTimeButton is not null)
+        {
+            if (calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night)
+            {
+                var hasNightPlan = calendar.NightAction is "rest" or "train" or "admin";
+                _advanceTimeButton.Text = hasNightPlan ? "End Day" : "Plan Night";
+                _advanceTimeButton.TooltipText = hasNightPlan
+                    ? "Settle the current day and show the daily report"
+                    : "Open management and choose tonight's work before ending the day";
+            }
+            else
+            {
+                _advanceTimeButton.Text = "Advance Phase";
+                _advanceTimeButton.TooltipText = "Advance the shared ranch clock to the next phase";
+            }
         }
 
         if (_economyLabel is not null)
