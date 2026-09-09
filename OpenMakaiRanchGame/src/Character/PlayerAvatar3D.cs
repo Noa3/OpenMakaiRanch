@@ -300,7 +300,12 @@ public partial class PlayerAvatar3D : Node3D
 
     private static Color ClothingColorFor(string race)
     {
-        var hash = (race ?? string.Empty).GetHashCode(StringComparison.Ordinal);
+        var hash = 17;
+        foreach (var ch in race ?? string.Empty)
+        {
+            hash = unchecked((hash * 31) + ch);
+        }
+
         var variants = new[]
         {
             new Color(0.18f, 0.29f, 0.42f),
