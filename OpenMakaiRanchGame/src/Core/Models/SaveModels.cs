@@ -61,6 +61,7 @@ public enum MissionOutcome
 public enum CombatPhase
 {
     PreBattle,
+    PlayerTurn,
     BattleResults,
     PostBattle
 }
