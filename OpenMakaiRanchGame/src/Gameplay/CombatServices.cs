@@ -29,47 +29,31 @@ public sealed class CombatService
 
     public CombatReport ResolveMissionRounds(string missionId, bool autoResolve)
     {
-        if (!_data.Missions.TryGetValue(missionId, out var mission))
-            return FailReport(missionId, "Mission not found.");
+        if (!TryCreateBattle(missionId, out var mission, out var partyChars, out var party, out var enemySide, out var failure))
+            return failure!;
 
         var report = new CombatReport { MissionId = missionId, IsRoundBased = true };
+        const int maxRounds = 10;
 
-        var enemies = PickEnemies(mission);
-        if (enemies.Count == 0)
-            return FailReport(missionId, "No enemies for this mission.");
-
-        var partyChars = _state.Roster.Characters
-            .Where(c => _state.Adventure.SelectedPartyIds.Contains(c.Id) || _state.Adventure.SelectedPartyIds.Count == 0)
-            .ToList();
-        if (partyChars.Count == 0)
-            return FailReport(missionId, "No party members available.");
-
-        var party = InitParty(partyChars);
-        var enemySide = InitEnemies(enemies);
-
-        report.PartyState = party.Select(CombatantSnapshot).ToList();
-        report.EnemyState = enemySide.Select(CombatantSnapshot).ToList();
-
-        int maxRounds = 10;
-        int roundNum = 0;
-        bool partyWon = false;
-        bool partyWiped = false;
-
-        while (roundNum < maxRounds)
+        for (var roundNum = 1; roundNum <= maxRounds; roundNum++)
         {
-            roundNum++;
             var activeParty = party.Where(c => c.Hp > 0).ToList();
             var activeEnemies = enemySide.Where(e => e.Hp > 0).ToList();
-            if (activeParty.Count == 0) { partyWiped = true; break; }
-            if (activeEnemies.Count == 0) { partyWon = true; break; }
+            if (activeParty.Count == 0 || activeEnemies.Count == 0)
+                break;
 
-            var allCombatants = new List<BattleCombatant>();
-            allCombatants.AddRange(activeParty);
-            allCombatants.AddRange(activeEnemies);
+            // Defend is a round stance: clear last round's stance before initiative is rebuilt.
+            foreach (var combatant in party)
+                combatant.Defending = false;
+            foreach (var combatant in enemySide)
+                combatant.Defending = false;
 
             var round = new BattleRound { RoundNumber = roundNum };
+            var allCombatants = activeParty.Concat(activeEnemies)
+                .OrderByDescending(combatant => combatant.Speed + _state.Calendar.Day % 3)
+                .ToList();
 
-            foreach (var actor in allCombatants.OrderByDescending(c => c.Speed + _state.Calendar.Day % 3))
+            foreach (var actor in allCombatants)
             {
                 if (actor.Hp <= 0 || activeEnemies.All(e => e.Hp <= 0) || activeParty.All(p => p.Hp <= 0))
                     break;
@@ -77,81 +61,254 @@ public sealed class CombatService
                 var action = autoResolve
                     ? AutoChooseAction(actor, activeParty, activeEnemies)
                     : ManualChooseAction(actor, activeParty, activeEnemies);
-
-                if (action.ActionType == "Defend")
-                {
-                    round.Actions.Add(new BattleAction
-                    {
-                        ActorName = action.ActorName, ActionType = "Defend",
-                        Description = $"{action.ActorName} braces for impact. Defense doubled this round."
-                    });
-                    actor.Defending = true;
-                    continue;
-                }
-
-                var target = action.TargetEnemy
-                    ? activeEnemies.FirstOrDefault(e => e.Id == action.TargetId) ?? activeEnemies.FirstOrDefault()
-                    : activeParty.FirstOrDefault(p => p.Id == action.TargetId) ?? activeParty.FirstOrDefault();
-                if (target == null || target.Hp <= 0)
-                    continue;
-
-                if (action.ActionType == "Skill")
-                {
-                    if (actor.Sp < SkillSpCost)
-                        continue;
-
-                    actor.Sp -= SkillSpCost;
-                    var heal = Math.Min(15 + Math.Max(0, actor.MagicPower), target.MaxHp - target.Hp);
-                    target.Hp += heal;
-                    round.Actions.Add(new BattleAction
-                    {
-                        ActorName = action.ActorName, ActionType = "Skill", TargetName = target.DisplayName,
-                        Healing = heal, ResourceCost = SkillSpCost, ResourceName = "SP",
-                        Description = $"{action.ActorName} uses a combat skill and restores {heal} HP to {target.DisplayName} (-{SkillSpCost} SP)."
-                    });
-                    continue;
-                }
-
-                if (action.ActionType == "Magic")
-                {
-                    if (!actor.UsesPlayerMana || !_magic.SpendPlayerMana(PlayerMagicHealCost))
-                        continue;
-
-                    report.PlayerManaSpent += PlayerMagicHealCost;
-                    var heal = Math.Min(24 + Math.Max(0, actor.MagicPower * 2), target.MaxHp - target.Hp);
-                    target.Hp += heal;
-                    round.Actions.Add(new BattleAction
-                    {
-                        ActorName = action.ActorName, ActionType = "Magic", TargetName = target.DisplayName,
-                        Healing = heal, ResourceCost = PlayerMagicHealCost, ResourceName = "MP",
-                        Description = $"{action.ActorName} channels mana and restores {heal} HP to {target.DisplayName} (-{PlayerMagicHealCost} MP)."
-                    });
-                    continue;
-                }
-
-                var rawDmg = Math.Max(1, actor.Attack + _state.Calendar.Day % 5 - target.Defense / 2);
-                if (target.Defending) rawDmg = Math.Max(1, rawDmg / 2);
-                target.Hp = Math.Max(0, target.Hp - rawDmg);
-                bool killed = target.Hp <= 0;
-
-                round.Actions.Add(new BattleAction
-                {
-                    ActorName = action.ActorName, ActionType = action.ActionType,
-                    TargetName = target.DisplayName, Damage = rawDmg,
-                    Description = $"{action.ActorName} attacks {target.DisplayName} for {rawDmg} damage!",
-                    KilledTarget = killed
-                });
-
-                target.Defending = false;
+                ResolveBattleAction(actor, action, activeParty, activeEnemies, round, report);
             }
 
             report.Rounds.Add(round);
             report.TurnLog.Add($"Round {roundNum}: {round.Actions.Count} actions resolved.");
         }
 
-        int totalPartyHp = party.Sum(p => p.MaxHp);
-        int remainingPartyHp = party.Where(p => p.Hp > 0).Sum(p => p.Hp);
-        float survivalRatio = totalPartyHp > 0 ? (float)remainingPartyHp / totalPartyHp : 0;
+        return FinalizeMissionCombat(mission, partyChars, party, enemySide, report, maxRounds);
+    }
+
+    public InteractiveCombatSession StartInteractiveMission(string missionId)
+    {
+        if (!TryCreateBattle(missionId, out var mission, out var partyChars, out var party, out var enemySide, out var failure))
+            return InteractiveCombatSession.Failed(this, missionId, failure!);
+
+        return new InteractiveCombatSession(this, mission!, partyChars, party, enemySide);
+    }
+
+    internal bool TryCreateBattle(
+        string missionId,
+        out MissionDefinition? mission,
+        out List<CharacterState> partyChars,
+        out List<BattleCombatant> party,
+        out List<BattleCombatant> enemySide,
+        out CombatReport? failure)
+    {
+        partyChars = new List<CharacterState>();
+        party = new List<BattleCombatant>();
+        enemySide = new List<BattleCombatant>();
+        failure = null;
+
+        if (!_data.Missions.TryGetValue(missionId, out mission))
+        {
+            failure = FailReport(missionId, "Mission not found.");
+            return false;
+        }
+
+        var enemies = PickEnemies(mission);
+        if (enemies.Count == 0)
+        {
+            failure = FailReport(missionId, "No enemies for this mission.");
+            return false;
+        }
+
+        partyChars = _state.Roster.Characters
+            .Where(c => _state.Adventure.SelectedPartyIds.Contains(c.Id) || _state.Adventure.SelectedPartyIds.Count == 0)
+            .ToList();
+        if (partyChars.Count == 0)
+        {
+            failure = FailReport(missionId, "No party members available.");
+            return false;
+        }
+
+        party = InitParty(partyChars);
+        enemySide = InitEnemies(enemies);
+        return true;
+    }
+
+    internal void ResolveBattleAction(
+        BattleCombatant actor,
+        BattleActionRecord action,
+        List<BattleCombatant> party,
+        List<BattleCombatant> enemies,
+        BattleRound round,
+        CombatReport report)
+    {
+        if (actor.Hp <= 0 || action.ActionType == "Wait")
+            return;
+
+        if (action.ActionType == "Defend")
+        {
+            round.Actions.Add(new BattleAction
+            {
+                ActorName = action.ActorName,
+                ActionType = "Defend",
+                Description = $"{action.ActorName} braces for impact. Defense is doubled until the round ends."
+            });
+            actor.Defending = true;
+            return;
+        }
+
+        var target = action.TargetEnemy
+            ? enemies.FirstOrDefault(e => e.Id == action.TargetId && e.Hp > 0) ?? enemies.FirstOrDefault(e => e.Hp > 0)
+            : party.FirstOrDefault(p => p.Id == action.TargetId && p.Hp > 0) ?? party.FirstOrDefault(p => p.Hp > 0);
+        if (target is null)
+            return;
+
+        if (action.ActionType == "Skill")
+        {
+            if (actor.Sp < SkillSpCost)
+                return;
+
+            actor.Sp -= SkillSpCost;
+            var heal = Math.Min(15 + Math.Max(0, actor.MagicPower), target.MaxHp - target.Hp);
+            target.Hp += heal;
+            round.Actions.Add(new BattleAction
+            {
+                ActorName = action.ActorName,
+                ActionType = "Skill",
+                TargetName = target.DisplayName,
+                Healing = heal,
+                ResourceCost = SkillSpCost,
+                ResourceName = "SP",
+                Description = $"{action.ActorName} uses a combat skill and restores {heal} HP to {target.DisplayName} (-{SkillSpCost} SP)."
+            });
+            return;
+        }
+
+        if (action.ActionType == "Magic")
+        {
+            if (!actor.UsesPlayerMana || !_magic.SpendPlayerMana(PlayerMagicHealCost))
+                return;
+
+            report.PlayerManaSpent += PlayerMagicHealCost;
+            var heal = Math.Min(24 + Math.Max(0, actor.MagicPower * 2), target.MaxHp - target.Hp);
+            target.Hp += heal;
+            round.Actions.Add(new BattleAction
+            {
+                ActorName = action.ActorName,
+                ActionType = "Magic",
+                TargetName = target.DisplayName,
+                Healing = heal,
+                ResourceCost = PlayerMagicHealCost,
+                ResourceName = "MP",
+                Description = $"{action.ActorName} channels mana and restores {heal} HP to {target.DisplayName} (-{PlayerMagicHealCost} MP)."
+            });
+            return;
+        }
+
+        var rawDmg = Math.Max(1, actor.Attack + _state.Calendar.Day % 5 - target.Defense / 2);
+        if (target.Defending)
+            rawDmg = Math.Max(1, rawDmg / 2);
+
+        target.Hp = Math.Max(0, target.Hp - rawDmg);
+        var killed = target.Hp <= 0;
+        round.Actions.Add(new BattleAction
+        {
+            ActorName = action.ActorName,
+            ActionType = action.ActionType,
+            TargetName = target.DisplayName,
+            Damage = rawDmg,
+            Description = $"{action.ActorName} attacks {target.DisplayName} for {rawDmg} damage!",
+            KilledTarget = killed
+        });
+    }
+
+    internal BattleActionRecord BuildPlayerAction(
+        BattleCombatant actor,
+        CombatPlayerCommand command,
+        string? targetId,
+        List<BattleCombatant> party,
+        List<BattleCombatant> enemies,
+        out string error)
+    {
+        error = string.Empty;
+        if (actor.IsEnemy || !actor.UsesPlayerMana || actor.Hp <= 0)
+        {
+            error = "The current actor is not the player.";
+            return new BattleActionRecord { ActorName = actor.DisplayName, ActionType = "Wait" };
+        }
+
+        switch (command)
+        {
+            case CombatPlayerCommand.Defend:
+                return new BattleActionRecord { ActorName = actor.DisplayName, ActionType = "Defend" };
+
+            case CombatPlayerCommand.Attack:
+            {
+                var target = enemies.FirstOrDefault(value => value.Id == targetId && value.Hp > 0)
+                    ?? enemies.FirstOrDefault(value => value.Hp > 0);
+                if (target is null)
+                {
+                    error = "No living enemy target is available.";
+                    break;
+                }
+                return new BattleActionRecord
+                {
+                    ActorName = actor.DisplayName,
+                    ActionType = "Attack",
+                    TargetEnemy = true,
+                    TargetId = target.Id
+                };
+            }
+
+            case CombatPlayerCommand.Skill:
+            {
+                if (actor.Sp < SkillSpCost)
+                {
+                    error = $"Need {SkillSpCost} SP.";
+                    break;
+                }
+                var target = party.FirstOrDefault(value => value.Id == targetId && value.Hp > 0)
+                    ?? party.Where(value => value.Hp > 0).OrderBy(value => (float)value.Hp / Math.Max(1, value.MaxHp)).FirstOrDefault();
+                if (target is null)
+                {
+                    error = "No living ally target is available.";
+                    break;
+                }
+                return new BattleActionRecord
+                {
+                    ActorName = actor.DisplayName,
+                    ActionType = "Skill",
+                    TargetEnemy = false,
+                    TargetId = target.Id
+                };
+            }
+
+            case CombatPlayerCommand.Magic:
+            {
+                if (!_magic.CanSpendPlayerMana(PlayerMagicHealCost))
+                {
+                    error = $"Need {PlayerMagicHealCost} personal MP.";
+                    break;
+                }
+                var target = party.FirstOrDefault(value => value.Id == targetId && value.Hp > 0)
+                    ?? party.Where(value => value.Hp > 0).OrderBy(value => (float)value.Hp / Math.Max(1, value.MaxHp)).FirstOrDefault();
+                if (target is null)
+                {
+                    error = "No living ally target is available.";
+                    break;
+                }
+                return new BattleActionRecord
+                {
+                    ActorName = actor.DisplayName,
+                    ActionType = "Magic",
+                    TargetEnemy = false,
+                    TargetId = target.Id
+                };
+            }
+        }
+
+        return new BattleActionRecord { ActorName = actor.DisplayName, ActionType = "Wait" };
+    }
+
+    internal CombatReport FinalizeMissionCombat(
+        MissionDefinition mission,
+        List<CharacterState> partyChars,
+        List<BattleCombatant> party,
+        List<BattleCombatant> enemySide,
+        CombatReport report,
+        int maxRounds)
+    {
+        var totalPartyHp = party.Sum(p => p.MaxHp);
+        var remainingPartyHp = party.Where(p => p.Hp > 0).Sum(p => p.Hp);
+        var survivalRatio = totalPartyHp > 0 ? (float)remainingPartyHp / totalPartyHp : 0f;
+        var partyWiped = party.All(p => p.Hp <= 0);
+        var partyWon = enemySide.All(e => e.Hp <= 0);
+        var roundNum = report.Rounds.Count;
 
         if (partyWiped)
         {
@@ -161,7 +318,6 @@ public sealed class CombatService
         }
         else if (partyWon)
         {
-            int diff = mission.Difficulty;
             if (survivalRatio >= 0.7f)
             {
                 report.Outcome = MissionOutcome.Success;
@@ -202,11 +358,10 @@ public sealed class CombatService
         }
 
         report.PartyState = party.Select(CombatantSnapshot).ToList();
-
-        _state.Adventure.LastMissionId = missionId;
+        report.EnemyState = enemySide.Select(CombatantSnapshot).ToList();
+        _state.Adventure.LastMissionId = mission.Id;
         _state.Adventure.LastOutcome = report.Outcome;
         _state.Adventure.LastSummary = report.Summary;
-
         return report;
     }
 
@@ -297,7 +452,7 @@ public sealed class CombatService
         return new List<EnemyDefinition> { pool[idx] };
     }
 
-    private List<BattleCombatant> InitParty(List<CharacterState> chars)
+    internal List<BattleCombatant> InitParty(List<CharacterState> chars)
     {
         int trainingBonus = _state.Research.UnlockedSkillIds.Contains("adventure_training") ? 4 : 0;
         int tacticalBonus = _state.Research.UnlockedSkillIds.Contains("tactical_training") ? 3 : 0;
@@ -316,7 +471,7 @@ public sealed class CombatService
         }).ToList();
     }
 
-    private List<BattleCombatant> InitEnemies(List<EnemyDefinition> defs)
+    internal List<BattleCombatant> InitEnemies(List<EnemyDefinition> defs)
     {
         int dayScale = 1 + _state.Calendar.Day / 10;
         return defs.Select(e => new BattleCombatant
@@ -333,7 +488,7 @@ public sealed class CombatService
         }).ToList();
     }
 
-    private BattleActionRecord AutoChooseAction(BattleCombatant actor, List<BattleCombatant> party, List<BattleCombatant> enemies)
+    internal BattleActionRecord AutoChooseAction(BattleCombatant actor, List<BattleCombatant> party, List<BattleCombatant> enemies)
     {
         bool isEnemy = actor.IsEnemy;
         var allies = isEnemy ? enemies : party;
@@ -428,7 +583,7 @@ public sealed class CombatService
         }
     }
 
-    private CombatantSnapshot CombatantSnapshot(BattleCombatant b) => new()
+    internal CombatantSnapshot CombatantSnapshot(BattleCombatant b) => new()
     {
         Id = b.Id, DisplayName = b.DisplayName,
         CurrentHp = b.Hp, MaxHp = b.MaxHp,
@@ -438,6 +593,222 @@ public sealed class CombatService
         IsAlive = b.Hp > 0, IsEnemy = b.IsEnemy,
         Attack = b.Attack, Defense = b.Defense, Speed = b.Speed
     };
+}
+
+
+public enum CombatPlayerCommand
+{
+    Attack,
+    Defend,
+    Skill,
+    Magic
+}
+
+/// <summary>
+/// Transient interactive combat state. It is intentionally not serialized into SaveState.
+/// The simulation advances automatically through companion/enemy turns and pauses only when the
+/// original player character is ready for a command.
+/// </summary>
+public sealed class InteractiveCombatSession
+{
+    private const int MaxRounds = 10;
+
+    private readonly CombatService _combat;
+    private readonly MissionDefinition? _mission;
+    private readonly List<CharacterState> _partyCharacters;
+    private readonly List<BattleCombatant> _party;
+    private readonly List<BattleCombatant> _enemies;
+    private List<BattleCombatant> _turnOrder = new();
+    private BattleRound? _round;
+    private int _turnIndex;
+    private BattleCombatant? _waitingPlayer;
+
+    private InteractiveCombatSession(
+        CombatService combat,
+        string missionId,
+        CombatReport report,
+        bool failed)
+    {
+        _combat = combat;
+        MissionId = missionId;
+        Report = report;
+        _partyCharacters = new List<CharacterState>();
+        _party = new List<BattleCombatant>();
+        _enemies = new List<BattleCombatant>();
+        IsFinished = failed;
+        LastError = failed ? report.Summary : string.Empty;
+    }
+
+    internal InteractiveCombatSession(
+        CombatService combat,
+        MissionDefinition mission,
+        List<CharacterState> partyCharacters,
+        List<BattleCombatant> party,
+        List<BattleCombatant> enemies)
+    {
+        _combat = combat;
+        _mission = mission;
+        MissionId = mission.Id;
+        _partyCharacters = partyCharacters;
+        _party = party;
+        _enemies = enemies;
+        Report = new CombatReport { MissionId = mission.Id, IsRoundBased = true };
+        RefreshSnapshots();
+        AdvanceUntilInputOrFinished();
+    }
+
+    internal static InteractiveCombatSession Failed(CombatService combat, string missionId, CombatReport report) =>
+        new(combat, missionId, report, failed: true);
+
+    public string MissionId { get; }
+    public CombatReport Report { get; private set; }
+    public bool IsFinished { get; private set; }
+    public bool AwaitingPlayerInput => !IsFinished && _waitingPlayer is not null;
+    public string LastError { get; private set; } = string.Empty;
+    public int RoundNumber => _round?.RoundNumber ?? Report.Rounds.Count;
+    public IReadOnlyList<CombatantSnapshot> PartyState => Report.PartyState;
+    public IReadOnlyList<CombatantSnapshot> EnemyState => Report.EnemyState;
+    public CombatantSnapshot? PlayerState => _waitingPlayer is null ? null : _combat.CombatantSnapshot(_waitingPlayer);
+
+    public bool SubmitPlayerCommand(CombatPlayerCommand command, string? targetId = null)
+    {
+        LastError = string.Empty;
+        if (IsFinished)
+        {
+            LastError = "Combat is already finished.";
+            return false;
+        }
+
+        if (_waitingPlayer is null || _round is null)
+        {
+            LastError = "Combat is not waiting for a player command.";
+            return false;
+        }
+
+        var action = _combat.BuildPlayerAction(_waitingPlayer, command, targetId, _party, _enemies, out var error);
+        if (!string.IsNullOrEmpty(error))
+        {
+            LastError = error;
+            return false;
+        }
+
+        _combat.ResolveBattleAction(_waitingPlayer, action, _party, _enemies, _round, Report);
+        _waitingPlayer = null;
+        _turnIndex++;
+        RefreshSnapshots();
+        AdvanceUntilInputOrFinished();
+        return true;
+    }
+
+    public void AutoFinish()
+    {
+        while (!IsFinished)
+        {
+            if (_waitingPlayer is not null && _round is not null)
+            {
+                var action = _combat.AutoChooseAction(_waitingPlayer, _party, _enemies);
+                _combat.ResolveBattleAction(_waitingPlayer, action, _party, _enemies, _round, Report);
+                _waitingPlayer = null;
+                _turnIndex++;
+                RefreshSnapshots();
+            }
+
+            AdvanceUntilInputOrFinished(stopForPlayer: false);
+        }
+    }
+
+    private void AdvanceUntilInputOrFinished(bool stopForPlayer = true)
+    {
+        while (!IsFinished)
+        {
+            if (_round is null)
+            {
+                if (_party.All(value => value.Hp <= 0)
+                    || _enemies.All(value => value.Hp <= 0)
+                    || Report.Rounds.Count >= MaxRounds)
+                {
+                    Finish();
+                    return;
+                }
+
+                foreach (var combatant in _party)
+                    combatant.Defending = false;
+                foreach (var combatant in _enemies)
+                    combatant.Defending = false;
+
+                _round = new BattleRound { RoundNumber = Report.Rounds.Count + 1 };
+                Report.Rounds.Add(_round);
+                _turnOrder = _party.Where(value => value.Hp > 0)
+                    .Concat(_enemies.Where(value => value.Hp > 0))
+                    .OrderByDescending(value => value.Speed)
+                    .ToList();
+                _turnIndex = 0;
+            }
+
+            while (_turnIndex < _turnOrder.Count)
+            {
+                if (_party.All(value => value.Hp <= 0) || _enemies.All(value => value.Hp <= 0))
+                    break;
+
+                var actor = _turnOrder[_turnIndex];
+                if (actor.Hp <= 0)
+                {
+                    _turnIndex++;
+                    continue;
+                }
+
+                if (!actor.IsEnemy && actor.UsesPlayerMana && stopForPlayer)
+                {
+                    _waitingPlayer = actor;
+                    RefreshSnapshots();
+                    return;
+                }
+
+                var activeParty = _party.Where(value => value.Hp > 0).ToList();
+                var activeEnemies = _enemies.Where(value => value.Hp > 0).ToList();
+                var action = _combat.AutoChooseAction(actor, activeParty, activeEnemies);
+                _combat.ResolveBattleAction(actor, action, activeParty, activeEnemies, _round, Report);
+                _turnIndex++;
+                RefreshSnapshots();
+            }
+
+            Report.TurnLog.Add($"Round {_round.RoundNumber}: {_round.Actions.Count} actions resolved.");
+            _round = null;
+            _turnOrder.Clear();
+            _turnIndex = 0;
+
+            if (_party.All(value => value.Hp <= 0)
+                || _enemies.All(value => value.Hp <= 0)
+                || Report.Rounds.Count >= MaxRounds)
+            {
+                Finish();
+                return;
+            }
+        }
+    }
+
+    private void RefreshSnapshots()
+    {
+        Report.PartyState = _party.Select(_combat.CombatantSnapshot).ToList();
+        Report.EnemyState = _enemies.Select(_combat.CombatantSnapshot).ToList();
+    }
+
+    private void Finish()
+    {
+        if (IsFinished)
+            return;
+
+        if (_mission is null)
+        {
+            IsFinished = true;
+            return;
+        }
+
+        Report = _combat.FinalizeMissionCombat(_mission, _partyCharacters, _party, _enemies, Report, MaxRounds);
+        IsFinished = true;
+        _waitingPlayer = null;
+        RefreshSnapshots();
+    }
 }
 
 internal sealed class BattleCombatant
