@@ -27,6 +27,9 @@ public partial class WorldAtmosphereController : Node3D
     private DayPhase _lastPhase = (DayPhase)(-1);
     private string _lastQuality = string.Empty;
     private bool _lastParticlesEnabled;
+    private bool _lastSheltered;
+
+    public bool IsPlayerSheltered => _lastSheltered;
 
     public int WeatherParticleAmount => _weather?.Amount ?? 0;
     public int SeasonalParticleAmount => _seasonal?.Amount ?? 0;
@@ -68,9 +71,13 @@ public partial class WorldAtmosphereController : Node3D
             var cal = game.State.Calendar;
             var quality = game.State.Settings.GraphicsQuality;
             var enabled = game.RuntimeSettings.EffectiveWorldParticlesEnabled;
+            var sheltered = _player is not null && GodotObject.IsInstanceValid(_player)
+                && WorldShelterVolume.IsPointSheltered(GetTree(), _player.GlobalPosition);
             if (cal.CurrentWeather != _lastWeather || cal.Season != _lastSeason || cal.Phase != _lastPhase
-                || !string.Equals(quality, _lastQuality, StringComparison.Ordinal) || enabled != _lastParticlesEnabled)
+                || !string.Equals(quality, _lastQuality, StringComparison.Ordinal) || enabled != _lastParticlesEnabled
+                || sheltered != _lastSheltered)
             {
+                _lastSheltered = sheltered;
                 Refresh();
             }
         }
@@ -88,10 +95,13 @@ public partial class WorldAtmosphereController : Node3D
         var settings = game.State.Settings;
         var particlesEnabled = game.RuntimeSettings.EffectiveWorldParticlesEnabled;
         var density = Mathf.Clamp(game.RuntimeSettings.ParticleDensity, 0.15f, 1.3f);
+        _lastSheltered = _player is not null && GodotObject.IsInstanceValid(_player)
+            && WorldShelterVolume.IsPointSheltered(GetTree(), _player.GlobalPosition);
+        var localOutdoorEffects = particlesEnabled && !_lastSheltered;
 
-        ConfigureWeather(_weather, cal.CurrentWeather, particlesEnabled, density);
-        ConfigureSeasonal(_seasonal, cal.Season, cal.CurrentWeather, particlesEnabled, density);
-        ConfigureNightMotes(_nightMotes, cal.Season, cal.Phase, cal.CurrentWeather, particlesEnabled, density);
+        ConfigureWeather(_weather, cal.CurrentWeather, localOutdoorEffects, density);
+        ConfigureSeasonal(_seasonal, cal.Season, cal.CurrentWeather, localOutdoorEffects, density);
+        ConfigureNightMotes(_nightMotes, cal.Season, cal.Phase, cal.CurrentWeather, localOutdoorEffects, density);
         ApplyGroundSurface(cal.Season, cal.CurrentWeather);
 
         _lastWeather = cal.CurrentWeather;
