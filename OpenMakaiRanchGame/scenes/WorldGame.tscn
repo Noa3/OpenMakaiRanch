@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://src/World/WorldGameController.cs" id="1_controller"]
 [ext_resource type="PackedScene" path="res://scenes/dev/RanchGreybox.tscn" id="2_ranch"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/dev/TownGreybox.tscn" id="4_town"]
 [ext_resource type="Script" path="res://src/World/WorldTransitionController.cs" id="5_transition"]
 [ext_resource type="Script" path="res://src/World/PauseMenuController.cs" id="6_pause"]
+[ext_resource type="Script" path="res://src/World/MobileWorldControls.cs" id="7_mobile"]
 
 [node name="WorldGame" type="Node"]
 script = ExtResource("1_controller")
@@ -21,6 +22,19 @@ layer = 50
 
 [node name="ManagementUi" parent="ManagementLayer" instance=ExtResource("3_management")]
 visible = false
+
+[node name="MobileControlsLayer" type="CanvasLayer" parent="."]
+layer = 70
+
+[node name="MobileControls" type="Control" parent="MobileControlsLayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_mobile")
 
 [node name="TransitionLayer" type="CanvasLayer" parent="."]
 layer = 80
