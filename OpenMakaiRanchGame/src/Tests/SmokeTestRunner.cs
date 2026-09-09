@@ -1063,8 +1063,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             AssertNodeExists(result, greybox, "Player", "greybox has a third-person player");
             AssertNodeExists(result, greybox, "CameraRig/Camera", "greybox has a follow camera");
             AssertNodeExists(result, greybox, "Station", "greybox has an interactable station");
-            AssertNodeExists(result, greybox, "PromptLayer/Prompt", "greybox shows an interaction prompt");
-            AssertNodeExists(result, greybox, "ButtonLayer/OpenManagementButton", "greybox has a management UI button");
+            AssertNodeExists(result, greybox, "Stations/PastureStation", "greybox has multiple authored job stations");
+            AssertNodeExists(result, greybox, "WorldHud/TopBar/DayLabel", "greybox has a world HUD day label");
+            AssertNodeExists(result, greybox, "WorldHud/WorkerPanel/WorkerLabel", "greybox HUD has selected-worker context");
+            AssertNodeExists(result, greybox, "WorldHud/Prompt", "greybox HUD has an interaction prompt");
+            AssertNodeExists(result, greybox, "PromptLayer/Prompt", "greybox retains the legacy interaction prompt node");
+            AssertNodeExists(result, greybox, "ButtonLayer/OpenManagementButton", "greybox retains the management UI composition anchor");
 
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.
@@ -1075,11 +1079,17 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 // _Ready() normally fires on tree entry; invoke it directly so the
                 // wiring (player / station / dispatcher) is verified headlessly.
                 controller._Ready();
-                Assert(result, controller.Wired, "greybox controller wires player + station");
+                Assert(result, controller.Wired, "greybox controller wires player + stations");
                 Assert(result, controller.Player is not null, "greybox controller resolves the player");
-                Assert(result, controller.Station is not null, "greybox controller resolves the station");
+                Assert(result, controller.Station is not null, "greybox controller resolves the primary station");
+                Assert(result, controller.StationCount >= 6, "greybox controller discovers all authored job stations");
                 Assert(result, controller.Station is not null && controller.Station.Dispatcher is not null,
-                    "greybox station has a production dispatcher bound");
+                    "greybox primary station has a production dispatcher bound");
+                Assert(result, controller.Stations.All(value => value.Dispatcher is not null),
+                    "greybox controller binds every authored station to the production dispatcher");
+                Assert(result, controller.CameraRig is not null && controller.CameraRig.Target is not null,
+                    "greybox controller binds the follow camera to the player head target");
+                Assert(result, controller.Hud is not null, "greybox controller resolves the world HUD");
             }
         }
         finally
@@ -1424,9 +1434,42 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 Assert(result, allInBounds, "greybox scene avatars are in the greybox bounds");
             }
 
-            // Player + camera + station still present (the world is intact, not just the rigs).
+            // Player + camera + stations + HUD are live, not just authored nodes.
             Assert(result, controller?.Player is not null, "greybox scene has a player");
-            Assert(result, controller?.Station is not null, "greybox scene has the milk station");
+            Assert(result, controller?.Station is not null, "greybox scene has a primary work station");
+            Assert(result, controller?.StationCount >= 6, "greybox scene exposes multiple spatial job stations");
+            Assert(result, controller?.CameraRig?.Target is not null, "greybox live camera follows the player target");
+            Assert(result, controller?.Hud is not null, "greybox live scene exposes the world HUD");
+            Assert(result, !string.IsNullOrWhiteSpace(controller?.SelectedCharacterId),
+                "greybox selects a real roster worker for spatial job interactions");
+
+            if (controller?.Hud is not null)
+            {
+                var hudDay = controller.Hud.GetNodeOrNull<Label>("TopBar/DayLabel");
+                Assert(result, hudDay is not null && hudDay.Text.Contains($"Day {game.State.Calendar.Day}", StringComparison.Ordinal),
+                    "world HUD reflects the shared calendar day");
+            }
+
+            // Controller-level regression: actual F-path semantics must pass a real roster id,
+            // never the station id, into TryAssignJob. Choose a station whose job differs from the
+            // currently selected worker so the shared command is expected to succeed.
+            if (controller?.Player is not null && !string.IsNullOrWhiteSpace(controller.SelectedCharacterId))
+            {
+                var selectedId = controller.SelectedCharacterId;
+                var currentJob = game.Schedule.GetAssignment(selectedId);
+                var targetStation = controller.Stations.FirstOrDefault(value =>
+                    !string.IsNullOrWhiteSpace(value.CommandTargetId) && value.CommandTargetId != currentJob);
+
+                Assert(result, targetStation is not null, "greybox has a station with a different job for controller interaction test");
+                if (targetStation is not null)
+                {
+                    controller.Player.GlobalPosition = targetStation.GlobalPosition;
+                    Assert(result, controller.TryInteractWithNearestStation(),
+                        "greybox controller interaction dispatches through the shared command boundary");
+                    Assert(result, game.Schedule.GetAssignment(selectedId) == targetStation.CommandTargetId,
+                        "greybox controller assigns the selected roster worker, not the station id");
+                }
+            }
 
             // RefreshLiveWorld re-derives from the shared state after a phase change.
             var phaseBefore = game.State.Calendar.Phase;
