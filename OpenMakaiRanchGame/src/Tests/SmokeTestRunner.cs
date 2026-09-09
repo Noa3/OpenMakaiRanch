@@ -68,6 +68,7 @@ public static class SmokeTestRunner
             TestFirstDaySystems(result);
             TestOriginalCalendarAndWeather(result);
             TestCombatWorldTimeLock(result);
+            TestPlayerStaminaAndRecovery(result);
             TestPlayerManaAndCombatResources(result);
             TestCameraInspectionAndBoundaryMath(result);
             TestCharacterAvatar(result);
@@ -1358,6 +1359,71 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "surface weather: shelter containment is deterministic without physics queries");
     }
 
+    private static void TestPlayerStaminaAndRecovery(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        Assert(result, game.State.Player.Stamina == PlayerStaminaService.DefaultMaxStamina
+            && game.State.Player.MaxStamina == PlayerStaminaService.DefaultMaxStamina,
+            "stamina: new game starts with a full independent daily player budget");
+
+        game.State.Roster.Characters[0].Energy = 1;
+        Assert(result, game.State.Player.Stamina == 100,
+            "stamina: player daily stamina is not the first roster character's Energy");
+
+        game.State.Player.Stamina = 70;
+        game.State.Calendar.Phase = DayPhase.Morning;
+        Assert(result, game.AdvanceTime() && game.State.Player.Stamina == 70,
+            "stamina: ordinary world phase progression does not consume the exploration budget");
+
+        game.State.Calendar.Phase = DayPhase.Evening;
+        game.State.Ranch.BathtubClean = true;
+        var bath = game.UsePlayerBath();
+        Assert(result, bath.Used && bath.UsedCleanBath && bath.Restored == PlayerStaminaService.CleanBathRecovery
+            && game.State.Player.Stamina == 100 && !game.State.Ranch.BathtubClean,
+            "stamina: an evening clean bath gives the stronger once-per-day second wind without ending the day");
+        Assert(result, string.IsNullOrWhiteSpace(game.State.Calendar.NightAction),
+            "stamina: evening bath does not silently choose or end the Night action");
+        Assert(result, !game.UsePlayerBath().Used,
+            "stamina: bath/shower recovery cannot be farmed repeatedly on the same day");
+
+        game.NewGame();
+        game.State.Player.Stamina = 40;
+        game.State.Calendar.Phase = DayPhase.Night;
+        game.State.Ranch.BathtubClean = false;
+        var shower = game.UsePlayerBath();
+        Assert(result, shower.Used && !shower.UsedCleanBath && shower.Restored == PlayerStaminaService.ShowerRecovery
+            && game.State.Player.Stamina == 55 && game.State.Calendar.NightAction == "rest",
+            "stamina: dirty bath falls back to a weaker shower and Night recovery routes into rest");
+
+        new DayCycleService(game.State).AdvanceToNextDay();
+        Assert(result, game.State.Player.Stamina == game.State.Player.MaxStamina && !game.State.Player.BathedToday,
+            "stamina: next day fully refreshes stamina and the once-per-day bath recovery");
+
+        game.NewGame();
+        var character = game.Roster.Characters.First();
+        character.Bond = 0;
+        game.State.Player.Stamina = game.PlayerStaminaCost(PlayerActivityKind.Mentorship) - 1;
+        var bondBefore = character.Bond;
+        Assert(result, !game.TryConductMentorship(character.Id, game.StateGeneration)
+            && character.Bond == bondBefore,
+            "stamina: insufficient budget blocks repeatable progression without granting rewards");
+
+        game.State.Player.Stamina = 60;
+        var staminaBeforeMentorship = game.State.Player.Stamina;
+        Assert(result, game.TryConductMentorship(character.Id, game.StateGeneration)
+            && game.State.Player.Stamina == staminaBeforeMentorship - game.PlayerStaminaCost(PlayerActivityKind.Mentorship),
+            "stamina: successful progression spends its declared cost exactly once");
+
+        game.State.Player.Stamina = game.PlayerStaminaCost(PlayerActivityKind.Adventure) - 1;
+        Assert(result, !game.CanStartAdventure("road_patrol")
+            && game.CanStartAdventure("tutorial_ranch_intruder"),
+            "stamina: ordinary adventures respect the budget while the mandatory Day-1 tutorial remains free");
+
+        game.NewGame();
+    }
+
     private static void TestPlayerManaAndCombatResources(SmokeTestResult result)
     {
         var data = DataRegistry.CreateSeeded();
@@ -1423,6 +1489,24 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, magicReport.PlayerManaSpent > 0
                 && state.Player.Mana == beforeMana - magicReport.PlayerManaSpent,
             "combat: report and persistent player MP agree on mana consumed");
+
+        var companionState = new SaveStateFactory(data, new Random(2412)).CreateNewGame();
+        companionState.Adventure.SelectedPartyIds.Clear();
+        companionState.Adventure.SelectedPartyIds.Add("rancher");
+        companionState.Player.Mana = 30;
+        var companionEquipment = new EquipmentService(companionState, data);
+        var companionTalents = new TalentService(companionState, data);
+        var companionMagic = new MagicService(companionState, data);
+        var companionCombat = new CombatService(companionState, data, companionEquipment, companionTalents, companionMagic);
+        var companionManaBefore = companionState.Player.Mana;
+        var companionReport = companionCombat.ResolveMissionRounds("tutorial_ranch_intruder", autoResolve: true);
+        Assert(result, companionState.Player.Mana == companionManaBefore && companionReport.PlayerManaSpent == 0,
+            "combat: a companion-only party cannot spend the PlayerState personal MP pool");
+
+        var wornCharacter = state.Roster.Characters.First(value => value.Id == "anon");
+        var wornSnapshot = magicReport.PartyState.First(value => value.Id == "anon");
+        Assert(result, wornSnapshot.CurrentHp == wornSnapshot.MaxHp || wornCharacter.Hp < 800,
+            "combat: non-trivial battle damage carries into persistent character HP instead of disappearing after results");
 
         var skillState = new SaveStateFactory(data, new Random(2410)).CreateNewGame();
         var skillEquipment = new EquipmentService(skillState, data);
