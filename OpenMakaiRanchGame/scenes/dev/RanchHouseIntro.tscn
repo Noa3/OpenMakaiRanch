@@ -1,0 +1,161 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://src/World/IntroHouseController.cs" id="1_intro"]
+[ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
+[ext_resource type="Script" path="res://src/World/WorldCameraRig.cs" id="3_camera"]
+[ext_resource type="Script" path="res://src/Character/PlayerAvatar3D.cs" id="4_avatar"]
+[ext_resource type="PackedScene" path="res://assets/vendor/kaykit_adventurers/Mage.glb" id="5_friend"]
+
+[sub_resource type="BoxMesh" id="floor_mesh"]
+size = Vector3(9, 0.3, 7)
+
+[sub_resource type="BoxShape3D" id="floor_shape"]
+size = Vector3(9, 0.3, 7)
+
+[sub_resource type="BoxMesh" id="wall_long"]
+size = Vector3(9, 3, 0.25)
+
+[sub_resource type="BoxMesh" id="wall_short"]
+size = Vector3(0.25, 3, 7)
+
+[sub_resource type="BoxMesh" id="bed_base"]
+size = Vector3(2.1, 0.45, 3.2)
+
+[sub_resource type="BoxMesh" id="bed_mattress"]
+size = Vector3(1.9, 0.32, 2.9)
+
+[sub_resource type="CapsuleShape3D" id="player_shape"]
+radius = 0.32
+height = 1.6
+
+[sub_resource type="StandardMaterial3D" id="floor_material"]
+albedo_color = Color(0.35, 0.25, 0.18, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="wall_material"]
+albedo_color = Color(0.76, 0.68, 0.56, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="bed_material"]
+albedo_color = Color(0.32, 0.20, 0.17, 1)
+
+[node name="IntroHouse" type="Node3D"]
+script = ExtResource("1_intro")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.15, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("floor_mesh")
+material_override = SubResource("floor_material")
+
+[node name="Collision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("floor_shape")
+
+[node name="Walls" type="Node3D" parent="."]
+
+[node name="North" type="MeshInstance3D" parent="Walls"]
+position = Vector3(0, 1.5, -3.5)
+mesh = SubResource("wall_long")
+material_override = SubResource("wall_material")
+
+[node name="West" type="MeshInstance3D" parent="Walls"]
+position = Vector3(-4.5, 1.5, 0)
+mesh = SubResource("wall_short")
+material_override = SubResource("wall_material")
+
+[node name="East" type="MeshInstance3D" parent="Walls"]
+position = Vector3(4.5, 1.5, 0)
+mesh = SubResource("wall_short")
+material_override = SubResource("wall_material")
+
+[node name="SouthLeft" type="MeshInstance3D" parent="Walls"]
+position = Vector3(-2.7, 1.5, 3.5)
+scale = Vector3(0.4, 1, 1)
+mesh = SubResource("wall_long")
+material_override = SubResource("wall_material")
+
+[node name="SouthRight" type="MeshInstance3D" parent="Walls"]
+position = Vector3(2.7, 1.5, 3.5)
+scale = Vector3(0.4, 1, 1)
+mesh = SubResource("wall_long")
+material_override = SubResource("wall_material")
+
+[node name="Bed" type="Node3D" parent="."]
+position = Vector3(-2.3, 0, -1.4)
+
+[node name="Base" type="MeshInstance3D" parent="Bed"]
+position = Vector3(0, 0.22, 0)
+mesh = SubResource("bed_base")
+material_override = SubResource("bed_material")
+
+[node name="Mattress" type="MeshInstance3D" parent="Bed"]
+position = Vector3(0, 0.58, 0)
+mesh = SubResource("bed_mattress")
+material_override = SubResource("wall_material")
+
+[node name="ChildhoodFriend" parent="." instance=ExtResource("5_friend")]
+position = Vector3(1.4, 0, -0.7)
+rotation_degrees = Vector3(0, 150, 0)
+scale = Vector3(1.15, 1.15, 1.15)
+
+[node name="FriendLabel" type="Label3D" parent="."]
+position = Vector3(1.4, 2.25, -0.7)
+text = "Childhood Friend"
+font_size = 28
+outline_size = 6
+
+[node name="ExitDoorPoint" type="Node3D" parent="."]
+position = Vector3(0, 0, 3.0)
+
+[node name="Player" type="CharacterBody3D" parent="."]
+position = Vector3(-1.2, 0.8, 0.4)
+script = ExtResource("2_player")
+MaxWalkSpeed = 4.0
+SprintMultiplier = 1.45
+
+[node name="Visual" type="Node3D" parent="Player"]
+position = Vector3(0, -0.8, 0)
+script = ExtResource("4_avatar")
+
+[node name="Collision" type="CollisionShape3D" parent="Player"]
+shape = SubResource("player_shape")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("3_camera")
+Yaw = -2.35
+Pitch = 0.38
+Distance = 5.2
+
+[node name="Camera" type="Camera3D" parent="CameraRig"]
+current = true
+fov = 68.0
+
+[node name="WarmLamp" type="OmniLight3D" parent="."]
+position = Vector3(-1.6, 2.4, -0.6)
+light_color = Color(1, 0.72, 0.46, 1)
+light_energy = 1.35
+omni_range = 8.0
+shadow_enabled = false
+
+[node name="WindowLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-28, 140, 0)
+light_color = Color(1, 0.88, 0.7, 1)
+light_energy = 0.55
+shadow_enabled = false
+
+[node name="IntroHud" type="CanvasLayer" parent="."]
+layer = 15
+
+[node name="Prompt" type="Label" parent="IntroHud"]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -360.0
+offset_top = -72.0
+offset_right = 360.0
+offset_bottom = -34.0
+horizontal_alignment = 1
+text = "Walk to the bedroom door and press F."
