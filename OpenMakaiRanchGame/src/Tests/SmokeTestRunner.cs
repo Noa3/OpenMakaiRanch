@@ -259,6 +259,7 @@ public static class SmokeTestRunner
         try
         {
             AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/EndDayButton", "game shell has end day button node");
+            AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton", "game shell has return-to-world button node");
             AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/DayChip/DayLabel", "game shell has day label node");
             AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/PhaseChip/PhaseLabel", "game shell has phase label node");
             AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/GoldChip/GoldLabel", "game shell has gold label node");
@@ -330,6 +331,28 @@ public static class SmokeTestRunner
         finally
         {
             game.Free();
+        }
+
+        var creationScene = GD.Load<PackedScene>("res://scenes/CharacterCreationScreen.tscn");
+        Assert(result, creationScene is not null, "character creation scene loads");
+        if (creationScene is not null)
+        {
+            var creation = creationScene.Instantiate();
+            try
+            {
+                Assert(result, creation is CharacterCreationPreviewController,
+                    "character creation root has its mixed 2D/3D controller");
+                AssertNodeExists(result, creation, "CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport",
+                    "character creation has a 3D SubViewport");
+                AssertNodeExists(result, creation, "CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport/PreviewWorld/Avatar",
+                    "character creation has a player avatar preview");
+                AssertNodeExists(result, creation, "CreationBody/SettingsColumn/BasicCard",
+                    "character creation retains 2D settings beside the preview");
+            }
+            finally
+            {
+                creation.Free();
+            }
         }
     }
 
@@ -1082,6 +1105,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 controller._Ready();
                 Assert(result, controller.Wired, "greybox controller wires player + stations");
                 Assert(result, controller.Player is not null, "greybox controller resolves the player");
+                Assert(result, controller.Player?.GetNodeOrNull<PlayerAvatar3D>("Visual") is not null,
+                    "greybox player uses the shared created-player 3D stand-in");
+                Assert(result, controller.Player is not null && controller.Player.MoveSpeedFor(true) > controller.Player.MoveSpeedFor(false),
+                    "greybox player sprint speed is greater than walk speed");
                 Assert(result, controller.Station is not null, "greybox controller resolves the primary station");
                 Assert(result, controller.StationCount >= 6, "greybox controller discovers all authored job stations");
                 Assert(result, controller.Station is not null && controller.Station.Dispatcher is not null,
@@ -1518,6 +1545,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
             AssertNodeExists(result, root, "ManagementLayer/ManagementUi/UiShell",
                 "world boot contains the existing management shell as overlay");
+            AssertNodeExists(result, root, "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton",
+                "world boot management overlay has an explicit return-to-world control");
 
             if (controller is null)
             {
