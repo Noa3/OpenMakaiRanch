@@ -158,15 +158,20 @@ public partial class MainMenuController : Control
 		var canContinue = game.MostRecentSaveSlot().HasValue;
 		_continueButton.Visible = canContinue;
 		_continueButton.Text = T("mainmenu.continue", "Continue");
+		_continueButton.TooltipText = T("mainmenu.continue_tip", "Load the most recently saved usable game from autosave or manual slots 1-3.");
 
 		_newGameButton.Text = T("mainmenu.new_game", "New Game");
+		_newGameButton.TooltipText = T("mainmenu.new_game_tip", "Create your player, view the prologue, then enter the 3D ranch.");
 
 		var hasVictorySave = game.HasVictorySave();
 		_newGamePlusButton.Visible = hasVictorySave;
 		_newGamePlusButton.Disabled = !hasVictorySave;
 		_newGamePlusButton.Text = T("mainmenu.new_game_plus", "New Game+");
+		_newGamePlusButton.TooltipText = T("mainmenu.new_game_plus_tip", "Start New Game+ from the most recent victory save and carry over the supported progression.");
 
 		_quitButton.Text = T("mainmenu.quit", "Quit");
+		_quitButton.TooltipText = T("mainmenu.quit_tip", "Close Open Makai Ranch.");
+		_langPicker.TooltipText = T("mainmenu.language_tip", "Change the interface language.");
 	}
 
 	private void HandleStart(bool loadExisting, bool newGamePlus = false)
