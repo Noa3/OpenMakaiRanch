@@ -441,7 +441,13 @@ public partial class WorldGameController : Node
                 && game.State.Calendar.Day == 1
                 && !game.State.Story.FirstDayCompleted;
 
-            if (!firstDayPending)
+            if (firstDayPending)
+            {
+                // ScreenChanged subscribers are not ordered by ownership. Re-evaluate the story
+                // only after this host has released its full-screen UI lock.
+                _firstDayFlow?.RefreshFromCurrentState();
+            }
+            else
             {
                 SetTransitionInputLock(true);
                 RevealArea("ranch", firstArrival: true);
