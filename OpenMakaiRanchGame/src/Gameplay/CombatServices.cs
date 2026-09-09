@@ -191,6 +191,8 @@ public sealed class CombatService
             ApplyFatigueAndMorale(partyChars, true);
         }
 
+        ApplyPersistentCombatWear(partyChars, party, report);
+
         if (report.Outcome != MissionOutcome.Failure && report.RewardGold > 0)
         {
             _state.Economy.Gold += report.RewardGold;
@@ -308,7 +310,8 @@ public sealed class CombatService
             Defense = (c.CombatSkill + _equipment.BonusCombatSkill(c.Id) + _talents.BonusCombatSkill(c.Id)) * 2 + (c.CraftSkill + _equipment.BonusCraftSkill(c.Id) + _talents.BonusCraftSkill(c.Id)) / 3 + trainingBonus / 2 + tacticalBonus / 2,
             Speed = 5 + (c.CombatSkill + _equipment.BonusCombatSkill(c.Id) + _talents.BonusCombatSkill(c.Id)) / 2 - c.Fatigue / 25 + trainingBonus / 2 + tacticalBonus / 3,
             MagicPower = Math.Max(0, c.MagicPower),
-            UsesPlayerMana = index == 0,
+            UsesPlayerMana = c.Provenance == CharacterProvenance.OriginalPlayer
+                || string.Equals(c.Id, "anon", StringComparison.OrdinalIgnoreCase),
             IsEnemy = false
         }).ToList();
     }
@@ -363,6 +366,8 @@ public sealed class CombatService
 
     private BattleActionRecord ManualChooseAction(BattleCombatant actor, List<BattleCombatant> party, List<BattleCombatant> enemies)
     {
+        // There is not yet an interactive turn-command UI. Keep this deterministic fallback for
+        // scripted/tutorial callers, but do not present it to players as a manual battle mode.
         return AutoChooseAction(actor, party, enemies);
     }
 
@@ -382,6 +387,44 @@ public sealed class CombatService
         {
             c.Fatigue = Math.Clamp(c.Fatigue + (victory ? 8 : 15), 0, 100);
             c.Morale = Math.Clamp(c.Morale + (victory ? 3 : -5), 0, 100);
+        }
+    }
+
+    private void ApplyPersistentCombatWear(List<CharacterState> characters, List<BattleCombatant> combatants, CombatReport report)
+    {
+        foreach (var character in characters)
+        {
+            var battle = combatants.FirstOrDefault(value => value.Id == character.Id);
+            if (battle is null)
+                continue;
+
+            var maxPersistentHp = character.MaxHpOverride
+                ?? (_data.Characters.TryGetValue(character.DefinitionId, out var definition) ? definition.MaxHp : Math.Max(character.Hp, 1));
+            maxPersistentHp = Math.Max(1, maxPersistentHp);
+
+            if (battle.Hp <= 0)
+            {
+                character.Hp = 0;
+                report.TurnLog.Add($"{battle.DisplayName} was defeated and is left at 0 persistent HP.");
+                continue;
+            }
+
+            var ratio = (float)battle.Hp / Math.Max(1, battle.MaxHp);
+            var wearPercent = ratio switch
+            {
+                < 0.20f => 80,
+                < 0.50f => 50,
+                < 0.80f => 30,
+                < 1.00f => 15,
+                _ => 0
+            };
+
+            if (wearPercent <= 0)
+                continue;
+
+            var hpCost = Math.Max(1, maxPersistentHp * wearPercent / 100);
+            character.Hp = Math.Max(0, character.Hp - hpCost);
+            report.TurnLog.Add($"{battle.DisplayName} carries battle wear into the day: -{hpCost} HP ({wearPercent}% tier).");
         }
     }
 
