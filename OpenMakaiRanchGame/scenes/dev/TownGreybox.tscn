@@ -322,7 +322,7 @@ theme_override_font_sizes/font_size = 22
 
 [node name="Body" type="Label" parent="TownHud/TutorialOverlay/HelpPanel/Inner"]
 layout_mode = 2
-text = "WASD / Arrows — Move\nShift — Sprint\nHold RMB — Orbit camera\nMouse Wheel — Zoom\nF — Enter nearest service / use gate\nM — Open Town Hub management\nF1 — Open/close help\n\nGeneral Store — buy/sell supplies and equipment\nAdventure Guild — missions, scouting, mercenaries\nResearch Office — technologies (requires Workshop)\nTavern — roster/recruitment access\nBathhouse — existing bond management\nTown Hall — milestones and records\nPlanning — facilities and Town Hub\n\nTravel currently has no added gold/time cost. The south gate returns to the ranch."
+text = "WASD / Arrows — Move\nShift — Sprint\nHold RMB — Orbit camera\nMouse Wheel — Zoom / inspect closely\nV — Toggle first-person\nF — Enter nearest service / use gate\nM — Open Town Hub management\nF1 — Open/close help\n\nGeneral Store — buy/sell supplies and equipment\nAdventure Guild — missions, scouting, mercenaries\nResearch Office — technologies (requires Workshop)\nTavern — roster/recruitment access\nBathhouse — existing bond management\nTown Hall — milestones and records\nPlanning — facilities and Town Hub\n\nTravel currently has no added gold/time cost. The south gate returns to the ranch."
 autowrap_mode = 2
 
 [node name="CloseButton" type="Button" parent="TownHud/TutorialOverlay/HelpPanel/Inner"]
