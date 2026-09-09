@@ -22,6 +22,7 @@ public partial class WorldHudController : CanvasLayer
     private Label? _rosterLabel;
     private Label? _workerLabel;
     private Label? _assignmentLabel;
+    private Label? _guidanceLabel;
     private Label? _promptLabel;
     private Label? _statusLabel;
     private Button? _advanceTimeButton;
@@ -40,6 +41,7 @@ public partial class WorldHudController : CanvasLayer
         _rosterLabel = GetNodeOrNull<Label>("TopBar/RosterLabel");
         _workerLabel = GetNodeOrNull<Label>("WorkerPanel/WorkerLabel");
         _assignmentLabel = GetNodeOrNull<Label>("WorkerPanel/AssignmentLabel");
+        _guidanceLabel = GetNodeOrNull<Label>("GuidancePanel/GuidanceLabel");
         _promptLabel = GetNodeOrNull<Label>("Prompt");
         _statusLabel = GetNodeOrNull<Label>("StatusLabel");
         _advanceTimeButton = GetNodeOrNull<Button>("AdvanceTimeButton");
@@ -112,6 +114,45 @@ public partial class WorldHudController : CanvasLayer
         }
 
         RefreshSelectedCharacter(game);
+        RefreshGuidance(game);
+    }
+
+    private void RefreshGuidance(GameRoot game)
+    {
+        if (_guidanceLabel is null)
+        {
+            return;
+        }
+
+        var calendar = game.State.Calendar;
+        if (calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night)
+        {
+            if (calendar.NightAction is not ("rest" or "train" or "admin"))
+            {
+                _guidanceLabel.Text = "Next: choose tonight's plan in Management [M].";
+                _guidanceLabel.TooltipText = "Night settlement requires a night plan. Open Management and choose Rest, Train or Admin.";
+                return;
+            }
+
+            _guidanceLabel.Text = "Next: End Day when you are finished.";
+            _guidanceLabel.TooltipText = "The night plan is ready. End Day to run the existing settlement and open the Daily Report.";
+            return;
+        }
+
+        var restingWorkers = game.Roster.Characters.Count(character =>
+            string.Equals(game.Schedule.GetAssignment(character.Id), "rest", StringComparison.OrdinalIgnoreCase));
+
+        if (restingWorkers > 0)
+        {
+            _guidanceLabel.Text = restingWorkers == 1
+                ? "Next: 1 worker is resting — assign work or keep them resting."
+                : $"Next: {restingWorkers} workers are resting — assign work or keep them resting.";
+            _guidanceLabel.TooltipText = "Use Tab + a nearby work station, or open Management → Schedule. Rest is also a valid deliberate choice.";
+            return;
+        }
+
+        _guidanceLabel.Text = $"Next: review the ranch, then advance from {calendar.Phase} when ready.";
+        _guidanceLabel.TooltipText = "You can inspect residents, change schedules, build facilities, explore management, or advance the shared day phase.";
     }
 
     /// <summary>
