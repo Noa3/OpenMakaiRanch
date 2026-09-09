@@ -47,14 +47,17 @@ public partial class CharacterCreationPreviewController : VBoxContainer
         if (_rotateLeft is not null)
         {
             _rotateLeft.Pressed += RotateLeft;
+            _rotateLeft.TooltipText = "Rotate the 3D preview left without changing your saved appearance.";
         }
         if (_reset is not null)
         {
             _reset.Pressed += ResetRotation;
+            _reset.TooltipText = "Return the 3D preview to its default front-facing rotation.";
         }
         if (_rotateRight is not null)
         {
             _rotateRight.Pressed += RotateRight;
+            _rotateRight.TooltipText = "Rotate the 3D preview right without changing your saved appearance.";
         }
 
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
