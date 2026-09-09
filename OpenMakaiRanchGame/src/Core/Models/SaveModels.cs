@@ -212,7 +212,7 @@ public sealed class PlayerState
     public int MaxMana { get; set; } = 100;
 
     /// <summary>Percent of MaxMana recovered at rest/day rollover. Original Chara0 starts at 10%.</summary>
-    public int ManaRecoveryPercent { get; set; } = 10
+    public int ManaRecoveryPercent { get; set; } = 10;
 }
 
 public sealed class CalendarState
