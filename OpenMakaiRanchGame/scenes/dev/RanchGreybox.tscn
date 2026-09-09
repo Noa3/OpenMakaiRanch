@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -17,6 +17,8 @@
 [ext_resource type="PackedScene" path="res://assets/vendor/kaykit_adventurers/Rogue_Hooded.glb" id="15_intruder"]
 
 [ext_resource type="Script" path="res://src/World/WorldAtmosphereController.cs" id="16_atmosphere"]
+
+[ext_resource type="Script" path="res://src/World/WorldBoundaryBuilder.cs" id="17_boundary"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -56,6 +58,12 @@ size = Vector3(0.5, 1.6, 0.5)
 
 [node name="RanchGreybox" type="Node3D"]
 script = ExtResource("1_controller")
+
+[node name="WorldBoundary" type="Node3D" parent="."]
+script = ExtResource("17_boundary")
+HalfExtents = Vector2(19.25, 14.25)
+SouthGateHalfWidth = 3.0
+AreaStyle = "ranch"
 
 [node name="WorldInputBootstrap" type="Node" parent="."]
 script = ExtResource("5_input")
