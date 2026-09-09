@@ -544,7 +544,36 @@ public partial class GameRoot : Node
 	}
 
 	public bool HasSaveSlot(int slot) => Save.HasSave(slot);
-	public bool HasVictorySave() => Save.Load(1)?.VictoryDay.HasValue == true;
+
+	/// <summary>
+	/// Return the newest usable save among autosave slot 0 and manual slots 1-3. MainMenu and
+	/// New Game+ use this instead of silently ignoring manual slots 2/3.
+	/// </summary>
+	public int? MostRecentSaveSlot(bool requireVictory = false)
+	{
+		int? selectedSlot = null;
+		DateTime selectedTime = DateTime.MinValue;
+
+		for (var slot = 0; slot <= 3; slot++)
+		{
+			var metadata = Save.LoadMetadata(slot);
+			if (metadata is null || (requireVictory && !metadata.VictoryDay.HasValue))
+			{
+				continue;
+			}
+
+			var savedAt = metadata.SavedAt ?? DateTime.MinValue;
+			if (!selectedSlot.HasValue || savedAt >= selectedTime)
+			{
+				selectedSlot = slot;
+				selectedTime = savedAt;
+			}
+		}
+
+		return selectedSlot;
+	}
+
+	public bool HasVictorySave() => MostRecentSaveSlot(requireVictory: true).HasValue;
 
 	public void TogglePartyMember(string characterId)
 	{
