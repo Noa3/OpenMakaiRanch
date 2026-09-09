@@ -97,6 +97,11 @@ public partial class MobileWorldControls : Control
 
     public void SetBlocked(bool blocked)
     {
+        if (_externallyBlocked == blocked)
+        {
+            return;
+        }
+
         _externallyBlocked = blocked;
         ApplyVisibility();
         if (blocked)
