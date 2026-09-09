@@ -18,6 +18,8 @@ public partial class WorldGameController : Node
     [Export] public NodePath ManagementButtonPath { get; set; } = "RanchWorld/WorldHud/ManagementButton";
     [Export] public NodePath AdvanceTimeButtonPath { get; set; } = "RanchWorld/WorldHud/AdvanceTimeButton";
     [Export] public NodePath ReturnToWorldButtonPath { get; set; } = "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton";
+    [Export] public NodePath TransitionPath { get; set; } = "TransitionLayer/Transition";
+    [Export] public NodePath PauseMenuPath { get; set; } = "PauseLayer/PauseMenu";
 
     private RanchGreyboxController? _ranch;
     private TownWorldController? _town;
@@ -26,6 +28,8 @@ public partial class WorldGameController : Node
     private Button? _managementButton;
     private Button? _advanceTimeButton;
     private Button? _returnToWorldButton;
+    private WorldTransitionController? _transition;
+    private PauseMenuController? _pauseMenu;
     private bool _flowLocksUi;
     private string _activeAreaId = "ranch";
 
@@ -35,6 +39,8 @@ public partial class WorldGameController : Node
     public RanchGreyboxController? Ranch => _ranch;
     public TownWorldController? Town => _town;
     public UiShellController? Shell => _shell;
+    public PauseMenuController? PauseMenu => _pauseMenu;
+    public WorldTransitionController? Transition => _transition;
 
     public override void _Ready()
     {
@@ -45,6 +51,8 @@ public partial class WorldGameController : Node
         _managementButton = GetNodeOrNull<Button>(ManagementButtonPath);
         _advanceTimeButton = GetNodeOrNull<Button>(AdvanceTimeButtonPath);
         _returnToWorldButton = GetNodeOrNull<Button>(ReturnToWorldButtonPath);
+        _transition = GetNodeOrNull<WorldTransitionController>(TransitionPath);
+        _pauseMenu = GetNodeOrNull<PauseMenuController>(PauseMenuPath);
 
         if (_ranch is null || _town is null || _managementRoot is null || _shell is null)
         {
@@ -58,6 +66,10 @@ public partial class WorldGameController : Node
         _ranch.TravelRequested += OnTravelRequested;
         _town.TravelRequested += OnTravelRequested;
         _town.ServiceScreenRequested += OnTownServiceRequested;
+        if (_pauseMenu is not null)
+        {
+            _pauseMenu.ManagementScreenRequested += OnPauseManagementRequested;
+        }
 
         if (_managementButton is not null)
         {
@@ -78,6 +90,16 @@ public partial class WorldGameController : Node
             : "ranch";
         SetActiveArea(_flowLocksUi ? "ranch" : savedArea, reposition: false);
         ApplyManagementVisibility(_flowLocksUi);
+
+        if (_flowLocksUi)
+        {
+            _transition?.HideImmediately();
+        }
+        else
+        {
+            _transition?.CoverInstant();
+            CallDeferred(nameof(RevealInitialWorld));
+        }
     }
 
     public override void _ExitTree()
@@ -99,6 +121,14 @@ public partial class WorldGameController : Node
             _town.TravelRequested -= OnTravelRequested;
             _town.ServiceScreenRequested -= OnTownServiceRequested;
         }
+        if (_pauseMenu is not null && GodotObject.IsInstanceValid(_pauseMenu))
+        {
+            _pauseMenu.ManagementScreenRequested -= OnPauseManagementRequested;
+            if (_pauseMenu.IsOpen)
+            {
+                _pauseMenu.Close();
+            }
+        }
 
         if (_managementButton is not null && GodotObject.IsInstanceValid(_managementButton))
         {
@@ -116,16 +146,29 @@ public partial class WorldGameController : Node
 
     public override void _Process(double delta)
     {
-        if (Input.IsActionJustPressed("toggle_management"))
+        if (Input.IsActionJustPressed("toggle_management") && _pauseMenu?.IsOpen != true)
         {
             ToggleManagement();
             return;
         }
 
-        if (IsManagementVisible && !_flowLocksUi && Input.IsActionJustPressed("ui_cancel"))
+        if (!Input.IsActionJustPressed("ui_cancel") || _flowLocksUi)
+        {
+            return;
+        }
+
+        if (IsManagementVisible)
         {
             CloseManagement();
+            return;
         }
+
+        if (_transition?.IsTransitioning == true)
+        {
+            return;
+        }
+
+        _pauseMenu?.Open(_activeAreaId);
     }
 
     public bool OpenManagement()
@@ -173,12 +216,15 @@ public partial class WorldGameController : Node
             return false;
         }
 
+        _transition?.CoverInstant();
         if (!SetActiveArea(destinationId, reposition: true))
         {
+            _transition?.HideImmediately();
             return false;
         }
 
         GameRoot.Instance?.SetWorldArea(destinationId);
+        RevealArea(destinationId, firstArrival: false);
         return true;
     }
 
@@ -240,6 +286,11 @@ public partial class WorldGameController : Node
         OpenManagement();
     }
 
+    private void OnPauseManagementRequested(string screenId)
+    {
+        OpenManagementScreen(screenId);
+    }
+
     private void OnTownServiceRequested(string screenId)
     {
         if (string.IsNullOrWhiteSpace(screenId) || _shell is null)
@@ -284,9 +335,11 @@ public partial class WorldGameController : Node
         // Mandatory new-game flow always begins at the ranch.
         if (wasLocked && screenId == "ranch")
         {
+            _transition?.CoverInstant();
             SetActiveArea("ranch", reposition: false);
             GameRoot.Instance?.SetWorldArea("ranch");
             ApplyManagementVisibility(false);
+            RevealArea("ranch", firstArrival: true);
         }
     }
 
@@ -413,6 +466,29 @@ public partial class WorldGameController : Node
         {
             _ranch?.LeaveManagementUi();
         }
+    }
+
+    private void RevealInitialWorld()
+    {
+        RevealArea(_activeAreaId, firstArrival: false);
+    }
+
+    private void RevealArea(string areaId, bool firstArrival)
+    {
+        if (_transition is null || GameRoot.Instance is not { } game)
+        {
+            return;
+        }
+
+        var location = areaId == "town"
+            ? "Okachi Town"
+            : string.IsNullOrWhiteSpace(game.State.Player.RanchName) ? "Okachi Ranch" : game.State.Player.RanchName;
+
+        var subtitle = firstArrival
+            ? $"Day {game.State.Calendar.Day} • {game.State.Calendar.Phase} — Your first morning at the ranch. Explore, check the HUD, and press F1 if you need guidance."
+            : $"Day {game.State.Calendar.Day} • {game.State.Calendar.Phase} — {(areaId == "town" ? "Town services are open." : "Welcome back to the ranch.")}";
+
+        _transition.Reveal(location, subtitle, firstArrival ? 1.15 : 0.55, firstArrival ? 1.05 : 0.65);
     }
 
     private void ActiveStatus(string message)
