@@ -57,7 +57,7 @@ public partial class WorldStation : Area3D, IWorldInteractable
                 return "station is busy or unavailable";
             }
 
-            var availability = AvailabilityResolver?.Invoke() ?? (true, string.Empty);
+            var availability = ResolveAvailability();
             return availability.Available ? string.Empty : availability.Reason;
         }
     }
@@ -71,8 +71,19 @@ public partial class WorldStation : Area3D, IWorldInteractable
                 return false;
             }
 
-            return (AvailabilityResolver?.Invoke() ?? (true, string.Empty)).Available;
+            return ResolveAvailability().Available;
         }
+    }
+
+    private (bool Available, string Reason) ResolveAvailability()
+    {
+        if (AvailabilityResolver is null)
+        {
+            return (true, string.Empty);
+        }
+
+        var resolved = AvailabilityResolver.Invoke();
+        return (resolved.Available, resolved.Reason ?? string.Empty);
     }
 
     /// <summary>
