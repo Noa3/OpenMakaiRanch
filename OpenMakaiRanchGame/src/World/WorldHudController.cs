@@ -251,6 +251,19 @@ public partial class WorldHudController : CanvasLayer
         _promptLabel.TooltipText = $"Move within {interactionRange:0.0} m to interact with {target.Label}.";
     }
 
+    public void SetTravelTarget(WorldTravelPortal portal, float distance, float interactionRange)
+    {
+        if (_promptLabel is null)
+        {
+            return;
+        }
+
+        _promptLabel.Text = distance <= interactionRange
+            ? $"[F] {portal.Prompt}"
+            : $"{portal.Label}  {distance:0.0} m   •   move closer";
+        _promptLabel.TooltipText = "Travel to another playable world area. Current travel adds no extra time or gold cost.";
+    }
+
     public void SetCharacterInteractionTarget(string characterName, float distance, float interactionRange)
     {
         if (_promptLabel is null)
