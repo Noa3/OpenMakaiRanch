@@ -39,6 +39,7 @@ public partial class DaylightRig : Node3D
         {
             _sun.LightEnergy = state.SunEnergy;
             _sun.LightColor = state.SunColor;
+            _sun.ShadowEnabled = GameRoot.Instance?.RuntimeSettings?.EffectiveShadowsEnabled ?? true;
             // Deterministic orientation: pitch down by elevation, swing by azimuth. Night (negative
             // elevation) aims the sun away from the scene; energy is 0 anyway.
             _sun.RotationDegrees = new Vector3(-state.SunElevationDegrees, -state.SunAzimuthDegrees, 0f);
