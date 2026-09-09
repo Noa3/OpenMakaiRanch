@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://src/World/WorldInputBootstrap.cs" id="5_input"]
 [ext_resource type="Script" path="res://src/World/DaylightRig.cs" id="6_daylight"]
 [ext_resource type="Script" path="res://src/World/RosterRig.cs" id="7_roster"]
+[ext_resource type="Script" path="res://src/World/WorldHudController.cs" id="8_hud"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -99,18 +100,114 @@ mesh = SubResource("interior_mesh")
 shape = SubResource("interior_shape")
 
 [node name="Station" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.5, -8)
 script = ExtResource("4_station")
-TargetId = "STATION_MILK"
-Label = "Milk Station"
+TargetId = "dairy_barn"
+Label = "Dairy Barn"
 CommandKind = 0
-CommandTargetId = "JOB_MILK"
+CommandTargetId = "dairy"
 
 [node name="Mesh" type="MeshInstance3D" parent="Station"]
 mesh = SubResource("station_mesh")
 
 [node name="Collision" type="CollisionShape3D" parent="Station"]
 shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Station"]
+position = Vector3(0, 1.4, 0)
+text = "Dairy Barn"
+
+[node name="Stations" type="Node3D" parent="."]
+
+[node name="PastureStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.5, -8)
+script = ExtResource("4_station")
+TargetId = "pasture"
+Label = "Pasture"
+CommandKind = 0
+CommandTargetId = "pasture"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/PastureStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/PastureStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/PastureStation"]
+position = Vector3(0, 1.4, 0)
+text = "Pasture"
+
+[node name="KitchenStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.5, 6)
+script = ExtResource("4_station")
+TargetId = "kitchen"
+Label = "Kitchen"
+CommandKind = 0
+CommandTargetId = "kitchen"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/KitchenStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/KitchenStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/KitchenStation"]
+position = Vector3(0, 1.4, 0)
+text = "Kitchen"
+
+[node name="WorkshopStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.5, 6)
+script = ExtResource("4_station")
+TargetId = "workshop"
+Label = "Workshop"
+CommandKind = 0
+CommandTargetId = "workshop"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/WorkshopStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/WorkshopStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/WorkshopStation"]
+position = Vector3(0, 1.4, 0)
+text = "Workshop"
+
+[node name="PharmacyStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.5, -1)
+script = ExtResource("4_station")
+TargetId = "pharmacy_lab"
+Label = "Pharmacy Lab"
+CommandKind = 0
+CommandTargetId = "pharmacy"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/PharmacyStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/PharmacyStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/PharmacyStation"]
+position = Vector3(0, 1.4, 0)
+text = "Pharmacy Lab"
+
+[node name="OfficeStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+script = ExtResource("4_station")
+TargetId = "office"
+Label = "Office"
+CommandKind = 0
+CommandTargetId = "office"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/OfficeStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/OfficeStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/OfficeStation"]
+position = Vector3(0, 1.4, 0)
+text = "Office"
 
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
@@ -139,7 +236,86 @@ Distance = 7.0
 current = true
 fov = 70.0
 
+[node name="WorldHud" type="CanvasLayer" parent="."]
+layer = 20
+script = ExtResource("8_hud")
+
+[node name="TopBar" type="ColorRect" parent="WorldHud"]
+anchor_right = 1.0
+offset_bottom = 58.0
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 0.88)
+
+[node name="DayLabel" type="Label" parent="WorldHud/TopBar"]
+offset_left = 18.0
+offset_top = 8.0
+offset_right = 520.0
+offset_bottom = 30.0
+text = "Day 1"
+
+[node name="EconomyLabel" type="Label" parent="WorldHud/TopBar"]
+offset_left = 18.0
+offset_top = 31.0
+offset_right = 520.0
+offset_bottom = 53.0
+text = "500 G"
+
+[node name="RosterLabel" type="Label" parent="WorldHud/TopBar"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = 42.0
+horizontal_alignment = 2
+text = "0 residents"
+
+[node name="WorkerPanel" type="ColorRect" parent="WorldHud"]
+offset_left = 14.0
+offset_top = 72.0
+offset_right = 326.0
+offset_bottom = 132.0
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 0.78)
+
+[node name="WorkerLabel" type="Label" parent="WorldHud/WorkerPanel"]
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 300.0
+offset_bottom = 28.0
+text = "Worker: none"
+
+[node name="AssignmentLabel" type="Label" parent="WorldHud/WorkerPanel"]
+offset_left = 12.0
+offset_top = 31.0
+offset_right = 300.0
+offset_bottom = 52.0
+text = "Tab: switch worker"
+
+[node name="Prompt" type="Label" parent="WorldHud"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -66.0
+offset_right = 320.0
+offset_bottom = -34.0
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "WASD / arrows: move"
+
+[node name="StatusLabel" type="Label" parent="WorldHud"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -38.0
+offset_right = 620.0
+offset_bottom = -12.0
+text = ""
+
 [node name="PromptLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="Prompt" type="Label" parent="PromptLayer"]
 anchors_preset = 10
@@ -153,9 +329,10 @@ grow_horizontal = 2
 grow_vertical = 0
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "Walk with WASD / arrows. Look with camera keys. Press F near a station to interact."
+text = "Walk with WASD / arrows. Hold RMB to look. Press F near a station to interact."
 
 [node name="ButtonLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="OpenManagementButton" type="Button" parent="ButtonLayer"]
 anchors_preset = 0
