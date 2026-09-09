@@ -10,7 +10,8 @@ namespace OpenMakaiRanch.World;
 /// </summary>
 public static class WorldCameraMath
 {
-    public const float MinDistance = 1.5f;
+    public const float MinDistance = 0.65f;
+    public const float GeometryMinDistance = 0.08f;
     public const float MaxDistance = 18f;
     public const float MinPitchDegrees = -70f;
     public const float MaxPitchDegrees = 85f;
@@ -70,10 +71,24 @@ public static class WorldCameraMath
         var available = rayLength;
         if (float.IsFinite(raycastHitDistance) && raycastHitDistance > 0f)
         {
-            available = Mathf.Min(available, Mathf.Max(MinDistance, raycastHitDistance - clearance));
+            // Geometry may be closer than the user's normal zoom minimum. Using a separate tiny
+            // geometry minimum prevents the old behavior from pushing the camera THROUGH a wall
+            // merely to preserve orbit distance.
+            available = Mathf.Min(available, Mathf.Max(GeometryMinDistance, raycastHitDistance - clearance));
         }
 
         return target + rayDirection * available;
+    }
+
+    /// <summary>View direction matching the third-person orbit's look-at direction.</summary>
+    public static Vector3 ComputeViewDirection(float yaw, float pitch)
+    {
+        var cosPitch = Mathf.Cos(pitch);
+        var orbitOut = new Vector3(
+            Mathf.Cos(yaw) * cosPitch,
+            Mathf.Sin(pitch),
+            Mathf.Sin(yaw) * cosPitch);
+        return orbitOut.LengthSquared() < 0.0001f ? Vector3.Forward : -orbitOut.Normalized();
     }
 
     /// <summary>
