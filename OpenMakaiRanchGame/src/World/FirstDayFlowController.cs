@@ -133,8 +133,8 @@ public partial class FirstDayFlowController : Control
 
     private void InitializeDeferred()
     {
-        _host = GetParentOrNull<WorldGameController>()
-            ?? GetParent()?.GetParentOrNull<WorldGameController>();
+        _host = GetParent() as WorldGameController
+            ?? GetParent()?.GetParent() as WorldGameController;
         _game = GameRoot.Instance;
         _intro = _host?.IntroHouse;
         _ranch = _host?.Ranch;
