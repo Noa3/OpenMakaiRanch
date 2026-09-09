@@ -21,6 +21,10 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
     public WorldInputGate InputGate { get; set; } = new();
 
+    /// <summary>Optional normalized input supplied by the mobile touch overlay.</summary>
+    public Vector2 MobileMovementInput { get; set; } = Vector2.Zero;
+    public bool MobileSprintHeld { get; set; }
+
     /// <summary>The node the camera should orbit around (the player's head).</summary>
     [Export] public Node3D? CameraTarget { get; set; }
 
@@ -97,7 +101,7 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
         var forward = (Input.IsActionPressed("move_forward") ? 1f : 0f) - (Input.IsActionPressed("move_backward") ? 1f : 0f);
         var strafe = (Input.IsActionPressed("move_right") ? 1f : 0f) - (Input.IsActionPressed("move_left") ? 1f : 0f);
-        var input = new Vector2(strafe, forward);
+        var input = new Vector2(strafe, forward) + MobileMovementInput;
         if (input.Length() > 1f)
         {
             input = input.Normalized();
@@ -118,7 +122,7 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
         var input = ReadMovementInput();
         var direction = WorldMovementMath.ComputeMovementDirection(CameraBasisForward, CameraBasisRight, input);
-        var sprinting = InputGate.WorldInputEnabled && Input.IsActionPressed("move_sprint");
+        var sprinting = InputGate.WorldInputEnabled && (Input.IsActionPressed("move_sprint") || MobileSprintHeld);
         var moveSpeed = MoveSpeedFor(sprinting);
         var targetVelocity = direction * moveSpeed;
 
