@@ -522,6 +522,37 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool SetAdvancedLightingEnabled(bool enabled)
+	{
+		if (State.Settings.AdvancedLightingEnabled == enabled) return false;
+		State.Settings.AdvancedLightingEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetWorldParticlesEnabled(bool enabled)
+	{
+		if (State.Settings.WorldParticlesEnabled == enabled) return false;
+		State.Settings.WorldParticlesEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetWorldDetailScale(float value)
+	{
+		var clamped = Mathf.Clamp(value, 0.35f, 1.25f);
+		if (Mathf.IsEqualApprox(State.Settings.WorldDetailScale, clamped)) return false;
+		State.Settings.WorldDetailScale = clamped;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool SetFrameRateLimit(int value)
 	{
 		var normalized = value <= 0 ? 0 : value switch
