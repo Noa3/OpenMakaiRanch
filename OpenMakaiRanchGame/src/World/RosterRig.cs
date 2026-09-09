@@ -68,7 +68,7 @@ public partial class RosterRig : Node3D
         return avatar is not null;
     }
 
-    public override void _Process(double delta)
+    public override void _PhysicsProcess(double delta)
     {
         if (!AnimateTravel || _avatars.Count == 0)
         {
@@ -184,7 +184,7 @@ public partial class RosterRig : Node3D
             TargetDesiredDistance = ArrivalDistance,
             Radius = 0.35f,
             Height = 1.7f,
-            AvoidanceEnabled = true
+            AvoidanceEnabled = false
         };
         avatar.AddChild(agent);
         _agents[characterId] = agent;
