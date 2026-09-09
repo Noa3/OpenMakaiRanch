@@ -1428,6 +1428,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         var skillEquipment = new EquipmentService(skillState, data);
         var skillTalents = new TalentService(skillState, data);
         var skillMagic = new MagicService(skillState, data);
+        skillState.Player.Mana = 0; // force the personal actor down the finite-SP support path
         var skillPlayer = skillState.Roster.Characters[0];
         skillPlayer.MaxHpOverride = 2000;
         skillPlayer.Hp = 800;
