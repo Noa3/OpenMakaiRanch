@@ -140,9 +140,25 @@ public partial class RuntimeSettingsService : Node
 
                 if (!settings.Fullscreen)
                 {
-                    window.Size = new Vector2I(
+                    var desired = new Vector2(
                         Mathf.Clamp(settings.WindowWidth, 960, 7680),
                         Mathf.Clamp(settings.WindowHeight, 540, 4320));
+                    var usable = DisplayServer.ScreenGetUsableRect();
+                    if (usable.Size.X > 0 && usable.Size.Y > 0)
+                    {
+                        var max = new Vector2(usable.Size.X * 0.94f, usable.Size.Y * 0.92f);
+                        var fit = Mathf.Min(1f, Mathf.Min(max.X / desired.X, max.Y / desired.Y));
+                        desired *= fit;
+                    }
+
+                    window.Size = new Vector2I(
+                        Mathf.Max(640, Mathf.RoundToInt(desired.X)),
+                        Mathf.Max(360, Mathf.RoundToInt(desired.Y)));
+
+                    if (usable.Size.X > window.Size.X && usable.Size.Y > window.Size.Y)
+                    {
+                        window.Position = usable.Position + (usable.Size - window.Size) / 2;
+                    }
                 }
             }
         }
