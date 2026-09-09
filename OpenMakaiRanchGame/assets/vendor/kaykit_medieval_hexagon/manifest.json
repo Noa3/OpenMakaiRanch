@@ -1,0 +1,16 @@
+{
+  "package": "KayKit Medieval Hexagon Pack 1.0",
+  "creator": "Kay Lousberg / KayKit Game Assets",
+  "source": "https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0",
+  "license": "CC0-1.0",
+  "admitted_on": "2026-09-09",
+  "scope": "Curated subset: market, tavern, blacksmith, tree and barrel. Decorative placeholders; gameplay collision/IDs remain authored separately.",
+  "files": [
+    "building_market_blue.gltf/.bin",
+    "building_tavern_blue.gltf/.bin",
+    "building_blacksmith_blue.gltf/.bin",
+    "tree_single_A.gltf/.bin",
+    "barrel.gltf/.bin",
+    "required hexagons_medieval.png atlases"
+  ]
+}
