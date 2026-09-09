@@ -1,13 +1,18 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://src/World/WorldGameController.cs" id="1_controller"]
 [ext_resource type="PackedScene" path="res://scenes/dev/RanchGreybox.tscn" id="2_ranch"]
 [ext_resource type="PackedScene" path="res://scenes/Game.tscn" id="3_management"]
+[ext_resource type="PackedScene" path="res://scenes/dev/TownGreybox.tscn" id="4_town"]
 
 [node name="WorldGame" type="Node"]
 script = ExtResource("1_controller")
 
 [node name="RanchWorld" parent="." instance=ExtResource("2_ranch")]
+
+[node name="TownWorld" parent="." instance=ExtResource("4_town")]
+visible = false
+process_mode = 4
 
 [node name="ManagementLayer" type="CanvasLayer" parent="."]
 layer = 50
