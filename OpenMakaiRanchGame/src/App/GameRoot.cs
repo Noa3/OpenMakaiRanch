@@ -396,6 +396,20 @@ public partial class GameRoot : Node
 
 	public bool CanSpendPlayerStamina(PlayerActivityKind kind) => PlayerStamina.CanSpend(kind);
 
+	public string TryFeedPet(string petId)
+	{
+		if (!PlayerStamina.CanSpend(PlayerActivityKind.PetFeed))
+			return "Not enough player stamina. Pet care can continue tomorrow.";
+
+		var result = Pets.Feed(petId);
+		if (!result.StartsWith("Fed successfully", StringComparison.Ordinal))
+			return result;
+
+		PlayerStamina.Spend(PlayerActivityKind.PetFeed);
+		StateChanged?.Invoke();
+		return result;
+	}
+
 	public string TryPlayWithPet(string petId)
 	{
 		if (!PlayerStamina.CanSpend(PlayerActivityKind.PetPlay))
