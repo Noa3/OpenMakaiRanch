@@ -139,6 +139,11 @@ public partial class FirstDayFlowController : Control
 
     private void InitializeDeferred()
     {
+        if (_initialized)
+        {
+            return;
+        }
+
         _host = GetParent() as WorldGameController
             ?? GetParent()?.GetParent() as WorldGameController;
         _game = GameRoot.Instance;
@@ -166,10 +171,15 @@ public partial class FirstDayFlowController : Control
     {
         if (!_initialized)
         {
-            return;
+            // Normal runtime reaches this through CallDeferred. Headless smoke and any future
+            // synchronous UI handoff may arrive first, so initialize on demand once the host is ready.
+            InitializeDeferred();
         }
 
-        TryStartOrResume();
+        if (_initialized)
+        {
+            TryStartOrResume();
+        }
     }
 
     private void TryStartOrResume()
