@@ -130,6 +130,13 @@ custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 show_percentage = false
 
+[node name="ReturnToWorldButton" type="Button" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
+visible = false
+custom_minimum_size = Vector2(132, 26)
+layout_mode = 2
+text = "Return to World"
+tooltip_text = "Close management and return to the 3D ranch"
+
 [node name="TopBarRow1Spacer" type="Control" parent="UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1"]
 layout_mode = 2
 size_flags_horizontal = 3
