@@ -44,8 +44,6 @@ public partial class CharacterCreationPreviewController : VBoxContainer
             return;
         }
 
-        _camera.LookAt(new Vector3(0f, 0.95f, 0f), Vector3.Up);
-
         if (_rotateLeft is not null)
         {
             _rotateLeft.Pressed += RotateLeft;
@@ -63,6 +61,7 @@ public partial class CharacterCreationPreviewController : VBoxContainer
         {
             game.StateChanged += RefreshSummary;
             _avatar.RefreshFrom(game.State.Player);
+            RefreshPreviewCamera(game.State.Player);
             RefreshSummary();
         }
     }
@@ -106,6 +105,20 @@ public partial class CharacterCreationPreviewController : VBoxContainer
         }
     }
 
+    private void RefreshPreviewCamera(OpenMakaiRanch.Core.Models.PlayerState player)
+    {
+        if (_camera is null)
+        {
+            return;
+        }
+
+        var heightMeters = Mathf.Clamp(player.Height / 1000f, 1.45f, 2.25f);
+        var focusHeight = heightMeters * 0.52f;
+        var distance = Mathf.Lerp(3.6f, 4.9f, Mathf.InverseLerp(1.45f, 2.25f, heightMeters));
+        _camera.Position = new Vector3(0f, focusHeight + 0.12f, distance);
+        _camera.LookAt(new Vector3(0f, focusHeight, 0f), Vector3.Up);
+    }
+
     private void RefreshSummary()
     {
         if (_summary is null || GameRoot.Instance is not { } game || !GodotObject.IsInstanceValid(game))
@@ -114,6 +127,7 @@ public partial class CharacterCreationPreviewController : VBoxContainer
         }
 
         var player = game.State.Player;
+        RefreshPreviewCamera(player);
         _summary.Text = $"{player.Name}  •  {player.Race}  •  {player.Height / 10f:0} cm\n3D preview uses a neutral placeholder model until final player assets exist.";
     }
 }
