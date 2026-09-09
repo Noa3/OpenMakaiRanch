@@ -65,6 +65,7 @@ public static class SmokeTestRunner
             TestWorldGreybox(result);
             TestWorldSharedSimulation(result);
             TestWorldAlerts(result);
+            TestFirstDaySystems(result);
             TestCharacterAvatar(result);
             TestEventDialogueStaging(result);
             TestWorldPanelCoordinator(result);
@@ -698,6 +699,10 @@ public static class SmokeTestRunner
         Assert(result, state.Player.Name == "Anon", "new game player name is Anon");
         Assert(result, state.Player.RanchName == "Okachi Ranch", "new game ranch name is Okachi Ranch");
         Assert(result, state.WorldAreaId == "ranch", "new game starts in the ranch world area");
+        Assert(result, state.Story is not null && state.Story.FirstDayStage == FirstDayFlowController.StageWakeUp,
+            "new game starts before the guided first-day wake-up");
+        Assert(result, !state.Story.FirstDayCompleted,
+            "new game first-day story is initially incomplete");
         Assert(result, state.Settings.TutorialHintsEnabled, "tutorial hints default to enabled");
         Assert(result, state.Settings.SeenTutorialIds.Count == 0, "new settings start with no tutorial acknowledgements");
         var settingsClone = state.Settings.Clone();
@@ -1237,6 +1242,53 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "alerts: starving pet becomes critical");
     }
 
+    private static void TestFirstDaySystems(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        Assert(result, game.Data.Missions.ContainsKey("tutorial_ranch_intruder"),
+            "first day: tutorial intruder mission is registered in shared mission data");
+        Assert(result, game.Data.Enemies.ContainsKey("tutorial_ranch_intruder"),
+            "first day: tutorial intruder enemy is registered in shared enemy data");
+
+        var mission = game.Data.Missions["tutorial_ranch_intruder"];
+        Assert(result, mission.RewardGold == 0 && string.IsNullOrEmpty(mission.RewardItemId),
+            "first day: tutorial fight cannot create ordinary mission rewards");
+
+        game.StartNewCombat();
+        var tutorialFight = game.RunRoundBasedMission("tutorial_ranch_intruder", autoResolve: false);
+        Assert(result, tutorialFight.MissionId == "tutorial_ranch_intruder",
+            "first day: intruder tutorial resolves through the normal CombatService");
+        Assert(result, tutorialFight.Rounds.Count > 0,
+            "first day: intruder tutorial produces ordinary round records");
+
+        game.NewGame();
+        game.State.Calendar.Phase = DayPhase.Night;
+        game.State.Ranch.BathtubClean = true;
+        Assert(result, game.UsePlayerBathForNight(),
+            "first day: clean ranch bath can be used during Night");
+        Assert(result, !game.State.Ranch.BathtubClean && game.State.Calendar.NightAction == "rest",
+            "first day: bathing consumes bath cleanliness and routes into the existing rest night action");
+
+        // Cleaning closes the bath loop through the existing job settlement path.
+        var state = new SaveStateFactory(game.Data).CreateNewGame();
+        state.Ranch.BathtubClean = false;
+        var equipment = new EquipmentService(state, game.Data);
+        var talents = new TalentService(state, game.Data);
+        var ranch = new RanchService(state, game.Data, equipment, talents);
+        var cleaner = state.Roster.Characters.First();
+        var cleaning = game.Data.Jobs["cleaning"];
+        var report = new DailyReport();
+        ranch.ApplyJobOutput(cleaner, cleaning, report);
+        Assert(result, state.Ranch.BathtubClean,
+            "first day: Cleaning job prepares a dirty bath for a later night");
+        Assert(result, report.Lines.Any(line => line.Contains("bath", StringComparison.OrdinalIgnoreCase)),
+            "first day: bath cleaning is visible in the ordinary daily report");
+
+        game.NewGame();
+    }
+
     private static void TestCharacterAvatar(SmokeTestResult result)
     {
         // CHAR-001: gate-safe, honest stand-in avatars bound by stable DefinitionId.
@@ -1639,6 +1691,9 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         {
             var controller = root as WorldGameController;
             Assert(result, controller is not null, "world boot root is WorldGameController");
+            AssertNodeExists(result, root, "IntroHouse", "world boot contains the first-day ranch-house bedroom");
+            AssertNodeExists(result, root, "StoryLayer/FirstDayFlow", "world boot contains the resumable first-day story flow");
+            AssertNodeExists(result, root, "RanchWorld/FirstDayIntruder", "ranch contains the hidden first-day intruder staging actor");
             AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
             AssertNodeExists(result, root, "TownWorld", "world boot contains persistent Okachi Town");
             AssertNodeExists(result, root, "TownWorld/Services/GeneralStore", "town has a General Store service point");
@@ -1900,6 +1955,26 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             Assert(result, worldEnvironment.Environment.TonemapExposure == evening.TonemapExposure,
                 "daylight rig writes the tonemap exposure to the environment");
 
+            game.State.Settings.GraphicsQuality = "High";
+            game.State.Settings.AtmosphereEffectsEnabled = true;
+            game.State.Settings.WeatherEffectsEnabled = true;
+            dayRig.Apply(DayPhase.Evening, Weather.Storm);
+            Assert(result, dayRig.LastWeather == Weather.Storm,
+                "atmosphere: daylight rig records the shared weather presentation");
+            Assert(result, worldEnvironment.Environment.FogEnabled,
+                "atmosphere: storm enables renderer-compatible fog on High quality");
+            Assert(result, worldEnvironment.Environment.AdjustmentEnabled,
+                "atmosphere: situation-aware color adjustment is enabled on High quality");
+
+            game.State.Settings.GraphicsQuality = "Low";
+            dayRig.Apply(DayPhase.Evening, Weather.Storm);
+            Assert(result, !worldEnvironment.Environment.FogEnabled
+                && !worldEnvironment.Environment.GlowEnabled
+                && !worldEnvironment.Environment.AdjustmentEnabled,
+                "atmosphere: Low quality disables optional post-processing while keeping daylight");
+
+            game.State.Settings.GraphicsQuality = "Medium";
+            game.State.Settings.AtmosphereEffectsEnabled = true;
             var fromGame = dayRig.ApplyFrom(game);
             Assert(result, fromGame == DaylightMath.For(game.State.Calendar.Phase),
                 "daylight rig reads the shared phase (single source of truth, no second clock)");
