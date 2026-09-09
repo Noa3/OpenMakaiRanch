@@ -162,6 +162,8 @@ public partial class UiShellController : Control
 	/// keep mandatory full-screen flows (character creation/prologue/victory) visible without
 	/// coupling the shell to the world scene.</summary>
 	public event Action<string>? ScreenChanged;
+	public event Action<string>? WorldTravelRequested;
+
 
 	public string CurrentScreen => _currentScreen;
 	public bool IsFullScreenMode => _fullScreenMode;
@@ -222,7 +224,17 @@ public partial class UiShellController : Control
 		}
 	}
 
-	public bool ShowCharacterDetailFromWorld(string characterId)
+	public bool RequestWorldTravel(string destinationId)
+	{
+		if (destinationId is not ("ranch" or "town") || WorldTravelRequested is null)
+		{
+			return false;
+		}
+
+		WorldTravelRequested.Invoke(destinationId);
+		return true;
+	}
+
 	{
 		if (string.IsNullOrWhiteSpace(characterId) || _game.Roster.Find(characterId) is null)
 		{
