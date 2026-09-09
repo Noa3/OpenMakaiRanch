@@ -335,6 +335,15 @@ public sealed class SettingsState
     public string Locale { get; set; } = "en";
     public bool ReducedMotion { get; set; }
 
+    /// <summary>Show contextual world onboarding and reminder hints.</summary>
+    public bool TutorialHintsEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Presentation-only tutorial acknowledgements. Stored with user settings rather than gameplay
+    /// saves so a player is not forced through the same control tutorial for every save slot.
+    /// </summary>
+    public HashSet<string> SeenTutorialIds { get; set; } = new(StringComparer.Ordinal);
+
     public SettingsState Clone()
     {
         return new SettingsState
@@ -344,7 +353,9 @@ public sealed class SettingsState
             ThemeId = ThemeId,
             UiScale = UiScale,
             Locale = Locale,
-            ReducedMotion = ReducedMotion
+            ReducedMotion = ReducedMotion,
+            TutorialHintsEnabled = TutorialHintsEnabled,
+            SeenTutorialIds = new HashSet<string>(SeenTutorialIds ?? new HashSet<string>(), StringComparer.Ordinal)
         };
     }
 }
