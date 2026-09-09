@@ -88,6 +88,7 @@ public partial class RosterRig : Node3D
             if (distance <= ArrivalDistance)
             {
                 avatar.GlobalPosition = target;
+                avatar.PlayLocomotion(0f, false);
                 continue;
             }
 
@@ -112,6 +113,7 @@ public partial class RosterRig : Node3D
             }
 
             avatar.GlobalPosition = next;
+            avatar.PlayLocomotion(TravelSpeed, false);
         }
     }
 
