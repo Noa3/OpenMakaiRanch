@@ -357,6 +357,8 @@ public sealed class SettingsState
     public int FrameRateLimit { get; set; } = 60;
     public bool VSyncEnabled { get; set; } = true;
     public bool Fullscreen { get; set; } = false;
+    public int WindowWidth { get; set; } = 1920;
+    public int WindowHeight { get; set; } = 1080;
 
     // Camera / input
     public float CameraSensitivity { get; set; } = 1.0f;
@@ -398,6 +400,8 @@ public sealed class SettingsState
             FrameRateLimit = FrameRateLimit,
             VSyncEnabled = VSyncEnabled,
             Fullscreen = Fullscreen,
+            WindowWidth = WindowWidth,
+            WindowHeight = WindowHeight,
             CameraSensitivity = CameraSensitivity,
             CameraFov = CameraFov,
             InvertCameraY = InvertCameraY,
