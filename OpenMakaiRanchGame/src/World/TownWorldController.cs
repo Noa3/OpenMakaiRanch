@@ -26,6 +26,7 @@ public partial class TownWorldController : Node3D
     private Button? _returnRanchButton;
 
     public DaylightRig? Daylight { get; private set; }
+    public TownPresentationBuilder? Presentation { get; private set; }
 
     public ThirdPersonPlayerController? Player => _player;
     public WorldCameraRig? CameraRig => _cameraRig;
@@ -69,6 +70,7 @@ public partial class TownWorldController : Node3D
         }
 
         WireDaylight();
+        Presentation = GetNodeOrNull<TownPresentationBuilder>("Presentation");
 
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
         {
@@ -110,6 +112,7 @@ public partial class TownWorldController : Node3D
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
         {
             Daylight?.ApplyFrom(game);
+            Presentation?.Refresh(game);
         }
 
         UpdateNearbyTargets();
