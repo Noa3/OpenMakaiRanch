@@ -32,39 +32,21 @@ public partial class RuntimeSettingsService : Node
     public bool IsMobileRenderer => string.Equals(CurrentRenderingMethod, "mobile", StringComparison.OrdinalIgnoreCase);
     public bool IsCompatibilityRenderer => string.Equals(CurrentRenderingMethod, "gl_compatibility", StringComparison.OrdinalIgnoreCase);
 
-    public float DecorationDensity
-    {
-        get
-        {
-            var preset = (_current?.GraphicsQuality ?? "Medium") switch
-            {
-                "Low" => 0.45f,
-                "Medium" => 0.70f,
-                "High" => 0.95f,
-                "Ultra" => 1.15f,
-                _ => 0.70f
-            };
-            return preset * Mathf.Clamp(_current?.WorldDetailScale ?? 1.0f, 0.35f, 1.25f);
-        }
-    }
+    public GraphicsQualityProfile QualityProfile => GraphicsQualityProfile.Resolve(_current?.GraphicsQuality);
 
-    public float ParticleDensity => (_current?.GraphicsQuality ?? "Medium") switch
-    {
-        "Low" => 0.30f,
-        "Medium" => 0.60f,
-        "High" => 0.90f,
-        "Ultra" => 1.20f,
-        _ => 0.60f
-    };
+    public float DecorationDensity =>
+        QualityProfile.DecorationDensity * Mathf.Clamp(_current?.WorldDetailScale ?? 1.0f, 0.35f, 1.25f);
+
+    public float ParticleDensity => QualityProfile.ParticleDensity;
 
     public bool EffectiveAdvancedLightingEnabled =>
-        _current?.AdvancedLightingEnabled == true && IsForwardPlus && !string.Equals(_current.GraphicsQuality, "Low", StringComparison.OrdinalIgnoreCase);
+        _current?.AdvancedLightingEnabled == true && IsForwardPlus && QualityProfile.AdvancedLighting;
 
     public bool EffectiveWorldParticlesEnabled =>
         _current?.WorldParticlesEnabled == true && _current.WeatherEffectsEnabled;
 
     public bool EffectiveShadowsEnabled =>
-        _current?.ShadowsEnabled == true && !string.Equals(_current.GraphicsQuality, "Low", StringComparison.OrdinalIgnoreCase);
+        _current?.ShadowsEnabled == true && QualityProfile.Shadows;
 
     public bool ShouldShowTouchControls =>
         _current?.TouchControlsEnabled == true || IsMobilePlatform;
@@ -104,53 +86,16 @@ public partial class RuntimeSettingsService : Node
 
     public static void ApplyQualityPreset(SettingsState settings, string quality)
     {
-        switch ((quality ?? string.Empty).Trim().ToLowerInvariant())
-        {
-            case "low":
-                settings.GraphicsQuality = "Low";
-                settings.RenderScale = 0.60f;
-                settings.ShadowsEnabled = false;
-                settings.AtmosphereEffectsEnabled = false;
-                settings.WeatherEffectsEnabled = true;
-                settings.AdvancedLightingEnabled = false;
-                settings.WorldParticlesEnabled = true;
-                settings.WorldDetailScale = 0.65f;
-                settings.FrameRateLimit = 45;
-                break;
-            case "high":
-                settings.GraphicsQuality = "High";
-                settings.RenderScale = 1.00f;
-                settings.ShadowsEnabled = true;
-                settings.AtmosphereEffectsEnabled = true;
-                settings.WeatherEffectsEnabled = true;
-                settings.AdvancedLightingEnabled = true;
-                settings.WorldParticlesEnabled = true;
-                settings.WorldDetailScale = 1.0f;
-                settings.FrameRateLimit = 60;
-                break;
-            case "ultra":
-                settings.GraphicsQuality = "Ultra";
-                settings.RenderScale = 1.00f;
-                settings.ShadowsEnabled = true;
-                settings.AtmosphereEffectsEnabled = true;
-                settings.WeatherEffectsEnabled = true;
-                settings.AdvancedLightingEnabled = true;
-                settings.WorldParticlesEnabled = true;
-                settings.WorldDetailScale = 1.15f;
-                settings.FrameRateLimit = 120;
-                break;
-            default:
-                settings.GraphicsQuality = "Medium";
-                settings.RenderScale = 0.80f;
-                settings.ShadowsEnabled = true;
-                settings.AtmosphereEffectsEnabled = true;
-                settings.WeatherEffectsEnabled = true;
-                settings.AdvancedLightingEnabled = true;
-                settings.WorldParticlesEnabled = true;
-                settings.WorldDetailScale = 0.85f;
-                settings.FrameRateLimit = 60;
-                break;
-        }
+        var profile = GraphicsQualityProfile.Resolve(quality);
+        settings.GraphicsQuality = profile.Name;
+        settings.RenderScale = profile.RenderScale;
+        settings.ShadowsEnabled = profile.Shadows;
+        settings.AtmosphereEffectsEnabled = profile.Atmosphere;
+        settings.WeatherEffectsEnabled = true;
+        settings.AdvancedLightingEnabled = profile.AdvancedLighting;
+        settings.WorldParticlesEnabled = true;
+        settings.WorldDetailScale = profile.WorldDetailScale;
+        settings.FrameRateLimit = profile.DefaultFrameRateLimit;
     }
 
     private void ApplyAudio(SettingsState settings)
