@@ -1344,6 +1344,18 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "calendar: rollover crosses Spring -> Summer at day 29");
         Assert(result, state.Calendar.CurrentWeather == Weather.Cloudy,
             "calendar: saved tomorrow forecast becomes today's weather at rollover");
+
+        Assert(result, WorldSurfaceInteractionController.ReactionFor(Season.Winter, Weather.Snow) == WorldSurfaceReaction.SnowTrack,
+            "surface weather: snow produces bounded character tracks");
+        Assert(result, WorldSurfaceInteractionController.ReactionFor(Season.Summer, Weather.Rain) == WorldSurfaceReaction.WetStep,
+            "surface weather: rain produces wet-step feedback");
+        Assert(result, WorldSurfaceInteractionController.ReactionFor(Season.Autumn, Weather.Clear) == WorldSurfaceReaction.LeafRustle,
+            "surface weather: calm autumn produces leaf-rustle feedback");
+        Assert(result, WorldSurfaceInteractionController.ReactionFor(Season.Summer, Weather.Clear) == WorldSurfaceReaction.None,
+            "surface weather: calm summer does not allocate unnecessary surface marks");
+        Assert(result, WorldShelterVolume.ContainsOffset(new Vector3(0.5f, 1f, -0.5f), new Vector3(2f, 2f, 2f))
+            && !WorldShelterVolume.ContainsOffset(new Vector3(2.5f, 0f, 0f), new Vector3(2f, 2f, 2f)),
+            "surface weather: shelter containment is deterministic without physics queries");
     }
 
     private static void TestPlayerManaAndCombatResources(SmokeTestResult result)
@@ -1902,6 +1914,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             AssertNodeExists(result, root, "RanchWorld/FirstDayIntruder", "ranch contains the hidden first-day intruder staging actor");
             AssertNodeExists(result, root, "RanchWorld/Atmosphere", "ranch contains weather/season particle presentation");
             AssertNodeExists(result, root, "TownWorld/Atmosphere", "town contains weather/season particle presentation");
+            AssertNodeExists(result, root, "RanchWorld/SurfaceInteractions", "ranch contains bounded weather surface reactions");
+            AssertNodeExists(result, root, "TownWorld/SurfaceInteractions", "town contains bounded weather surface reactions");
             AssertNodeExists(result, root, "RanchWorld/WorldBoundary", "ranch contains finite-world collision/dressing");
             AssertNodeExists(result, root, "TownWorld/WorldBoundary", "town contains finite-world collision/dressing");
             AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
