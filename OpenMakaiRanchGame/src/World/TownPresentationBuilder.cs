@@ -129,6 +129,7 @@ public partial class TownPresentationBuilder : Node3D
         var wall = index % 2 == 0 ? WallA : WallB;
         var roof = index % 2 == 0 ? RoofA : RoofB;
 
+        Node3D? externalModel = null;
         var externalLoaded = ServiceModels.TryGetValue(service.ServiceId, out var externalPath)
             && TryAddExternalScene(
                 $"External_{service.ServiceId}",
@@ -136,7 +137,7 @@ public partial class TownPresentationBuilder : Node3D
                 new Vector3(center.X, 0.03f, center.Z),
                 Vector3.One * 2.0f,
                 0f,
-                out var externalModel);
+                out externalModel);
 
         if (externalLoaded && externalModel is not null)
         {

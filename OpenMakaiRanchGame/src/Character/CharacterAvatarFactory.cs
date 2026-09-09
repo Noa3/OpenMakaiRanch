@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using OpenMakaiRanch.Core.Resources;
 
@@ -47,7 +48,7 @@ public static class CharacterAvatarFactory
             IsDebugStandIn = true,
             BodyColor = MapSkinColor(definition.SkinColor),
             HeadColor = MapHairColor(definition.HairColor),
-            Height = Mathf.Clamp(definition.Height / 1000f, 1.45f, 2.25f),
+            Height = ResolveHeightMeters(definition.Height),
             PlaceholderModelPath = PlaceholderModels[StablePlaceholderIndex(definition.Id)]
         };
     }
@@ -77,6 +78,42 @@ public static class CharacterAvatarFactory
         }
 
         return new CharacterAvatar3D { Profile = profile };
+    }
+
+    private static float ResolveHeightMeters(string height)
+    {
+        if (!string.IsNullOrWhiteSpace(height))
+        {
+            var digits = string.Empty;
+            foreach (var ch in height)
+            {
+                if (char.IsDigit(ch))
+                {
+                    digits += ch;
+                }
+                else if (digits.Length > 0)
+                {
+                    break;
+                }
+            }
+
+            if (int.TryParse(digits, out var centimeters) && centimeters is >= 100 and <= 250)
+            {
+                return Mathf.Clamp(centimeters / 100f, 1.45f, 2.25f);
+            }
+
+            if (height.Contains("short", StringComparison.OrdinalIgnoreCase))
+            {
+                return 1.55f;
+            }
+
+            if (height.Contains("tall", StringComparison.OrdinalIgnoreCase))
+            {
+                return 1.82f;
+            }
+        }
+
+        return 1.70f;
     }
 
     private static int StablePlaceholderIndex(string id)

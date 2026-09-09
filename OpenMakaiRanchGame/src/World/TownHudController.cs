@@ -166,7 +166,7 @@ public partial class TownHudController : CanvasLayer
 
         if (_guidanceLabel is not null)
         {
-            var supplies = game.State.Ranch.Stockpile.GetValueOrDefault("supplies");
+            var supplies = game.State.Ranch.Stockpile.TryGetValue("supplies", out var supplyCount) ? supplyCount : 0;
             var workshopBuilt = game.Ranch.Facilities.TryGetValue("workshop", out var workshopLevel) && workshopLevel > 0;
 
             if (calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night)

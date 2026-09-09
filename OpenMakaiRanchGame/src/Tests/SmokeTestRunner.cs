@@ -704,7 +704,7 @@ public static class SmokeTestRunner
         Assert(result, state.WorldAreaId == "ranch", "new game starts in the ranch world area");
         Assert(result, state.Story is not null && state.Story.FirstDayStage == FirstDayFlowController.StageWakeUp,
             "new game starts before the guided first-day wake-up");
-        Assert(result, !state.Story.FirstDayCompleted,
+        Assert(result, state.Story?.FirstDayCompleted == false,
             "new game first-day story is initially incomplete");
         Assert(result, state.Settings.TutorialHintsEnabled, "tutorial hints default to enabled");
         Assert(result, state.Settings.SeenTutorialIds.Count == 0, "new settings start with no tutorial acknowledgements");
