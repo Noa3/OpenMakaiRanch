@@ -134,22 +134,44 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
     private Camera3D? GetCamera()
     {
-        // Find the world camera rig's Camera3D by walking up from this body's parent chain
-        // and into its children. The scene authors the camera as a sibling under the same root.
+        // The authored camera lives at RanchGreybox/CameraRig/Camera, so a direct-sibling scan
+        // misses it. Walk each ancestor subtree recursively and prefer the current camera.
         var root = GetParent();
+        Camera3D? fallback = null;
         while (root is not null)
         {
-            foreach (var child in root.GetChildren())
+            var found = FindCameraRecursive(root, ref fallback);
+            if (found is not null)
             {
-                if (child is Camera3D cam)
-                {
-                    return cam;
-                }
+                return found;
             }
 
             root = root.GetParent();
         }
 
-        return GetNodeOrNull<Camera3D>("Camera");
+        return fallback ?? GetNodeOrNull<Camera3D>("Camera");
+    }
+
+    private static Camera3D? FindCameraRecursive(Node root, ref Camera3D? fallback)
+    {
+        foreach (var child in root.GetChildren())
+        {
+            if (child is Camera3D camera)
+            {
+                fallback ??= camera;
+                if (camera.Current)
+                {
+                    return camera;
+                }
+            }
+
+            var nested = FindCameraRecursive(child, ref fallback);
+            if (nested is not null)
+            {
+                return nested;
+            }
+        }
+
+        return null;
     }
 }
