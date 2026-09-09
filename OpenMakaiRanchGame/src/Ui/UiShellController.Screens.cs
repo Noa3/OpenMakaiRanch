@@ -887,7 +887,13 @@ public partial class UiShellController
         header.AddChild(titleLabel);
         var returnBtn = SecondaryButton(T("screen.town.return", "Return to Ranch"), T("tooltip.return_ranch", "Head back to your ranch"));
         returnBtn.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
-        returnBtn.Pressed += () => ShowScreen("ranch");
+        returnBtn.Pressed += () =>
+        {
+            if (!RequestWorldTravel("ranch"))
+            {
+                ShowScreen("ranch");
+            }
+        };
         header.AddChild(returnBtn);
 
         _content.AddChild(MutedLabel(T("screen.town.subtitle", "Okachi Town — Choose a building to visit.")));
