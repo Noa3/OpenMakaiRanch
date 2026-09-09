@@ -72,7 +72,10 @@ public partial class WorldGameController : Node
         }
 
         _flowLocksUi = RequiresFullScreenUi(_shell.CurrentScreen);
-        SetActiveArea("ranch", reposition: false);
+        var savedArea = GameRoot.Instance is { } game && game.State.WorldAreaId is "ranch" or "town"
+            ? game.State.WorldAreaId
+            : "ranch";
+        SetActiveArea(_flowLocksUi ? "ranch" : savedArea, reposition: false);
         ApplyManagementVisibility(_flowLocksUi);
     }
 
@@ -168,7 +171,13 @@ public partial class WorldGameController : Node
             return false;
         }
 
-        return SetActiveArea(destinationId, reposition: true);
+        if (!SetActiveArea(destinationId, reposition: true))
+        {
+            return false;
+        }
+
+        GameRoot.Instance?.SetWorldArea(destinationId);
+        return true;
     }
 
     public void AdvanceWorldTime()
@@ -264,6 +273,7 @@ public partial class WorldGameController : Node
         if (wasLocked && screenId == "ranch")
         {
             SetActiveArea("ranch", reposition: false);
+            GameRoot.Instance?.SetWorldArea("ranch");
             ApplyManagementVisibility(false);
         }
     }
