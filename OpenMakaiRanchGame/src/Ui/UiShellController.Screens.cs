@@ -2573,28 +2573,39 @@ public partial class UiShellController
         _content.AddChild(root);
 
         var cardStyle = CardStyle(Palette.CardFill, Palette.CardBorder, 1, 8);
+        root.GetNode<PanelContainer>("CreationBody/PreviewCard").AddThemeStyleboxOverride("panel", cardStyle);
         foreach (var name in new[] { "BasicCard", "BodyCard", "AppearanceCard", "AccessoriesCard", "PetMountCard" })
-            root.GetNode<PanelContainer>(name).AddThemeStyleboxOverride("panel", cardStyle);
+            root.GetNode<PanelContainer>($"CreationBody/SettingsColumn/{name}").AddThemeStyleboxOverride("panel", cardStyle);
+
+        var previewTitle = root.GetNode<Label>("CreationBody/PreviewCard/PreviewInner/PreviewTitle");
+        previewTitle.Text = T("screen.character_creation.preview", "3D Character Preview");
+        previewTitle.AddThemeColorOverride("font_color", Palette.SectionText);
 
         // --- Basic Information ---
         {
-            var title = root.GetNode<Label>("BasicCard/BasicInner/BasicTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.basic", "Basic Information");
 
-            var grid = root.GetNode<GridContainer>("BasicCard/BasicInner/BasicGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid");
             StyleGridLabels(grid);
 
-            var nameInput = root.GetNode<LineEdit>("BasicCard/BasicInner/BasicGrid/NameInput");
+            var nameInput = root.GetNode<LineEdit>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid/NameInput");
             nameInput.PlaceholderText = T("screen.character_creation.name_hint", "Enter your name");
             nameInput.Text = player.Name;
             nameInput.TextChanged += _ => _game.SetPlayerName(nameInput.Text);
 
-            PopulatePicker(root.GetNode<OptionButton>("BasicCard/BasicInner/BasicGrid/SpeciesPicker"), CharacterGenerationPools.Races, player.Race, val => _game.SetPlayerRace(val));
-            PopulatePicker(root.GetNode<OptionButton>("BasicCard/BasicInner/BasicGrid/GenderPicker"), new[] { "Male", "Female" }, player.Gender, val => _game.SetPlayerGender(val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid/SpeciesPicker"), CharacterGenerationPools.Races, player.Race, val => _game.SetPlayerRace(val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid/GenderPicker"), new[] { "Male", "Female" }, player.Gender, val =>
+            {
+                _game.SetPlayerGender(val);
+                var female = string.Equals(val, "Female", StringComparison.OrdinalIgnoreCase);
+                root.GetNode<Label>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/ChestLabel").Visible = female;
+                root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/ChestPicker").Visible = female;
+            });
 
-            var ranchInput = root.GetNode<LineEdit>("BasicCard/BasicInner/BasicGrid/RanchInput");
+            var ranchInput = root.GetNode<LineEdit>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid/RanchInput");
             ranchInput.Text = player.RanchName;
             ranchInput.PlaceholderText = T("screen.character_creation.ranch_hint", "Enter your ranch name");
             ranchInput.TextChanged += _ => _game.SetRanchName(ranchInput.Text);
@@ -2602,17 +2613,17 @@ public partial class UiShellController
 
         // --- Body ---
         {
-            var title = root.GetNode<Label>("BodyCard/BodyInner/BodyTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.body", "Body");
 
-            var grid = root.GetNode<GridContainer>("BodyCard/BodyInner/BodyGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid");
             StyleGridLabels(grid);
 
             var heightLabels = CharacterGenerationPools.HeightRanges.Select(h => h.Label).ToArray();
             var currentHeightLabel = CharacterGenerationPools.HeightRanges.FirstOrDefault(h => h.Min <= player.Height && player.Height <= h.Max).Label ?? "Imposing";
-            PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/HeightPicker"), heightLabels, currentHeightLabel, val =>
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/HeightPicker"), heightLabels, currentHeightLabel, val =>
             {
                 var range = CharacterGenerationPools.HeightRanges.FirstOrDefault(h => h.Label == val);
                 _game.ModifyPlayer(p => { p.Height = (range.Min + range.Max) / 2; });
@@ -2620,91 +2631,84 @@ public partial class UiShellController
 
             var ageLabels = CharacterGenerationPools.PlayerApparentAges.Select(a => a.Label).ToArray();
             var currentAgeLabel = CharacterGenerationPools.PlayerApparentAges.FirstOrDefault(a => a.Age == player.ApparentAge).Label ?? "Adult";
-            PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/AgePicker"), ageLabels, currentAgeLabel, val =>
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/AgePicker"), ageLabels, currentAgeLabel, val =>
             {
                 var entry = CharacterGenerationPools.PlayerApparentAges.FirstOrDefault(a => a.Label == val);
                 _game.ModifyPlayer(p => p.ApparentAge = entry.Age);
             });
 
-            PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/BuildPicker"), CharacterGenerationPools.BodyShapes, player.BodyShape, val => _game.ModifyPlayer(p => p.BodyShape = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/BuildPicker"), CharacterGenerationPools.BodyShapes, player.BodyShape, val => _game.ModifyPlayer(p => p.BodyShape = val));
 
-            var chestLabel = root.GetNode<Label>("BodyCard/BodyInner/BodyGrid/ChestLabel");
-            var chestPicker = root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/ChestPicker");
-            if (string.Equals(player.Gender, "Female", StringComparison.OrdinalIgnoreCase))
-            {
-                chestLabel.Visible = true;
-                chestPicker.Visible = true;
-                PopulatePicker(chestPicker, CharacterGenerationPools.BreastSizeLabels, player.BustSize, val => _game.ModifyPlayer(p => p.BustSize = val));
-            }
-            else
-            {
-                chestLabel.Visible = false;
-                chestPicker.Visible = false;
-            }
+            var chestLabel = root.GetNode<Label>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/ChestLabel");
+            var chestPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/ChestPicker");
+            PopulatePicker(chestPicker, CharacterGenerationPools.BreastSizeLabels, player.BustSize, val => _game.ModifyPlayer(p => p.BustSize = val));
+            var showChest = string.Equals(player.Gender, "Female", StringComparison.OrdinalIgnoreCase);
+            chestLabel.Visible = showChest;
+            chestPicker.Visible = showChest;
 
-            var skinPicker = root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/SkinRow/SkinPicker");
+            var skinPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/SkinRow/SkinPicker");
             PopulatePicker(skinPicker, CharacterGenerationPools.SkinColors, player.SkinColor, val => _game.ModifyPlayer(p => p.SkinColor = val));
 
-            PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/TailPicker"), CharacterGenerationPools.TailTypes, player.TailType, val => _game.ModifyPlayer(p => p.TailType = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/TailPicker"), CharacterGenerationPools.TailTypes, player.TailType, val => _game.ModifyPlayer(p => p.TailType = val));
         }
 
         // --- Appearance ---
         {
-            var title = root.GetNode<Label>("AppearanceCard/AppearanceInner/AppearanceTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.appearance", "Appearance");
 
-            var grid = root.GetNode<GridContainer>("AppearanceCard/AppearanceInner/AppearanceGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid");
             StyleGridLabels(grid);
 
-            var hairPicker = root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/HairColorRow/HairColorPicker");
+            var hairPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/HairColorRow/HairColorPicker");
             PopulatePicker(hairPicker, CharacterGenerationPools.HairColors, player.HairColor, val => _game.ModifyPlayer(p => p.HairColor = val));
 
-            PopulatePicker(root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/HairLengthPicker"), CharacterGenerationPools.HairFeatures, player.HairFeature, val => _game.ModifyPlayer(p => p.HairFeature = val));
-            PopulatePicker(root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/HairstylePicker"), CharacterGenerationPools.HairStyles, player.HairStyle, val => _game.ModifyPlayer(p => p.HairStyle = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/HairLengthPicker"), CharacterGenerationPools.HairFeatures, player.HairFeature, val => _game.ModifyPlayer(p => p.HairFeature = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/HairstylePicker"), CharacterGenerationPools.HairStyles, player.HairStyle, val => _game.ModifyPlayer(p => p.HairStyle = val));
 
-            var eyePicker = root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/EyeColorRow/EyeColorPicker");
+            var eyePicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/EyeColorRow/EyeColorPicker");
             PopulatePicker(eyePicker, CharacterGenerationPools.EyeColors, player.EyeColor, val => _game.ModifyPlayer(p => p.EyeColor = val));
 
-            PopulatePicker(root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/EyeStylePicker"), CharacterGenerationPools.EyeShapes, player.EyeShape, val => _game.ModifyPlayer(p => p.EyeShape = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/EyeStylePicker"), CharacterGenerationPools.EyeShapes, player.EyeShape, val => _game.ModifyPlayer(p => p.EyeShape = val));
         }
 
         // --- Accessories ---
         {
-            var title = root.GetNode<Label>("AccessoriesCard/AccessoriesInner/AccessoriesTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.accessories", "Accessories");
 
-            var grid = root.GetNode<GridContainer>("AccessoriesCard/AccessoriesInner/AccessoriesGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid");
             StyleGridLabels(grid);
 
-            var hornsCb = root.GetNode<CheckBox>("AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow/HornsCheck");
+            var hornsCb = root.GetNode<CheckBox>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow/HornsCheck");
             hornsCb.ButtonPressed = player.HasHorns;
             hornsCb.Toggled += on => _game.ModifyPlayer(p => p.HasHorns = on);
 
-            var glassesCb = root.GetNode<CheckBox>("AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow/GlassesCheck");
+            var glassesCb = root.GetNode<CheckBox>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow/GlassesCheck");
             glassesCb.ButtonPressed = player.HasGlasses;
             glassesCb.Toggled += on => _game.ModifyPlayer(p => p.HasGlasses = on);
 
-            PopulatePicker(root.GetNode<OptionButton>("AccessoriesCard/AccessoriesInner/AccessoriesGrid/BodyFurPicker"), CharacterGenerationPools.BodyFurOptions, player.BodyFur, val => _game.ModifyPlayer(p => p.BodyFur = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid/BodyFurPicker"), CharacterGenerationPools.BodyFurOptions, player.BodyFur, val => _game.ModifyPlayer(p => p.BodyFur = val));
         }
 
         // --- Pet & Mount ---
         {
-            var title = root.GetNode<Label>("PetMountCard/PetMountInner/PetMountTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.pet_mount", "Pet & Mount");
 
-            var grid = root.GetNode<GridContainer>("PetMountCard/PetMountInner/PetMountGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid");
             StyleGridLabels(grid);
 
             var petIds = _game.Data.Pets.Keys.ToList();
             var petNames = petIds.Select(id => _game.Data.Pets[id].DisplayName).ToArray();
             var currentPetIdx = Math.Max(0, petIds.FindIndex(id => string.Equals(id, player.StartingPetId, StringComparison.OrdinalIgnoreCase)));
-            var petPicker = root.GetNode<OptionButton>("PetMountCard/PetMountInner/PetMountGrid/PetPicker");
+            var petPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid/PetPicker");
             PopulatePicker(petPicker, petNames, currentPetIdx >= 0 ? petNames[currentPetIdx] : petNames[0], val =>
             {
                 var idx = Array.IndexOf(petNames, val);
@@ -2714,7 +2718,7 @@ public partial class UiShellController
             var mountIds = petIds.Where(id => _game.Data.Pets[id].IsMountable).ToList();
             var mountNames = new[] { T("screen.character_creation.no_mount", "None") }.Concat(mountIds.Select(id => _game.Data.Pets[id].DisplayName)).ToArray();
             var mountValues = new[] { "none" }.Concat(mountIds).ToArray();
-            var mountPicker = root.GetNode<OptionButton>("PetMountCard/PetMountInner/PetMountGrid/MountPicker");
+            var mountPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid/MountPicker");
             var mountCurr = mountValues.Contains(player.StartingMountId) ? player.StartingMountId : "none";
             var mountCurrName = mountNames[Array.IndexOf(mountValues, mountCurr)];
             PopulatePicker(mountPicker, mountNames, mountCurrName, val =>
