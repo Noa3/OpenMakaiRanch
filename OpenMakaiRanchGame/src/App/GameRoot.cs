@@ -27,6 +27,7 @@ public partial class GameRoot : Node
 	// Presentation callbacks capture this value, never a state-bound service reference.
 	public ulong StateGeneration { get; private set; }
 	public FeedbackService Feedback { get; private set; } = null!;
+	public RuntimeSettingsService RuntimeSettings { get; private set; } = null!;
 	public SettingsStorage SettingsStorage { get; private set; } = new();
 	public SaveService Save { get; private set; } = new();
 	public RosterService Roster { get; private set; } = null!;
@@ -67,6 +68,8 @@ public partial class GameRoot : Node
 	public override void _Ready()
 	{
 		Instance = this;
+		RuntimeSettings = new RuntimeSettingsService();
+		AddChild(RuntimeSettings);
 		Feedback = new FeedbackService();
 		AddChild(Feedback);
 		Data = DataRegistry.CreateSeeded();
@@ -86,6 +89,14 @@ public partial class GameRoot : Node
 		{
 			// Defer so the scene tree finishes setup; UI walk tests need a quiescent root.
 			CallDeferred(nameof(RunSmokeTestsAndExit));
+		}
+	}
+
+	public override void _Notification(int what)
+	{
+		if (what == NotificationApplicationPaused)
+		{
+			TryAutosave("application paused");
 		}
 	}
 
@@ -433,6 +444,170 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool SetMasterVolume(float value) => SetVolumeSetting(value, () => State.Settings.MasterVolume, v => State.Settings.MasterVolume = v);
+	public bool SetMusicVolume(float value) => SetVolumeSetting(value, () => State.Settings.MusicVolume, v => State.Settings.MusicVolume = v);
+	public bool SetSfxVolume(float value) => SetVolumeSetting(value, () => State.Settings.SfxVolume, v => State.Settings.SfxVolume = v);
+	public bool SetUiVolume(float value) => SetVolumeSetting(value, () => State.Settings.UiVolume, v => State.Settings.UiVolume = v);
+
+	private bool SetVolumeSetting(float value, Func<float> get, Action<float> set)
+	{
+		var clamped = Mathf.Clamp(value, 0f, 1f);
+		if (Mathf.IsEqualApprox(get(), clamped))
+		{
+			return false;
+		}
+
+		set(clamped);
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetMuteWhenUnfocused(bool enabled)
+	{
+		if (State.Settings.MuteWhenUnfocused == enabled) return false;
+		State.Settings.MuteWhenUnfocused = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetGraphicsQuality(string quality)
+	{
+		RuntimeSettingsService.ApplyQualityPreset(State.Settings, quality);
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetRenderScale(float value)
+	{
+		var clamped = Mathf.Clamp(value, 0.50f, 1.00f);
+		if (Mathf.IsEqualApprox(State.Settings.RenderScale, clamped)) return false;
+		State.Settings.RenderScale = clamped;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetShadowsEnabled(bool enabled)
+	{
+		if (State.Settings.ShadowsEnabled == enabled) return false;
+		State.Settings.ShadowsEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetFrameRateLimit(int value)
+	{
+		var normalized = value <= 0 ? 0 : value switch
+		{
+			<= 30 => 30,
+			<= 45 => 45,
+			<= 60 => 60,
+			<= 90 => 90,
+			<= 120 => 120,
+			_ => 144
+		};
+		if (State.Settings.FrameRateLimit == normalized) return false;
+		State.Settings.FrameRateLimit = normalized;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetVSyncEnabled(bool enabled)
+	{
+		if (State.Settings.VSyncEnabled == enabled) return false;
+		State.Settings.VSyncEnabled = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetFullscreen(bool enabled)
+	{
+		if (State.Settings.Fullscreen == enabled) return false;
+		State.Settings.Fullscreen = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetCameraSensitivity(float value)
+	{
+		var clamped = Mathf.Clamp(value, 0.35f, 2.50f);
+		if (Mathf.IsEqualApprox(State.Settings.CameraSensitivity, clamped)) return false;
+		State.Settings.CameraSensitivity = clamped;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetCameraFov(float value)
+	{
+		var clamped = Mathf.Clamp(value, 55f, 95f);
+		if (Mathf.IsEqualApprox(State.Settings.CameraFov, clamped)) return false;
+		State.Settings.CameraFov = clamped;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetInvertCameraY(bool enabled)
+	{
+		if (State.Settings.InvertCameraY == enabled) return false;
+		State.Settings.InvertCameraY = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetTouchControlsEnabled(bool enabled)
+	{
+		if (State.Settings.TouchControlsEnabled == enabled) return false;
+		State.Settings.TouchControlsEnabled = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetTouchControlScale(float value)
+	{
+		var clamped = Mathf.Clamp(value, 0.75f, 1.50f);
+		if (Mathf.IsEqualApprox(State.Settings.TouchControlScale, clamped)) return false;
+		State.Settings.TouchControlScale = clamped;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetAutosaveEnabled(bool enabled)
+	{
+		if (State.Settings.AutosaveEnabled == enabled) return false;
+		State.Settings.AutosaveEnabled = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public void ApplyRecommendedSettings()
+	{
+		RuntimeSettingsService.ApplyQualityPreset(State.Settings, RuntimeSettings.IsMobilePlatform ? "Low" : "Medium");
+		State.Settings.UiScale = RuntimeSettings.IsMobilePlatform ? 1.15f : 1.0f;
+		State.Settings.TouchControlsEnabled = RuntimeSettings.IsMobilePlatform;
+		State.Settings.TouchControlScale = 1.0f;
+		State.Settings.VSyncEnabled = true;
+		State.Settings.CameraSensitivity = 1.0f;
+		State.Settings.CameraFov = RuntimeSettings.IsMobilePlatform ? 65f : 70f;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+	}
+
 	public bool SetWorldArea(string areaId)
 	{
 		if (areaId is not ("ranch" or "town") || State.WorldAreaId == areaId)
@@ -555,6 +730,7 @@ public partial class GameRoot : Node
 		State.Reports.Add(LastDailyReport);
 		DaySettled?.Invoke(LastDailyReport);
 		StateChanged?.Invoke();
+		TryAutosave("day settled");
 		if (WinCondition.IsGameComplete() && !State.VictoryDay.HasValue)
 		{
 			State.VictoryDay = State.Calendar.Day;
@@ -736,6 +912,21 @@ public partial class GameRoot : Node
 		}
 	}
 
+	private bool TryAutosave(string reason)
+	{
+		if (State is null || !State.Settings.AutosaveEnabled || SmokeTestRunner.ShouldRun())
+		{
+			return false;
+		}
+
+		var saved = SaveSlot(0);
+		if (saved)
+		{
+			GD.Print($"Autosave completed ({reason}).");
+		}
+		return saved;
+	}
+
 	private void BuildServices()
 	{
 		Roster = new RosterService(State, Data);
@@ -775,6 +966,7 @@ public partial class GameRoot : Node
 	private void SyncFeedbackSettings()
 	{
 		Feedback.ApplySettings(State.Settings);
+		RuntimeSettings.Apply(State.Settings);
 		ApplyLocale();
 	}
 
