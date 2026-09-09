@@ -222,6 +222,18 @@ public partial class UiShellController : Control
 		}
 	}
 
+	public bool ShowCharacterDetailFromWorld(string characterId)
+	{
+		if (string.IsNullOrWhiteSpace(characterId) || _game.Roster.Find(characterId) is null)
+		{
+			return false;
+		}
+
+		_detailCharacterId = characterId;
+		ShowScreen("character_detail");
+		return true;
+	}
+
 	public void ShowScreen(string screenId)
 	{
 		if (!CanEnterScreen(screenId, out var blockedReason))
