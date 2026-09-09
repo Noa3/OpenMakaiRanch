@@ -145,6 +145,9 @@ public partial class RuntimeSettingsService : Node
                 settings.ShadowsEnabled = true;
                 settings.AtmosphereEffectsEnabled = true;
                 settings.WeatherEffectsEnabled = true;
+                settings.AdvancedLightingEnabled = true;
+                settings.WorldParticlesEnabled = true;
+                settings.WorldDetailScale = 0.85f;
                 settings.FrameRateLimit = 60;
                 break;
         }
