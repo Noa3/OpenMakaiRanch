@@ -216,6 +216,13 @@ public partial class RanchPresentationBuilder : Node3D
                 new Vector3(3.8f, 0.48f, 3.2f),
                 RoofColor);
 
+            _generated!.AddChild(new WorldShelterVolume
+            {
+                Name = $"Shelter_{station.TargetId}",
+                Position = buildingPos + new Vector3(0f, 0.65f, 0f),
+                HalfExtents = new Vector3(1.9f, 1.55f, 1.65f)
+            });
+
             // A bright front marker helps identify the approach side even before final art exists.
             var towardHub = -outward;
             var front = buildingPos + towardHub * 1.45f + new Vector3(0f, -0.2f, 0f);
