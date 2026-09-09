@@ -31,6 +31,9 @@ public partial class WorldTutorialController : Control
         new("world_management", "Open ranch management",
             "Management contains the full schedule, facilities, roster, town, research, save/load and other detailed systems. Open it whenever you need a deeper decision.",
             "M = management  •  Esc / Return to World = close"),
+        new("world_town", "Visit Okachi Town",
+            "Follow the south road to the town gate and press F. Town services use the same shared shop, research, adventure, roster, bond and milestone systems.",
+            "South gate → F = travel to town"),
         new("world_time", "Advance the day",
             "Use Advance Phase in the world HUD when you are ready. At Night, choose a night plan before ending the day. Settlement then opens the Daily Report.",
             "Advance Phase → Night plan → End Day → Daily Report")
@@ -57,6 +60,7 @@ public partial class WorldTutorialController : Control
     private bool _cameraUsed;
     private bool _stationUsed;
     private bool _managementOpened;
+    private bool _townTravelUsed;
     private bool _timeAdvanced;
     private int _visibleStepIndex = -1;
 
@@ -108,6 +112,7 @@ public partial class WorldTutorialController : Control
         if (_ranch is not null)
         {
             _ranch.StationInteractionSucceeded += OnStationInteractionSucceeded;
+            _ranch.TravelRequested += OnTravelRequested;
         }
 
         if (_dismissButton is not null)
@@ -147,6 +152,7 @@ public partial class WorldTutorialController : Control
         if (_ranch is not null && GodotObject.IsInstanceValid(_ranch))
         {
             _ranch.StationInteractionSucceeded -= OnStationInteractionSucceeded;
+            _ranch.TravelRequested -= OnTravelRequested;
         }
 
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
@@ -260,6 +266,7 @@ public partial class WorldTutorialController : Control
         _cameraUsed = false;
         _stationUsed = false;
         _managementOpened = false;
+        _townTravelUsed = false;
         _timeAdvanced = false;
         _startPosition = _ranch?.Player?.GlobalPosition ?? Vector3.Zero;
         _initialPhase = game.State.Calendar.Phase;
@@ -282,6 +289,16 @@ public partial class WorldTutorialController : Control
     {
         _stationUsed = true;
         RefreshTutorial();
+    }
+
+    private void OnTravelRequested(string destinationId)
+    {
+        if (destinationId == "town")
+        {
+            _townTravelUsed = true;
+            GameRoot.Instance?.MarkTutorialSeen("world_town");
+            RefreshTutorial();
+        }
     }
 
     private void OnSharedStateChanged()
@@ -371,6 +388,11 @@ public partial class WorldTutorialController : Control
         if (!game.HasSeenTutorial("world_management") && _managementOpened)
         {
             game.MarkTutorialSeen("world_management");
+        }
+
+        if (!game.HasSeenTutorial("world_town") && _townTravelUsed)
+        {
+            game.MarkTutorialSeen("world_town");
         }
 
         if (!game.HasSeenTutorial("world_time") && _timeAdvanced)
