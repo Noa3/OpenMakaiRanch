@@ -15,6 +15,12 @@ public partial class TownHudController : CanvasLayer
     private Label? _promptLabel;
     private Label? _statusLabel;
     private Label? _guidanceLabel;
+    private Button? _returnRanchButton;
+    private Control? _guidancePanel;
+    private Control? _alertPanel;
+    private Control? _tutorialHintCard;
+    private Control? _tutorialHelpButton;
+    private Vector2 _lastViewportSize = Vector2.Zero;
     private double _statusRemaining;
 
     public override void _Ready()
@@ -24,11 +30,18 @@ public partial class TownHudController : CanvasLayer
         _promptLabel = GetNodeOrNull<Label>("Prompt");
         _statusLabel = GetNodeOrNull<Label>("StatusLabel");
         _guidanceLabel = GetNodeOrNull<Label>("GuidancePanel/GuidanceLabel");
+        _returnRanchButton = GetNodeOrNull<Button>("ReturnRanchButton");
+        _guidancePanel = GetNodeOrNull<Control>("GuidancePanel");
+        _alertPanel = GetNodeOrNull<Control>("AlertPanel");
+        _tutorialHintCard = GetNodeOrNull<Control>("TutorialOverlay/HintCard");
+        _tutorialHelpButton = GetNodeOrNull<Control>("TutorialOverlay/HelpButton");
+        ApplyResponsiveLayout(force: true);
         Refresh(GameRoot.Instance);
     }
 
     public override void _Process(double delta)
     {
+        ApplyResponsiveLayout();
         if (_statusRemaining > 0)
         {
             _statusRemaining -= delta;
@@ -36,6 +49,98 @@ public partial class TownHudController : CanvasLayer
             {
                 _statusLabel.Text = string.Empty;
             }
+        }
+    }
+
+    private void ApplyResponsiveLayout(bool force = false)
+    {
+        var viewport = GetViewport();
+        if (viewport is null)
+        {
+            return;
+        }
+
+        var metrics = ScreenLayout.Calculate(viewport);
+        if (!force && metrics.ViewportSize.IsEqualApprox(_lastViewportSize))
+        {
+            return;
+        }
+        _lastViewportSize = metrics.ViewportSize;
+
+        var left = metrics.ContentLeft + 18f;
+        var rightInset = metrics.ViewportSize.X - metrics.ContentRight + 18f;
+        var top = metrics.SafeTop;
+
+        if (_locationLabel is not null)
+        {
+            _locationLabel.OffsetLeft = left;
+            _locationLabel.OffsetRight = left + Mathf.Min(760f, metrics.ContentWidth * 0.62f);
+            _locationLabel.OffsetTop = top + 8f;
+            _locationLabel.OffsetBottom = top + 30f;
+        }
+        if (_economyLabel is not null)
+        {
+            _economyLabel.OffsetLeft = left;
+            _economyLabel.OffsetRight = left + Mathf.Min(760f, metrics.ContentWidth * 0.62f);
+            _economyLabel.OffsetTop = top + 31f;
+            _economyLabel.OffsetBottom = top + 53f;
+        }
+
+        if (_returnRanchButton is not null)
+        {
+            _returnRanchButton.OffsetRight = -rightInset;
+            _returnRanchButton.OffsetLeft = -rightInset - 152f;
+            _returnRanchButton.OffsetTop = top + 14f;
+            _returnRanchButton.OffsetBottom = top + 46f;
+        }
+
+        var leftPanelWidth = Mathf.Min(456f, Mathf.Max(320f, metrics.ContentWidth * 0.44f));
+        if (_guidancePanel is not null)
+        {
+            _guidancePanel.OffsetLeft = left;
+            _guidancePanel.OffsetRight = left + leftPanelWidth;
+            _guidancePanel.OffsetTop = top + 72f;
+            _guidancePanel.OffsetBottom = top + 124f;
+        }
+        if (_tutorialHintCard is not null)
+        {
+            _tutorialHintCard.OffsetLeft = left;
+            _tutorialHintCard.OffsetRight = left + leftPanelWidth;
+            _tutorialHintCard.OffsetTop = top + 138f;
+            _tutorialHintCard.OffsetBottom = top + 252f;
+        }
+
+        var alertWidth = Mathf.Min(452f, Mathf.Max(330f, metrics.ContentWidth * 0.40f));
+        if (_alertPanel is not null)
+        {
+            _alertPanel.OffsetRight = -rightInset;
+            _alertPanel.OffsetLeft = -rightInset - alertWidth;
+            _alertPanel.OffsetTop = top + 62f;
+            _alertPanel.OffsetBottom = top + 196f;
+        }
+
+        if (_promptLabel is not null)
+        {
+            var promptHalf = Mathf.Min(540f, metrics.ContentWidth * 0.42f);
+            var shift = metrics.HorizontalCenter - metrics.ViewportSize.X * 0.5f;
+            _promptLabel.OffsetLeft = shift - promptHalf;
+            _promptLabel.OffsetRight = shift + promptHalf;
+            _promptLabel.OffsetTop = -68f - metrics.SafeBottom;
+            _promptLabel.OffsetBottom = -34f - metrics.SafeBottom;
+        }
+        if (_statusLabel is not null)
+        {
+            _statusLabel.OffsetLeft = left;
+            _statusLabel.OffsetRight = Mathf.Min(metrics.ContentRight - 18f, left + 820f);
+            _statusLabel.OffsetTop = -38f - metrics.SafeBottom;
+            _statusLabel.OffsetBottom = -12f - metrics.SafeBottom;
+        }
+        if (_tutorialHelpButton is not null)
+        {
+            _tutorialHelpButton.OffsetRight = -rightInset;
+            _tutorialHelpButton.OffsetLeft = -rightInset - 56f;
+            _tutorialHelpButton.OffsetTop = -72f - metrics.SafeBottom;
+            _tutorialHelpButton.OffsetBottom = -18f - metrics.SafeBottom;
         }
     }
 
