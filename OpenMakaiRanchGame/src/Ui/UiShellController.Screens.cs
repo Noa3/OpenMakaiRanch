@@ -1275,6 +1275,12 @@ public partial class UiShellController
     {
         AddTitle(T("screen.combat", "Combat And Mission Result"));
 
+        var pauseCard = CardContainer();
+        _content.AddChild(pauseCard);
+        pauseCard.AddChild(SubtitleLabel(T("screen.combat.world_paused", "⏸ World Time Paused")));
+        pauseCard.AddChild(MutedLabel(T("screen.combat.world_paused_hint",
+            "Combat is turn-based. Ranch phase, weather progression and daily settlement cannot advance until you leave combat.")));
+
         if (_game.CurrentCombatPhase == CombatPhase.PreBattle)
         {
             RenderCombatPreBattle();
@@ -1295,6 +1301,8 @@ public partial class UiShellController
         var card = CardContainer();
         _content.AddChild(card);
         card.AddChild(SubtitleLabel(T("screen.combat.pre_battle", "Prepare for Battle")));
+        card.AddChild(MutedLabel(T("screen.combat.rules",
+            "Round order favors higher Speed. Attack is reduced by Defense; Defend halves incoming damage while active. Skills can provide utility/healing.")));
 
         var missionId = _game.LastCombatReport?.MissionId ?? _game.State.Adventure.LastMissionId;
         var mission = _game.Data.Missions.Values.FirstOrDefault(m => m.Id == missionId);
@@ -1350,7 +1358,7 @@ public partial class UiShellController
         AddFlowButton(actions, captureBtn, 160);
 
         var backBtn = SecondaryButton(T("common.back", "Back"));
-        backBtn.Pressed += () => { _game.StartNewCombat(); ShowScreen("adventure"); };
+        backBtn.Pressed += () => ShowScreen("adventure");
         AddFlowButton(actions, backBtn, 96);
     }
 
@@ -1377,6 +1385,9 @@ public partial class UiShellController
         var outcomeLabel = AddStyledLine($"{T("screen.combat.outcome", "Outcome")}: {report.Outcome}", true);
         outcomeLabel.AddThemeColorOverride("font_color", Color.FromHtml(outcomeColor));
         outcomeCard.AddChild(outcomeLabel);
+        outcomeCard.AddChild(MutedLabel(
+            $"{T("screen.combat.rounds_resolved", "Rounds resolved")}: {report.Rounds.Count}  •  " +
+            $"{T("screen.combat.world_clock", "World clock")}: {(_game.CombatWorldTimeLocked ? T("label.paused", "Paused") : T("label.active", "Active"))}"));
         var combatSummary = new TypewriterLabel
         {
             AutowrapMode = TextServer.AutowrapMode.WordSmart,
@@ -1462,7 +1473,7 @@ public partial class UiShellController
         }
 
         var btn = PrimaryButton(T("common.back", "Back"));
-        btn.Pressed += () => { _game.StartNewCombat(); ShowScreen("adventure"); };
+        btn.Pressed += () => ShowScreen("adventure");
         _content.AddChild(btn);
     }
 
