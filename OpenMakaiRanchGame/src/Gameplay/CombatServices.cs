@@ -385,7 +385,7 @@ public sealed class CombatService
         }
     }
 
-    private static CombatantSnapshot CombatantSnapshot(BattleCombatant b) => new()
+    private CombatantSnapshot CombatantSnapshot(BattleCombatant b) => new()
     {
         Id = b.Id, DisplayName = b.DisplayName,
         CurrentHp = b.Hp, MaxHp = b.MaxHp,
