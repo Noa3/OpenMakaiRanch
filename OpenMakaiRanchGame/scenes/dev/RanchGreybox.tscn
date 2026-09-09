@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://src/World/RosterRig.cs" id="7_roster"]
 [ext_resource type="Script" path="res://src/World/WorldHudController.cs" id="8_hud"]
 [ext_resource type="Script" path="res://src/Character/PlayerAvatar3D.cs" id="9_player_avatar"]
+[ext_resource type="Script" path="res://src/World/WorldTutorialController.cs" id="10_tutorial"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -346,6 +347,126 @@ offset_top = -38.0
 offset_right = 620.0
 offset_bottom = -12.0
 text = ""
+
+[node name="TutorialOverlay" type="Control" parent="WorldHud"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_tutorial")
+
+[node name="HintCard" type="PanelContainer" parent="WorldHud/TutorialOverlay"]
+offset_left = 14.0
+offset_top = 146.0
+offset_right = 430.0
+offset_bottom = 354.0
+tooltip_text = "Contextual first-run guidance. You can skip individual steps or disable tutorials from F1 Help."
+
+[node name="Inner" type="VBoxContainer" parent="WorldHud/TutorialOverlay/HintCard"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="StepLabel" type="Label" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+text = "Ranch Tutorial 1/5"
+
+[node name="TitleLabel" type="Label" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+text = "Move around the ranch"
+theme_override_font_sizes/font_size = 18
+
+[node name="BodyLabel" type="Label" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Use WASD or the arrow keys to walk."
+autowrap_mode = 2
+
+[node name="KeyLabel" type="Label" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+text = "WASD / Arrows  •  Shift = sprint"
+autowrap_mode = 2
+
+[node name="Actions" type="HBoxContainer" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="DismissButton" type="Button" parent="WorldHud/TutorialOverlay/HintCard/Inner/Actions"]
+layout_mode = 2
+text = "Next / Skip Step"
+
+[node name="SkipButton" type="Button" parent="WorldHud/TutorialOverlay/HintCard/Inner/Actions"]
+layout_mode = 2
+text = "Skip Tutorial"
+
+[node name="HelpButton" type="Button" parent="WorldHud/TutorialOverlay"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -74.0
+offset_top = -72.0
+offset_right = -18.0
+offset_bottom = -18.0
+text = "?"
+tooltip_text = "Help and controls [F1]"
+
+[node name="HelpPanel" type="PanelContainer" parent="WorldHud/TutorialOverlay"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -270.0
+offset_right = 340.0
+offset_bottom = 270.0
+
+[node name="Inner" type="VBoxContainer" parent="WorldHud/TutorialOverlay/HelpPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Ranch Help & Controls"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+
+[node name="ControlsTitle" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Controls"
+theme_override_font_sizes/font_size = 17
+
+[node name="ControlsLabel" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "WASD / Arrows — Move\nShift — Sprint\nHold RMB — Orbit camera\nMouse Wheel — Zoom\nR — Recenter camera\nF — Interact / assign selected worker\nTab — Select next worker\nM — Open management\nEsc — Return to world from ordinary management\nF1 — Open/close this help"
+autowrap_mode = 2
+
+[node name="LoopTitle" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Basic Ranch Loop"
+theme_override_font_sizes/font_size = 17
+
+[node name="LoopLabel" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "1. Choose a worker with Tab.\n2. Assign work in the 3D ranch or full Management.\n3. Check facilities, roster, supplies and plans in Management.\n4. Advance the day when ready.\n5. At Night choose a night plan, then End Day.\n6. Review the Daily Report and adjust tomorrow's plan."
+autowrap_mode = 2
+
+[node name="TutorialToggle" type="CheckButton" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Show contextual tutorial hints"
+button_pressed = true
+tooltip_text = "Disable automatic tutorial cards. F1 Help remains available."
+
+[node name="ResetTutorialButton" type="Button" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Restart Basic Tutorial"
+
+[node name="CloseButton" type="Button" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Close Help [F1]"
 
 [node name="PromptLayer" type="CanvasLayer" parent="."]
 visible = false
