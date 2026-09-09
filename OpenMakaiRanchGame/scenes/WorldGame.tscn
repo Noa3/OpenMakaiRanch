@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://src/World/WorldGameController.cs" id="1_controller"]
 [ext_resource type="PackedScene" path="res://scenes/dev/RanchGreybox.tscn" id="2_ranch"]
 [ext_resource type="PackedScene" path="res://scenes/Game.tscn" id="3_management"]
 [ext_resource type="PackedScene" path="res://scenes/dev/TownGreybox.tscn" id="4_town"]
+[ext_resource type="Script" path="res://src/World/WorldTransitionController.cs" id="5_transition"]
+[ext_resource type="Script" path="res://src/World/PauseMenuController.cs" id="6_pause"]
 
 [node name="WorldGame" type="Node"]
 script = ExtResource("1_controller")
@@ -19,3 +21,132 @@ layer = 50
 
 [node name="ManagementUi" parent="ManagementLayer" instance=ExtResource("3_management")]
 visible = false
+
+[node name="TransitionLayer" type="CanvasLayer" parent="."]
+layer = 80
+
+[node name="Transition" type="Control" parent="TransitionLayer"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_transition")
+
+[node name="Blackout" type="ColorRect" parent="TransitionLayer/Transition"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.015, 0.02, 0.03, 1)
+
+[node name="Center" type="VBoxContainer" parent="TransitionLayer/Transition"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -70.0
+offset_right = 360.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="LocationLabel" type="Label" parent="TransitionLayer/Transition/Center"]
+layout_mode = 2
+text = "Okachi Ranch"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+
+[node name="SubtitleLabel" type="Label" parent="TransitionLayer/Transition/Center"]
+layout_mode = 2
+text = "Day 1 • Morning"
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 17
+
+[node name="PauseLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="PauseMenu" type="Control" parent="PauseLayer"]
+visible = false
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("6_pause")
+
+[node name="Backdrop" type="ColorRect" parent="PauseLayer/PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.015, 0.025, 0.78)
+
+[node name="Center" type="CenterContainer" parent="PauseLayer/PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="PauseLayer/PauseMenu/Center"]
+custom_minimum_size = Vector2(390, 0)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="PauseLayer/PauseMenu/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="PauseLayer/PauseMenu/Center/Panel/Content"]
+layout_mode = 2
+text = "Paused"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+
+[node name="ContextLabel" type="Label" parent="PauseLayer/PauseMenu/Center/Panel/Content"]
+layout_mode = 2
+text = "Okachi Ranch • Day 1 • Morning"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ResumeButton" type="Button" parent="PauseLayer/PauseMenu/Center/Panel/Content"]
+layout_mode = 2
+text = "Resume"
+tooltip_text = "Return to the game [Esc]"
+
+[node name="SaveLoadButton" type="Button" parent="PauseLayer/PauseMenu/Center/Panel/Content"]
+layout_mode = 2
+text = "Save / Load"
+tooltip_text = "Open the existing save and load screen."
+
+[node name="SettingsButton" type="Button" parent="PauseLayer/PauseMenu/Center/Panel/Content"]
+layout_mode = 2
+text = "Settings"
+tooltip_text = "Open game settings."
+
+[node name="MainMenuButton" type="Button" parent="PauseLayer/PauseMenu/Center/Panel/Content"]
+layout_mode = 2
+text = "Return to Main Menu"
+tooltip_text = "Leave the current world. Unsaved progress is not automatically saved."
+
+[node name="QuitButton" type="Button" parent="PauseLayer/PauseMenu/Center/Panel/Content"]
+layout_mode = 2
+text = "Quit to Desktop"
+tooltip_text = "Close the game. Unsaved progress is not automatically saved."
