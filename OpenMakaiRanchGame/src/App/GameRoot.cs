@@ -64,6 +64,8 @@ public partial class GameRoot : Node
 	public CombatPhase CurrentCombatPhase { get; set; } = CombatPhase.PreBattle;
 	public static string? PendingInitialScreen { get; set; }
 	public int CurrentCombatRound { get; set; }
+	private bool _combatWorldTimeLocked;
+	public bool CombatWorldTimeLocked => _combatWorldTimeLocked;
 
 	public override void _Ready()
 	{
@@ -118,6 +120,7 @@ public partial class GameRoot : Node
 		State.Settings = persistedSettings;
 		LastDailyReport = null;
 		LastCombatReport = null;
+		_combatWorldTimeLocked = false;
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -394,6 +397,7 @@ public partial class GameRoot : Node
 		State.Settings = SettingsStorage.Load();
 		LastDailyReport = null;
 		LastCombatReport = null;
+		_combatWorldTimeLocked = false;
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -781,6 +785,11 @@ public partial class GameRoot : Node
 
 	public bool AdvanceTime()
 	{
+		if (_combatWorldTimeLocked)
+		{
+			return false;
+		}
+
 		var dayCycle = new DayCycleService(State);
 		if (dayCycle.AdvancePhase())
 		{
@@ -872,6 +881,26 @@ public partial class GameRoot : Node
 
 	public void StartNewCombat()
 	{
+		BeginCombatSession();
+	}
+
+	public void BeginCombatSession()
+	{
+		_combatWorldTimeLocked = true;
+		CurrentCombatPhase = CombatPhase.PreBattle;
+		CurrentCombatRound = 0;
+		LastCombatReport = null;
+		NotifyStateChanged();
+	}
+
+	public void EndCombatSession()
+	{
+		if (!_combatWorldTimeLocked && CurrentCombatPhase == CombatPhase.PreBattle && LastCombatReport is null)
+		{
+			return;
+		}
+
+		_combatWorldTimeLocked = false;
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 		LastCombatReport = null;
