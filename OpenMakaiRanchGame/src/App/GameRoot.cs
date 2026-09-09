@@ -385,6 +385,7 @@ public partial class GameRoot : Node
 		}
 
 		State = loaded;
+		State.Story ??= new StoryProgressState();
 		EnsureLoadedEligibility();
 		if (State.WorldAreaId is not ("ranch" or "town"))
 		{
