@@ -17,12 +17,14 @@ public partial class WorldGameController : Node
     [Export] public NodePath ManagementRootPath { get; set; } = "ManagementLayer/ManagementUi";
     [Export] public NodePath UiShellPath { get; set; } = "ManagementLayer/ManagementUi/UiShell";
     [Export] public NodePath ManagementButtonPath { get; set; } = "RanchWorld/WorldHud/ManagementButton";
+    [Export] public NodePath AdvanceTimeButtonPath { get; set; } = "RanchWorld/WorldHud/AdvanceTimeButton";
     [Export] public NodePath ReturnToWorldButtonPath { get; set; } = "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton";
 
     private RanchGreyboxController? _ranch;
     private Control? _managementRoot;
     private UiShellController? _shell;
     private Button? _managementButton;
+    private Button? _advanceTimeButton;
     private Button? _returnToWorldButton;
     private bool _flowLocksUi;
 
@@ -37,6 +39,7 @@ public partial class WorldGameController : Node
         _managementRoot = GetNodeOrNull<Control>(ManagementRootPath);
         _shell = GetNodeOrNull<UiShellController>(UiShellPath);
         _managementButton = GetNodeOrNull<Button>(ManagementButtonPath);
+        _advanceTimeButton = GetNodeOrNull<Button>(AdvanceTimeButtonPath);
         _returnToWorldButton = GetNodeOrNull<Button>(ReturnToWorldButtonPath);
 
         if (_ranch is null || _managementRoot is null || _shell is null)
@@ -49,6 +52,10 @@ public partial class WorldGameController : Node
         if (_managementButton is not null)
         {
             _managementButton.Pressed += ToggleManagement;
+        }
+        if (_advanceTimeButton is not null)
+        {
+            _advanceTimeButton.Pressed += AdvanceWorldTime;
         }
         if (_returnToWorldButton is not null)
         {
@@ -69,6 +76,10 @@ public partial class WorldGameController : Node
         if (_managementButton is not null && GodotObject.IsInstanceValid(_managementButton))
         {
             _managementButton.Pressed -= ToggleManagement;
+        }
+        if (_advanceTimeButton is not null && GodotObject.IsInstanceValid(_advanceTimeButton))
+        {
+            _advanceTimeButton.Pressed -= AdvanceWorldTime;
         }
         if (_returnToWorldButton is not null && GodotObject.IsInstanceValid(_returnToWorldButton))
         {
@@ -125,6 +136,57 @@ public partial class WorldGameController : Node
     private void CloseManagementFromUi()
     {
         CloseManagement();
+    }
+
+    /// <summary>
+    /// Advance the same shared clock used by management. Night settlement is guarded by the
+    /// existing night-plan UI; completing a day opens the existing daily report instead of
+    /// inventing a second report surface in the world.
+    /// </summary>
+    public void AdvanceWorldTime()
+    {
+        var game = GameRoot.Instance;
+        if (game is null || !GodotObject.IsInstanceValid(game))
+        {
+            return;
+        }
+
+        if (game.State.Calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night
+            && game.State.Calendar.NightAction is not ("rest" or "train" or "admin"))
+        {
+            OpenManagementScreen("ranch");
+            _ranch?.Hud?.SetStatus("Choose tonight's work in management before ending the day.");
+            return;
+        }
+
+        var dayBefore = game.State.Calendar.Day;
+        if (!game.AdvanceTime())
+        {
+            _ranch?.Hud?.SetStatus("Time could not be advanced.");
+            return;
+        }
+
+        if (game.State.Calendar.Day != dayBefore
+            && game.State.Calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Morning
+            && game.LastDailyReport is not null)
+        {
+            OpenManagementScreen("report");
+            return;
+        }
+
+        _ranch?.RefreshLiveWorld();
+        _ranch?.Hud?.SetStatus($"Advanced to {game.State.Calendar.Phase}.");
+    }
+
+    public bool OpenManagementScreen(string screenId)
+    {
+        if (_shell is null)
+        {
+            return false;
+        }
+
+        _shell.ShowScreen(screenId);
+        return OpenManagement();
     }
 
     private void OnShellScreenChanged(string screenId)
