@@ -316,6 +316,12 @@ public partial class WorldGameController : Node
         }
         else
         {
+            var savedArea = GameRoot.Instance?.State.WorldAreaId;
+            if (savedArea is "ranch" or "town" && savedArea != _activeAreaId)
+            {
+                SetActiveArea(savedArea, reposition: false);
+            }
+
             ActiveLeaveManagement();
             _ranch.RefreshLiveWorld();
             _town.Refresh();
