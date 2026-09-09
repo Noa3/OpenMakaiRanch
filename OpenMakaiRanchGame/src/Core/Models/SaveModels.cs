@@ -213,6 +213,17 @@ public sealed class PlayerState
 
     /// <summary>Percent of MaxMana recovered at rest/day rollover. Original Chara0 starts at 10%.</summary>
     public int ManaRecoveryPercent { get; set; } = 10;
+
+    /// <summary>
+    /// Daily real-time action budget. Locomotion/exploration never spends this; persistent
+    /// progression actions do. This replaces the original turn-slot "action done" constraint.
+    /// </summary>
+    public int Stamina { get; set; } = 100;
+
+    public int MaxStamina { get; set; } = 100;
+
+    /// <summary>Prevents repeatedly farming bath/shower recovery during one in-game day.</summary>
+    public bool BathedToday { get; set; }
 }
 
 public sealed class CalendarState
