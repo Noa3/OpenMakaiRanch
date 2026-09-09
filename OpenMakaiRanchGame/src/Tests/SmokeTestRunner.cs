@@ -1066,6 +1066,13 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             // missing-target / re-entrancy contract that must hold across rapid presses).
             var second = station.Activate(context);
             Assert(result, second && calls.Count == 2, "world station allows sequential activations");
+
+            station.AvailabilityResolver = () => (false, "facility is not built");
+            Assert(result, !station.IsAvailable, "world station respects injected progression availability");
+            Assert(result, station.UnavailableReason == "facility is not built",
+                "world station exposes progression lock reason");
+            Assert(result, !station.Activate(context), "world station cannot bypass a progression lock");
+            station.AvailabilityResolver = null;
         }
         finally
         {
@@ -1466,6 +1473,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             Assert(result, controller?.Player is not null, "greybox scene has a player");
             Assert(result, controller?.Station is not null, "greybox scene has a primary work station");
             Assert(result, controller?.StationCount >= 6, "greybox scene exposes multiple spatial job stations");
+            Assert(result, controller?.Stations.Any(value => value.RequiredFacilityId == "workshop" && !value.IsAvailable) == true,
+                "greybox locks unbuilt workshop station through shared ranch progression");
+            Assert(result, controller?.Stations.Any(value => value.RequiredFacilityId == "pasture" && value.IsAvailable) == true,
+                "greybox keeps built pasture station available");
             Assert(result, controller?.CameraRig?.Target is not null, "greybox live camera follows the player target");
             Assert(result, controller?.Hud is not null, "greybox live scene exposes the world HUD");
             Assert(result, !string.IsNullOrWhiteSpace(controller?.SelectedCharacterId),
@@ -1486,7 +1497,9 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 var selectedId = controller.SelectedCharacterId;
                 var currentJob = game.Schedule.GetAssignment(selectedId);
                 var targetStation = controller.Stations.FirstOrDefault(value =>
-                    !string.IsNullOrWhiteSpace(value.CommandTargetId) && value.CommandTargetId != currentJob);
+                    value.IsAvailable
+                    && !string.IsNullOrWhiteSpace(value.CommandTargetId)
+                    && value.CommandTargetId != currentJob);
 
                 Assert(result, targetStation is not null, "greybox has a station with a different job for controller interaction test");
                 if (targetStation is not null)
