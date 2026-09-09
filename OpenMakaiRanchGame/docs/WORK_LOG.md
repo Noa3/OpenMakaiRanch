@@ -154,3 +154,14 @@ Still intentionally deferred:
 - NavigationAgent3D travel/reservations.
 - Final ranch art/assets and concept selection.
 - Character model production.
+
+### WORLD-003c composition extension
+- Added `scenes/WorldGame.tscn`: permanent 3D RanchGreybox + the existing `Game.tscn` management shell on a CanvasLayer. Both use the same GameRoot.
+- Added `WorldGameController`: M/HUD-button toggles ordinary management; character creation, prologue, victory/title are mandatory UI flows and cannot be hidden. Exiting the new-game prologue to `ranch` automatically returns to the 3D world.
+- MainMenu now routes New Game / Continue / New Game+ to `WorldGame.tscn` instead of replacing the world with `Game.tscn`.
+- Added a generic `UiShellController.ScreenChanged` event plus read-only current-screen/full-screen state; no screen content was changed.
+- The world now guarantees a runtime `Environment` resource before applying shared DayPhase lighting, so ambient/tonemap state is not silently discarded.
+- Added WORLD-003c smoke coverage for composed scene nodes, overlay visibility, world-input suspension/restoration, mandatory character-creation/prologue lock and automatic return to the ranch.
+- Added a nested-camera lookup fix in `ThirdPersonPlayerController`; the authored camera is under `CameraRig/Camera`, not a direct player sibling.
+
+External visual-direction research (reference only, no copied assets): GodotCon anime/stylized 3D workflows emphasize deliberate toon shading, outlines, edited normals and modular Blender→Godot asset authoring. The environment should use readable paths/landmarks and authored lighting rather than attempting photorealism.
