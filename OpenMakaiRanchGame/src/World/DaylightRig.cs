@@ -77,9 +77,9 @@ public partial class DaylightRig : Node3D
         var atmosphereEnabled = settings?.AtmosphereEffectsEnabled ?? true;
         var weatherEnabled = settings?.WeatherEffectsEnabled ?? true;
         var quality = settings?.GraphicsQuality ?? "Medium";
-        var lowQuality = string.Equals(quality, "Low", StringComparison.OrdinalIgnoreCase);
+        var profile = GraphicsQualityProfile.Resolve(quality);
 
-        if (!atmosphereEnabled || lowQuality)
+        if (!atmosphereEnabled || !profile.Atmosphere)
         {
             DisableOptionalEnvironmentEffects(environment);
             return;
@@ -120,8 +120,7 @@ public partial class DaylightRig : Node3D
         environment.AdjustmentContrast = contrast;
         environment.AdjustmentSaturation = saturation;
 
-        var allowGlow = quality is "High" or "Ultra" or "Custom";
-        environment.GlowEnabled = allowGlow;
+        environment.GlowEnabled = profile.Glow;
         environment.GlowBloom = phase switch
         {
             DayPhase.Evening => 0.08f,
@@ -137,14 +136,14 @@ public partial class DaylightRig : Node3D
         environment.FogSunScatter = OriginalCalendarRules.IsSevere(weather) ? 0.08f : 0.18f;
         environment.FogSkyAffect = OriginalCalendarRules.IsSevere(weather) ? 0.86f : 0.68f;
 
-        ApplyForwardPlusEffects(environment, phase, weather, quality, runtime);
+        ApplyForwardPlusEffects(environment, phase, weather, profile, runtime);
     }
 
     private static void ApplyForwardPlusEffects(
         GodotEnvironment environment,
         DayPhase phase,
         Weather weather,
-        string quality,
+        GraphicsQualityProfile profile,
         RuntimeSettingsService? runtime)
     {
         var forwardPlus = runtime?.IsForwardPlus == true;
@@ -158,14 +157,14 @@ public partial class DaylightRig : Node3D
             return;
         }
 
-        var high = quality is "High" or "Ultra" or "Custom";
-        var ultra = quality == "Ultra";
+        var high = profile.Name is "High" or "Ultra";
+        var ultra = profile.Name == "Ultra";
 
-        environment.SsaoEnabled = true;
+        environment.SsaoEnabled = profile.Ssao;
         environment.SsaoRadius = high ? 1.25f : 0.9f;
         environment.SsaoIntensity = high ? 2.1f : 1.6f;
 
-        environment.SsilEnabled = high;
+        environment.SsilEnabled = profile.Ssil;
         environment.SsilRadius = ultra ? 7.0f : 4.5f;
         environment.SsilIntensity = ultra ? 1.15f : 0.8f;
 
@@ -173,12 +172,12 @@ public partial class DaylightRig : Node3D
         var reflectiveSituation = OriginalCalendarRules.IsRain(weather)
             || OriginalCalendarRules.IsSnow(weather)
             || phase == DayPhase.Night;
-        environment.SsrEnabled = high && reflectiveSituation;
-        environment.SsrMaxSteps = ultra ? 96 : 56;
+        environment.SsrEnabled = profile.Ssr && reflectiveSituation;
+        environment.SsrMaxSteps = profile.SsrMaxSteps;
 
         var volumetricSituation = WeatherNeedsFog(weather)
             || phase == DayPhase.Night && weather != Weather.Clear;
-        environment.VolumetricFogEnabled = high && volumetricSituation;
+        environment.VolumetricFogEnabled = profile.VolumetricFog && volumetricSituation;
         environment.VolumetricFogDensity = weather switch
         {
             Weather.Blizzard => 0.030f,
@@ -188,7 +187,7 @@ public partial class DaylightRig : Node3D
             Weather.Drizzle or Weather.Cloudy => 0.006f,
             _ => phase == DayPhase.Night ? 0.0035f : 0.0f
         };
-        environment.VolumetricFogLength = ultra ? 96f : 64f;
+        environment.VolumetricFogLength = profile.VolumetricFogLength;
         environment.VolumetricFogAmbientInject = phase == DayPhase.Night ? 0.45f : 0.25f;
         environment.VolumetricFogAnisotropy = OriginalCalendarRules.IsRain(weather) ? 0.42f : 0.24f;
         environment.VolumetricFogSkyAffect = OriginalCalendarRules.IsSevere(weather) ? 0.92f : 0.70f;
