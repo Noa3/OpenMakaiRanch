@@ -1,0 +1,238 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://src/World/TownWorldController.cs" id="1_controller"]
+[ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
+[ext_resource type="Script" path="res://src/World/WorldCameraRig.cs" id="3_camera"]
+[ext_resource type="Script" path="res://src/World/TownServicePoint.cs" id="4_service"]
+[ext_resource type="Script" path="res://src/World/WorldTravelPortal.cs" id="5_portal"]
+[ext_resource type="Script" path="res://src/World/TownHudController.cs" id="6_hud"]
+[ext_resource type="Script" path="res://src/World/TownPresentationBuilder.cs" id="7_presentation"]
+[ext_resource type="Script" path="res://src/World/SimpleNavigationRegionBuilder.cs" id="8_navigation"]
+[ext_resource type="Script" path="res://src/World/DaylightRig.cs" id="9_daylight"]
+[ext_resource type="Script" path="res://src/Character/PlayerAvatar3D.cs" id="10_avatar"]
+
+[sub_resource type="BoxMesh" id="ground_mesh"]
+size = Vector3(40, 1, 30)
+
+[sub_resource type="BoxShape3D" id="ground_shape"]
+size = Vector3(40, 1, 30)
+
+[sub_resource type="BoxShape3D" id="service_shape"]
+size = Vector3(1.7, 2.0, 1.7)
+
+[node name="TownWorld" type="Node3D"]
+script = ExtResource("1_controller")
+
+[node name="NavigationRegion" type="NavigationRegion3D" parent="."]
+script = ExtResource("8_navigation")
+Size = Vector2(36, 26)
+
+[node name="DaylightRig" type="Node3D" parent="."]
+script = ExtResource("9_daylight")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-45, -35, 0)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("ground_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("ground_shape")
+
+[node name="Presentation" type="Node3D" parent="."]
+script = ExtResource("7_presentation")
+
+[node name="Services" type="Node3D" parent="."]
+
+[node name="GeneralStore" type="Area3D" parent="Services"]
+position = Vector3(-10, 0.7, -7)
+script = ExtResource("4_service")
+ServiceId = "general_store"
+ScreenId = "shop"
+Label = "General Store"
+Description = "Buy and sell supplies, equipment, and consumables."
+
+[node name="Collision" type="CollisionShape3D" parent="Services/GeneralStore"]
+shape = SubResource("service_shape")
+
+[node name="AdventureGuild" type="Area3D" parent="Services"]
+position = Vector3(10, 0.7, -7)
+script = ExtResource("4_service")
+ServiceId = "adventure_guild"
+ScreenId = "adventure"
+Label = "Adventure Guild"
+Description = "Prepare parties, scout areas, hire mercenaries and run missions."
+
+[node name="Collision" type="CollisionShape3D" parent="Services/AdventureGuild"]
+shape = SubResource("service_shape")
+
+[node name="ResearchOffice" type="Area3D" parent="Services"]
+position = Vector3(-12, 0.7, 2)
+script = ExtResource("4_service")
+ServiceId = "research_office"
+ScreenId = "research"
+Label = "Research Office"
+Description = "Unlock new skills and technologies."
+RequiredFacilityId = "workshop"
+
+[node name="Collision" type="CollisionShape3D" parent="Services/ResearchOffice"]
+shape = SubResource("service_shape")
+
+[node name="Tavern" type="Area3D" parent="Services"]
+position = Vector3(12, 0.7, 2)
+script = ExtResource("4_service")
+ServiceId = "tavern"
+ScreenId = "roster"
+Label = "Tavern"
+Description = "Review the roster and recruitment-related options."
+
+[node name="Collision" type="CollisionShape3D" parent="Services/Tavern"]
+shape = SubResource("service_shape")
+
+[node name="Bathhouse" type="Area3D" parent="Services"]
+position = Vector3(-8, 0.7, 7)
+script = ExtResource("4_service")
+ServiceId = "bathhouse"
+ScreenId = "bond"
+Label = "Bathhouse"
+Description = "Open the existing bond and relationship management."
+
+[node name="Collision" type="CollisionShape3D" parent="Services/Bathhouse"]
+shape = SubResource("service_shape")
+
+[node name="TownHall" type="Area3D" parent="Services"]
+position = Vector3(8, 0.7, 7)
+script = ExtResource("4_service")
+ServiceId = "town_hall"
+ScreenId = "milestones"
+Label = "Town Hall"
+Description = "Review milestones, records and long-term ranch progress."
+
+[node name="Collision" type="CollisionShape3D" parent="Services/TownHall"]
+shape = SubResource("service_shape")
+
+[node name="PlanningBoard" type="Area3D" parent="Services"]
+position = Vector3(0, 0.7, -9)
+script = ExtResource("4_service")
+ServiceId = "planning_board"
+ScreenId = "town"
+Label = "Construction & Planning"
+Description = "Open the existing Town Hub and facility planning."
+
+[node name="Collision" type="CollisionShape3D" parent="Services/PlanningBoard"]
+shape = SubResource("service_shape")
+
+[node name="TravelToRanch" type="Area3D" parent="."]
+position = Vector3(0, 0.7, 12)
+script = ExtResource("5_portal")
+DestinationId = "ranch"
+Label = "South Gate"
+Prompt = "Return to Ranch"
+
+[node name="Collision" type="CollisionShape3D" parent="TravelToRanch"]
+shape = SubResource("service_shape")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+position = Vector3(0, 0.8, 10)
+script = ExtResource("2_player")
+MaxWalkSpeed = 5.0
+SprintMultiplier = 1.65
+Acceleration = 40.0
+Gravity = 20.0
+TurnSpeed = 10.0
+HeadHeight = 0.9
+
+[node name="Visual" type="Node3D" parent="Player"]
+position = Vector3(0, -0.8, 0)
+script = ExtResource("10_avatar")
+
+[node name="Collision" type="CollisionShape3D" parent="Player"]
+shape = SubResource("service_shape")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("3_camera")
+Yaw = -1.5708
+Pitch = 0.5236
+Distance = 7.0
+
+[node name="Camera" type="Camera3D" parent="CameraRig"]
+current = true
+fov = 70.0
+
+[node name="TownHud" type="CanvasLayer" parent="."]
+layer = 20
+script = ExtResource("6_hud")
+
+[node name="TopBar" type="ColorRect" parent="TownHud"]
+anchor_right = 1.0
+offset_bottom = 58.0
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 0.88)
+
+[node name="LocationLabel" type="Label" parent="TownHud/TopBar"]
+offset_left = 18.0
+offset_top = 8.0
+offset_right = 540.0
+offset_bottom = 30.0
+text = "Okachi Town"
+
+[node name="EconomyLabel" type="Label" parent="TownHud/TopBar"]
+offset_left = 18.0
+offset_top = 31.0
+offset_right = 540.0
+offset_bottom = 53.0
+text = "500 G"
+
+[node name="ReturnRanchButton" type="Button" parent="TownHud"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -170.0
+offset_top = 14.0
+offset_right = -18.0
+offset_bottom = 46.0
+text = "Return to Ranch"
+tooltip_text = "Travel back to the ranch without an added time or gold cost."
+
+[node name="GuidancePanel" type="ColorRect" parent="TownHud"]
+offset_left = 14.0
+offset_top = 72.0
+offset_right = 470.0
+offset_bottom = 124.0
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 0.72)
+
+[node name="GuidanceLabel" type="Label" parent="TownHud/GuidancePanel"]
+offset_left = 10.0
+offset_top = 7.0
+offset_right = 446.0
+offset_bottom = 44.0
+text = "Explore town services or return to the ranch."
+autowrap_mode = 2
+
+[node name="Prompt" type="Label" parent="TownHud"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -350.0
+offset_top = -68.0
+offset_right = 350.0
+offset_bottom = -34.0
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "Walk up to a town building and press F."
+
+[node name="StatusLabel" type="Label" parent="TownHud"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -38.0
+offset_right = 700.0
+offset_bottom = -12.0
+text = ""
