@@ -40,6 +40,33 @@ public partial class RosterRig : Node3D
         return _targets.TryGetValue(characterId, out target);
     }
 
+    public bool TryFindNearest(Vector3 worldPosition, float maxDistance, out string characterId, out CharacterAvatar3D? avatar, out float distance)
+    {
+        characterId = string.Empty;
+        avatar = null;
+        distance = float.PositiveInfinity;
+
+        foreach (var (id, candidate) in _avatars)
+        {
+            if (!GodotObject.IsInstanceValid(candidate))
+            {
+                continue;
+            }
+
+            var candidateDistance = worldPosition.DistanceTo(candidate.GlobalPosition);
+            if (candidateDistance > maxDistance || candidateDistance >= distance)
+            {
+                continue;
+            }
+
+            characterId = id;
+            avatar = candidate;
+            distance = candidateDistance;
+        }
+
+        return avatar is not null;
+    }
+
     public override void _Process(double delta)
     {
         if (!AnimateTravel || _avatars.Count == 0)
@@ -137,6 +164,17 @@ public partial class RosterRig : Node3D
         var profile = CharacterAvatarFactory.CreateProfile(definition);
         var avatar = CharacterAvatarFactory.BuildAvatar(profile);
         avatar.Name = $"Avatar_{characterId}";
+
+        var nameplate = new Label3D
+        {
+            Name = "Nameplate",
+            Text = definition.DisplayName,
+            Position = new Vector3(0f, 2.05f, 0f),
+            FontSize = 28,
+            OutlineSize = 6
+        };
+        avatar.AddChild(nameplate);
+
         AddChild(avatar);
         return avatar;
     }
