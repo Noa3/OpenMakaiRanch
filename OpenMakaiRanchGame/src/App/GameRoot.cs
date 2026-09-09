@@ -375,6 +375,10 @@ public partial class GameRoot : Node
 
 		State = loaded;
 		EnsureLoadedEligibility();
+		if (State.WorldAreaId is not ("ranch" or "town"))
+		{
+			State.WorldAreaId = "ranch";
+		}
 		State.Settings = SettingsStorage.Load();
 		LastDailyReport = null;
 		LastCombatReport = null;
