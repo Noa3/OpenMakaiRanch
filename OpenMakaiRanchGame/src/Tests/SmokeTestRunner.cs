@@ -1620,6 +1620,23 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "ordinary ranch boot gives input to the 3D world");
             Assert(result, InputMap.HasAction("open_help"), "world boot registers the F1 help action");
 
+            if (controller.Ranch?.Player is not null && controller.Ranch.Roster is not null)
+            {
+                var nearbyAvatar = controller.Ranch.Roster.GetChildren().OfType<CharacterAvatar3D>().FirstOrDefault();
+                if (nearbyAvatar is not null)
+                {
+                    controller.Ranch.Player.GlobalPosition = nearbyAvatar.GlobalPosition + new Vector3(0.45f, 0f, 0f);
+                    Assert(result, controller.Ranch.TryInteractWithNearestWorldTarget(),
+                        "world player can interact with a nearby roster resident");
+                    Assert(result, controller.IsManagementVisible && controller.Shell?.CurrentScreen == "character_detail",
+                        "nearby resident interaction routes into the existing character detail UI");
+                    Assert(result, controller.CloseManagement(),
+                        "character detail opened from the world can return to the 3D ranch");
+                    Assert(result, controller.Ranch.InputGate.WorldInputEnabled,
+                        "resident detail return restores world input");
+                }
+            }
+
             var tutorial = root.GetNodeOrNull<WorldTutorialController>("RanchWorld/WorldHud/TutorialOverlay");
             Assert(result, tutorial is not null, "world tutorial controller binds in composed gameplay");
             if (tutorial is not null)
