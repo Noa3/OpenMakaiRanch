@@ -55,6 +55,18 @@ public partial class WorldTransitionController : Control
         }
     }
 
+    public void CompleteImmediately()
+    {
+        var shouldSignal = _running || Visible;
+        _running = false;
+        Visible = false;
+        SetAlpha(0f);
+        if (shouldSignal)
+        {
+            Completed?.Invoke();
+        }
+    }
+
     public void HideImmediately()
     {
         _running = false;
