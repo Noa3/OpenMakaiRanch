@@ -2870,7 +2870,8 @@ public partial class UiShellController
             new[] {
                 T("prologue.final1", "\"Well, I'm counting on you! There might be more requests once the samples are collected, so please take care.\" — Eugene"),
                 T("prologue.final2", "\"Well then, I'll be off for now〜. Looks like there's something to look forward to, huh?\" — Mano"),
-                T("prologue.final3", "And so, your new life as a rancher — with a side of slave training and milk production — begins in earnest.")
+                T("prologue.final3", "And so, your new life as a rancher — with a side of slave training and milk production — begins in earnest."),
+                T("prologue.arrival", "The next morning, the ranch wakes with you. There is work to assign, supplies to check, and a road into Okachi Town when you are ready.")
             }
         };
 
@@ -2929,7 +2930,7 @@ public partial class UiShellController
         }
         else
         {
-            var begin = PrimaryButton(T("prologue.begin", "Begin Game"));
+            var begin = PrimaryButton(T("prologue.begin", "Enter the Ranch"));
             begin.Pressed += () => { if (FinishPrologueTyping()) return; _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
             actions.AddChild(begin);
         }
