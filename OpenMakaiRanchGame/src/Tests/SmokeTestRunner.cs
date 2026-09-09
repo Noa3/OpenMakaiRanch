@@ -1848,7 +1848,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             Assert(result, travelerNode is not null && beforeTravel.DistanceTo(travelTarget) > rosterRig.ArrivalDistance,
                 "changed assignment creates visible travel instead of teleporting immediately");
             var distanceBeforeStep = travelerNode?.GlobalPosition.DistanceTo(travelTarget) ?? 0f;
-            rosterRig._Process(0.5);
+            rosterRig._PhysicsProcess(0.5);
             var distanceAfterStep = travelerNode?.GlobalPosition.DistanceTo(travelTarget) ?? 0f;
             Assert(result, distanceAfterStep < distanceBeforeStep,
                 "roster stand-in walks toward its assigned logical anchor");
