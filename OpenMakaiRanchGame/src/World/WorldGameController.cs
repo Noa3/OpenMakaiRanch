@@ -1,19 +1,18 @@
 using Godot;
+using OpenMakaiRanch.App;
 using OpenMakaiRanch.Ui;
 
 namespace OpenMakaiRanch.World;
 
 /// <summary>
-/// Composes the playable 3D ranch with the existing management Game.tscn as a full-viewport
-/// overlay. Both views share the same GameRoot; this host owns presentation/input visibility only.
-///
-/// Mandatory full-screen flows (character creation, prologue, victory/title) lock the overlay open.
-/// Leaving such a flow for the ranch automatically reveals the 3D world. During ordinary play the
-/// player may toggle management with the mapped action or the HUD button.
+/// Composes the persistent 3D world areas (ranch + Okachi Town) with the existing management
+/// Game.tscn overlay on one GameRoot. This host owns only area visibility, camera/input ownership,
+/// spatial travel and UI routing; it never duplicates shop, research, adventure or settlement logic.
 /// </summary>
 public partial class WorldGameController : Node
 {
     [Export] public NodePath RanchPath { get; set; } = "RanchWorld";
+    [Export] public NodePath TownPath { get; set; } = "TownWorld";
     [Export] public NodePath ManagementRootPath { get; set; } = "ManagementLayer/ManagementUi";
     [Export] public NodePath UiShellPath { get; set; } = "ManagementLayer/ManagementUi/UiShell";
     [Export] public NodePath ManagementButtonPath { get; set; } = "RanchWorld/WorldHud/ManagementButton";
@@ -21,35 +20,44 @@ public partial class WorldGameController : Node
     [Export] public NodePath ReturnToWorldButtonPath { get; set; } = "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton";
 
     private RanchGreyboxController? _ranch;
+    private TownWorldController? _town;
     private Control? _managementRoot;
     private UiShellController? _shell;
     private Button? _managementButton;
     private Button? _advanceTimeButton;
     private Button? _returnToWorldButton;
     private bool _flowLocksUi;
+    private string _activeAreaId = "ranch";
 
     public bool IsManagementVisible => _managementRoot?.Visible == true;
     public bool FlowLocksUi => _flowLocksUi;
+    public string ActiveAreaId => _activeAreaId;
     public RanchGreyboxController? Ranch => _ranch;
+    public TownWorldController? Town => _town;
     public UiShellController? Shell => _shell;
 
     public override void _Ready()
     {
         _ranch = GetNodeOrNull<RanchGreyboxController>(RanchPath);
+        _town = GetNodeOrNull<TownWorldController>(TownPath);
         _managementRoot = GetNodeOrNull<Control>(ManagementRootPath);
         _shell = GetNodeOrNull<UiShellController>(UiShellPath);
         _managementButton = GetNodeOrNull<Button>(ManagementButtonPath);
         _advanceTimeButton = GetNodeOrNull<Button>(AdvanceTimeButtonPath);
         _returnToWorldButton = GetNodeOrNull<Button>(ReturnToWorldButtonPath);
 
-        if (_ranch is null || _managementRoot is null || _shell is null)
+        if (_ranch is null || _town is null || _managementRoot is null || _shell is null)
         {
-            GD.PushError("WorldGameController could not bind RanchWorld + management UI composition.");
+            GD.PushError("WorldGameController could not bind RanchWorld + TownWorld + management UI composition.");
             return;
         }
 
         _shell.ScreenChanged += OnShellScreenChanged;
         _ranch.CharacterInteractionRequested += OnCharacterInteractionRequested;
+        _ranch.TravelRequested += OnTravelRequested;
+        _town.TravelRequested += OnTravelRequested;
+        _town.ServiceScreenRequested += OnTownServiceRequested;
+
         if (_managementButton is not null)
         {
             _managementButton.Pressed += ToggleManagement;
@@ -64,6 +72,7 @@ public partial class WorldGameController : Node
         }
 
         _flowLocksUi = RequiresFullScreenUi(_shell.CurrentScreen);
+        SetActiveArea("ranch", reposition: false);
         ApplyManagementVisibility(_flowLocksUi);
     }
 
@@ -73,9 +82,17 @@ public partial class WorldGameController : Node
         {
             _shell.ScreenChanged -= OnShellScreenChanged;
         }
+
         if (_ranch is not null && GodotObject.IsInstanceValid(_ranch))
         {
             _ranch.CharacterInteractionRequested -= OnCharacterInteractionRequested;
+            _ranch.TravelRequested -= OnTravelRequested;
+        }
+
+        if (_town is not null && GodotObject.IsInstanceValid(_town))
+        {
+            _town.TravelRequested -= OnTravelRequested;
+            _town.ServiceScreenRequested -= OnTownServiceRequested;
         }
 
         if (_managementButton is not null && GodotObject.IsInstanceValid(_managementButton))
@@ -106,16 +123,11 @@ public partial class WorldGameController : Node
         }
     }
 
-    /// <summary>Open the existing management shell and suspend 3D-world input.</summary>
     public bool OpenManagement()
     {
         return ApplyManagementVisibility(true);
     }
 
-    /// <summary>
-    /// Close management and return control to the 3D world. Mandatory full-screen flows cannot be
-    /// hidden because that would strand character creation/prologue/victory behind the world.
-    /// </summary>
     public bool CloseManagement()
     {
         if (_flowLocksUi)
@@ -131,11 +143,14 @@ public partial class WorldGameController : Node
         if (IsManagementVisible)
         {
             CloseManagement();
+            return;
         }
-        else
+
+        if (_shell is not null)
         {
-            OpenManagement();
+            _shell.ShowScreen(_activeAreaId == "town" ? "town" : "ranch");
         }
+        OpenManagement();
     }
 
     private void CloseManagementFromUi()
@@ -144,10 +159,18 @@ public partial class WorldGameController : Node
     }
 
     /// <summary>
-    /// Advance the same shared clock used by management. Night settlement is guarded by the
-    /// existing night-plan UI; completing a day opens the existing daily report instead of
-    /// inventing a second report surface in the world.
+    /// Travel between world areas without inventing a cost that the shared simulation does not own.
     /// </summary>
+    public bool TravelTo(string destinationId)
+    {
+        if (IsManagementVisible || _flowLocksUi)
+        {
+            return false;
+        }
+
+        return SetActiveArea(destinationId, reposition: true);
+    }
+
     public void AdvanceWorldTime()
     {
         var game = GameRoot.Instance;
@@ -167,7 +190,7 @@ public partial class WorldGameController : Node
         var dayBefore = game.State.Calendar.Day;
         if (!game.AdvanceTime())
         {
-            _ranch?.Hud?.SetStatus("Time could not be advanced.");
+            ActiveStatus("Time could not be advanced.");
             return;
         }
 
@@ -180,7 +203,8 @@ public partial class WorldGameController : Node
         }
 
         _ranch?.RefreshLiveWorld();
-        _ranch?.Hud?.SetStatus($"Advanced to {game.State.Calendar.Phase}.");
+        _town?.Refresh();
+        ActiveStatus($"Advanced to {game.State.Calendar.Phase}.");
     }
 
     public bool OpenManagementScreen(string screenId)
@@ -198,11 +222,31 @@ public partial class WorldGameController : Node
     {
         if (_shell is null || !_shell.ShowCharacterDetailFromWorld(characterId))
         {
-            _ranch?.Hud?.SetStatus("Character details are unavailable.");
+            ActiveStatus("Character details are unavailable.");
             return;
         }
 
         OpenManagement();
+    }
+
+    private void OnTownServiceRequested(string screenId)
+    {
+        if (string.IsNullOrWhiteSpace(screenId) || _shell is null)
+        {
+            _town?.Hud?.SetStatus("This town service is unavailable.");
+            return;
+        }
+
+        _shell.ShowScreen(screenId);
+        OpenManagement();
+    }
+
+    private void OnTravelRequested(string destinationId)
+    {
+        if (!TravelTo(destinationId))
+        {
+            ActiveStatus("Travel is unavailable while another interface owns input.");
+        }
     }
 
     private void OnShellScreenChanged(string screenId)
@@ -216,17 +260,17 @@ public partial class WorldGameController : Node
             return;
         }
 
-        // New game: character creation -> prologue -> ranch. When that mandatory UI flow finishes,
-        // automatically reveal the world instead of making the user close a redundant overlay.
+        // Mandatory new-game flow always begins at the ranch.
         if (wasLocked && screenId == "ranch")
         {
+            SetActiveArea("ranch", reposition: false);
             ApplyManagementVisibility(false);
         }
     }
 
     private bool ApplyManagementVisibility(bool visible)
     {
-        if (_managementRoot is null || _ranch is null)
+        if (_managementRoot is null || _ranch is null || _town is null)
         {
             return false;
         }
@@ -241,19 +285,118 @@ public partial class WorldGameController : Node
         {
             _returnToWorldButton.Visible = visible && !_flowLocksUi;
             _returnToWorldButton.Disabled = _flowLocksUi;
+            _returnToWorldButton.Text = _activeAreaId == "town" ? "Return to Town" : "Return to World";
         }
 
         if (visible)
         {
-            _ranch.EnterManagementUi();
+            ActiveEnterManagement();
         }
         else
         {
-            _ranch.LeaveManagementUi();
+            ActiveLeaveManagement();
             _ranch.RefreshLiveWorld();
+            _town.Refresh();
         }
 
         return true;
+    }
+
+    private bool SetActiveArea(string destinationId, bool reposition)
+    {
+        if (_ranch is null || _town is null)
+        {
+            return false;
+        }
+
+        if (destinationId is not ("ranch" or "town"))
+        {
+            return false;
+        }
+
+        _activeAreaId = destinationId;
+        var ranchActive = destinationId == "ranch";
+
+        _ranch.Visible = ranchActive;
+        _ranch.ProcessMode = ranchActive ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
+        _town.Visible = !ranchActive;
+        _town.ProcessMode = ranchActive ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit;
+
+        if (_ranch.CameraRig?.GetNodeOrNull<Camera3D>("Camera") is { } ranchCamera)
+        {
+            ranchCamera.Current = ranchActive;
+        }
+        if (_town.CameraRig?.GetNodeOrNull<Camera3D>("Camera") is { } townCamera)
+        {
+            townCamera.Current = !ranchActive;
+        }
+
+        // Inactive areas never retain UI ownership.
+        _ranch.InputGate.Reset();
+        _town.InputGate.Reset();
+
+        if (reposition)
+        {
+            if (ranchActive && _ranch.Player is not null)
+            {
+                _ranch.Player.GlobalPosition = new Vector3(0f, 0.8f, 10.5f);
+                _ranch.Hud?.SetStatus("Returned to the ranch.");
+            }
+            else if (!ranchActive && _town.Player is not null)
+            {
+                _town.Player.GlobalPosition = new Vector3(0f, 0.8f, 10.2f);
+                var game = GameRoot.Instance;
+                if (game is not null && !game.HasSeenTutorial("town_arrival"))
+                {
+                    _town.Hud?.SetStatus("Welcome to Okachi Town. Walk to a building and press F; the south gate returns to the ranch.", 6.0);
+                    game.MarkTutorialSeen("town_arrival");
+                }
+                else
+                {
+                    _town.Hud?.SetStatus("Arrived in Okachi Town.");
+                }
+            }
+        }
+
+        _ranch.RefreshLiveWorld();
+        _town.Refresh();
+        return true;
+    }
+
+    private void ActiveEnterManagement()
+    {
+        if (_activeAreaId == "town")
+        {
+            _town?.EnterManagementUi();
+        }
+        else
+        {
+            _ranch?.EnterManagementUi();
+        }
+    }
+
+    private void ActiveLeaveManagement()
+    {
+        if (_activeAreaId == "town")
+        {
+            _town?.LeaveManagementUi();
+        }
+        else
+        {
+            _ranch?.LeaveManagementUi();
+        }
+    }
+
+    private void ActiveStatus(string message)
+    {
+        if (_activeAreaId == "town")
+        {
+            _town?.Hud?.SetStatus(message);
+        }
+        else
+        {
+            _ranch?.Hud?.SetStatus(message);
+        }
     }
 
     private static bool RequiresFullScreenUi(string screenId)
