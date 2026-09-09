@@ -534,7 +534,7 @@ theme_override_font_sizes/font_size = 17
 
 [node name="ControlsLabel" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
 layout_mode = 2
-text = "WASD / Arrows — Move\nShift — Sprint\nHold RMB — Orbit camera\nMouse Wheel — Zoom\nR — Recenter camera\nF — Interact with a nearby station or resident\nTab — Select next worker\nM — Open management\nEsc — Return to world from ordinary management\nF1 — Open/close this help"
+text = "WASD / Arrows — Move\nShift — Sprint\nHold RMB — Orbit camera\nMouse Wheel — Zoom / inspect closely\nV — Toggle first-person\nR — Recenter camera\nF — Interact with a nearby station or resident\nTab — Select next worker\nM — Open management\nEsc — Return to world from ordinary management\nF1 — Open/close this help"
 autowrap_mode = 2
 
 [node name="LoopTitle" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
