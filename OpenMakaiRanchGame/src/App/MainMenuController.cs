@@ -155,7 +155,7 @@ public partial class MainMenuController : Control
 		GetNode<Label>("Root/Center/Panel/Content/TitleLabel").Text = T("mainmenu.title", "Open Makai Ranch");
 		GetNode<Label>("Root/Center/Panel/Content/LangRow/LangLabel").Text = T("mainmenu.language", "Language:");
 
-		var canContinue = game.HasSaveSlot(0) || game.HasSaveSlot(1);
+		var canContinue = game.MostRecentSaveSlot().HasValue;
 		_continueButton.Visible = canContinue;
 		_continueButton.Text = T("mainmenu.continue", "Continue");
 
@@ -194,19 +194,15 @@ public partial class MainMenuController : Control
 
 	private void ContinueFromSlot(GameRoot game)
 	{
-		if (game.LoadSlot(1))
+		var slot = game.MostRecentSaveSlot();
+		if (slot.HasValue && game.LoadSlot(slot.Value))
 		{
+			GameRoot.PendingInitialScreen = null;
 			GoToGameScene();
 			return;
 		}
 
-		if (game.LoadSlot(0))
-		{
-			GoToGameScene();
-			return;
-		}
-
-		GD.PushWarning("Continue requested but no save slots were available.");
+		GD.PushWarning("Continue requested but no usable save slots were available.");
 		RefreshState();
 	}
 
@@ -219,12 +215,15 @@ public partial class MainMenuController : Control
 
 	private void StartNewGamePlusFromMenu(GameRoot game)
 	{
-		if (!game.LoadSlot(1))
+		var slot = game.MostRecentSaveSlot(requireVictory: true);
+		if (!slot.HasValue || !game.LoadSlot(slot.Value))
 		{
-			GD.PushWarning("New Game+ failed: could not load save.");
+			GD.PushWarning("New Game+ failed: could not load a victory save.");
 			return;
 		}
+
 		game.StartNewGamePlus();
+		GameRoot.PendingInitialScreen = null;
 		GoToGameScene();
 	}
 
