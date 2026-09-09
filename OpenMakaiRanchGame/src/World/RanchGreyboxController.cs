@@ -440,8 +440,7 @@ public partial class RanchGreyboxController : Node3D
         _hud.RefreshSimulation(game);
         _hud.SetSelectedCharacter(game, ResolveSelectedCharacterId());
 
-        var travelInRange = _travelPortal is not null
-            && _travelPortalDistance <= InteractionRange
+        var travelIsClosest = _travelPortal is not null
             && (string.IsNullOrWhiteSpace(_nearbyCharacterId) || _travelPortalDistance <= _nearbyCharacterDistance)
             && (_nearbyStation is null || _travelPortalDistance <= _nearbyDistance);
 
@@ -449,7 +448,7 @@ public partial class RanchGreyboxController : Node3D
             && _nearbyCharacterDistance <= InteractionRange
             && (_nearbyStation is null || _nearbyCharacterDistance < _nearbyDistance);
 
-        if (travelInRange)
+        if (travelIsClosest)
         {
             _hud.SetTravelTarget(_travelPortal!, _travelPortalDistance, InteractionRange);
         }
