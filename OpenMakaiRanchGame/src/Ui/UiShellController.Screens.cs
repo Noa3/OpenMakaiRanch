@@ -195,7 +195,9 @@ public partial class UiShellController
         var inner = CardContent();
         summary.AddChild(inner);
         inner.AddChild(SubtitleLabel(T("screen.ranch.command_deck", "Command Deck")));
-        inner.AddChild(AddStyledLine($"{T("label.day", "Day")} {_game.State.Calendar.Day} | {_game.State.Calendar.Season} | {_game.State.Calendar.Phase}"));
+        var calendar = _game.State.Calendar;
+        inner.AddChild(AddStyledLine($"Year {calendar.Year} | {calendar.Season} Day {calendar.DayOfSeason:00} | {calendar.Weekday} | {calendar.Phase}"));
+        inner.AddChild(MutedLabel($"Weather: {calendar.CurrentWeather}  |  Forecast: {calendar.TomorrowWeather}"));
         inner.AddChild(AddStyledLine($"{T("screen.ranch.gold", "Gold")}: {_game.Economy.Gold}  {T("screen.ranch.income", "Last income")}: {_game.State.Economy.LastIncome}  {T("label.net", "Net")}: {_game.State.Economy.LastIncome - _game.State.Economy.LastExpenses}"));
         inner.AddChild(MutedLabel($"{T("screen.ranch.health", "Ranch health")}: {_game.State.Ranch.CattleHealth}%  |  {T("screen.ranch.workload", "Workload")}: {_game.State.Ranch.Workload}%  |  {(_game.State.Ranch.BathtubClean ? T("screen.ranch.bath_clean", "Bath clean") : T("screen.ranch.bath_dirty", "Bath dirty"))}"));
 
