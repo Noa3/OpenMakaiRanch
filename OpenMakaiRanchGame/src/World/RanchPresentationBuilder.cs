@@ -132,8 +132,7 @@ public partial class RanchPresentationBuilder : Node3D
             Text = "OKACHI RANCH",
             Position = new Vector3(0f, 2.35f, 12.0f),
             FontSize = 34,
-            OutlineSize = 6,
-            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled
+            OutlineSize = 6
         };
         _generated!.AddChild(sign);
     }
@@ -245,8 +244,7 @@ public partial class RanchPresentationBuilder : Node3D
             Position = position,
             Rotation = new Vector3(0f, yaw, 0f),
             Mesh = new BoxMesh { Size = size },
-            MaterialOverride = CreateMaterial(color),
-            CastShadow = GeometryInstance3D.ShadowCastingSetting.On
+            MaterialOverride = CreateMaterial(color)
         };
         _generated!.AddChild(node);
         return node;
