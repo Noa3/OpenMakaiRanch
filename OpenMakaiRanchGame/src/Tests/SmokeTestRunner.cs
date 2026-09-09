@@ -70,6 +70,7 @@ public static class SmokeTestRunner
             TestCombatWorldTimeLock(result);
             TestPlayerStaminaAndRecovery(result);
             TestPlayerManaAndCombatResources(result);
+            TestInteractiveCombatSession(result);
             TestCameraInspectionAndBoundaryMath(result);
             TestCharacterAvatar(result);
             TestEventDialogueStaging(result);
@@ -1357,6 +1358,30 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, WorldShelterVolume.ContainsOffset(new Vector3(0.5f, 1f, -0.5f), new Vector3(2f, 2f, 2f))
             && !WorldShelterVolume.ContainsOffset(new Vector3(2.5f, 0f, 0f), new Vector3(2f, 2f, 2f)),
             "surface weather: shelter containment is deterministic without physics queries");
+
+        var lowProfile = GraphicsQualityProfile.Resolve("Low");
+        var mediumProfile = GraphicsQualityProfile.Resolve("Medium");
+        var highProfile = GraphicsQualityProfile.Resolve("High");
+        var ultraProfile = GraphicsQualityProfile.Resolve("Ultra");
+        Assert(result, !lowProfile.Shadows && !lowProfile.AdvancedLighting && !lowProfile.Ssao
+            && lowProfile.SurfaceMarkBudget < mediumProfile.SurfaceMarkBudget,
+            "graphics quality: Low removes expensive Forward+ features and reduces reactive-world budget");
+        Assert(result, mediumProfile.Ssao && !mediumProfile.Ssil && !mediumProfile.Ssr && !mediumProfile.VolumetricFog,
+            "graphics quality: Medium keeps affordable SSAO but defers heavier Forward+ effects");
+        Assert(result, highProfile.Ssao && highProfile.Ssil && highProfile.Ssr && highProfile.VolumetricFog,
+            "graphics quality: High enables the complete situation-aware Forward+ feature set");
+        Assert(result, ultraProfile.SsrMaxSteps > highProfile.SsrMaxSteps
+            && ultraProfile.VolumetricFogLength > highProfile.VolumetricFogLength
+            && ultraProfile.SurfaceMarkBudget > highProfile.SurfaceMarkBudget,
+            "graphics quality: Ultra increases expensive effect quality and bounded world-reaction budgets");
+
+        var presetState = new SettingsState();
+        RuntimeSettingsService.ApplyQualityPreset(presetState, "High");
+        Assert(result, presetState.GraphicsQuality == highProfile.Name
+            && Math.Abs(presetState.RenderScale - highProfile.RenderScale) < 0.001f
+            && presetState.AdvancedLightingEnabled == highProfile.AdvancedLighting
+            && presetState.FrameRateLimit == highProfile.DefaultFrameRateLimit,
+            "graphics quality: preset application derives from the central profile instead of duplicate switches");
     }
 
     private static void TestPlayerStaminaAndRecovery(SmokeTestResult result)
@@ -1529,6 +1554,90 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "combat: support skills heal without friendly-fire damage and consume finite SP");
         Assert(result, skillReport.PartyState.Any(member => member.CurrentSp < member.MaxSp),
             "combat: spent skill SP remains visible in the final combat snapshot");
+    }
+
+    private static void TestInteractiveCombatSession(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data, new Random(2510)).CreateNewGame();
+        state.Adventure.SelectedPartyIds.Clear();
+        state.Adventure.SelectedPartyIds.Add("anon");
+        var playerCharacter = state.Roster.Characters.First(character => character.Id == "anon");
+        playerCharacter.MaxHpOverride = 2400;
+        playerCharacter.Hp = 2400;
+        playerCharacter.Energy = 400;
+        playerCharacter.CombatSkill = Math.Max(playerCharacter.CombatSkill, 25);
+        state.Player.Mana = 100;
+        state.Player.MaxMana = 100;
+
+        var equipment = new EquipmentService(state, data);
+        var talents = new TalentService(state, data);
+        var magic = new MagicService(state, data);
+        var combat = new CombatService(state, data, equipment, talents, magic);
+        var session = combat.StartInteractiveMission("tutorial_ranch_intruder");
+
+        Assert(result, !session.IsFinished && session.AwaitingPlayerInput && session.PlayerState?.Id == "anon",
+            "combat interactive: tactical session pauses only on the original player combatant");
+        Assert(result, session.RoundNumber == 1 && session.EnemyState.Any(enemy => enemy.IsAlive),
+            "combat interactive: first player turn exposes live round and enemy snapshots");
+
+        var enemyId = session.EnemyState.First(enemy => enemy.IsAlive).Id;
+        var actionsBefore = session.Report.Rounds.Sum(round => round.Actions.Count);
+        Assert(result, session.SubmitPlayerCommand(CombatPlayerCommand.Attack, enemyId),
+            "combat interactive: explicit player Attack command is accepted");
+        Assert(result, session.Report.Rounds.Sum(round => round.Actions.Count) > actionsBefore
+            && session.Report.Rounds.SelectMany(round => round.Actions)
+                .Any(action => action.ActorName == session.PartyState.First(member => member.Id == "anon").DisplayName
+                    && action.ActionType == "Attack"),
+            "combat interactive: player command resolves into the shared battle log instead of an AI placeholder");
+
+        if (!session.IsFinished)
+            session.AutoFinish();
+
+        Assert(result, session.IsFinished && session.Report.Outcome != MissionOutcome.None,
+            "combat interactive: Auto Finish completes the same tactical session and produces a normal outcome");
+        Assert(result, session.Report.PartyState.Count > 0 && session.Report.EnemyState.Count > 0,
+            "combat interactive: final tactical report exposes both sides for results UI");
+
+        var game = GameRoot.Instance;
+        game.NewGame();
+        game.State.Adventure.SelectedPartyIds.Clear();
+        game.State.Adventure.SelectedPartyIds.Add("anon");
+        var gamePlayer = game.Roster.Find("anon")!;
+        gamePlayer.MaxHpOverride = 4000;
+        gamePlayer.Hp = 4000;
+        gamePlayer.Energy = 500;
+        gamePlayer.CombatSkill = Math.Max(gamePlayer.CombatSkill, 30);
+        game.State.Player.Stamina = game.State.Player.MaxStamina;
+        var staminaBefore = game.State.Player.Stamina;
+        var expectedCost = game.AdventureStaminaCost("road_patrol");
+
+        Assert(result, game.BeginInteractiveCombat("road_patrol"),
+            "combat interactive: GameRoot can start a tactical mission through the shared combat lifecycle");
+        Assert(result, game.CombatWorldTimeLocked,
+            "combat interactive: tactical battle keeps world time locked");
+        Assert(result, game.State.Player.Stamina == staminaBefore - expectedCost,
+            "combat interactive: entering a real tactical battle commits daily stamina exactly once");
+
+        if (game.ActiveCombatSession is { IsFinished: false })
+            game.AutoFinishInteractiveCombat();
+
+        Assert(result, game.State.Player.Stamina == staminaBefore - expectedCost,
+            "combat interactive: resolving remaining turns does not charge daily stamina again");
+        Assert(result, game.CurrentCombatPhase == CombatPhase.BattleResults,
+            "combat interactive: completed tactical session transitions into the existing results phase");
+
+        game.EndCombatSession();
+        Assert(result, !game.CombatWorldTimeLocked && game.ActiveCombatSession is null
+            && game.CurrentCombatPhase == CombatPhase.PreBattle,
+            "combat interactive: leaving results releases world-time ownership and transient session state");
+
+        game.NewGame();
+        game.State.Adventure.SelectedPartyIds.Clear();
+        game.State.Adventure.SelectedPartyIds.Add("rancher");
+        Assert(result, !game.CanStartInteractiveCombat("road_patrol"),
+            "combat interactive: companion-only parties cannot impersonate the player tactical turn");
+        game.NewGame();
     }
 
     private static void TestCombatWorldTimeLock(SmokeTestResult result)
