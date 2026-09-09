@@ -113,14 +113,21 @@ public partial class GameRoot : Node
 		GetTree().Quit(result.Passed ? 0 : 1);
 	}
 
+	private void ResetTransientRuntimeState()
+	{
+		LastDailyReport = null;
+		LastCombatReport = null;
+		CurrentCombatPhase = CombatPhase.PreBattle;
+		CurrentCombatRound = 0;
+		_combatWorldTimeLocked = false;
+		PendingInitialScreen = null;
+	}
 	public void NewGame()
 	{
 		var persistedSettings = State.Settings.Clone();
 		State = new SaveStateFactory(Data).CreateNewGame();
 		State.Settings = persistedSettings;
-		LastDailyReport = null;
-		LastCombatReport = null;
-		_combatWorldTimeLocked = false;
+		ResetTransientRuntimeState();
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -203,8 +210,7 @@ public partial class GameRoot : Node
 		// Carry over player customization
 		State.Player = oldState.Player;
 
-		LastDailyReport = null;
-		LastCombatReport = null;
+		ResetTransientRuntimeState();
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -395,9 +401,7 @@ public partial class GameRoot : Node
 			State.WorldAreaId = "ranch";
 		}
 		State.Settings = SettingsStorage.Load();
-		LastDailyReport = null;
-		LastCombatReport = null;
-		_combatWorldTimeLocked = false;
+		ResetTransientRuntimeState();
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
