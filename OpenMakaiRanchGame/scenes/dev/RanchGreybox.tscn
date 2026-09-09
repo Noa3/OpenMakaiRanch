@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=26 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://src/World/WorldTutorialController.cs" id="10_tutorial"]
 [ext_resource type="Script" path="res://src/World/RanchPresentationBuilder.cs" id="11_presentation"]
 [ext_resource type="Script" path="res://src/World/SimpleNavigationRegionBuilder.cs" id="12_navigation"]
+[ext_resource type="Script" path="res://src/World/WorldTravelPortal.cs" id="13_travel"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -224,6 +225,20 @@ shape = SubResource("station_shape")
 [node name="Label" type="Label3D" parent="Stations/OfficeStation"]
 position = Vector3(0, 1.4, 0)
 text = "Office"
+
+[node name="TravelToTown" type="Area3D" parent="."]
+position = Vector3(0, 0.7, 13)
+script = ExtResource("13_travel")
+DestinationId = "town"
+Label = "Road to Okachi Town"
+Prompt = "Travel to Okachi Town"
+
+[node name="Collision" type="CollisionShape3D" parent="TravelToTown"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="TravelToTown"]
+position = Vector3(0, 1.6, 0)
+text = "Okachi Town →"
 
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
