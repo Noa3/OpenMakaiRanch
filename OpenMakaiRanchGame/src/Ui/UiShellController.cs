@@ -250,6 +250,16 @@ public partial class UiShellController : Control
 
 	public void ShowScreen(string screenId)
 	{
+		var previousScreen = _currentScreen;
+		if (screenId == "combat" && previousScreen != "combat" && !_game.CombatWorldTimeLocked)
+		{
+			_game.BeginCombatSession();
+		}
+		else if (previousScreen == "combat" && screenId != "combat" && _game.CombatWorldTimeLocked)
+		{
+			_game.EndCombatSession();
+		}
+
 		if (!CanEnterScreen(screenId, out var blockedReason))
 		{
 			_game.Feedback.PlayError();
