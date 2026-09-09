@@ -11,19 +11,38 @@ namespace OpenMakaiRanch.World;
 /// </summary>
 public partial class WorldGameController
 {
+    private bool _combatScreenLockGuardBound;
+
     public override void _EnterTree()
     {
         CallDeferred(nameof(BindCombatScreenLockGuard));
+        TreeExiting += UnbindCombatScreenLockGuard;
     }
 
     private void BindCombatScreenLockGuard()
     {
-        if (_shell is null || !GodotObject.IsInstanceValid(_shell))
+        if (_combatScreenLockGuardBound || _shell is null || !GodotObject.IsInstanceValid(_shell))
         {
             return;
         }
 
         _shell.ScreenChanged += OnCombatScreenChangedForTimeLock;
+        _combatScreenLockGuardBound = true;
+    }
+
+    private void UnbindCombatScreenLockGuard()
+    {
+        if (!_combatScreenLockGuardBound)
+        {
+            return;
+        }
+
+        if (_shell is not null && GodotObject.IsInstanceValid(_shell))
+        {
+            _shell.ScreenChanged -= OnCombatScreenChangedForTimeLock;
+        }
+
+        _combatScreenLockGuardBound = false;
     }
 
     private void OnCombatScreenChangedForTimeLock(string screenId)
