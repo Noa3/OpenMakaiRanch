@@ -150,6 +150,13 @@ public partial class TownPresentationBuilder : Node3D
         var roofProxy = AddBox($"Roof_{service.ServiceId}", center + new Vector3(0,1.55f,0), new Vector3(4.6f,0.55f,3.8f), roof);
         roofProxy.Visible = !externalLoaded;
 
+        _generated!.AddChild(new WorldShelterVolume
+        {
+            Name = $"Shelter_{service.ServiceId}",
+            Position = center + new Vector3(0f, 0.65f, 0f),
+            HalfExtents = new Vector3(2.25f, 1.75f, 1.95f)
+        });
+
         var towardPlaza = -radial;
         var door = center + towardPlaza * 1.78f + new Vector3(0,-0.35f,0);
         AddBox($"Door_{service.ServiceId}", door, new Vector3(1.0f,1.65f,0.18f), Wood, Mathf.Atan2(towardPlaza.X,towardPlaza.Z));
