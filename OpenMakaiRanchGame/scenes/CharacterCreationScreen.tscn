@@ -1,327 +1,416 @@
-[gd_scene format=3]
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/Ui/CharacterCreationPreviewController.cs" id="1_preview"]
+[ext_resource type="Script" path="res://src/Character/PlayerAvatar3D.cs" id="2_avatar"]
 
 [node name="CharacterCreationContent" type="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_constants/separation = 14
+script = ExtResource("1_preview")
 
-[node name="BasicCard" type="PanelContainer" parent="."]
+[node name="CreationBody" type="HFlowContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
+
+[node name="PreviewCard" type="PanelContainer" parent="CreationBody"]
+custom_minimum_size = Vector2(340, 540)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="PreviewInner" type="VBoxContainer" parent="CreationBody/PreviewCard"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="PreviewTitle" type="Label" parent="CreationBody/PreviewCard/PreviewInner"]
+layout_mode = 2
+text = "3D Character Preview"
+horizontal_alignment = 1
+
+[node name="PreviewFrame" type="SubViewportContainer" parent="CreationBody/PreviewCard/PreviewInner"]
+custom_minimum_size = Vector2(320, 410)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+mouse_filter = 2
+
+[node name="PreviewViewport" type="SubViewport" parent="CreationBody/PreviewCard/PreviewInner/PreviewFrame"]
+size = Vector2i(400, 500)
+transparent_bg = true
+own_world_3d = true
+
+[node name="PreviewWorld" type="Node3D" parent="CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport"]
+
+[node name="Avatar" type="Node3D" parent="CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport/PreviewWorld"]
+script = ExtResource("2_avatar")
+AnimateMovement = false
+
+[node name="KeyLight" type="DirectionalLight3D" parent="CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport/PreviewWorld"]
+rotation_degrees = Vector3(-35, -30, 0)
+light_energy = 1.35
+shadow_enabled = true
+
+[node name="FillLight" type="OmniLight3D" parent="CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport/PreviewWorld"]
+position = Vector3(1.8, 1.8, 2.6)
+light_energy = 0.65
+omni_range = 7.0
+
+[node name="Camera" type="Camera3D" parent="CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport/PreviewWorld"]
+position = Vector3(0, 1.15, 4.3)
+current = true
+fov = 38.0
+
+[node name="PreviewSummary" type="Label" parent="CreationBody/PreviewCard/PreviewInner"]
+layout_mode = 2
+autowrap_mode = 2
+horizontal_alignment = 1
+text = "3D preview"
+
+[node name="PreviewActions" type="HBoxContainer" parent="CreationBody/PreviewCard/PreviewInner"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="RotateLeftButton" type="Button" parent="CreationBody/PreviewCard/PreviewInner/PreviewActions"]
+layout_mode = 2
+text = "Rotate Left"
+
+[node name="ResetButton" type="Button" parent="CreationBody/PreviewCard/PreviewInner/PreviewActions"]
+layout_mode = 2
+text = "Reset"
+
+[node name="RotateRightButton" type="Button" parent="CreationBody/PreviewCard/PreviewInner/PreviewActions"]
+layout_mode = 2
+text = "Rotate Right"
+
+[node name="SettingsColumn" type="VBoxContainer" parent="CreationBody"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="BasicCard" type="PanelContainer" parent="CreationBody/SettingsColumn"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BasicInner" type="VBoxContainer" parent="BasicCard"]
+[node name="BasicInner" type="VBoxContainer" parent="CreationBody/SettingsColumn/BasicCard"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BasicTitle" type="Label" parent="BasicCard/BasicInner"]
+[node name="BasicTitle" type="Label" parent="CreationBody/SettingsColumn/BasicCard/BasicInner"]
 layout_mode = 2
 
-[node name="BasicGrid" type="GridContainer" parent="BasicCard/BasicInner"]
+[node name="BasicGrid" type="GridContainer" parent="CreationBody/SettingsColumn/BasicCard/BasicInner"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 14
 theme_override_constants/v_separation = 10
 columns = 2
 
-[node name="NameLabel" type="Label" parent="BasicCard/BasicInner/BasicGrid"]
+[node name="NameLabel" type="Label" parent="CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid"]
 layout_mode = 2
 text = "Character Name:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="NameInput" type="LineEdit" parent="BasicCard/BasicInner/BasicGrid"]
+[node name="NameInput" type="LineEdit" parent="CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid"]
 custom_minimum_size = Vector2(260, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Enter your name"
 
-[node name="SpeciesLabel" type="Label" parent="BasicCard/BasicInner/BasicGrid"]
+[node name="SpeciesLabel" type="Label" parent="CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid"]
 layout_mode = 2
 text = "Species:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="SpeciesPicker" type="OptionButton" parent="BasicCard/BasicInner/BasicGrid"]
+[node name="SpeciesPicker" type="OptionButton" parent="CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="GenderLabel" type="Label" parent="BasicCard/BasicInner/BasicGrid"]
+[node name="GenderLabel" type="Label" parent="CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid"]
 layout_mode = 2
 text = "Gender:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="GenderPicker" type="OptionButton" parent="BasicCard/BasicInner/BasicGrid"]
+[node name="GenderPicker" type="OptionButton" parent="CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="RanchLabel" type="Label" parent="BasicCard/BasicInner/BasicGrid"]
+[node name="RanchLabel" type="Label" parent="CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid"]
 layout_mode = 2
 text = "Ranch Name:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="RanchInput" type="LineEdit" parent="BasicCard/BasicInner/BasicGrid"]
+[node name="RanchInput" type="LineEdit" parent="CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid"]
 custom_minimum_size = Vector2(260, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Enter your ranch name"
 
-[node name="BodyCard" type="PanelContainer" parent="."]
+[node name="BodyCard" type="PanelContainer" parent="CreationBody/SettingsColumn"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BodyInner" type="VBoxContainer" parent="BodyCard"]
+[node name="BodyInner" type="VBoxContainer" parent="CreationBody/SettingsColumn/BodyCard"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BodyTitle" type="Label" parent="BodyCard/BodyInner"]
+[node name="BodyTitle" type="Label" parent="CreationBody/SettingsColumn/BodyCard/BodyInner"]
 layout_mode = 2
 
-[node name="BodyGrid" type="GridContainer" parent="BodyCard/BodyInner"]
+[node name="BodyGrid" type="GridContainer" parent="CreationBody/SettingsColumn/BodyCard/BodyInner"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 14
 theme_override_constants/v_separation = 10
 columns = 2
 
-[node name="HeightLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="HeightLabel" type="Label" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 layout_mode = 2
 text = "Height:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="HeightPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="HeightPicker" type="OptionButton" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="AgeLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="AgeLabel" type="Label" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 layout_mode = 2
 text = "Age:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="AgePicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="AgePicker" type="OptionButton" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="BuildLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="BuildLabel" type="Label" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 layout_mode = 2
 text = "Body Build:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="BuildPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="BuildPicker" type="OptionButton" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="ChestLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="ChestLabel" type="Label" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 layout_mode = 2
 text = "Chest Size:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="ChestPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="ChestPicker" type="OptionButton" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="SkinLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="SkinLabel" type="Label" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 layout_mode = 2
 text = "Skin Tone:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="SkinRow" type="HBoxContainer" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="SkinRow" type="HBoxContainer" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="SkinPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid/SkinRow"]
+[node name="SkinPicker" type="OptionButton" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/SkinRow"]
 custom_minimum_size = Vector2(200, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="TailLabel" type="Label" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="TailLabel" type="Label" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 layout_mode = 2
 text = "Tail:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="TailPicker" type="OptionButton" parent="BodyCard/BodyInner/BodyGrid"]
+[node name="TailPicker" type="OptionButton" parent="CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="AppearanceCard" type="PanelContainer" parent="."]
+[node name="AppearanceCard" type="PanelContainer" parent="CreationBody/SettingsColumn"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AppearanceInner" type="VBoxContainer" parent="AppearanceCard"]
+[node name="AppearanceInner" type="VBoxContainer" parent="CreationBody/SettingsColumn/AppearanceCard"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AppearanceTitle" type="Label" parent="AppearanceCard/AppearanceInner"]
+[node name="AppearanceTitle" type="Label" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner"]
 layout_mode = 2
 
-[node name="AppearanceGrid" type="GridContainer" parent="AppearanceCard/AppearanceInner"]
+[node name="AppearanceGrid" type="GridContainer" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 14
 theme_override_constants/v_separation = 10
 columns = 2
 
-[node name="HairColorLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="HairColorLabel" type="Label" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 layout_mode = 2
 text = "Hair Color:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="HairColorRow" type="HBoxContainer" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="HairColorRow" type="HBoxContainer" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="HairColorPicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid/HairColorRow"]
+[node name="HairColorPicker" type="OptionButton" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/HairColorRow"]
 custom_minimum_size = Vector2(200, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="HairLengthLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="HairLengthLabel" type="Label" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 layout_mode = 2
 text = "Hair Length:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="HairLengthPicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="HairLengthPicker" type="OptionButton" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="HairstyleLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="HairstyleLabel" type="Label" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 layout_mode = 2
 text = "Hairstyle:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="HairstylePicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="HairstylePicker" type="OptionButton" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="EyeColorLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="EyeColorLabel" type="Label" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 layout_mode = 2
 text = "Eye Color:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="EyeColorRow" type="HBoxContainer" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="EyeColorRow" type="HBoxContainer" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="EyeColorPicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid/EyeColorRow"]
+[node name="EyeColorPicker" type="OptionButton" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/EyeColorRow"]
 custom_minimum_size = Vector2(200, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="EyeStyleLabel" type="Label" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="EyeStyleLabel" type="Label" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 layout_mode = 2
 text = "Eye Style:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="EyeStylePicker" type="OptionButton" parent="AppearanceCard/AppearanceInner/AppearanceGrid"]
+[node name="EyeStylePicker" type="OptionButton" parent="CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="AccessoriesCard" type="PanelContainer" parent="."]
+[node name="AccessoriesCard" type="PanelContainer" parent="CreationBody/SettingsColumn"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AccessoriesInner" type="VBoxContainer" parent="AccessoriesCard"]
+[node name="AccessoriesInner" type="VBoxContainer" parent="CreationBody/SettingsColumn/AccessoriesCard"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AccessoriesTitle" type="Label" parent="AccessoriesCard/AccessoriesInner"]
+[node name="AccessoriesTitle" type="Label" parent="CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner"]
 layout_mode = 2
 
-[node name="AccessoriesGrid" type="GridContainer" parent="AccessoriesCard/AccessoriesInner"]
+[node name="AccessoriesGrid" type="GridContainer" parent="CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 14
 theme_override_constants/v_separation = 10
 columns = 2
 
-[node name="AccessoriesLabel" type="Label" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
+[node name="AccessoriesLabel" type="Label" parent="CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
 layout_mode = 2
 text = "Accessories:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="AccessoriesRow" type="HBoxContainer" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
+[node name="AccessoriesRow" type="HBoxContainer" parent="CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 14
 
-[node name="HornsCheck" type="CheckBox" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow"]
+[node name="HornsCheck" type="CheckBox" parent="CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow"]
 layout_mode = 2
 text = "Horns"
 
-[node name="GlassesCheck" type="CheckBox" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow"]
+[node name="GlassesCheck" type="CheckBox" parent="CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow"]
 layout_mode = 2
 text = "Glasses"
 
-[node name="BodyFurLabel" type="Label" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
+[node name="BodyFurLabel" type="Label" parent="CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
 layout_mode = 2
 text = "Body Fur:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="BodyFurPicker" type="OptionButton" parent="AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
+[node name="BodyFurPicker" type="OptionButton" parent="CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="PetMountCard" type="PanelContainer" parent="."]
+[node name="PetMountCard" type="PanelContainer" parent="CreationBody/SettingsColumn"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PetMountInner" type="VBoxContainer" parent="PetMountCard"]
+[node name="PetMountInner" type="VBoxContainer" parent="CreationBody/SettingsColumn/PetMountCard"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PetMountTitle" type="Label" parent="PetMountCard/PetMountInner"]
+[node name="PetMountTitle" type="Label" parent="CreationBody/SettingsColumn/PetMountCard/PetMountInner"]
 layout_mode = 2
 
-[node name="PetMountGrid" type="GridContainer" parent="PetMountCard/PetMountInner"]
+[node name="PetMountGrid" type="GridContainer" parent="CreationBody/SettingsColumn/PetMountCard/PetMountInner"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 14
 theme_override_constants/v_separation = 10
 columns = 2
 
-[node name="PetLabel" type="Label" parent="PetMountCard/PetMountInner/PetMountGrid"]
+[node name="PetLabel" type="Label" parent="CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid"]
 layout_mode = 2
 text = "Starting Pet:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="PetPicker" type="OptionButton" parent="PetMountCard/PetMountInner/PetMountGrid"]
+[node name="PetPicker" type="OptionButton" parent="CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3
 fit_to_longest_item = false
 
-[node name="MountLabel" type="Label" parent="PetMountCard/PetMountInner/PetMountGrid"]
+[node name="MountLabel" type="Label" parent="CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid"]
 layout_mode = 2
 text = "Starting Mount:"
 custom_minimum_size = Vector2(140, 0)
 
-[node name="MountPicker" type="OptionButton" parent="PetMountCard/PetMountInner/PetMountGrid"]
+[node name="MountPicker" type="OptionButton" parent="CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid"]
 custom_minimum_size = Vector2(220, 34)
 layout_mode = 2
 size_flags_horizontal = 3

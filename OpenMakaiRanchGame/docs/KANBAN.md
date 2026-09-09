@@ -21,12 +21,15 @@ Updated 2026-09-05. Status is evidence-based; DONE applies only to the named sco
 - **WORLD-003b (greybox = live view of the shared simulation)** `RanchGreyboxController.WireLiveWorld`/`RefreshLiveWorld`: on entering the tree the greybox binds its daylight + roster rigs to the shared `GameRoot` (lighting reflects the current phase, CHAR-001 stand-ins placed for the live roster — no manual wiring). Scene carries `DaylightRig` + `RosterRig`. `TestGreyboxSceneIsLive` proves the composition: scene instantiates into a live view (lighting == shared phase, one avatar per character, in-bounds, player/station intact, re-derives after a phase change). 14 dedicated smoke assertions. Full isolated smoke **1153 assertions PASS** on Godot 4.7.2 mono.
 - **DATA-003 (abgesagt)** No original-CSV import: the game is 100% self-contained — runtime reads only `res://data/*.json` + seed fallback; every CSV hit in `src/` is a comment, not a read. The curated `data/characters.json` (10 chars) + seed is the sole source. `Tools/EraDataImporter` stays `.csproj`-only.
 
+- **WORLD-003c (implemented on PR #2; validation pending)** 2D MainMenu -> mixed 2D/3D Character Creation -> persistent Ranch + Okachi Town 3D areas + existing Game.tscn management overlay on one GameRoot. Shared player stand-in, HUD, movement/sprint/camera, facility-aware stations, contextual tutorials/F1 Help, Next-Step guidance, resident interaction, spatial Ranch↔Town travel, saved world location and service routing are implemented. Static 8-scene resource/parent audit is clean; runtime Godot/.NET validation is still required.
+- **TOWN-001 (implemented on PR #2; validation pending)** Playable Okachi Town greybox: persistent second world area, south-gate travel, General Store/Guild/Research/Tavern/Bathhouse/Town Hall/Planning service points, Town HUD/help/tutorial, shared DaylightRig, saved `WorldAreaId`, service progression locks and stylized placeholder town. No duplicate shop/research/adventure/economy authority.
+
 ## Next — priority order
 
 Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe`. `launch.py` auto-discovers it (rejects the 198 KB `*_console.exe` stub by size, prefers the highest 4.7.x). No `GODOT_BIN` needed.
 
-1. **WORLD-003c (boot-world composition)** The greybox becomes the actual boot world: a composed scene = 3D world (player, camera, station, daylight, roster) **with the existing management UI as a full-viewport overlay** on a CanvasLayer, both on the same `GameRoot` — opening/closing panels resumes world input safely (WORLD-003b already proves the greybox is a live view; this composes it into the boot path without breaking the working 2D game).
-2. **WORLD-003d (first complete playable day, end-to-end)** Full session from the boot world: management UI → assign jobs → NPC work/social/event in the 3D view → lighting across the day → settlement → report → save/load, all on one `GameRoot`, verified by an isolated full-day smoke.
+1. **WORLD-003c/003d + TOWN-001 validation** Build/run PR #2 with Godot 4.7.x mono. Verify MainMenu -> mixed creation -> prologue -> Ranch; Ranch movement/worker assignment/residents/day loop; Ranch gate -> Town; Town service entry/return; Town Hub physical return; Research lock; F1 Help; save/load while in Town; NavigationAgent3D pathfollowing. Fix regressions before merge.
+2. **TOWN-002 / WORLD environment production** Admit exact CC0 Ranch/Town/nature packages with package/hash/license records, replace procedural landmarks one service/facility at a time, author real collision, then replace the simple open navigation region with editor-baked NavigationMesh geometry. Preserve service/facility IDs and the single shared simulation.
 3. **CHAR-002 / ART-002 (gate-blocked)** One real character (candidate: Noir) — master source/context review, non-explicit identity references, .blend/GLB + material/rig/export validation, shared Godot toon prototype. Gate-safe: only `ConfirmedAdult` after **independent design review**; no age renumbering. Blocked: `data/characters.json` has no `AdultEligibility` field, no ConfirmedAdult character, no design review yet. Needs CHAR-001 (done) + ComfyUI asset generation + design clearance.
 
 ## Ready after prerequisites
@@ -35,8 +38,9 @@ Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_w
 - **ART-002** Master character .blend, GLB, material/rig/export validation; shared Godot toon prototype. Needs selected references; no mass conversion.
 - **MORPH-001** Gameplay-to-visual curves, matching body/clothing shapes, extreme-combination lab. No mesh internals in saves.
 - **ANIM-001** Shared rig and idle/walk/run/work/talk animation validation at gameplay camera.
-- **AI-001** Derive logical NPC locations from existing assignments/phases; nearby navigation, distant logical simulation, bounded stuck recovery. No second work economy. (WORLD-003a already ships `RosterPlacementMath` + `RosterRig` as the placement core.)
-- **WORLD-003c/003d** Boot-world composition + first complete playable day (tracked in "Next"; 003a/003b done).
+- **AI-001** Logical NPC locations derive from shared assignments/phases; stand-ins now carry NavigationAgent3D and path-follow in `_PhysicsProcess()` on the current simple NavigationRegion3D, plus nearby resident inspection. Next: editor-baked obstacle-aware navmesh from final collision, optional dynamic avoidance where justified, and bounded stuck recovery. No second work economy.
+- **WORLD-003c/003d** Boot-world composition + first complete playable day + Ranch/Town composition (tracked in "Next"; 003a/003b done).
+- **TOWN-002** Replace Town procedural service buildings with admitted CC0/custom assets, collision + baked navigation, then add bounded ambient-life pass.
 
 ## Backlog / isolated follow-ups
 

@@ -28,6 +28,7 @@ public partial class WorldInputBootstrap : Node
         EnsureAction("move_backward");
         EnsureAction("move_left");
         EnsureAction("move_right");
+        EnsureAction("move_sprint");
         EnsureAction("interact");
         EnsureAction("camera_look_up");
         EnsureAction("camera_look_down");
@@ -36,6 +37,10 @@ public partial class WorldInputBootstrap : Node
         EnsureAction("camera_zoom_in");
         EnsureAction("camera_zoom_out");
         EnsureAction("camera_recenter");
+        EnsureAction("camera_first_person");
+        EnsureAction("cycle_character");
+        EnsureAction("toggle_management");
+        EnsureAction("open_help");
 
         foreach (var (action, _, keycode) in KeyboardMappings)
         {
@@ -45,8 +50,13 @@ public partial class WorldInputBootstrap : Node
         // Interact on F / Space.
         AddKeyIfAbsent("interact", (int)Key.F);
         AddKeyIfAbsent("interact", (int)Key.Space);
-        // Recenter on R.
+        // Recenter on R; Tab cycles the worker affected by spatial job stations.
         AddKeyIfAbsent("camera_recenter", (int)Key.R);
+        AddKeyIfAbsent("camera_first_person", (int)Key.V);
+        AddKeyIfAbsent("cycle_character", (int)Key.Tab);
+        AddKeyIfAbsent("toggle_management", (int)Key.M);
+        AddKeyIfAbsent("move_sprint", (int)Key.Shift);
+        AddKeyIfAbsent("open_help", (int)Key.F1);
     }
 
     private static void EnsureAction(string action)

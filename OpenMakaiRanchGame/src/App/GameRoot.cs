@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using OpenMakaiRanch.Core.Models;
@@ -26,6 +27,7 @@ public partial class GameRoot : Node
 	// Presentation callbacks capture this value, never a state-bound service reference.
 	public ulong StateGeneration { get; private set; }
 	public FeedbackService Feedback { get; private set; } = null!;
+	public RuntimeSettingsService RuntimeSettings { get; private set; } = null!;
 	public SettingsStorage SettingsStorage { get; private set; } = new();
 	public SaveService Save { get; private set; } = new();
 	public RosterService Roster { get; private set; } = null!;
@@ -62,10 +64,14 @@ public partial class GameRoot : Node
 	public CombatPhase CurrentCombatPhase { get; set; } = CombatPhase.PreBattle;
 	public static string? PendingInitialScreen { get; set; }
 	public int CurrentCombatRound { get; set; }
+	private bool _combatWorldTimeLocked;
+	public bool CombatWorldTimeLocked => _combatWorldTimeLocked;
 
 	public override void _Ready()
 	{
 		Instance = this;
+		RuntimeSettings = new RuntimeSettingsService();
+		AddChild(RuntimeSettings);
 		Feedback = new FeedbackService();
 		AddChild(Feedback);
 		Data = DataRegistry.CreateSeeded();
@@ -88,6 +94,14 @@ public partial class GameRoot : Node
 		}
 	}
 
+	public override void _Notification(int what)
+	{
+		if (what == NotificationApplicationPaused)
+		{
+			TryAutosave("application paused");
+		}
+	}
+
 	private void RunSmokeTestsAndExit()
 	{
 		var result = SmokeTestRunner.Run();
@@ -106,6 +120,7 @@ public partial class GameRoot : Node
 		State.Settings = persistedSettings;
 		LastDailyReport = null;
 		LastCombatReport = null;
+		_combatWorldTimeLocked = false;
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -373,10 +388,16 @@ public partial class GameRoot : Node
 		}
 
 		State = loaded;
+		State.Story ??= new StoryProgressState();
 		EnsureLoadedEligibility();
+		if (State.WorldAreaId is not ("ranch" or "town"))
+		{
+			State.WorldAreaId = "ranch";
+		}
 		State.Settings = SettingsStorage.Load();
 		LastDailyReport = null;
 		LastCombatReport = null;
+		_combatWorldTimeLocked = false;
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -428,6 +449,309 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool SetMasterVolume(float value) => SetVolumeSetting(value, () => State.Settings.MasterVolume, v => State.Settings.MasterVolume = v);
+	public bool SetMusicVolume(float value) => SetVolumeSetting(value, () => State.Settings.MusicVolume, v => State.Settings.MusicVolume = v);
+	public bool SetSfxVolume(float value) => SetVolumeSetting(value, () => State.Settings.SfxVolume, v => State.Settings.SfxVolume = v);
+	public bool SetUiVolume(float value) => SetVolumeSetting(value, () => State.Settings.UiVolume, v => State.Settings.UiVolume = v);
+
+	private bool SetVolumeSetting(float value, Func<float> get, Action<float> set)
+	{
+		var clamped = Mathf.Clamp(value, 0f, 1f);
+		if (Mathf.IsEqualApprox(get(), clamped))
+		{
+			return false;
+		}
+
+		set(clamped);
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetMuteWhenUnfocused(bool enabled)
+	{
+		if (State.Settings.MuteWhenUnfocused == enabled) return false;
+		State.Settings.MuteWhenUnfocused = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetGraphicsQuality(string quality)
+	{
+		RuntimeSettingsService.ApplyQualityPreset(State.Settings, quality);
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetRenderScale(float value)
+	{
+		var clamped = Mathf.Clamp(value, 0.50f, 1.00f);
+		if (Mathf.IsEqualApprox(State.Settings.RenderScale, clamped)) return false;
+		State.Settings.RenderScale = clamped;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetAtmosphereEffectsEnabled(bool enabled)
+	{
+		if (State.Settings.AtmosphereEffectsEnabled == enabled) return false;
+		State.Settings.AtmosphereEffectsEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetWeatherEffectsEnabled(bool enabled)
+	{
+		if (State.Settings.WeatherEffectsEnabled == enabled) return false;
+		State.Settings.WeatherEffectsEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetShadowsEnabled(bool enabled)
+	{
+		if (State.Settings.ShadowsEnabled == enabled) return false;
+		State.Settings.ShadowsEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetAdvancedLightingEnabled(bool enabled)
+	{
+		if (State.Settings.AdvancedLightingEnabled == enabled) return false;
+		State.Settings.AdvancedLightingEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetWorldParticlesEnabled(bool enabled)
+	{
+		if (State.Settings.WorldParticlesEnabled == enabled) return false;
+		State.Settings.WorldParticlesEnabled = enabled;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetWorldDetailScale(float value)
+	{
+		var clamped = Mathf.Clamp(value, 0.35f, 1.25f);
+		if (Mathf.IsEqualApprox(State.Settings.WorldDetailScale, clamped)) return false;
+		State.Settings.WorldDetailScale = clamped;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetFrameRateLimit(int value)
+	{
+		var normalized = value <= 0 ? 0 : value switch
+		{
+			<= 30 => 30,
+			<= 45 => 45,
+			<= 60 => 60,
+			<= 90 => 90,
+			<= 120 => 120,
+			_ => 144
+		};
+		if (State.Settings.FrameRateLimit == normalized) return false;
+		State.Settings.FrameRateLimit = normalized;
+		State.Settings.GraphicsQuality = "Custom";
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetVSyncEnabled(bool enabled)
+	{
+		if (State.Settings.VSyncEnabled == enabled) return false;
+		State.Settings.VSyncEnabled = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetWindowSize(int width, int height)
+	{
+		var w = Mathf.Clamp(width, 960, 7680);
+		var h = Mathf.Clamp(height, 540, 4320);
+		if (State.Settings.WindowWidth == w && State.Settings.WindowHeight == h)
+		{
+			return false;
+		}
+
+		State.Settings.WindowWidth = w;
+		State.Settings.WindowHeight = h;
+		State.Settings.Fullscreen = false;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetFullscreen(bool enabled)
+	{
+		if (State.Settings.Fullscreen == enabled) return false;
+		State.Settings.Fullscreen = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetCameraSensitivity(float value)
+	{
+		var clamped = Mathf.Clamp(value, 0.35f, 2.50f);
+		if (Mathf.IsEqualApprox(State.Settings.CameraSensitivity, clamped)) return false;
+		State.Settings.CameraSensitivity = clamped;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetCameraFov(float value)
+	{
+		var clamped = Mathf.Clamp(value, 55f, 95f);
+		if (Mathf.IsEqualApprox(State.Settings.CameraFov, clamped)) return false;
+		State.Settings.CameraFov = clamped;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetInvertCameraY(bool enabled)
+	{
+		if (State.Settings.InvertCameraY == enabled) return false;
+		State.Settings.InvertCameraY = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetTouchControlsEnabled(bool enabled)
+	{
+		if (State.Settings.TouchControlsEnabled == enabled) return false;
+		State.Settings.TouchControlsEnabled = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetTouchControlScale(float value)
+	{
+		var clamped = Mathf.Clamp(value, 0.75f, 1.50f);
+		if (Mathf.IsEqualApprox(State.Settings.TouchControlScale, clamped)) return false;
+		State.Settings.TouchControlScale = clamped;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetAutosaveEnabled(bool enabled)
+	{
+		if (State.Settings.AutosaveEnabled == enabled) return false;
+		State.Settings.AutosaveEnabled = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public void ApplyRecommendedSettings()
+	{
+		RuntimeSettingsService.ApplyQualityPreset(State.Settings, RuntimeSettings.IsMobilePlatform ? "Low" : "Medium");
+		State.Settings.UiScale = RuntimeSettings.IsMobilePlatform ? 1.15f : 1.0f;
+		State.Settings.TouchControlsEnabled = RuntimeSettings.IsMobilePlatform;
+		State.Settings.TouchControlScale = 1.0f;
+		State.Settings.VSyncEnabled = true;
+		State.Settings.CameraSensitivity = 1.0f;
+		State.Settings.CameraFov = RuntimeSettings.IsMobilePlatform ? 65f : 70f;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+	}
+
+	public bool SetWorldArea(string areaId)
+	{
+		if (areaId is not ("ranch" or "town") || State.WorldAreaId == areaId)
+		{
+			return false;
+		}
+
+		State.WorldAreaId = areaId;
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetReducedMotion(bool enabled)
+	{
+		if (State.Settings.ReducedMotion == enabled) return false;
+		State.Settings.ReducedMotion = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SetTutorialHintsEnabled(bool enabled)
+	{
+		if (State.Settings.TutorialHintsEnabled == enabled)
+		{
+			return false;
+		}
+
+		State.Settings.TutorialHintsEnabled = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool HasSeenTutorial(string tutorialId)
+	{
+		return !string.IsNullOrWhiteSpace(tutorialId)
+			&& State.Settings.SeenTutorialIds?.Contains(tutorialId) == true;
+	}
+
+	public bool MarkTutorialSeen(string tutorialId)
+	{
+		if (string.IsNullOrWhiteSpace(tutorialId))
+		{
+			return false;
+		}
+
+		State.Settings.SeenTutorialIds ??= new HashSet<string>(StringComparer.Ordinal);
+		if (!State.Settings.SeenTutorialIds.Add(tutorialId))
+		{
+			return false;
+		}
+
+		SettingsStorage.Save(State.Settings);
+		return true;
+	}
+
+	public bool ResetTutorialProgress()
+	{
+		State.Settings.SeenTutorialIds ??= new HashSet<string>(StringComparer.Ordinal);
+		if (State.Settings.SeenTutorialIds.Count == 0)
+		{
+			return false;
+		}
+
+		State.Settings.SeenTutorialIds.Clear();
+		SettingsStorage.Save(State.Settings);
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool SetLocale(string locale)
 	{
 		var normalizedLocale = LocaleCatalog.NormalizeLocale(locale);
@@ -461,6 +785,11 @@ public partial class GameRoot : Node
 
 	public bool AdvanceTime()
 	{
+		if (_combatWorldTimeLocked)
+		{
+			return false;
+		}
+
 		var dayCycle = new DayCycleService(State);
 		if (dayCycle.AdvancePhase())
 		{
@@ -470,6 +799,25 @@ public partial class GameRoot : Node
 
 		EndDay();
 		return true;
+	}
+
+	public bool UsePlayerBathForNight()
+	{
+		if (!State.Ranch.BathtubClean || State.Calendar.Phase != DayPhase.Night)
+		{
+			return false;
+		}
+
+		State.Ranch.BathtubClean = false;
+		State.Calendar.NightAction = "rest";
+		State.Story.PlayerBathedOnFirstNight = State.Calendar.Day == 1 || State.Story.PlayerBathedOnFirstNight;
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool AutosaveCheckpoint(string reason)
+	{
+		return TryAutosave(reason);
 	}
 
 	public void SetNightAction(string action)
@@ -488,6 +836,7 @@ public partial class GameRoot : Node
 		State.Reports.Add(LastDailyReport);
 		DaySettled?.Invoke(LastDailyReport);
 		StateChanged?.Invoke();
+		TryAutosave("day settled");
 		if (WinCondition.IsGameComplete() && !State.VictoryDay.HasValue)
 		{
 			State.VictoryDay = State.Calendar.Day;
@@ -532,6 +881,26 @@ public partial class GameRoot : Node
 
 	public void StartNewCombat()
 	{
+		BeginCombatSession();
+	}
+
+	public void BeginCombatSession()
+	{
+		_combatWorldTimeLocked = true;
+		CurrentCombatPhase = CombatPhase.PreBattle;
+		CurrentCombatRound = 0;
+		LastCombatReport = null;
+		NotifyStateChanged();
+	}
+
+	public void EndCombatSession()
+	{
+		if (!_combatWorldTimeLocked && CurrentCombatPhase == CombatPhase.PreBattle && LastCombatReport is null)
+		{
+			return;
+		}
+
+		_combatWorldTimeLocked = false;
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 		LastCombatReport = null;
@@ -544,7 +913,36 @@ public partial class GameRoot : Node
 	}
 
 	public bool HasSaveSlot(int slot) => Save.HasSave(slot);
-	public bool HasVictorySave() => Save.Load(1)?.VictoryDay.HasValue == true;
+
+	/// <summary>
+	/// Return the newest usable save among autosave slot 0 and manual slots 1-3. MainMenu and
+	/// New Game+ use this instead of silently ignoring manual slots 2/3.
+	/// </summary>
+	public int? MostRecentSaveSlot(bool requireVictory = false)
+	{
+		int? selectedSlot = null;
+		DateTime selectedTime = DateTime.MinValue;
+
+		for (var slot = 0; slot <= 3; slot++)
+		{
+			var metadata = Save.LoadMetadata(slot);
+			if (metadata is null || (requireVictory && !metadata.VictoryDay.HasValue))
+			{
+				continue;
+			}
+
+			var savedAt = metadata.SavedAt ?? DateTime.MinValue;
+			if (!selectedSlot.HasValue || savedAt >= selectedTime)
+			{
+				selectedSlot = slot;
+				selectedTime = savedAt;
+			}
+		}
+
+		return selectedSlot;
+	}
+
+	public bool HasVictorySave() => MostRecentSaveSlot(requireVictory: true).HasValue;
 
 	public void TogglePartyMember(string characterId)
 	{
@@ -640,6 +1038,21 @@ public partial class GameRoot : Node
 		}
 	}
 
+	private bool TryAutosave(string reason)
+	{
+		if (State is null || !State.Settings.AutosaveEnabled || SmokeTestRunner.ShouldRun())
+		{
+			return false;
+		}
+
+		var saved = SaveSlot(0);
+		if (saved)
+		{
+			GD.Print($"Autosave completed ({reason}).");
+		}
+		return saved;
+	}
+
 	private void BuildServices()
 	{
 		Roster = new RosterService(State, Data);
@@ -679,6 +1092,7 @@ public partial class GameRoot : Node
 	private void SyncFeedbackSettings()
 	{
 		Feedback.ApplySettings(State.Settings);
+		RuntimeSettings.Apply(State.Settings);
 		ApplyLocale();
 	}
 

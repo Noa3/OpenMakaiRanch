@@ -64,11 +64,17 @@ public static class SmokeTestRunner
             GameCommandTests.Run(result);
             TestWorldGreybox(result);
             TestWorldSharedSimulation(result);
+            TestWorldAlerts(result);
+            TestFirstDaySystems(result);
+            TestOriginalCalendarAndWeather(result);
+            TestCombatWorldTimeLock(result);
+            TestCameraInspectionAndBoundaryMath(result);
             TestCharacterAvatar(result);
             TestEventDialogueStaging(result);
             TestWorldPanelCoordinator(result);
             TestSaveLoadRoundTrip(result);
             TestGreyboxSceneIsLive(result);
+            TestWorldBootComposition(result);
             TestWorldDaylightAndRoster(result);
         }
         catch (Exception exception)
@@ -258,6 +264,7 @@ public static class SmokeTestRunner
         try
         {
             AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/EndDayButton", "game shell has end day button node");
+            AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton", "game shell has return-to-world button node");
             AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/DayChip/DayLabel", "game shell has day label node");
             AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/PhaseChip/PhaseLabel", "game shell has phase label node");
             AssertNodeExists(result, game, "UiShell/Margin/RootPanel/Root/TopBar/TopBarRow2/GoldChip/GoldLabel", "game shell has gold label node");
@@ -329,6 +336,43 @@ public static class SmokeTestRunner
         finally
         {
             game.Free();
+        }
+
+        var creationScene = GD.Load<PackedScene>("res://scenes/CharacterCreationScreen.tscn");
+        Assert(result, creationScene is not null, "character creation scene loads");
+        if (creationScene is not null)
+        {
+            var creation = creationScene.Instantiate();
+            try
+            {
+                Assert(result, creation is CharacterCreationPreviewController,
+                    "character creation root has its mixed 2D/3D controller");
+                AssertNodeExists(result, creation, "CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport",
+                    "character creation has a 3D SubViewport");
+                AssertNodeExists(result, creation, "CreationBody/PreviewCard/PreviewInner/PreviewFrame/PreviewViewport/PreviewWorld/Avatar",
+                    "character creation has a player avatar preview");
+                AssertNodeExists(result, creation, "CreationBody/SettingsColumn/BasicCard",
+                    "character creation retains 2D settings beside the preview");
+
+                if (GameRoot.Instance is { } liveGame && GodotObject.IsInstanceValid(liveGame))
+                {
+                    liveGame.AddChild(creation);
+                    var preview = creation as CharacterCreationPreviewController;
+                    Assert(result, preview?.PreviewReady == true,
+                        "character creation 3D preview binds after entering the scene tree");
+                    Assert(result, preview?.Avatar?.Body is not null && preview.Avatar.Head is not null,
+                        "character creation builds visible neutral player geometry");
+                    liveGame.RemoveChild(creation);
+                }
+            }
+            finally
+            {
+                if (creation.IsInsideTree())
+                {
+                    creation.GetParent()?.RemoveChild(creation);
+                }
+                creation.Free();
+            }
         }
     }
 
@@ -657,6 +701,17 @@ public static class SmokeTestRunner
         Assert(result, state.Recruitment.CurrentOffer is not null, "new game has a recruitment offer");
         Assert(result, state.Player.Name == "Anon", "new game player name is Anon");
         Assert(result, state.Player.RanchName == "Okachi Ranch", "new game ranch name is Okachi Ranch");
+        Assert(result, state.WorldAreaId == "ranch", "new game starts in the ranch world area");
+        Assert(result, state.Story is not null && state.Story.FirstDayStage == FirstDayFlowController.StageWakeUp,
+            "new game starts before the guided first-day wake-up");
+        Assert(result, !state.Story.FirstDayCompleted,
+            "new game first-day story is initially incomplete");
+        Assert(result, state.Settings.TutorialHintsEnabled, "tutorial hints default to enabled");
+        Assert(result, state.Settings.SeenTutorialIds.Count == 0, "new settings start with no tutorial acknowledgements");
+        var settingsClone = state.Settings.Clone();
+        settingsClone.SeenTutorialIds.Add("clone_only");
+        Assert(result, !state.Settings.SeenTutorialIds.Contains("clone_only"),
+            "settings clone owns an independent tutorial acknowledgement set");
     }
 
     private static void TestScheduleAssignments(SmokeTestResult result)
@@ -1042,6 +1097,13 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             // missing-target / re-entrancy contract that must hold across rapid presses).
             var second = station.Activate(context);
             Assert(result, second && calls.Count == 2, "world station allows sequential activations");
+
+            station.AvailabilityResolver = () => (false, "facility is not built");
+            Assert(result, !station.IsAvailable, "world station respects injected progression availability");
+            Assert(result, station.UnavailableReason == "facility is not built",
+                "world station exposes progression lock reason");
+            Assert(result, !station.Activate(context), "world station cannot bypass a progression lock");
+            station.AvailabilityResolver = null;
         }
         finally
         {
@@ -1063,8 +1125,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             AssertNodeExists(result, greybox, "Player", "greybox has a third-person player");
             AssertNodeExists(result, greybox, "CameraRig/Camera", "greybox has a follow camera");
             AssertNodeExists(result, greybox, "Station", "greybox has an interactable station");
-            AssertNodeExists(result, greybox, "PromptLayer/Prompt", "greybox shows an interaction prompt");
-            AssertNodeExists(result, greybox, "ButtonLayer/OpenManagementButton", "greybox has a management UI button");
+            AssertNodeExists(result, greybox, "Stations/PastureStation", "greybox has multiple authored job stations");
+            AssertNodeExists(result, greybox, "WorldHud/TopBar/DayLabel", "greybox has a world HUD day label");
+            AssertNodeExists(result, greybox, "WorldHud/WorkerPanel/WorkerLabel", "greybox HUD has selected-worker context");
+            AssertNodeExists(result, greybox, "WorldHud/Prompt", "greybox HUD has an interaction prompt");
+            AssertNodeExists(result, greybox, "PromptLayer/Prompt", "greybox retains the legacy interaction prompt node");
+            AssertNodeExists(result, greybox, "ButtonLayer/OpenManagementButton", "greybox retains the management UI composition anchor");
 
             // The greybox root node carries the controller script. In Godot 4 C# the
             // instantiated root reports the C# extension type, so an `as` cast resolves it.
@@ -1075,11 +1141,21 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 // _Ready() normally fires on tree entry; invoke it directly so the
                 // wiring (player / station / dispatcher) is verified headlessly.
                 controller._Ready();
-                Assert(result, controller.Wired, "greybox controller wires player + station");
+                Assert(result, controller.Wired, "greybox controller wires player + stations");
                 Assert(result, controller.Player is not null, "greybox controller resolves the player");
-                Assert(result, controller.Station is not null, "greybox controller resolves the station");
+                Assert(result, controller.Player?.GetNodeOrNull<PlayerAvatar3D>("Visual") is not null,
+                    "greybox player uses the shared created-player 3D stand-in");
+                Assert(result, controller.Player is not null && controller.Player.MoveSpeedFor(true) > controller.Player.MoveSpeedFor(false),
+                    "greybox player sprint speed is greater than walk speed");
+                Assert(result, controller.Station is not null, "greybox controller resolves the primary station");
+                Assert(result, controller.StationCount >= 6, "greybox controller discovers all authored job stations");
                 Assert(result, controller.Station is not null && controller.Station.Dispatcher is not null,
-                    "greybox station has a production dispatcher bound");
+                    "greybox primary station has a production dispatcher bound");
+                Assert(result, controller.Stations.All(value => value.Dispatcher is not null),
+                    "greybox controller binds every authored station to the production dispatcher");
+                Assert(result, controller.CameraRig is not null && controller.CameraRig.Target is not null,
+                    "greybox controller binds the follow camera to the player head target");
+                Assert(result, controller.Hud is not null, "greybox controller resolves the world HUD");
             }
         }
         finally
@@ -1141,6 +1217,188 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         }
     }
 
+    private static void TestWorldAlerts(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        var initial = WorldAlertEvaluator.Evaluate(game);
+        Assert(result, initial.Any(alert => alert.Id == "dairy_unstaffed"),
+            "alerts: missing Dairy assignment is surfaced because settlement penalizes it");
+        Assert(result, initial.Any(alert => alert.Id == "pasture_unstaffed"),
+            "alerts: unstaffed Pasture is surfaced as production guidance");
+
+        var worker = game.Roster.Characters.First();
+        Assert(result, game.TryAssignJob(worker.Id, "dairy", game.StateGeneration),
+            "alerts: test can assign Dairy through shared GameRoot");
+        var staffed = WorldAlertEvaluator.Evaluate(game);
+        Assert(result, staffed.All(alert => alert.Id != "dairy_unstaffed"),
+            "alerts: Dairy warning clears immediately after shared schedule assignment");
+
+        worker.Fatigue = 92;
+        worker.Energy = 5;
+        game.State.Pets.Entries["stable_cat"].Hunger = 10;
+        var critical = WorldAlertEvaluator.Evaluate(game);
+        Assert(result, critical.Any(alert => alert.Id == "roster_exhausted" && alert.Severity == WorldAlertSeverity.Critical),
+            "alerts: exhausted resident becomes critical");
+        Assert(result, critical.Any(alert => alert.Id == "pets_hungry" && alert.Severity == WorldAlertSeverity.Critical),
+            "alerts: starving pet becomes critical");
+    }
+
+    private static void TestFirstDaySystems(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        Assert(result, game.Data.Missions.ContainsKey("tutorial_ranch_intruder"),
+            "first day: tutorial intruder mission is registered in shared mission data");
+        Assert(result, game.Data.Enemies.ContainsKey("tutorial_ranch_intruder"),
+            "first day: tutorial intruder enemy is registered in shared enemy data");
+
+        var mission = game.Data.Missions["tutorial_ranch_intruder"];
+        Assert(result, mission.RewardGold == 0 && string.IsNullOrEmpty(mission.RewardItemId),
+            "first day: tutorial fight cannot create ordinary mission rewards");
+
+        game.StartNewCombat();
+        var tutorialFight = game.RunRoundBasedMission("tutorial_ranch_intruder", autoResolve: false);
+        Assert(result, tutorialFight.MissionId == "tutorial_ranch_intruder",
+            "first day: intruder tutorial resolves through the normal CombatService");
+        Assert(result, tutorialFight.Rounds.Count > 0,
+            "first day: intruder tutorial produces ordinary round records");
+
+        game.NewGame();
+        game.State.Calendar.Phase = DayPhase.Night;
+        game.State.Ranch.BathtubClean = true;
+        Assert(result, game.UsePlayerBathForNight(),
+            "first day: clean ranch bath can be used during Night");
+        Assert(result, !game.State.Ranch.BathtubClean && game.State.Calendar.NightAction == "rest",
+            "first day: bathing consumes bath cleanliness and routes into the existing rest night action");
+
+        // Cleaning closes the bath loop through the existing job settlement path.
+        var state = new SaveStateFactory(game.Data).CreateNewGame();
+        state.Ranch.BathtubClean = false;
+        var equipment = new EquipmentService(state, game.Data);
+        var talents = new TalentService(state, game.Data);
+        var ranch = new RanchService(state, game.Data, equipment, talents);
+        var cleaner = state.Roster.Characters.First();
+        var cleaning = game.Data.Jobs["cleaning"];
+        var report = new DailyReport();
+        ranch.ApplyJobOutput(cleaner, cleaning, report);
+        Assert(result, state.Ranch.BathtubClean,
+            "first day: Cleaning job prepares a dirty bath for a later night");
+        Assert(result, report.Lines.Any(line => line.Contains("bath", StringComparison.OrdinalIgnoreCase)),
+            "first day: bath cleaning is visible in the ordinary daily report");
+
+        game.NewGame();
+    }
+
+    private static void TestOriginalCalendarAndWeather(SmokeTestResult result)
+    {
+        var calendar = new CalendarState { Day = 1 };
+        Assert(result, calendar.Year == 1 && calendar.Season == Season.Spring && calendar.DayOfSeason == 1,
+            "calendar: day 1 is Year 1 Spring day 1");
+        Assert(result, calendar.Weekday == Weekday.Monday,
+            "calendar: original day 1 starts on Monday");
+
+        calendar.Day = 28;
+        Assert(result, calendar.Season == Season.Spring && calendar.DayOfSeason == 28 && calendar.IsSeasonEnd,
+            "calendar: day 28 is the end of Spring");
+        Assert(result, OriginalCalendarRules.RollTomorrow(calendar, new Random(1)) == Weather.Cloudy,
+            "calendar: season-end forecast is forced Cloudy like the original");
+
+        calendar.Day = 29;
+        Assert(result, calendar.Season == Season.Summer && calendar.DayOfSeason == 1 && calendar.IsSeasonStart,
+            "calendar: day 29 starts Summer");
+
+        calendar.Day = 112;
+        Assert(result, calendar.Year == 1 && calendar.Season == Season.Winter && calendar.DayOfSeason == 28,
+            "calendar: day 112 is Year 1 Winter day 28");
+        calendar.Day = 113;
+        Assert(result, calendar.Year == 2 && calendar.Season == Season.Spring && calendar.DayOfSeason == 1,
+            "calendar: day 113 starts Year 2 Spring");
+
+        // Winter distribution must never produce rain-family weather; it uses snow-family weather.
+        var winterKinds = new HashSet<Weather>();
+        var rng = new Random(1742);
+        for (var i = 0; i < 400; i++)
+        {
+            winterKinds.Add(OriginalCalendarRules.RollWeather(Season.Winter, rng));
+        }
+        Assert(result, winterKinds.All(w => !OriginalCalendarRules.IsRain(w)),
+            "calendar: winter weather replaces rain-family results with snow/overcast/clear");
+        Assert(result, winterKinds.Any(OriginalCalendarRules.IsSnow),
+            "calendar: winter distribution can generate snow");
+
+        // Forecast -> current rollover.
+        var state = new SaveState { Calendar = new CalendarState
+        {
+            Day = 28,
+            Phase = DayPhase.Night,
+            CurrentWeather = Weather.Rain,
+            TomorrowWeather = Weather.Cloudy
+        }};
+        var cycle = new DayCycleService(state);
+        cycle.AdvanceToNextDay();
+        Assert(result, state.Calendar.Day == 29 && state.Calendar.Season == Season.Summer,
+            "calendar: rollover crosses Spring -> Summer at day 29");
+        Assert(result, state.Calendar.CurrentWeather == Weather.Cloudy,
+            "calendar: saved tomorrow forecast becomes today's weather at rollover");
+    }
+
+    private static void TestCombatWorldTimeLock(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+        var day = game.State.Calendar.Day;
+        var phase = game.State.Calendar.Phase;
+
+        game.BeginCombatSession();
+        Assert(result, game.CombatWorldTimeLocked, "combat: entering a round-based session locks world time");
+        Assert(result, !game.AdvanceTime(), "combat: AdvanceTime is rejected while combat owns time");
+        Assert(result, game.State.Calendar.Day == day && game.State.Calendar.Phase == phase,
+            "combat: blocked time advance leaves day and phase unchanged");
+
+        game.EndCombatSession();
+        Assert(result, !game.CombatWorldTimeLocked, "combat: leaving session unlocks world time");
+        Assert(result, game.AdvanceTime(), "combat: world phase can advance again after combat");
+        Assert(result, game.State.Calendar.Phase != phase,
+            "combat: post-combat advance changes the shared phase");
+        game.NewGame();
+    }
+
+    private static void TestCameraInspectionAndBoundaryMath(SmokeTestResult result)
+    {
+        var target = new Vector3(0, 1.6f, 0);
+        var desired = WorldCameraMath.ComputeCameraPosition(target, 0f, 0f, 7f);
+        var closeWall = WorldCameraMath.ClampToGeometry(target, desired, 0.35f, 0.20f);
+        Assert(result, target.DistanceTo(closeWall) < WorldCameraMath.MinDistance,
+            "camera: nearby geometry may pull camera closer than normal user zoom minimum");
+        Assert(result, target.DistanceTo(closeWall) >= WorldCameraMath.GeometryMinDistance,
+            "camera: geometry clamp remains in front of the target instead of crossing through it");
+
+        var view = WorldCameraMath.ComputeViewDirection(0f, 0f);
+        Assert(result, view.IsNormalized() && view.Z < -0.99f,
+            "camera: first-person view direction matches the orbit orientation");
+
+        var boundary = new WorldBoundaryBuilder
+        {
+            HalfExtents = new Vector2(19.25f, 14.25f),
+            SouthGateHalfWidth = 3f
+        };
+        GameRoot.Instance.AddChild(boundary);
+        try
+        {
+            Assert(result, boundary.HasCollisionBoundary,
+                "world boundary: four continuous collision sides are authored");
+            Assert(result, boundary.DressingNodeCount > 0,
+                "world boundary: quality-scaled visual dressing is generated");
+        }
+        finally
+        {
+            boundary.QueueFree();
+        }
+    }
+
     private static void TestCharacterAvatar(SmokeTestResult result)
     {
         // CHAR-001: gate-safe, honest stand-in avatars bound by stable DefinitionId.
@@ -1170,6 +1428,9 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, profile.DisplayName == "Slay", "profile: display name carried");
         Assert(result, profile.IsDebugStandIn, "profile: CHAR-001 ships honest stand-in, not real model");
         Assert(result, profile.AdultEligibility == AdultEligibility.ConfirmedAdult, "profile: fail-closed eligibility carried forward");
+        Assert(result, !string.IsNullOrWhiteSpace(profile.PlaceholderModelPath)
+            && ResourceLoader.Exists(profile.PlaceholderModelPath),
+            "profile: admitted CC0 placeholder model path resolves");
         // Presentation ≠ gameplay state: no HP, skill, bond, reward fields exist.
         Assert(result, !typeof(CharacterVisualProfile).GetProperties().Any(p =>
             p.Name is "MaxHp" or "RanchSkill" or "BondLevel" or "RewardGold" or "Energy"),
@@ -1178,7 +1439,13 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         // ---- Node: stand-in geometry generated, material overridden ----
         var avatar = CharacterAvatarFactory.BuildAvatar(profile);
         Assert(result, avatar is not null && ReferenceEquals(avatar.Profile, profile), "avatar: built with bound profile");
-        avatar!.Rebuild(); // deterministic, no tree required
+        var sentinel = new Node3D { Name = "NavigationSentinel" };
+        avatar!.AddChild(sentinel);
+        avatar.Rebuild(); // deterministic, no tree required
+        Assert(result, avatar.GetNodeOrNull<Node3D>("NavigationSentinel") is not null,
+            "avatar: rebuild preserves navigation/nameplate-style external children");
+        Assert(result, avatar.UsesExternalPlaceholder,
+            "avatar: admitted CC0 placeholder scene is instantiated when available");
         Assert(result, avatar.Body is not null, "avatar: body capsule generated");
         Assert(result, avatar.Head is not null, "avatar: head sphere generated");
         Assert(result, avatar.Body!.Mesh is CapsuleMesh, "avatar: body is capsule stand-in");
@@ -1334,7 +1601,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             var moraleFinal = root.Roster.Find(characterId)!.Morale;
             var dayAfterTransition = root.State.Calendar.Day;
 
-            // 4) Persist the whole session, then start a fresh game and load it back.
+            // 4) Persist the whole session, including the current 3D presentation area.
+            Assert(result, root.SetWorldArea("town"), "save round-trip: world area can switch to town");
             Assert(result, root.SaveSlot(slot), "save round-trip: the session persists to the slot");
             root.NewGame(); // fresh start: assignment/bond/day are all reset
             var freshCharacter = root.Roster.Characters.First(value => value.Id == characterId);
@@ -1355,6 +1623,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "save round-trip: the day counter survives save/load");
             Assert(result, root.State.Calendar.Phase == DayPhase.Morning,
                 "save round-trip: the phase survives save/load");
+            Assert(result, root.State.WorldAreaId == "town",
+                "save round-trip: the current 3D world area survives save/load");
 
             // 6) StateGeneration guard: a pre-load generation must now be rejected via the world path.
             var staleGeneration = root.StateGeneration - 1;
@@ -1411,6 +1681,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             Assert(result, roster is not null, "greybox scene exposes a bound roster rig");
             Assert(result, roster?.AvatarCount == game.Roster.Characters.Count,
                 "greybox scene places one avatar per roster character");
+            AssertNodeExists(result, root, "NavigationRegion", "greybox has a NavigationRegion3D");
+            Assert(result, roster?.GetChildren().OfType<CharacterAvatar3D>()
+                    .Any(avatar => avatar.GetNodeOrNull<NavigationAgent3D>("NavigationAgent") is not null) == true,
+                "roster stand-ins carry NavigationAgent3D path followers");
             if (roster is not null)
             {
                 bool allInBounds = true;
@@ -1424,9 +1698,65 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 Assert(result, allInBounds, "greybox scene avatars are in the greybox bounds");
             }
 
-            // Player + camera + station still present (the world is intact, not just the rigs).
+            // Player + camera + stations + HUD are live, not just authored nodes.
             Assert(result, controller?.Player is not null, "greybox scene has a player");
-            Assert(result, controller?.Station is not null, "greybox scene has the milk station");
+            Assert(result, controller?.Station is not null, "greybox scene has a primary work station");
+            Assert(result, controller?.StationCount >= 6, "greybox scene exposes multiple spatial job stations");
+            Assert(result, controller?.Stations.Any(value => value.RequiredFacilityId == "workshop" && !value.IsAvailable) == true,
+                "greybox locks unbuilt workshop station through shared ranch progression");
+            Assert(result, controller?.Stations.Any(value => value.RequiredFacilityId == "pasture" && value.IsAvailable) == true,
+                "greybox keeps built pasture station available");
+
+            var workshopStation = controller?.Stations.FirstOrDefault(value => value.RequiredFacilityId == "workshop");
+            if (workshopStation is not null)
+            {
+                Assert(result, !workshopStation.IsAvailable, "workshop starts locked in the world");
+                Assert(result, game.Ranch.UpgradeFacility("workshop", game.Economy),
+                    "building workshop through shared ranch service succeeds");
+                Assert(result, workshopStation.IsAvailable,
+                    "shared management facility upgrade immediately unlocks the world station");
+                controller?.RefreshLiveWorld();
+                Assert(result, workshopStation.GetNodeOrNull<Label3D>("Label")?.Text.Contains("[Locked]", StringComparison.Ordinal) == false,
+                    "placeholder landmark label refreshes when a facility becomes built");
+            }
+            Assert(result, controller?.CameraRig?.Target is not null, "greybox live camera follows the player target");
+            Assert(result, controller?.Hud is not null, "greybox live scene exposes the world HUD");
+            Assert(result, controller?.Presentation is not null,
+                "greybox live scene exposes the stylized placeholder presentation layer");
+            Assert(result, controller?.Presentation?.GeneratedNodeCount > 10,
+                "placeholder presentation builds paths, landmarks and boundary nature");
+            Assert(result, !string.IsNullOrWhiteSpace(controller?.SelectedCharacterId),
+                "greybox selects a real roster worker for spatial job interactions");
+
+            if (controller?.Hud is not null)
+            {
+                var hudDay = controller.Hud.GetNodeOrNull<Label>("TopBar/DayLabel");
+                Assert(result, hudDay is not null && hudDay.Text.Contains($"Day {game.State.Calendar.Day}", StringComparison.Ordinal),
+                    "world HUD reflects the shared calendar day");
+            }
+
+            // Controller-level regression: actual F-path semantics must pass a real roster id,
+            // never the station id, into TryAssignJob. Choose a station whose job differs from the
+            // currently selected worker so the shared command is expected to succeed.
+            if (controller?.Player is not null && !string.IsNullOrWhiteSpace(controller.SelectedCharacterId))
+            {
+                var selectedId = controller.SelectedCharacterId;
+                var currentJob = game.Schedule.GetAssignment(selectedId);
+                var targetStation = controller.Stations.FirstOrDefault(value =>
+                    value.IsAvailable
+                    && !string.IsNullOrWhiteSpace(value.CommandTargetId)
+                    && value.CommandTargetId != currentJob);
+
+                Assert(result, targetStation is not null, "greybox has a station with a different job for controller interaction test");
+                if (targetStation is not null)
+                {
+                    controller.Player.GlobalPosition = targetStation.GlobalPosition;
+                    Assert(result, controller.TryInteractWithNearestStation(),
+                        "greybox controller interaction dispatches through the shared command boundary");
+                    Assert(result, game.Schedule.GetAssignment(selectedId) == targetStation.CommandTargetId,
+                        "greybox controller assigns the selected roster worker, not the station id");
+                }
+            }
 
             // RefreshLiveWorld re-derives from the shared state after a phase change.
             var phaseBefore = game.State.Calendar.Phase;
@@ -1447,6 +1777,253 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         }
 
         game.NewGame();
+    }
+
+    private static void TestWorldBootComposition(SmokeTestResult result)
+    {
+        // WORLD-003c: the actual gameplay host composes the 3D ranch and the existing Game.tscn
+        // management shell over one GameRoot. This test verifies visibility/input ownership only;
+        // it does not duplicate any UI action or simulation logic.
+        var game = GameRoot.Instance;
+        game.NewGame();
+        // This test exercises the ORDINARY Day-2+ world composition. The first-day story has its
+        // own tests and must not steal the active area during these assertions.
+        game.State.Story.FirstDayCompleted = true;
+        game.State.Story.FirstDayStage = FirstDayFlowController.StageCompleted;
+        GameRoot.PendingInitialScreen = null;
+
+        var scene = GD.Load<PackedScene>("res://scenes/WorldGame.tscn");
+        Assert(result, scene is not null, "world boot composition scene loads");
+        if (scene is null)
+        {
+            return;
+        }
+
+        var root = scene.Instantiate();
+        game.AddChild(root);
+        try
+        {
+            var controller = root as WorldGameController;
+            Assert(result, controller is not null, "world boot root is WorldGameController");
+            AssertNodeExists(result, root, "IntroHouse", "world boot contains the first-day ranch-house bedroom");
+            AssertNodeExists(result, root, "StoryLayer/FirstDayFlow", "world boot contains the resumable first-day story flow");
+            AssertNodeExists(result, root, "RanchWorld/FirstDayIntruder", "ranch contains the hidden first-day intruder staging actor");
+            AssertNodeExists(result, root, "RanchWorld/Atmosphere", "ranch contains weather/season particle presentation");
+            AssertNodeExists(result, root, "TownWorld/Atmosphere", "town contains weather/season particle presentation");
+            AssertNodeExists(result, root, "RanchWorld/WorldBoundary", "ranch contains finite-world collision/dressing");
+            AssertNodeExists(result, root, "TownWorld/WorldBoundary", "town contains finite-world collision/dressing");
+            AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
+            AssertNodeExists(result, root, "TownWorld", "world boot contains persistent Okachi Town");
+            AssertNodeExists(result, root, "TownWorld/Services/GeneralStore", "town has a General Store service point");
+            AssertNodeExists(result, root, "TownWorld/Services/AdventureGuild", "town has an Adventure Guild service point");
+            AssertNodeExists(result, root, "TownWorld/Services/ResearchOffice", "town has a Research Office service point");
+            AssertNodeExists(result, root, "TownWorld/TravelToRanch", "town has a ranch return gate");
+            AssertNodeExists(result, root, "TownWorld/TownHud/TutorialOverlay/HelpButton", "town exposes F1 help");
+            AssertNodeExists(result, root, "ManagementLayer/ManagementUi/UiShell",
+                "world boot contains the existing management shell as overlay");
+            AssertNodeExists(result, root, "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton",
+                "world boot management overlay has an explicit return-to-world control");
+            AssertNodeExists(result, root, "RanchWorld/WorldHud/AdvanceTimeButton",
+                "world boot HUD exposes shared phase progression");
+            AssertNodeExists(result, root, "RanchWorld/WorldHud/TutorialOverlay",
+                "world boot HUD contains contextual onboarding");
+            AssertNodeExists(result, root, "RanchWorld/WorldHud/TutorialOverlay/HelpButton",
+                "world boot HUD exposes persistent F1 help");
+            AssertNodeExists(result, root, "RanchWorld/Presentation",
+                "world boot contains the stylized placeholder presentation layer");
+            AssertNodeExists(result, root, "RanchWorld/WorldHud/AlertPanel",
+                "ranch HUD contains the shared attention warning panel");
+            AssertNodeExists(result, root, "TownWorld/TownHud/AlertPanel",
+                "town HUD contains the shared attention warning panel");
+            AssertNodeExists(result, root, "TransitionLayer/Transition",
+                "world boot contains the location reveal overlay");
+            AssertNodeExists(result, root, "PauseLayer/PauseMenu",
+                "world boot contains the ESC pause menu");
+
+            if (controller is null)
+            {
+                return;
+            }
+
+            controller.Transition?.CompleteImmediately();
+            Assert(result, controller.Ranch is not null, "world boot binds ranch controller");
+            Assert(result, controller.Shell is not null, "world boot binds existing UiShellController");
+            Assert(result, !controller.IsManagementVisible,
+                "ordinary ranch boot starts with the 3D world visible");
+            Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
+                "ordinary ranch boot gives input to the 3D world");
+            Assert(result, InputMap.HasAction("open_help"), "world boot registers the F1 help action");
+
+            if (controller.Ranch?.Player is not null && controller.Ranch.Roster is not null)
+            {
+                var nearbyAvatar = controller.Ranch.Roster.GetChildren().OfType<CharacterAvatar3D>().FirstOrDefault();
+                if (nearbyAvatar is not null)
+                {
+                    controller.Ranch.Player.GlobalPosition = nearbyAvatar.GlobalPosition + new Vector3(0.45f, 0f, 0f);
+                    Assert(result, controller.Ranch.TryInteractWithNearestWorldTarget(),
+                        "world player can interact with a nearby roster resident");
+                    Assert(result, controller.IsManagementVisible && controller.Shell?.CurrentScreen == "character_detail",
+                        "nearby resident interaction routes into the existing character detail UI");
+                    Assert(result, controller.CloseManagement(),
+                        "character detail opened from the world can return to the 3D ranch");
+                    Assert(result, controller.Ranch.InputGate.WorldInputEnabled,
+                        "resident detail return restores world input");
+                }
+            }
+
+            var tutorial = root.GetNodeOrNull<WorldTutorialController>("RanchWorld/WorldHud/TutorialOverlay");
+            Assert(result, tutorial is not null, "world tutorial controller binds in composed gameplay");
+            if (tutorial is not null)
+            {
+                tutorial.ToggleHelp();
+                Assert(result, tutorial.HelpVisible, "F1 help surface can open from the world");
+                Assert(result, controller.Ranch?.InputGate.UiOwnsInput == true,
+                    "open help temporarily owns input instead of moving the player behind it");
+                tutorial.CloseHelp();
+                Assert(result, !tutorial.HelpVisible && controller.Ranch?.InputGate.WorldInputEnabled == true,
+                    "closing help safely restores world input");
+            }
+
+            Assert(result, controller.Town is not null, "world boot binds town controller");
+            Assert(result, controller.Town?.Services.Count >= 7, "town exposes all authored service points");
+            Assert(result, controller.Town?.Daylight?.Wired == true, "town daylight uses the shared day-phase rig");
+            Assert(result, root.GetNodeOrNull<TownPresentationBuilder>("TownWorld/Presentation")?.GeneratedNodeCount > 10,
+                "town builds readable roads, landmarks and service-building placeholders");
+            Assert(result, controller.ActiveAreaId == "ranch" && game.State.WorldAreaId == "ranch",
+                "world boot starts in persisted ranch area");
+
+            Assert(result, controller.TravelTo("town"), "ranch can travel to Okachi Town");
+            controller.Transition?.CompleteImmediately();
+            Assert(result, controller.ActiveAreaId == "town" && game.State.WorldAreaId == "town",
+                "travel switches active world area and persists town location");
+            Assert(result, controller.Town?.Visible == true && controller.Ranch?.Visible == false,
+                "town travel disables ranch presentation and reveals town");
+            Assert(result, controller.Town?.InputGate.WorldInputEnabled == true,
+                "town receives world input after travel");
+
+            if (controller.Town is not null)
+            {
+                var research = controller.Town.Services.FirstOrDefault(service => service.ServiceId == "research_office");
+                Assert(result, research is not null && !research.IsAvailable,
+                    "town Research Office preserves the existing Workshop progression requirement");
+
+                var shop = controller.Town.Services.FirstOrDefault(service => service.ServiceId == "general_store");
+                if (shop is not null && controller.Town.Player is not null)
+                {
+                    controller.Town.Player.GlobalPosition = shop.GlobalPosition;
+                    Assert(result, controller.Town.TryInteract(), "player can enter a nearby town service");
+                    Assert(result, controller.IsManagementVisible && controller.Shell?.CurrentScreen == "shop",
+                        "General Store world service routes to the existing shop screen");
+                    Assert(result, controller.CloseManagement(), "shop overlay can return to the 3D town");
+                    Assert(result, controller.ActiveAreaId == "town" && controller.Town.InputGate.WorldInputEnabled,
+                        "closing town service restores town movement");
+                }
+
+                var townTutorial = root.GetNodeOrNull<TownTutorialController>("TownWorld/TownHud/TutorialOverlay");
+                Assert(result, townTutorial is not null, "town tutorial controller binds");
+                if (townTutorial is not null)
+                {
+                    townTutorial.ToggleHelp();
+                    Assert(result, townTutorial.HelpVisible && controller.Town.InputGate.UiOwnsInput,
+                        "town F1 help owns input while visible");
+                    townTutorial.CloseHelp();
+                    Assert(result, !townTutorial.HelpVisible && controller.Town.InputGate.WorldInputEnabled,
+                        "closing town help restores movement");
+                }
+            }
+
+            if (controller.Town?.Player is not null && controller.Town.ReturnPortal is not null)
+            {
+                controller.Town.Player.GlobalPosition = controller.Town.ReturnPortal.GlobalPosition;
+                Assert(result, controller.Town.TryInteract(), "town south gate can return to the ranch");
+                controller.Transition?.CompleteImmediately();
+                Assert(result, controller.ActiveAreaId == "ranch" && game.State.WorldAreaId == "ranch",
+                    "physical return gate restores ranch area and persisted location");
+            }
+
+            Assert(result, controller.TravelTo("town"), "world can revisit town for UI-travel test");
+            controller.Transition?.CompleteImmediately();
+            Assert(result, controller.OpenManagementScreen("town"), "town hub management opens while in town");
+            Assert(result, controller.Shell?.RequestWorldTravel("ranch") == true,
+                "Town Hub Return to Ranch requests physical world travel when hosted");
+            controller.Transition?.CompleteImmediately();
+            Assert(result, !controller.IsManagementVisible && controller.ActiveAreaId == "ranch",
+                "Town Hub travel request closes management and returns to the ranch");
+
+            Assert(result, controller.PauseMenu is not null, "world boot binds ESC pause menu");
+            if (controller.PauseMenu is not null)
+            {
+                controller.PauseMenu.Open("ranch");
+                Assert(result, controller.PauseMenu.IsOpen && root.GetTree().Paused,
+                    "ESC pause menu pauses the scene tree");
+                controller.PauseMenu.Close();
+                Assert(result, !controller.PauseMenu.IsOpen && !root.GetTree().Paused,
+                    "resume closes pause menu and unpauses the tree");
+            }
+
+            Assert(result, controller.OpenManagement(), "world boot opens existing management overlay");
+            Assert(result, controller.IsManagementVisible, "management overlay becomes visible");
+            Assert(result, controller.Ranch?.InputGate.UiOwnsInput == true,
+                "management overlay suspends world input");
+
+            Assert(result, controller.CloseManagement(), "world boot closes ordinary management overlay");
+            Assert(result, !controller.IsManagementVisible, "management overlay hides on close");
+            Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
+                "closing management safely restores 3D world input");
+
+            if (controller.Shell is not null)
+            {
+                controller.Shell.ShowScreen("character_creation");
+                Assert(result, controller.FlowLocksUi && controller.IsManagementVisible,
+                    "character creation forces the management layer visible");
+                Assert(result, !controller.CloseManagement(),
+                    "mandatory character-creation flow cannot be hidden behind the world");
+
+                controller.Shell.ShowScreen("prologue");
+                Assert(result, controller.FlowLocksUi && controller.IsManagementVisible,
+                    "prologue keeps the mandatory overlay visible");
+
+                controller.Shell.ShowScreen("ranch");
+                Assert(result, !controller.FlowLocksUi && !controller.IsManagementVisible,
+                    "finishing the mandatory new-game flow automatically reveals the 3D ranch");
+                Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
+                    "new-game flow completion returns input to the world");
+
+                // WORLD-003d flow: play through the shared clock from the 3D world. Day phases can
+                // advance without opening management; Night with no plan opens the existing choice,
+                // then settlement opens the existing Daily Report.
+                controller.AdvanceWorldTime(); // Morning -> Afternoon
+                controller.AdvanceWorldTime(); // Afternoon -> Evening
+                controller.AdvanceWorldTime(); // Evening -> Night
+                Assert(result, game.State.Calendar.Phase == DayPhase.Night,
+                    "world time control reaches the shared Night phase");
+                Assert(result, !controller.IsManagementVisible,
+                    "ordinary phase advancement keeps the player in the 3D world");
+
+                controller.AdvanceWorldTime(); // no night plan -> management request, no settlement
+                Assert(result, game.State.Calendar.Phase == DayPhase.Night,
+                    "world refuses to settle Night before a night plan exists");
+                Assert(result, controller.IsManagementVisible && controller.Shell.CurrentScreen == "ranch",
+                    "missing night plan opens the existing ranch management screen");
+
+                Assert(result, controller.CloseManagement(),
+                    "night planning management can return to the world");
+                game.SetNightAction("rest");
+                var dayBeforeWorldSettlement = game.State.Calendar.Day;
+                controller.AdvanceWorldTime();
+                Assert(result, game.State.Calendar.Day == dayBeforeWorldSettlement + 1
+                    && game.State.Calendar.Phase == DayPhase.Morning,
+                    "world End Day uses the shared settlement and advances to next Morning");
+                Assert(result, controller.IsManagementVisible && controller.Shell.CurrentScreen == "report",
+                    "world settlement opens the existing Daily Report");
+            }
+        }
+        finally
+        {
+            root.Free();
+            GameRoot.PendingInitialScreen = null;
+            game.NewGame();
+        }
     }
 
     private static void TestWorldDaylightAndRoster(SmokeTestResult result)
@@ -1496,6 +2073,26 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             Assert(result, worldEnvironment.Environment.TonemapExposure == evening.TonemapExposure,
                 "daylight rig writes the tonemap exposure to the environment");
 
+            game.State.Settings.GraphicsQuality = "High";
+            game.State.Settings.AtmosphereEffectsEnabled = true;
+            game.State.Settings.WeatherEffectsEnabled = true;
+            dayRig.Apply(DayPhase.Evening, Weather.Storm);
+            Assert(result, dayRig.LastWeather == Weather.Storm,
+                "atmosphere: daylight rig records the shared weather presentation");
+            Assert(result, worldEnvironment.Environment.FogEnabled,
+                "atmosphere: storm enables renderer-compatible fog on High quality");
+            Assert(result, worldEnvironment.Environment.AdjustmentEnabled,
+                "atmosphere: situation-aware color adjustment is enabled on High quality");
+
+            game.State.Settings.GraphicsQuality = "Low";
+            dayRig.Apply(DayPhase.Evening, Weather.Storm);
+            Assert(result, !worldEnvironment.Environment.FogEnabled
+                && !worldEnvironment.Environment.GlowEnabled
+                && !worldEnvironment.Environment.AdjustmentEnabled,
+                "atmosphere: Low quality disables optional post-processing while keeping daylight");
+
+            game.State.Settings.GraphicsQuality = "Medium";
+            game.State.Settings.AtmosphereEffectsEnabled = true;
             var fromGame = dayRig.ApplyFrom(game);
             Assert(result, fromGame == DaylightMath.For(game.State.Calendar.Phase),
                 "daylight rig reads the shared phase (single source of truth, no second clock)");
@@ -1568,6 +2165,26 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             rosterRig.Refresh(game);
             Assert(result, game.Schedule.GetAssignment(game.Roster.Characters.First().Id) == assignmentBefore,
                 "roster rig moves presentation only — the shared schedule is untouched");
+
+            // Assignment changes come from GameRoot; the rig only derives a new presentation target
+            // and moves toward it over time.
+            var traveler = game.Roster.Characters.First();
+            var travelerNode = rosterRig.GetNodeOrNull<CharacterAvatar3D>($"Avatar_{traveler.Id}");
+            var beforeTravel = travelerNode?.GlobalPosition ?? Vector3.Zero;
+            Assert(result, game.TryAssignJob(traveler.Id, "pasture", game.StateGeneration),
+                "shared schedule accepts a new pasture assignment for roster travel test");
+            rosterRig.Refresh(game);
+            Assert(result, rosterRig.TryGetTarget(traveler.Id, out var travelTarget),
+                "roster rig derives a target from the shared assignment");
+            Assert(result, travelerNode is not null && beforeTravel.DistanceTo(travelTarget) > rosterRig.ArrivalDistance,
+                "changed assignment creates visible travel instead of teleporting immediately");
+            var distanceBeforeStep = travelerNode?.GlobalPosition.DistanceTo(travelTarget) ?? 0f;
+            rosterRig._PhysicsProcess(0.5);
+            var distanceAfterStep = travelerNode?.GlobalPosition.DistanceTo(travelTarget) ?? 0f;
+            Assert(result, distanceAfterStep < distanceBeforeStep,
+                "roster stand-in walks toward its assigned logical anchor");
+            Assert(result, game.Schedule.GetAssignment(traveler.Id) == "pasture",
+                "roster travel does not replace the shared assignment authority");
         }
         finally
         {

@@ -13,11 +13,17 @@ namespace OpenMakaiRanch.World;
 public partial class ThirdPersonPlayerController : CharacterBody3D
 {
     [Export] public float MaxWalkSpeed { get; set; } = 5f;
+    [Export] public float SprintMultiplier { get; set; } = 1.65f;
     [Export] public float Acceleration { get; set; } = 40f;
     [Export] public float Gravity { get; set; } = 20f;
+    [Export] public float TurnSpeed { get; set; } = 10f;
     [Export] public float HeadHeight { get; set; } = 1.6f;
 
     public WorldInputGate InputGate { get; set; } = new();
+
+    /// <summary>Optional normalized input supplied by the mobile touch overlay.</summary>
+    public Vector2 MobileMovementInput { get; set; } = Vector2.Zero;
+    public bool MobileSprintHeld { get; set; }
 
     /// <summary>The node the camera should orbit around (the player's head).</summary>
     [Export] public Node3D? CameraTarget { get; set; }
@@ -36,12 +42,34 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
     public override void _Ready()
     {
-        if (CameraTarget is null)
+        EnsureCameraTarget();
+    }
+
+    /// <summary>
+    /// Ensure the camera has a stable head-height orbit target. The ranch controller calls this
+    /// too so manual/headless scene composition gets the same contract as normal tree entry.
+    /// </summary>
+    public Node3D EnsureCameraTarget()
+    {
+        if (CameraTarget is not null && GodotObject.IsInstanceValid(CameraTarget))
         {
-            var target = new Node3D { Name = "CameraTarget" };
-            target.Position = new Vector3(0f, HeadHeight, 0f);
-            AddChild(target);
-            CameraTarget = target;
+            CameraTarget.Position = new Vector3(0f, HeadHeight, 0f);
+            return CameraTarget;
+        }
+
+        var target = new Node3D { Name = "CameraTarget" };
+        target.Position = new Vector3(0f, HeadHeight, 0f);
+        AddChild(target);
+        CameraTarget = target;
+        return target;
+    }
+
+    public void SetFirstPersonVisualHidden(bool hidden)
+    {
+        var visual = GetNodeOrNull<Node3D>("Visual");
+        if (visual is not null)
+        {
+            visual.Visible = !hidden;
         }
     }
 
@@ -82,13 +110,18 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
         var forward = (Input.IsActionPressed("move_forward") ? 1f : 0f) - (Input.IsActionPressed("move_backward") ? 1f : 0f);
         var strafe = (Input.IsActionPressed("move_right") ? 1f : 0f) - (Input.IsActionPressed("move_left") ? 1f : 0f);
-        var input = new Vector2(strafe, forward);
+        var input = new Vector2(strafe, forward) + MobileMovementInput;
         if (input.Length() > 1f)
         {
             input = input.Normalized();
         }
 
         return input;
+    }
+
+    public float MoveSpeedFor(bool sprinting)
+    {
+        return MaxWalkSpeed * (sprinting ? Mathf.Max(1f, SprintMultiplier) : 1f);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -98,7 +131,20 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
         var input = ReadMovementInput();
         var direction = WorldMovementMath.ComputeMovementDirection(CameraBasisForward, CameraBasisRight, input);
-        var targetVelocity = direction * MaxWalkSpeed;
+        var sprinting = InputGate.WorldInputEnabled && (Input.IsActionPressed("move_sprint") || MobileSprintHeld);
+        var moveSpeed = MoveSpeedFor(sprinting);
+        var targetVelocity = direction * moveSpeed;
+
+        if (direction.LengthSquared() > 0.0001f)
+        {
+            // Godot's conventional character-forward axis is -Z. Rotate the body smoothly toward
+            // camera-relative travel so the visible avatar and movement direction agree.
+            var targetYaw = Mathf.Atan2(-direction.X, -direction.Z);
+            Rotation = new Vector3(
+                Rotation.X,
+                Mathf.LerpAngle(Rotation.Y, targetYaw, Mathf.Clamp(TurnSpeed * dt, 0f, 1f)),
+                Rotation.Z);
+        }
 
         // Gravity (bounded) when not on the floor.
         if (!IsOnFloor())
@@ -113,7 +159,7 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
         // Bounded horizontal acceleration toward the target.
         var target = new Vector3(targetVelocity.X, Velocity.Y, targetVelocity.Z);
         Velocity = WorldMovementMath.BlendVelocity(Velocity, target, Acceleration, dt);
-        Velocity = WorldMovementMath.ClampSpeed(Velocity, MaxWalkSpeed);
+        Velocity = WorldMovementMath.ClampSpeed(Velocity, moveSpeed);
         LastComputedVelocity = Velocity;
 
         MoveAndSlide();
@@ -121,22 +167,44 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
     private Camera3D? GetCamera()
     {
-        // Find the world camera rig's Camera3D by walking up from this body's parent chain
-        // and into its children. The scene authors the camera as a sibling under the same root.
+        // The authored camera lives at RanchGreybox/CameraRig/Camera, so a direct-sibling scan
+        // misses it. Walk each ancestor subtree recursively and prefer the current camera.
         var root = GetParent();
+        Camera3D? fallback = null;
         while (root is not null)
         {
-            foreach (var child in root.GetChildren())
+            var found = FindCameraRecursive(root, ref fallback);
+            if (found is not null)
             {
-                if (child is Camera3D cam)
-                {
-                    return cam;
-                }
+                return found;
             }
 
             root = root.GetParent();
         }
 
-        return GetNodeOrNull<Camera3D>("Camera");
+        return fallback ?? GetNodeOrNull<Camera3D>("Camera");
+    }
+
+    private static Camera3D? FindCameraRecursive(Node root, ref Camera3D? fallback)
+    {
+        foreach (var child in root.GetChildren())
+        {
+            if (child is Camera3D camera)
+            {
+                fallback ??= camera;
+                if (camera.Current)
+                {
+                    return camera;
+                }
+            }
+
+            var nested = FindCameraRecursive(child, ref fallback);
+            if (nested is not null)
+            {
+                return nested;
+            }
+        }
+
+        return null;
     }
 }

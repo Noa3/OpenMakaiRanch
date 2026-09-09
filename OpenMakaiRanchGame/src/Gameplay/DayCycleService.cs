@@ -16,20 +16,12 @@ public sealed class DayCycleService
     {
         _state.Calendar.Day += 1;
         _state.Calendar.Phase = DayPhase.Morning;
-        _state.Calendar.CurrentWeather = RandomWeather();
-        _state.Calendar.TrainedToday = 0;
-    }
 
-    private static Weather RandomWeather()
-    {
-        var roll = Random.Shared.NextDouble();
-        return roll switch
-        {
-            < 0.40 => Weather.Clear,
-            < 0.70 => Weather.Cloudy,
-            < 0.90 => Weather.Rain,
-            _ => Weather.Storm
-        };
+        // Original parity: yesterday's forecast becomes today's weather after the date increments,
+        // then a new forecast is generated from the new season/day.
+        _state.Calendar.CurrentWeather = _state.Calendar.TomorrowWeather;
+        _state.Calendar.TomorrowWeather = OriginalCalendarRules.RollTomorrow(_state.Calendar);
+        _state.Calendar.TrainedToday = 0;
     }
 
     public bool AdvancePhase()

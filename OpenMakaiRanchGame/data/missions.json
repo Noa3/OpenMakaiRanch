@@ -118,5 +118,15 @@
     "RewardItemId": "camping_gear",
     "EnemyGroupId": "group_bandit_regional",
     "_id": "trade_escort"
+  },
+  {
+    "Id": "tutorial_ranch_intruder",
+    "DisplayName": "Ranch Break-in",
+    "Tier": 0,
+    "Difficulty": 1,
+    "RewardGold": 0,
+    "RewardItemId": "",
+    "EnemyGroupId": "group_tutorial_intruder",
+    "_id": "tutorial_ranch_intruder"
   }
 ]

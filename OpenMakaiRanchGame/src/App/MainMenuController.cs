@@ -155,18 +155,23 @@ public partial class MainMenuController : Control
 		GetNode<Label>("Root/Center/Panel/Content/TitleLabel").Text = T("mainmenu.title", "Open Makai Ranch");
 		GetNode<Label>("Root/Center/Panel/Content/LangRow/LangLabel").Text = T("mainmenu.language", "Language:");
 
-		var canContinue = game.HasSaveSlot(0) || game.HasSaveSlot(1);
+		var canContinue = game.MostRecentSaveSlot().HasValue;
 		_continueButton.Visible = canContinue;
 		_continueButton.Text = T("mainmenu.continue", "Continue");
+		_continueButton.TooltipText = T("mainmenu.continue_tip", "Load the most recently saved usable game from autosave or manual slots 1-3.");
 
 		_newGameButton.Text = T("mainmenu.new_game", "New Game");
+		_newGameButton.TooltipText = T("mainmenu.new_game_tip", "Create your player, view the prologue, then enter the 3D ranch.");
 
 		var hasVictorySave = game.HasVictorySave();
 		_newGamePlusButton.Visible = hasVictorySave;
 		_newGamePlusButton.Disabled = !hasVictorySave;
 		_newGamePlusButton.Text = T("mainmenu.new_game_plus", "New Game+");
+		_newGamePlusButton.TooltipText = T("mainmenu.new_game_plus_tip", "Start New Game+ from the most recent victory save and carry over the supported progression.");
 
 		_quitButton.Text = T("mainmenu.quit", "Quit");
+		_quitButton.TooltipText = T("mainmenu.quit_tip", "Close Open Makai Ranch.");
+		_langPicker.TooltipText = T("mainmenu.language_tip", "Change the interface language.");
 	}
 
 	private void HandleStart(bool loadExisting, bool newGamePlus = false)
@@ -194,19 +199,15 @@ public partial class MainMenuController : Control
 
 	private void ContinueFromSlot(GameRoot game)
 	{
-		if (game.LoadSlot(1))
+		var slot = game.MostRecentSaveSlot();
+		if (slot.HasValue && game.LoadSlot(slot.Value))
 		{
+			GameRoot.PendingInitialScreen = null;
 			GoToGameScene();
 			return;
 		}
 
-		if (game.LoadSlot(0))
-		{
-			GoToGameScene();
-			return;
-		}
-
-		GD.PushWarning("Continue requested but no save slots were available.");
+		GD.PushWarning("Continue requested but no usable save slots were available.");
 		RefreshState();
 	}
 
@@ -219,21 +220,24 @@ public partial class MainMenuController : Control
 
 	private void StartNewGamePlusFromMenu(GameRoot game)
 	{
-		if (!game.LoadSlot(1))
+		var slot = game.MostRecentSaveSlot(requireVictory: true);
+		if (!slot.HasValue || !game.LoadSlot(slot.Value))
 		{
-			GD.PushWarning("New Game+ failed: could not load save.");
+			GD.PushWarning("New Game+ failed: could not load a victory save.");
 			return;
 		}
+
 		game.StartNewGamePlus();
+		GameRoot.PendingInitialScreen = null;
 		GoToGameScene();
 	}
 
 	private void GoToGameScene()
 	{
-		var error = GetTree().ChangeSceneToFile("res://scenes/Game.tscn");
+		var error = GetTree().ChangeSceneToFile("res://scenes/WorldGame.tscn");
 		if (error != Error.Ok)
 		{
-			GD.PushError($"MainMenu failed to open Game scene: {error}");
+			GD.PushError($"MainMenu failed to open WorldGame scene: {error}");
 		}
 	}
 }

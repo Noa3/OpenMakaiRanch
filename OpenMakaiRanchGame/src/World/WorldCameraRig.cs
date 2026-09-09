@@ -1,32 +1,42 @@
 using Godot;
+using OpenMakaiRanch.App;
 
 namespace OpenMakaiRanch.World;
 
 /// <summary>
-/// Collision-aware third-person camera follow rig. Owns yaw/pitch/zoom and keeps the
-/// camera out of geometry by clamping along its ray to the nearest obstacle
-/// (via <see cref="WorldCameraMath.ClampToGeometry"/> and a raycast).
+/// Collision-aware third-person camera follow rig. Owns yaw/pitch/zoom and keeps the camera out
+/// of geometry by clamping along its ray to the nearest obstacle.
 ///
-/// Per the 3D_REMAKE_PLAN: "camera must not penetrate geometry." The follow target is the
-/// player's head node. Mouse look, wheel zoom, and recenter are implemented here.
+/// The rig is presentation-only. Input ownership is shared with the player through
+/// <see cref="WorldInputGate"/> so management overlays cannot accidentally keep rotating the world.
 /// </summary>
 public partial class WorldCameraRig : Node3D
 {
     [Export] public float LookSensitivity { get; set; } = 0.0025f;
     [Export] public float ZoomSensitivity { get; set; } = 1.5f;
     [Export] public float RecenterSpeed { get; set; } = 6f;
+    [Export] public bool RequireRightMouseButtonForLook { get; set; } = true;
+    [Export] public float CameraNearClip { get; set; } = 0.03f;
+    [Export] public float CollisionClearance { get; set; } = 0.28f;
 
-    /// <summary>The node the camera orbits around (the player's head).</summary>
+    /// <summary>The node the camera orbits around (normally the player's head target).</summary>
     [Export] public Node3D? Target { get; set; }
 
     [Export] public float Yaw { get; set; } = Mathf.DegToRad(-90f);
     [Export] public float Pitch { get; set; } = Mathf.DegToRad(30f);
     [Export] public float Distance { get; set; } = 7f;
 
+    public WorldInputGate InputGate { get; set; } = new();
+
     private Camera3D? _camera;
     private Vector3 _desiredPosition;
+    private float _userSensitivity = 1f;
+    private bool _invertY;
+    private bool _firstPerson;
+    private bool _mouseCapturedForFirstPerson;
 
     public Camera3D? Camera => _camera;
+    public bool IsFirstPerson => _firstPerson;
     public Vector3 DesiredPosition => _desiredPosition;
 
     public override void _Ready()
@@ -41,11 +51,41 @@ public partial class WorldCameraRig : Node3D
             _camera = new Camera3D { Name = "Camera", Current = true };
             AddChild(_camera);
         }
+
+        _camera.Near = Mathf.Clamp(CameraNearClip, 0.01f, 0.20f);
+
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        {
+            game.StateChanged += ApplyUserSettings;
+        }
+        ApplyUserSettings();
     }
 
-    /// <summary>
-    /// Drive the rig from synthetic yaw/pitch/distance — used by headless verification.
-    /// </summary>
+    public override void _ExitTree()
+    {
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        {
+            game.StateChanged -= ApplyUserSettings;
+        }
+    }
+
+    public void ApplyUserSettings()
+    {
+        if (GameRoot.Instance is not { } game)
+        {
+            return;
+        }
+
+        _userSensitivity = Mathf.Clamp(game.State.Settings.CameraSensitivity, 0.35f, 2.50f);
+        _invertY = game.State.Settings.InvertCameraY;
+        if (_camera is not null)
+        {
+            _camera.Fov = Mathf.Clamp(game.State.Settings.CameraFov, 55f, 95f);
+            _camera.Near = Mathf.Clamp(CameraNearClip, 0.01f, 0.20f);
+        }
+    }
+
+    /// <summary>Drive the orbit directly; used by deterministic verification and dev tools.</summary>
     public void SetOrbit(float yaw, float pitch, float distance)
     {
         Yaw = yaw;
@@ -53,46 +93,142 @@ public partial class WorldCameraRig : Node3D
         Distance = WorldCameraMath.ApplyZoom(distance, 0f);
     }
 
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (!InputGate.WorldInputEnabled)
+        {
+            return;
+        }
+
+        if (@event is InputEventMouseMotion motion)
+        {
+            var canLook = _firstPerson || !RequireRightMouseButtonForLook || Input.IsMouseButtonPressed(MouseButton.Right);
+            if (canLook)
+            {
+                ApplyLookDelta(motion.Relative);
+            }
+            return;
+        }
+
+        if (@event is InputEventMouseButton mouseButton && mouseButton.Pressed)
+        {
+            if (mouseButton.ButtonIndex == MouseButton.WheelUp)
+            {
+                Distance = WorldCameraMath.ApplyZoom(Distance, ZoomSensitivity);
+            }
+            else if (mouseButton.ButtonIndex == MouseButton.WheelDown)
+            {
+                Distance = WorldCameraMath.ApplyZoom(Distance, -ZoomSensitivity);
+            }
+        }
+    }
+
+    public void ApplyLookDelta(Vector2 relative)
+    {
+        if (!InputGate.WorldInputEnabled)
+        {
+            return;
+        }
+
+        var sensitivity = LookSensitivity * _userSensitivity;
+        Yaw -= relative.X * sensitivity;
+        var y = relative.Y * sensitivity * (_invertY ? -1f : 1f);
+        Pitch = WorldCameraMath.ClampPitch(Pitch - y);
+    }
+
     public override void _Process(double delta)
     {
         var dt = (float)delta;
 
-        if (Input.IsActionJustPressed("camera_recenter"))
-        {
-            var t = Mathf.Clamp(RecenterSpeed * dt, 0f, 1f);
-            Yaw = Mathf.LerpAngle(Yaw, Mathf.DegToRad(-90f), t);
-            Pitch = Mathf.Lerp(Pitch, Mathf.DegToRad(30f), t);
-        }
+        UpdateFirstPersonMouseCapture();
 
-        // Mouse look (only when the world owns input — the input gate is checked by the scene
-        // via WorldInputGate; here we only react to the mapped actions).
-        if (Input.IsActionJustPressed("camera_look_up"))
+        if (InputGate.WorldInputEnabled)
         {
-            Pitch = WorldCameraMath.ClampPitch(Pitch + LookSensitivity);
-        }
-        if (Input.IsActionJustPressed("camera_look_down"))
-        {
-            Pitch = WorldCameraMath.ClampPitch(Pitch - LookSensitivity);
-        }
-        if (Input.IsActionJustPressed("camera_look_left"))
-        {
-            Yaw += LookSensitivity;
-        }
-        if (Input.IsActionJustPressed("camera_look_right"))
-        {
-            Yaw -= LookSensitivity;
-        }
+            if (Input.IsActionJustPressed("camera_first_person"))
+            {
+                SetFirstPerson(!_firstPerson);
+            }
 
-        if (Input.IsActionJustPressed("camera_zoom_in"))
-        {
-            Distance = WorldCameraMath.ApplyZoom(Distance, ZoomSensitivity);
-        }
-        if (Input.IsActionJustPressed("camera_zoom_out"))
-        {
-            Distance = WorldCameraMath.ApplyZoom(Distance, -ZoomSensitivity);
+            if (Input.IsActionJustPressed("camera_recenter"))
+            {
+                var t = Mathf.Clamp(RecenterSpeed * dt, 0f, 1f);
+                Yaw = Mathf.LerpAngle(Yaw, Mathf.DegToRad(-90f), t);
+                Pitch = Mathf.Lerp(Pitch, Mathf.DegToRad(30f), t);
+            }
+
+            // These mapped actions remain useful for accessibility/controller bindings. Mouse look
+            // is handled in _UnhandledInput so ordinary desktop play no longer depends on synthetic
+            // InputEventAction events.
+            if (Input.IsActionPressed("camera_look_up"))
+            {
+                Pitch = WorldCameraMath.ClampPitch(Pitch + LookSensitivity * _userSensitivity * 60f * dt * (_invertY ? -1f : 1f));
+            }
+            if (Input.IsActionPressed("camera_look_down"))
+            {
+                Pitch = WorldCameraMath.ClampPitch(Pitch - LookSensitivity * _userSensitivity * 60f * dt * (_invertY ? -1f : 1f));
+            }
+            if (Input.IsActionPressed("camera_look_left"))
+            {
+                Yaw += LookSensitivity * _userSensitivity * 60f * dt;
+            }
+            if (Input.IsActionPressed("camera_look_right"))
+            {
+                Yaw -= LookSensitivity * _userSensitivity * 60f * dt;
+            }
+
+            if (Input.IsActionJustPressed("camera_zoom_in"))
+            {
+                Distance = WorldCameraMath.ApplyZoom(Distance, ZoomSensitivity);
+            }
+            if (Input.IsActionJustPressed("camera_zoom_out"))
+            {
+                Distance = WorldCameraMath.ApplyZoom(Distance, -ZoomSensitivity);
+            }
         }
 
         UpdateCameraTransform();
+    }
+
+    public void SetFirstPerson(bool enabled)
+    {
+        if (_firstPerson == enabled)
+        {
+            return;
+        }
+
+        _firstPerson = enabled;
+        if (Target?.GetParent() is ThirdPersonPlayerController player)
+        {
+            player.SetFirstPersonVisualHidden(enabled);
+        }
+
+        if (!enabled && _mouseCapturedForFirstPerson)
+        {
+            Input.MouseMode = Input.MouseModeEnum.Visible;
+            _mouseCapturedForFirstPerson = false;
+        }
+    }
+
+    private void UpdateFirstPersonMouseCapture()
+    {
+        if (!_firstPerson)
+        {
+            return;
+        }
+
+        if (InputGate.WorldInputEnabled)
+        {
+            if (!_mouseCapturedForFirstPerson)
+            {
+                Input.MouseMode = Input.MouseModeEnum.Captured;
+                _mouseCapturedForFirstPerson = true;
+            }
+        }
+        else if (_mouseCapturedForFirstPerson)
+        {
+            Input.MouseMode = Input.MouseModeEnum.Visible;
+            _mouseCapturedForFirstPerson = false;
+        }
     }
 
     private void UpdateCameraTransform()
@@ -103,9 +239,21 @@ public partial class WorldCameraRig : Node3D
         }
 
         var targetPos = Target.GlobalPosition;
+
+        if (_firstPerson)
+        {
+            var viewDirection = WorldCameraMath.ComputeViewDirection(Yaw, Pitch);
+            var basis = Basis.LookingAt(viewDirection, Vector3.Up);
+            // Small forward offset keeps the near plane away from the exact character origin while
+            // still behaving as a true eye-level camera.
+            var eye = targetPos + viewDirection * 0.04f;
+            _desiredPosition = eye;
+            _camera.GlobalTransform = new Transform3D(basis, eye);
+            return;
+        }
+
         _desiredPosition = WorldCameraMath.ComputeCameraPosition(targetPos, Yaw, Pitch, Distance);
 
-        // Collision-aware clamp: raycast from target toward the desired camera position.
         var hitDistance = float.PositiveInfinity;
         var spaceState = GetWorld3D()?.DirectSpaceState;
         if (spaceState is not null)
@@ -117,6 +265,11 @@ public partial class WorldCameraRig : Node3D
             if (length > 0.0001f)
             {
                 var query = PhysicsRayQueryParameters3D.Create(from, to);
+                if (Target.GetParent() is CollisionObject3D owner)
+                {
+                    query.Exclude = new Godot.Collections.Array<Rid> { owner.GetRid() };
+                }
+
                 var hit = spaceState.IntersectRay(query);
                 if (hit.ContainsKey("position"))
                 {
@@ -125,11 +278,14 @@ public partial class WorldCameraRig : Node3D
             }
         }
 
-        var clamped = WorldCameraMath.ClampToGeometry(targetPos, _desiredPosition, hitDistance);
-        // Basis.LookingAt(direction, up): the camera looks along `direction` (its -Z axis).
-        // So the direction is from the camera position toward the target.
+        var clamped = WorldCameraMath.ClampToGeometry(
+            targetPos,
+            _desiredPosition,
+            hitDistance,
+            Mathf.Clamp(CollisionClearance, 0.08f, 0.60f));
         var direction = (targetPos - clamped).Normalized();
-        var basis = Basis.LookingAt(direction, Vector3.Up);
-        _camera.GlobalTransform = new Transform3D(basis, clamped);
+        var cameraBasis = Basis.LookingAt(direction, Vector3.Up);
+        _camera.GlobalTransform = new Transform3D(cameraBasis, clamped);
     }
+
 }

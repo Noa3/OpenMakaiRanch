@@ -101,6 +101,16 @@ public sealed class DailySettlementService
         _milestones.CheckAfterSettlement(report);
         _dayCycle.AdvanceToNextDay();
 
+        // Original ANNIVERSARY_MESSAGE parity: announce the first day of a new season/year after
+        // DATE_CALC/weather rollover. This modernizes presentation without changing settlement.
+        if (_state.Calendar.IsSeasonStart)
+        {
+            var seasonLine = _state.Calendar.Season == Season.Spring
+                ? $"Year {_state.Calendar.Year} begins. Spring has come to the ranch."
+                : $"The season changes. {_state.Calendar.Season} begins.";
+            report.Lines.Add(seasonLine);
+        }
+
         var discovered = _state.Adventure.DiscoveredMissionIds.Count;
         var total = _data.Missions.Count;
         if (discovered < total && _state.Calendar.Day % 3 == 0)

@@ -21,12 +21,33 @@ public enum Season
     Winter
 }
 
+public enum Weekday
+{
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday
+}
+
 public enum Weather
 {
+    // Keep legacy numeric values 0-3 stable for existing saves.
     Clear,
     Cloudy,
     Rain,
-    Storm
+    Storm,
+
+    // Original eraMakaiRanch weather vocabulary, added without renumbering legacy values.
+    Drizzle,
+    HeavyRain,
+    StrongWind,
+    TorrentialRain,
+    Snow,
+    HeavySnow,
+    Blizzard
 }
 
 public enum MissionOutcome
@@ -97,6 +118,36 @@ public sealed class SaveState
     public bool NgPlusActive { get; set; }
     public int? VictoryDay { get; set; }
     public FlagStorage Flags { get; set; } = new();
+
+    /// <summary>
+    /// Additive remake story/presentation state. It intentionally does not consume unknown original
+    /// numeric flag IDs; original event-flag parity can map verified IDs into FlagStorage later.
+    /// </summary>
+    public StoryProgressState Story { get; set; } = new();
+
+    /// <summary>
+    /// Presentation location for the 3D remake. Additive/defaulted so older saves safely resume at
+    /// the ranch without a schema migration.
+    /// </summary>
+    public string WorldAreaId { get; set; } = "ranch";
+}
+
+public sealed class StoryProgressState
+{
+    /// <summary>0 = not started; later values are defined by FirstDayFlowController.</summary>
+    public int FirstDayStage { get; set; }
+
+    public bool FirstDayCompleted { get; set; }
+    public bool RanchTourCompleted { get; set; }
+    public bool IntruderEncounterCompleted { get; set; }
+    public bool PersonalEveningCompleted { get; set; }
+    public bool PlayerBathedOnFirstNight { get; set; }
+
+    /// <summary>
+    /// Placeholder guide identity. Empty means the original childhood-friend mapping has not yet
+    /// been verified; the presentation uses the neutral "Childhood Friend" label.
+    /// </summary>
+    public string ChildhoodFriendCharacterId { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -158,14 +209,53 @@ public sealed class PlayerState
 
 public sealed class CalendarState
 {
+    public const int DaysPerWeek = 7;
+    public const int DaysPerSeason = 28;
+    public const int SeasonsPerYear = 4;
+    public const int DaysPerYear = DaysPerSeason * SeasonsPerYear;
+
+    /// <summary>Total elapsed game day. Day 1 is Spring 1, Year 1, Monday like the original.</summary>
     public int Day { get; set; } = 1;
     public DayPhase Phase { get; set; } = DayPhase.Morning;
     public Weather CurrentWeather { get; set; } = Weather.Clear;
+
+    /// <summary>
+    /// Original parity: today becomes yesterday's forecast at day rollover, then a new forecast is rolled.
+    /// Older saves safely default to Clear.
+    /// </summary>
+    public Weather TomorrowWeather { get; set; } = Weather.Clear;
+
     public string NightAction { get; set; } = string.Empty;
     public int TrainedToday { get; set; }
 
     [JsonIgnore]
-    public Season Season => (Season)(((Day - 1) / 30) % 4);
+    public int Year => ((Math.Max(1, Day) - 1) / DaysPerYear) + 1;
+
+    [JsonIgnore]
+    public Season Season => (Season)(((Math.Max(1, Day) - 1) / DaysPerSeason) % SeasonsPerYear);
+
+    [JsonIgnore]
+    public int DayOfSeason
+    {
+        get
+        {
+            var value = Math.Max(1, Day) % DaysPerSeason;
+            return value == 0 ? DaysPerSeason : value;
+        }
+    }
+
+    [JsonIgnore]
+    public Weekday Weekday => (Weekday)((Math.Max(1, Day) - 1) % DaysPerWeek);
+
+    [JsonIgnore]
+    public bool IsSeasonEnd => DayOfSeason == DaysPerSeason;
+
+    [JsonIgnore]
+    public bool IsSeasonStart => DayOfSeason == 1;
+
+    [JsonIgnore]
+    public string OriginalStyleDate =>
+        $"Year {Year} [{Season} Day {DayOfSeason:00} / {Weekday.ToString()[..3]}]";
 }
 
 public sealed class EconomyState
@@ -328,12 +418,55 @@ public sealed class RecruitmentState
 
 public sealed class SettingsState
 {
+    // Audio / feedback
     public bool AudioEnabled { get; set; } = true;
     public bool HapticsEnabled { get; set; } = true;
+    public float MasterVolume { get; set; } = 0.85f;
+    public float MusicVolume { get; set; } = 0.70f;
+    public float SfxVolume { get; set; } = 0.85f;
+    public float UiVolume { get; set; } = 0.80f;
+    public bool MuteWhenUnfocused { get; set; } = false;
+
+    // Presentation / accessibility
     public string ThemeId { get; set; } = "midnight";
     public float UiScale { get; set; } = 1.0f;
     public string Locale { get; set; } = "en";
     public bool ReducedMotion { get; set; }
+
+    // Graphics / performance. Desktop targets Forward+; mobile uses Mobile and web uses
+    // Compatibility. Runtime quality gates keep one settings model across all renderers.
+    public string GraphicsQuality { get; set; } = "Medium";
+    public float RenderScale { get; set; } = 0.85f;
+    public bool ShadowsEnabled { get; set; } = true;
+    public bool AtmosphereEffectsEnabled { get; set; } = true;
+    public bool WeatherEffectsEnabled { get; set; } = true;
+    public bool AdvancedLightingEnabled { get; set; } = true;
+    public bool WorldParticlesEnabled { get; set; } = true;
+    public float WorldDetailScale { get; set; } = 1.0f;
+    public int FrameRateLimit { get; set; } = 60;
+    public bool VSyncEnabled { get; set; } = true;
+    public bool Fullscreen { get; set; } = false;
+    public int WindowWidth { get; set; } = 1920;
+    public int WindowHeight { get; set; } = 1080;
+
+    // Camera / input
+    public float CameraSensitivity { get; set; } = 1.0f;
+    public float CameraFov { get; set; } = 70.0f;
+    public bool InvertCameraY { get; set; } = false;
+    public bool TouchControlsEnabled { get; set; } = false;
+    public float TouchControlScale { get; set; } = 1.0f;
+
+    // Save / lifecycle
+    public bool AutosaveEnabled { get; set; } = true;
+
+    /// <summary>Show contextual world onboarding and reminder hints.</summary>
+    public bool TutorialHintsEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Presentation-only tutorial acknowledgements. Stored with user settings rather than gameplay
+    /// saves so a player is not forced through the same control tutorial for every save slot.
+    /// </summary>
+    public HashSet<string> SeenTutorialIds { get; set; } = new(StringComparer.Ordinal);
 
     public SettingsState Clone()
     {
@@ -341,10 +474,36 @@ public sealed class SettingsState
         {
             AudioEnabled = AudioEnabled,
             HapticsEnabled = HapticsEnabled,
+            MasterVolume = MasterVolume,
+            MusicVolume = MusicVolume,
+            SfxVolume = SfxVolume,
+            UiVolume = UiVolume,
+            MuteWhenUnfocused = MuteWhenUnfocused,
             ThemeId = ThemeId,
             UiScale = UiScale,
             Locale = Locale,
-            ReducedMotion = ReducedMotion
+            ReducedMotion = ReducedMotion,
+            GraphicsQuality = GraphicsQuality,
+            RenderScale = RenderScale,
+            ShadowsEnabled = ShadowsEnabled,
+            AtmosphereEffectsEnabled = AtmosphereEffectsEnabled,
+            WeatherEffectsEnabled = WeatherEffectsEnabled,
+            AdvancedLightingEnabled = AdvancedLightingEnabled,
+            WorldParticlesEnabled = WorldParticlesEnabled,
+            WorldDetailScale = WorldDetailScale,
+            FrameRateLimit = FrameRateLimit,
+            VSyncEnabled = VSyncEnabled,
+            Fullscreen = Fullscreen,
+            WindowWidth = WindowWidth,
+            WindowHeight = WindowHeight,
+            CameraSensitivity = CameraSensitivity,
+            CameraFov = CameraFov,
+            InvertCameraY = InvertCameraY,
+            TouchControlsEnabled = TouchControlsEnabled,
+            TouchControlScale = TouchControlScale,
+            AutosaveEnabled = AutosaveEnabled,
+            TutorialHintsEnabled = TutorialHintsEnabled,
+            SeenTutorialIds = new HashSet<string>(SeenTutorialIds ?? new HashSet<string>(), StringComparer.Ordinal)
         };
     }
 }

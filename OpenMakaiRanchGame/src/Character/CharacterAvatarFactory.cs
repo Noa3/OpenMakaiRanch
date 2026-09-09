@@ -18,6 +18,14 @@ namespace OpenMakaiRanch.Character;
 /// </summary>
 public static class CharacterAvatarFactory
 {
+    private static readonly string[] PlaceholderModels =
+    {
+        "res://assets/vendor/kaykit_adventurers/Knight.glb",
+        "res://assets/vendor/kaykit_adventurers/Mage.glb",
+        "res://assets/vendor/kaykit_adventurers/Rogue_Hooded.glb",
+        "res://assets/vendor/kaykit_adventurers/Barbarian.glb"
+    };
+
     /// <summary>
     /// Build a presentation-only profile from a <see cref="CharacterDefinition"/>.
     /// The definition is read; it is never mutated. All gameplay state stays in the definition/state.
@@ -39,6 +47,8 @@ public static class CharacterAvatarFactory
             IsDebugStandIn = true,
             BodyColor = MapSkinColor(definition.SkinColor),
             HeadColor = MapHairColor(definition.HairColor),
+            Height = Mathf.Clamp(definition.Height / 1000f, 1.45f, 2.25f),
+            PlaceholderModelPath = PlaceholderModels[StablePlaceholderIndex(definition.Id)]
         };
     }
 
@@ -67,6 +77,17 @@ public static class CharacterAvatarFactory
         }
 
         return new CharacterAvatar3D { Profile = profile };
+    }
+
+    private static int StablePlaceholderIndex(string id)
+    {
+        var hash = 17;
+        foreach (var ch in id ?? string.Empty)
+        {
+            hash = unchecked(hash * 31 + ch);
+        }
+
+        return (hash & 0x7fffffff) % PlaceholderModels.Length;
     }
 
     /// <summary>Map a neutral skin-color name to a stand-in body tint. Unknown → default.</summary>

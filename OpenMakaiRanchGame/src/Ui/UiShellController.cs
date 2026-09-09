@@ -6,6 +6,7 @@ using OpenMakaiRanch.App;
 using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Core.Resources;
 using OpenMakaiRanch.Gameplay;
+using OpenMakaiRanch.World;
 using static OpenMakaiRanch.Locale.LocaleCatalog;
 
 namespace OpenMakaiRanch.Ui;
@@ -157,6 +158,16 @@ public partial class UiShellController : Control
 	private bool _shellReady;
 	private bool _fullScreenMode;
 	private string _currentScreen = "title";
+
+	/// <summary>Raised whenever the shell changes its logical screen. Used by the 3D world host to
+	/// keep mandatory full-screen flows (character creation/prologue/victory) visible without
+	/// coupling the shell to the world scene.</summary>
+	public event Action<string>? ScreenChanged;
+	public event Action<string>? WorldTravelRequested;
+
+
+	public string CurrentScreen => _currentScreen;
+	public bool IsFullScreenMode => _fullScreenMode;
 	private string _detailCharacterId = string.Empty;
 	private readonly Dictionary<string, Button> _navButtons = new();
 	private readonly Dictionary<string, Button> _compactNavButtons = new();
@@ -214,8 +225,41 @@ public partial class UiShellController : Control
 		}
 	}
 
+	public bool RequestWorldTravel(string destinationId)
+	{
+		if (destinationId is not ("ranch" or "town") || WorldTravelRequested is null)
+		{
+			return false;
+		}
+
+		WorldTravelRequested.Invoke(destinationId);
+		return true;
+	}
+
+	public bool ShowCharacterDetailFromWorld(string characterId)
+	{
+		if (string.IsNullOrWhiteSpace(characterId) || _game.Roster.Find(characterId) is null)
+		{
+			return false;
+		}
+
+		_detailCharacterId = characterId;
+		ShowScreen("character_detail");
+		return true;
+	}
+
 	public void ShowScreen(string screenId)
 	{
+		var previousScreen = _currentScreen;
+		if (screenId == "combat" && previousScreen != "combat" && !_game.CombatWorldTimeLocked)
+		{
+			_game.BeginCombatSession();
+		}
+		else if (previousScreen == "combat" && screenId != "combat" && _game.CombatWorldTimeLocked)
+		{
+			_game.EndCombatSession();
+		}
+
 		if (!CanEnterScreen(screenId, out var blockedReason))
 		{
 			_game.Feedback.PlayError();
@@ -229,6 +273,7 @@ public partial class UiShellController : Control
 		var nowFullScreen = screenId is "character_creation" or "prologue" or "victory" or "title";
 		_fullScreenMode = nowFullScreen;
 		_currentScreen = screenId;
+		ScreenChanged?.Invoke(screenId);
 
 		if (nowFullScreen != wasFullScreen)
 		{
@@ -291,33 +336,37 @@ public partial class UiShellController : Control
 			default: RenderRanch(); break;
 		}
 
-		var selected = _game.State.Calendar.NightAction;
-		var hasChoice = selected is "rest" or "train" or "admin";
-
-		var banner = CardContainer();
-		banner.AddThemeConstantOverride("separation", 6);
-		_content.AddChild(banner);
-
-		var title = AddStyledLine(T("screen.night.title", "Night Phase — Choose Tonight's Work"), true);
-		title.TooltipText = T("tooltip.night", "Pick how the ranch spends the night. Applied when you End Day.");
-		banner.AddChild(title);
-
-		if (hasChoice)
+		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not "report")
 		{
-			banner.AddChild(MutedLabel($"{T("screen.night.selected", "Selected")}: {NightActionLabel(selected)}"));
-			return;
-		}
+			var selected = _game.State.Calendar.NightAction;
+			var hasChoice = selected is "rest" or "train" or "admin";
 
-		void AddNightButton(string action, string label)
-		{
-			var button = PrimaryButton(label, "");
-			button.Pressed += () => { _game.SetNightAction(action); ShowScreen(_currentScreen); };
-			banner.AddChild(button);
-		}
+			var banner = CardContainer();
+			banner.AddThemeConstantOverride("separation", 6);
+			_content.AddChild(banner);
 
-		AddNightButton("rest", T("screen.night.rest", "Rest (restore energy)"));
-		AddNightButton("train", T("screen.night.train", "Train (growth practice)"));
-		AddNightButton("admin", T("screen.night.admin", "Admin (reduce workload)"));
+			var title = AddStyledLine(T("screen.night.title", "Night Phase — Choose Tonight's Work"), true);
+			title.TooltipText = T("tooltip.night", "Pick how the ranch spends the night. Applied when you End Day.");
+			banner.AddChild(title);
+
+			if (hasChoice)
+			{
+				banner.AddChild(MutedLabel($"{T("screen.night.selected", "Selected")}: {NightActionLabel(selected)}"));
+			}
+			else
+			{
+				void AddNightButton(string action, string label)
+				{
+					var button = PrimaryButton(label, "");
+					button.Pressed += () => { _game.SetNightAction(action); ShowScreen(_currentScreen); };
+					banner.AddChild(button);
+				}
+
+				AddNightButton("rest", T("screen.night.rest", "Rest (restore energy)"));
+				AddNightButton("train", T("screen.night.train", "Train (growth practice)"));
+				AddNightButton("admin", T("screen.night.admin", "Admin (reduce workload)"));
+			}
+		}
 	}
 
 	private static string NightActionLabel(string action) => action switch
@@ -400,7 +449,7 @@ public partial class UiShellController : Control
 	_rootPanel.AddThemeStyleboxOverride("panel", CardStyle(Palette.RootPanelFill, Palette.RootPanelBorder, 1, 10));
 	_navPanel.AddThemeStyleboxOverride("panel", CardStyle(Palette.NavPanelFill, Palette.NavPanelBorder, 1, 8));
 		contentPanel.AddThemeStyleboxOverride("panel", CardStyle(Palette.ContentPanelFill, Palette.ContentPanelBorder, 1, 10));
-	_rootPanel.Scale = Vector2.One * _game.State.Settings.UiScale;
+	_rootPanel.Scale = Vector2.One;
 
 	ApplyHeaderLabelStyle(_titleLabel);
 		ApplyMutedLabelStyle(_screenLabel);
@@ -508,32 +557,40 @@ public partial class UiShellController : Control
 
 	private void ApplyResponsiveLayout()
 	{
-		var viewportSize = GetViewportRect().Size;
-		var compact = _navCollapsed || viewportSize.X <= 900 || viewportSize.Y <= 520;
-		var tightWidth = viewportSize.X <= 680;
-		var ultraTight = viewportSize.X <= 560;
-		var margin = compact ? 8 : 18;
+		var viewport = GetViewport();
+		var metrics = ScreenLayout.Calculate(viewport);
+		var viewportSize = metrics.ViewportSize;
+		var mobile = _game.RuntimeSettings.IsMobilePlatform;
+		var compact = _navCollapsed || mobile || viewportSize.X <= 900 || viewportSize.Y <= 520;
+		var tightWidth = viewportSize.X <= 680 || (mobile && viewportSize.Y <= 900);
+		var ultraTight = viewportSize.X <= 560 || (mobile && viewportSize.Y <= 720);
+		var margin = compact ? 8f : 18f;
 
 		if (_fullScreenMode)
 		{
-			_margin.OffsetLeft = _margin.OffsetTop = _margin.OffsetRight = _margin.OffsetBottom = 0;
+			_margin.OffsetLeft = metrics.SafeLeft;
+			_margin.OffsetTop = metrics.SafeTop;
+			_margin.OffsetRight = -metrics.SafeRight;
+			_margin.OffsetBottom = -metrics.SafeBottom;
 			_topBar.Visible = false;
 			_navPanel.Visible = false;
 			_compactNavigationScroll.Visible = false;
 		}
 		else
 		{
-			_margin.OffsetLeft = margin;
-			_margin.OffsetTop = compact ? 8 : 16;
-			_margin.OffsetRight = -margin;
-			_margin.OffsetBottom = compact ? -8 : -16;
+			// On 21:9 / 32:9 the 3D world can use the extra horizontal field of view, while dense
+			// management stays inside a centered 1920-wide readable region.
+			_margin.OffsetLeft = metrics.ContentLeft + margin;
+			_margin.OffsetTop = metrics.SafeTop + (compact ? 8 : 16);
+			_margin.OffsetRight = -(viewportSize.X - metrics.ContentRight + margin);
+			_margin.OffsetBottom = -(metrics.SafeBottom + (compact ? 8 : 16));
 
 			_topBar.Visible = true;
 			_navPanel.Visible = !compact;
 			_compactNavigationScroll.Visible = compact;
 		}
 
-		_rootPanel.Scale = Vector2.One * _game.State.Settings.UiScale;
+		_rootPanel.Scale = Vector2.One;
 		_body.AddThemeConstantOverride("separation", compact ? 8 : 12);
 		_topBar.AddThemeConstantOverride("separation", compact ? 2 : 4);
 		_topBarRow1.AddThemeConstantOverride("separation", compact ? 4 : 8);
@@ -722,6 +779,15 @@ public partial class UiShellController : Control
 
 	private void RefreshCurrentScreen()
 	{
+		// Character-creation controls already reflect their own edit locally, while the embedded
+		// PlayerAvatar3D listens directly to GameRoot.StateChanged. Rebuilding the entire scene on
+		// every keystroke/picker change would destroy focus and make name entry unusable.
+		if (_currentScreen == "character_creation"
+			&& _content.GetNodeOrNull<CharacterCreationPreviewController>("CharacterCreationContent") is not null)
+		{
+			return;
+		}
+
 		ShowScreen(_currentScreen);
 	}
 
@@ -737,7 +803,8 @@ public partial class UiShellController : Control
 		var ranch = _game.State.Ranch;
 		var player = _game.State.Player;
 
-		_dayLabel.Text = $"{cal.Season} / Day {cal.Day}";
+		_dayLabel.Text = $"Y{cal.Year} {cal.Season} {cal.DayOfSeason:00} • {cal.Weekday.ToString()[..3]}";
+		_dayLabel.TooltipText = $"Total day {cal.Day} • 28 days/season • 112 days/year (original era calendar)";
 		_phaseLabel.Text = cal.Phase.ToString();
 		_weatherLabel.Text = WeatherSymbol(cal.CurrentWeather);
 		_playerNameLabel.Text = player.Name;
@@ -800,7 +867,14 @@ public partial class UiShellController : Control
 	{
 		Weather.Clear => "☀ Clear",
 		Weather.Cloudy => "☁ Cloudy",
+		Weather.Drizzle => "🌦 Drizzle",
 		Weather.Rain => "🌧 Rain",
+		Weather.HeavyRain => "🌧 Heavy Rain",
+		Weather.TorrentialRain => "⛈ Downpour",
+		Weather.StrongWind => "💨 Strong Wind",
+		Weather.Snow => "❄ Snow",
+		Weather.HeavySnow => "❄ Heavy Snow",
+		Weather.Blizzard => "🌨 Blizzard",
 		Weather.Storm => "⛈ Storm",
 		_ => "☀ Clear"
 	};

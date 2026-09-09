@@ -20,8 +20,8 @@ public partial class FeedbackService : Node
     {
         _player = new AudioStreamPlayer
         {
-            Bus = "Master",
-            VolumeDb = -12f,
+            Bus = RuntimeSettingsService.UiBus,
+            VolumeDb = -6f,
             MaxPolyphony = 2
         };
         AddChild(_player);

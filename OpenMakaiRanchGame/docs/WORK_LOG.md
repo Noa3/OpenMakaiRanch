@@ -128,3 +128,155 @@ Editor Game.tscn tree contains the repaired Rooms/Bond/Pets nodes. Headless smok
 Created CURRENT_PROJECT_STATE, 3D_REMAKE_PLAN, KANBAN, DECISIONS, KNOWN_ISSUES, this WORK_LOG and ASTRA_HANDOFF. Added neutral character audit/evidence, parity matrix seed and draft art bible/manifest. Drafts contain no fake approvals or generated assets.
 
 Next engineering task: SAVE-001, focused root flag roundtrip and null migration regression tests. CORE-002 follows for mutation notifications/rebinding before world implementation. Visual direction and source character review remain prerequisites for detailed art. See handoff for exact resume commands.
+
+
+## 2026-09-09 — WORLD-003c prep: world function + HUD pass
+
+Branch: `feat/world-hud-function-pass`.
+
+Scope is deliberately non-explicit and leaves all adult-content data/services untouched.
+
+Implemented:
+- Added `WorldHudController`: shared-simulation HUD for day/season/phase/weather, gold/spirit/mana, roster size, selected worker/current job, nearest station prompt and transient feedback.
+- Expanded the opt-in RanchGreybox from one job marker to six ordinary spatial job stations: Office, Kitchen, Workshop, Pasture, Pharmacy Lab and Dairy Barn. All dispatch through the existing `GameRootCommandDispatcher`; no second economy/reward path was added.
+- Fixed the actual controller interaction context: the old scene path passed the station target id as `CharacterId`; the world controller now maintains a selected roster worker and passes that real runtime id to `TryAssignJob`. Tab cycles the worker.
+- Fixed camera composition: `WorldCameraRig.Target` is now explicitly bound to the player's stable head target. Added hold-RMB mouse orbit and mouse-wheel zoom, gated by the same `WorldInputGate` used by movement/UI ownership.
+- Replaced the controller's `InputEventAction`-only interaction handling with `Input.IsActionJustPressed`, so ordinary mapped F input reaches the spatial interaction path.
+- Added smoke assertions for authored HUD nodes, multi-station discovery/dispatcher binding, camera target wiring, selected-worker binding and a controller-level station interaction that must mutate the selected roster worker's shared Schedule state.
+
+Validation status:
+- Repository diff reviewed through GitHub.
+- Local build/runtime cannot be executed from the ChatGPT runtime used for this patch (no local .NET/Godot toolchain available there).
+- Pull-request CI is the verification path; do not record a new smoke-pass count until CI/local Godot 4.7 verification actually succeeds.
+
+Still intentionally deferred:
+- Boot-world composition with the existing full management shell.
+- NavigationAgent3D travel/reservations.
+- Final ranch art/assets and concept selection.
+- Character model production.
+
+### WORLD-003c composition extension
+- Added `scenes/WorldGame.tscn`: permanent 3D RanchGreybox + the existing `Game.tscn` management shell on a CanvasLayer. Both use the same GameRoot.
+- Added `WorldGameController`: M/HUD-button toggles ordinary management; character creation, prologue, victory/title are mandatory UI flows and cannot be hidden. Exiting the new-game prologue to `ranch` automatically returns to the 3D world.
+- MainMenu now routes New Game / Continue / New Game+ to `WorldGame.tscn` instead of replacing the world with `Game.tscn`.
+- Added a generic `UiShellController.ScreenChanged` event plus read-only current-screen/full-screen state; no screen content was changed.
+- The world now guarantees a runtime `Environment` resource before applying shared DayPhase lighting, so ambient/tonemap state is not silently discarded.
+- Added WORLD-003c smoke coverage for composed scene nodes, overlay visibility, world-input suspension/restoration, mandatory character-creation/prologue lock and automatic return to the ranch.
+- Added a nested-camera lookup fix in `ThirdPersonPlayerController`; the authored camera is under `CameraRig/Camera`, not a direct player sibling.
+
+External visual-direction research (reference only, no copied assets): GodotCon anime/stylized 3D workflows emphasize deliberate toon shading, outlines, edited normals and modular Blender→Godot asset authoring. The environment should use readable paths/landmarks and authored lighting rather than attempting photorealism.
+
+
+## 2026-09-09 — WORLD-003c/003d continuation: mixed creation + playable world flow
+
+Branch: `feat/world-hud-function-pass`, PR #2. No CI/build-pipeline files were added or modified in this continuation.
+
+Implemented:
+- Kept Bootstrap/MainMenu fully 2D. New Game still starts from `MainMenu.tscn`; gameplay routing remains `WorldGame.tscn` only after the menu action.
+- `CharacterCreationScreen.tscn` is now a mixed UI: existing editable 2D settings live beside a `SubViewport` 3D preview. Added `CharacterCreationPreviewController` and a reusable neutral `PlayerAvatar3D`.
+- The 3D player stand-in reflects ordinary player presentation data (height, skin/hair/eye colors, horns, glasses) and deliberately excludes adult-specific body presentation. The same stand-in is used in the ranch so creation and gameplay have one presentation source.
+- Character creation no longer rebuilds the full screen on every `GameRoot.StateChanged`, preventing LineEdit focus loss and picker resets while typing/editing. The 3D preview listens to shared state independently and its camera reframes for player height.
+- Added world sprint (`Shift`), smooth facing toward camera-relative travel, and visible player reuse in the `CharacterBody3D`. The old box mesh remains as a hidden debug geometry/collision reference only.
+- Added explicit management exit paths: `Return to World` button plus `Esc` for ordinary management; mandatory character-creation/prologue/victory/title flows remain locked visible.
+- Fixed Continue/New Game+ save selection. MainMenu now considers autosave slot 0 and manual slots 1-3 and selects the most recently saved usable/victory slot instead of ignoring slots 2/3.
+- Ranch presentation now subscribes to shared `GameRoot.StateChanged` while in-tree, so load, assignments, facility upgrades and time advancement refresh daylight/roster/HUD immediately.
+- Spatial job stations now respect the same facility progression used by management. Pasture/Kitchen are available in a new game; unbuilt Workshop/Pharmacy Lab/Dairy Barn expose a lock reason and cannot bypass management construction.
+- Added a world `Advance Phase`/`Plan Night`/`End Day` HUD action. Normal phases advance through `GameRoot.AdvanceTime`; Night without a plan opens the existing management choice; completed settlement opens the existing Daily Report. No second clock, settlement, reward or report system was introduced.
+- Night-plan controls in the management shell are now shown only during the actual Night phase and never on mandatory full-screen creation/prologue screens.
+
+Regression coverage added (not executed in this ChatGPT environment):
+- mixed character-creation scene contract, live SubViewport binding and generated neutral player geometry;
+- shared player visual in the ranch plus sprint > walk;
+- explicit Return-to-World and world phase-control nodes;
+- station progression locks and immediate unlock after the shared RanchService builds Workshop;
+- complete world clock path Morning -> Afternoon -> Evening -> Night -> management night plan -> settlement -> next Morning -> existing Daily Report;
+- existing controller-to-shared-Schedule assignment path remains covered.
+
+Static verification performed through repository inspection:
+- all 7 `.tscn` files were re-read at branch HEAD;
+- every Script/PackedScene ext_resource exists;
+- every authored non-root node parent path resolves;
+- static scene audit result: 0 missing resource references and 0 invalid parent paths.
+
+Validation still required before merge:
+- run the existing `build-and-verify.bat` / Godot 4.7.x Mono smoke locally;
+- manually verify gameplay feel, viewport sizing/focus, camera collision, input, Return-to-World, save/load and the full day flow;
+- no new assertion count or runtime PASS is claimed by this continuation.
+
+
+## 2026-09-09 — onboarding, world readability and resident interaction continuation
+
+Branch: `feat/world-hud-function-pass`, PR #2. No GitHub workflow/build-pipeline files were changed.
+
+Implemented:
+- Added persistent tutorial preferences to `SettingsState` / `settings.json`: tutorial hints can be disabled, completed basic steps are remembered across save slots, and progress can be reset.
+- Added `WorldTutorialController` plus authored HUD nodes: five contextual first-run steps (movement, camera, worker assignment, management, day progression), per-step skip, full tutorial skip, and an always-available F1 help panel.
+- F1 Help takes world input ownership while open and restores it on close; it does not pause or duplicate simulation state. Help contains controls, the basic ranch loop, tutorial toggle and restart.
+- Added Settings-menu controls for tutorial hints and restarting onboarding.
+- Added contextual world prompts/tooltips: nearby stations show the selected worker in the action text, locked facilities expose the reason, and the idle prompt advertises F1 Help.
+- Added a persistent `Next Step` guidance panel. It derives suggestions from the shared phase/schedule (resting workers, Night planning, End Day readiness) but never blocks the player's choice.
+- Added a collision-free `RanchPresentationBuilder` placeholder pass: readable paths, entry arch, custom ranch-name sign, central well/notice landmark, stylized boundary vegetation and facility building proxies. Facility colors/labels follow the existing RanchService built/unbuilt state.
+- Added `docs/assets/CC0_ASSET_CANDIDATES.md` as the external-asset provenance gate. Current evaluated source families are Quaternius Farm Buildings, Quaternius Ultimate Stylized Nature, Kenney Nature Kit and Poly Haven; no external binary was silently vendored.
+- Roster stand-ins now expose readable nameplates and can be found spatially. Pressing F near a closer resident requests the existing Character Detail screen through `WorldGameController`; no second bond/dialogue/reward path exists.
+- Main-menu and character-preview controls received explanatory tooltips.
+
+Regression coverage added (runtime execution still pending locally):
+- tutorial settings defaults and clone isolation;
+- authored TutorialOverlay/F1 Help/Presentation nodes;
+- help input ownership and restoration;
+- stylized placeholder generation and facility-state refresh;
+- nearby resident -> existing character detail -> Return to World;
+- existing world/day/station/save flows remain covered.
+
+Verification in the connected repository environment:
+- static audit re-read all 7 `.tscn` files;
+- 0 missing Script/PackedScene external resources;
+- 0 invalid authored parent paths;
+- compare against `main` shows no `.github/workflows/*` changes.
+
+Still required before merge:
+- run the existing local Godot 4.7.x Mono / `build-and-verify.bat` validation;
+- visually inspect tutorial/help layout at several resolutions, placeholder landmark framing, NPC nameplates, contextual prompts and resident interaction;
+- after that validation, admit exact CC0 asset packages individually with recorded package/hash/source/license rather than copying untracked downloads.
+
+
+## 2026-09-09 — TOWN-001: playable Okachi Town + travel/navigation slice
+
+Branch: `feat/world-hud-function-pass`, PR #2. No GitHub workflow/build-pipeline files changed.
+
+Implemented after the previously recommended world-readability/onboarding work:
+- Added `SimpleNavigationRegionBuilder` and real `NavigationAgent3D` children to roster stand-ins. Pathfollowing now updates from `_PhysicsProcess()` using `TargetPosition` / `GetNextPathPosition()`; the current open ranch uses a simple rectangular nav region and keeps straight-line fallback behavior if no path is available.
+- Added `WorldTravelPortal`, Ranch south/town gate and persistent world-area composition.
+- Added `TownGreybox.tscn` as a second playable 3D area inside the same `WorldGame` / `GameRoot`.
+- `WorldGameController` now switches active area (ranch/town) by visibility, ProcessMode, camera and input ownership rather than creating a second game session.
+- Travel currently costs no extra gold/time because no existing shared rule defines such a cost.
+- Added additive `SaveState.WorldAreaId` plus validated `GameRoot.SetWorldArea`; old/unknown values normalize to `ranch`. Saving in Town and loading restores Town; closing a load/management overlay immediately applies the loaded area.
+- Added 3D Town services that route only to existing UI/service authorities: General Store -> shop, Adventure Guild -> adventure, Research Office -> research (existing Workshop prerequisite preserved), Tavern -> roster, Bathhouse -> bond, Town Hall -> milestones, Construction & Planning -> town/facility planning.
+- Added physical Town south gate and explicit Return-to-Ranch button. Existing 2D Town Hub `Return to Ranch` now requests physical travel when hosted by `WorldGame`, with legacy UI fallback otherwise.
+- Added `TownHudController`, contextual service/tooltips, state-aware suggested errands, first-visit tutorial and independent F1 Town Help.
+- Added `TownPresentationBuilder`: collision-free roads, plaza/fountain, service-building proxies, doors/signs, town gate, lamps and vegetation. Locked services are visually greyed and labelled.
+- Ranch tutorial now includes a dedicated Okachi Town travel step.
+- Added `docs/art/OKACHI_TOWN_WORLD.md` with layout, service mapping, travel rules, navigation plan, acceptance criteria and follow-up slices.
+- Extended CC0 candidate provenance with Kenney Fantasy Town Kit and Quaternius Medieval Village Pack. Exact binary archives remain unvendored pending local admission/hash/source records.
+
+Regression coverage added (runtime still pending locally):
+- Ranch NavigationRegion3D and NavigationAgent3D roster followers;
+- Ranch -> Town area persistence and active camera/input ownership;
+- Town authored services and DaylightRig;
+- Research Office Workshop lock;
+- General Store spatial interaction -> existing shop UI -> return to Town;
+- Town F1 Help input ownership;
+- physical Town south gate -> Ranch;
+- Town Hub UI Return to Ranch -> physical travel;
+- save/load preserves `WorldAreaId`.
+
+Static verification at branch HEAD:
+- 8 `.tscn` scenes re-read;
+- 0 missing Script/PackedScene ext_resources;
+- 0 invalid authored parent paths;
+- compare against `main`: 0 `.github/workflows/*` changes.
+
+Still required before merge:
+- run existing local Godot 4.7.x Mono / `build-and-verify.bat`;
+- manually verify NavigationAgent path behavior after NavigationServer sync, camera ownership during travel, Town service prompts, F1 layouts, save/load area restoration and UI-return travel;
+- when real CC0 building/fence collision is admitted, replace the simple navigation region with an editor-baked navmesh and add bounded stuck recovery.

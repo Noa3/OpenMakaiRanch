@@ -195,7 +195,9 @@ public partial class UiShellController
         var inner = CardContent();
         summary.AddChild(inner);
         inner.AddChild(SubtitleLabel(T("screen.ranch.command_deck", "Command Deck")));
-        inner.AddChild(AddStyledLine($"{T("label.day", "Day")} {_game.State.Calendar.Day} | {_game.State.Calendar.Season} | {_game.State.Calendar.Phase}"));
+        var calendar = _game.State.Calendar;
+        inner.AddChild(AddStyledLine($"Year {calendar.Year} | {calendar.Season} Day {calendar.DayOfSeason:00} | {calendar.Weekday} | {calendar.Phase}"));
+        inner.AddChild(MutedLabel($"Weather: {calendar.CurrentWeather}  |  Forecast: {calendar.TomorrowWeather}"));
         inner.AddChild(AddStyledLine($"{T("screen.ranch.gold", "Gold")}: {_game.Economy.Gold}  {T("screen.ranch.income", "Last income")}: {_game.State.Economy.LastIncome}  {T("label.net", "Net")}: {_game.State.Economy.LastIncome - _game.State.Economy.LastExpenses}"));
         inner.AddChild(MutedLabel($"{T("screen.ranch.health", "Ranch health")}: {_game.State.Ranch.CattleHealth}%  |  {T("screen.ranch.workload", "Workload")}: {_game.State.Ranch.Workload}%  |  {(_game.State.Ranch.BathtubClean ? T("screen.ranch.bath_clean", "Bath clean") : T("screen.ranch.bath_dirty", "Bath dirty"))}"));
 
@@ -887,7 +889,13 @@ public partial class UiShellController
         header.AddChild(titleLabel);
         var returnBtn = SecondaryButton(T("screen.town.return", "Return to Ranch"), T("tooltip.return_ranch", "Head back to your ranch"));
         returnBtn.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
-        returnBtn.Pressed += () => ShowScreen("ranch");
+        returnBtn.Pressed += () =>
+        {
+            if (!RequestWorldTravel("ranch"))
+            {
+                ShowScreen("ranch");
+            }
+        };
         header.AddChild(returnBtn);
 
         _content.AddChild(MutedLabel(T("screen.town.subtitle", "Okachi Town — Choose a building to visit.")));
@@ -1267,6 +1275,12 @@ public partial class UiShellController
     {
         AddTitle(T("screen.combat", "Combat And Mission Result"));
 
+        var pauseCard = CardContainer();
+        _content.AddChild(pauseCard);
+        pauseCard.AddChild(SubtitleLabel(T("screen.combat.world_paused", "⏸ World Time Paused")));
+        pauseCard.AddChild(MutedLabel(T("screen.combat.world_paused_hint",
+            "Combat is turn-based. Ranch phase, weather progression and daily settlement cannot advance until you leave combat.")));
+
         if (_game.CurrentCombatPhase == CombatPhase.PreBattle)
         {
             RenderCombatPreBattle();
@@ -1287,6 +1301,8 @@ public partial class UiShellController
         var card = CardContainer();
         _content.AddChild(card);
         card.AddChild(SubtitleLabel(T("screen.combat.pre_battle", "Prepare for Battle")));
+        card.AddChild(MutedLabel(T("screen.combat.rules",
+            "Round order favors higher Speed. Attack is reduced by Defense; Defend halves incoming damage while active. Skills can provide utility/healing.")));
 
         var missionId = _game.LastCombatReport?.MissionId ?? _game.State.Adventure.LastMissionId;
         var mission = _game.Data.Missions.Values.FirstOrDefault(m => m.Id == missionId);
@@ -1342,7 +1358,7 @@ public partial class UiShellController
         AddFlowButton(actions, captureBtn, 160);
 
         var backBtn = SecondaryButton(T("common.back", "Back"));
-        backBtn.Pressed += () => { _game.StartNewCombat(); ShowScreen("adventure"); };
+        backBtn.Pressed += () => ShowScreen("adventure");
         AddFlowButton(actions, backBtn, 96);
     }
 
@@ -1369,6 +1385,9 @@ public partial class UiShellController
         var outcomeLabel = AddStyledLine($"{T("screen.combat.outcome", "Outcome")}: {report.Outcome}", true);
         outcomeLabel.AddThemeColorOverride("font_color", Color.FromHtml(outcomeColor));
         outcomeCard.AddChild(outcomeLabel);
+        outcomeCard.AddChild(MutedLabel(
+            $"{T("screen.combat.rounds_resolved", "Rounds resolved")}: {report.Rounds.Count}  •  " +
+            $"{T("screen.combat.world_clock", "World clock")}: {(_game.CombatWorldTimeLocked ? T("label.paused", "Paused") : T("label.active", "Active"))}"));
         var combatSummary = new TypewriterLabel
         {
             AutowrapMode = TextServer.AutowrapMode.WordSmart,
@@ -1454,7 +1473,7 @@ public partial class UiShellController
         }
 
         var btn = PrimaryButton(T("common.back", "Back"));
-        btn.Pressed += () => { _game.StartNewCombat(); ShowScreen("adventure"); };
+        btn.Pressed += () => ShowScreen("adventure");
         _content.AddChild(btn);
     }
 
@@ -1787,61 +1806,234 @@ public partial class UiShellController
     private void RenderSettings()
     {
         AddTitle(T("screen.settings", "Settings"));
-        var card = CardContainer();
-        _content.AddChild(card);
-        var inner = CardContent();
-        card.AddChild(inner);
-        inner.AddChild(AddStyledLine(T("screen.settings.menu_flow", "Menu flow has been simplified: grouped navigation, cards, and clear action priorities.")));
-        inner.AddChild(AddStyledLine(T("screen.settings.feedback_info", "Mobile and handheld feedback can use short UI tones and optional vibration.")));
+        var settings = _game.State.Settings;
 
-        var audioToggle = PrimaryButton($"{T("screen.settings.audio_feedback", "Audio Feedback")}: {(_game.Feedback.AudioEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        var platformCard = CardContainer();
+        _content.AddChild(platformCard);
+        var platform = CardContent();
+        platformCard.AddChild(platform);
+        platform.AddChild(SubtitleLabel(T("screen.settings.platform", "Platform & Recommended Setup")));
+        platform.AddChild(MutedLabel($"{OS.GetName()} • {_game.RuntimeSettings.CurrentRenderingMethod} • {GetViewportRect().Size.X:0}×{GetViewportRect().Size.Y:0}"));
+        platform.AddChild(MutedLabel(_game.RuntimeSettings.IsMobilePlatform
+            ? T("screen.settings.mobile_note", "Mobile mode favors lower render cost, touch controls and readable UI. Native Android/iOS builds are preferred over browser play.")
+            : T("screen.settings.desktop_note", "Desktop mode supports window/fullscreen, mouse/controller input and higher quality settings.")));
+        var recommended = PrimaryButton(T("screen.settings.recommended", "Apply Recommended Settings"),
+            T("tooltip.settings.recommended", "Choose a safe balanced preset for the current platform."));
+        recommended.Pressed += () =>
+        {
+            _game.ApplyRecommendedSettings();
+            ShowScreen("settings");
+        };
+        platform.AddChild(recommended);
+
+        var graphicsCard = CardContainer();
+        _content.AddChild(graphicsCard);
+        var graphics = CardContent();
+        graphicsCard.AddChild(graphics);
+        graphics.AddChild(SubtitleLabel(T("screen.settings.graphics", "Graphics & Performance")));
+
+        var qualityRow = FlowRow(8);
+        graphics.AddChild(qualityRow);
+        qualityRow.AddChild(AddStyledLine(T("screen.settings.quality", "Quality Preset"), true));
+        var qualityPicker = StyledPicker(180);
+        var qualities = new[] { "Low", "Medium", "High", "Ultra", "Custom" };
+        var qualitySelected = 1;
+        for (var q = 0; q < qualities.Length; q++)
+        {
+            qualityPicker.AddItem(qualities[q]);
+            if (string.Equals(qualities[q], settings.GraphicsQuality, StringComparison.OrdinalIgnoreCase))
+            {
+                qualitySelected = q;
+            }
+        }
+        qualityPicker.Selected = qualitySelected;
+        qualityPicker.ItemSelected += idx =>
+        {
+            var value = qualities[(int)idx];
+            if (value != "Custom")
+            {
+                ExecuteUiAction(() => _game.SetGraphicsQuality(value), false);
+            }
+        };
+        qualityRow.AddChild(qualityPicker);
+
+        var renderScaleRow = FlowRow(8);
+        graphics.AddChild(renderScaleRow);
+        renderScaleRow.AddChild(AddStyledLine($"{T("screen.settings.render_scale", "3D Render Scale")}: {settings.RenderScale * 100f:0}%", true));
+        var renderScale = new HSlider
+        {
+            MinValue = 0.50,
+            MaxValue = 1.00,
+            Step = 0.05,
+            Value = settings.RenderScale,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        renderScale.TooltipText = T("tooltip.settings.render_scale", "Lower this first if the 3D world runs slowly. UI remains at full resolution.");
+        renderScale.ValueChanged += value => ExecuteUiAction(() => _game.SetRenderScale((float)value), false);
+        renderScaleRow.AddChild(renderScale);
+
+        var fpsRow = FlowRow(8);
+        graphics.AddChild(fpsRow);
+        fpsRow.AddChild(AddStyledLine(T("screen.settings.fps", "Frame Rate Limit"), true));
+        var fpsPicker = StyledPicker(160);
+        var fpsValues = new[] { 30, 45, 60, 90, 120, 144, 0 };
+        var fpsSelected = 2;
+        for (var i = 0; i < fpsValues.Length; i++)
+        {
+            fpsPicker.AddItem(fpsValues[i] == 0 ? T("label.unlimited", "Unlimited") : $"{fpsValues[i]} FPS");
+            fpsPicker.SetItemMetadata(i, fpsValues[i]);
+            if (fpsValues[i] == settings.FrameRateLimit) fpsSelected = i;
+        }
+        fpsPicker.Selected = fpsSelected;
+        fpsPicker.ItemSelected += idx => ExecuteUiAction(
+            () => _game.SetFrameRateLimit((int)fpsPicker.GetItemMetadata((int)idx).AsInt64()), false);
+        fpsRow.AddChild(fpsPicker);
+
+        var shadows = PrimaryButton($"{T("screen.settings.shadows", "Dynamic Shadows")}: {(settings.ShadowsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        shadows.TooltipText = T("tooltip.settings.shadows", "Disable shadows for a substantial GPU saving on low-end or mobile hardware.");
+        shadows.Pressed += () => _game.SetShadowsEnabled(!settings.ShadowsEnabled);
+        graphics.AddChild(shadows);
+
+        var atmosphere = PrimaryButton($"{T("screen.settings.atmosphere", "Atmosphere / Post Processing")}: {(settings.AtmosphereEffectsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        atmosphere.TooltipText = T("tooltip.settings.atmosphere", "Controls situation-aware fog, glow and color adjustments. Low quality disables this automatically.");
+        atmosphere.Pressed += () => _game.SetAtmosphereEffectsEnabled(!settings.AtmosphereEffectsEnabled);
+        graphics.AddChild(atmosphere);
+
+        var weatherFx = PrimaryButton($"{T("screen.settings.weather_fx", "Weather Visual Effects")}: {(settings.WeatherEffectsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        weatherFx.TooltipText = T("tooltip.settings.weather_fx", "Keep weather gameplay while optionally reducing its visual atmosphere cost.");
+        weatherFx.Pressed += () => _game.SetWeatherEffectsEnabled(!settings.WeatherEffectsEnabled);
+        graphics.AddChild(weatherFx);
+
+        var advancedLighting = PrimaryButton($"{T("screen.settings.advanced_lighting", "Forward+ Advanced Lighting")}: {(settings.AdvancedLightingEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        advancedLighting.TooltipText = _game.RuntimeSettings.IsForwardPlus
+            ? T("tooltip.settings.advanced_lighting", "Forward+ only: SSAO/SSIL/SSR and volumetric atmosphere where the quality preset allows it.")
+            : T("tooltip.settings.advanced_lighting_unavailable", "The current renderer does not support the full Forward+ advanced-lighting set.");
+        advancedLighting.Disabled = !_game.RuntimeSettings.IsForwardPlus;
+        advancedLighting.Pressed += () => _game.SetAdvancedLightingEnabled(!settings.AdvancedLightingEnabled);
+        graphics.AddChild(advancedLighting);
+
+        var particles = PrimaryButton($"{T("screen.settings.world_particles", "World Particles")}: {(settings.WorldParticlesEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        particles.TooltipText = T("tooltip.settings.world_particles", "Rain, snow, wind debris and seasonal leaf particles. Density follows the quality preset.");
+        particles.Pressed += () => _game.SetWorldParticlesEnabled(!settings.WorldParticlesEnabled);
+        graphics.AddChild(particles);
+
+        var detailRow = FlowRow(8);
+        graphics.AddChild(detailRow);
+        detailRow.AddChild(AddStyledLine($"{T("screen.settings.world_detail", "World Detail")}: {settings.WorldDetailScale * 100f:0}%", true));
+        var detailScale = new HSlider
+        {
+            MinValue = 0.35,
+            MaxValue = 1.25,
+            Step = 0.05,
+            Value = settings.WorldDetailScale,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        detailScale.TooltipText = T("tooltip.settings.world_detail", "Scales decorative density independently from gameplay objects. Lower values keep paths, stations and interactions intact.");
+        detailScale.ValueChanged += value => ExecuteUiAction(() => _game.SetWorldDetailScale((float)value), false);
+        detailRow.AddChild(detailScale);
+
+        var vsync = PrimaryButton($"{T("screen.settings.vsync", "VSync")}: {(settings.VSyncEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        vsync.Pressed += () => _game.SetVSyncEnabled(!settings.VSyncEnabled);
+        graphics.AddChild(vsync);
+
+        if (_game.RuntimeSettings.IsDesktopPlatform && !_game.RuntimeSettings.IsWebPlatform)
+        {
+            var windowRow = FlowRow(8);
+            graphics.AddChild(windowRow);
+            windowRow.AddChild(AddStyledLine(T("screen.settings.window_size", "Window Size / Aspect"), true));
+            var windowPicker = StyledPicker(260);
+            var windowSizes = new (string Label, int Width, int Height)[]
+            {
+                ("1280×720  (16:9)", 1280, 720),
+                ("1600×900  (16:9)", 1600, 900),
+                ("1920×1080  (16:9 Default)", 1920, 1080),
+                ("1920×1200  (16:10)", 1920, 1200),
+                ("2560×1440  (16:9)", 2560, 1440),
+                ("2560×1080  (21:9)", 2560, 1080),
+                ("3440×1440  (21:9)", 3440, 1440),
+                ("3840×1080  (32:9)", 3840, 1080),
+                ("5120×1440  (32:9)", 5120, 1440)
+            };
+            var selectedWindow = 2;
+            for (var w = 0; w < windowSizes.Length; w++)
+            {
+                windowPicker.AddItem(windowSizes[w].Label);
+                if (windowSizes[w].Width == settings.WindowWidth && windowSizes[w].Height == settings.WindowHeight)
+                {
+                    selectedWindow = w;
+                }
+            }
+            windowPicker.Selected = selectedWindow;
+            windowPicker.Disabled = settings.Fullscreen;
+            windowPicker.TooltipText = T("tooltip.settings.window_size", "1920×1080 is the design resolution. Other aspect ratios expand the visible world; HUD remains in a centered safe region.");
+            windowPicker.ItemSelected += idx =>
+            {
+                var size = windowSizes[(int)idx];
+                ExecuteUiAction(() => _game.SetWindowSize(size.Width, size.Height), false);
+            };
+            windowRow.AddChild(windowPicker);
+
+            var fullscreen = PrimaryButton($"{T("screen.settings.fullscreen", "Exclusive Fullscreen")}: {(settings.Fullscreen ? T("label.on", "On") : T("label.off", "Off"))}");
+            fullscreen.TooltipText = T("tooltip.settings.fullscreen", "Fullscreen uses the monitor's native resolution/aspect ratio; the game does not force the monitor to another mode.");
+            fullscreen.Pressed += () => _game.SetFullscreen(!settings.Fullscreen);
+            graphics.AddChild(fullscreen);
+        }
+
+        var audioCard = CardContainer();
+        _content.AddChild(audioCard);
+        var audio = CardContent();
+        audioCard.AddChild(audio);
+        audio.AddChild(SubtitleLabel(T("screen.settings.audio", "Audio & Feedback")));
+
+        var audioToggle = PrimaryButton($"{T("screen.settings.audio_feedback", "Audio")}: {(_game.Feedback.AudioEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
         audioToggle.Pressed += () =>
         {
             _game.ToggleAudioFeedback();
-            if (_game.Feedback.AudioEnabled)
-            {
-                _game.Feedback.PlayConfirm();
-            }
+            if (_game.Feedback.AudioEnabled) _game.Feedback.PlayConfirm();
         };
-        inner.AddChild(audioToggle);
+        audio.AddChild(audioToggle);
+
+        AddVolumeSlider(audio, T("screen.settings.master_volume", "Master"), settings.MasterVolume, _game.SetMasterVolume);
+        AddVolumeSlider(audio, T("screen.settings.music_volume", "Music"), settings.MusicVolume, _game.SetMusicVolume);
+        AddVolumeSlider(audio, T("screen.settings.sfx_volume", "SFX"), settings.SfxVolume, _game.SetSfxVolume);
+        AddVolumeSlider(audio, T("screen.settings.ui_volume", "UI"), settings.UiVolume, _game.SetUiVolume);
+
+        var muteUnfocused = PrimaryButton($"{T("screen.settings.mute_unfocused", "Mute When Unfocused")}: {(settings.MuteWhenUnfocused ? T("label.on", "On") : T("label.off", "Off"))}");
+        muteUnfocused.Pressed += () => _game.SetMuteWhenUnfocused(!settings.MuteWhenUnfocused);
+        audio.AddChild(muteUnfocused);
 
         var hapticsToggle = PrimaryButton($"{T("screen.settings.handheld_vibration", "Handheld Vibration")}: {(_game.Feedback.HapticsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        hapticsToggle.Disabled = !_game.Feedback.SupportsHaptics;
         hapticsToggle.Pressed += () =>
         {
             _game.ToggleHapticsFeedback();
             _game.Feedback.PulseHaptics(40, 0.45f);
         };
-        inner.AddChild(hapticsToggle);
+        audio.AddChild(hapticsToggle);
 
         var previewFeedback = SecondaryButton(T("screen.settings.preview_confirm", "Preview Confirm Feedback"));
         previewFeedback.Pressed += () => _game.Feedback.PlayConfirm();
-        inner.AddChild(previewFeedback);
+        audio.AddChild(previewFeedback);
 
-        var previewError = SecondaryButton(T("screen.settings.preview_error", "Preview Error Feedback"));
-        previewError.Pressed += () => _game.Feedback.PlayError();
-        inner.AddChild(previewError);
+        var interfaceCard = CardContainer();
+        _content.AddChild(interfaceCard);
+        var ui = CardContent();
+        interfaceCard.AddChild(ui);
+        ui.AddChild(SubtitleLabel(T("screen.settings.interface", "Interface & Accessibility")));
 
         var themeRow = FlowRow(8);
-        inner.AddChild(themeRow);
+        ui.AddChild(themeRow);
         themeRow.AddChild(AddStyledLine(T("screen.settings.color_theme", "Color Theme"), true));
-
         var themePicker = StyledPicker(220);
-        themePicker.Name = "ThemeOption";
-        var currentThemeId = _game.State.Settings.ThemeId;
         var selectedThemeIndex = 0;
-        var index = 0;
+        var themeIndex = 0;
         foreach (var theme in UiThemeCatalog.All)
         {
             themePicker.AddItem(theme.DisplayName);
-            themePicker.SetItemMetadata(index, theme.Id);
-            if (string.Equals(theme.Id, currentThemeId, StringComparison.OrdinalIgnoreCase))
-            {
-                selectedThemeIndex = index;
-            }
-
-            index += 1;
+            themePicker.SetItemMetadata(themeIndex, theme.Id);
+            if (string.Equals(theme.Id, settings.ThemeId, StringComparison.OrdinalIgnoreCase)) selectedThemeIndex = themeIndex;
+            themeIndex++;
         }
-
         themePicker.Selected = selectedThemeIndex;
         themePicker.ItemSelected += selected =>
         {
@@ -1851,35 +2043,34 @@ public partial class UiShellController
         themeRow.AddChild(themePicker);
 
         var uiScaleRow = FlowRow(8);
-        inner.AddChild(uiScaleRow);
-        uiScaleRow.AddChild(AddStyledLine($"{T("screen.settings.ui_scale", "UI Scale")}: {_game.State.Settings.UiScale:0.00}x", true));
+        ui.AddChild(uiScaleRow);
+        uiScaleRow.AddChild(AddStyledLine($"{T("screen.settings.ui_scale", "UI Scale")}: {settings.UiScale:0.00}x", true));
         var uiScale = new HSlider
         {
-            Name = "UiScaleSlider",
-            MinValue = 0.85f,
-            MaxValue = 1.35f,
-            Step = 0.05f,
-            Value = _game.State.Settings.UiScale,
+            MinValue = 0.80,
+            MaxValue = 1.50,
+            Step = 0.05,
+            Value = settings.UiScale,
             CustomMinimumSize = new Vector2(240, 0)
         };
         uiScale.ValueChanged += value => ExecuteUiAction(() => _game.SetUiScale((float)value), false);
         uiScaleRow.AddChild(uiScale);
 
+        var reducedMotion = PrimaryButton($"{T("screen.settings.reduced_motion", "Reduced Motion")}: {(settings.ReducedMotion ? T("label.on", "On") : T("label.off", "Off"))}");
+        reducedMotion.Pressed += () => _game.SetReducedMotion(!settings.ReducedMotion);
+        ui.AddChild(reducedMotion);
+
         var localeRow = FlowRow(8);
-        inner.AddChild(localeRow);
+        ui.AddChild(localeRow);
         localeRow.AddChild(AddStyledLine(T("screen.settings.language", "Language"), true));
         var localePicker = StyledPicker(180);
-        localePicker.Name = "LocaleOption";
         var selectedLocaleIndex = 0;
         for (var localeIdx = 0; localeIdx < AvailableLocales.Length; localeIdx++)
         {
             var lc = AvailableLocales[localeIdx];
             localePicker.AddItem(LocaleDisplayName(lc));
             localePicker.SetItemMetadata(localeIdx, lc);
-            if (string.Equals(lc, _game.State.Settings.Locale, StringComparison.OrdinalIgnoreCase))
-            {
-                selectedLocaleIndex = localeIdx;
-            }
+            if (string.Equals(lc, settings.Locale, StringComparison.OrdinalIgnoreCase)) selectedLocaleIndex = localeIdx;
         }
         localePicker.Selected = selectedLocaleIndex;
         localePicker.ItemSelected += selected =>
@@ -1889,8 +2080,106 @@ public partial class UiShellController
         };
         localeRow.AddChild(localePicker);
 
-        inner.AddChild(MutedLabel($"{T("screen.settings.haptics_supported", "Haptics supported on this device")}: {(_game.Feedback.SupportsHaptics ? T("label.yes", "Yes") : T("label.no", "No"))}"));
-        inner.AddChild(MutedLabel(T("screen.settings.android_haptics", "Android exports need the VIBRATE permission enabled for handheld vibration.")));
+        var controlsCard = CardContainer();
+        _content.AddChild(controlsCard);
+        var controls = CardContent();
+        controlsCard.AddChild(controls);
+        controls.AddChild(SubtitleLabel(T("screen.settings.controls", "Camera & Controls")));
+
+        var sensitivityRow = FlowRow(8);
+        controls.AddChild(sensitivityRow);
+        sensitivityRow.AddChild(AddStyledLine($"{T("screen.settings.camera_sensitivity", "Camera Sensitivity")}: {settings.CameraSensitivity:0.00}x", true));
+        var sensitivity = new HSlider
+        {
+            MinValue = 0.35,
+            MaxValue = 2.50,
+            Step = 0.05,
+            Value = settings.CameraSensitivity,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        sensitivity.ValueChanged += value => ExecuteUiAction(() => _game.SetCameraSensitivity((float)value), false);
+        sensitivityRow.AddChild(sensitivity);
+
+        var fovRow = FlowRow(8);
+        controls.AddChild(fovRow);
+        fovRow.AddChild(AddStyledLine($"{T("screen.settings.camera_fov", "Camera FOV")}: {settings.CameraFov:0}°", true));
+        var fov = new HSlider
+        {
+            MinValue = 55,
+            MaxValue = 95,
+            Step = 1,
+            Value = settings.CameraFov,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        fov.ValueChanged += value => ExecuteUiAction(() => _game.SetCameraFov((float)value), false);
+        fovRow.AddChild(fov);
+
+        var invertY = PrimaryButton($"{T("screen.settings.invert_y", "Invert Camera Y")}: {(settings.InvertCameraY ? T("label.on", "On") : T("label.off", "Off"))}");
+        invertY.Pressed += () => _game.SetInvertCameraY(!settings.InvertCameraY);
+        controls.AddChild(invertY);
+
+        var touch = PrimaryButton($"{T("screen.settings.touch_controls", "On-screen Touch Controls")}: {((_game.RuntimeSettings.ShouldShowTouchControls) ? T("label.on", "On") : T("label.off", "Off"))}");
+        touch.TooltipText = _game.RuntimeSettings.IsMobilePlatform
+            ? T("tooltip.settings.touch_mobile", "Touch controls are always available on mobile; this switch also allows testing them on desktop.")
+            : T("tooltip.settings.touch_desktop", "Enable the mobile touch overlay for testing or touch-screen PCs.");
+        touch.Pressed += () => _game.SetTouchControlsEnabled(!settings.TouchControlsEnabled);
+        controls.AddChild(touch);
+
+        var touchScaleRow = FlowRow(8);
+        controls.AddChild(touchScaleRow);
+        touchScaleRow.AddChild(AddStyledLine($"{T("screen.settings.touch_scale", "Touch Control Size")}: {settings.TouchControlScale:0.00}x", true));
+        var touchScale = new HSlider
+        {
+            MinValue = 0.75,
+            MaxValue = 1.50,
+            Step = 0.05,
+            Value = settings.TouchControlScale,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        touchScale.ValueChanged += value => ExecuteUiAction(() => _game.SetTouchControlScale((float)value), false);
+        touchScaleRow.AddChild(touchScale);
+
+        var gameplayCard = CardContainer();
+        _content.AddChild(gameplayCard);
+        var gameplay = CardContent();
+        gameplayCard.AddChild(gameplay);
+        gameplay.AddChild(SubtitleLabel(T("screen.settings.gameplay", "Gameplay Assistance & Saving")));
+
+        var autosave = PrimaryButton($"{T("screen.settings.autosave", "Autosave")}: {(settings.AutosaveEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        autosave.TooltipText = T("tooltip.settings.autosave", "Autosave to slot 0 after each completed day and when a mobile app is suspended.");
+        autosave.Pressed += () => _game.SetAutosaveEnabled(!settings.AutosaveEnabled);
+        gameplay.AddChild(autosave);
+
+        var tutorialToggle = PrimaryButton($"{T("screen.settings.tutorial_hints", "World Tutorial Hints")}: {(settings.TutorialHintsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        tutorialToggle.Pressed += () => _game.SetTutorialHintsEnabled(!settings.TutorialHintsEnabled);
+        gameplay.AddChild(tutorialToggle);
+
+        var resetTutorial = SecondaryButton(T("screen.settings.restart_tutorial", "Restart Basic Ranch Tutorial"));
+        resetTutorial.Pressed += () =>
+        {
+            _game.ResetTutorialProgress();
+            _game.SetTutorialHintsEnabled(true);
+            ShowScreen("settings");
+        };
+        gameplay.AddChild(resetTutorial);
+        gameplay.AddChild(MutedLabel(T("screen.settings.world_help", "In the 3D world, press F1 at any time for controls and the basic gameplay loop.")));
+    }
+
+    private void AddVolumeSlider(VBoxContainer parent, string label, float value, Func<float, bool> setter)
+    {
+        var row = FlowRow(8);
+        parent.AddChild(row);
+        row.AddChild(AddStyledLine($"{label}: {value * 100f:0}%", true));
+        var slider = new HSlider
+        {
+            MinValue = 0,
+            MaxValue = 1,
+            Step = 0.05,
+            Value = value,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        slider.ValueChanged += changed => ExecuteUiAction(() => setter((float)changed), false);
+        row.AddChild(slider);
     }
 
     // === Training state tracking ===
@@ -1919,7 +2208,7 @@ public partial class UiShellController
         var character = chars[_trainingCharIdx];
         var mental = character.Mature;
 
-        // === Character selector row ===
+        // === Resident / companion selector row ===
         var selectorRow = FlowRow(8);
         _content.AddChild(selectorRow);
 
@@ -2101,7 +2390,59 @@ public partial class UiShellController
 
     private void RenderVisit()
     {
-        AddTitle(T("screen.visit", "Visit Slave"));
+        AddTitle(T("screen.visit", "Personal Time"));
+
+        var freeTimeCard = CardContainer();
+        _content.AddChild(freeTimeCard);
+        var freeTimeInner = CardContent();
+        freeTimeCard.AddChild(freeTimeInner);
+        freeTimeInner.AddChild(SubtitleLabel(T("screen.visit.free_time", "Free Time")));
+        freeTimeInner.AddChild(MutedLabel(T("screen.visit.free_time_original",
+            "Original-era structure: free time can be spent resting in your room or spending time with an adopted pet. The remake also exposes resident conversations/care below through the existing Visit/Bond systems.")));
+
+        var freeTimeActions = FlowRow(8);
+        freeTimeInner.AddChild(freeTimeActions);
+
+        var playerCharacter = _game.Roster.Characters.FirstOrDefault();
+        if (playerCharacter is not null)
+        {
+            var restSelf = SecondaryButton(
+                T("screen.visit.rest_self", "Rest In Your Room"),
+                T("tooltip.visit.rest_self", "Use the existing rest recovery on the player character without advancing the world phase."));
+            restSelf.Pressed += () =>
+            {
+                var line = _game.Visit.CareRest(playerCharacter.Id);
+                SetStatus(line, false);
+                _game.NotifyStateChanged();
+            };
+            AddFlowButton(freeTimeActions, restSelf, 170);
+        }
+
+        foreach (var petId in _game.State.Pets.AdoptedPetIds)
+        {
+            if (!_game.Data.Pets.TryGetValue(petId, out var petDef))
+            {
+                continue;
+            }
+
+            var capturedPetId = petId;
+            var playPet = SecondaryButton(
+                $"{T("screen.visit.spend_pet", "Spend Time With")} {petDef.DisplayName}",
+                T("tooltip.visit.spend_pet", "Uses the existing pet Play action: improves mood/bond and costs its normal small fee."));
+            playPet.Pressed += () =>
+            {
+                var line = _game.Pets.Play(capturedPetId);
+                SetStatus(line, false);
+                _game.NotifyStateChanged();
+            };
+            AddFlowButton(freeTimeActions, playPet, 220);
+        }
+
+        if (!_game.State.Pets.AdoptedPetIds.Any())
+        {
+            freeTimeInner.AddChild(MutedLabel(T("screen.visit.no_pet_free_time", "No adopted pet is available for free-time play yet.")));
+        }
+
         var chars = _game.Roster.Characters;
         if (!chars.Any())
         {
@@ -2120,7 +2461,7 @@ public partial class UiShellController
         _content.AddChild(selectorRow);
         selectorRow.AddChild(MutedLabel($"{T("label.character", "Character")}:"));
         var charPicker = StyledPicker(240);
-        charPicker.TooltipText = T("tooltip.visit_char", "Select a character to visit");
+        charPicker.TooltipText = T("tooltip.visit_char", "Select a resident or companion to spend personal time with");
         for (var i = 0; i < chars.Count; i++)
         {
             charPicker.AddItem(CharacterPickerName(chars[i]));
@@ -2573,28 +2914,39 @@ public partial class UiShellController
         _content.AddChild(root);
 
         var cardStyle = CardStyle(Palette.CardFill, Palette.CardBorder, 1, 8);
+        root.GetNode<PanelContainer>("CreationBody/PreviewCard").AddThemeStyleboxOverride("panel", cardStyle);
         foreach (var name in new[] { "BasicCard", "BodyCard", "AppearanceCard", "AccessoriesCard", "PetMountCard" })
-            root.GetNode<PanelContainer>(name).AddThemeStyleboxOverride("panel", cardStyle);
+            root.GetNode<PanelContainer>($"CreationBody/SettingsColumn/{name}").AddThemeStyleboxOverride("panel", cardStyle);
+
+        var previewTitle = root.GetNode<Label>("CreationBody/PreviewCard/PreviewInner/PreviewTitle");
+        previewTitle.Text = T("screen.character_creation.preview", "3D Character Preview");
+        previewTitle.AddThemeColorOverride("font_color", Palette.SectionText);
 
         // --- Basic Information ---
         {
-            var title = root.GetNode<Label>("BasicCard/BasicInner/BasicTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.basic", "Basic Information");
 
-            var grid = root.GetNode<GridContainer>("BasicCard/BasicInner/BasicGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid");
             StyleGridLabels(grid);
 
-            var nameInput = root.GetNode<LineEdit>("BasicCard/BasicInner/BasicGrid/NameInput");
+            var nameInput = root.GetNode<LineEdit>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid/NameInput");
             nameInput.PlaceholderText = T("screen.character_creation.name_hint", "Enter your name");
             nameInput.Text = player.Name;
             nameInput.TextChanged += _ => _game.SetPlayerName(nameInput.Text);
 
-            PopulatePicker(root.GetNode<OptionButton>("BasicCard/BasicInner/BasicGrid/SpeciesPicker"), CharacterGenerationPools.Races, player.Race, val => _game.SetPlayerRace(val));
-            PopulatePicker(root.GetNode<OptionButton>("BasicCard/BasicInner/BasicGrid/GenderPicker"), new[] { "Male", "Female" }, player.Gender, val => _game.SetPlayerGender(val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid/SpeciesPicker"), CharacterGenerationPools.Races, player.Race, val => _game.SetPlayerRace(val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid/GenderPicker"), new[] { "Male", "Female" }, player.Gender, val =>
+            {
+                _game.SetPlayerGender(val);
+                var female = string.Equals(val, "Female", StringComparison.OrdinalIgnoreCase);
+                root.GetNode<Label>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/ChestLabel").Visible = female;
+                root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/ChestPicker").Visible = female;
+            });
 
-            var ranchInput = root.GetNode<LineEdit>("BasicCard/BasicInner/BasicGrid/RanchInput");
+            var ranchInput = root.GetNode<LineEdit>("CreationBody/SettingsColumn/BasicCard/BasicInner/BasicGrid/RanchInput");
             ranchInput.Text = player.RanchName;
             ranchInput.PlaceholderText = T("screen.character_creation.ranch_hint", "Enter your ranch name");
             ranchInput.TextChanged += _ => _game.SetRanchName(ranchInput.Text);
@@ -2602,17 +2954,17 @@ public partial class UiShellController
 
         // --- Body ---
         {
-            var title = root.GetNode<Label>("BodyCard/BodyInner/BodyTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.body", "Body");
 
-            var grid = root.GetNode<GridContainer>("BodyCard/BodyInner/BodyGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid");
             StyleGridLabels(grid);
 
             var heightLabels = CharacterGenerationPools.HeightRanges.Select(h => h.Label).ToArray();
             var currentHeightLabel = CharacterGenerationPools.HeightRanges.FirstOrDefault(h => h.Min <= player.Height && player.Height <= h.Max).Label ?? "Imposing";
-            PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/HeightPicker"), heightLabels, currentHeightLabel, val =>
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/HeightPicker"), heightLabels, currentHeightLabel, val =>
             {
                 var range = CharacterGenerationPools.HeightRanges.FirstOrDefault(h => h.Label == val);
                 _game.ModifyPlayer(p => { p.Height = (range.Min + range.Max) / 2; });
@@ -2620,91 +2972,84 @@ public partial class UiShellController
 
             var ageLabels = CharacterGenerationPools.PlayerApparentAges.Select(a => a.Label).ToArray();
             var currentAgeLabel = CharacterGenerationPools.PlayerApparentAges.FirstOrDefault(a => a.Age == player.ApparentAge).Label ?? "Adult";
-            PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/AgePicker"), ageLabels, currentAgeLabel, val =>
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/AgePicker"), ageLabels, currentAgeLabel, val =>
             {
                 var entry = CharacterGenerationPools.PlayerApparentAges.FirstOrDefault(a => a.Label == val);
                 _game.ModifyPlayer(p => p.ApparentAge = entry.Age);
             });
 
-            PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/BuildPicker"), CharacterGenerationPools.BodyShapes, player.BodyShape, val => _game.ModifyPlayer(p => p.BodyShape = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/BuildPicker"), CharacterGenerationPools.BodyShapes, player.BodyShape, val => _game.ModifyPlayer(p => p.BodyShape = val));
 
-            var chestLabel = root.GetNode<Label>("BodyCard/BodyInner/BodyGrid/ChestLabel");
-            var chestPicker = root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/ChestPicker");
-            if (string.Equals(player.Gender, "Female", StringComparison.OrdinalIgnoreCase))
-            {
-                chestLabel.Visible = true;
-                chestPicker.Visible = true;
-                PopulatePicker(chestPicker, CharacterGenerationPools.BreastSizeLabels, player.BustSize, val => _game.ModifyPlayer(p => p.BustSize = val));
-            }
-            else
-            {
-                chestLabel.Visible = false;
-                chestPicker.Visible = false;
-            }
+            var chestLabel = root.GetNode<Label>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/ChestLabel");
+            var chestPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/ChestPicker");
+            PopulatePicker(chestPicker, CharacterGenerationPools.BreastSizeLabels, player.BustSize, val => _game.ModifyPlayer(p => p.BustSize = val));
+            var showChest = string.Equals(player.Gender, "Female", StringComparison.OrdinalIgnoreCase);
+            chestLabel.Visible = showChest;
+            chestPicker.Visible = showChest;
 
-            var skinPicker = root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/SkinRow/SkinPicker");
+            var skinPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/SkinRow/SkinPicker");
             PopulatePicker(skinPicker, CharacterGenerationPools.SkinColors, player.SkinColor, val => _game.ModifyPlayer(p => p.SkinColor = val));
 
-            PopulatePicker(root.GetNode<OptionButton>("BodyCard/BodyInner/BodyGrid/TailPicker"), CharacterGenerationPools.TailTypes, player.TailType, val => _game.ModifyPlayer(p => p.TailType = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/BodyCard/BodyInner/BodyGrid/TailPicker"), CharacterGenerationPools.TailTypes, player.TailType, val => _game.ModifyPlayer(p => p.TailType = val));
         }
 
         // --- Appearance ---
         {
-            var title = root.GetNode<Label>("AppearanceCard/AppearanceInner/AppearanceTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.appearance", "Appearance");
 
-            var grid = root.GetNode<GridContainer>("AppearanceCard/AppearanceInner/AppearanceGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid");
             StyleGridLabels(grid);
 
-            var hairPicker = root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/HairColorRow/HairColorPicker");
+            var hairPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/HairColorRow/HairColorPicker");
             PopulatePicker(hairPicker, CharacterGenerationPools.HairColors, player.HairColor, val => _game.ModifyPlayer(p => p.HairColor = val));
 
-            PopulatePicker(root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/HairLengthPicker"), CharacterGenerationPools.HairFeatures, player.HairFeature, val => _game.ModifyPlayer(p => p.HairFeature = val));
-            PopulatePicker(root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/HairstylePicker"), CharacterGenerationPools.HairStyles, player.HairStyle, val => _game.ModifyPlayer(p => p.HairStyle = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/HairLengthPicker"), CharacterGenerationPools.HairFeatures, player.HairFeature, val => _game.ModifyPlayer(p => p.HairFeature = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/HairstylePicker"), CharacterGenerationPools.HairStyles, player.HairStyle, val => _game.ModifyPlayer(p => p.HairStyle = val));
 
-            var eyePicker = root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/EyeColorRow/EyeColorPicker");
+            var eyePicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/EyeColorRow/EyeColorPicker");
             PopulatePicker(eyePicker, CharacterGenerationPools.EyeColors, player.EyeColor, val => _game.ModifyPlayer(p => p.EyeColor = val));
 
-            PopulatePicker(root.GetNode<OptionButton>("AppearanceCard/AppearanceInner/AppearanceGrid/EyeStylePicker"), CharacterGenerationPools.EyeShapes, player.EyeShape, val => _game.ModifyPlayer(p => p.EyeShape = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/AppearanceCard/AppearanceInner/AppearanceGrid/EyeStylePicker"), CharacterGenerationPools.EyeShapes, player.EyeShape, val => _game.ModifyPlayer(p => p.EyeShape = val));
         }
 
         // --- Accessories ---
         {
-            var title = root.GetNode<Label>("AccessoriesCard/AccessoriesInner/AccessoriesTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.accessories", "Accessories");
 
-            var grid = root.GetNode<GridContainer>("AccessoriesCard/AccessoriesInner/AccessoriesGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid");
             StyleGridLabels(grid);
 
-            var hornsCb = root.GetNode<CheckBox>("AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow/HornsCheck");
+            var hornsCb = root.GetNode<CheckBox>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow/HornsCheck");
             hornsCb.ButtonPressed = player.HasHorns;
             hornsCb.Toggled += on => _game.ModifyPlayer(p => p.HasHorns = on);
 
-            var glassesCb = root.GetNode<CheckBox>("AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow/GlassesCheck");
+            var glassesCb = root.GetNode<CheckBox>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid/AccessoriesRow/GlassesCheck");
             glassesCb.ButtonPressed = player.HasGlasses;
             glassesCb.Toggled += on => _game.ModifyPlayer(p => p.HasGlasses = on);
 
-            PopulatePicker(root.GetNode<OptionButton>("AccessoriesCard/AccessoriesInner/AccessoriesGrid/BodyFurPicker"), CharacterGenerationPools.BodyFurOptions, player.BodyFur, val => _game.ModifyPlayer(p => p.BodyFur = val));
+            PopulatePicker(root.GetNode<OptionButton>("CreationBody/SettingsColumn/AccessoriesCard/AccessoriesInner/AccessoriesGrid/BodyFurPicker"), CharacterGenerationPools.BodyFurOptions, player.BodyFur, val => _game.ModifyPlayer(p => p.BodyFur = val));
         }
 
         // --- Pet & Mount ---
         {
-            var title = root.GetNode<Label>("PetMountCard/PetMountInner/PetMountTitle");
+            var title = root.GetNode<Label>("CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountTitle");
             title.AddThemeColorOverride("font_color", Palette.SectionText);
             ConfigureReadableLabel(title);
             title.Text = T("screen.character_creation.pet_mount", "Pet & Mount");
 
-            var grid = root.GetNode<GridContainer>("PetMountCard/PetMountInner/PetMountGrid");
+            var grid = root.GetNode<GridContainer>("CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid");
             StyleGridLabels(grid);
 
             var petIds = _game.Data.Pets.Keys.ToList();
             var petNames = petIds.Select(id => _game.Data.Pets[id].DisplayName).ToArray();
             var currentPetIdx = Math.Max(0, petIds.FindIndex(id => string.Equals(id, player.StartingPetId, StringComparison.OrdinalIgnoreCase)));
-            var petPicker = root.GetNode<OptionButton>("PetMountCard/PetMountInner/PetMountGrid/PetPicker");
+            var petPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid/PetPicker");
             PopulatePicker(petPicker, petNames, currentPetIdx >= 0 ? petNames[currentPetIdx] : petNames[0], val =>
             {
                 var idx = Array.IndexOf(petNames, val);
@@ -2714,7 +3059,7 @@ public partial class UiShellController
             var mountIds = petIds.Where(id => _game.Data.Pets[id].IsMountable).ToList();
             var mountNames = new[] { T("screen.character_creation.no_mount", "None") }.Concat(mountIds.Select(id => _game.Data.Pets[id].DisplayName)).ToArray();
             var mountValues = new[] { "none" }.Concat(mountIds).ToArray();
-            var mountPicker = root.GetNode<OptionButton>("PetMountCard/PetMountInner/PetMountGrid/MountPicker");
+            var mountPicker = root.GetNode<OptionButton>("CreationBody/SettingsColumn/PetMountCard/PetMountInner/PetMountGrid/MountPicker");
             var mountCurr = mountValues.Contains(player.StartingMountId) ? player.StartingMountId : "none";
             var mountCurrName = mountNames[Array.IndexOf(mountValues, mountCurr)];
             PopulatePicker(mountPicker, mountNames, mountCurrName, val =>
@@ -2843,7 +3188,8 @@ public partial class UiShellController
             new[] {
                 T("prologue.final1", "\"Well, I'm counting on you! There might be more requests once the samples are collected, so please take care.\" — Eugene"),
                 T("prologue.final2", "\"Well then, I'll be off for now〜. Looks like there's something to look forward to, huh?\" — Mano"),
-                T("prologue.final3", "And so, your new life as a rancher — with a side of slave training and milk production — begins in earnest.")
+                T("prologue.final3", "And so, your new life as a rancher — with a side of slave training and milk production — begins in earnest."),
+                T("prologue.arrival", "The next morning, the ranch wakes with you. There is work to assign, supplies to check, and a road into Okachi Town when you are ready.")
             }
         };
 
@@ -2902,7 +3248,7 @@ public partial class UiShellController
         }
         else
         {
-            var begin = PrimaryButton(T("prologue.begin", "Begin Game"));
+            var begin = PrimaryButton(T("prologue.begin", "Enter the Ranch"));
             begin.Pressed += () => { if (FinishPrologueTyping()) return; _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
             actions.AddChild(begin);
         }

@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 namespace OpenMakaiRanch.World;
@@ -24,18 +25,66 @@ public partial class WorldStation : Area3D, IWorldInteractable
     [Export] public string CommandTargetId { get; set; } = string.Empty;
 
     /// <summary>
+    /// Optional facility gate. Empty means the station is part of the always-available ranch
+    /// baseline. RanchGreyboxController resolves this against the shared RanchService.
+    /// </summary>
+    [Export] public string RequiredFacilityId { get; set; } = string.Empty;
+
+    /// <summary>
     /// The dispatcher routing the command to GameRoot. The scene (RanchGreybox controller)
     /// injects the production binding; headless tests inject a stub.
     /// </summary>
     public IWorldCommandDispatcher? Dispatcher { get; set; }
 
+    /// <summary>
+    /// Optional external progression check injected by the world controller. Tests and isolated
+    /// stations remain available when no resolver is supplied.
+    /// </summary>
+    public Func<(bool Available, string Reason)>? AvailabilityResolver { get; set; }
+
     private readonly WorldInteractionGuard _guard = new();
 
-    public string? UnavailableReason => Dispatcher is null
-        ? "no command dispatcher bound"
-        : string.Empty;
+    public string? UnavailableReason
+    {
+        get
+        {
+            if (Dispatcher is null)
+            {
+                return "no command dispatcher bound";
+            }
+            if (!_guard.CanInteract)
+            {
+                return "station is busy or unavailable";
+            }
 
-    public bool IsAvailable => _guard.CanInteract && Dispatcher is not null;
+            var availability = ResolveAvailability();
+            return availability.Available ? string.Empty : availability.Reason;
+        }
+    }
+
+    public bool IsAvailable
+    {
+        get
+        {
+            if (!_guard.CanInteract || Dispatcher is null)
+            {
+                return false;
+            }
+
+            return ResolveAvailability().Available;
+        }
+    }
+
+    private (bool Available, string Reason) ResolveAvailability()
+    {
+        if (AvailabilityResolver is null)
+        {
+            return (true, string.Empty);
+        }
+
+        var resolved = AvailabilityResolver.Invoke();
+        return (resolved.Available, resolved.Reason ?? string.Empty);
+    }
 
     /// <summary>
     /// Activate through the guard + dispatcher. Returns the command result (true = success).
@@ -43,7 +92,7 @@ public partial class WorldStation : Area3D, IWorldInteractable
     /// </summary>
     public bool Activate(WorldInteractionContext context)
     {
-        if (Dispatcher is null || !_guard.CanInteract)
+        if (!IsAvailable || Dispatcher is null)
         {
             return false;
         }

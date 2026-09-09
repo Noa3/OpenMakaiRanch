@@ -118,13 +118,10 @@ public sealed class SaveStateFactory
             state.Pets.Entries[state.Player.StartingMountId] = new PetEntryState();
         }
 
-        state.Calendar.CurrentWeather = _random.NextDouble() switch
-        {
-            < 0.40 => Weather.Clear,
-            < 0.70 => Weather.Cloudy,
-            < 0.90 => Weather.Rain,
-            _ => Weather.Storm
-        };
+        // Seed both today's weather and tomorrow's forecast from the source-traced original
+        // seasonal distribution. The day-cycle then advances forecast -> current exactly once/day.
+        state.Calendar.CurrentWeather = OriginalCalendarRules.RollWeather(state.Calendar.Season, _random);
+        state.Calendar.TomorrowWeather = OriginalCalendarRules.RollTomorrow(state.Calendar, _random);
 
         return state;
     }

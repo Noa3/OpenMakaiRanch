@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -7,6 +7,18 @@
 [ext_resource type="Script" path="res://src/World/WorldInputBootstrap.cs" id="5_input"]
 [ext_resource type="Script" path="res://src/World/DaylightRig.cs" id="6_daylight"]
 [ext_resource type="Script" path="res://src/World/RosterRig.cs" id="7_roster"]
+[ext_resource type="Script" path="res://src/World/WorldHudController.cs" id="8_hud"]
+[ext_resource type="Script" path="res://src/Character/PlayerAvatar3D.cs" id="9_player_avatar"]
+[ext_resource type="Script" path="res://src/World/WorldTutorialController.cs" id="10_tutorial"]
+[ext_resource type="Script" path="res://src/World/RanchPresentationBuilder.cs" id="11_presentation"]
+[ext_resource type="Script" path="res://src/World/SimpleNavigationRegionBuilder.cs" id="12_navigation"]
+[ext_resource type="Script" path="res://src/World/WorldTravelPortal.cs" id="13_travel"]
+[ext_resource type="Script" path="res://src/World/WorldAlertPanelController.cs" id="14_alert"]
+[ext_resource type="PackedScene" path="res://assets/vendor/kaykit_adventurers/Rogue_Hooded.glb" id="15_intruder"]
+
+[ext_resource type="Script" path="res://src/World/WorldAtmosphereController.cs" id="16_atmosphere"]
+
+[ext_resource type="Script" path="res://src/World/WorldBoundaryBuilder.cs" id="17_boundary"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -47,16 +59,29 @@ size = Vector3(0.5, 1.6, 0.5)
 [node name="RanchGreybox" type="Node3D"]
 script = ExtResource("1_controller")
 
+[node name="WorldBoundary" type="Node3D" parent="."]
+script = ExtResource("17_boundary")
+HalfExtents = Vector2(19.25, 14.25)
+SouthGateHalfWidth = 3.0
+AreaStyle = "ranch"
+
 [node name="WorldInputBootstrap" type="Node" parent="."]
 script = ExtResource("5_input")
 
 [node name="DaylightRig" type="Node3D" parent="."]
 script = ExtResource("6_daylight")
 
+[node name="NavigationRegion" type="NavigationRegion3D" parent="."]
+script = ExtResource("12_navigation")
+Size = Vector2(36, 26)
+
 [node name="RosterRig" type="Node3D" parent="."]
 script = ExtResource("7_roster")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+
+[node name="Presentation" type="Node3D" parent="."]
+script = ExtResource("11_presentation")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.7, 0.71, 0, -0.71, 0.7, 0, 8, 0)
@@ -99,12 +124,13 @@ mesh = SubResource("interior_mesh")
 shape = SubResource("interior_shape")
 
 [node name="Station" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.5, -8)
 script = ExtResource("4_station")
-TargetId = "STATION_MILK"
-Label = "Milk Station"
+TargetId = "dairy_barn"
+Label = "Dairy Barn"
 CommandKind = 0
-CommandTargetId = "JOB_MILK"
+CommandTargetId = "dairy"
+RequiredFacilityId = "dairy_barn"
 
 [node name="Mesh" type="MeshInstance3D" parent="Station"]
 mesh = SubResource("station_mesh")
@@ -112,16 +138,155 @@ mesh = SubResource("station_mesh")
 [node name="Collision" type="CollisionShape3D" parent="Station"]
 shape = SubResource("station_shape")
 
+[node name="Label" type="Label3D" parent="Station"]
+position = Vector3(0, 1.4, 0)
+text = "Dairy Barn"
+
+[node name="Stations" type="Node3D" parent="."]
+
+[node name="PastureStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.5, -8)
+script = ExtResource("4_station")
+TargetId = "pasture"
+Label = "Pasture"
+CommandKind = 0
+CommandTargetId = "pasture"
+RequiredFacilityId = "pasture"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/PastureStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/PastureStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/PastureStation"]
+position = Vector3(0, 1.4, 0)
+text = "Pasture"
+
+[node name="KitchenStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.5, 6)
+script = ExtResource("4_station")
+TargetId = "kitchen"
+Label = "Kitchen"
+CommandKind = 0
+CommandTargetId = "kitchen"
+RequiredFacilityId = "kitchen"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/KitchenStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/KitchenStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/KitchenStation"]
+position = Vector3(0, 1.4, 0)
+text = "Kitchen"
+
+[node name="WorkshopStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.5, 6)
+script = ExtResource("4_station")
+TargetId = "workshop"
+Label = "Workshop"
+CommandKind = 0
+CommandTargetId = "workshop"
+RequiredFacilityId = "workshop"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/WorkshopStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/WorkshopStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/WorkshopStation"]
+position = Vector3(0, 1.4, 0)
+text = "Workshop"
+
+[node name="PharmacyStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.5, -1)
+script = ExtResource("4_station")
+TargetId = "pharmacy_lab"
+Label = "Pharmacy Lab"
+CommandKind = 0
+CommandTargetId = "pharmacy"
+RequiredFacilityId = "pharmacy_lab"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/PharmacyStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/PharmacyStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/PharmacyStation"]
+position = Vector3(0, 1.4, 0)
+text = "Pharmacy Lab"
+
+[node name="OfficeStation" type="Area3D" parent="Stations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+script = ExtResource("4_station")
+TargetId = "office"
+Label = "Office"
+CommandKind = 0
+CommandTargetId = "office"
+
+[node name="Mesh" type="MeshInstance3D" parent="Stations/OfficeStation"]
+mesh = SubResource("station_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Stations/OfficeStation"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="Stations/OfficeStation"]
+position = Vector3(0, 1.4, 0)
+text = "Office"
+
+[node name="TravelToTown" type="Area3D" parent="."]
+position = Vector3(0, 0.7, 13)
+script = ExtResource("13_travel")
+DestinationId = "town"
+Label = "Road to Okachi Town"
+Prompt = "Travel to Okachi Town"
+
+[node name="Collision" type="CollisionShape3D" parent="TravelToTown"]
+shape = SubResource("station_shape")
+
+[node name="Label" type="Label3D" parent="TravelToTown"]
+position = Vector3(0, 1.6, 0)
+text = "Okachi Town →"
+
+[node name="FirstDayIntruder" type="Node3D" parent="."]
+visible = false
+position = Vector3(-6.0, 0.0, 1.5)
+
+[node name="Model" parent="FirstDayIntruder" instance=ExtResource("15_intruder")]
+rotation_degrees = Vector3(0, 90, 0)
+scale = Vector3(1.15, 1.15, 1.15)
+
+[node name="Label" type="Label3D" parent="FirstDayIntruder"]
+position = Vector3(0, 2.2, 0)
+text = "Suspicious Intruder"
+font_size = 28
+outline_size = 6
+
+[node name="Atmosphere" type="Node3D" parent="."]
+script = ExtResource("16_atmosphere")
+PlayerPath = NodePath("../Player")
+
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
 script = ExtResource("2_player")
 MaxWalkSpeed = 5.0
+SprintMultiplier = 1.65
 Acceleration = 40.0
 Gravity = 20.0
-HeadHeight = 1.6
+TurnSpeed = 10.0
+HeadHeight = 0.9
 
 [node name="Mesh" type="MeshInstance3D" parent="Player"]
+visible = false
 mesh = SubResource("player_mesh")
+
+[node name="Visual" type="Node3D" parent="Player"]
+position = Vector3(0, -0.8, 0)
+script = ExtResource("9_player_avatar")
 
 [node name="Collision" type="CollisionShape3D" parent="Player"]
 shape = SubResource("player_shape")
@@ -139,7 +304,265 @@ Distance = 7.0
 current = true
 fov = 70.0
 
+[node name="WorldHud" type="CanvasLayer" parent="."]
+layer = 20
+script = ExtResource("8_hud")
+
+[node name="TopBar" type="ColorRect" parent="WorldHud"]
+anchor_right = 1.0
+offset_bottom = 58.0
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 0.88)
+
+[node name="DayLabel" type="Label" parent="WorldHud/TopBar"]
+offset_left = 18.0
+offset_top = 8.0
+offset_right = 520.0
+offset_bottom = 30.0
+text = "Day 1"
+
+[node name="EconomyLabel" type="Label" parent="WorldHud/TopBar"]
+offset_left = 18.0
+offset_top = 31.0
+offset_right = 520.0
+offset_bottom = 53.0
+text = "500 G"
+
+[node name="RosterLabel" type="Label" parent="WorldHud/TopBar"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -540.0
+offset_top = 18.0
+offset_right = -316.0
+offset_bottom = 42.0
+horizontal_alignment = 2
+text = "0 residents"
+
+[node name="AdvanceTimeButton" type="Button" parent="WorldHud"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -304.0
+offset_top = 14.0
+offset_right = -166.0
+offset_bottom = 46.0
+text = "Advance Phase"
+tooltip_text = "Advance the shared ranch clock"
+
+[node name="ManagementButton" type="Button" parent="WorldHud"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -154.0
+offset_top = 14.0
+offset_right = -18.0
+offset_bottom = 46.0
+text = "Management [M]"
+tooltip_text = "Open the existing ranch management interface"
+
+[node name="WorkerPanel" type="ColorRect" parent="WorldHud"]
+offset_left = 14.0
+offset_top = 72.0
+offset_right = 326.0
+offset_bottom = 132.0
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 0.78)
+
+[node name="WorkerLabel" type="Label" parent="WorldHud/WorkerPanel"]
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 300.0
+offset_bottom = 28.0
+text = "Worker: none"
+
+[node name="AssignmentLabel" type="Label" parent="WorldHud/WorkerPanel"]
+offset_left = 12.0
+offset_top = 31.0
+offset_right = 300.0
+offset_bottom = 52.0
+text = "Tab: switch worker"
+
+[node name="GuidancePanel" type="ColorRect" parent="WorldHud"]
+offset_left = 14.0
+offset_top = 140.0
+offset_right = 430.0
+offset_bottom = 184.0
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 0.70)
+
+[node name="GuidanceLabel" type="Label" parent="WorldHud/GuidancePanel"]
+offset_left = 10.0
+offset_top = 7.0
+offset_right = 406.0
+offset_bottom = 37.0
+text = "Next: assign workers or open Management."
+autowrap_mode = 2
+
+[node name="Prompt" type="Label" parent="WorldHud"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -66.0
+offset_right = 320.0
+offset_bottom = -34.0
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "WASD / arrows: move"
+
+[node name="StatusLabel" type="Label" parent="WorldHud"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -38.0
+offset_right = 620.0
+offset_bottom = -12.0
+text = ""
+
+[node name="AlertPanel" type="PanelContainer" parent="WorldHud"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -470.0
+offset_top = 62.0
+offset_right = -18.0
+offset_bottom = 196.0
+script = ExtResource("14_alert")
+tooltip_text = "Current ranch/resident attention warnings. Press M to review detailed management."
+
+[node name="Inner" type="VBoxContainer" parent="WorldHud/AlertPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Header" type="Label" parent="WorldHud/AlertPanel/Inner"]
+layout_mode = 2
+text = "RANCH CHECK"
+
+[node name="Body" type="Label" parent="WorldHud/AlertPanel/Inner"]
+layout_mode = 2
+text = ""
+autowrap_mode = 2
+
+[node name="TutorialOverlay" type="Control" parent="WorldHud"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_tutorial")
+
+[node name="HintCard" type="PanelContainer" parent="WorldHud/TutorialOverlay"]
+offset_left = 14.0
+offset_top = 194.0
+offset_right = 430.0
+offset_bottom = 402.0
+tooltip_text = "Contextual first-run guidance. You can skip individual steps or disable tutorials from F1 Help."
+
+[node name="Inner" type="VBoxContainer" parent="WorldHud/TutorialOverlay/HintCard"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="StepLabel" type="Label" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+text = "Ranch Tutorial 1/5"
+
+[node name="TitleLabel" type="Label" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+text = "Move around the ranch"
+theme_override_font_sizes/font_size = 18
+
+[node name="BodyLabel" type="Label" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Use WASD or the arrow keys to walk."
+autowrap_mode = 2
+
+[node name="KeyLabel" type="Label" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+text = "WASD / Arrows  •  Shift = sprint"
+autowrap_mode = 2
+
+[node name="Actions" type="HBoxContainer" parent="WorldHud/TutorialOverlay/HintCard/Inner"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="DismissButton" type="Button" parent="WorldHud/TutorialOverlay/HintCard/Inner/Actions"]
+layout_mode = 2
+text = "Next / Skip Step"
+
+[node name="SkipButton" type="Button" parent="WorldHud/TutorialOverlay/HintCard/Inner/Actions"]
+layout_mode = 2
+text = "Skip Tutorial"
+
+[node name="HelpButton" type="Button" parent="WorldHud/TutorialOverlay"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -74.0
+offset_top = -72.0
+offset_right = -18.0
+offset_bottom = -18.0
+text = "?"
+tooltip_text = "Help and controls [F1]"
+
+[node name="HelpPanel" type="PanelContainer" parent="WorldHud/TutorialOverlay"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -270.0
+offset_right = 340.0
+offset_bottom = 270.0
+
+[node name="Inner" type="VBoxContainer" parent="WorldHud/TutorialOverlay/HelpPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Ranch Help & Controls"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+
+[node name="ControlsTitle" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Controls"
+theme_override_font_sizes/font_size = 17
+
+[node name="ControlsLabel" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "WASD / Arrows — Move\nShift — Sprint\nHold RMB — Orbit camera\nMouse Wheel — Zoom / inspect closely\nV — Toggle first-person\nR — Recenter camera\nF — Interact with a nearby station or resident\nTab — Select next worker\nM — Open management\nEsc — Return to world from ordinary management\nF1 — Open/close this help"
+autowrap_mode = 2
+
+[node name="LoopTitle" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Basic Ranch Loop"
+theme_override_font_sizes/font_size = 17
+
+[node name="LoopLabel" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "1. Choose a worker with Tab.\n2. Assign work in the 3D ranch or full Management.\n3. Walk up to residents and press F to open their existing character details.\n4. Check facilities, roster, supplies and plans in Management.\n5. Advance the day when ready.\n6. At Night choose a night plan, then End Day.\n7. Review the Daily Report and adjust tomorrow's plan."
+autowrap_mode = 2
+
+[node name="TutorialToggle" type="CheckButton" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Show contextual tutorial hints"
+button_pressed = true
+tooltip_text = "Disable automatic tutorial cards. F1 Help remains available."
+
+[node name="ResetTutorialButton" type="Button" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Restart Basic Tutorial"
+
+[node name="CloseButton" type="Button" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
+layout_mode = 2
+text = "Close Help [F1]"
+
 [node name="PromptLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="Prompt" type="Label" parent="PromptLayer"]
 anchors_preset = 10
@@ -153,9 +576,10 @@ grow_horizontal = 2
 grow_vertical = 0
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "Walk with WASD / arrows. Look with camera keys. Press F near a station to interact."
+text = "Walk with WASD / arrows. Hold RMB to look. Press F near a station to interact."
 
 [node name="ButtonLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="OpenManagementButton" type="Button" parent="ButtonLayer"]
 anchors_preset = 0
