@@ -393,9 +393,7 @@ public partial class FirstDayFlowController : Control
         {
             ShowDialogue(
                 "Combat Tutorial",
-                $"{outcomeText}
-
-The tutorial opponent is intentionally weak; you can retry without changing the story outcome.",
+                $"{outcomeText}\n\nThe tutorial opponent is intentionally weak; you can retry without changing the story outcome.",
                 ("Retry", StartIntruderCombat));
             return;
         }
@@ -406,9 +404,7 @@ The tutorial opponent is intentionally weak; you can retry without changing the 
 
         ShowDialogue(
             "Combat Tutorial",
-            $"{outcomeText}
-
-{roundSummary}",
+            $"{outcomeText}\n\n{roundSummary}",
             ("Detain the intruder", FinishIntruderEncounter));
     }
 
