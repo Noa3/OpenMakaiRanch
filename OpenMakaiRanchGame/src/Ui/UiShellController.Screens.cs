@@ -1802,7 +1802,7 @@ public partial class UiShellController
         var platform = CardContent();
         platformCard.AddChild(platform);
         platform.AddChild(SubtitleLabel(T("screen.settings.platform", "Platform & Recommended Setup")));
-        platform.AddChild(MutedLabel($"{OS.GetName()} • GL Compatibility • {GetViewportRect().Size.X:0}×{GetViewportRect().Size.Y:0}"));
+        platform.AddChild(MutedLabel($"{OS.GetName()} • {_game.RuntimeSettings.CurrentRenderingMethod} • {GetViewportRect().Size.X:0}×{GetViewportRect().Size.Y:0}"));
         platform.AddChild(MutedLabel(_game.RuntimeSettings.IsMobilePlatform
             ? T("screen.settings.mobile_note", "Mobile mode favors lower render cost, touch controls and readable UI. Native Android/iOS builds are preferred over browser play.")
             : T("screen.settings.desktop_note", "Desktop mode supports window/fullscreen, mouse/controller input and higher quality settings.")));
@@ -1892,6 +1892,34 @@ public partial class UiShellController
         weatherFx.TooltipText = T("tooltip.settings.weather_fx", "Keep weather gameplay while optionally reducing its visual atmosphere cost.");
         weatherFx.Pressed += () => _game.SetWeatherEffectsEnabled(!settings.WeatherEffectsEnabled);
         graphics.AddChild(weatherFx);
+
+        var advancedLighting = PrimaryButton($"{T("screen.settings.advanced_lighting", "Forward+ Advanced Lighting")}: {(settings.AdvancedLightingEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        advancedLighting.TooltipText = _game.RuntimeSettings.IsForwardPlus
+            ? T("tooltip.settings.advanced_lighting", "Forward+ only: SSAO/SSIL/SSR and volumetric atmosphere where the quality preset allows it.")
+            : T("tooltip.settings.advanced_lighting_unavailable", "The current renderer does not support the full Forward+ advanced-lighting set.");
+        advancedLighting.Disabled = !_game.RuntimeSettings.IsForwardPlus;
+        advancedLighting.Pressed += () => _game.SetAdvancedLightingEnabled(!settings.AdvancedLightingEnabled);
+        graphics.AddChild(advancedLighting);
+
+        var particles = PrimaryButton($"{T("screen.settings.world_particles", "World Particles")}: {(settings.WorldParticlesEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        particles.TooltipText = T("tooltip.settings.world_particles", "Rain, snow, wind debris and seasonal leaf particles. Density follows the quality preset.");
+        particles.Pressed += () => _game.SetWorldParticlesEnabled(!settings.WorldParticlesEnabled);
+        graphics.AddChild(particles);
+
+        var detailRow = FlowRow(8);
+        graphics.AddChild(detailRow);
+        detailRow.AddChild(AddStyledLine($"{T("screen.settings.world_detail", "World Detail")}: {settings.WorldDetailScale * 100f:0}%", true));
+        var detailScale = new HSlider
+        {
+            MinValue = 0.35,
+            MaxValue = 1.25,
+            Step = 0.05,
+            Value = settings.WorldDetailScale,
+            CustomMinimumSize = new Vector2(240, 0)
+        };
+        detailScale.TooltipText = T("tooltip.settings.world_detail", "Scales decorative density independently from gameplay objects. Lower values keep paths, stations and interactions intact.");
+        detailScale.ValueChanged += value => ExecuteUiAction(() => _game.SetWorldDetailScale((float)value), false);
+        detailRow.AddChild(detailScale);
 
         var vsync = PrimaryButton($"{T("screen.settings.vsync", "VSync")}: {(settings.VSyncEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
         vsync.Pressed += () => _game.SetVSyncEnabled(!settings.VSyncEnabled);
