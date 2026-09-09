@@ -41,4 +41,10 @@ public partial class CharacterVisualProfile : Resource
 
     /// <summary>Approximate height in meters, for scale and camera clearance.</summary>
     public float Height { get; set; } = 1.7f;
+
+    /// <summary>
+    /// Optional generic placeholder model. This remains a debug stand-in and is never treated as
+    /// identity-specific final character art.
+    /// </summary>
+    public string PlaceholderModelPath { get; set; } = string.Empty;
 }
