@@ -23,6 +23,9 @@ public partial class TownWorldController : Node3D
     private TownServicePoint? _nearbyService;
     private float _nearbyServiceDistance = float.PositiveInfinity;
     private float _returnPortalDistance = float.PositiveInfinity;
+    private Button? _returnRanchButton;
+
+    public DaylightRig? Daylight { get; private set; }
 
     public ThirdPersonPlayerController? Player => _player;
     public WorldCameraRig? CameraRig => _cameraRig;
@@ -39,6 +42,7 @@ public partial class TownWorldController : Node3D
         _cameraRig = GetNodeOrNull<WorldCameraRig>("CameraRig");
         _hud = GetNodeOrNull<TownHudController>("TownHud");
         _returnPortal = GetNodeOrNull<WorldTravelPortal>("TravelToRanch");
+        _returnRanchButton = GetNodeOrNull<Button>("TownHud/ReturnRanchButton");
 
         _services.Clear();
         CollectServices(this);
@@ -59,6 +63,13 @@ public partial class TownWorldController : Node3D
             service.AvailabilityResolver = () => ResolveAvailability(service.RequiredFacilityId, service.Label);
         }
 
+        if (_returnRanchButton is not null)
+        {
+            _returnRanchButton.Pressed += RequestReturnToRanch;
+        }
+
+        WireDaylight();
+
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
         {
             game.StateChanged += OnSharedStateChanged;
@@ -72,6 +83,11 @@ public partial class TownWorldController : Node3D
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
         {
             game.StateChanged -= OnSharedStateChanged;
+        }
+
+        if (_returnRanchButton is not null && GodotObject.IsInstanceValid(_returnRanchButton))
+        {
+            _returnRanchButton.Pressed -= RequestReturnToRanch;
         }
     }
 
@@ -91,6 +107,11 @@ public partial class TownWorldController : Node3D
 
     public void Refresh()
     {
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        {
+            Daylight?.ApplyFrom(game);
+        }
+
         UpdateNearbyTargets();
         RefreshHud();
     }
@@ -122,6 +143,36 @@ public partial class TownWorldController : Node3D
 
         ServiceScreenRequested?.Invoke(_nearbyService.ScreenId);
         return true;
+    }
+
+    private void RequestReturnToRanch()
+    {
+        TravelRequested?.Invoke("ranch");
+    }
+
+    private void WireDaylight()
+    {
+        var game = GameRoot.Instance;
+        if (game is null || !GodotObject.IsInstanceValid(game))
+        {
+            return;
+        }
+
+        var rig = GetNodeOrNull<DaylightRig>("DaylightRig");
+        if (rig is null)
+        {
+            return;
+        }
+
+        var worldEnvironment = GetNodeOrNull<WorldEnvironment>("WorldEnvironment");
+        if (worldEnvironment is not null && worldEnvironment.Environment is null)
+        {
+            worldEnvironment.Environment = new Godot.Environment();
+        }
+
+        rig.Bind(GetNodeOrNull<DirectionalLight3D>("Sun"), worldEnvironment);
+        rig.ApplyFrom(game);
+        Daylight = rig;
     }
 
     private void UpdateNearbyTargets()
