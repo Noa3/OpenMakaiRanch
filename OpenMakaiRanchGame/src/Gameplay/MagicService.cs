@@ -8,12 +8,19 @@ using OpenMakaiRanch.Data;
 namespace OpenMakaiRanch.Gameplay;
 
 /// <summary>
-/// Personal player MP and ranch-stored mana are deliberately separate. This mirrors the original
-/// BASE:0:魔力 / MAXBASE:0:魔力 versus stored-mana split: spells spend personal MP, while ranch
-/// storage can refill it after capacity has been unlocked.
+/// Original-style personal MP versus ranch-stored mana.
+/// Personal MP (BASE:0:魔力) pays for magic. Stored mana (MONEY:貯蔵魔力) is a separate reserve.
+/// Rest recovery can store one fifth of sufficiently large overflow when a reservoir exists, while
+/// transferring stored mana back into the player requires the original Magic Supply Device.
 /// </summary>
 public sealed class MagicService
 {
+    public const int HomeStorageCapacity = 10_000;
+    public const int BusinessStorageCapacity = 50_000;
+    public const int LargeStorageCapacity = 1_000_000;
+    public const int ModifiedStorageCapacity = 10_000_000;
+    public const int MinimumOverflowStorageGain = 1_000;
+
     private readonly SaveState _state;
     private readonly DataRegistry _data;
 
@@ -27,7 +34,9 @@ public sealed class MagicService
     public int CurrentMana => _state.Player.Mana;
     public int MaxMana => _state.Player.MaxMana;
     public int StoredMana => _state.Economy.ManaReservoir;
+    public int StorageCapacity => StorageCapacityFor(_state);
     public int SpiritEnergy => _state.Economy.SpiritEnergy;
+    public bool HasManaSupplyDevice => HasItem(_state, "magic_supply_device");
 
     public bool CanSpendPlayerMana(int amount) => amount >= 0 && CurrentMana >= amount;
 
@@ -35,6 +44,7 @@ public sealed class MagicService
     {
         if (amount <= 0 || !CanSpendPlayerMana(amount))
             return false;
+
         _state.Player.Mana -= amount;
         return true;
     }
@@ -46,15 +56,23 @@ public sealed class MagicService
     {
         if (!CanCast(spellId, manaCost) || !SpendPlayerMana(manaCost))
             return false;
+
         ApplySpellEffect(spellId, manaCost);
         return true;
     }
 
+    /// <summary>
+    /// Original Magic Supply Device behavior: stored mana can refill current personal MP but never
+    /// increases Max MP. Without the device this transfer is unavailable.
+    /// </summary>
     public int RechargePlayerManaFromStorage(int requestedAmount = int.MaxValue)
     {
         Normalize();
-        if (requestedAmount <= 0 || MaxMana <= 0 || CurrentMana >= MaxMana || StoredMana <= 0)
+        if (!HasManaSupplyDevice || requestedAmount <= 0 || MaxMana <= 0
+            || CurrentMana >= MaxMana || StoredMana <= 0)
+        {
             return 0;
+        }
 
         var transferred = Math.Min(requestedAmount, Math.Min(MaxMana - CurrentMana, StoredMana));
         _state.Economy.ManaReservoir -= transferred;
@@ -84,6 +102,51 @@ public sealed class MagicService
         var before = CurrentMana;
         _state.Player.Mana = Math.Min(MaxMana, CurrentMana + amount);
         return _state.Player.Mana - before;
+    }
+
+    /// <summary>
+    /// Rest/day-rollover recovery from the original MP_HEAL_RATIO path. The player receives the
+    /// configured percentage of Max MP. If that heal overflows Max MP, one fifth of the overflow is
+    /// stored when it yields at least 1,000 MP and an actual reservoir is available.
+    /// </summary>
+    public static (int recovered, int stored) RecoverPlayerManaForRest(SaveState state)
+    {
+        var player = state.Player;
+        player.MaxMana = Math.Max(0, player.MaxMana);
+        player.Mana = Math.Clamp(player.Mana, 0, player.MaxMana);
+        player.ManaRecoveryPercent = Math.Clamp(player.ManaRecoveryPercent, 0, 100);
+        state.Economy.ManaReservoir = Math.Max(0, state.Economy.ManaReservoir);
+
+        if (player.MaxMana <= 0 || player.ManaRecoveryPercent <= 0)
+            return (0, 0);
+
+        var heal = Math.Max(1, player.MaxMana * player.ManaRecoveryPercent / 100);
+        var before = player.Mana;
+        player.Mana = Math.Min(player.MaxMana, player.Mana + heal);
+        var recovered = player.Mana - before;
+
+        var overflow = Math.Max(0, before + heal - player.Mana);
+        var storageGain = overflow / 5;
+        var capacity = StorageCapacityFor(state);
+        if (storageGain < MinimumOverflowStorageGain || capacity <= 0 || state.Economy.ManaReservoir >= capacity)
+            return (recovered, 0);
+
+        var beforeStored = state.Economy.ManaReservoir;
+        state.Economy.ManaReservoir = Math.Min(capacity, beforeStored + storageGain);
+        return (recovered, state.Economy.ManaReservoir - beforeStored);
+    }
+
+    public static int StorageCapacityFor(SaveState state)
+    {
+        if (HasItem(state, "magic_storage_mod") || HasFacility(state, "magic_storage_3"))
+            return ModifiedStorageCapacity;
+        if (HasItem(state, "magic_storage_huge"))
+            return LargeStorageCapacity;
+        if (HasItem(state, "magic_storage_large") || HasFacility(state, "magic_storage_2"))
+            return BusinessStorageCapacity;
+        if (HasItem(state, "magic_storage_small") || HasFacility(state, "magic_storage"))
+            return HomeStorageCapacity;
+        return 0;
     }
 
     public List<ItemDefinition> AvailableMagicItems() => _data.Items.Values
@@ -120,5 +183,14 @@ public sealed class MagicService
         _state.Player.Mana = Math.Clamp(_state.Player.Mana, 0, _state.Player.MaxMana);
         _state.Player.ManaRecoveryPercent = Math.Clamp(_state.Player.ManaRecoveryPercent, 0, 100);
         _state.Economy.ManaReservoir = Math.Max(0, _state.Economy.ManaReservoir);
+        var capacity = StorageCapacity;
+        if (capacity > 0)
+            _state.Economy.ManaReservoir = Math.Min(capacity, _state.Economy.ManaReservoir);
     }
+
+    private static bool HasItem(SaveState state, string itemId) =>
+        state.Inventory.Items.TryGetValue(itemId, out var count) && count > 0;
+
+    private static bool HasFacility(SaveState state, string facilityId) =>
+        state.Ranch.Facilities.TryGetValue(facilityId, out var level) && level > 0;
 }
