@@ -64,6 +64,15 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
         return target;
     }
 
+    public void SetFirstPersonVisualHidden(bool hidden)
+    {
+        var visual = GetNodeOrNull<Node3D>("Visual");
+        if (visual is not null)
+        {
+            visual.Visible = !hidden;
+        }
+    }
+
     private void ResolveCamera()
     {
         if (_camera is null || !_camera.IsInsideTree())
