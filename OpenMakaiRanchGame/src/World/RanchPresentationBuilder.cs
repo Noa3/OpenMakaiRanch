@@ -18,6 +18,7 @@ public partial class RanchPresentationBuilder : Node3D
 
     private readonly Dictionary<string, MeshInstance3D> _facilityLandmarks = new();
     private Node3D? _generated;
+    private Label3D? _entrySign;
 
     private static readonly Color GroundColor = new("7ea66a");
     private static readonly Color PathColor = new("cbb98d");
@@ -48,6 +49,13 @@ public partial class RanchPresentationBuilder : Node3D
         if (game is null || !GodotObject.IsInstanceValid(game))
         {
             return;
+        }
+
+        if (_entrySign is not null)
+        {
+            _entrySign.Text = string.IsNullOrWhiteSpace(game.State.Player.RanchName)
+                ? "RANCH"
+                : game.State.Player.RanchName.ToUpperInvariant();
         }
 
         var ranch = GetParent();
@@ -126,15 +134,15 @@ public partial class RanchPresentationBuilder : Node3D
         AddBox("EntryPostR", new Vector3(1.65f, 1.25f, 12.2f), new Vector3(0.28f, 2.5f, 0.28f), WoodColor);
         AddBox("EntryBeam", new Vector3(0f, 2.35f, 12.2f), new Vector3(3.6f, 0.32f, 0.34f), AccentColor);
 
-        var sign = new Label3D
+        _entrySign = new Label3D
         {
             Name = "RanchEntrySign",
-            Text = "OKACHI RANCH",
+            Text = "RANCH",
             Position = new Vector3(0f, 2.35f, 12.0f),
             FontSize = 34,
             OutlineSize = 6
         };
-        _generated!.AddChild(sign);
+        _generated!.AddChild(_entrySign);
     }
 
     private void BuildCentralLandmark()
