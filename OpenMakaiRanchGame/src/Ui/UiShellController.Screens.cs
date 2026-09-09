@@ -4185,19 +4185,17 @@ public partial class UiShellController
             spellInner.AddChild(SubtitleLabel(spell.DisplayName));
             spellInner.AddChild(MutedLabel(spell.Description));
             spellInner.AddChild(MutedLabel("Type: " + spell.Type));
-            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " personal MP"));
 
             var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
-            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            castBtn.Disabled = !_game.Magic.CanSpendPlayerMana(spell.ManaCost);
             var capturedSpell = spell;
             castBtn.Pressed += () =>
             {
                 ExecuteUiAction(() =>
                 {
-                    if (_game.State.Economy.ManaReservoir >= capturedSpell.ManaCost)
+                    if (_game.CastPlayerSpell(capturedSpell.Id, capturedSpell.ManaCost))
                     {
-                        _game.State.Economy.ManaReservoir -= capturedSpell.ManaCost;
-                        _game.NotifyStateChanged();
                         _game.Feedback.PlayConfirm();
                         SetStatus("Cast: " + capturedSpell.DisplayName + " - " + capturedSpell.EffectDescription, true);
                         ShowScreen("magic_basic");
@@ -4205,14 +4203,14 @@ public partial class UiShellController
                     else
                     {
                         _game.Feedback.PlayError();
-                        SetStatus("Need " + (capturedSpell.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                        SetStatus("Need " + Math.Max(0, capturedSpell.ManaCost - _game.Magic.CurrentMana) + " personal MP", true);
                     }
                 }, true, "magic_basic");
             };
             spellInner.AddChild(castBtn);
             if (castBtn.Disabled)
             {
-                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+                spellInner.AddChild(RequirementLabel("Need " + Math.Max(0, capturedSpell.ManaCost - _game.Magic.CurrentMana) + " personal MP"));
             }
         }
 
@@ -4251,19 +4249,17 @@ public partial class UiShellController
             spellInner.AddChild(SubtitleLabel(spell.DisplayName));
             spellInner.AddChild(MutedLabel(spell.Description));
             spellInner.AddChild(MutedLabel("Type: " + spell.Type));
-            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " personal MP"));
 
             var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
-            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            castBtn.Disabled = !_game.Magic.CanSpendPlayerMana(spell.ManaCost);
             var capturedSpell2 = spell;
             castBtn.Pressed += () =>
             {
                 ExecuteUiAction(() =>
                 {
-                    if (_game.State.Economy.ManaReservoir >= capturedSpell2.ManaCost)
+                    if (_game.CastPlayerSpell(capturedSpell2.Id, capturedSpell2.ManaCost))
                     {
-                        _game.State.Economy.ManaReservoir -= capturedSpell2.ManaCost;
-                        _game.NotifyStateChanged();
                         _game.Feedback.PlayConfirm();
                         SetStatus("Cast: " + capturedSpell2.DisplayName + " - " + capturedSpell2.EffectDescription, true);
                         ShowScreen("magic_forbidden");
@@ -4271,14 +4267,14 @@ public partial class UiShellController
                     else
                     {
                         _game.Feedback.PlayError();
-                        SetStatus("Need " + (capturedSpell2.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                        SetStatus("Need " + Math.Max(0, capturedSpell2.ManaCost - _game.Magic.CurrentMana) + " personal MP", true);
                     }
                 }, true, "magic_forbidden");
             };
             spellInner.AddChild(castBtn);
             if (castBtn.Disabled)
             {
-                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell2.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+                spellInner.AddChild(RequirementLabel("Need " + Math.Max(0, capturedSpell2.ManaCost - _game.Magic.CurrentMana) + " personal MP"));
             }
         }
 
@@ -4317,19 +4313,17 @@ public partial class UiShellController
             spellInner.AddChild(SubtitleLabel(spell.DisplayName));
             spellInner.AddChild(MutedLabel(spell.Description));
             spellInner.AddChild(MutedLabel("Type: " + spell.Type));
-            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " personal MP"));
 
             var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
-            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            castBtn.Disabled = !_game.Magic.CanSpendPlayerMana(spell.ManaCost);
             var capturedSpell3 = spell;
             castBtn.Pressed += () =>
             {
                 ExecuteUiAction(() =>
                 {
-                    if (_game.State.Economy.ManaReservoir >= capturedSpell3.ManaCost)
+                    if (_game.CastPlayerSpell(capturedSpell3.Id, capturedSpell3.ManaCost))
                     {
-                        _game.State.Economy.ManaReservoir -= capturedSpell3.ManaCost;
-                        _game.NotifyStateChanged();
                         _game.Feedback.PlayConfirm();
                         SetStatus("Cast: " + capturedSpell3.DisplayName + " - " + capturedSpell3.EffectDescription, true);
                         ShowScreen("magic_tentacle");
@@ -4337,14 +4331,14 @@ public partial class UiShellController
                     else
                     {
                         _game.Feedback.PlayError();
-                        SetStatus("Need " + (capturedSpell3.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                        SetStatus("Need " + Math.Max(0, capturedSpell3.ManaCost - _game.Magic.CurrentMana) + " personal MP", true);
                     }
                 }, true, "magic_tentacle");
             };
             spellInner.AddChild(castBtn);
             if (castBtn.Disabled)
             {
-                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell3.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+                spellInner.AddChild(RequirementLabel("Need " + Math.Max(0, capturedSpell3.ManaCost - _game.Magic.CurrentMana) + " personal MP"));
             }
         }
 
