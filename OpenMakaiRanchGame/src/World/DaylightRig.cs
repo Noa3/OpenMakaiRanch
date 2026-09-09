@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using GodotEnvironment = Godot.Environment;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Gameplay;
@@ -67,7 +68,7 @@ public partial class DaylightRig : Node3D
     }
 
     private static void ApplyAtmosphere(
-        Environment environment,
+        GodotEnvironment environment,
         DayPhase phase,
         Weather weather,
         SettingsState? settings,
@@ -140,7 +141,7 @@ public partial class DaylightRig : Node3D
     }
 
     private static void ApplyForwardPlusEffects(
-        Environment environment,
+        GodotEnvironment environment,
         DayPhase phase,
         Weather weather,
         string quality,
@@ -193,7 +194,7 @@ public partial class DaylightRig : Node3D
         environment.VolumetricFogSkyAffect = OriginalCalendarRules.IsSevere(weather) ? 0.92f : 0.70f;
     }
 
-    private static void DisableOptionalEnvironmentEffects(Environment environment)
+    private static void DisableOptionalEnvironmentEffects(GodotEnvironment environment)
     {
         environment.AdjustmentEnabled = false;
         environment.GlowEnabled = false;
