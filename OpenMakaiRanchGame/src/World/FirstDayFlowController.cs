@@ -212,7 +212,7 @@ public partial class FirstDayFlowController : Control
                     {
                         SetStage(StageLeaveBedroom);
                         HideDialogue();
-                        _intro?.SetDoorEnabled(true);
+                        _intro?.FinishWakeUp();
                         SetObjective("Get familiar with movement, then walk to the bedroom door and press F.");
                     }));
                 break;
