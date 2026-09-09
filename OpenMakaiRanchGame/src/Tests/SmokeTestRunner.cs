@@ -1351,8 +1351,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         var data = DataRegistry.CreateSeeded();
         var state = new SaveStateFactory(data, new Random(2409)).CreateNewGame();
 
-        Assert(result, state.Player.Mana == 0 && state.Player.MaxMana == 0,
-            "mana: new game preserves the original-style locked 0/0 personal MP start");
+        Assert(result, state.Player.Mana == 100 && state.Player.MaxMana == 100 && state.Player.ManaRecoveryPercent == 10,
+            "mana: new game matches original Chara0 personal MP and 10% recovery defaults");
 
         state.Player.MaxMana = 100;
         state.Player.Mana = 10;
@@ -1364,9 +1364,24 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
 
         state.Economy.ManaReservoir = 45;
         var magic = new MagicService(state, data);
+        Assert(result, magic.RechargePlayerManaFromStorage(30) == 0,
+            "mana: stored mana cannot refill the player before the Magic Supply Device exists");
+        state.Inventory.Items["magic_supply_device"] = 1;
         var transferred = magic.RechargePlayerManaFromStorage(30);
         Assert(result, transferred == 30 && state.Player.Mana == 50 && state.Economy.ManaReservoir == 15,
-            "mana: ranch storage recharges personal MP without conflating the two pools");
+            "mana: Magic Supply Device refills personal MP from stored mana without increasing Max MP");
+
+        var overflowState = new SaveStateFactory(data, new Random(2411)).CreateNewGame();
+        overflowState.Player.MaxMana = 100_000;
+        overflowState.Player.Mana = 99_000;
+        overflowState.Player.ManaRecoveryPercent = 10;
+        overflowState.Inventory.Items["magic_storage_small"] = 1;
+        var overflowCycle = new DayCycleService(overflowState);
+        overflowCycle.AdvanceToNextDay();
+        Assert(result, overflowState.Player.Mana == 100_000 && overflowState.Economy.ManaReservoir == 1_800,
+            "mana: rest stores one fifth of sufficiently large recovery overflow in an installed reservoir");
+        Assert(result, MagicService.StorageCapacityFor(overflowState) == MagicService.HomeStorageCapacity,
+            "mana: home reservoir exposes the original 10,000 MP storage capacity");
 
         var moraleBefore = state.Roster.Characters.Sum(character => character.Morale);
         Assert(result, magic.CastSpell("morale_boost", 10, state.Roster.Characters[0].Id),
