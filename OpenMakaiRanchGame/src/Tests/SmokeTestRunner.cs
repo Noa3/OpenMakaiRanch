@@ -1985,9 +1985,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
 
                 controller.Shell.ShowScreen("ranch");
                 Assert(result, !controller.FlowLocksUi && !controller.IsManagementVisible,
-                    "finishing the mandatory new-game flow automatically reveals the 3D ranch");
-                Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
-                    "new-game flow completion returns input to the world");
+                    "finishing the mandatory new-game UI flow reveals the 3D story world");
+                Assert(result, controller.FirstDayFlow?.IsActive == true && controller.ActiveAreaId == "intro",
+                    "fresh day-one flow resumes in the ranch-house bedroom instead of skipping the guided opening");
+                controller.Transition?.CompleteImmediately();
+                Assert(result, controller.IntroHouse?.InputGate.WorldInputEnabled == true,
+                    "day-one bedroom transition returns input to the active story world");
 
                 // WORLD-003d flow: play through the shared clock from the 3D world. Day phases can
                 // advance without opening management; Night with no plan opens the existing choice,
