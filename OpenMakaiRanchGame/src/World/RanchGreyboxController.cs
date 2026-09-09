@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Godot;
 using OpenMakaiRanch.App;
 
@@ -5,11 +7,11 @@ namespace OpenMakaiRanch.World;
 
 /// <summary>
 /// Scene controller for the opt-in <c>scenes/dev/RanchGreybox.tscn</c>. It wires the shared
-/// input gate, the command dispatcher, and the interact prompt, and handles the single
-/// "interact" action: find the nearest in-range station and dispatch through the guard.
+/// input gate, command dispatchers, camera target, roster/daylight presentation and the world HUD.
 ///
-/// This node owns no simulation. It only routes input to the controller / camera / station
-/// and surfaces a prompt. All game effects flow through <see cref="GameRoot"/>.
+/// This node owns no simulation. Spatial interactions are translated into commands against the
+/// existing <see cref="GameRoot"/>. The selected roster character is presentation state only and
+/// determines which worker receives an assignment when the player uses a job station.
 /// </summary>
 public partial class RanchGreyboxController : Node3D
 {
@@ -17,56 +19,103 @@ public partial class RanchGreyboxController : Node3D
 
     public WorldInputGate InputGate { get; private set; } = new();
 
+    private readonly List<WorldStation> _stations = new();
     private ThirdPersonPlayerController? _player;
-    private WorldStation? _station;
-    private Label? _prompt;
+    private WorldCameraRig? _cameraRig;
+    private WorldHudController? _hud;
+    private Label? _legacyPrompt;
+    private WorldStation? _nearbyStation;
+    private float _nearbyDistance = float.PositiveInfinity;
+    private int _selectedCharacterIndex;
     private bool _wired;
 
     public ThirdPersonPlayerController? Player => _player;
-    public WorldStation? Station => _station;
+    public WorldCameraRig? CameraRig => _cameraRig;
+    public WorldStation? Station => _stations.Count > 0 ? _stations[0] : null;
+    public IReadOnlyList<WorldStation> Stations => _stations;
+    public int StationCount => _stations.Count;
+    public WorldStation? NearbyStation => _nearbyStation;
+    public WorldHudController? Hud => _hud;
     public bool Wired => _wired;
+    public string SelectedCharacterId => ResolveSelectedCharacterId();
 
-    /// <summary>Applies the shared phase to the scene's sun + environment (WORLD-003 lighting).</summary>
+    /// <summary>Applies the shared phase to the scene's sun + environment.</summary>
     public DaylightRig? Daylight { get; private set; }
 
-    /// <summary>Places CHAR-001 stand-ins for the live roster (WORLD-003 / AI-001 placement).</summary>
+    /// <summary>Places stand-ins for the live roster from shared assignments.</summary>
     public RosterRig? Roster { get; private set; }
 
     public override void _Ready()
     {
         _player = GetNodeOrNull<ThirdPersonPlayerController>("Player");
-        _station = GetNodeOrNull<WorldStation>("Station");
+        _cameraRig = GetNodeOrNull<WorldCameraRig>("CameraRig");
+        _hud = GetNodeOrNull<WorldHudController>("WorldHud");
 
-        // Shared input gate: the player reads it, the controller drives it.
+        _stations.Clear();
+        CollectStations(this);
+
+        // Shared input ownership and explicit camera target. This closes a real composition gap:
+        // the camera rig previously existed as a sibling but was never bound to the player's head.
         if (_player is not null)
         {
             _player.InputGate = InputGate;
+            var target = _player.EnsureCameraTarget();
+            if (_cameraRig is not null)
+            {
+                _cameraRig.InputGate = InputGate;
+                _cameraRig.Target = target;
+            }
         }
 
-        // Production dispatcher binding the station to GameRoot.
-        if (_station is not null && _station.Dispatcher is null)
+        // Every authored smart object dispatches through the same GameRoot boundary.
+        foreach (var station in _stations)
         {
-            _station.Dispatcher = new GameRootCommandDispatcher();
+            if (station.Dispatcher is null)
+            {
+                station.Dispatcher = new GameRootCommandDispatcher();
+            }
         }
 
-        // Prompt (optional; the scene may author it).
+        // Legacy prompt is retained for backwards-compatible scene/tests but hidden by the authored
+        // scene once WorldHud is present.
         var promptLayer = GetNodeOrNull<CanvasLayer>("PromptLayer");
         if (promptLayer is not null)
         {
-            _prompt = promptLayer.GetNodeOrNull<Label>("Prompt");
+            _legacyPrompt = promptLayer.GetNodeOrNull<Label>("Prompt");
         }
 
-        // WORLD-003: the scene is a live view of the shared simulation, not a static greybox.
-        // Lighting derives from the current DayPhase; roster placement derives from assignments.
         WireLiveWorld();
+        EnsureSelectedCharacter();
+        UpdateNearbyStation();
+        RefreshHud();
 
-        _wired = true;
+        _wired = _player is not null && _stations.Count > 0;
+    }
+
+    public override void _Process(double delta)
+    {
+        if (InputGate.WorldInputEnabled)
+        {
+            if (Input.IsActionJustPressed("cycle_character"))
+            {
+                CycleSelectedCharacter();
+            }
+
+            // Using Input.IsActionJustPressed handles real InputMap keyboard/gamepad actions. The
+            // previous InputEventAction-only path did not reliably receive ordinary F-key input.
+            if (Input.IsActionJustPressed("interact"))
+            {
+                TryInteractWithNearestStation();
+            }
+        }
+
+        UpdateNearbyStation();
+        RefreshHud();
     }
 
     /// <summary>
-    /// Bind the day-phase lighting + roster placement to the shared <see cref="GameRoot"/> and
-    /// apply them for the current state. Safe when a rig or the GameRoot is missing (headless,
-    /// pre-boot) — the scene then simply stays in its authored state.
+    /// Bind day-phase lighting + roster placement to the shared <see cref="GameRoot"/> and apply the
+    /// current state. Safe when GameRoot is not active (headless/pre-boot).
     /// </summary>
     private void WireLiveWorld()
     {
@@ -93,8 +142,7 @@ public partial class RanchGreyboxController : Node3D
     }
 
     /// <summary>
-    /// Re-derive the live world from the shared simulation — call when the phase or assignments
-    /// change (e.g. after End Day, after a world interaction, after loading).
+    /// Re-derive the live world from the shared simulation after phase/assignment/load changes.
     /// </summary>
     public void RefreshLiveWorld()
     {
@@ -106,57 +154,228 @@ public partial class RanchGreyboxController : Node3D
 
         Daylight?.ApplyFrom(game);
         Roster?.Refresh(game);
+        EnsureSelectedCharacter();
+        UpdateNearbyStation();
+        RefreshHud();
+    }
+
+    /// <summary>Cycle the worker affected by spatial job stations.</summary>
+    public void CycleSelectedCharacter(int direction = 1)
+    {
+        var game = GameRoot.Instance;
+        if (game is null || !GodotObject.IsInstanceValid(game) || game.Roster.Characters.Count == 0)
+        {
+            _selectedCharacterIndex = 0;
+            RefreshHud();
+            return;
+        }
+
+        var count = game.Roster.Characters.Count;
+        var step = direction >= 0 ? 1 : -1;
+        _selectedCharacterIndex = (_selectedCharacterIndex + step + count) % count;
+        RefreshHud();
     }
 
     /// <summary>
-    /// Open the management UI: the world loses input ownership. Called by the scene's
-    /// "Open Management UI" button.
+    /// Activate the closest station when it is in range. The selected roster id is passed as the
+    /// command context; the station id itself is never substituted for a character id.
+    /// </summary>
+    public bool TryInteractWithNearestStation()
+    {
+        UpdateNearbyStation();
+
+        if (_player is null || _nearbyStation is null)
+        {
+            SetFeedback("No ranch station nearby.");
+            return false;
+        }
+
+        if (_nearbyDistance > InteractionRange)
+        {
+            SetFeedback($"Move closer to {_nearbyStation.Label}.");
+            return false;
+        }
+
+        if (!_nearbyStation.IsAvailable)
+        {
+            SetFeedback($"{_nearbyStation.Label}: {_nearbyStation.UnavailableReason}");
+            return false;
+        }
+
+        var characterId = ResolveSelectedCharacterId();
+        if (string.IsNullOrWhiteSpace(characterId))
+        {
+            SetFeedback("No roster worker is available.");
+            return false;
+        }
+
+        var context = new WorldInteractionContext(characterId, ResolveGeneration());
+        var ok = _nearbyStation.Activate(context);
+
+        if (ok)
+        {
+            var worker = ResolveSelectedCharacterName();
+            SetFeedback($"{_nearbyStation.Label}: {worker} updated.");
+            RefreshLiveWorld();
+        }
+        else
+        {
+            var reason = string.IsNullOrWhiteSpace(_nearbyStation.UnavailableReason)
+                ? "interaction rejected by the shared simulation"
+                : _nearbyStation.UnavailableReason;
+            SetFeedback($"{_nearbyStation.Label}: {reason}");
+        }
+
+        return ok;
+    }
+
+    /// <summary>
+    /// Open the management UI: the world loses input ownership. Kept as the boundary used by the
+    /// upcoming boot-world composition; this scene does not invent a second management shell.
     /// </summary>
     public void EnterManagementUi()
     {
         InputGate.SetUiOwnsInput(true);
+        _hud?.SetStatus("Management UI owns input.");
     }
 
-    /// <summary>
-    /// Leave the management UI: the world regains input ownership.
-    /// </summary>
+    /// <summary>Leave the management UI and deliberately return input to the world.</summary>
     public void LeaveManagementUi()
     {
         InputGate.SetUiOwnsInput(false);
+        _hud?.SetStatus("World controls restored.");
     }
 
-    public override void _Input(InputEvent @event)
+    private void EnsureSelectedCharacter()
     {
-        if (!InputGate.WorldInputEnabled)
+        var game = GameRoot.Instance;
+        if (game is null || !GodotObject.IsInstanceValid(game) || game.Roster.Characters.Count == 0)
+        {
+            _selectedCharacterIndex = 0;
+            return;
+        }
+
+        _selectedCharacterIndex = Math.Clamp(_selectedCharacterIndex, 0, game.Roster.Characters.Count - 1);
+    }
+
+    private string ResolveSelectedCharacterId()
+    {
+        var game = GameRoot.Instance;
+        if (game is null || !GodotObject.IsInstanceValid(game) || game.Roster.Characters.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        EnsureSelectedCharacter();
+        return game.Roster.Characters[_selectedCharacterIndex].Id;
+    }
+
+    private string ResolveSelectedCharacterName()
+    {
+        var game = GameRoot.Instance;
+        var id = ResolveSelectedCharacterId();
+        if (game is null || string.IsNullOrWhiteSpace(id))
+        {
+            return "worker";
+        }
+
+        var character = game.Roster.Find(id);
+        return character is null ? id : game.Roster.DefinitionFor(character).DisplayName;
+    }
+
+    private void UpdateNearbyStation()
+    {
+        _nearbyStation = null;
+        _nearbyDistance = float.PositiveInfinity;
+
+        if (_player is null)
         {
             return;
         }
 
-        if (@event is InputEventAction action && action.Pressed && action.Action == "interact")
+        foreach (var station in _stations)
         {
-            HandleInteract();
+            if (station is null || !GodotObject.IsInstanceValid(station))
+            {
+                continue;
+            }
+
+            var distance = _player.GlobalPosition.DistanceTo(station.GlobalPosition);
+            if (distance < _nearbyDistance)
+            {
+                _nearbyDistance = distance;
+                _nearbyStation = station;
+            }
+        }
+
+        UpdateLegacyPrompt();
+    }
+
+    private void RefreshHud()
+    {
+        var game = GameRoot.Instance;
+        if (_hud is null)
+        {
+            return;
+        }
+
+        _hud.RefreshSimulation(game);
+        _hud.SetSelectedCharacter(game, ResolveSelectedCharacterId());
+        _hud.SetInteractionTarget(_nearbyStation, _nearbyDistance, InteractionRange);
+    }
+
+    private void SetFeedback(string message)
+    {
+        _hud?.SetStatus(message);
+        if (_legacyPrompt is not null)
+        {
+            _legacyPrompt.Text = message;
         }
     }
 
-    private void HandleInteract()
+    private void UpdateLegacyPrompt()
     {
-        if (_player is null || _station is null)
+        if (_legacyPrompt is null)
         {
             return;
         }
 
-        var distance = _player.GlobalPosition.DistanceTo(_station.GlobalPosition);
-        if (distance > InteractionRange || !_station.IsAvailable)
+        if (_nearbyStation is null)
         {
+            _legacyPrompt.Text = "Explore the ranch.";
             return;
         }
 
-        var generation = ResolveGeneration();
-        var context = new WorldInteractionContext(_station.TargetId, generation);
-        var ok = _station.Activate(context);
-        if (_prompt is not null)
+        _legacyPrompt.Text = _nearbyDistance <= InteractionRange
+            ? $"F: {_nearbyStation.Label}"
+            : $"{_nearbyStation.Label} {_nearbyDistance:0.0}m";
+    }
+
+    private static void CollectStations(Node root, List<WorldStation>? destination = null)
+    {
+        destination ??= new List<WorldStation>();
+        foreach (var child in root.GetChildren())
         {
-            _prompt.Text = ok ? $"{_station.Label}: done" : $"{_station.Label}: {_station.UnavailableReason}";
+            if (child is WorldStation station)
+            {
+                destination.Add(station);
+            }
+            CollectStations(child, destination);
+        }
+
+        // This overload exists only to support recursive calls; the instance collection is populated
+        // by the wrapper below.
+    }
+
+    private void CollectStations(Node root)
+    {
+        foreach (var child in root.GetChildren())
+        {
+            if (child is WorldStation station)
+            {
+                _stations.Add(station);
+            }
+            CollectStations(child);
         }
     }
 
