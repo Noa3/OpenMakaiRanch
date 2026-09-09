@@ -91,7 +91,7 @@ public partial class RanchGreyboxController : Node3D
         UpdateNearbyStation();
         RefreshHud();
 
-        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+        if (IsInsideTree() && GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
         {
             game.StateChanged += OnSharedStateChanged;
         }
