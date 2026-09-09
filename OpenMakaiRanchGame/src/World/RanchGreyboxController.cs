@@ -74,6 +74,8 @@ public partial class RanchGreyboxController : Node3D
             {
                 station.Dispatcher = new GameRootCommandDispatcher();
             }
+
+            station.AvailabilityResolver = () => ResolveStationAvailability(station);
         }
 
         // Legacy prompt is retained for backwards-compatible scene/tests but hidden by the authored
@@ -390,6 +392,31 @@ public partial class RanchGreyboxController : Node3D
             }
             CollectStations(child);
         }
+    }
+
+    private static (bool Available, string Reason) ResolveStationAvailability(WorldStation station)
+    {
+        if (string.IsNullOrWhiteSpace(station.RequiredFacilityId))
+        {
+            return (true, string.Empty);
+        }
+
+        var game = GameRoot.Instance;
+        if (game is null || !GodotObject.IsInstanceValid(game))
+        {
+            return (false, "ranch state is unavailable");
+        }
+
+        var built = game.Ranch.Facilities.TryGetValue(station.RequiredFacilityId, out var level) && level > 0;
+        if (built)
+        {
+            return (true, string.Empty);
+        }
+
+        var displayName = game.Data.Facilities.TryGetValue(station.RequiredFacilityId, out var definition)
+            ? definition.DisplayName
+            : station.Label;
+        return (false, $"{displayName} is not built yet");
     }
 
     private ulong ResolveGeneration()
