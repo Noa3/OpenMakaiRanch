@@ -39,6 +39,7 @@ public static class WorldAlertEvaluator
         AddStockpileAlerts(game, alerts);
         AddRosterAlerts(game, alerts);
         AddPetAlerts(game, alerts);
+        AddRanchConditionAlerts(game, alerts);
         AddEconomyAlerts(game, alerts);
 
         if (state.Calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night
@@ -63,7 +64,6 @@ public static class WorldAlertEvaluator
         var health = game.State.Ranch.CattleHealth;
         var pastureWorkers = CountJob(game, "pasture");
         var dairyWorkers = CountJob(game, "dairy");
-        var dairyBuilt = game.Ranch.Facilities.TryGetValue("dairy_barn", out var dairyLevel) && dairyLevel > 0;
 
         if (health <= 25)
         {
@@ -84,25 +84,23 @@ public static class WorldAlertEvaluator
                 "schedule"));
         }
 
+        if (dairyWorkers == 0)
+        {
+            alerts.Add(new WorldAlert(
+                "dairy_unstaffed",
+                health <= 50 ? WorldAlertSeverity.Critical : WorldAlertSeverity.Warning,
+                "No one assigned to Dairy Work",
+                "Daily settlement applies +15g maintenance and a morale penalty when Dairy Work has no assigned resident.",
+                "schedule"));
+        }
+
         if (pastureWorkers == 0)
         {
             alerts.Add(new WorldAlert(
                 "pasture_unstaffed",
-                health <= 50 ? WorldAlertSeverity.Critical : WorldAlertSeverity.Warning,
-                "Pasture has no worker",
-                health <= 50
-                    ? "Cattle health is already low and nobody is assigned to Pasture Work."
-                    : "Nobody is assigned to Pasture Work. Rest is valid, but the pasture will produce nothing.",
-                "schedule"));
-        }
-
-        if (dairyBuilt && dairyWorkers == 0)
-        {
-            alerts.Add(new WorldAlert(
-                "dairy_unstaffed",
-                WorldAlertSeverity.Warning,
-                "Dairy Barn has no worker",
-                "The Dairy Barn is built, but nobody is assigned to Dairy Work.",
+                WorldAlertSeverity.Info,
+                "Pasture is unstaffed",
+                "Nobody is assigned to Pasture Work. This mainly means no pasture output for the day.",
                 "schedule"));
         }
     }
@@ -112,24 +110,26 @@ public static class WorldAlertEvaluator
         var stockpile = game.State.Ranch.Stockpile;
         var meals = stockpile.GetValueOrDefault("meals");
         var supplies = stockpile.GetValueOrDefault("supplies");
+        var mealBoxes = game.State.Inventory.Items.GetValueOrDefault("meal_box");
 
         if (meals <= 0)
         {
             alerts.Add(new WorldAlert(
                 "meals_empty",
-                WorldAlertSeverity.Critical,
-                "No prepared meals",
-                "Meal stock is empty. Assign Kitchen/Cooking work or buy useful supplies before the situation worsens.",
+                WorldAlertSeverity.Info,
+                "No meal output stockpiled",
+                "The meals production stockpile is empty. This is not automatic starvation, but Kitchen/Cooking will produce more.",
                 "schedule"));
         }
-        else if (meals <= 2)
+
+        if (mealBoxes <= 0 && game.Roster.Characters.Any(character => character.Fatigue >= 70 || character.Energy <= 20))
         {
             alerts.Add(new WorldAlert(
-                "meals_low",
+                "meal_box_missing",
                 WorldAlertSeverity.Warning,
-                "Meals are running low",
-                $"Only {meals} prepared meal(s) remain.",
-                "schedule"));
+                "No meal boxes for tired residents",
+                "Care feeding uses meal_box items, but none are in inventory while residents need recovery.",
+                "shop"));
         }
 
         if (supplies <= 0)
@@ -235,6 +235,29 @@ public static class WorldAlertEvaluator
                 "Pet getting hungry",
                 $"{gettingHungry} adopted pet(s) are getting hungry.",
                 "pets"));
+        }
+    }
+
+    private static void AddRanchConditionAlerts(GameRoot game, List<WorldAlert> alerts)
+    {
+        if (game.State.Ranch.Workload >= 80)
+        {
+            alerts.Add(new WorldAlert(
+                "workload_high",
+                WorldAlertSeverity.Warning,
+                "Ranch workload is very high",
+                $"Workload is {game.State.Ranch.Workload}/100. Night Admin can reduce it.",
+                "ranch"));
+        }
+
+        if (!game.State.Ranch.BathtubClean)
+        {
+            alerts.Add(new WorldAlert(
+                "bath_dirty",
+                WorldAlertSeverity.Info,
+                "Bath needs cleaning",
+                "The ranch bath is currently marked dirty.",
+                "ranch"));
         }
     }
 
