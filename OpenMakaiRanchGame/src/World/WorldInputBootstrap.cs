@@ -37,6 +37,7 @@ public partial class WorldInputBootstrap : Node
         EnsureAction("camera_zoom_in");
         EnsureAction("camera_zoom_out");
         EnsureAction("camera_recenter");
+        EnsureAction("camera_first_person");
         EnsureAction("cycle_character");
         EnsureAction("toggle_management");
         EnsureAction("open_help");
@@ -51,6 +52,7 @@ public partial class WorldInputBootstrap : Node
         AddKeyIfAbsent("interact", (int)Key.Space);
         // Recenter on R; Tab cycles the worker affected by spatial job stations.
         AddKeyIfAbsent("camera_recenter", (int)Key.R);
+        AddKeyIfAbsent("camera_first_person", (int)Key.V);
         AddKeyIfAbsent("cycle_character", (int)Key.Tab);
         AddKeyIfAbsent("toggle_management", (int)Key.M);
         AddKeyIfAbsent("move_sprint", (int)Key.Shift);
