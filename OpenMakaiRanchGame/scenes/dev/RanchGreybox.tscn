@@ -553,7 +553,7 @@ theme_override_font_sizes/font_size = 17
 
 [node name="LoopLabel" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
 layout_mode = 2
-text = "1. Choose a worker with Tab.\n2. Assign work in the 3D ranch or full Management.\n3. Walk up to residents and press F to open their existing character details.\n4. Check facilities, roster, supplies and plans in Management.\n5. Advance the day when ready.\n6. At Night choose a night plan, then End Day.\n7. Review the Daily Report and adjust tomorrow's plan."
+text = "1. Choose a worker with Tab.\n2. Assign work in the 3D ranch or full Management.\n3. Walk up to residents and press F to open their existing character details.\n4. STA is your daily budget for repeatable progress actions — walking, sprinting, exploring, shopping and ordinary dialogue are free.\n5. In Evening/Night, one bath or shower can restore some STA; a prepared hot bath restores more.\n6. Advance the day when ready.\n7. At Night choose a night plan, then End Day.\n8. Review the Daily Report and adjust tomorrow's plan."
 autowrap_mode = 2
 
 [node name="TutorialToggle" type="CheckButton" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
