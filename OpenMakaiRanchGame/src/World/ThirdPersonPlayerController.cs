@@ -36,13 +36,26 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
     public override void _Ready()
     {
-        if (CameraTarget is null)
+        EnsureCameraTarget();
+    }
+
+    /// <summary>
+    /// Ensure the camera has a stable head-height orbit target. The ranch controller calls this
+    /// too so manual/headless scene composition gets the same contract as normal tree entry.
+    /// </summary>
+    public Node3D EnsureCameraTarget()
+    {
+        if (CameraTarget is not null && GodotObject.IsInstanceValid(CameraTarget))
         {
-            var target = new Node3D { Name = "CameraTarget" };
-            target.Position = new Vector3(0f, HeadHeight, 0f);
-            AddChild(target);
-            CameraTarget = target;
+            CameraTarget.Position = new Vector3(0f, HeadHeight, 0f);
+            return CameraTarget;
         }
+
+        var target = new Node3D { Name = "CameraTarget" };
+        target.Position = new Vector3(0f, HeadHeight, 0f);
+        AddChild(target);
+        CameraTarget = target;
+        return target;
     }
 
     private void ResolveCamera()
