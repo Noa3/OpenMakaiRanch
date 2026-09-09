@@ -13,8 +13,10 @@ namespace OpenMakaiRanch.World;
 public partial class ThirdPersonPlayerController : CharacterBody3D
 {
     [Export] public float MaxWalkSpeed { get; set; } = 5f;
+    [Export] public float SprintMultiplier { get; set; } = 1.65f;
     [Export] public float Acceleration { get; set; } = 40f;
     [Export] public float Gravity { get; set; } = 20f;
+    [Export] public float TurnSpeed { get; set; } = 10f;
     [Export] public float HeadHeight { get; set; } = 1.6f;
 
     public WorldInputGate InputGate { get; set; } = new();
@@ -104,6 +106,11 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
         return input;
     }
 
+    public float MoveSpeedFor(bool sprinting)
+    {
+        return MaxWalkSpeed * (sprinting ? Mathf.Max(1f, SprintMultiplier) : 1f);
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         var dt = (float)delta;
@@ -111,7 +118,20 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
         var input = ReadMovementInput();
         var direction = WorldMovementMath.ComputeMovementDirection(CameraBasisForward, CameraBasisRight, input);
-        var targetVelocity = direction * MaxWalkSpeed;
+        var sprinting = InputGate.WorldInputEnabled && Input.IsActionPressed("move_sprint");
+        var moveSpeed = MoveSpeedFor(sprinting);
+        var targetVelocity = direction * moveSpeed;
+
+        if (direction.LengthSquared() > 0.0001f)
+        {
+            // Godot's conventional character-forward axis is -Z. Rotate the body smoothly toward
+            // camera-relative travel so the visible avatar and movement direction agree.
+            var targetYaw = Mathf.Atan2(-direction.X, -direction.Z);
+            Rotation = new Vector3(
+                Rotation.X,
+                Mathf.LerpAngle(Rotation.Y, targetYaw, Mathf.Clamp(TurnSpeed * dt, 0f, 1f)),
+                Rotation.Z);
+        }
 
         // Gravity (bounded) when not on the floor.
         if (!IsOnFloor())
@@ -126,7 +146,7 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
         // Bounded horizontal acceleration toward the target.
         var target = new Vector3(targetVelocity.X, Velocity.Y, targetVelocity.Z);
         Velocity = WorldMovementMath.BlendVelocity(Velocity, target, Acceleration, dt);
-        Velocity = WorldMovementMath.ClampSpeed(Velocity, MaxWalkSpeed);
+        Velocity = WorldMovementMath.ClampSpeed(Velocity, moveSpeed);
         LastComputedVelocity = Velocity;
 
         MoveAndSlide();
