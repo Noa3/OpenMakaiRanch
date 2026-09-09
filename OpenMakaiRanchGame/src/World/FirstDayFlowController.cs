@@ -500,10 +500,10 @@ public partial class FirstDayFlowController : Control
         ShowDialogueBase(
             GuideName(),
             _game.State.Ranch.BathtubClean
-                ? "You're exhausted. You can take a bath before sleeping, go straight to bed, or use the existing night workload choices for training/admin."
-                : "You're exhausted. The bath is dirty, so either go straight to bed or choose one of the existing night workload options. Assign Cleaning on a later day to prepare the bath again.");
+                ? "You're exhausted. A prepared hot bath gives the strongest stamina recovery before sleep; you can also go straight to bed or use the night workload choices."
+                : "You're exhausted. The main bath is not prepared, but a quick shower is still available for a smaller stamina recovery. Assign Cleaning on a later day to prepare the full bath again.");
 
-        AddChoice("Take a bath, then sleep", ChooseBathAndSleep, disabled: !_game.State.Ranch.BathtubClean);
+        AddChoice(_game.State.Ranch.BathtubClean ? "Take a hot bath, then sleep" : "Take a quick shower, then sleep", ChooseBathAndSleep);
         AddChoice("Go straight to bed", () => ChooseNight("rest"));
         AddChoice("Night training", () => ChooseNight("train"));
         AddChoice("Handle administration", () => ChooseNight("admin"));
@@ -517,7 +517,9 @@ public partial class FirstDayFlowController : Control
             return;
         }
 
-        FinishFirstDay("You take a quiet bath, then head to bed.");
+        FinishFirstDay(_game.State.Ranch.BathtubClean
+            ? "You wash up and head to bed."
+            : "You take a quiet bath, then head to bed.");
     }
 
     private void ChooseNight(string action)
