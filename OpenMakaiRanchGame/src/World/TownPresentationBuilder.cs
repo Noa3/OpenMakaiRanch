@@ -13,6 +13,15 @@ public partial class TownPresentationBuilder : Node3D
     private Node3D? _generated;
     private readonly Dictionary<string, MeshInstance3D> _serviceBuildings = new();
     private readonly Dictionary<string, Label3D> _serviceSigns = new();
+    private readonly Dictionary<string, Node3D> _externalServiceModels = new();
+
+    private const string VendorRoot = "res://assets/vendor/kaykit_medieval_hexagon/Assets/gltf";
+    private static readonly Dictionary<string, string> ServiceModels = new()
+    {
+        ["general_store"] = $"{VendorRoot}/buildings/blue/building_market_blue.gltf",
+        ["tavern"] = $"{VendorRoot}/buildings/blue/building_tavern_blue.gltf",
+        ["research_office"] = $"{VendorRoot}/buildings/blue/building_blacksmith_blue.gltf"
+    };
 
     private static readonly Color Road = new("b9a27a");
     private static readonly Color Plaza = new("a6a6a0");
@@ -120,9 +129,25 @@ public partial class TownPresentationBuilder : Node3D
         var wall = index % 2 == 0 ? WallA : WallB;
         var roof = index % 2 == 0 ? RoofA : RoofB;
 
+        var externalLoaded = ServiceModels.TryGetValue(service.ServiceId, out var externalPath)
+            && TryAddExternalScene(
+                $"External_{service.ServiceId}",
+                externalPath,
+                new Vector3(center.X, 0.03f, center.Z),
+                Vector3.One * 2.0f,
+                0f,
+                out var externalModel);
+
+        if (externalLoaded && externalModel is not null)
+        {
+            _externalServiceModels[service.ServiceId] = externalModel;
+        }
+
         var building = AddBox($"Building_{service.ServiceId}", center, new Vector3(4.2f, 2.5f, 3.4f), wall);
+        building.Visible = !externalLoaded;
         _serviceBuildings[service.ServiceId] = building;
-        AddBox($"Roof_{service.ServiceId}", center + new Vector3(0,1.55f,0), new Vector3(4.6f,0.55f,3.8f), roof);
+        var roofProxy = AddBox($"Roof_{service.ServiceId}", center + new Vector3(0,1.55f,0), new Vector3(4.6f,0.55f,3.8f), roof);
+        roofProxy.Visible = !externalLoaded;
 
         var towardPlaza = -radial;
         var door = center + towardPlaza * 1.78f + new Vector3(0,-0.35f,0);
@@ -158,6 +183,12 @@ public partial class TownPresentationBuilder : Node3D
 
     private void AddTree(string name, Vector3 pos, float scale)
     {
+        var externalPath = $"{VendorRoot}/decoration/nature/tree_single_A.gltf";
+        if (TryAddExternalScene(name, externalPath, pos, Vector3.One * (1.35f * scale), 0f, out _))
+        {
+            return;
+        }
+
         AddCylinder(name+"_Trunk", pos+new Vector3(0,0.75f*scale,0), 0.16f*scale,1.5f*scale,Wood);
         AddSphere(name+"_Crown", pos+new Vector3(0,2.0f*scale,0),0.72f*scale,Leaf);
     }
@@ -166,6 +197,34 @@ public partial class TownPresentationBuilder : Node3D
     {
         AddCylinder("LampPost_"+pos.X+"_"+pos.Z, pos+new Vector3(0,1.1f,0),0.08f,2.2f,Wood);
         AddSphere("Lamp_"+pos.X+"_"+pos.Z, pos+new Vector3(0,2.25f,0),0.18f,Lamp);
+    }
+
+    private bool TryAddExternalScene(string name, string path, Vector3 position, Vector3 scale, float yaw, out Node3D? instance)
+    {
+        instance = null;
+        if (_generated is null || string.IsNullOrWhiteSpace(path) || !ResourceLoader.Exists(path))
+        {
+            return false;
+        }
+
+        var packed = GD.Load<PackedScene>(path);
+        if (packed is null)
+        {
+            return false;
+        }
+
+        instance = packed.Instantiate<Node3D>();
+        if (instance is null)
+        {
+            return false;
+        }
+
+        instance.Name = name;
+        instance.Position = position;
+        instance.Scale = scale;
+        instance.Rotation = new Vector3(0f, yaw, 0f);
+        _generated.AddChild(instance);
+        return true;
     }
 
     private MeshInstance3D AddBox(string name, Vector3 pos, Vector3 size, Color color, float yaw=0)
