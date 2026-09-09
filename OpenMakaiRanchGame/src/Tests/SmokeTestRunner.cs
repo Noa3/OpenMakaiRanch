@@ -1784,6 +1784,26 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             rosterRig.Refresh(game);
             Assert(result, game.Schedule.GetAssignment(game.Roster.Characters.First().Id) == assignmentBefore,
                 "roster rig moves presentation only — the shared schedule is untouched");
+
+            // Assignment changes come from GameRoot; the rig only derives a new presentation target
+            // and moves toward it over time.
+            var traveler = game.Roster.Characters.First();
+            var travelerNode = rosterRig.GetNodeOrNull<CharacterAvatar3D>($"Avatar_{traveler.Id}");
+            var beforeTravel = travelerNode?.GlobalPosition ?? Vector3.Zero;
+            Assert(result, game.TryAssignJob(traveler.Id, "pasture", game.StateGeneration),
+                "shared schedule accepts a new pasture assignment for roster travel test");
+            rosterRig.Refresh(game);
+            Assert(result, rosterRig.TryGetTarget(traveler.Id, out var travelTarget),
+                "roster rig derives a target from the shared assignment");
+            Assert(result, travelerNode is not null && beforeTravel.DistanceTo(travelTarget) > rosterRig.ArrivalDistance,
+                "changed assignment creates visible travel instead of teleporting immediately");
+            var distanceBeforeStep = travelerNode?.GlobalPosition.DistanceTo(travelTarget) ?? 0f;
+            rosterRig._Process(0.5);
+            var distanceAfterStep = travelerNode?.GlobalPosition.DistanceTo(travelTarget) ?? 0f;
+            Assert(result, distanceAfterStep < distanceBeforeStep,
+                "roster stand-in walks toward its assigned logical anchor");
+            Assert(result, game.Schedule.GetAssignment(traveler.Id) == "pasture",
+                "roster travel does not replace the shared assignment authority");
         }
         finally
         {
