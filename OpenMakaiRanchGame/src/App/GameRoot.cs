@@ -1297,14 +1297,6 @@ public partial class GameRoot : Node
 		return revenue;
 	}
 
-	public void ProduceAllMilk()
-	{
-		foreach (var character in State.Roster.Characters)
-		{
-			MilkEconomy.ProduceMilk(character.Id);
-		}
-	}
-
 	private bool TryAutosave(string reason)
 	{
 		if (State is null || !State.Settings.AutosaveEnabled || SmokeTestRunner.ShouldRun())
