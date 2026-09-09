@@ -29,6 +29,7 @@ public partial class WorldHudController : CanvasLayer
     private double _refreshRemaining;
     private double _statusRemaining;
     private string _selectedCharacterId = string.Empty;
+    private string _selectedCharacterName = string.Empty;
 
     public string SelectedCharacterId => _selectedCharacterId;
 
@@ -132,6 +133,7 @@ public partial class WorldHudController : CanvasLayer
 
         if (game is null || !GodotObject.IsInstanceValid(game) || string.IsNullOrWhiteSpace(_selectedCharacterId))
         {
+            _selectedCharacterName = string.Empty;
             if (_workerLabel is not null)
             {
                 _workerLabel.Text = "Worker: none";
@@ -146,6 +148,7 @@ public partial class WorldHudController : CanvasLayer
         var character = game.Roster.Find(_selectedCharacterId);
         if (character is null)
         {
+            _selectedCharacterName = string.Empty;
             if (_workerLabel is not null)
             {
                 _workerLabel.Text = "Worker: unavailable";
@@ -158,6 +161,7 @@ public partial class WorldHudController : CanvasLayer
         }
 
         var definition = game.Roster.DefinitionFor(character);
+        _selectedCharacterName = definition.DisplayName;
         var jobId = game.Schedule.GetAssignment(character.Id);
         var jobLabel = game.Data.Jobs.TryGetValue(jobId, out var job)
             ? job.DisplayName
@@ -183,19 +187,26 @@ public partial class WorldHudController : CanvasLayer
 
         if (target is null)
         {
-            _promptLabel.Text = "WASD / arrows: move   •   Shift: sprint   •   Hold RMB: look   •   Wheel: zoom   •   Tab: worker   •   M: management";
+            _promptLabel.Text = "WASD / arrows: move   •   Shift: sprint   •   Hold RMB: look   •   Wheel: zoom   •   Tab: worker   •   M: management   •   F1: help";
+            _promptLabel.TooltipText = "Basic world controls. Press F1 for the full help and gameplay loop.";
             return;
         }
 
         if (distance <= interactionRange)
         {
             _promptLabel.Text = target.IsAvailable
-                ? $"[F] {target.Label}"
+                ? (string.IsNullOrWhiteSpace(_selectedCharacterName)
+                    ? $"[F] Use {target.Label}"
+                    : $"[F] Assign {_selectedCharacterName} → {target.Label}")
                 : $"{target.Label} — {target.UnavailableReason}";
+            _promptLabel.TooltipText = target.IsAvailable
+                ? "Press F to apply this spatial interaction through the same shared simulation used by Management."
+                : $"Unavailable: {target.UnavailableReason}";
             return;
         }
 
         _promptLabel.Text = $"{target.Label}  {distance:0.0} m   •   move closer to interact";
+        _promptLabel.TooltipText = $"Move within {interactionRange:0.0} m to interact with {target.Label}.";
     }
 
     public void SetStatus(string message, double? seconds = null)
