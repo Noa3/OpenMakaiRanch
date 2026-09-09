@@ -66,6 +66,9 @@ public static class SmokeTestRunner
             TestWorldSharedSimulation(result);
             TestWorldAlerts(result);
             TestFirstDaySystems(result);
+            TestOriginalCalendarAndWeather(result);
+            TestCombatWorldTimeLock(result);
+            TestCameraInspectionAndBoundaryMath(result);
             TestCharacterAvatar(result);
             TestEventDialogueStaging(result);
             TestWorldPanelCoordinator(result);
@@ -1289,6 +1292,113 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         game.NewGame();
     }
 
+    private static void TestOriginalCalendarAndWeather(SmokeTestResult result)
+    {
+        var calendar = new CalendarState { Day = 1 };
+        Assert(result, calendar.Year == 1 && calendar.Season == Season.Spring && calendar.DayOfSeason == 1,
+            "calendar: day 1 is Year 1 Spring day 1");
+        Assert(result, calendar.Weekday == Weekday.Monday,
+            "calendar: original day 1 starts on Monday");
+
+        calendar.Day = 28;
+        Assert(result, calendar.Season == Season.Spring && calendar.DayOfSeason == 28 && calendar.IsSeasonEnd,
+            "calendar: day 28 is the end of Spring");
+        Assert(result, OriginalCalendarRules.RollTomorrow(calendar, new Random(1)) == Weather.Cloudy,
+            "calendar: season-end forecast is forced Cloudy like the original");
+
+        calendar.Day = 29;
+        Assert(result, calendar.Season == Season.Summer && calendar.DayOfSeason == 1 && calendar.IsSeasonStart,
+            "calendar: day 29 starts Summer");
+
+        calendar.Day = 112;
+        Assert(result, calendar.Year == 1 && calendar.Season == Season.Winter && calendar.DayOfSeason == 28,
+            "calendar: day 112 is Year 1 Winter day 28");
+        calendar.Day = 113;
+        Assert(result, calendar.Year == 2 && calendar.Season == Season.Spring && calendar.DayOfSeason == 1,
+            "calendar: day 113 starts Year 2 Spring");
+
+        // Winter distribution must never produce rain-family weather; it uses snow-family weather.
+        var winterKinds = new HashSet<Weather>();
+        var rng = new Random(1742);
+        for (var i = 0; i < 400; i++)
+        {
+            winterKinds.Add(OriginalCalendarRules.RollWeather(Season.Winter, rng));
+        }
+        Assert(result, winterKinds.All(w => !OriginalCalendarRules.IsRain(w)),
+            "calendar: winter weather replaces rain-family results with snow/overcast/clear");
+        Assert(result, winterKinds.Any(OriginalCalendarRules.IsSnow),
+            "calendar: winter distribution can generate snow");
+
+        // Forecast -> current rollover.
+        var state = new SaveState { Calendar = new CalendarState
+        {
+            Day = 28,
+            Phase = DayPhase.Night,
+            CurrentWeather = Weather.Rain,
+            TomorrowWeather = Weather.Cloudy
+        }};
+        var cycle = new DayCycleService(state);
+        cycle.AdvanceToNextDay();
+        Assert(result, state.Calendar.Day == 29 && state.Calendar.Season == Season.Summer,
+            "calendar: rollover crosses Spring -> Summer at day 29");
+        Assert(result, state.Calendar.CurrentWeather == Weather.Cloudy,
+            "calendar: saved tomorrow forecast becomes today's weather at rollover");
+    }
+
+    private static void TestCombatWorldTimeLock(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+        var day = game.State.Calendar.Day;
+        var phase = game.State.Calendar.Phase;
+
+        game.BeginCombatSession();
+        Assert(result, game.CombatWorldTimeLocked, "combat: entering a round-based session locks world time");
+        Assert(result, !game.AdvanceTime(), "combat: AdvanceTime is rejected while combat owns time");
+        Assert(result, game.State.Calendar.Day == day && game.State.Calendar.Phase == phase,
+            "combat: blocked time advance leaves day and phase unchanged");
+
+        game.EndCombatSession();
+        Assert(result, !game.CombatWorldTimeLocked, "combat: leaving session unlocks world time");
+        Assert(result, game.AdvanceTime(), "combat: world phase can advance again after combat");
+        Assert(result, game.State.Calendar.Phase != phase,
+            "combat: post-combat advance changes the shared phase");
+        game.NewGame();
+    }
+
+    private static void TestCameraInspectionAndBoundaryMath(SmokeTestResult result)
+    {
+        var target = new Vector3(0, 1.6f, 0);
+        var desired = WorldCameraMath.ComputeCameraPosition(target, 0f, 0f, 7f);
+        var closeWall = WorldCameraMath.ClampToGeometry(target, desired, 0.35f, 0.20f);
+        Assert(result, target.DistanceTo(closeWall) < WorldCameraMath.MinDistance,
+            "camera: nearby geometry may pull camera closer than normal user zoom minimum");
+        Assert(result, target.DistanceTo(closeWall) >= WorldCameraMath.GeometryMinDistance,
+            "camera: geometry clamp remains in front of the target instead of crossing through it");
+
+        var view = WorldCameraMath.ComputeViewDirection(0f, 0f);
+        Assert(result, view.IsNormalized() && view.Z < -0.99f,
+            "camera: first-person view direction matches the orbit orientation");
+
+        var boundary = new WorldBoundaryBuilder
+        {
+            HalfExtents = new Vector2(19.25f, 14.25f),
+            SouthGateHalfWidth = 3f
+        };
+        GameRoot.Instance.AddChild(boundary);
+        try
+        {
+            Assert(result, boundary.HasCollisionBoundary,
+                "world boundary: four continuous collision sides are authored");
+            Assert(result, boundary.DressingNodeCount > 0,
+                "world boundary: quality-scaled visual dressing is generated");
+        }
+        finally
+        {
+            boundary.QueueFree();
+        }
+    }
+
     private static void TestCharacterAvatar(SmokeTestResult result)
     {
         // CHAR-001: gate-safe, honest stand-in avatars bound by stable DefinitionId.
@@ -1676,6 +1786,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         // it does not duplicate any UI action or simulation logic.
         var game = GameRoot.Instance;
         game.NewGame();
+        // This test exercises the ORDINARY Day-2+ world composition. The first-day story has its
+        // own tests and must not steal the active area during these assertions.
+        game.State.Story.FirstDayCompleted = true;
+        game.State.Story.FirstDayStage = FirstDayFlowController.StageCompleted;
         GameRoot.PendingInitialScreen = null;
 
         var scene = GD.Load<PackedScene>("res://scenes/WorldGame.tscn");
@@ -1694,6 +1808,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             AssertNodeExists(result, root, "IntroHouse", "world boot contains the first-day ranch-house bedroom");
             AssertNodeExists(result, root, "StoryLayer/FirstDayFlow", "world boot contains the resumable first-day story flow");
             AssertNodeExists(result, root, "RanchWorld/FirstDayIntruder", "ranch contains the hidden first-day intruder staging actor");
+            AssertNodeExists(result, root, "RanchWorld/Atmosphere", "ranch contains weather/season particle presentation");
+            AssertNodeExists(result, root, "TownWorld/Atmosphere", "town contains weather/season particle presentation");
+            AssertNodeExists(result, root, "RanchWorld/WorldBoundary", "ranch contains finite-world collision/dressing");
+            AssertNodeExists(result, root, "TownWorld/WorldBoundary", "town contains finite-world collision/dressing");
             AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
             AssertNodeExists(result, root, "TownWorld", "world boot contains persistent Okachi Town");
             AssertNodeExists(result, root, "TownWorld/Services/GeneralStore", "town has a General Store service point");
