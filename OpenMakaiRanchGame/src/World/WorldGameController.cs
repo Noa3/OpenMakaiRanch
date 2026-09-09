@@ -49,6 +49,7 @@ public partial class WorldGameController : Node
         }
 
         _shell.ScreenChanged += OnShellScreenChanged;
+        _ranch.CharacterInteractionRequested += OnCharacterInteractionRequested;
         if (_managementButton is not null)
         {
             _managementButton.Pressed += ToggleManagement;
@@ -71,6 +72,10 @@ public partial class WorldGameController : Node
         if (_shell is not null && GodotObject.IsInstanceValid(_shell))
         {
             _shell.ScreenChanged -= OnShellScreenChanged;
+        }
+        if (_ranch is not null && GodotObject.IsInstanceValid(_ranch))
+        {
+            _ranch.CharacterInteractionRequested -= OnCharacterInteractionRequested;
         }
 
         if (_managementButton is not null && GodotObject.IsInstanceValid(_managementButton))
@@ -187,6 +192,17 @@ public partial class WorldGameController : Node
 
         _shell.ShowScreen(screenId);
         return OpenManagement();
+    }
+
+    private void OnCharacterInteractionRequested(string characterId)
+    {
+        if (_shell is null || !_shell.ShowCharacterDetailFromWorld(characterId))
+        {
+            _ranch?.Hud?.SetStatus("Character details are unavailable.");
+            return;
+        }
+
+        OpenManagement();
     }
 
     private void OnShellScreenChanged(string screenId)
