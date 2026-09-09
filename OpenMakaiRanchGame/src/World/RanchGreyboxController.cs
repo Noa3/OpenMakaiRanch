@@ -351,22 +351,6 @@ public partial class RanchGreyboxController : Node3D
             : $"{_nearbyStation.Label} {_nearbyDistance:0.0}m";
     }
 
-    private static void CollectStations(Node root, List<WorldStation>? destination = null)
-    {
-        destination ??= new List<WorldStation>();
-        foreach (var child in root.GetChildren())
-        {
-            if (child is WorldStation station)
-            {
-                destination.Add(station);
-            }
-            CollectStations(child, destination);
-        }
-
-        // This overload exists only to support recursive calls; the instance collection is populated
-        // by the wrapper below.
-    }
-
     private void CollectStations(Node root)
     {
         foreach (var child in root.GetChildren())
