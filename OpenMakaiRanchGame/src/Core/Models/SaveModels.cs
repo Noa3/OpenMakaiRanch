@@ -99,10 +99,34 @@ public sealed class SaveState
     public FlagStorage Flags { get; set; } = new();
 
     /// <summary>
+    /// Additive remake story/presentation state. It intentionally does not consume unknown original
+    /// numeric flag IDs; original event-flag parity can map verified IDs into FlagStorage later.
+    /// </summary>
+    public StoryProgressState Story { get; set; } = new();
+
+    /// <summary>
     /// Presentation location for the 3D remake. Additive/defaulted so older saves safely resume at
     /// the ranch without a schema migration.
     /// </summary>
     public string WorldAreaId { get; set; } = "ranch";
+}
+
+public sealed class StoryProgressState
+{
+    /// <summary>0 = not started; later values are defined by FirstDayFlowController.</summary>
+    public int FirstDayStage { get; set; }
+
+    public bool FirstDayCompleted { get; set; }
+    public bool RanchTourCompleted { get; set; }
+    public bool IntruderEncounterCompleted { get; set; }
+    public bool PersonalEveningCompleted { get; set; }
+    public bool PlayerBathedOnFirstNight { get; set; }
+
+    /// <summary>
+    /// Placeholder guide identity. Empty means the original childhood-friend mapping has not yet
+    /// been verified; the presentation uses the neutral "Childhood Friend" label.
+    /// </summary>
+    public string ChildhoodFriendCharacterId { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -354,6 +378,8 @@ public sealed class SettingsState
     public string GraphicsQuality { get; set; } = "Medium";
     public float RenderScale { get; set; } = 0.85f;
     public bool ShadowsEnabled { get; set; } = true;
+    public bool AtmosphereEffectsEnabled { get; set; } = true;
+    public bool WeatherEffectsEnabled { get; set; } = true;
     public int FrameRateLimit { get; set; } = 60;
     public bool VSyncEnabled { get; set; } = true;
     public bool Fullscreen { get; set; } = false;
@@ -397,6 +423,8 @@ public sealed class SettingsState
             GraphicsQuality = GraphicsQuality,
             RenderScale = RenderScale,
             ShadowsEnabled = ShadowsEnabled,
+            AtmosphereEffectsEnabled = AtmosphereEffectsEnabled,
+            WeatherEffectsEnabled = WeatherEffectsEnabled,
             FrameRateLimit = FrameRateLimit,
             VSyncEnabled = VSyncEnabled,
             Fullscreen = Fullscreen,
