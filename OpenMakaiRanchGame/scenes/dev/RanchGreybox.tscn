@@ -223,13 +223,14 @@ SprintMultiplier = 1.65
 Acceleration = 40.0
 Gravity = 20.0
 TurnSpeed = 10.0
-HeadHeight = 1.6
+HeadHeight = 0.9
 
 [node name="Mesh" type="MeshInstance3D" parent="Player"]
 visible = false
 mesh = SubResource("player_mesh")
 
 [node name="Visual" type="Node3D" parent="Player"]
+position = Vector3(0, -0.8, 0)
 script = ExtResource("9_player_avatar")
 
 [node name="Collision" type="CollisionShape3D" parent="Player"]
