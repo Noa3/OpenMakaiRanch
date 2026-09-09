@@ -23,6 +23,7 @@ public sealed class DayCycleService
         _state.Calendar.TomorrowWeather = OriginalCalendarRules.RollTomorrow(_state.Calendar);
         _state.Calendar.TrainedToday = 0;
         MagicService.RecoverPlayerManaForRest(_state);
+        new PlayerStaminaService(_state).ResetForNewDay();
     }
 
     public bool AdvancePhase()
