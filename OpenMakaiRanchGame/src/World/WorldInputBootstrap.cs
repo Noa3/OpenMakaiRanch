@@ -36,6 +36,7 @@ public partial class WorldInputBootstrap : Node
         EnsureAction("camera_zoom_in");
         EnsureAction("camera_zoom_out");
         EnsureAction("camera_recenter");
+        EnsureAction("cycle_character");
 
         foreach (var (action, _, keycode) in KeyboardMappings)
         {
@@ -45,8 +46,9 @@ public partial class WorldInputBootstrap : Node
         // Interact on F / Space.
         AddKeyIfAbsent("interact", (int)Key.F);
         AddKeyIfAbsent("interact", (int)Key.Space);
-        // Recenter on R.
+        // Recenter on R; Tab cycles the worker affected by spatial job stations.
         AddKeyIfAbsent("camera_recenter", (int)Key.R);
+        AddKeyIfAbsent("cycle_character", (int)Key.Tab);
     }
 
     private static void EnsureAction(string action)
