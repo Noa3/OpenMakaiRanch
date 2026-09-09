@@ -74,6 +74,8 @@ public sealed class SettingsStorage
         settings.GraphicsQuality = NormalizeQuality(settings.GraphicsQuality);
         settings.RenderScale = Mathf.Clamp(settings.RenderScale <= 0f ? 0.85f : settings.RenderScale, 0.50f, 1.00f);
         settings.FrameRateLimit = NormalizeFrameLimit(settings.FrameRateLimit);
+        settings.WindowWidth = Mathf.Clamp(settings.WindowWidth <= 0 ? 1920 : settings.WindowWidth, 960, 7680);
+        settings.WindowHeight = Mathf.Clamp(settings.WindowHeight <= 0 ? 1080 : settings.WindowHeight, 540, 4320);
 
         settings.CameraSensitivity = Mathf.Clamp(settings.CameraSensitivity <= 0f ? 1.0f : settings.CameraSensitivity, 0.35f, 2.50f);
         settings.CameraFov = Mathf.Clamp(settings.CameraFov <= 0f ? 70f : settings.CameraFov, 55f, 95f);
