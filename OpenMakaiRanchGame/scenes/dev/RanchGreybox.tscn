@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://src/World/SimpleNavigationRegionBuilder.cs" id="12_navigation"]
 [ext_resource type="Script" path="res://src/World/WorldTravelPortal.cs" id="13_travel"]
 [ext_resource type="Script" path="res://src/World/WorldAlertPanelController.cs" id="14_alert"]
+[ext_resource type="PackedScene" path="res://assets/vendor/kaykit_adventurers/Rogue_Hooded.glb" id="15_intruder"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -240,6 +241,20 @@ shape = SubResource("station_shape")
 [node name="Label" type="Label3D" parent="TravelToTown"]
 position = Vector3(0, 1.6, 0)
 text = "Okachi Town →"
+
+[node name="FirstDayIntruder" type="Node3D" parent="."]
+visible = false
+position = Vector3(-6.0, 0.0, 1.5)
+
+[node name="Model" parent="FirstDayIntruder" instance=ExtResource("15_intruder")]
+rotation_degrees = Vector3(0, 90, 0)
+scale = Vector3(1.15, 1.15, 1.15)
+
+[node name="Label" type="Label3D" parent="FirstDayIntruder"]
+position = Vector3(0, 2.2, 0)
+text = "Suspicious Intruder"
+font_size = 28
+outline_size = 6
 
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
