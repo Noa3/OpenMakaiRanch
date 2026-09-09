@@ -234,7 +234,7 @@ public partial class WorldHudController : CanvasLayer
         if (_economyLabel is not null)
         {
             var player = game.State.Player;
-            _economyLabel.Text = $"{economy.Gold:N0} G   Spirit {economy.SpiritEnergy:N0}   MP {player.Mana:N0}/{player.MaxMana:N0}   Stored {economy.ManaReservoir:N0}";
+            _economyLabel.Text = $"{economy.Gold:N0} G   STA {player.Stamina}/{player.MaxStamina}   Spirit {economy.SpiritEnergy:N0}   MP {player.Mana:N0}/{player.MaxMana:N0}   Stored {economy.ManaReservoir:N0}";
         }
 
         if (_rosterLabel is not null)
