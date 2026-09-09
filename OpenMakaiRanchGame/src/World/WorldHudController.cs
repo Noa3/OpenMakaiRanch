@@ -27,6 +27,13 @@ public partial class WorldHudController : CanvasLayer
     private Label? _promptLabel;
     private Label? _statusLabel;
     private Button? _advanceTimeButton;
+    private Button? _managementButton;
+    private Control? _workerPanel;
+    private Control? _guidancePanel;
+    private Control? _alertPanel;
+    private Control? _tutorialHintCard;
+    private Control? _tutorialHelpButton;
+    private Vector2 _lastViewportSize = Vector2.Zero;
 
     private double _refreshRemaining;
     private double _statusRemaining;
@@ -46,12 +53,20 @@ public partial class WorldHudController : CanvasLayer
         _promptLabel = GetNodeOrNull<Label>("Prompt");
         _statusLabel = GetNodeOrNull<Label>("StatusLabel");
         _advanceTimeButton = GetNodeOrNull<Button>("AdvanceTimeButton");
+        _managementButton = GetNodeOrNull<Button>("ManagementButton");
+        _workerPanel = GetNodeOrNull<Control>("WorkerPanel");
+        _guidancePanel = GetNodeOrNull<Control>("GuidancePanel");
+        _alertPanel = GetNodeOrNull<Control>("AlertPanel");
+        _tutorialHintCard = GetNodeOrNull<Control>("TutorialOverlay/HintCard");
+        _tutorialHelpButton = GetNodeOrNull<Control>("TutorialOverlay/HelpButton");
 
+        ApplyResponsiveLayout(force: true);
         RefreshSimulation(GameRoot.Instance);
     }
 
     public override void _Process(double delta)
     {
+        ApplyResponsiveLayout();
         _refreshRemaining -= delta;
         if (_refreshRemaining <= 0.0)
         {
@@ -66,6 +81,119 @@ public partial class WorldHudController : CanvasLayer
             {
                 _statusLabel.Text = string.Empty;
             }
+        }
+    }
+
+    private void ApplyResponsiveLayout(bool force = false)
+    {
+        var viewport = GetViewport();
+        if (viewport is null)
+        {
+            return;
+        }
+
+        var metrics = ScreenLayout.Calculate(viewport);
+        if (!force && metrics.ViewportSize.IsEqualApprox(_lastViewportSize))
+        {
+            return;
+        }
+        _lastViewportSize = metrics.ViewportSize;
+
+        var left = metrics.ContentLeft + 18f;
+        var rightInset = metrics.ViewportSize.X - metrics.ContentRight + 18f;
+        var top = metrics.SafeTop;
+
+        if (_dayLabel is not null)
+        {
+            _dayLabel.OffsetLeft = left;
+            _dayLabel.OffsetRight = left + Mathf.Min(760f, metrics.ContentWidth * 0.58f);
+            _dayLabel.OffsetTop = top + 8f;
+            _dayLabel.OffsetBottom = top + 30f;
+        }
+        if (_economyLabel is not null)
+        {
+            _economyLabel.OffsetLeft = left;
+            _economyLabel.OffsetRight = left + Mathf.Min(760f, metrics.ContentWidth * 0.58f);
+            _economyLabel.OffsetTop = top + 31f;
+            _economyLabel.OffsetBottom = top + 53f;
+        }
+        if (_rosterLabel is not null)
+        {
+            _rosterLabel.OffsetRight = -rightInset - 298f;
+            _rosterLabel.OffsetLeft = _rosterLabel.OffsetRight - 224f;
+            _rosterLabel.OffsetTop = top + 18f;
+            _rosterLabel.OffsetBottom = top + 42f;
+        }
+
+        if (_managementButton is not null)
+        {
+            _managementButton.OffsetRight = -rightInset;
+            _managementButton.OffsetLeft = -rightInset - 136f;
+            _managementButton.OffsetTop = top + 14f;
+            _managementButton.OffsetBottom = top + 46f;
+        }
+        if (_advanceTimeButton is not null)
+        {
+            _advanceTimeButton.OffsetRight = -rightInset - 148f;
+            _advanceTimeButton.OffsetLeft = -rightInset - 286f;
+            _advanceTimeButton.OffsetTop = top + 14f;
+            _advanceTimeButton.OffsetBottom = top + 46f;
+        }
+
+        var leftPanelWidth = Mathf.Min(416f, Mathf.Max(300f, metrics.ContentWidth * 0.42f));
+        if (_workerPanel is not null)
+        {
+            _workerPanel.OffsetLeft = left;
+            _workerPanel.OffsetRight = left + Mathf.Min(312f, leftPanelWidth);
+            _workerPanel.OffsetTop = top + 72f;
+            _workerPanel.OffsetBottom = top + 132f;
+        }
+        if (_guidancePanel is not null)
+        {
+            _guidancePanel.OffsetLeft = left;
+            _guidancePanel.OffsetRight = left + leftPanelWidth;
+            _guidancePanel.OffsetTop = top + 140f;
+            _guidancePanel.OffsetBottom = top + 184f;
+        }
+        if (_tutorialHintCard is not null)
+        {
+            _tutorialHintCard.OffsetLeft = left;
+            _tutorialHintCard.OffsetRight = left + leftPanelWidth;
+            _tutorialHintCard.OffsetTop = top + 194f;
+            _tutorialHintCard.OffsetBottom = top + 402f;
+        }
+
+        var alertWidth = Mathf.Min(452f, Mathf.Max(330f, metrics.ContentWidth * 0.40f));
+        if (_alertPanel is not null)
+        {
+            _alertPanel.OffsetRight = -rightInset;
+            _alertPanel.OffsetLeft = -rightInset - alertWidth;
+            _alertPanel.OffsetTop = top + 62f;
+            _alertPanel.OffsetBottom = top + 196f;
+        }
+
+        if (_promptLabel is not null)
+        {
+            var promptHalf = Mathf.Min(520f, metrics.ContentWidth * 0.40f);
+            var shift = metrics.HorizontalCenter - metrics.ViewportSize.X * 0.5f;
+            _promptLabel.OffsetLeft = shift - promptHalf;
+            _promptLabel.OffsetRight = shift + promptHalf;
+            _promptLabel.OffsetTop = -66f - metrics.SafeBottom;
+            _promptLabel.OffsetBottom = -34f - metrics.SafeBottom;
+        }
+        if (_statusLabel is not null)
+        {
+            _statusLabel.OffsetLeft = left;
+            _statusLabel.OffsetRight = Mathf.Min(metrics.ContentRight - 18f, left + 760f);
+            _statusLabel.OffsetTop = -38f - metrics.SafeBottom;
+            _statusLabel.OffsetBottom = -12f - metrics.SafeBottom;
+        }
+        if (_tutorialHelpButton is not null)
+        {
+            _tutorialHelpButton.OffsetRight = -rightInset;
+            _tutorialHelpButton.OffsetLeft = -rightInset - 56f;
+            _tutorialHelpButton.OffsetTop = -72f - metrics.SafeBottom;
+            _tutorialHelpButton.OffsetBottom = -18f - metrics.SafeBottom;
         }
     }
 
