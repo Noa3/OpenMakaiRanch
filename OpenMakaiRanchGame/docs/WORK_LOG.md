@@ -165,3 +165,40 @@ Still intentionally deferred:
 - Added a nested-camera lookup fix in `ThirdPersonPlayerController`; the authored camera is under `CameraRig/Camera`, not a direct player sibling.
 
 External visual-direction research (reference only, no copied assets): GodotCon anime/stylized 3D workflows emphasize deliberate toon shading, outlines, edited normals and modular Blender→Godot asset authoring. The environment should use readable paths/landmarks and authored lighting rather than attempting photorealism.
+
+
+## 2026-09-09 — WORLD-003c/003d continuation: mixed creation + playable world flow
+
+Branch: `feat/world-hud-function-pass`, PR #2. No CI/build-pipeline files were added or modified in this continuation.
+
+Implemented:
+- Kept Bootstrap/MainMenu fully 2D. New Game still starts from `MainMenu.tscn`; gameplay routing remains `WorldGame.tscn` only after the menu action.
+- `CharacterCreationScreen.tscn` is now a mixed UI: existing editable 2D settings live beside a `SubViewport` 3D preview. Added `CharacterCreationPreviewController` and a reusable neutral `PlayerAvatar3D`.
+- The 3D player stand-in reflects ordinary player presentation data (height, skin/hair/eye colors, horns, glasses) and deliberately excludes adult-specific body presentation. The same stand-in is used in the ranch so creation and gameplay have one presentation source.
+- Character creation no longer rebuilds the full screen on every `GameRoot.StateChanged`, preventing LineEdit focus loss and picker resets while typing/editing. The 3D preview listens to shared state independently and its camera reframes for player height.
+- Added world sprint (`Shift`), smooth facing toward camera-relative travel, and visible player reuse in the `CharacterBody3D`. The old box mesh remains as a hidden debug geometry/collision reference only.
+- Added explicit management exit paths: `Return to World` button plus `Esc` for ordinary management; mandatory character-creation/prologue/victory/title flows remain locked visible.
+- Fixed Continue/New Game+ save selection. MainMenu now considers autosave slot 0 and manual slots 1-3 and selects the most recently saved usable/victory slot instead of ignoring slots 2/3.
+- Ranch presentation now subscribes to shared `GameRoot.StateChanged` while in-tree, so load, assignments, facility upgrades and time advancement refresh daylight/roster/HUD immediately.
+- Spatial job stations now respect the same facility progression used by management. Pasture/Kitchen are available in a new game; unbuilt Workshop/Pharmacy Lab/Dairy Barn expose a lock reason and cannot bypass management construction.
+- Added a world `Advance Phase`/`Plan Night`/`End Day` HUD action. Normal phases advance through `GameRoot.AdvanceTime`; Night without a plan opens the existing management choice; completed settlement opens the existing Daily Report. No second clock, settlement, reward or report system was introduced.
+- Night-plan controls in the management shell are now shown only during the actual Night phase and never on mandatory full-screen creation/prologue screens.
+
+Regression coverage added (not executed in this ChatGPT environment):
+- mixed character-creation scene contract, live SubViewport binding and generated neutral player geometry;
+- shared player visual in the ranch plus sprint > walk;
+- explicit Return-to-World and world phase-control nodes;
+- station progression locks and immediate unlock after the shared RanchService builds Workshop;
+- complete world clock path Morning -> Afternoon -> Evening -> Night -> management night plan -> settlement -> next Morning -> existing Daily Report;
+- existing controller-to-shared-Schedule assignment path remains covered.
+
+Static verification performed through repository inspection:
+- all 7 `.tscn` files were re-read at branch HEAD;
+- every Script/PackedScene ext_resource exists;
+- every authored non-root node parent path resolves;
+- static scene audit result: 0 missing resource references and 0 invalid parent paths.
+
+Validation still required before merge:
+- run the existing `build-and-verify.bat` / Godot 4.7.x Mono smoke locally;
+- manually verify gameplay feel, viewport sizing/focus, camera collision, input, Return-to-World, save/load and the full day flow;
+- no new assertion count or runtime PASS is claimed by this continuation.
