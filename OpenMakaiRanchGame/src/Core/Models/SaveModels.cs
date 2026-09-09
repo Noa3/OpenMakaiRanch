@@ -334,12 +334,39 @@ public sealed class RecruitmentState
 
 public sealed class SettingsState
 {
+    // Audio / feedback
     public bool AudioEnabled { get; set; } = true;
     public bool HapticsEnabled { get; set; } = true;
+    public float MasterVolume { get; set; } = 0.85f;
+    public float MusicVolume { get; set; } = 0.70f;
+    public float SfxVolume { get; set; } = 0.85f;
+    public float UiVolume { get; set; } = 0.80f;
+    public bool MuteWhenUnfocused { get; set; } = false;
+
+    // Presentation / accessibility
     public string ThemeId { get; set; } = "midnight";
     public float UiScale { get; set; } = 1.0f;
     public string Locale { get; set; } = "en";
     public bool ReducedMotion { get; set; }
+
+    // Graphics / performance. These are intentionally renderer-agnostic so Compatibility remains
+    // the common target for desktop, low-end mobile and a future non-.NET web client.
+    public string GraphicsQuality { get; set; } = "Medium";
+    public float RenderScale { get; set; } = 0.85f;
+    public bool ShadowsEnabled { get; set; } = true;
+    public int FrameRateLimit { get; set; } = 60;
+    public bool VSyncEnabled { get; set; } = true;
+    public bool Fullscreen { get; set; } = false;
+
+    // Camera / input
+    public float CameraSensitivity { get; set; } = 1.0f;
+    public float CameraFov { get; set; } = 70.0f;
+    public bool InvertCameraY { get; set; } = false;
+    public bool TouchControlsEnabled { get; set; } = false;
+    public float TouchControlScale { get; set; } = 1.0f;
+
+    // Save / lifecycle
+    public bool AutosaveEnabled { get; set; } = true;
 
     /// <summary>Show contextual world onboarding and reminder hints.</summary>
     public bool TutorialHintsEnabled { get; set; } = true;
@@ -356,10 +383,27 @@ public sealed class SettingsState
         {
             AudioEnabled = AudioEnabled,
             HapticsEnabled = HapticsEnabled,
+            MasterVolume = MasterVolume,
+            MusicVolume = MusicVolume,
+            SfxVolume = SfxVolume,
+            UiVolume = UiVolume,
+            MuteWhenUnfocused = MuteWhenUnfocused,
             ThemeId = ThemeId,
             UiScale = UiScale,
             Locale = Locale,
             ReducedMotion = ReducedMotion,
+            GraphicsQuality = GraphicsQuality,
+            RenderScale = RenderScale,
+            ShadowsEnabled = ShadowsEnabled,
+            FrameRateLimit = FrameRateLimit,
+            VSyncEnabled = VSyncEnabled,
+            Fullscreen = Fullscreen,
+            CameraSensitivity = CameraSensitivity,
+            CameraFov = CameraFov,
+            InvertCameraY = InvertCameraY,
+            TouchControlsEnabled = TouchControlsEnabled,
+            TouchControlScale = TouchControlScale,
+            AutosaveEnabled = AutosaveEnabled,
             TutorialHintsEnabled = TutorialHintsEnabled,
             SeenTutorialIds = new HashSet<string>(SeenTutorialIds ?? new HashSet<string>(), StringComparer.Ordinal)
         };
