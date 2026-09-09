@@ -164,7 +164,7 @@ public partial class WorldHudController : CanvasLayer
 
         if (target is null)
         {
-            _promptLabel.Text = "WASD / arrows: move   •   Hold RMB: look   •   Mouse wheel: zoom   •   Tab: worker";
+            _promptLabel.Text = "WASD / arrows: move   •   Shift: sprint   •   Hold RMB: look   •   Wheel: zoom   •   Tab: worker   •   M: management";
             return;
         }
 
