@@ -17,6 +17,11 @@ class LauncherTests(unittest.TestCase):
         self.root.mkdir()
         self.binary = self.root / launch.NAMES[0]
         self.binary.touch()
+        # Most discovery tests exercise version/source precedence, not physical engine size.
+        # Keep them cheap while preserving a dedicated stub-size regression below.
+        self.min_size_patch = patch.object(launch, "MIN_ENGINE_BYTES", 0)
+        self.min_size_patch.start()
+        self.addCleanup(self.min_size_patch.stop)
 
     def test_repo_relative_baseline(self):
         path, version = launch.resolve_godot(self.root, {"PATH": ""}, lambda _: "4.7.stable.mono.official.test")
@@ -35,8 +40,17 @@ class LauncherTests(unittest.TestCase):
 
     def test_rejects_incompatible_versions(self):
         for version in ("4.6.3.stable.mono.test", "4.7.stable.official.test", "4.8.dev.mono.test", "4.7.rc1.mono.test"):
-            with self.subTest(version=version), self.assertRaisesRegex(RuntimeError, "No compatible Godot"):
+            with self.subTest(version=version), self.assertRaisesRegex(RuntimeError, "Explicit Godot .* was rejected"):
                 launch.resolve_godot(self.root, {"GODOT_BIN": str(self.binary)}, lambda _: version)
+
+    def test_rejects_stub_binary(self):
+        with patch.object(launch, "MIN_ENGINE_BYTES", 50 * 1024 * 1024):
+            with self.assertRaisesRegex(RuntimeError, "stub/partial download"):
+                launch.resolve_godot(
+                    self.root,
+                    {"GODOT_BIN": str(self.binary)},
+                    lambda _: "4.7.2.stable.mono.test",
+                )
 
     def test_hung_version_check_fails_closed(self):
         def timeout(_):
