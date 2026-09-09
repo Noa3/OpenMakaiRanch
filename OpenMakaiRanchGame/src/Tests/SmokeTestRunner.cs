@@ -696,6 +696,7 @@ public static class SmokeTestRunner
         Assert(result, state.Recruitment.CurrentOffer is not null, "new game has a recruitment offer");
         Assert(result, state.Player.Name == "Anon", "new game player name is Anon");
         Assert(result, state.Player.RanchName == "Okachi Ranch", "new game ranch name is Okachi Ranch");
+        Assert(result, state.WorldAreaId == "ranch", "new game starts in the ranch world area");
         Assert(result, state.Settings.TutorialHintsEnabled, "tutorial hints default to enabled");
         Assert(result, state.Settings.SeenTutorialIds.Count == 0, "new settings start with no tutorial acknowledgements");
         var settingsClone = state.Settings.Clone();
@@ -1477,6 +1478,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             Assert(result, roster is not null, "greybox scene exposes a bound roster rig");
             Assert(result, roster?.AvatarCount == game.Roster.Characters.Count,
                 "greybox scene places one avatar per roster character");
+            AssertNodeExists(result, root, "NavigationRegion", "greybox has a NavigationRegion3D");
+            Assert(result, roster?.GetChildren().OfType<CharacterAvatar3D>()
+                    .Any(avatar => avatar.GetNodeOrNull<NavigationAgent3D>("NavigationAgent") is not null) == true,
+                "roster stand-ins carry NavigationAgent3D path followers");
             if (roster is not null)
             {
                 bool allInBounds = true;
@@ -1594,6 +1599,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             var controller = root as WorldGameController;
             Assert(result, controller is not null, "world boot root is WorldGameController");
             AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
+            AssertNodeExists(result, root, "TownWorld", "world boot contains persistent Okachi Town");
+            AssertNodeExists(result, root, "TownWorld/Services/GeneralStore", "town has a General Store service point");
+            AssertNodeExists(result, root, "TownWorld/Services/AdventureGuild", "town has an Adventure Guild service point");
+            AssertNodeExists(result, root, "TownWorld/Services/ResearchOffice", "town has a Research Office service point");
+            AssertNodeExists(result, root, "TownWorld/TravelToRanch", "town has a ranch return gate");
+            AssertNodeExists(result, root, "TownWorld/TownHud/TutorialOverlay/HelpButton", "town exposes F1 help");
             AssertNodeExists(result, root, "ManagementLayer/ManagementUi/UiShell",
                 "world boot contains the existing management shell as overlay");
             AssertNodeExists(result, root, "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton",
@@ -1649,6 +1660,53 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 Assert(result, !tutorial.HelpVisible && controller.Ranch?.InputGate.WorldInputEnabled == true,
                     "closing help safely restores world input");
             }
+
+            Assert(result, controller.Town is not null, "world boot binds town controller");
+            Assert(result, controller.ActiveAreaId == "ranch" && game.State.WorldAreaId == "ranch",
+                "world boot starts in persisted ranch area");
+
+            Assert(result, controller.TravelTo("town"), "ranch can travel to Okachi Town");
+            Assert(result, controller.ActiveAreaId == "town" && game.State.WorldAreaId == "town",
+                "travel switches active world area and persists town location");
+            Assert(result, controller.Town?.Visible == true && controller.Ranch?.Visible == false,
+                "town travel disables ranch presentation and reveals town");
+            Assert(result, controller.Town?.InputGate.WorldInputEnabled == true,
+                "town receives world input after travel");
+
+            if (controller.Town is not null)
+            {
+                var research = controller.Town.Services.FirstOrDefault(service => service.ServiceId == "research_office");
+                Assert(result, research is not null && !research.IsAvailable,
+                    "town Research Office preserves the existing Workshop progression requirement");
+
+                var shop = controller.Town.Services.FirstOrDefault(service => service.ServiceId == "general_store");
+                if (shop is not null && controller.Town.Player is not null)
+                {
+                    controller.Town.Player.GlobalPosition = shop.GlobalPosition;
+                    Assert(result, controller.Town.TryInteract(), "player can enter a nearby town service");
+                    Assert(result, controller.IsManagementVisible && controller.Shell?.CurrentScreen == "shop",
+                        "General Store world service routes to the existing shop screen");
+                    Assert(result, controller.CloseManagement(), "shop overlay can return to the 3D town");
+                    Assert(result, controller.ActiveAreaId == "town" && controller.Town.InputGate.WorldInputEnabled,
+                        "closing town service restores town movement");
+                }
+
+                var townTutorial = root.GetNodeOrNull<TownTutorialController>("TownWorld/TownHud/TutorialOverlay");
+                Assert(result, townTutorial is not null, "town tutorial controller binds");
+                if (townTutorial is not null)
+                {
+                    townTutorial.ToggleHelp();
+                    Assert(result, townTutorial.HelpVisible && controller.Town.InputGate.UiOwnsInput,
+                        "town F1 help owns input while visible");
+                    townTutorial.CloseHelp();
+                    Assert(result, !townTutorial.HelpVisible && controller.Town.InputGate.WorldInputEnabled,
+                        "closing town help restores movement");
+                }
+            }
+
+            Assert(result, controller.TravelTo("ranch"), "town can return to the ranch");
+            Assert(result, controller.ActiveAreaId == "ranch" && game.State.WorldAreaId == "ranch",
+                "return travel restores ranch area and persisted location");
 
             Assert(result, controller.OpenManagement(), "world boot opens existing management overlay");
             Assert(result, controller.IsManagementVisible, "management overlay becomes visible");
