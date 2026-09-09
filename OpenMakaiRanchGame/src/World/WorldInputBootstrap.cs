@@ -28,6 +28,7 @@ public partial class WorldInputBootstrap : Node
         EnsureAction("move_backward");
         EnsureAction("move_left");
         EnsureAction("move_right");
+        EnsureAction("move_sprint");
         EnsureAction("interact");
         EnsureAction("camera_look_up");
         EnsureAction("camera_look_down");
@@ -51,6 +52,7 @@ public partial class WorldInputBootstrap : Node
         AddKeyIfAbsent("camera_recenter", (int)Key.R);
         AddKeyIfAbsent("cycle_character", (int)Key.Tab);
         AddKeyIfAbsent("toggle_management", (int)Key.M);
+        AddKeyIfAbsent("move_sprint", (int)Key.Shift);
     }
 
     private static void EnsureAction(string action)
