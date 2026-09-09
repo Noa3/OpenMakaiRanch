@@ -236,6 +236,7 @@ public partial class UiShellController : Control
 		return true;
 	}
 
+	public bool ShowCharacterDetailFromWorld(string characterId)
 	{
 		if (string.IsNullOrWhiteSpace(characterId) || _game.Roster.Find(characterId) is null)
 		{
