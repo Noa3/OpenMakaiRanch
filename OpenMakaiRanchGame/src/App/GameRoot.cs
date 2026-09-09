@@ -760,6 +760,25 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool UsePlayerBathForNight()
+	{
+		if (!State.Ranch.BathtubClean || State.Calendar.Phase != DayPhase.Night)
+		{
+			return false;
+		}
+
+		State.Ranch.BathtubClean = false;
+		State.Calendar.NightAction = "rest";
+		State.Story.PlayerBathedOnFirstNight = State.Calendar.Day == 1 || State.Story.PlayerBathedOnFirstNight;
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool AutosaveCheckpoint(string reason)
+	{
+		return TryAutosave(reason);
+	}
+
 	public void SetNightAction(string action)
 	{
 		if (action is not ("rest" or "train" or "admin")) return;
