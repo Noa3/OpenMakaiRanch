@@ -18,9 +18,9 @@ public partial class WorldAtmosphereController : Node3D
     [Export] public float FollowRadius { get; set; } = 13.0f;
 
     private ThirdPersonPlayerController? _player;
-    private GPUParticles3D? _weather;
-    private GPUParticles3D? _seasonal;
-    private GPUParticles3D? _nightMotes;
+    private GpuParticles3D? _weather;
+    private GpuParticles3D? _seasonal;
+    private GpuParticles3D? _nightMotes;
     private MeshInstance3D? _groundMesh;
     private Weather _lastWeather = (Weather)(-1);
     private Season _lastSeason = (Season)(-1);
@@ -147,9 +147,9 @@ public partial class WorldAtmosphereController : Node3D
         AddChild(_nightMotes);
     }
 
-    private GPUParticles3D CreateEmitter(string name)
+    private GpuParticles3D CreateEmitter(string name)
     {
-        var particles = new GPUParticles3D
+        var particles = new GpuParticles3D
         {
             Name = name,
             Emitting = false,
@@ -166,7 +166,7 @@ public partial class WorldAtmosphereController : Node3D
         return particles;
     }
 
-    private void ConfigureWeather(GPUParticles3D particles, Weather weather, bool enabled, float density)
+    private void ConfigureWeather(GpuParticles3D particles, Weather weather, bool enabled, float density)
     {
         if (!enabled || (!OriginalCalendarRules.IsRain(weather) && !OriginalCalendarRules.IsSnow(weather)))
         {
@@ -199,7 +199,7 @@ public partial class WorldAtmosphereController : Node3D
         particles.Emitting = true;
     }
 
-    private void ConfigureSeasonal(GPUParticles3D particles, Season season, Weather weather, bool enabled, float density)
+    private void ConfigureSeasonal(GpuParticles3D particles, Season season, Weather weather, bool enabled, float density)
     {
         // Severe precipitation already provides enough motion/readability.
         if (!enabled || OriginalCalendarRules.IsSevere(weather) || weather == Weather.Storm
@@ -241,7 +241,7 @@ public partial class WorldAtmosphereController : Node3D
     }
 
     private void ConfigureNightMotes(
-        GPUParticles3D particles,
+        GpuParticles3D particles,
         Season season,
         DayPhase phase,
         Weather weather,
