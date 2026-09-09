@@ -2666,16 +2666,6 @@ public partial class UiShellController
         var actions = FlowRow(10);
         _content.AddChild(actions);
 
-        var produceBtn = PrimaryButton(T("screen.milk.produce", "Produce Milk Now"), T("tooltip.produce_milk", "Generate milk based on production rate, quality, and constitution traits"));
-        produceBtn.TooltipText = T("tooltip.produce_milk", "Generate milk based on production rate, quality, and constitution traits");
-        produceBtn.Pressed += () =>
-        {
-            _game.MilkEconomy.ProduceMilk(character.Id);
-            _game.Feedback.PlayConfirm();
-            ShowScreen(_currentScreen);
-        };
-        actions.AddChild(produceBtn);
-
         var shipBtn = PrimaryButton($"{T("screen.milk.ship", "Ship")} ({milk.CurrentAmount} {T("unit.units", "units")})", T("tooltip.ship_milk", "Sell all stored milk from this character. Price depends on quality and concentration."));
         shipBtn.Pressed += () =>
         {
@@ -2698,7 +2688,7 @@ public partial class UiShellController
         _content.AddChild(shipAll);
 
         if (milk.CurrentAmount == 0)
-            _content.AddChild(MutedLabel(T("screen.milk.no_milk", "No milk stored. Use Produce to generate milk, or advance a day for automatic production.")));
+            _content.AddChild(MutedLabel(T("screen.milk.no_milk", "No milk stored. Production is calculated once during daily settlement; advance/end the day to produce the next batch.")));
     }
 
     private static string ConcentrationLabel(string concentration) => concentration switch
