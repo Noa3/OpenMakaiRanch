@@ -27,6 +27,7 @@ public partial class RosterRig : Node3D
     [Export] public float ArrivalDistance { get; set; } = 0.08f;
 
     private readonly Dictionary<string, CharacterAvatar3D> _avatars = new();
+    private readonly Dictionary<string, NavigationAgent3D> _agents = new();
     private readonly Dictionary<string, Vector3> _targets = new();
 
     public int AvatarCount => _avatars.Count;
@@ -90,8 +91,19 @@ public partial class RosterRig : Node3D
                 continue;
             }
 
-            var next = current.MoveToward(target, step);
-            var travel = target - current;
+            var travelTarget = target;
+            if (_agents.TryGetValue(id, out var agent) && GodotObject.IsInstanceValid(agent))
+            {
+                agent.TargetPosition = target;
+                var nextPath = agent.GetNextPathPosition();
+                if (nextPath.DistanceTo(current) > 0.01f && nextPath.DistanceTo(current) < 8.0f)
+                {
+                    travelTarget = nextPath;
+                }
+            }
+
+            var next = current.MoveToward(travelTarget, step);
+            var travel = travelTarget - current;
             travel.Y = 0f;
             if (travel.LengthSquared() > 0.0001f)
             {
@@ -165,6 +177,18 @@ public partial class RosterRig : Node3D
         var avatar = CharacterAvatarFactory.BuildAvatar(profile);
         avatar.Name = $"Avatar_{characterId}";
 
+        var agent = new NavigationAgent3D
+        {
+            Name = "NavigationAgent",
+            PathDesiredDistance = 0.35f,
+            TargetDesiredDistance = ArrivalDistance,
+            Radius = 0.35f,
+            Height = 1.7f,
+            AvoidanceEnabled = true
+        };
+        avatar.AddChild(agent);
+        _agents[characterId] = agent;
+
         var nameplate = new Label3D
         {
             Name = "Nameplate",
@@ -187,6 +211,7 @@ public partial class RosterRig : Node3D
         }
 
         _avatars.Remove(characterId);
+        _agents.Remove(characterId);
         _targets.Remove(characterId);
     }
 }
