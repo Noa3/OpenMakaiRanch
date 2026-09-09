@@ -13,3 +13,4 @@ script = ExtResource("1_controller")
 layer = 50
 
 [node name="ManagementUi" parent="ManagementLayer" instance=ExtResource("3_management")]
+visible = false
