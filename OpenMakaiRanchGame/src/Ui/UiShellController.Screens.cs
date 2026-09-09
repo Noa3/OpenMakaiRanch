@@ -1341,18 +1341,23 @@ public partial class UiShellController
         var actions = FlowRow(10);
         _content.AddChild(actions);
 
-        var autoBtn = PrimaryButton(T("screen.combat.auto_battle", "Auto Battle"), T("tooltip.auto_battle", "Resolve all combat rounds automatically with AI tactics"));
+        var activeMissionId = mission?.Id ?? _game.State.Adventure.LastMissionId;
+        var adventureCost = _game.AdventureStaminaCost(activeMissionId);
+        var autoLabel = adventureCost > 0 ? $"Auto Battle ({adventureCost} Stamina)" : "Auto Battle (Tutorial — free)";
+        var autoBtn = PrimaryButton(autoLabel, T("tooltip.auto_battle", "Resolve all combat rounds automatically with AI tactics. World time stays paused."));
+        autoBtn.Disabled = !_game.CanStartAdventure(activeMissionId);
         autoBtn.Pressed += () =>
         {
-            _game.RunRoundBasedMission(mission?.Id ?? _game.State.Adventure.LastMissionId, true);
+            _game.RunRoundBasedMission(activeMissionId, true);
             ShowScreen(_currentScreen);
         };
         AddFlowButton(actions, autoBtn, 150);
 
-        var captureBtn = SecondaryButton(T("screen.combat.capture_battle", "Capture Battle"), T("tooltip.capture_battle", "Fight with capture attempt. Success may recruit an enemy!"));
+        var captureBtn = SecondaryButton(adventureCost > 0 ? $"Capture Battle ({adventureCost} Stamina)" : "Capture Battle (Tutorial — free)", T("tooltip.capture_battle", "Fight with capture attempt. Success may recruit an enemy!"));
+        captureBtn.Disabled = !_game.CanStartAdventure(activeMissionId);
         captureBtn.Pressed += () =>
         {
-            _game.RunRoundBasedCapture(mission?.Id ?? _game.State.Adventure.LastMissionId);
+            _game.RunRoundBasedCapture(activeMissionId);
             ShowScreen(_currentScreen);
         };
         AddFlowButton(actions, captureBtn, 160);
@@ -1587,7 +1592,9 @@ public partial class UiShellController
             header.AddChild(info);
             info.AddChild(SubtitleLabel($"{definition.DisplayName} — Bond {character.Bond}"));
 
-            var mentorBtn = SecondaryButton("Mentorship (+4 bond, -4 fatigue)", "Spend 4 fatigue: +5 bond, +4 morale");
+            var mentorshipCost = _game.PlayerStaminaCost(PlayerActivityKind.Mentorship);
+            var mentorBtn = SecondaryButton($"Mentorship ({mentorshipCost} Stamina)", "Spend daily player stamina: +5 bond, +4 morale, +4 character fatigue.");
+            mentorBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.Mentorship);
             mentorBtn.Pressed += () => ExecuteUiAction(() => _game.TryConductMentorship(character.Id, generation), true);
             info.AddChild(mentorBtn);
 
@@ -1630,7 +1637,9 @@ public partial class UiShellController
                 };
                 narrativeBox.AddChild(narrativeLabel);
 
-                var completeBtn = PrimaryButton("Complete Event", "Complete this bond event to earn rewards and progress the story");
+                var bondEventCost = _game.PlayerStaminaCost(PlayerActivityKind.BondEvent);
+                var completeBtn = PrimaryButton($"Complete Event ({bondEventCost} Stamina)", "Complete this bond event to earn rewards and progress the story."); 
+                completeBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.BondEvent);
                 completeBtn.Pressed += () =>
                 {
                     if (generation != _game.StateGeneration) return;
@@ -1681,17 +1690,23 @@ public partial class UiShellController
                 var actions = FlowRow(6);
                 petCard.AddChild(actions);
 
-                var feedBtn = PrimaryButton($"{T("screen.pets.feed", "Feed")} (10{T("unit.g", "g")})", T("tooltip.feed_pet", "Feed the pet: Hunger+20, Mood+5, Bond+2"));
-                feedBtn.Pressed += () => { var result = _game.Pets.Feed(pet.Id); _game.Feedback.PlayConfirm(); ShowScreen(_currentScreen); };
-                AddFlowButton(actions, feedBtn, 120);
+                var feedCost = _game.PlayerStaminaCost(PlayerActivityKind.PetFeed);
+                var feedBtn = PrimaryButton($"{T("screen.pets.feed", "Feed")} (10{T("unit.g", "g")} + {feedCost} STA)", T("tooltip.feed_pet", "Feed the pet: Hunger+20, Mood+5, Bond+2"));
+                feedBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.PetFeed);
+                feedBtn.Pressed += () => { var result = _game.TryFeedPet(pet.Id); SetStatus(result, result.StartsWith("Fed successfully", StringComparison.Ordinal)); ShowScreen(_currentScreen); };
+                AddFlowButton(actions, feedBtn, 150);
 
-                var playBtn = SecondaryButton($"{T("screen.pets.play", "Play")} (5{T("unit.g", "g")})", T("tooltip.play_pet", "Play with the pet: Mood+15, Bond+3, Hunger-5"));
-                playBtn.Pressed += () => { var result = _game.Pets.Play(pet.Id); _game.Feedback.PlayConfirm(); ShowScreen(_currentScreen); };
-                AddFlowButton(actions, playBtn, 120);
+                var playCost = _game.PlayerStaminaCost(PlayerActivityKind.PetPlay);
+                var playBtn = SecondaryButton($"{T("screen.pets.play", "Play")} (5{T("unit.g", "g")} + {playCost} STA)", T("tooltip.play_pet", "Play with the pet: Mood+15, Bond+3, Hunger-5"));
+                playBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.PetPlay);
+                playBtn.Pressed += () => { var result = _game.TryPlayWithPet(pet.Id); SetStatus(result, result.StartsWith("Played successfully", StringComparison.Ordinal)); ShowScreen(_currentScreen); };
+                AddFlowButton(actions, playBtn, 150);
 
-                var trainBtn = SecondaryButton($"{T("screen.pets.train", "Train")} (15{T("unit.g", "g")})", T("tooltip.train_pet", "Train the pet: Training+10, Bond+1, Hunger-10, Mood-5"));
-                trainBtn.Pressed += () => { var result = _game.Pets.Train(pet.Id); _game.Feedback.PlayConfirm(); ShowScreen(_currentScreen); };
-                AddFlowButton(actions, trainBtn, 120);
+                var trainCost = _game.PlayerStaminaCost(PlayerActivityKind.PetTraining);
+                var trainBtn = SecondaryButton($"{T("screen.pets.train", "Train")} (15{T("unit.g", "g")} + {trainCost} STA)", T("tooltip.train_pet", "Train the pet: Training+10, Bond+1, Hunger-10, Mood-5"));
+                trainBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.PetTraining);
+                trainBtn.Pressed += () => { var result = _game.TryTrainPet(pet.Id); SetStatus(result, result.StartsWith("Trained successfully", StringComparison.Ordinal)); ShowScreen(_currentScreen); };
+                AddFlowButton(actions, trainBtn, 160);
 
                 // Progress bars
                 AddMentalBar(petCard, T("screen.pets.stats", "Hunger"), entry.Hunger, 100, "ffaa44");
@@ -2481,46 +2496,51 @@ public partial class UiShellController
         var careRow = FlowRow(6);
         _content.AddChild(careRow);
 
-        var feedBtn = PrimaryButton("Feed", T("tooltip.visit_feed", "Feed a meal_box: Fatigue-18, Energy+10, Morale+8, Bond+4"));
+        var feedBtn = PrimaryButton($"Feed ({_game.PlayerStaminaCost(PlayerActivityKind.VisitFeed)} STA)", T("tooltip.visit_feed", "Feed a meal_box: Fatigue-18, Energy+10, Morale+8, Bond+4"));
+        feedBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitFeed);
         feedBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareFeed(character.Id);
+            var line = _game.TryVisitCare(character.Id, "feed");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
         careRow.AddChild(feedBtn);
 
-        var batheBtn = SecondaryButton("Bathe", T("tooltip.visit_bathe", "Wash and groom her: Fatigue-12, Morale+6, Bond+2"));
+        var batheBtn = SecondaryButton($"Bathe ({_game.PlayerStaminaCost(PlayerActivityKind.VisitCare)} STA)", T("tooltip.visit_bathe", "Wash and groom her: Fatigue-12, Morale+6, Bond+2"));
+        batheBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare);
         batheBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareBathe(character.Id);
+            var line = _game.TryVisitCare(character.Id, "bathe");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
         careRow.AddChild(batheBtn);
 
-        var talkBtn = SecondaryButton("Talk", T("tooltip.visit_talk", "Talk and comfort: Morale+7, Bond+3, Favorability+150"));
+        var talkBtn = SecondaryButton($"Talk ({_game.PlayerStaminaCost(PlayerActivityKind.VisitCare)} STA)", T("tooltip.visit_talk", "Talk and comfort: Morale+7, Bond+3, Favorability+150"));
+        talkBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare);
         talkBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareTalk(character.Id);
+            var line = _game.TryVisitCare(character.Id, "talk");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
         careRow.AddChild(talkBtn);
 
-        var groomBtn = SecondaryButton("Groom", T("tooltip.visit_groom", "Brush and groom: Morale+5, Bond+3"));
+        var groomBtn = SecondaryButton($"Groom ({_game.PlayerStaminaCost(PlayerActivityKind.VisitCare)} STA)", T("tooltip.visit_groom", "Brush and groom: Morale+5, Bond+3"));
+        groomBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare);
         groomBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareGroom(character.Id);
+            var line = _game.TryVisitCare(character.Id, "groom");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
         careRow.AddChild(groomBtn);
 
-        var restBtn = SecondaryButton("Rest", T("tooltip.visit_rest", "Let her rest: Energy+25, Fatigue-10, Morale+3"));
+        var restBtn = SecondaryButton($"Rest ({_game.PlayerStaminaCost(PlayerActivityKind.VisitCare)} STA)", T("tooltip.visit_rest", "Let her rest: Energy+25, Fatigue-10, Morale+3"));
+        restBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare);
         restBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareRest(character.Id);
+            var line = _game.TryVisitCare(character.Id, "rest");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
@@ -2541,10 +2561,11 @@ public partial class UiShellController
                 var row = FlowRow(8);
                 giftCard.AddChild(row);
                 row.AddChild(AddStyledLine($"{def.DisplayName} x{count}", true));
-                var give = SecondaryButton(T("screen.visit.give", "Give"), $"Give {def.DisplayName}: Bond+8, Morale+5, Favorability+400");
+                var give = SecondaryButton($"{T("screen.visit.give", "Give")} ({_game.PlayerStaminaCost(PlayerActivityKind.VisitGift)} STA)", $"Give {def.DisplayName}: Bond+8, Morale+5, Favorability+400");
+                give.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitGift);
                 give.Pressed += () =>
                 {
-                    var line = _game.Visit.CareGift(character.Id, itemId);
+                    var line = _game.TryVisitCare(character.Id, "gift", itemId);
                     SetStatus(line, false);
                     RefreshCurrentScreen();
                 };
