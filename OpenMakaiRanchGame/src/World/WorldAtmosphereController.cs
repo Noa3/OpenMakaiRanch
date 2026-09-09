@@ -21,6 +21,7 @@ public partial class WorldAtmosphereController : Node3D
     private GPUParticles3D? _weather;
     private GPUParticles3D? _seasonal;
     private GPUParticles3D? _nightMotes;
+    private MeshInstance3D? _groundMesh;
     private Weather _lastWeather = (Weather)(-1);
     private Season _lastSeason = (Season)(-1);
     private DayPhase _lastPhase = (DayPhase)(-1);
@@ -35,6 +36,7 @@ public partial class WorldAtmosphereController : Node3D
     public override void _Ready()
     {
         _player = GetNodeOrNull<ThirdPersonPlayerController>(PlayerPath);
+        _groundMesh = GetParent()?.GetNodeOrNull<MeshInstance3D>("Ground/Mesh");
         BuildEmitters();
 
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
@@ -90,12 +92,48 @@ public partial class WorldAtmosphereController : Node3D
         ConfigureWeather(_weather, cal.CurrentWeather, particlesEnabled, density);
         ConfigureSeasonal(_seasonal, cal.Season, cal.CurrentWeather, particlesEnabled, density);
         ConfigureNightMotes(_nightMotes, cal.Season, cal.Phase, cal.CurrentWeather, particlesEnabled, density);
+        ApplyGroundSurface(cal.Season, cal.CurrentWeather);
 
         _lastWeather = cal.CurrentWeather;
         _lastSeason = cal.Season;
         _lastPhase = cal.Phase;
         _lastQuality = settings.GraphicsQuality;
         _lastParticlesEnabled = particlesEnabled;
+    }
+
+    private void ApplyGroundSurface(Season season, Weather weather)
+    {
+        if (_groundMesh is null)
+        {
+            return;
+        }
+
+        var baseColor = season switch
+        {
+            Season.Spring => new Color(0.43f, 0.58f, 0.34f),
+            Season.Summer => new Color(0.31f, 0.50f, 0.25f),
+            Season.Autumn => new Color(0.48f, 0.40f, 0.25f),
+            Season.Winter => new Color(0.48f, 0.50f, 0.45f),
+            _ => new Color(0.40f, 0.52f, 0.32f)
+        };
+
+        var snow = OriginalCalendarRules.IsSnow(weather);
+        var wet = OriginalCalendarRules.IsRain(weather);
+        if (snow)
+        {
+            baseColor = baseColor.Lerp(new Color(0.88f, 0.91f, 0.92f), weather is Weather.HeavySnow or Weather.Blizzard ? 0.86f : 0.64f);
+        }
+        else if (wet)
+        {
+            baseColor = baseColor.Darkened(weather is Weather.HeavyRain or Weather.TorrentialRain or Weather.Storm ? 0.28f : 0.16f);
+        }
+
+        _groundMesh.MaterialOverride = new StandardMaterial3D
+        {
+            AlbedoColor = baseColor,
+            Roughness = wet ? 0.42f : snow ? 0.72f : 0.90f,
+            Metallic = 0.0f
+        };
     }
 
     private void BuildEmitters()
