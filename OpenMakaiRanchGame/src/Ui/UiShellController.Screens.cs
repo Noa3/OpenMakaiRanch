@@ -1813,6 +1813,23 @@ public partial class UiShellController
         };
         inner.AddChild(hapticsToggle);
 
+        var tutorialToggle = PrimaryButton($"{T("screen.settings.tutorial_hints", "World Tutorial Hints")}: {(_game.State.Settings.TutorialHintsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        tutorialToggle.TooltipText = T("tooltip.tutorial_hints", "Show contextual first-run cards in the 3D ranch. F1 Help remains available even when hints are off.");
+        tutorialToggle.Pressed += () => _game.SetTutorialHintsEnabled(!_game.State.Settings.TutorialHintsEnabled);
+        inner.AddChild(tutorialToggle);
+
+        var resetTutorial = SecondaryButton(T("screen.settings.restart_tutorial", "Restart Basic Ranch Tutorial"));
+        resetTutorial.TooltipText = T("tooltip.restart_tutorial", "Clear completed basic world tutorial steps and enable tutorial hints again.");
+        resetTutorial.Pressed += () =>
+        {
+            _game.ResetTutorialProgress();
+            _game.SetTutorialHintsEnabled(true);
+            ShowScreen("settings");
+        };
+        inner.AddChild(resetTutorial);
+
+        inner.AddChild(MutedLabel(T("screen.settings.world_help", "In the 3D ranch, press F1 at any time for controls and the basic gameplay loop.")));
+
         var previewFeedback = SecondaryButton(T("screen.settings.preview_confirm", "Preview Confirm Feedback"));
         previewFeedback.Pressed += () => _game.Feedback.PlayConfirm();
         inner.AddChild(previewFeedback);
