@@ -793,7 +793,8 @@ public partial class UiShellController : Control
 		var ranch = _game.State.Ranch;
 		var player = _game.State.Player;
 
-		_dayLabel.Text = $"{cal.Season} / Day {cal.Day}";
+		_dayLabel.Text = $"Y{cal.Year} {cal.Season} {cal.DayOfSeason:00} • {cal.Weekday.ToString()[..3]}";
+		_dayLabel.TooltipText = $"Total day {cal.Day} • 28 days/season • 112 days/year (original era calendar)";
 		_phaseLabel.Text = cal.Phase.ToString();
 		_weatherLabel.Text = WeatherSymbol(cal.CurrentWeather);
 		_playerNameLabel.Text = player.Name;
@@ -856,7 +857,14 @@ public partial class UiShellController : Control
 	{
 		Weather.Clear => "☀ Clear",
 		Weather.Cloudy => "☁ Cloudy",
+		Weather.Drizzle => "🌦 Drizzle",
 		Weather.Rain => "🌧 Rain",
+		Weather.HeavyRain => "🌧 Heavy Rain",
+		Weather.TorrentialRain => "⛈ Downpour",
+		Weather.StrongWind => "💨 Strong Wind",
+		Weather.Snow => "❄ Snow",
+		Weather.HeavySnow => "❄ Heavy Snow",
+		Weather.Blizzard => "🌨 Blizzard",
 		Weather.Storm => "⛈ Storm",
 		_ => "☀ Clear"
 	};
