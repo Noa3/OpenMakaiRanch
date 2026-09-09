@@ -16,6 +16,7 @@ public partial class IntroHouseController : Node3D
     private ThirdPersonPlayerController? _player;
     private WorldCameraRig? _cameraRig;
     private Node3D? _doorPoint;
+    private Node3D? _wakeVisual;
     private Label? _prompt;
     private bool _doorEnabled;
 
@@ -30,6 +31,7 @@ public partial class IntroHouseController : Node3D
         _player = GetNodeOrNull<ThirdPersonPlayerController>("Player");
         _cameraRig = GetNodeOrNull<WorldCameraRig>("CameraRig");
         _doorPoint = GetNodeOrNull<Node3D>("ExitDoorPoint");
+        _wakeVisual = GetNodeOrNull<Node3D>("WakeVisual");
         _prompt = GetNodeOrNull<Label>("IntroHud/Prompt");
 
         if (_player is not null)
@@ -43,7 +45,33 @@ public partial class IntroHouseController : Node3D
             }
         }
 
-        SetDoorEnabled(false);
+        var alreadyAwake = GameRoot.Instance?.State.Story.FirstDayStage >= FirstDayFlowController.StageLeaveBedroom;
+        SetWakePresentation(!alreadyAwake);
+        SetDoorEnabled(alreadyAwake);
+    }
+
+    public void FinishWakeUp()
+    {
+        SetWakePresentation(false);
+        if (_player is not null)
+        {
+            _player.GlobalPosition = new Vector3(-1.0f, 0.8f, -0.2f);
+        }
+        SetDoorEnabled(true);
+    }
+
+    private void SetWakePresentation(bool sleeping)
+    {
+        if (_wakeVisual is not null)
+        {
+            _wakeVisual.Visible = sleeping;
+        }
+
+        if (_player is not null)
+        {
+            _player.Visible = !sleeping;
+            _player.ProcessMode = sleeping ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit;
+        }
     }
 
     public override void _Process(double delta)
