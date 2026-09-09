@@ -24,7 +24,7 @@ public partial class WorldBoundaryBuilder : Node3D
     private float _lastDensity = -1f;
 
     public int DressingNodeCount => _dressingRoot?.GetChildCount() ?? 0;
-    public bool HasCollisionBoundary => _collisionRoot?.GetChildCount() >= 4;
+    public bool HasCollisionBoundary => _collisionRoot?.GetChildCount() == 4;
 
     public override void _Ready()
     {
@@ -71,19 +71,13 @@ public partial class WorldBoundaryBuilder : Node3D
         _collisionRoot = new Node3D { Name = "BoundaryCollision" };
         AddChild(_collisionRoot);
 
-        // North/east/west are continuous. South is split around the authored gate so the visual
-        // portal can be approached, while collision still closes the world outside the gate.
+        // All four gameplay boundaries are continuous. The SOUTH VISUAL DRESSING leaves a gate
+        // opening, but collision stays closed behind the travel Area3D. The player can walk up to
+        // the gate and interact, never walk past it and fall off the authored ground.
         AddWall("NorthBoundary", new Vector3(0, WallHeight * 0.5f, -HalfExtents.Y), new Vector3(HalfExtents.X * 2f, WallHeight, 0.8f));
         AddWall("WestBoundary", new Vector3(-HalfExtents.X, WallHeight * 0.5f, 0), new Vector3(0.8f, WallHeight, HalfExtents.Y * 2f));
         AddWall("EastBoundary", new Vector3(HalfExtents.X, WallHeight * 0.5f, 0), new Vector3(0.8f, WallHeight, HalfExtents.Y * 2f));
-
-        var sideWidth = Math.Max(0.5f, HalfExtents.X - SouthGateHalfWidth);
-        AddWall("SouthBoundaryLeft",
-            new Vector3(-(SouthGateHalfWidth + sideWidth * 0.5f), WallHeight * 0.5f, HalfExtents.Y),
-            new Vector3(sideWidth, WallHeight, 0.8f));
-        AddWall("SouthBoundaryRight",
-            new Vector3(SouthGateHalfWidth + sideWidth * 0.5f, WallHeight * 0.5f, HalfExtents.Y),
-            new Vector3(sideWidth, WallHeight, 0.8f));
+        AddWall("SouthBoundary", new Vector3(0, WallHeight * 0.5f, HalfExtents.Y), new Vector3(HalfExtents.X * 2f, WallHeight, 0.8f));
     }
 
     private void AddWall(string name, Vector3 position, Vector3 size)
