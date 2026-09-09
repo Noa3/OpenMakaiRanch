@@ -421,6 +421,7 @@ The tutorial opponent is intentionally weak; you can retry without changing the 
 
         _game.State.Story.IntruderEncounterCompleted = true;
         SetIntruderVisible(false);
+        _game.EndCombatSession();
 
         if (_game.State.Calendar.Phase == DayPhase.Evening)
         {
@@ -563,6 +564,11 @@ The tutorial opponent is intentionally weak; you can retry without changing the 
 
         // Story skip moves only the shared phase. It does not settle jobs, produce resources, grant
         // combat rewards or increment the day. The player still chooses the normal night action.
+        if (_game.CombatWorldTimeLocked)
+        {
+            _game.EndCombatSession();
+        }
+
         var guard = 0;
         while (_game.State.Calendar.Phase != DayPhase.Night && guard++ < 4)
         {
