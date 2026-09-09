@@ -1477,6 +1477,16 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "greybox locks unbuilt workshop station through shared ranch progression");
             Assert(result, controller?.Stations.Any(value => value.RequiredFacilityId == "pasture" && value.IsAvailable) == true,
                 "greybox keeps built pasture station available");
+
+            var workshopStation = controller?.Stations.FirstOrDefault(value => value.RequiredFacilityId == "workshop");
+            if (workshopStation is not null)
+            {
+                Assert(result, !workshopStation.IsAvailable, "workshop starts locked in the world");
+                Assert(result, game.Ranch.UpgradeFacility("workshop", game.Economy),
+                    "building workshop through shared ranch service succeeds");
+                Assert(result, workshopStation.IsAvailable,
+                    "shared management facility upgrade immediately unlocks the world station");
+            }
             Assert(result, controller?.CameraRig?.Target is not null, "greybox live camera follows the player target");
             Assert(result, controller?.Hud is not null, "greybox live scene exposes the world HUD");
             Assert(result, !string.IsNullOrWhiteSpace(controller?.SelectedCharacterId),
@@ -1560,6 +1570,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 "world boot contains the existing management shell as overlay");
             AssertNodeExists(result, root, "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton",
                 "world boot management overlay has an explicit return-to-world control");
+            AssertNodeExists(result, root, "RanchWorld/WorldHud/AdvanceTimeButton",
+                "world boot HUD exposes shared phase progression");
 
             if (controller is null)
             {
@@ -1600,6 +1612,34 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                     "finishing the mandatory new-game flow automatically reveals the 3D ranch");
                 Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
                     "new-game flow completion returns input to the world");
+
+                // WORLD-003d flow: play through the shared clock from the 3D world. Day phases can
+                // advance without opening management; Night with no plan opens the existing choice,
+                // then settlement opens the existing Daily Report.
+                controller.AdvanceWorldTime(); // Morning -> Afternoon
+                controller.AdvanceWorldTime(); // Afternoon -> Evening
+                controller.AdvanceWorldTime(); // Evening -> Night
+                Assert(result, game.State.Calendar.Phase == DayPhase.Night,
+                    "world time control reaches the shared Night phase");
+                Assert(result, !controller.IsManagementVisible,
+                    "ordinary phase advancement keeps the player in the 3D world");
+
+                controller.AdvanceWorldTime(); // no night plan -> management request, no settlement
+                Assert(result, game.State.Calendar.Phase == DayPhase.Night,
+                    "world refuses to settle Night before a night plan exists");
+                Assert(result, controller.IsManagementVisible && controller.Shell.CurrentScreen == "ranch",
+                    "missing night plan opens the existing ranch management screen");
+
+                Assert(result, controller.CloseManagement(),
+                    "night planning management can return to the world");
+                game.SetNightAction("rest");
+                var dayBeforeWorldSettlement = game.State.Calendar.Day;
+                controller.AdvanceWorldTime();
+                Assert(result, game.State.Calendar.Day == dayBeforeWorldSettlement + 1
+                    && game.State.Calendar.Phase == DayPhase.Morning,
+                    "world End Day uses the shared settlement and advances to next Morning");
+                Assert(result, controller.IsManagementVisible && controller.Shell.CurrentScreen == "report",
+                    "world settlement opens the existing Daily Report");
             }
         }
         finally
