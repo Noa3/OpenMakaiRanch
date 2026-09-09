@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://src/World/TownWorldController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://src/World/WorldAtmosphereController.cs" id="16_atmosphere"]
 
 [ext_resource type="Script" path="res://src/World/WorldBoundaryBuilder.cs" id="13_boundary"]
+[ext_resource type="Script" path="res://src/World/WorldSurfaceInteractionController.cs" id="17_surface"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -157,6 +158,14 @@ shape = SubResource("service_shape")
 [node name="Atmosphere" type="Node3D" parent="."]
 script = ExtResource("16_atmosphere")
 PlayerPath = NodePath("../Player")
+
+[node name="SurfaceInteractions" type="Node3D" parent="."]
+script = ExtResource("17_surface")
+PlayerPath = NodePath("../Player")
+RosterPath = NodePath("")
+MaxMarks = 48
+MaxTrackedActors = 1
+MaxPuddles = 8
 
 [node name="Player" type="CharacterBody3D" parent="."]
 position = Vector3(0, 0.8, 10)
