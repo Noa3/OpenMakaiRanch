@@ -18,6 +18,7 @@ public partial class WorldTransitionController : Control
     private bool _running;
 
     public bool IsTransitioning => _running;
+    public event Action? Completed;
 
     public override void _Ready()
     {
@@ -50,6 +51,7 @@ public partial class WorldTransitionController : Control
         {
             _running = false;
             Visible = false;
+            Completed?.Invoke();
         }
     }
 
