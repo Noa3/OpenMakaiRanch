@@ -102,7 +102,6 @@ public partial class WorldGameController : Node
         else
         {
             _transition?.CoverInstant();
-            SetTransitionInputLock(true);
             CallDeferred(nameof(RevealInitialWorld));
         }
     }
@@ -499,6 +498,7 @@ public partial class WorldGameController : Node
 
     private void RevealInitialWorld()
     {
+        SetTransitionInputLock(true);
         RevealArea(_activeAreaId, firstArrival: false);
     }
 
@@ -518,6 +518,10 @@ public partial class WorldGameController : Node
             : $"Day {game.State.Calendar.Day} • {game.State.Calendar.Phase} — {(areaId == "town" ? "Town services are open." : "Welcome back to the ranch.")}";
 
         _transition.Reveal(location, subtitle, firstArrival ? 1.15 : 0.55, firstArrival ? 1.05 : 0.65);
+        if (game.State.Settings.ReducedMotion)
+        {
+            _transition.CompleteImmediately();
+        }
     }
 
     private void ActiveStatus(string message)
