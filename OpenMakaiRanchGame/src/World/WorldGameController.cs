@@ -102,7 +102,7 @@ public partial class WorldGameController : Node
         else
         {
             _transition?.CoverInstant();
-            CallDeferred(nameof(RevealInitialWorld));
+            RevealInitialWorld();
         }
     }
 
