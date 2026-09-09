@@ -429,6 +429,18 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool SetWorldArea(string areaId)
+	{
+		if (areaId is not ("ranch" or "town") || State.WorldAreaId == areaId)
+		{
+			return false;
+		}
+
+		State.WorldAreaId = areaId;
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool SetTutorialHintsEnabled(bool enabled)
 	{
 		if (State.Settings.TutorialHintsEnabled == enabled)
