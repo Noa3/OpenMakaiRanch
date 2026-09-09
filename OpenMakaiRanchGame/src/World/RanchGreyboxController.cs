@@ -39,6 +39,12 @@ public partial class RanchGreyboxController : Node3D
     public bool Wired => _wired;
     public string SelectedCharacterId => ResolveSelectedCharacterId();
 
+    /// <summary>
+    /// Presentation notification for onboarding/feedback only. Gameplay state has already been
+    /// mutated through GameRoot before this event fires.
+    /// </summary>
+    public event Action<string, string>? StationInteractionSucceeded;
+
     /// <summary>Applies the shared phase to the scene's sun + environment.</summary>
     public DaylightRig? Daylight { get; private set; }
 
@@ -247,6 +253,7 @@ public partial class RanchGreyboxController : Node3D
         {
             var worker = ResolveSelectedCharacterName();
             SetFeedback($"{_nearbyStation.Label}: {worker} updated.");
+            StationInteractionSucceeded?.Invoke(characterId, _nearbyStation.CommandTargetId);
             RefreshLiveWorld();
         }
         else
