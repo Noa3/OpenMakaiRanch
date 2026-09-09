@@ -66,6 +66,10 @@ public partial class WorldGameController : Node
         _ranch.TravelRequested += OnTravelRequested;
         _town.TravelRequested += OnTravelRequested;
         _town.ServiceScreenRequested += OnTownServiceRequested;
+        if (_transition is not null)
+        {
+            _transition.Completed += OnTransitionCompleted;
+        }
         if (_pauseMenu is not null)
         {
             _pauseMenu.ManagementScreenRequested += OnPauseManagementRequested;
@@ -98,6 +102,7 @@ public partial class WorldGameController : Node
         else
         {
             _transition?.CoverInstant();
+            SetTransitionInputLock(true);
             CallDeferred(nameof(RevealInitialWorld));
         }
     }
@@ -120,6 +125,10 @@ public partial class WorldGameController : Node
         {
             _town.TravelRequested -= OnTravelRequested;
             _town.ServiceScreenRequested -= OnTownServiceRequested;
+        }
+        if (_transition is not null && GodotObject.IsInstanceValid(_transition))
+        {
+            _transition.Completed -= OnTransitionCompleted;
         }
         if (_pauseMenu is not null && GodotObject.IsInstanceValid(_pauseMenu))
         {
@@ -217,9 +226,11 @@ public partial class WorldGameController : Node
         }
 
         _transition?.CoverInstant();
+        SetTransitionInputLock(true);
         if (!SetActiveArea(destinationId, reposition: true))
         {
             _transition?.HideImmediately();
+            SetTransitionInputLock(false);
             return false;
         }
 
@@ -339,6 +350,7 @@ public partial class WorldGameController : Node
             SetActiveArea("ranch", reposition: false);
             GameRoot.Instance?.SetWorldArea("ranch");
             ApplyManagementVisibility(false);
+            SetTransitionInputLock(true);
             RevealArea("ranch", firstArrival: true);
         }
     }
@@ -465,6 +477,23 @@ public partial class WorldGameController : Node
         else
         {
             _ranch?.LeaveManagementUi();
+        }
+    }
+
+    private void OnTransitionCompleted()
+    {
+        SetTransitionInputLock(false);
+    }
+
+    private void SetTransitionInputLock(bool locked)
+    {
+        if (_activeAreaId == "town")
+        {
+            _town?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
+        }
+        else
+        {
+            _ranch?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
         }
     }
 
