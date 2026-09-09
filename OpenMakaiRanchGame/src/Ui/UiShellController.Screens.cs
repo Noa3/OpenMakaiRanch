@@ -1287,6 +1287,12 @@ public partial class UiShellController
             return;
         }
 
+        if (_game.CurrentCombatPhase == CombatPhase.PlayerTurn)
+        {
+            RenderCombatPlayerTurn();
+            return;
+        }
+
         if (_game.CurrentCombatPhase == CombatPhase.BattleResults)
         {
             RenderCombatResults();
@@ -1343,8 +1349,18 @@ public partial class UiShellController
 
         var activeMissionId = mission?.Id ?? _game.State.Adventure.LastMissionId;
         var adventureCost = _game.AdventureStaminaCost(activeMissionId);
+        var tacticalLabel = adventureCost > 0 ? $"Tactical Battle ({adventureCost} Stamina)" : "Tactical Battle (Tutorial — free)";
+        var tacticalBtn = PrimaryButton(tacticalLabel, "Control the ranch owner each round. Companions and enemies act automatically; HP/SP/MP persist through the battle.");
+        tacticalBtn.Disabled = !_game.CanStartInteractiveCombat(activeMissionId);
+        tacticalBtn.Pressed += () =>
+        {
+            if (_game.BeginInteractiveCombat(activeMissionId))
+                ShowScreen(_currentScreen);
+        };
+        AddFlowButton(actions, tacticalBtn, 178);
+
         var autoLabel = adventureCost > 0 ? $"Auto Battle ({adventureCost} Stamina)" : "Auto Battle (Tutorial — free)";
-        var autoBtn = PrimaryButton(autoLabel, T("tooltip.auto_battle", "Resolve all combat rounds automatically with AI tactics. World time stays paused."));
+        var autoBtn = SecondaryButton(autoLabel, T("tooltip.auto_battle", "Resolve all combat rounds automatically with AI tactics. World time stays paused."));
         autoBtn.Disabled = !_game.CanStartAdventure(activeMissionId);
         autoBtn.Pressed += () =>
         {
@@ -1363,8 +1379,152 @@ public partial class UiShellController
         AddFlowButton(actions, captureBtn, 160);
 
         var backBtn = SecondaryButton(T("common.back", "Back"));
-        backBtn.Pressed += () => ShowScreen("adventure");
+        backBtn.Pressed += () =>
+        {
+            _game.EndCombatSession();
+            ShowScreen("adventure");
+        };
         AddFlowButton(actions, backBtn, 96);
+
+        if (!_game.CanStartInteractiveCombat(activeMissionId) && _game.CanStartAdventure(activeMissionId))
+            _content.AddChild(RequirementLabel("Tactical Battle requires the ranch owner in the selected party."));
+    }
+
+    private void RenderCombatPlayerTurn()
+    {
+        var session = _game.ActiveCombatSession;
+        if (session is null)
+        {
+            var missing = CardContainer();
+            _content.AddChild(missing);
+            missing.AddChild(AddStyledLine("No active tactical combat session."));
+            var returnBtn = SecondaryButton(T("common.back", "Back"));
+            returnBtn.Pressed += () =>
+            {
+                _game.EndCombatSession();
+                ShowScreen("adventure");
+            };
+            _content.AddChild(returnBtn);
+            return;
+        }
+
+        var player = session.PlayerState;
+        if (player is null)
+        {
+            var waiting = CardContainer();
+            _content.AddChild(waiting);
+            waiting.AddChild(AddStyledLine("Resolving companion and enemy turns..."));
+            return;
+        }
+
+        var turnCard = CardContainer();
+        _content.AddChild(turnCard);
+        turnCard.AddChild(SubtitleLabel($"Round {session.RoundNumber} — {player.DisplayName}'s Turn"));
+        turnCard.AddChild(AddStyledLine(
+            $"HP {player.CurrentHp}/{player.MaxHp}   SP {player.CurrentSp}/{player.MaxSp}   MP {player.CurrentMana}/{player.MaxMana}", true));
+        turnCard.AddChild(MutedLabel(
+            "Daily Stamina was committed when the battle began. Combat commands use combat HP/SP/MP, not additional daily Stamina."));
+
+        var enemyCard = CardContainer();
+        _content.AddChild(enemyCard);
+        enemyCard.AddChild(SubtitleLabel("Enemies"));
+        foreach (var enemy in session.EnemyState)
+        {
+            var status = enemy.IsAlive ? $"{enemy.CurrentHp}/{enemy.MaxHp} HP" : "Defeated";
+            enemyCard.AddChild(AddStyledLine($"{enemy.DisplayName}: {status}"));
+        }
+
+        var partyCard = CardContainer();
+        _content.AddChild(partyCard);
+        partyCard.AddChild(SubtitleLabel("Party"));
+        foreach (var ally in session.PartyState)
+        {
+            var status = ally.IsAlive
+                ? $"{ally.CurrentHp}/{ally.MaxHp} HP   {ally.CurrentSp}/{ally.MaxSp} SP"
+                : "Fallen";
+            partyCard.AddChild(AddStyledLine($"{ally.DisplayName}: {status}"));
+        }
+
+        var attackCard = CardContainer();
+        _content.AddChild(attackCard);
+        attackCard.AddChild(SubtitleLabel("Attack"));
+        var attackRow = FlowRow(8);
+        attackCard.AddChild(attackRow);
+        foreach (var enemy in session.EnemyState.Where(value => value.IsAlive))
+        {
+            var capturedEnemyId = enemy.Id;
+            var attack = PrimaryButton($"Attack {enemy.DisplayName}", $"Basic attack against {enemy.DisplayName}. No SP or MP cost.");
+            attack.Pressed += () =>
+            {
+                if (!_game.SubmitInteractiveCombatAction(CombatPlayerCommand.Attack, capturedEnemyId))
+                    SetStatus(_game.ActiveCombatSession?.LastError ?? "Attack could not be resolved.", false);
+                ShowScreen(_currentScreen);
+            };
+            AddFlowButton(attackRow, attack, 148);
+        }
+
+        var tacticsCard = CardContainer();
+        _content.AddChild(tacticsCard);
+        tacticsCard.AddChild(SubtitleLabel("Tactics"));
+        var tacticsRow = FlowRow(8);
+        tacticsCard.AddChild(tacticsRow);
+
+        var defend = SecondaryButton("Defend", "Halve all incoming attack damage for the rest of this round.");
+        defend.Pressed += () =>
+        {
+            if (!_game.SubmitInteractiveCombatAction(CombatPlayerCommand.Defend))
+                SetStatus(_game.ActiveCombatSession?.LastError ?? "Defend could not be resolved.", false);
+            ShowScreen(_currentScreen);
+        };
+        AddFlowButton(tacticsRow, defend, 120);
+
+        var injuredAllies = session.PartyState.Where(value => value.IsAlive && value.CurrentHp < value.MaxHp).ToList();
+        foreach (var ally in injuredAllies)
+        {
+            var capturedAllyId = ally.Id;
+            var skill = SecondaryButton($"Skill Heal {ally.DisplayName} (-{CombatService.SkillSpCost} SP)",
+                "Combat support skill. Uses this combatant's finite SP.");
+            skill.Disabled = player.CurrentSp < CombatService.SkillSpCost;
+            skill.Pressed += () =>
+            {
+                if (!_game.SubmitInteractiveCombatAction(CombatPlayerCommand.Skill, capturedAllyId))
+                    SetStatus(_game.ActiveCombatSession?.LastError ?? "Skill could not be resolved.", false);
+                ShowScreen(_currentScreen);
+            };
+            AddFlowButton(tacticsRow, skill, 190);
+
+            var magic = SecondaryButton($"Magic Heal {ally.DisplayName} (-{CombatService.PlayerMagicHealCost} MP)",
+                "Uses the ranch owner's persistent personal MP pool.");
+            magic.Disabled = player.CurrentMana < CombatService.PlayerMagicHealCost;
+            magic.Pressed += () =>
+            {
+                if (!_game.SubmitInteractiveCombatAction(CombatPlayerCommand.Magic, capturedAllyId))
+                    SetStatus(_game.ActiveCombatSession?.LastError ?? "Magic could not be resolved.", false);
+                ShowScreen(_currentScreen);
+            };
+            AddFlowButton(tacticsRow, magic, 194);
+        }
+
+        var autoFinish = SecondaryButton("Auto Finish", "Hand the remaining player turns to the same deterministic combat AI.");
+        autoFinish.Pressed += () =>
+        {
+            _game.AutoFinishInteractiveCombat();
+            ShowScreen(_currentScreen);
+        };
+        AddFlowButton(tacticsRow, autoFinish, 132);
+
+        if (!string.IsNullOrWhiteSpace(session.LastError))
+            _content.AddChild(RequirementLabel(session.LastError));
+
+        var latestRound = session.Report.Rounds.LastOrDefault();
+        if (latestRound is not null && latestRound.Actions.Count > 0)
+        {
+            var log = CardContainer();
+            _content.AddChild(log);
+            log.AddChild(SubtitleLabel($"Round {latestRound.RoundNumber} actions"));
+            foreach (var action in latestRound.Actions.TakeLast(8))
+                log.AddChild(MutedLabel(action.Description));
+        }
     }
 
     private void RenderCombatResults()
@@ -1478,7 +1638,11 @@ public partial class UiShellController
         }
 
         var btn = PrimaryButton(T("common.back", "Back"));
-        btn.Pressed += () => ShowScreen("adventure");
+        btn.Pressed += () =>
+        {
+            _game.EndCombatSession();
+            ShowScreen("adventure");
+        };
         _content.AddChild(btn);
     }
 
