@@ -11,6 +11,8 @@ namespace OpenMakaiRanch.World;
 public partial class TownPresentationBuilder : Node3D
 {
     private Node3D? _generated;
+    private readonly Dictionary<string, MeshInstance3D> _serviceBuildings = new();
+    private readonly Dictionary<string, Label3D> _serviceSigns = new();
 
     private static readonly Color Road = new("b9a27a");
     private static readonly Color Plaza = new("a6a6a0");
@@ -27,6 +29,32 @@ public partial class TownPresentationBuilder : Node3D
     public override void _Ready()
     {
         BuildOnce();
+        Refresh(OpenMakaiRanch.App.GameRoot.Instance);
+    }
+
+    public void Refresh(OpenMakaiRanch.App.GameRoot? game)
+    {
+        if (game is null || !GodotObject.IsInstanceValid(game))
+        {
+            return;
+        }
+
+        var services = new List<TownServicePoint>();
+        CollectServices(GetParent(), services);
+        foreach (var service in services)
+        {
+            var available = service.IsAvailable;
+            if (_serviceBuildings.TryGetValue(service.ServiceId, out var building) && GodotObject.IsInstanceValid(building))
+            {
+                building.MaterialOverride = Material(available ? WallA : new Color("777983"));
+            }
+
+            if (_serviceSigns.TryGetValue(service.ServiceId, out var sign) && GodotObject.IsInstanceValid(sign))
+            {
+                sign.Modulate = available ? Colors.White : new Color(0.70f, 0.70f, 0.74f);
+                sign.Text = available ? service.Label : $"{service.Label} [Locked]";
+            }
+        }
     }
 
     private void BuildOnce()
@@ -92,7 +120,8 @@ public partial class TownPresentationBuilder : Node3D
         var wall = index % 2 == 0 ? WallA : WallB;
         var roof = index % 2 == 0 ? RoofA : RoofB;
 
-        AddBox($"Building_{service.ServiceId}", center, new Vector3(4.2f, 2.5f, 3.4f), wall);
+        var building = AddBox($"Building_{service.ServiceId}", center, new Vector3(4.2f, 2.5f, 3.4f), wall);
+        _serviceBuildings[service.ServiceId] = building;
         AddBox($"Roof_{service.ServiceId}", center + new Vector3(0,1.55f,0), new Vector3(4.6f,0.55f,3.8f), roof);
 
         var towardPlaza = -radial;
@@ -108,6 +137,7 @@ public partial class TownPresentationBuilder : Node3D
             OutlineSize = 6
         };
         _generated!.AddChild(label);
+        _serviceSigns[service.ServiceId] = label;
     }
 
     private void AddGate()
