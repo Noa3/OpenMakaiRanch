@@ -272,24 +272,14 @@ public partial class WorldSurfaceInteractionController : Node3D
 
     private int EffectiveMarkBudget()
     {
-        var quality = GameRoot.Instance?.State.Settings.GraphicsQuality ?? "Medium";
-        return quality switch
-        {
-            "Low" => Math.Min(MaxMarks, 16),
-            "High" or "Ultra" => Math.Max(16, MaxMarks),
-            _ => Math.Min(MaxMarks, 36)
-        };
+        var profile = GraphicsQualityProfile.Resolve(GameRoot.Instance?.State.Settings.GraphicsQuality);
+        return Math.Max(1, Math.Min(MaxMarks, profile.SurfaceMarkBudget));
     }
 
     private int EffectivePuddleBudget()
     {
-        var quality = GameRoot.Instance?.State.Settings.GraphicsQuality ?? "Medium";
-        return quality switch
-        {
-            "Low" => Math.Min(MaxPuddles, 3),
-            "High" or "Ultra" => Math.Max(4, MaxPuddles),
-            _ => Math.Min(MaxPuddles, 6)
-        };
+        var profile = GraphicsQualityProfile.Resolve(GameRoot.Instance?.State.Settings.GraphicsQuality);
+        return Math.Max(0, Math.Min(MaxPuddles, profile.PuddleBudget));
     }
 
     private void ClearMarks()
