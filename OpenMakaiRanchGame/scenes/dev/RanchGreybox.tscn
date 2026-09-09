@@ -107,6 +107,7 @@ TargetId = "dairy_barn"
 Label = "Dairy Barn"
 CommandKind = 0
 CommandTargetId = "dairy"
+RequiredFacilityId = "dairy_barn"
 
 [node name="Mesh" type="MeshInstance3D" parent="Station"]
 mesh = SubResource("station_mesh")
@@ -127,6 +128,7 @@ TargetId = "pasture"
 Label = "Pasture"
 CommandKind = 0
 CommandTargetId = "pasture"
+RequiredFacilityId = "pasture"
 
 [node name="Mesh" type="MeshInstance3D" parent="Stations/PastureStation"]
 mesh = SubResource("station_mesh")
@@ -145,6 +147,7 @@ TargetId = "kitchen"
 Label = "Kitchen"
 CommandKind = 0
 CommandTargetId = "kitchen"
+RequiredFacilityId = "kitchen"
 
 [node name="Mesh" type="MeshInstance3D" parent="Stations/KitchenStation"]
 mesh = SubResource("station_mesh")
@@ -163,6 +166,7 @@ TargetId = "workshop"
 Label = "Workshop"
 CommandKind = 0
 CommandTargetId = "workshop"
+RequiredFacilityId = "workshop"
 
 [node name="Mesh" type="MeshInstance3D" parent="Stations/WorkshopStation"]
 mesh = SubResource("station_mesh")
@@ -181,6 +185,7 @@ TargetId = "pharmacy_lab"
 Label = "Pharmacy Lab"
 CommandKind = 0
 CommandTargetId = "pharmacy"
+RequiredFacilityId = "pharmacy_lab"
 
 [node name="Mesh" type="MeshInstance3D" parent="Stations/PharmacyStation"]
 mesh = SubResource("station_mesh")
