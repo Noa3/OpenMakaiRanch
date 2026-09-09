@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://src/World/DaylightRig.cs" id="6_daylight"]
 [ext_resource type="Script" path="res://src/World/RosterRig.cs" id="7_roster"]
 [ext_resource type="Script" path="res://src/World/WorldHudController.cs" id="8_hud"]
+[ext_resource type="Script" path="res://src/Character/PlayerAvatar3D.cs" id="9_player_avatar"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -213,12 +214,18 @@ text = "Office"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
 script = ExtResource("2_player")
 MaxWalkSpeed = 5.0
+SprintMultiplier = 1.65
 Acceleration = 40.0
 Gravity = 20.0
+TurnSpeed = 10.0
 HeadHeight = 1.6
 
 [node name="Mesh" type="MeshInstance3D" parent="Player"]
+visible = false
 mesh = SubResource("player_mesh")
+
+[node name="Visual" type="Node3D" parent="Player"]
+script = ExtResource("9_player_avatar")
 
 [node name="Collision" type="CollisionShape3D" parent="Player"]
 shape = SubResource("player_shape")
