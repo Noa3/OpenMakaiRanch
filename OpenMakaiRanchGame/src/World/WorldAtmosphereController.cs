@@ -8,8 +8,8 @@ namespace OpenMakaiRanch.World;
 
 /// <summary>
 /// Presentation-only environmental life layer. It follows the active player with bounded particle
-/// volumes instead of filling the entire map: rain/snow, seasonal leaves/pollen and subtle night
-/// motes. Gameplay weather/season remains owned by CalendarState.
+/// volumes instead of filling the entire map: rain/snow, four-season ambient particles and subtle
+/// night motes. Gameplay weather/season remains owned by CalendarState.
 /// </summary>
 public partial class WorldAtmosphereController : Node3D
 {
@@ -62,7 +62,6 @@ public partial class WorldAtmosphereController : Node3D
             GlobalPosition = _player.GlobalPosition + Vector3.Up * FollowHeight;
         }
 
-        // StateChanged normally handles this. This cheap guard also catches direct dev/test changes.
         if (GameRoot.Instance is { } game)
         {
             var cal = game.State.Calendar;
@@ -201,42 +200,76 @@ public partial class WorldAtmosphereController : Node3D
 
     private void ConfigureSeasonal(GPUParticles3D particles, Season season, Weather weather, bool enabled, float density)
     {
-        // Severe precipitation already provides enough motion/readability.
+        // Strong rain/snow already provides enough screen motion. Calm and ordinary weather keeps
+        // a lighter four-season ambience around the player.
         if (!enabled || OriginalCalendarRules.IsSevere(weather) || weather == Weather.Storm
-            || season is Season.Winter)
+            || OriginalCalendarRules.IsRain(weather) || OriginalCalendarRules.IsSnow(weather))
         {
             particles.Emitting = false;
             return;
         }
 
-        var autumn = season == Season.Autumn;
-        var spring = season == Season.Spring;
-        if (!autumn && !spring)
+        var amountBase = season switch
         {
-            particles.Emitting = false;
-            return;
-        }
+            Season.Spring => 82f,
+            Season.Summer => 48f,
+            Season.Autumn => 145f,
+            Season.Winter => 38f,
+            _ => 48f
+        };
+        particles.Amount = Math.Max(12, Mathf.RoundToInt(amountBase * density));
+        particles.Lifetime = season switch
+        {
+            Season.Autumn => 6.5f,
+            Season.Spring => 5.2f,
+            Season.Summer => 5.8f,
+            Season.Winter => 4.8f,
+            _ => 5f
+        };
+        particles.Randomness = 0.78f;
 
-        particles.Amount = Math.Max(16, Mathf.RoundToInt((autumn ? 135f : 70f) * density));
-        particles.Lifetime = autumn ? 6.5f : 5.0f;
-        particles.Randomness = 0.75f;
+        var strongWind = OriginalCalendarRules.IsStrongWind(weather);
+        var horizontalWind = strongWind ? 4.2f : season == Season.Autumn ? 1.45f : 0.75f;
+        var gravityY = season switch
+        {
+            Season.Autumn => -0.58f,
+            Season.Spring => -0.24f,
+            Season.Summer => -0.12f,
+            Season.Winter => -0.18f,
+            _ => -0.2f
+        };
+        var color = season switch
+        {
+            Season.Spring => new Color(1f, 0.76f, 0.88f, 0.64f),
+            Season.Summer => new Color(0.96f, 0.86f, 0.54f, 0.42f),
+            Season.Autumn => new Color(0.94f, 0.49f, 0.14f, 0.88f),
+            Season.Winter => new Color(0.83f, 0.92f, 1f, 0.48f),
+            _ => new Color(0.9f, 0.9f, 0.75f, 0.5f)
+        };
+        var size = season switch
+        {
+            Season.Autumn => new Vector3(0.09f, 0.025f, 0.15f),
+            Season.Spring => new Vector3(0.04f, 0.015f, 0.065f),
+            Season.Summer => new Vector3(0.028f, 0.018f, 0.045f),
+            Season.Winter => new Vector3(0.025f, 0.025f, 0.025f),
+            _ => new Vector3(0.03f, 0.02f, 0.04f)
+        };
 
-        var wind = OriginalCalendarRules.IsStrongWind(weather) ? 4.2f : 1.2f;
         var process = new ParticleProcessMaterial
         {
-            Direction = new Vector3(0.35f, -0.8f, 0.12f).Normalized(),
-            Spread = autumn ? 55f : 70f,
-            Gravity = new Vector3(wind, autumn ? -0.55f : -0.25f, 0.4f),
-            InitialVelocityMin = 0.4f,
-            InitialVelocityMax = autumn ? 2.3f : 1.2f,
+            Direction = season == Season.Autumn
+                ? new Vector3(0.35f, -0.8f, 0.12f).Normalized()
+                : new Vector3(0.18f, -0.35f, 0.10f).Normalized(),
+            Spread = season == Season.Autumn ? 55f : 78f,
+            Gravity = new Vector3(horizontalWind, gravityY, 0.35f),
+            InitialVelocityMin = season == Season.Autumn ? 0.45f : 0.12f,
+            InitialVelocityMax = season == Season.Autumn ? 2.4f : 0.85f,
             EmissionBoxExtents = new Vector3(FollowRadius, 3.0f, FollowRadius),
-            Color = autumn ? new Color(0.92f, 0.50f, 0.16f, 0.88f) : new Color(1f, 0.78f, 0.88f, 0.62f)
+            Color = color
         };
         process.Set("emission_shape", 3);
         particles.ProcessMaterial = process;
-        particles.DrawPass1 = ParticleBox(
-            autumn ? new Vector3(0.085f, 0.025f, 0.14f) : new Vector3(0.035f, 0.015f, 0.055f),
-            autumn ? new Color(0.95f, 0.48f, 0.12f, 0.86f) : new Color(1f, 0.76f, 0.86f, 0.60f));
+        particles.DrawPass1 = ParticleBox(size, color, emission: season == Season.Winter);
         particles.Emitting = true;
     }
 
