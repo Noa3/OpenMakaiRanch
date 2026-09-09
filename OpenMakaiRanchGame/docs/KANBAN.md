@@ -21,6 +21,8 @@ Updated 2026-09-05. Status is evidence-based; DONE applies only to the named sco
 - **WORLD-003b (greybox = live view of the shared simulation)** `RanchGreyboxController.WireLiveWorld`/`RefreshLiveWorld`: on entering the tree the greybox binds its daylight + roster rigs to the shared `GameRoot` (lighting reflects the current phase, CHAR-001 stand-ins placed for the live roster — no manual wiring). Scene carries `DaylightRig` + `RosterRig`. `TestGreyboxSceneIsLive` proves the composition: scene instantiates into a live view (lighting == shared phase, one avatar per character, in-bounds, player/station intact, re-derives after a phase change). 14 dedicated smoke assertions. Full isolated smoke **1153 assertions PASS** on Godot 4.7.2 mono.
 - **DATA-003 (abgesagt)** No original-CSV import: the game is 100% self-contained — runtime reads only `res://data/*.json` + seed fallback; every CSV hit in `src/` is a comment, not a read. The curated `data/characters.json` (10 chars) + seed is the sole source. `Tools/EraDataImporter` stays `.csproj`-only.
 
+- **WORLD-003c-prep (branch validation pending)** World-facing function/HUD pass: shared-simulation HUD, six spatial ordinary job stations, selected-worker cycling, corrected controller→TryAssignJob character context, explicit player camera-target binding and RMB/wheel camera input. Regression assertions added; merge only after PR build validation. No adult-content implementation changed.
+
 ## Next — priority order
 
 Engine: use **Godot 4.7.2 mono** from `E:\GodotEditor\Godot_v4.7.2-stable_mono_win64.exe`. `launch.py` auto-discovers it (rejects the 198 KB `*_console.exe` stub by size, prefers the highest 4.7.x). No `GODOT_BIN` needed.
