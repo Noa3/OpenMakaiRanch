@@ -300,33 +300,37 @@ public partial class UiShellController : Control
 			default: RenderRanch(); break;
 		}
 
-		var selected = _game.State.Calendar.NightAction;
-		var hasChoice = selected is "rest" or "train" or "admin";
-
-		var banner = CardContainer();
-		banner.AddThemeConstantOverride("separation", 6);
-		_content.AddChild(banner);
-
-		var title = AddStyledLine(T("screen.night.title", "Night Phase — Choose Tonight's Work"), true);
-		title.TooltipText = T("tooltip.night", "Pick how the ranch spends the night. Applied when you End Day.");
-		banner.AddChild(title);
-
-		if (hasChoice)
+		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not "report")
 		{
-			banner.AddChild(MutedLabel($"{T("screen.night.selected", "Selected")}: {NightActionLabel(selected)}"));
-			return;
-		}
+			var selected = _game.State.Calendar.NightAction;
+			var hasChoice = selected is "rest" or "train" or "admin";
 
-		void AddNightButton(string action, string label)
-		{
-			var button = PrimaryButton(label, "");
-			button.Pressed += () => { _game.SetNightAction(action); ShowScreen(_currentScreen); };
-			banner.AddChild(button);
-		}
+			var banner = CardContainer();
+			banner.AddThemeConstantOverride("separation", 6);
+			_content.AddChild(banner);
 
-		AddNightButton("rest", T("screen.night.rest", "Rest (restore energy)"));
-		AddNightButton("train", T("screen.night.train", "Train (growth practice)"));
-		AddNightButton("admin", T("screen.night.admin", "Admin (reduce workload)"));
+			var title = AddStyledLine(T("screen.night.title", "Night Phase — Choose Tonight's Work"), true);
+			title.TooltipText = T("tooltip.night", "Pick how the ranch spends the night. Applied when you End Day.");
+			banner.AddChild(title);
+
+			if (hasChoice)
+			{
+				banner.AddChild(MutedLabel($"{T("screen.night.selected", "Selected")}: {NightActionLabel(selected)}"));
+			}
+			else
+			{
+				void AddNightButton(string action, string label)
+				{
+					var button = PrimaryButton(label, "");
+					button.Pressed += () => { _game.SetNightAction(action); ShowScreen(_currentScreen); };
+					banner.AddChild(button);
+				}
+
+				AddNightButton("rest", T("screen.night.rest", "Rest (restore energy)"));
+				AddNightButton("train", T("screen.night.train", "Train (growth practice)"));
+				AddNightButton("admin", T("screen.night.admin", "Admin (reduce workload)"));
+			}
+		}
 	}
 
 	private static string NightActionLabel(string action) => action switch
@@ -731,6 +735,15 @@ public partial class UiShellController : Control
 
 	private void RefreshCurrentScreen()
 	{
+		// Character-creation controls already reflect their own edit locally, while the embedded
+		// PlayerAvatar3D listens directly to GameRoot.StateChanged. Rebuilding the entire scene on
+		// every keystroke/picker change would destroy focus and make name entry unusable.
+		if (_currentScreen == "character_creation"
+			&& _content.GetNodeOrNull<CharacterCreationPreviewController>("CharacterCreationContent") is not null)
+		{
+			return;
+		}
+
 		ShowScreen(_currentScreen);
 	}
 
