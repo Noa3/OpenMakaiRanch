@@ -14,7 +14,7 @@
 [ext_resource type="Script" path="res://src/World/SimpleNavigationRegionBuilder.cs" id="12_navigation"]
 [ext_resource type="Script" path="res://src/World/WorldTravelPortal.cs" id="13_travel"]
 [ext_resource type="Script" path="res://src/World/WorldAlertPanelController.cs" id="14_alert"]
-[ext_resource type="PackedScene" path="res://assets/vendor/kaykit_adventurers/Rogue_Hooded.glb" id="15_intruder"]
+[ext_resource type="PackedScene" path="res://scenes/dev/GenericCharacterPlaceholder.tscn" id="15_intruder"]
 
 [ext_resource type="Script" path="res://src/World/WorldAtmosphereController.cs" id="16_atmosphere"]
 

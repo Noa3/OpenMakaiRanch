@@ -19,13 +19,9 @@ namespace OpenMakaiRanch.Character;
 /// </summary>
 public static class CharacterAvatarFactory
 {
-    private static readonly string[] PlaceholderModels =
-    {
-        "res://assets/vendor/kaykit_adventurers/Knight.glb",
-        "res://assets/vendor/kaykit_adventurers/Mage.glb",
-        "res://assets/vendor/kaykit_adventurers/Rogue_Hooded.glb",
-        "res://assets/vendor/kaykit_adventurers/Barbarian.glb"
-    };
+    // Project-authored, text-based stand-in. Keeping the placeholder inside the repository avoids
+    // pretending that incomplete/empty vendor binaries are usable character art.
+    private const string DebugPlaceholderScene = "res://scenes/dev/GenericCharacterPlaceholder.tscn";
 
     /// <summary>
     /// Build a presentation-only profile from a <see cref="CharacterDefinition"/>.
@@ -49,7 +45,7 @@ public static class CharacterAvatarFactory
             BodyColor = MapSkinColor(definition.SkinColor),
             HeadColor = MapHairColor(definition.HairColor),
             Height = ResolveHeightMeters(definition.Height),
-            PlaceholderModelPath = PlaceholderModels[StablePlaceholderIndex(definition.Id)]
+            PlaceholderModelPath = DebugPlaceholderScene
         };
     }
 
@@ -114,17 +110,6 @@ public static class CharacterAvatarFactory
         }
 
         return 1.70f;
-    }
-
-    private static int StablePlaceholderIndex(string id)
-    {
-        var hash = 17;
-        foreach (var ch in id ?? string.Empty)
-        {
-            hash = unchecked(hash * 31 + ch);
-        }
-
-        return (hash & 0x7fffffff) % PlaceholderModels.Length;
     }
 
     /// <summary>Map a neutral skin-color name to a stand-in body tint. Unknown → default.</summary>

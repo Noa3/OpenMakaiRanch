@@ -194,7 +194,7 @@ public static class SmokeTestRunner
         var adventure = new AdventureService(state, data, economy, inventory, milestones, new Random(17));
         var party = state.Roster.Characters.Select(character => character.Id).ToList();
         var guaranteedMission = data.Missions.Values
-            .Where(mission => mission.Tier == MissionTier.Local)
+            .Where(mission => mission.Tier == MissionTier.Local && mission.RewardGold > 0)
             .OrderBy(mission => mission.Difficulty)
             .First();
 
@@ -1449,8 +1449,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, target.DistanceTo(closeWall) >= WorldCameraMath.GeometryMinDistance,
             "camera: geometry clamp remains in front of the target instead of crossing through it");
 
-        var view = WorldCameraMath.ComputeViewDirection(0f, 0f);
-        Assert(result, view.IsNormalized() && view.Z < -0.99f,
+        const float viewYaw = 0.73f;
+        const float viewPitch = -0.21f;
+        var orbitCamera = WorldCameraMath.ComputeCameraPosition(target, viewYaw, viewPitch, 7f);
+        var orbitView = WorldCameraMath.ComputeLookAt(orbitCamera, target);
+        var view = WorldCameraMath.ComputeViewDirection(viewYaw, viewPitch);
+        Assert(result, view.IsNormalized() && view.Dot(orbitView) > 0.999f,
             "camera: first-person view direction matches the orbit orientation");
 
         var boundary = new WorldBoundaryBuilder
@@ -1503,7 +1507,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, profile.AdultEligibility == AdultEligibility.ConfirmedAdult, "profile: fail-closed eligibility carried forward");
         Assert(result, !string.IsNullOrWhiteSpace(profile.PlaceholderModelPath)
             && ResourceLoader.Exists(profile.PlaceholderModelPath),
-            "profile: admitted CC0 placeholder model path resolves");
+            "profile: project debug placeholder scene path resolves");
         // Presentation ≠ gameplay state: no HP, skill, bond, reward fields exist.
         Assert(result, !typeof(CharacterVisualProfile).GetProperties().Any(p =>
             p.Name is "MaxHp" or "RanchSkill" or "BondLevel" or "RewardGold" or "Energy"),
@@ -1518,7 +1522,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, avatar.GetNodeOrNull<Node3D>("NavigationSentinel") is not null,
             "avatar: rebuild preserves navigation/nameplate-style external children");
         Assert(result, avatar.UsesExternalPlaceholder,
-            "avatar: admitted CC0 placeholder scene is instantiated when available");
+            "avatar: project debug placeholder scene is instantiated when available");
         Assert(result, avatar.Body is not null, "avatar: body capsule generated");
         Assert(result, avatar.Head is not null, "avatar: head sphere generated");
         Assert(result, avatar.Body!.Mesh is CapsuleMesh, "avatar: body is capsule stand-in");
@@ -2046,6 +2050,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
 
             if (controller.Shell is not null)
             {
+                // The earlier assertions intentionally exercise the ordinary completed-story world.
+                // Reset to a genuinely fresh state before testing the mandatory Day-1 UI handoff.
+                game.NewGame();
+                GameRoot.PendingInitialScreen = null;
                 controller.Shell.ShowScreen("character_creation");
                 Assert(result, controller.FlowLocksUi && controller.IsManagementVisible,
                     "character creation forces the management layer visible");

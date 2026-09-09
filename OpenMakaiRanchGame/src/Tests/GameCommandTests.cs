@@ -186,6 +186,9 @@ public static class GameCommandTests
                     root.State.Story.FirstDayCompleted = true;
                     root.State.Story.PersonalEveningCompleted = true;
                     root.State.WorldAreaId = "town";
+                    // BeginCombatSession is part of fixture setup and legitimately emits StateChanged.
+                    // Count only the lifecycle replacement itself for the "exactly once" assertion.
+                    notifications = 0;
                     root.StartNewGamePlus();
                 }
                 Check(result, root.StateGeneration == oldGeneration + 1 && observedGeneration == root.StateGeneration
