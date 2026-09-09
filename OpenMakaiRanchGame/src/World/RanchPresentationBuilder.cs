@@ -20,6 +20,8 @@ public partial class RanchPresentationBuilder : Node3D
     private Node3D? _generated;
     private Label3D? _entrySign;
 
+    private const string VendorRoot = "res://assets/vendor/kaykit_medieval_hexagon/Assets/gltf";
+
     private static readonly Color GroundColor = new("7ea66a");
     private static readonly Color PathColor = new("cbb98d");
     private static readonly Color WoodColor = new("795b43");
@@ -126,6 +128,12 @@ public partial class RanchPresentationBuilder : Node3D
         BuildCentralLandmark();
         BuildBoundaryNature();
         BuildFacilityLandmarks();
+
+        // Small admitted CC0 prop accents. They remain decorative; collision and gameplay IDs stay authored.
+        TryAddExternalScene("RanchBarrelA", $"{VendorRoot}/decoration/props/barrel.gltf",
+            new Vector3(-3.0f, 0.03f, 3.6f), Vector3.One * 1.1f, 0.2f);
+        TryAddExternalScene("RanchBarrelB", $"{VendorRoot}/decoration/props/barrel.gltf",
+            new Vector3(-3.55f, 0.03f, 3.9f), Vector3.One * 0.95f, -0.25f);
     }
 
     private void BuildEntryArch()
@@ -222,6 +230,12 @@ public partial class RanchPresentationBuilder : Node3D
 
     private void AddTree(string name, Vector3 basePosition, float scale)
     {
+        if (TryAddExternalScene(name, $"{VendorRoot}/decoration/nature/tree_single_A.gltf",
+                basePosition, Vector3.One * (1.35f * scale), 0f))
+        {
+            return;
+        }
+
         AddCylinder($"{name}_Trunk", basePosition + new Vector3(0f, 0.75f * scale, 0f),
             0.18f * scale, 1.5f * scale, WoodColor);
         AddSphere($"{name}_Crown", basePosition + new Vector3(0f, 2.05f * scale, 0f),
@@ -242,6 +256,33 @@ public partial class RanchPresentationBuilder : Node3D
         var midpoint = (from + to) * 0.5f;
         var yaw = Mathf.Atan2(delta.X, delta.Z);
         AddBox(name, midpoint, new Vector3(width, 0.055f, length), PathColor, yaw);
+    }
+
+    private bool TryAddExternalScene(string name, string path, Vector3 position, Vector3 scale, float yaw)
+    {
+        if (_generated is null || string.IsNullOrWhiteSpace(path) || !ResourceLoader.Exists(path))
+        {
+            return false;
+        }
+
+        var packed = GD.Load<PackedScene>(path);
+        if (packed is null)
+        {
+            return false;
+        }
+
+        var instance = packed.Instantiate<Node3D>();
+        if (instance is null)
+        {
+            return false;
+        }
+
+        instance.Name = name;
+        instance.Position = position;
+        instance.Scale = scale;
+        instance.Rotation = new Vector3(0f, yaw, 0f);
+        _generated.AddChild(instance);
+        return true;
     }
 
     private MeshInstance3D AddBox(string name, Vector3 position, Vector3 size, Color color, float yaw = 0f)
