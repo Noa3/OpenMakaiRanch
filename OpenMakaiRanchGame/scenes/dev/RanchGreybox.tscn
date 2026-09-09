@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://src/World/RanchPresentationBuilder.cs" id="11_presentation"]
 [ext_resource type="Script" path="res://src/World/SimpleNavigationRegionBuilder.cs" id="12_navigation"]
 [ext_resource type="Script" path="res://src/World/WorldTravelPortal.cs" id="13_travel"]
+[ext_resource type="Script" path="res://src/World/WorldAlertPanelController.cs" id="14_alert"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -387,6 +388,29 @@ offset_top = -38.0
 offset_right = 620.0
 offset_bottom = -12.0
 text = ""
+
+[node name="AlertPanel" type="PanelContainer" parent="WorldHud"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -470.0
+offset_top = 62.0
+offset_right = -18.0
+offset_bottom = 196.0
+script = ExtResource("14_alert")
+tooltip_text = "Current ranch/resident attention warnings. Press M to review detailed management."
+
+[node name="Inner" type="VBoxContainer" parent="WorldHud/AlertPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Header" type="Label" parent="WorldHud/AlertPanel/Inner"]
+layout_mode = 2
+text = "RANCH CHECK"
+
+[node name="Body" type="Label" parent="WorldHud/AlertPanel/Inner"]
+layout_mode = 2
+text = ""
+autowrap_mode = 2
 
 [node name="TutorialOverlay" type="Control" parent="WorldHud"]
 anchors_preset = 15
