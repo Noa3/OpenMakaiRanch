@@ -46,23 +46,29 @@ public static class GameCommandTests
             character.Bond = 0;
             character.Morale = 50;
             character.Fatigue = 0;
+            var staminaBeforeMentorship = root.State.Player.Stamina;
             shell.ShowScreen("bond");
             Buttons(shell).First(button => button.Text.StartsWith("Mentorship")).EmitSignal(BaseButton.SignalName.Pressed);
             Check(result, character.Bond == 5 && character.Morale == 54 && character.Fatigue == 4,
                 "command UI mentorship keeps existing service effects");
+            Check(result, root.State.Player.Stamina == staminaBeforeMentorship - root.PlayerStaminaCost(PlayerActivityKind.Mentorship),
+                "command UI mentorship spends player daily stamina exactly once");
             Check(result, notifications == 1 && secondObserverNotifications == 1,
                 "command UI mentorship notifies both observers exactly once");
 
             notifications = secondObserverNotifications = 0;
             character.Bond = 100;
             var eventId = root.Bond.AvailableEvents(character.Id).First().Id;
+            var staminaBeforeEvent = root.State.Player.Stamina;
             shell.ShowScreen("bond");
-            var completeButton = Buttons(shell).First(button => button.Text == "Complete Event");
+            var completeButton = Buttons(shell).First(button => button.Text.StartsWith("Complete Event", StringComparison.Ordinal));
             completeButton.EmitSignal(BaseButton.SignalName.Pressed);
             // First click finishes typewriting; only the next click may complete the event.
             if (!root.State.Bond.CompletedEventIds.Contains(eventId))
                 completeButton.EmitSignal(BaseButton.SignalName.Pressed);
             Check(result, root.State.Bond.CompletedEventIds.Contains(eventId), "command UI completes existing bond event");
+            Check(result, root.State.Player.Stamina == staminaBeforeEvent - root.PlayerStaminaCost(PlayerActivityKind.BondEvent),
+                "command UI bond event spends player daily stamina exactly once");
             Check(result, notifications == 1 && secondObserverNotifications == 1,
                 "command UI bond event notifies both observers exactly once");
         }
@@ -156,8 +162,11 @@ public static class GameCommandTests
             Check(result, !root.TryCompleteBondEvent(bondEvent.Id, generation) && notifications == 0,
                 "command locked event emits no change");
             character.Bond = 100;
+            var eventStaminaBefore = root.State.Player.Stamina;
             Check(result, root.TryCompleteBondEvent(bondEvent.Id, generation) && notifications == 1,
                 "command valid event emits one change");
+            Check(result, root.State.Player.Stamina == eventStaminaBefore - root.PlayerStaminaCost(PlayerActivityKind.BondEvent),
+                "command valid event spends stamina at the same successful boundary");
             var stockpile = root.State.Ranch.Stockpile.ToDictionary(pair => pair.Key, pair => pair.Value);
             Check(result, !root.TryCompleteBondEvent(bondEvent.Id, generation) && notifications == 1
                 && stockpile.Count == root.State.Ranch.Stockpile.Count
