@@ -336,6 +336,28 @@ public partial class UiShellController : Control
 			default: RenderRanch(); break;
 		}
 
+		if (_game.State.Calendar.Phase is DayPhase.Evening or DayPhase.Night && !nowFullScreen && screenId is not "report")
+		{
+			var recovery = CardContainer();
+			recovery.AddThemeConstantOverride("separation", 6);
+			_content.AddChild(recovery);
+			recovery.AddChild(AddStyledLine($"Player Stamina: {_game.State.Player.Stamina}/{_game.State.Player.MaxStamina}", true));
+			var cleanBath = _game.State.Ranch.BathtubClean;
+			var bathLabel = cleanBath
+				? $"Take a hot bath (+{PlayerStaminaService.CleanBathRecovery} Stamina)"
+				: $"Take a quick shower (+{PlayerStaminaService.ShowerRecovery} Stamina)";
+			var bath = SecondaryButton(bathLabel,
+				"Evening/Night recovery. Can be used once per day. A prepared bath gives a stronger second wind; a shower remains available if the bath is dirty.");
+			bath.Disabled = _game.State.Player.BathedToday || _game.State.Player.Stamina >= _game.State.Player.MaxStamina;
+			bath.Pressed += () =>
+			{
+				var result = _game.UsePlayerBath();
+				SetStatus(result.Message, result.Used);
+				ShowScreen(_currentScreen);
+			};
+			recovery.AddChild(bath);
+		}
+
 		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not "report")
 		{
 			var selected = _game.State.Calendar.NightAction;
@@ -894,18 +916,9 @@ public partial class UiShellController : Control
 		return pc.MaxHpOverride.HasValue ? pc.MaxHpOverride.Value : Math.Max(1, pc.Hp);
 	}
 
-	private int PlayerStamina()
-	{
-		if (_game.State.Roster.Characters.Count == 0) return 0;
-		return _game.State.Roster.Characters[0].Energy;
-	}
+	private int PlayerStamina() => _game.State.Player.Stamina;
 
-	private int PlayerMaxStamina()
-	{
-		if (_game.State.Roster.Characters.Count == 0) return 1;
-		var pc = _game.State.Roster.Characters[0];
-		return pc.MaxEnergyOverride.HasValue ? pc.MaxEnergyOverride.Value : Math.Max(1, pc.Energy);
-	}
+	private int PlayerMaxStamina() => Math.Max(1, _game.State.Player.MaxStamina);
 
 	private void UpdateNavigationState()
 	{
