@@ -24,17 +24,19 @@ public partial class SimpleNavigationRegionBuilder : NavigationRegion3D
         var halfX = Mathf.Max(1f, Size.X * 0.5f);
         var halfZ = Mathf.Max(1f, Size.Y * 0.5f);
 
+        Vector3[] vertices =
+        {
+            new(-halfX, Y,  halfZ),
+            new( halfX, Y,  halfZ),
+            new( halfX, Y, -halfZ),
+            new(-halfX, Y, -halfZ)
+        };
+
         var mesh = new NavigationMesh
         {
-            Vertices = new PackedVector3Array(new[]
-            {
-                new Vector3(-halfX, Y, -halfZ),
-                new Vector3( halfX, Y, -halfZ),
-                new Vector3( halfX, Y,  halfZ),
-                new Vector3(-halfX, Y,  halfZ)
-            })
+            Vertices = vertices
         };
-        mesh.AddPolygon(new PackedInt32Array(new[] { 0, 1, 2, 3 }));
+        mesh.AddPolygon(new[] { 0, 1, 2, 3 });
         NavigationMesh = mesh;
     }
 }
