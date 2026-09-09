@@ -6,6 +6,7 @@ using OpenMakaiRanch.App;
 using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Core.Resources;
 using OpenMakaiRanch.Gameplay;
+using OpenMakaiRanch.World;
 using static OpenMakaiRanch.Locale.LocaleCatalog;
 
 namespace OpenMakaiRanch.Ui;
@@ -545,25 +546,33 @@ public partial class UiShellController : Control
 
 	private void ApplyResponsiveLayout()
 	{
-		var viewportSize = GetViewportRect().Size;
-		var compact = _navCollapsed || viewportSize.X <= 900 || viewportSize.Y <= 520;
-		var tightWidth = viewportSize.X <= 680;
-		var ultraTight = viewportSize.X <= 560;
-		var margin = compact ? 8 : 18;
+		var viewport = GetViewport();
+		var metrics = ScreenLayout.Calculate(viewport);
+		var viewportSize = metrics.ViewportSize;
+		var mobile = _game.RuntimeSettings.IsMobilePlatform;
+		var compact = _navCollapsed || mobile || viewportSize.X <= 900 || viewportSize.Y <= 520;
+		var tightWidth = viewportSize.X <= 680 || (mobile && viewportSize.Y <= 900);
+		var ultraTight = viewportSize.X <= 560 || (mobile && viewportSize.Y <= 720);
+		var margin = compact ? 8f : 18f;
 
 		if (_fullScreenMode)
 		{
-			_margin.OffsetLeft = _margin.OffsetTop = _margin.OffsetRight = _margin.OffsetBottom = 0;
+			_margin.OffsetLeft = metrics.SafeLeft;
+			_margin.OffsetTop = metrics.SafeTop;
+			_margin.OffsetRight = -metrics.SafeRight;
+			_margin.OffsetBottom = -metrics.SafeBottom;
 			_topBar.Visible = false;
 			_navPanel.Visible = false;
 			_compactNavigationScroll.Visible = false;
 		}
 		else
 		{
-			_margin.OffsetLeft = margin;
-			_margin.OffsetTop = compact ? 8 : 16;
-			_margin.OffsetRight = -margin;
-			_margin.OffsetBottom = compact ? -8 : -16;
+			// On 21:9 / 32:9 the 3D world can use the extra horizontal field of view, while dense
+			// management stays inside a centered 1920-wide readable region.
+			_margin.OffsetLeft = metrics.ContentLeft + margin;
+			_margin.OffsetTop = metrics.SafeTop + (compact ? 8 : 16);
+			_margin.OffsetRight = -(viewportSize.X - metrics.ContentRight + margin);
+			_margin.OffsetBottom = -(metrics.SafeBottom + (compact ? 8 : 16));
 
 			_topBar.Visible = true;
 			_navPanel.Visible = !compact;
