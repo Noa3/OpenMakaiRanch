@@ -428,6 +428,56 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool SetTutorialHintsEnabled(bool enabled)
+	{
+		if (State.Settings.TutorialHintsEnabled == enabled)
+		{
+			return false;
+		}
+
+		State.Settings.TutorialHintsEnabled = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool HasSeenTutorial(string tutorialId)
+	{
+		return !string.IsNullOrWhiteSpace(tutorialId)
+			&& State.Settings.SeenTutorialIds?.Contains(tutorialId) == true;
+	}
+
+	public bool MarkTutorialSeen(string tutorialId)
+	{
+		if (string.IsNullOrWhiteSpace(tutorialId))
+		{
+			return false;
+		}
+
+		State.Settings.SeenTutorialIds ??= new HashSet<string>(StringComparer.Ordinal);
+		if (!State.Settings.SeenTutorialIds.Add(tutorialId))
+		{
+			return false;
+		}
+
+		SettingsStorage.Save(State.Settings);
+		return true;
+	}
+
+	public bool ResetTutorialProgress()
+	{
+		State.Settings.SeenTutorialIds ??= new HashSet<string>(StringComparer.Ordinal);
+		if (State.Settings.SeenTutorialIds.Count == 0)
+		{
+			return false;
+		}
+
+		State.Settings.SeenTutorialIds.Clear();
+		SettingsStorage.Save(State.Settings);
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool SetLocale(string locale)
 	{
 		var normalizedLocale = LocaleCatalog.NormalizeLocale(locale);
