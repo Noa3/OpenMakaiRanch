@@ -173,11 +173,41 @@ public static class GameCommandTests
                 notifications = 0;
                 if (replacement == "new") root.NewGame();
                 else if (replacement == "load") Check(result, root.LoadSlot(99), "command lifecycle fixture loads");
-                else root.StartNewGamePlus();
+                else
+                {
+                    root.BeginCombatSession();
+                    root.CurrentCombatPhase = CombatPhase.PostBattle;
+                    root.CurrentCombatRound = 4;
+                    root.LastDailyReport = new DailyReport { Day = 99 };
+                    root.LastCombatReport = new CombatReport { MissionId = "transient_fixture" };
+                    GameRoot.PendingInitialScreen = "victory";
+                    root.State.Story.FirstDayStage = 7;
+                    root.State.Story.FirstDayCompleted = true;
+                    root.State.Story.PersonalEveningCompleted = true;
+                    root.State.WorldAreaId = "town";
+                    root.StartNewGamePlus();
+                }
                 Check(result, root.StateGeneration == oldGeneration + 1 && observedGeneration == root.StateGeneration
                     && ReferenceEquals(observedState, root.State) && !ReferenceEquals(oldState, root.State)
                     && !ReferenceEquals(oldSchedule, root.Schedule) && !ReferenceEquals(oldBond, root.Bond)
                     && notifications == 1, $"command {replacement} exposes rebound services and generation once");
+                if (replacement == "ngplus")
+                {
+                    Check(result,
+                        root.CurrentCombatPhase == CombatPhase.PreBattle
+                        && root.CurrentCombatRound == 0
+                        && !root.CombatWorldTimeLocked
+                        && root.LastDailyReport is null
+                        && root.LastCombatReport is null
+                        && GameRoot.PendingInitialScreen is null
+                        && root.State.Story.FirstDayStage == 0
+                        && !root.State.Story.FirstDayCompleted
+                        && !root.State.Story.PersonalEveningCompleted
+                        && root.State.WorldAreaId == "ranch"
+                        && root.State.Calendar.Day == 1
+                        && root.State.Calendar.Phase == DayPhase.Morning,
+                        "command ngplus resets transient combat story world and calendar state");
+                }
                 notifications = 0;
                 Check(result, !root.TryAssignJob(id, "pasture", oldGeneration)
                     && !root.TryConductMentorship(id, oldGeneration)
