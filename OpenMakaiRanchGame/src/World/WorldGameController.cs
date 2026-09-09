@@ -17,11 +17,13 @@ public partial class WorldGameController : Node
     [Export] public NodePath ManagementRootPath { get; set; } = "ManagementLayer/ManagementUi";
     [Export] public NodePath UiShellPath { get; set; } = "ManagementLayer/ManagementUi/UiShell";
     [Export] public NodePath ManagementButtonPath { get; set; } = "RanchWorld/WorldHud/ManagementButton";
+    [Export] public NodePath ReturnToWorldButtonPath { get; set; } = "ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton";
 
     private RanchGreyboxController? _ranch;
     private Control? _managementRoot;
     private UiShellController? _shell;
     private Button? _managementButton;
+    private Button? _returnToWorldButton;
     private bool _flowLocksUi;
 
     public bool IsManagementVisible => _managementRoot?.Visible == true;
@@ -35,6 +37,7 @@ public partial class WorldGameController : Node
         _managementRoot = GetNodeOrNull<Control>(ManagementRootPath);
         _shell = GetNodeOrNull<UiShellController>(UiShellPath);
         _managementButton = GetNodeOrNull<Button>(ManagementButtonPath);
+        _returnToWorldButton = GetNodeOrNull<Button>(ReturnToWorldButtonPath);
 
         if (_ranch is null || _managementRoot is null || _shell is null)
         {
@@ -46,6 +49,10 @@ public partial class WorldGameController : Node
         if (_managementButton is not null)
         {
             _managementButton.Pressed += ToggleManagement;
+        }
+        if (_returnToWorldButton is not null)
+        {
+            _returnToWorldButton.Pressed += CloseManagementFromUi;
         }
 
         _flowLocksUi = RequiresFullScreenUi(_shell.CurrentScreen);
@@ -63,6 +70,10 @@ public partial class WorldGameController : Node
         {
             _managementButton.Pressed -= ToggleManagement;
         }
+        if (_returnToWorldButton is not null && GodotObject.IsInstanceValid(_returnToWorldButton))
+        {
+            _returnToWorldButton.Pressed -= CloseManagementFromUi;
+        }
     }
 
     public override void _Process(double delta)
@@ -70,6 +81,12 @@ public partial class WorldGameController : Node
         if (Input.IsActionJustPressed("toggle_management"))
         {
             ToggleManagement();
+            return;
+        }
+
+        if (IsManagementVisible && !_flowLocksUi && Input.IsActionJustPressed("ui_cancel"))
+        {
+            CloseManagement();
         }
     }
 
@@ -105,6 +122,11 @@ public partial class WorldGameController : Node
         }
     }
 
+    private void CloseManagementFromUi()
+    {
+        CloseManagement();
+    }
+
     private void OnShellScreenChanged(string screenId)
     {
         var wasLocked = _flowLocksUi;
@@ -137,6 +159,12 @@ public partial class WorldGameController : Node
         }
 
         _managementRoot.Visible = visible;
+        if (_returnToWorldButton is not null)
+        {
+            _returnToWorldButton.Visible = visible && !_flowLocksUi;
+            _returnToWorldButton.Disabled = _flowLocksUi;
+        }
+
         if (visible)
         {
             _ranch.EnterManagementUi();
