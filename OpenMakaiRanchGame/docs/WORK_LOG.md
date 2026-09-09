@@ -202,3 +202,39 @@ Validation still required before merge:
 - run the existing `build-and-verify.bat` / Godot 4.7.x Mono smoke locally;
 - manually verify gameplay feel, viewport sizing/focus, camera collision, input, Return-to-World, save/load and the full day flow;
 - no new assertion count or runtime PASS is claimed by this continuation.
+
+
+## 2026-09-09 — onboarding, world readability and resident interaction continuation
+
+Branch: `feat/world-hud-function-pass`, PR #2. No GitHub workflow/build-pipeline files were changed.
+
+Implemented:
+- Added persistent tutorial preferences to `SettingsState` / `settings.json`: tutorial hints can be disabled, completed basic steps are remembered across save slots, and progress can be reset.
+- Added `WorldTutorialController` plus authored HUD nodes: five contextual first-run steps (movement, camera, worker assignment, management, day progression), per-step skip, full tutorial skip, and an always-available F1 help panel.
+- F1 Help takes world input ownership while open and restores it on close; it does not pause or duplicate simulation state. Help contains controls, the basic ranch loop, tutorial toggle and restart.
+- Added Settings-menu controls for tutorial hints and restarting onboarding.
+- Added contextual world prompts/tooltips: nearby stations show the selected worker in the action text, locked facilities expose the reason, and the idle prompt advertises F1 Help.
+- Added a persistent `Next Step` guidance panel. It derives suggestions from the shared phase/schedule (resting workers, Night planning, End Day readiness) but never blocks the player's choice.
+- Added a collision-free `RanchPresentationBuilder` placeholder pass: readable paths, entry arch, custom ranch-name sign, central well/notice landmark, stylized boundary vegetation and facility building proxies. Facility colors/labels follow the existing RanchService built/unbuilt state.
+- Added `docs/assets/CC0_ASSET_CANDIDATES.md` as the external-asset provenance gate. Current evaluated source families are Quaternius Farm Buildings, Quaternius Ultimate Stylized Nature, Kenney Nature Kit and Poly Haven; no external binary was silently vendored.
+- Roster stand-ins now expose readable nameplates and can be found spatially. Pressing F near a closer resident requests the existing Character Detail screen through `WorldGameController`; no second bond/dialogue/reward path exists.
+- Main-menu and character-preview controls received explanatory tooltips.
+
+Regression coverage added (runtime execution still pending locally):
+- tutorial settings defaults and clone isolation;
+- authored TutorialOverlay/F1 Help/Presentation nodes;
+- help input ownership and restoration;
+- stylized placeholder generation and facility-state refresh;
+- nearby resident -> existing character detail -> Return to World;
+- existing world/day/station/save flows remain covered.
+
+Verification in the connected repository environment:
+- static audit re-read all 7 `.tscn` files;
+- 0 missing Script/PackedScene external resources;
+- 0 invalid authored parent paths;
+- compare against `main` shows no `.github/workflows/*` changes.
+
+Still required before merge:
+- run the existing local Godot 4.7.x Mono / `build-and-verify.bat` validation;
+- visually inspect tutorial/help layout at several resolutions, placeholder landmark framing, NPC nameplates, contextual prompts and resident interaction;
+- after that validation, admit exact CC0 asset packages individually with recorded package/hash/source/license rather than copying untracked downloads.
