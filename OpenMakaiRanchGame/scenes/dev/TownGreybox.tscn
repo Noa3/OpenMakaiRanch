@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://src/World/TownWorldController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://src/World/DaylightRig.cs" id="9_daylight"]
 [ext_resource type="Script" path="res://src/Character/PlayerAvatar3D.cs" id="10_avatar"]
 [ext_resource type="Script" path="res://src/World/TownTutorialController.cs" id="11_tutorial"]
+[ext_resource type="Script" path="res://src/World/WorldAlertPanelController.cs" id="12_alert"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -218,6 +219,29 @@ offset_top = 7.0
 offset_right = 446.0
 offset_bottom = 44.0
 text = "Explore town services or return to the ranch."
+autowrap_mode = 2
+
+[node name="AlertPanel" type="PanelContainer" parent="TownHud"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -470.0
+offset_top = 62.0
+offset_right = -18.0
+offset_bottom = 196.0
+script = ExtResource("12_alert")
+tooltip_text = "Ranch/resident issues remain visible while you are in town."
+
+[node name="Inner" type="VBoxContainer" parent="TownHud/AlertPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Header" type="Label" parent="TownHud/AlertPanel/Inner"]
+layout_mode = 2
+text = "RANCH CHECK"
+
+[node name="Body" type="Label" parent="TownHud/AlertPanel/Inner"]
+layout_mode = 2
+text = ""
 autowrap_mode = 2
 
 [node name="TutorialOverlay" type="Control" parent="TownHud"]
