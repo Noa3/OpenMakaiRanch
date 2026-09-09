@@ -1377,11 +1377,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, game.AdvanceTime() && game.State.Player.Stamina == 70,
             "stamina: ordinary world phase progression does not consume the exploration budget");
 
+        game.State.Player.Stamina = 60;
         game.State.Calendar.Phase = DayPhase.Evening;
         game.State.Ranch.BathtubClean = true;
         var bath = game.UsePlayerBath();
         Assert(result, bath.Used && bath.UsedCleanBath && bath.Restored == PlayerStaminaService.CleanBathRecovery
-            && game.State.Player.Stamina == 100 && !game.State.Ranch.BathtubClean,
+            && game.State.Player.Stamina == 95 && !game.State.Ranch.BathtubClean,
             "stamina: an evening clean bath gives the stronger once-per-day second wind without ending the day");
         Assert(result, string.IsNullOrWhiteSpace(game.State.Calendar.NightAction),
             "stamina: evening bath does not silently choose or end the Night action");
