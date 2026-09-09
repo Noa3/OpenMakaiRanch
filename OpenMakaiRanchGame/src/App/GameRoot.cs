@@ -620,6 +620,15 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public bool SetReducedMotion(bool enabled)
+	{
+		if (State.Settings.ReducedMotion == enabled) return false;
+		State.Settings.ReducedMotion = enabled;
+		PersistAndSyncFeedbackSettings();
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public bool SetTutorialHintsEnabled(bool enabled)
 	{
 		if (State.Settings.TutorialHintsEnabled == enabled)
