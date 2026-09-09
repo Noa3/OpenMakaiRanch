@@ -63,7 +63,7 @@ class LauncherTests(unittest.TestCase):
         home.mkdir()
         (home / launch.NAMES[0]).touch()
         path, _ = launch.resolve_godot(self.root, {"GODOT_HOME": str(home), "PATH": ""}, lambda _: "4.7.stable.mono.test")
-        self.assertEqual(path.parent, home)
+        self.assertEqual(path.parent, home.resolve())
 
     def test_path_fallback(self):
         empty = self.root / "empty"
@@ -73,7 +73,7 @@ class LauncherTests(unittest.TestCase):
         nested.mkdir()
         with patch("launch.shutil.which", return_value=str(self.binary)):
             path, _ = launch.resolve_godot(nested, {"PATH": "fake"}, lambda _: "4.7.stable.mono.test")
-        self.assertEqual(path, self.binary)
+        self.assertEqual(path, self.binary.resolve())
 
     def test_port_collision_is_actionable(self):
         with launch.socket.socket() as server:
