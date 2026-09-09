@@ -157,6 +157,14 @@ public partial class UiShellController : Control
 	private bool _shellReady;
 	private bool _fullScreenMode;
 	private string _currentScreen = "title";
+
+	/// <summary>Raised whenever the shell changes its logical screen. Used by the 3D world host to
+	/// keep mandatory full-screen flows (character creation/prologue/victory) visible without
+	/// coupling the shell to the world scene.</summary>
+	public event Action<string>? ScreenChanged;
+
+	public string CurrentScreen => _currentScreen;
+	public bool IsFullScreenMode => _fullScreenMode;
 	private string _detailCharacterId = string.Empty;
 	private readonly Dictionary<string, Button> _navButtons = new();
 	private readonly Dictionary<string, Button> _compactNavButtons = new();
@@ -229,6 +237,7 @@ public partial class UiShellController : Control
 		var nowFullScreen = screenId is "character_creation" or "prologue" or "victory" or "title";
 		_fullScreenMode = nowFullScreen;
 		_currentScreen = screenId;
+		ScreenChanged?.Invoke(screenId);
 
 		if (nowFullScreen != wasFullScreen)
 		{
