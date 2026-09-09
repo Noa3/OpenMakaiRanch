@@ -1881,6 +1881,16 @@ public partial class UiShellController
         shadows.Pressed += () => _game.SetShadowsEnabled(!settings.ShadowsEnabled);
         graphics.AddChild(shadows);
 
+        var atmosphere = PrimaryButton($"{T("screen.settings.atmosphere", "Atmosphere / Post Processing")}: {(settings.AtmosphereEffectsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        atmosphere.TooltipText = T("tooltip.settings.atmosphere", "Controls situation-aware fog, glow and color adjustments. Low quality disables this automatically.");
+        atmosphere.Pressed += () => _game.SetAtmosphereEffectsEnabled(!settings.AtmosphereEffectsEnabled);
+        graphics.AddChild(atmosphere);
+
+        var weatherFx = PrimaryButton($"{T("screen.settings.weather_fx", "Weather Visual Effects")}: {(settings.WeatherEffectsEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
+        weatherFx.TooltipText = T("tooltip.settings.weather_fx", "Keep weather gameplay while optionally reducing its visual atmosphere cost.");
+        weatherFx.Pressed += () => _game.SetWeatherEffectsEnabled(!settings.WeatherEffectsEnabled);
+        graphics.AddChild(weatherFx);
+
         var vsync = PrimaryButton($"{T("screen.settings.vsync", "VSync")}: {(settings.VSyncEnabled ? T("label.on", "On") : T("label.off", "Off"))}");
         vsync.Pressed += () => _game.SetVSyncEnabled(!settings.VSyncEnabled);
         graphics.AddChild(vsync);
