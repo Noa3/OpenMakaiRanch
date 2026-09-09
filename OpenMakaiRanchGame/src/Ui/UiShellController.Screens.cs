@@ -1887,7 +1887,43 @@ public partial class UiShellController
 
         if (_game.RuntimeSettings.IsDesktopPlatform && !_game.RuntimeSettings.IsWebPlatform)
         {
+            var windowRow = FlowRow(8);
+            graphics.AddChild(windowRow);
+            windowRow.AddChild(AddStyledLine(T("screen.settings.window_size", "Window Size / Aspect"), true));
+            var windowPicker = StyledPicker(260);
+            var windowSizes = new (string Label, int Width, int Height)[]
+            {
+                ("1280×720  (16:9)", 1280, 720),
+                ("1600×900  (16:9)", 1600, 900),
+                ("1920×1080  (16:9 Default)", 1920, 1080),
+                ("1920×1200  (16:10)", 1920, 1200),
+                ("2560×1440  (16:9)", 2560, 1440),
+                ("2560×1080  (21:9)", 2560, 1080),
+                ("3440×1440  (21:9)", 3440, 1440),
+                ("3840×1080  (32:9)", 3840, 1080),
+                ("5120×1440  (32:9)", 5120, 1440)
+            };
+            var selectedWindow = 2;
+            for (var w = 0; w < windowSizes.Length; w++)
+            {
+                windowPicker.AddItem(windowSizes[w].Label);
+                if (windowSizes[w].Width == settings.WindowWidth && windowSizes[w].Height == settings.WindowHeight)
+                {
+                    selectedWindow = w;
+                }
+            }
+            windowPicker.Selected = selectedWindow;
+            windowPicker.Disabled = settings.Fullscreen;
+            windowPicker.TooltipText = T("tooltip.settings.window_size", "1920×1080 is the design resolution. Other aspect ratios expand the visible world; HUD remains in a centered safe region.");
+            windowPicker.ItemSelected += idx =>
+            {
+                var size = windowSizes[(int)idx];
+                ExecuteUiAction(() => _game.SetWindowSize(size.Width, size.Height), false);
+            };
+            windowRow.AddChild(windowPicker);
+
             var fullscreen = PrimaryButton($"{T("screen.settings.fullscreen", "Exclusive Fullscreen")}: {(settings.Fullscreen ? T("label.on", "On") : T("label.off", "Off"))}");
+            fullscreen.TooltipText = T("tooltip.settings.fullscreen", "Fullscreen uses the monitor's native resolution/aspect ratio; the game does not force the monitor to another mode.");
             fullscreen.Pressed += () => _game.SetFullscreen(!settings.Fullscreen);
             graphics.AddChild(fullscreen);
         }
