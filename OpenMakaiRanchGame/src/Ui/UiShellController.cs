@@ -821,7 +821,8 @@ public partial class UiShellController : Control
 	_hpBar.CustomMinimumSize = new Vector2(0, 4);
 
 		_spiritLabel.Text = $"Energy {eco.SpiritEnergy}";
-		_manaLabel.Text = $"Mana {eco.ManaReservoir}";
+		_manaLabel.Text = $"MP {player.Mana}/{player.MaxMana} • Stored {eco.ManaReservoir}";
+		_manaLabel.TooltipText = "Personal MP fuels magic; Stored Mana is the ranch reserve used to recharge it.";
 		_healthLabel.Text = $"Health {ranch.CattleHealth}%";
 		_healthBar.MinValue = 0;
 		_healthBar.MaxValue = 100;

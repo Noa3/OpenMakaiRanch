@@ -13,13 +13,18 @@ public sealed class CombatService
     private readonly DataRegistry _data;
     private readonly EquipmentService _equipment;
     private readonly TalentService _talents;
+    private readonly MagicService _magic;
 
-    public CombatService(SaveState state, DataRegistry data, EquipmentService equipment, TalentService talents)
+    public const int SkillSpCost = 10;
+    public const int PlayerMagicHealCost = 10;
+
+    public CombatService(SaveState state, DataRegistry data, EquipmentService equipment, TalentService talents, MagicService? magic = null)
     {
         _state = state;
         _data = data;
         _equipment = equipment;
         _talents = talents;
+        _magic = magic ?? new MagicService(state, data);
     }
 
     public CombatReport ResolveMissionRounds(string missionId, bool autoResolve)
@@ -85,10 +90,44 @@ public sealed class CombatService
                 }
 
                 var target = action.TargetEnemy
-                    ? activeEnemies.FirstOrDefault(e => e.Id == action.TargetId) ?? activeEnemies.First()
-                    : activeParty.FirstOrDefault(p => p.Id == action.TargetId) ?? activeParty.First();
+                    ? activeEnemies.FirstOrDefault(e => e.Id == action.TargetId) ?? activeEnemies.FirstOrDefault()
+                    : activeParty.FirstOrDefault(p => p.Id == action.TargetId) ?? activeParty.FirstOrDefault();
                 if (target == null || target.Hp <= 0)
                     continue;
+
+                if (action.ActionType == "Skill")
+                {
+                    if (actor.Sp < SkillSpCost)
+                        continue;
+
+                    actor.Sp -= SkillSpCost;
+                    var heal = Math.Min(15 + Math.Max(0, actor.MagicPower), target.MaxHp - target.Hp);
+                    target.Hp += heal;
+                    round.Actions.Add(new BattleAction
+                    {
+                        ActorName = action.ActorName, ActionType = "Skill", TargetName = target.DisplayName,
+                        Healing = heal, ResourceCost = SkillSpCost, ResourceName = "SP",
+                        Description = $"{action.ActorName} uses a combat skill and restores {heal} HP to {target.DisplayName} (-{SkillSpCost} SP)."
+                    });
+                    continue;
+                }
+
+                if (action.ActionType == "Magic")
+                {
+                    if (!actor.UsesPlayerMana || !_magic.SpendPlayerMana(PlayerMagicHealCost))
+                        continue;
+
+                    report.PlayerManaSpent += PlayerMagicHealCost;
+                    var heal = Math.Min(24 + Math.Max(0, actor.MagicPower * 2), target.MaxHp - target.Hp);
+                    target.Hp += heal;
+                    round.Actions.Add(new BattleAction
+                    {
+                        ActorName = action.ActorName, ActionType = "Magic", TargetName = target.DisplayName,
+                        Healing = heal, ResourceCost = PlayerMagicHealCost, ResourceName = "MP",
+                        Description = $"{action.ActorName} channels mana and restores {heal} HP to {target.DisplayName} (-{PlayerMagicHealCost} MP)."
+                    });
+                    continue;
+                }
 
                 var rawDmg = Math.Max(1, actor.Attack + _state.Calendar.Day % 5 - target.Defense / 2);
                 if (target.Defending) rawDmg = Math.Max(1, rawDmg / 2);
@@ -102,26 +141,6 @@ public sealed class CombatService
                     Description = $"{action.ActorName} attacks {target.DisplayName} for {rawDmg} damage!",
                     KilledTarget = killed
                 });
-
-                if (action.ActionType == "Skill")
-                {
-                    bool healed = false;
-                    foreach (var ally in activeParty.Where(p => p.Hp > 0 && p.Hp < p.MaxHp).Take(2))
-                    {
-                        int heal = Math.Min(15, ally.MaxHp - ally.Hp);
-                        ally.Hp += heal;
-                        if (!healed)
-                        {
-                            healed = true;
-                            round.Actions.Add(new BattleAction
-                            {
-                                ActorName = action.ActorName, ActionType = "Skill",
-                                TargetName = ally.DisplayName, Healing = heal,
-                                Description = $"{action.ActorName} heals {ally.DisplayName} for {heal} HP."
-                            });
-                        }
-                    }
-                }
 
                 target.Defending = false;
             }
@@ -280,14 +299,16 @@ public sealed class CombatService
     {
         int trainingBonus = _state.Research.UnlockedSkillIds.Contains("adventure_training") ? 4 : 0;
         int tacticalBonus = _state.Research.UnlockedSkillIds.Contains("tactical_training") ? 3 : 0;
-        return chars.Select(c => new BattleCombatant
+        return chars.Select((c, index) => new BattleCombatant
         {
-            Id = c.Id, DisplayName = c.DisplayNameOverride,
+            Id = c.Id, DisplayName = string.IsNullOrWhiteSpace(c.DisplayNameOverride) ? c.Id : c.DisplayNameOverride,
             Hp = Math.Max(50, c.Hp / 20), MaxHp = Math.Max(50, ((c.MaxHpOverride ?? 100) + _equipment.BonusMaxHp(c.Id) + _talents.BonusMaxHp(c.Id)) / 20),
             Sp = Math.Max(20, c.Energy / 10), MaxSp = Math.Max(20, ((c.MaxEnergyOverride ?? 100) + _equipment.BonusMaxEnergy(c.Id) + _talents.BonusMaxEnergy(c.Id)) / 10),
             Attack = (c.CombatSkill + _equipment.BonusCombatSkill(c.Id) + _talents.BonusCombatSkill(c.Id)) * 3 + c.Morale / 20 + trainingBonus + tacticalBonus,
             Defense = (c.CombatSkill + _equipment.BonusCombatSkill(c.Id) + _talents.BonusCombatSkill(c.Id)) * 2 + (c.CraftSkill + _equipment.BonusCraftSkill(c.Id) + _talents.BonusCraftSkill(c.Id)) / 3 + trainingBonus / 2 + tacticalBonus / 2,
             Speed = 5 + (c.CombatSkill + _equipment.BonusCombatSkill(c.Id) + _talents.BonusCombatSkill(c.Id)) / 2 - c.Fatigue / 25 + trainingBonus / 2 + tacticalBonus / 3,
+            MagicPower = Math.Max(0, c.MagicPower),
+            UsesPlayerMana = index == 0,
             IsEnemy = false
         }).ToList();
     }
@@ -303,6 +324,8 @@ public sealed class CombatService
             Attack = e.Attack + dayScale - 1,
             Defense = e.Defense + dayScale / 2,
             Speed = e.Speed,
+            MagicPower = 0,
+            UsesPlayerMana = false,
             IsEnemy = true
         }).ToList();
     }
@@ -316,13 +339,16 @@ public sealed class CombatService
         if (healthyFoes.Count == 0) return new BattleActionRecord { ActorName = actor.DisplayName, ActionType = "Wait" };
 
         int hpPct = actor.Hp * 100 / Math.Max(1, actor.MaxHp);
+        var hurtAlly = allies
+            .Where(a => a.Hp > 0 && a.Hp * 100 / Math.Max(1, a.MaxHp) < 70)
+            .OrderBy(a => (float)a.Hp / Math.Max(1, a.MaxHp))
+            .FirstOrDefault();
 
-        if (hpPct < 30 && actor.Sp >= 10)
-        {
-            var hurtAlly = allies.Where(a => a.Hp > 0 && a.Hp < a.MaxHp).OrderBy(a => a.Hp).FirstOrDefault();
-            if (hurtAlly != null)
-                return new BattleActionRecord { ActorName = actor.DisplayName, ActionType = "Skill", TargetEnemy = isEnemy, TargetId = hurtAlly.Id };
-        }
+        if (!isEnemy && actor.UsesPlayerMana && hurtAlly is not null && _magic.CanSpendPlayerMana(PlayerMagicHealCost))
+            return new BattleActionRecord { ActorName = actor.DisplayName, ActionType = "Magic", TargetEnemy = false, TargetId = hurtAlly.Id };
+
+        if (hurtAlly is not null && actor.Sp >= SkillSpCost)
+            return new BattleActionRecord { ActorName = actor.DisplayName, ActionType = "Skill", TargetEnemy = isEnemy, TargetId = hurtAlly.Id };
 
         if (hpPct < 20)
             return new BattleActionRecord { ActorName = actor.DisplayName, ActionType = "Defend" };
@@ -364,6 +390,8 @@ public sealed class CombatService
         Id = b.Id, DisplayName = b.DisplayName,
         CurrentHp = b.Hp, MaxHp = b.MaxHp,
         CurrentSp = b.Sp, MaxSp = b.MaxSp,
+        CurrentMana = b.UsesPlayerMana ? _magic.CurrentMana : 0,
+        MaxMana = b.UsesPlayerMana ? _magic.MaxMana : 0,
         IsAlive = b.Hp > 0, IsEnemy = b.IsEnemy,
         Attack = b.Attack, Defense = b.Defense, Speed = b.Speed
     };
@@ -380,6 +408,8 @@ internal sealed class BattleCombatant
     public int Attack { get; set; }
     public int Defense { get; set; }
     public int Speed { get; set; }
+    public int MagicPower { get; set; }
+    public bool UsesPlayerMana { get; set; }
     public bool IsEnemy { get; set; }
     public bool Defending { get; set; }
 }

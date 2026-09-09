@@ -205,6 +205,14 @@ public sealed class PlayerState
     public string StartingMountId { get; set; } = "none";
     public string TailType { get; set; } = "None";
     public string BodyFur { get; set; } = "None";
+    /// <summary>Current personal MP, separate from ranch-stored mana like the original BASE:0:魔力.</summary>
+    public int Mana { get; set; }
+
+    /// <summary>Personal MP capacity. Zero means the player has not unlocked mana yet.</summary>
+    public int MaxMana { get; set; }
+
+    /// <summary>Percent of MaxMana recovered at the start of a new day.</summary>
+    public int ManaRecoveryPercent { get; set; }
 }
 
 public sealed class CalendarState
@@ -554,6 +562,7 @@ public sealed class CombatReport
     public List<BattleRound> Rounds { get; set; } = new();
     public List<CombatantSnapshot> PartyState { get; set; } = new();
     public List<CombatantSnapshot> EnemyState { get; set; } = new();
+    public int PlayerManaSpent { get; set; }
 }
 
 public sealed class BattleRound
@@ -571,6 +580,8 @@ public sealed class BattleAction
     public int Healing { get; set; }
     public string Description { get; set; } = string.Empty;
     public bool KilledTarget { get; set; }
+    public int ResourceCost { get; set; }
+    public string ResourceName { get; set; } = string.Empty;
 }
 
 public sealed class CombatantSnapshot
@@ -581,6 +592,8 @@ public sealed class CombatantSnapshot
     public int MaxHp { get; set; }
     public int CurrentSp { get; set; }
     public int MaxSp { get; set; }
+    public int CurrentMana { get; set; }
+    public int MaxMana { get; set; }
     public bool IsAlive { get; set; }
     public bool IsEnemy { get; set; }
     public int Attack { get; set; }

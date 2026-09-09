@@ -68,6 +68,7 @@ public static class SmokeTestRunner
             TestFirstDaySystems(result);
             TestOriginalCalendarAndWeather(result);
             TestCombatWorldTimeLock(result);
+            TestPlayerManaAndCombatResources(result);
             TestCameraInspectionAndBoundaryMath(result);
             TestCharacterAvatar(result);
             TestEventDialogueStaging(result);
@@ -1343,6 +1344,78 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "calendar: rollover crosses Spring -> Summer at day 29");
         Assert(result, state.Calendar.CurrentWeather == Weather.Cloudy,
             "calendar: saved tomorrow forecast becomes today's weather at rollover");
+    }
+
+    private static void TestPlayerManaAndCombatResources(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data, new Random(2409)).CreateNewGame();
+
+        Assert(result, state.Player.Mana == 0 && state.Player.MaxMana == 0,
+            "mana: new game preserves the original-style locked 0/0 personal MP start");
+
+        state.Player.MaxMana = 100;
+        state.Player.Mana = 10;
+        state.Player.ManaRecoveryPercent = 10;
+        var cycle = new DayCycleService(state);
+        cycle.AdvanceToNextDay();
+        Assert(result, state.Player.Mana == 20,
+            "mana: new-day recovery restores the configured percentage of personal Max MP");
+
+        state.Economy.ManaReservoir = 45;
+        var magic = new MagicService(state, data);
+        var transferred = magic.RechargePlayerManaFromStorage(30);
+        Assert(result, transferred == 30 && state.Player.Mana == 50 && state.Economy.ManaReservoir == 15,
+            "mana: ranch storage recharges personal MP without conflating the two pools");
+
+        var moraleBefore = state.Roster.Characters.Sum(character => character.Morale);
+        Assert(result, magic.CastSpell("morale_boost", 10, state.Roster.Characters[0].Id),
+            "mana: a spell can spend personal MP when enough is available");
+        Assert(result, state.Player.Mana == 40 && state.Roster.Characters.Sum(character => character.Morale) > moraleBefore,
+            "mana: spell spending affects personal MP and applies its gameplay effect");
+
+        var equipment = new EquipmentService(state, data);
+        var talents = new TalentService(state, data);
+        var playerCharacter = state.Roster.Characters[0];
+        playerCharacter.MaxHpOverride = 2000;
+        playerCharacter.Hp = 800;
+        playerCharacter.Energy = 200;
+        state.Player.MaxMana = 40;
+        state.Player.Mana = 30;
+
+        var combat = new CombatService(state, data, equipment, talents, magic);
+        var beforeMana = state.Player.Mana;
+        var magicReport = combat.ResolveMissionRounds("tutorial_ranch_intruder", autoResolve: true);
+        var magicActions = magicReport.Rounds.SelectMany(round => round.Actions)
+            .Where(action => action.ActionType == "Magic").ToList();
+        Assert(result, magicActions.Count > 0,
+            "combat: player AI uses personal MP for a magical support action when an ally is wounded");
+        Assert(result, magicActions.All(action => action.Damage == 0 && action.Healing > 0
+                && action.ResourceName == "MP" && action.ResourceCost == CombatService.PlayerMagicHealCost),
+            "combat: magic support heals without accidentally damaging its ally and records MP cost");
+        Assert(result, magicReport.PlayerManaSpent > 0
+                && state.Player.Mana == beforeMana - magicReport.PlayerManaSpent,
+            "combat: report and persistent player MP agree on mana consumed");
+
+        var skillState = new SaveStateFactory(data, new Random(2410)).CreateNewGame();
+        var skillEquipment = new EquipmentService(skillState, data);
+        var skillTalents = new TalentService(skillState, data);
+        var skillMagic = new MagicService(skillState, data);
+        var skillPlayer = skillState.Roster.Characters[0];
+        skillPlayer.MaxHpOverride = 2000;
+        skillPlayer.Hp = 800;
+        skillPlayer.Energy = 200;
+        var skillCombat = new CombatService(skillState, data, skillEquipment, skillTalents, skillMagic);
+        var skillReport = skillCombat.ResolveMissionRounds("tutorial_ranch_intruder", autoResolve: true);
+        var skillActions = skillReport.Rounds.SelectMany(round => round.Actions)
+            .Where(action => action.ActionType == "Skill").ToList();
+        Assert(result, skillActions.Count > 0,
+            "combat: non-magic support skill is available when combat SP is sufficient");
+        Assert(result, skillActions.All(action => action.Damage == 0 && action.Healing > 0
+                && action.ResourceName == "SP" && action.ResourceCost == CombatService.SkillSpCost),
+            "combat: support skills heal without friendly-fire damage and consume finite SP");
+        Assert(result, skillReport.PartyState.Any(member => member.CurrentSp < member.MaxSp),
+            "combat: spent skill SP remains visible in the final combat snapshot");
     }
 
     private static void TestCombatWorldTimeLock(SmokeTestResult result)

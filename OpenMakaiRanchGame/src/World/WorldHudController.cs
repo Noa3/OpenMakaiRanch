@@ -233,7 +233,8 @@ public partial class WorldHudController : CanvasLayer
 
         if (_economyLabel is not null)
         {
-            _economyLabel.Text = $"{economy.Gold:N0} G   Spirit {economy.SpiritEnergy:N0}   Mana {economy.ManaReservoir:N0}";
+            var player = game.State.Player;
+            _economyLabel.Text = $"{economy.Gold:N0} G   Spirit {economy.SpiritEnergy:N0}   MP {player.Mana:N0}/{player.MaxMana:N0}   Stored {economy.ManaReservoir:N0}";
         }
 
         if (_rosterLabel is not null)

@@ -161,7 +161,8 @@ public partial class TownHudController : CanvasLayer
 
         if (_economyLabel is not null)
         {
-            _economyLabel.Text = $"{economy.Gold:N0} G   Mana {economy.ManaReservoir:N0}";
+            var player = game.State.Player;
+            _economyLabel.Text = $"{economy.Gold:N0} G   MP {player.Mana:N0}/{player.MaxMana:N0}   Stored {economy.ManaReservoir:N0}";
         }
 
         if (_guidanceLabel is not null)

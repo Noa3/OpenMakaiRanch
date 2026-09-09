@@ -22,6 +22,22 @@ public sealed class DayCycleService
         _state.Calendar.CurrentWeather = _state.Calendar.TomorrowWeather;
         _state.Calendar.TomorrowWeather = OriginalCalendarRules.RollTomorrow(_state.Calendar);
         _state.Calendar.TrainedToday = 0;
+        RecoverPlayerManaForNewDay();
+    }
+
+    private void RecoverPlayerManaForNewDay()
+    {
+        var player = _state.Player;
+        player.MaxMana = Math.Max(0, player.MaxMana);
+        player.Mana = Math.Clamp(player.Mana, 0, player.MaxMana);
+        player.ManaRecoveryPercent = Math.Clamp(player.ManaRecoveryPercent, 0, 100);
+        if (player.MaxMana <= 0 || player.Mana >= player.MaxMana || player.ManaRecoveryPercent <= 0)
+        {
+            return;
+        }
+
+        var recovered = Math.Max(1, player.MaxMana * player.ManaRecoveryPercent / 100);
+        player.Mana = Math.Min(player.MaxMana, player.Mana + recovered);
     }
 
     public bool AdvancePhase()

@@ -187,6 +187,10 @@ public static class SaveMigrator
         if (string.IsNullOrWhiteSpace(state.Player.HairStyle)) state.Player.HairStyle = "Short";
         if (string.IsNullOrWhiteSpace(state.Player.EyeColor)) state.Player.EyeColor = "Red";
         if (string.IsNullOrWhiteSpace(state.Player.EyeShape)) state.Player.EyeShape = "Standard";
+        state.Player.MaxMana = Math.Max(0, state.Player.MaxMana);
+        state.Player.Mana = Math.Clamp(state.Player.Mana, 0, state.Player.MaxMana);
+        state.Player.ManaRecoveryPercent = Math.Clamp(state.Player.ManaRecoveryPercent, 0, 100);
+        state.Economy.ManaReservoir = Math.Max(0, state.Economy.ManaReservoir);
 
         return state;
     }

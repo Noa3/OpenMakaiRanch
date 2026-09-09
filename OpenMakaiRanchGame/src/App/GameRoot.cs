@@ -52,6 +52,7 @@ public partial class GameRoot : Node
 	public MilkEconomyService MilkEconomy { get; private set; } = null!;
 	public AddictionService Addiction { get; private set; } = null!;
 	public CombatService Combat { get; private set; } = null!;
+	public MagicService Magic { get; private set; } = null!;
 	public DiscoveryService Discovery { get; private set; } = null!;
 	public MercenaryService Mercenary { get; private set; } = null!;
 	public WinConditionService WinCondition { get; private set; } = null!;
@@ -849,6 +850,36 @@ public partial class GameRoot : Node
 		return LastDailyReport;
 	}
 
+	public int RechargePlayerManaFromStorage(int requestedAmount = int.MaxValue)
+	{
+		var transferred = Magic.RechargePlayerManaFromStorage(requestedAmount);
+		if (transferred > 0)
+		{
+			StateChanged?.Invoke();
+		}
+		return transferred;
+	}
+
+	public int IncreasePlayerManaCapacity(int amount, bool fillNewCapacity = false)
+	{
+		var gained = Magic.IncreasePlayerManaCapacity(amount, fillNewCapacity);
+		if (gained > 0)
+		{
+			StateChanged?.Invoke();
+		}
+		return gained;
+	}
+
+	public bool CastPlayerSpell(string spellId, int manaCost)
+	{
+		if (!Magic.CastSpell(spellId, manaCost, State.Roster.Characters.FirstOrDefault()?.Id ?? string.Empty))
+		{
+			return false;
+		}
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public CombatReport RunMission(string missionId)
 	{
 		return RunMission(missionId, false);
@@ -1066,6 +1097,7 @@ public partial class GameRoot : Node
 		Talents = new TalentService(State, Data);
 		Ranch = new RanchService(State, Data, Equipment, Talents);
 		Economy = new EconomyService(State);
+		Magic = new MagicService(State, Data);
 		Inventory = new InventoryService(State);
 		Milestones = new MilestoneService(State, Data, Economy);
 		Shop = new ShopService(Data, Economy, Inventory);
@@ -1082,7 +1114,7 @@ public partial class GameRoot : Node
 		Visit = new VisitService(State, Data);
 		MilkEconomy = new MilkEconomyService(State);
 		Addiction = new AddictionService(State);
-		Combat = new CombatService(State, Data, Equipment, Talents);
+		Combat = new CombatService(State, Data, Equipment, Talents, Magic);
 		Discovery = new DiscoveryService(State, Data);
 		Mercenary = new MercenaryService(State, Economy);
 		WinCondition = new WinConditionService(State, Data);
