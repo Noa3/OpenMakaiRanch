@@ -97,6 +97,12 @@ public sealed class SaveState
     public bool NgPlusActive { get; set; }
     public int? VictoryDay { get; set; }
     public FlagStorage Flags { get; set; } = new();
+
+    /// <summary>
+    /// Presentation location for the 3D remake. Additive/defaulted so older saves safely resume at
+    /// the ranch without a schema migration.
+    /// </summary>
+    public string WorldAreaId { get; set; } = "ranch";
 }
 
 /// <summary>
