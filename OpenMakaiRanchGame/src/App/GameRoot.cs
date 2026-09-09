@@ -63,6 +63,7 @@ public partial class GameRoot : Node
 	public FlagService Flags { get; private set; } = null!;
 	public DailyReport? LastDailyReport { get; set; }
 	public CombatReport? LastCombatReport { get; set; }
+	public InteractiveCombatSession? ActiveCombatSession { get; private set; }
 	public CombatPhase CurrentCombatPhase { get; set; } = CombatPhase.PreBattle;
 	public static string? PendingInitialScreen { get; set; }
 	public int CurrentCombatRound { get; set; }
@@ -119,6 +120,7 @@ public partial class GameRoot : Node
 	{
 		LastDailyReport = null;
 		LastCombatReport = null;
+		ActiveCombatSession = null;
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 		_combatWorldTimeLocked = false;
@@ -1020,6 +1022,7 @@ public partial class GameRoot : Node
 
 	public CombatReport RunRoundBasedMission(string missionId, bool autoResolve)
 	{
+		ActiveCombatSession = null;
 		if (!CanStartAdventure(missionId))
 			return BlockedCombatReport(missionId, "Adventure blocked: not enough stamina, no valid party, or mission unavailable.");
 
@@ -1035,6 +1038,7 @@ public partial class GameRoot : Node
 
 	public CombatReport RunRoundBasedCapture(string missionId)
 	{
+		ActiveCombatSession = null;
 		if (!CanStartAdventure(missionId))
 			return BlockedCombatReport(missionId, "Capture battle blocked: not enough stamina, no valid party, or mission unavailable.");
 
@@ -1057,6 +1061,89 @@ public partial class GameRoot : Node
 		TurnLog = new List<string> { summary }
 	};
 
+	public bool CanStartInteractiveCombat(string missionId)
+	{
+		if (!CanStartAdventure(missionId))
+			return false;
+
+		return State.Roster.Characters.Any(character =>
+			(character.Provenance == CharacterProvenance.OriginalPlayer || string.Equals(character.Id, "anon", StringComparison.OrdinalIgnoreCase))
+			&& (State.Adventure.SelectedPartyIds.Count == 0 || State.Adventure.SelectedPartyIds.Contains(character.Id)));
+	}
+
+	public bool BeginInteractiveCombat(string missionId)
+	{
+		if (!CanStartInteractiveCombat(missionId))
+			return false;
+
+		BeginCombatSession();
+		var session = Combat.StartInteractiveMission(missionId);
+		ActiveCombatSession = session;
+		LastCombatReport = session.Report;
+
+		if (session.Report.Rounds.Count > 0 && !session.IsFinished)
+		{
+			PlayerStamina.Spend(AdventureStaminaCost(missionId));
+		}
+
+		if (session.IsFinished)
+		{
+			if (session.Report.Rounds.Count > 0)
+				PlayerStamina.Spend(AdventureStaminaCost(missionId));
+			CurrentCombatPhase = CombatPhase.BattleResults;
+			CurrentCombatRound = session.Report.Rounds.Count;
+			CombatResolved?.Invoke(session.Report);
+		}
+		else
+		{
+			CurrentCombatPhase = CombatPhase.PlayerTurn;
+			CurrentCombatRound = session.RoundNumber;
+		}
+
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SubmitInteractiveCombatAction(CombatPlayerCommand command, string? targetId = null)
+	{
+		var session = ActiveCombatSession;
+		if (session is null || session.IsFinished || !session.AwaitingPlayerInput)
+			return false;
+
+		if (!session.SubmitPlayerCommand(command, targetId))
+			return false;
+
+		LastCombatReport = session.Report;
+		CurrentCombatRound = session.RoundNumber;
+		if (session.IsFinished)
+		{
+			CurrentCombatPhase = CombatPhase.BattleResults;
+			CombatResolved?.Invoke(session.Report);
+		}
+		else
+		{
+			CurrentCombatPhase = CombatPhase.PlayerTurn;
+		}
+
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool AutoFinishInteractiveCombat()
+	{
+		var session = ActiveCombatSession;
+		if (session is null || session.IsFinished)
+			return false;
+
+		session.AutoFinish();
+		LastCombatReport = session.Report;
+		CurrentCombatRound = session.Report.Rounds.Count;
+		CurrentCombatPhase = CombatPhase.BattleResults;
+		CombatResolved?.Invoke(session.Report);
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public void StartNewCombat()
 	{
 		BeginCombatSession();
@@ -1065,6 +1152,7 @@ public partial class GameRoot : Node
 	public void BeginCombatSession()
 	{
 		_combatWorldTimeLocked = true;
+		ActiveCombatSession = null;
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 		LastCombatReport = null;
@@ -1079,6 +1167,7 @@ public partial class GameRoot : Node
 		}
 
 		_combatWorldTimeLocked = false;
+		ActiveCombatSession = null;
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 		LastCombatReport = null;
