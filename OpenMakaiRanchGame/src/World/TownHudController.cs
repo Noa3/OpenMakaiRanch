@@ -61,10 +61,31 @@ public partial class TownHudController : CanvasLayer
 
         if (_guidanceLabel is not null)
         {
-            _guidanceLabel.Text = calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night
-                ? "Town services remain available; return to the ranch when you are ready to plan/end the night."
-                : "Explore services, shop, prepare missions, research, recruit, or return to the ranch.";
-            _guidanceLabel.TooltipText = "Town interactions open the existing management screens. Purchases and progression still use the shared GameRoot services.";
+            var supplies = game.State.Ranch.Stockpile.GetValueOrDefault("supplies");
+            var workshopBuilt = game.Ranch.Facilities.TryGetValue("workshop", out var workshopLevel) && workshopLevel > 0;
+
+            if (calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night)
+            {
+                _guidanceLabel.Text = "Town is still usable, but return to the ranch when you are ready to plan or end the night.";
+            }
+            else if (supplies <= 1)
+            {
+                _guidanceLabel.Text = "Suggested errand: supplies are low — visit the General Store.";
+            }
+            else if (!workshopBuilt)
+            {
+                _guidanceLabel.Text = "Suggested errand: use Construction & Planning to build the Workshop and unlock Research Office access.";
+            }
+            else if (!game.Discovery.AllDiscovered)
+            {
+                _guidanceLabel.Text = "Suggested errand: the Adventure Guild can scout for undiscovered missions.";
+            }
+            else
+            {
+                _guidanceLabel.Text = "Explore services, shop, prepare missions, research, recruit, review milestones, or return to the ranch.";
+            }
+
+            _guidanceLabel.TooltipText = "Suggestions are optional. Town actions still execute through the shared GameRoot services.";
         }
     }
 
