@@ -28,6 +28,8 @@ public partial class RanchGreyboxController : Node3D
     private float _nearbyDistance = float.PositiveInfinity;
     private string _nearbyCharacterId = string.Empty;
     private float _nearbyCharacterDistance = float.PositiveInfinity;
+    private WorldTravelPortal? _travelPortal;
+    private float _travelPortalDistance = float.PositiveInfinity;
     private int _selectedCharacterIndex;
     private bool _wired;
 
@@ -40,6 +42,7 @@ public partial class RanchGreyboxController : Node3D
     public string NearbyCharacterId => _nearbyCharacterId;
     public float NearbyCharacterDistance => _nearbyCharacterDistance;
     public WorldHudController? Hud => _hud;
+    public WorldTravelPortal? TravelPortal => _travelPortal;
     public bool Wired => _wired;
     public string SelectedCharacterId => ResolveSelectedCharacterId();
 
@@ -54,6 +57,7 @@ public partial class RanchGreyboxController : Node3D
     /// never changes bond, stats, schedule, rewards or any other simulation state.
     /// </summary>
     public event Action<string>? CharacterInteractionRequested;
+    public event Action<string>? TravelRequested;
 
     /// <summary>Applies the shared phase to the scene's sun + environment.</summary>
     public DaylightRig? Daylight { get; private set; }
@@ -69,6 +73,7 @@ public partial class RanchGreyboxController : Node3D
         _player = GetNodeOrNull<ThirdPersonPlayerController>("Player");
         _cameraRig = GetNodeOrNull<WorldCameraRig>("CameraRig");
         _hud = GetNodeOrNull<WorldHudController>("WorldHud");
+        _travelPortal = GetNodeOrNull<WorldTravelPortal>("TravelToTown");
 
         _stations.Clear();
         CollectStations(this);
@@ -245,6 +250,16 @@ public partial class RanchGreyboxController : Node3D
         var npcInRange = !string.IsNullOrWhiteSpace(_nearbyCharacterId)
             && _nearbyCharacterDistance <= InteractionRange;
         var stationInRange = _nearbyStation is not null && _nearbyDistance <= InteractionRange;
+        var travelInRange = _travelPortal is not null && _travelPortalDistance <= InteractionRange;
+
+        if (travelInRange
+            && (!npcInRange || _travelPortalDistance <= _nearbyCharacterDistance)
+            && (!stationInRange || _travelPortalDistance <= _nearbyDistance))
+        {
+            SetFeedback(_travelPortal!.Prompt);
+            TravelRequested?.Invoke(_travelPortal.DestinationId);
+            return true;
+        }
 
         if (npcInRange && (!stationInRange || _nearbyCharacterDistance < _nearbyDistance))
         {
@@ -376,6 +391,7 @@ public partial class RanchGreyboxController : Node3D
         _nearbyDistance = float.PositiveInfinity;
         _nearbyCharacterId = string.Empty;
         _nearbyCharacterDistance = float.PositiveInfinity;
+        _travelPortalDistance = float.PositiveInfinity;
 
         if (_player is null)
         {
@@ -405,6 +421,11 @@ public partial class RanchGreyboxController : Node3D
             _nearbyCharacterDistance = characterDistance;
         }
 
+        if (_travelPortal is not null)
+        {
+            _travelPortalDistance = _player.GlobalPosition.DistanceTo(_travelPortal.GlobalPosition);
+        }
+
         UpdateLegacyPrompt();
     }
 
@@ -419,10 +440,20 @@ public partial class RanchGreyboxController : Node3D
         _hud.RefreshSimulation(game);
         _hud.SetSelectedCharacter(game, ResolveSelectedCharacterId());
 
+        var travelInRange = _travelPortal is not null
+            && _travelPortalDistance <= InteractionRange
+            && (string.IsNullOrWhiteSpace(_nearbyCharacterId) || _travelPortalDistance <= _nearbyCharacterDistance)
+            && (_nearbyStation is null || _travelPortalDistance <= _nearbyDistance);
+
         var npcInRange = !string.IsNullOrWhiteSpace(_nearbyCharacterId)
             && _nearbyCharacterDistance <= InteractionRange
             && (_nearbyStation is null || _nearbyCharacterDistance < _nearbyDistance);
-        if (npcInRange)
+
+        if (travelInRange)
+        {
+            _hud.SetTravelTarget(_travelPortal!, _travelPortalDistance, InteractionRange);
+        }
+        else if (npcInRange)
         {
             _hud.SetCharacterInteractionTarget(
                 ResolveCharacterName(_nearbyCharacterId),
