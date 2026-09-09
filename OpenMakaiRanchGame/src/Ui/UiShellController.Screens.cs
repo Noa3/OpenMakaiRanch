@@ -2208,7 +2208,7 @@ public partial class UiShellController
         var character = chars[_trainingCharIdx];
         var mental = character.Mature;
 
-        // === Character selector row ===
+        // === Resident / companion selector row ===
         var selectorRow = FlowRow(8);
         _content.AddChild(selectorRow);
 
@@ -2390,7 +2390,59 @@ public partial class UiShellController
 
     private void RenderVisit()
     {
-        AddTitle(T("screen.visit", "Visit Slave"));
+        AddTitle(T("screen.visit", "Personal Time"));
+
+        var freeTimeCard = CardContainer();
+        _content.AddChild(freeTimeCard);
+        var freeTimeInner = CardContent();
+        freeTimeCard.AddChild(freeTimeInner);
+        freeTimeInner.AddChild(SubtitleLabel(T("screen.visit.free_time", "Free Time")));
+        freeTimeInner.AddChild(MutedLabel(T("screen.visit.free_time_original",
+            "Original-era structure: free time can be spent resting in your room or spending time with an adopted pet. The remake also exposes resident conversations/care below through the existing Visit/Bond systems.")));
+
+        var freeTimeActions = FlowRow(8);
+        freeTimeInner.AddChild(freeTimeActions);
+
+        var playerCharacter = _game.Roster.Characters.FirstOrDefault();
+        if (playerCharacter is not null)
+        {
+            var restSelf = SecondaryButton(
+                T("screen.visit.rest_self", "Rest In Your Room"),
+                T("tooltip.visit.rest_self", "Use the existing rest recovery on the player character without advancing the world phase."));
+            restSelf.Pressed += () =>
+            {
+                var line = _game.Visit.CareRest(playerCharacter.Id);
+                SetStatus(line, false);
+                _game.NotifyStateChanged();
+            };
+            AddFlowButton(freeTimeActions, restSelf, 170);
+        }
+
+        foreach (var petId in _game.State.Pets.AdoptedPetIds)
+        {
+            if (!_game.Data.Pets.TryGetValue(petId, out var petDef))
+            {
+                continue;
+            }
+
+            var capturedPetId = petId;
+            var playPet = SecondaryButton(
+                $"{T("screen.visit.spend_pet", "Spend Time With")} {petDef.DisplayName}",
+                T("tooltip.visit.spend_pet", "Uses the existing pet Play action: improves mood/bond and costs its normal small fee."));
+            playPet.Pressed += () =>
+            {
+                var line = _game.Pets.Play(capturedPetId);
+                SetStatus(line, false);
+                _game.NotifyStateChanged();
+            };
+            AddFlowButton(freeTimeActions, playPet, 220);
+        }
+
+        if (!_game.State.Pets.AdoptedPetIds.Any())
+        {
+            freeTimeInner.AddChild(MutedLabel(T("screen.visit.no_pet_free_time", "No adopted pet is available for free-time play yet.")));
+        }
+
         var chars = _game.Roster.Characters;
         if (!chars.Any())
         {
@@ -2409,7 +2461,7 @@ public partial class UiShellController
         _content.AddChild(selectorRow);
         selectorRow.AddChild(MutedLabel($"{T("label.character", "Character")}:"));
         var charPicker = StyledPicker(240);
-        charPicker.TooltipText = T("tooltip.visit_char", "Select a character to visit");
+        charPicker.TooltipText = T("tooltip.visit_char", "Select a resident or companion to spend personal time with");
         for (var i = 0; i < chars.Count; i++)
         {
             charPicker.AddItem(CharacterPickerName(chars[i]));
