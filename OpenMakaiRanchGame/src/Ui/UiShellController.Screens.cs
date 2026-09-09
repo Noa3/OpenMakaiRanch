@@ -4160,6 +4160,7 @@ public partial class UiShellController
         ClearContent();
         UpdateTopBar();
         AddTitle(T("screen.magic.title", "Magic"));
+        AddManaResourceCard("magic_basic");
 
         var spells = _game.Data.Spells.Values.ToList();
 
@@ -4224,6 +4225,7 @@ public partial class UiShellController
         ClearContent();
         UpdateTopBar();
         AddTitle(T("screen.magic.forbidden_title", "Magic — Restricted Spells"));
+        AddManaResourceCard("magic_forbidden");
 
         var spells = _game.Data.Spells.Values.ToList();
 
@@ -4288,6 +4290,7 @@ public partial class UiShellController
         ClearContent();
         UpdateTopBar();
         AddTitle(T("screen.magic.tentacle_title", "Magic — Special Spells"));
+        AddManaResourceCard("magic_tentacle");
 
         var spells = _game.Data.Spells.Values.ToList();
 
@@ -4346,5 +4349,55 @@ public partial class UiShellController
         backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
         _content.AddChild(backBtn);
     }
+
+    private void AddManaResourceCard(string returnScreen)
+    {
+        var magic = _game.Magic;
+        var card = CardContainer();
+        _content.AddChild(card);
+        var inner = CardContent();
+        card.AddChild(inner);
+        inner.AddChild(SubtitleLabel("Mana Resources"));
+        inner.AddChild(MutedLabel($"Personal MP: {magic.CurrentMana:N0}/{magic.MaxMana:N0}  •  Rest recovery: {_game.State.Player.ManaRecoveryPercent}%"));
+
+        if (magic.StorageCapacity > 0)
+        {
+            inner.AddChild(MutedLabel($"Stored Mana: {magic.StoredMana:N0}/{magic.StorageCapacity:N0} MP"));
+        }
+        else
+        {
+            inner.AddChild(MutedLabel("Stored Mana: no reservoir installed"));
+        }
+
+        var refill = SecondaryButton("Replenish Personal MP", "Use the Magic Supply Device to move Stored Mana into personal MP without increasing Max MP.");
+        refill.Disabled = !magic.HasManaSupplyDevice || magic.StoredMana <= 0 || magic.CurrentMana >= magic.MaxMana;
+        refill.Pressed += () =>
+        {
+            ExecuteUiAction(() =>
+            {
+                var transferred = _game.RechargePlayerManaFromStorage();
+                if (transferred > 0)
+                {
+                    _game.Feedback.PlayConfirm();
+                    SetStatus($"Replenished {transferred:N0} personal MP from Stored Mana.", true);
+                }
+                else
+                {
+                    _game.Feedback.PlayError();
+                    SetStatus(magic.HasManaSupplyDevice
+                        ? "No Stored Mana can be transferred right now."
+                        : "A Magic Supply Device is required to replenish personal MP from the reservoir.", true);
+                }
+                ShowScreen(returnScreen);
+            }, true, returnScreen);
+        };
+        inner.AddChild(refill);
+
+        if (!magic.HasManaSupplyDevice)
+        {
+            inner.AddChild(RequirementLabel("Magic Supply Device required for reservoir → personal MP transfer."));
+        }
+    }
+
 
 }
