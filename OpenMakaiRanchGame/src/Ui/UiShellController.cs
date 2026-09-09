@@ -437,7 +437,7 @@ public partial class UiShellController : Control
 	_rootPanel.AddThemeStyleboxOverride("panel", CardStyle(Palette.RootPanelFill, Palette.RootPanelBorder, 1, 10));
 	_navPanel.AddThemeStyleboxOverride("panel", CardStyle(Palette.NavPanelFill, Palette.NavPanelBorder, 1, 8));
 		contentPanel.AddThemeStyleboxOverride("panel", CardStyle(Palette.ContentPanelFill, Palette.ContentPanelBorder, 1, 10));
-	_rootPanel.Scale = Vector2.One * _game.State.Settings.UiScale;
+	_rootPanel.Scale = Vector2.One;
 
 	ApplyHeaderLabelStyle(_titleLabel);
 		ApplyMutedLabelStyle(_screenLabel);
@@ -570,7 +570,7 @@ public partial class UiShellController : Control
 			_compactNavigationScroll.Visible = compact;
 		}
 
-		_rootPanel.Scale = Vector2.One * _game.State.Settings.UiScale;
+		_rootPanel.Scale = Vector2.One;
 		_body.AddThemeConstantOverride("separation", compact ? 8 : 12);
 		_topBar.AddThemeConstantOverride("separation", compact ? 2 : 4);
 		_topBarRow1.AddThemeConstantOverride("separation", compact ? 4 : 8);
