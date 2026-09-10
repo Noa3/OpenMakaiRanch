@@ -11,17 +11,27 @@ config_version=5
 [application]
 
 config/name="OpenMakaiRanch"
-config/unique_name="com.noa3.openmakairanch"
-config/quit_on_go_back=false
 run/main_scene="res://scenes/Bootstrap.tscn"
+config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+config/unique_name="com.noa3.openmakairanch"
 
 [autoload]
 
 GameRoot="*res://src/App/GameRoot.cs"
 SceneRouter="*res://src/App/SceneRouter.cs"
 GodotUniversalMcpRuntime="*res://addons/godot_universal_mcp/runtime_bridge.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1920
+window/size/window_height_override=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=4
 
 [dotnet]
 
@@ -35,30 +45,10 @@ enabled=PackedStringArray("res://addons/godot_universal_mcp/plugin.cfg")
 
 godot_universal_mcp:enabled=true
 
-[display]
-
-window/size/viewport_width=1920
-window/size/viewport_height=1080
-window/size/window_width_override=1920
-window/size/window_height_override=1080
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
-window/vsync/vsync_mode=1
-window/handheld/orientation=4
-window/energy_saving/keep_screen_on=true
-
-[input_devices]
-
-pointing/emulate_mouse_from_touch=true
-
 [rendering]
 
-renderer/rendering_method="forward_plus"
-renderer/rendering_method.mobile="mobile"
-renderer/rendering_method.web="gl_compatibility"
 scaling_3d/mode="bilinear"
 scaling_3d/scale=0.85
-
 rendering/environment/ssao/quality=2
 rendering/environment/ssao/half_size=true
 rendering/environment/ssil/quality=2

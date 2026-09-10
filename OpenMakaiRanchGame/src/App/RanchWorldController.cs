@@ -232,7 +232,10 @@ public partial class RanchWorldController : Node3D, ITravelHandler
     public override void _ExitTree()
     {
         foreach (var area in _areas)
-            area?.ManagementUiRequested -= HandleManagementUiRequested;
+        {
+            if (area is not null)
+                area.ManagementUiRequested -= HandleManagementUiRequested;
+        }
     }
 
     public override void _UnhandledInput(InputEvent @event)

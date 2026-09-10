@@ -11,310 +11,310 @@ namespace OpenMakaiRanch.Gameplay;
 
 public sealed class SaveService
 {
-    private const long MaxSaveBytes = 4 * 1024 * 1024;
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        MaxDepth = 32,
-        Converters = { new JsonStringEnumConverter(), new LegacyEquipmentConverter() }
-    };
+	private const long MaxSaveBytes = 4 * 1024 * 1024;
+	private static readonly JsonSerializerOptions JsonOptions = new()
+	{
+		WriteIndented = true,
+		MaxDepth = 32,
+		Converters = { new JsonStringEnumConverter(), new LegacyEquipmentConverter() }
+	};
 
-    public bool Save(SaveState state, int slot)
-    {
-        var path = SavePath(slot);
-        EnsureSaveDirectory();
-        state.SavedAt = DateTime.UtcNow;
-        var json = JsonSerializer.Serialize(state, JsonOptions);
-        if (Encoding.UTF8.GetByteCount(json) > MaxSaveBytes)
-        {
-            GD.PushError($"Save slot {slot} exceeds the maximum supported size.");
-            return false;
-        }
+	public bool Save(SaveState state, int slot)
+	{
+		var path = SavePath(slot);
+		EnsureSaveDirectory();
+		state.SavedAt = DateTime.UtcNow;
+		var json = JsonSerializer.Serialize(state, JsonOptions);
+		if (Encoding.UTF8.GetByteCount(json) > MaxSaveBytes)
+		{
+			GD.PushError($"Save slot {slot} exceeds the maximum supported size.");
+			return false;
+		}
 
-        var absolutePath = ProjectSettings.GlobalizePath(path);
-        var temporaryPath = absolutePath + ".tmp";
-        try
-        {
-            File.WriteAllText(temporaryPath, json, Encoding.UTF8);
-            File.Move(temporaryPath, absolutePath, true);
-            return true;
-        }
-        catch (Exception exception)
-        {
-            GD.PushError($"Could not write save slot {slot}: {exception.Message}");
-            if (File.Exists(temporaryPath))
-            {
-                File.Delete(temporaryPath);
-            }
+		var absolutePath = ProjectSettings.GlobalizePath(path);
+		var temporaryPath = absolutePath + ".tmp";
+		try
+		{
+			File.WriteAllText(temporaryPath, json, Encoding.UTF8);
+			File.Move(temporaryPath, absolutePath, true);
+			return true;
+		}
+		catch (Exception exception)
+		{
+			GD.PushError($"Could not write save slot {slot}: {exception.Message}");
+			if (File.Exists(temporaryPath))
+			{
+				File.Delete(temporaryPath);
+			}
 
-            return false;
-        }
-    }
+			return false;
+		}
+	}
 
-    public bool HasSave(int slot) => Godot.FileAccess.FileExists(SavePath(slot));
+	public bool HasSave(int slot) => Godot.FileAccess.FileExists(SavePath(slot));
 
-    public SaveSlotMetadata? LoadMetadata(int slot)
-    {
-        var path = SavePath(slot);
-        if (!Godot.FileAccess.FileExists(path))
-        {
-            return null;
-        }
+	public SaveSlotMetadata? LoadMetadata(int slot)
+	{
+		var path = SavePath(slot);
+		if (!Godot.FileAccess.FileExists(path))
+		{
+			return null;
+		}
 
-        using var file = Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read);
-        if (file is null)
-        {
-            GD.PushError($"Could not open save slot {slot} for metadata.");
-            return null;
-        }
+		using var file = Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read);
+		if (file is null)
+		{
+			GD.PushError($"Could not open save slot {slot} for metadata.");
+			return null;
+		}
 
-        if ((long)file.GetLength() > MaxSaveBytes)
-        {
-            GD.PushError($"Save slot {slot} exceeds the maximum supported size.");
-            return null;
-        }
+		if ((long)file.GetLength() > MaxSaveBytes)
+		{
+			GD.PushError($"Save slot {slot} exceeds the maximum supported size.");
+			return null;
+		}
 
-        try
-        {
-            using var document = JsonDocument.Parse(file.GetAsText());
-            var root = document.RootElement;
-            var day = TryGetNestedInt(root, "Calendar", "Day") ?? 1;
-            var gold = TryGetNestedInt(root, "Economy", "Gold") ?? 0;
-            var characters = TryGetNestedArrayLength(root, "Roster", "Characters") ?? 0;
-            var savedAt = TryGetDateTime(root, "SavedAt");
-            var victoryDay = TryGetInt(root, "VictoryDay");
-            return new SaveSlotMetadata(day, gold, characters, savedAt, victoryDay);
-        }
-        catch (Exception exception)
-        {
-            GD.PushError($"Save slot {slot} metadata could not be parsed: {exception.Message}");
-            return null;
-        }
-    }
+		try
+		{
+			using var document = JsonDocument.Parse(file.GetAsText());
+			var root = document.RootElement;
+			var day = TryGetNestedInt(root, "Calendar", "Day") ?? 1;
+			var gold = TryGetNestedInt(root, "Economy", "Gold") ?? 0;
+			var characters = TryGetNestedArrayLength(root, "Roster", "Characters") ?? 0;
+			var savedAt = TryGetDateTime(root, "SavedAt");
+			var victoryDay = TryGetInt(root, "VictoryDay");
+			return new SaveSlotMetadata(day, gold, characters, savedAt, victoryDay);
+		}
+		catch (Exception exception)
+		{
+			GD.PushError($"Save slot {slot} metadata could not be parsed: {exception.Message}");
+			return null;
+		}
+	}
 
-    public SaveState? Load(int slot)
-    {
-        var path = SavePath(slot);
-        if (!Godot.FileAccess.FileExists(path))
-        {
-            return null;
-        }
+	public SaveState? Load(int slot)
+	{
+		var path = SavePath(slot);
+		if (!Godot.FileAccess.FileExists(path))
+		{
+			return null;
+		}
 
-        using var file = Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read);
-        if (file is null)
-        {
-            GD.PushError($"Could not open save slot {slot} for reading.");
-            return null;
-        }
+		using var file = Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read);
+		if (file is null)
+		{
+			GD.PushError($"Could not open save slot {slot} for reading.");
+			return null;
+		}
 
-        if ((long)file.GetLength() > MaxSaveBytes)
-        {
-            GD.PushError($"Save slot {slot} exceeds the maximum supported size.");
-            return null;
-        }
+		if ((long)file.GetLength() > MaxSaveBytes)
+		{
+			GD.PushError($"Save slot {slot} exceeds the maximum supported size.");
+			return null;
+		}
 
-        try
-        {
-            var state = JsonSerializer.Deserialize<SaveState>(file.GetAsText(), JsonOptions);
-            if (state is null)
-            {
-                GD.PushError($"Save slot {slot} was empty or invalid.");
-                return null;
-            }
+		try
+		{
+			var state = JsonSerializer.Deserialize<SaveState>(file.GetAsText(), JsonOptions);
+			if (state is null)
+			{
+				GD.PushError($"Save slot {slot} was empty or invalid.");
+				return null;
+			}
 
-            state = SaveMigrator.Migrate(state);
-            if (state.SchemaVersion != SaveState.CurrentSchemaVersion)
-            {
-                GD.PushError($"Save slot {slot} schema {state.SchemaVersion} is not supported by schema {SaveState.CurrentSchemaVersion}.");
-                return null;
-            }
+			state = SaveMigrator.Migrate(state);
+			if (state.SchemaVersion != SaveState.CurrentSchemaVersion)
+			{
+				GD.PushError($"Save slot {slot} schema {state.SchemaVersion} is not supported by schema {SaveState.CurrentSchemaVersion}.");
+				return null;
+			}
 
-            return state;
-        }
-        catch (Exception exception)
-        {
-            GD.PushError($"Save slot {slot} could not be parsed: {exception.Message}");
-            return null;
-        }
-    }
+			return state;
+		}
+		catch (Exception exception)
+		{
+			GD.PushError($"Save slot {slot} could not be parsed: {exception.Message}");
+			return null;
+		}
+	}
 
-    public void Delete(int slot)
-    {
-        var path = SavePath(slot);
-        if (!Godot.FileAccess.FileExists(path))
-        {
-            return;
-        }
+	public void Delete(int slot)
+	{
+		var path = SavePath(slot);
+		if (!Godot.FileAccess.FileExists(path))
+		{
+			return;
+		}
 
-        DirAccess.RemoveAbsolute(ProjectSettings.GlobalizePath(path));
-    }
+		DirAccess.RemoveAbsolute(ProjectSettings.GlobalizePath(path));
+	}
 
-    private static string SavePath(int slot) => $"user://saves/slot{slot}.json";
+	private static string SavePath(int slot) => $"user://saves/slot{slot}.json";
 
-    private static int? TryGetNestedInt(JsonElement root, string objectName, string propertyName)
-    {
-        if (!root.TryGetProperty(objectName, out var parent))
-        {
-            return null;
-        }
+	private static int? TryGetNestedInt(JsonElement root, string objectName, string propertyName)
+	{
+		if (!root.TryGetProperty(objectName, out var parent))
+		{
+			return null;
+		}
 
-        return TryGetInt(parent, propertyName);
-    }
+		return TryGetInt(parent, propertyName);
+	}
 
-    private static int? TryGetNestedArrayLength(JsonElement root, string objectName, string propertyName)
-    {
-        if (!root.TryGetProperty(objectName, out var parent) || !parent.TryGetProperty(propertyName, out var value) || value.ValueKind != JsonValueKind.Array)
-        {
-            return null;
-        }
+	private static int? TryGetNestedArrayLength(JsonElement root, string objectName, string propertyName)
+	{
+		if (!root.TryGetProperty(objectName, out var parent) || !parent.TryGetProperty(propertyName, out var value) || value.ValueKind != JsonValueKind.Array)
+		{
+			return null;
+		}
 
-        return value.GetArrayLength();
-    }
+		return value.GetArrayLength();
+	}
 
-    private static int? TryGetInt(JsonElement root, string propertyName)
-    {
-        if (!root.TryGetProperty(propertyName, out var value) || value.ValueKind != JsonValueKind.Number)
-        {
-            return null;
-        }
+	private static int? TryGetInt(JsonElement root, string propertyName)
+	{
+		if (!root.TryGetProperty(propertyName, out var value) || value.ValueKind != JsonValueKind.Number)
+		{
+			return null;
+		}
 
-        return value.TryGetInt32(out var number) ? number : null;
-    }
+		return value.TryGetInt32(out var number) ? number : null;
+	}
 
-    private static DateTime? TryGetDateTime(JsonElement root, string propertyName)
-    {
-        if (!root.TryGetProperty(propertyName, out var value) || value.ValueKind != JsonValueKind.String)
-        {
-            return null;
-        }
+	private static DateTime? TryGetDateTime(JsonElement root, string propertyName)
+	{
+		if (!root.TryGetProperty(propertyName, out var value) || value.ValueKind != JsonValueKind.String)
+		{
+			return null;
+		}
 
-        return value.TryGetDateTime(out var dateTime) ? dateTime : null;
-    }
+		return value.TryGetDateTime(out var dateTime) ? dateTime : null;
+	}
 
-    private static void EnsureSaveDirectory()
-    {
-        var absolutePath = ProjectSettings.GlobalizePath("user://saves");
-        Directory.CreateDirectory(absolutePath);
-    }
+	private static void EnsureSaveDirectory()
+	{
+		var absolutePath = ProjectSettings.GlobalizePath("user://saves");
+		Directory.CreateDirectory(absolutePath);
+	}
 }
 
 public sealed record SaveSlotMetadata(int Day, int Gold, int CharacterCount, DateTime? SavedAt, int? VictoryDay);
 
 public sealed class LegacyEquipmentConverter : JsonConverter<EquipmentState>
 {
-    public override EquipmentState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var result = new EquipmentState();
-        if (reader.TokenType != JsonTokenType.StartObject)
-        {
-            reader.Skip();
-            return result;
-        }
+	public override EquipmentState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		var result = new EquipmentState();
+		if (reader.TokenType != JsonTokenType.StartObject)
+		{
+			reader.Skip();
+			return result;
+		}
 
-        static string StringOrEmpty(ref Utf8JsonReader reader)
-        {
-            return reader.TokenType switch
-            {
-                JsonTokenType.String => reader.GetString() ?? string.Empty,
-                JsonTokenType.Number => string.Empty,
-                _ => string.Empty
-            };
-        }
+		static string StringOrEmpty(ref Utf8JsonReader reader)
+		{
+			return reader.TokenType switch
+			{
+				JsonTokenType.String => reader.GetString() ?? string.Empty,
+				JsonTokenType.Number => string.Empty,
+				_ => string.Empty
+			};
+		}
 
-        while (reader.Read())
-        {
-            if (reader.TokenType == JsonTokenType.EndObject)
-            {
-                break;
-            }
+		while (reader.Read())
+		{
+			if (reader.TokenType == JsonTokenType.EndObject)
+			{
+				break;
+			}
 
-            if (reader.TokenType != JsonTokenType.PropertyName)
-            {
-                continue;
-            }
+			if (reader.TokenType != JsonTokenType.PropertyName)
+			{
+				continue;
+			}
 
-            var propertyName = reader.GetString();
-            reader.Read();
+			var propertyName = reader.GetString();
+			reader.Read();
 
-            switch (propertyName)
-            {
-                case "ClothesId":
-                    result.ClothesId = StringOrEmpty(ref reader);
-                    break;
-                case "UnderwearTopId":
-                    result.UnderwearTopId = StringOrEmpty(ref reader);
-                    break;
-                case "UnderwearBottomId":
-                    result.UnderwearBottomId = StringOrEmpty(ref reader);
-                    break;
-                case "ArmorId":
-                    result.ArmorId = StringOrEmpty(ref reader);
-                    break;
-                case "EyesId":
-                    result.EyesId = StringOrEmpty(ref reader);
-                    break;
-                case "HeadId":
-                    result.HeadId = StringOrEmpty(ref reader);
-                    break;
-                case "ArmsId":
-                    result.ArmsId = StringOrEmpty(ref reader);
-                    break;
-                case "LegsId":
-                    result.LegsId = StringOrEmpty(ref reader);
-                    break;
-                case "NeckId":
-                    result.NecklaceId = StringOrEmpty(ref reader);
-                    break;
-                case "JacketId":
-                    result.CoatId = StringOrEmpty(ref reader);
-                    break;
-                case "CollarId":
-                    result.AccessoryId = StringOrEmpty(ref reader);
-                    break;
-                case "NecklaceId":
-                    result.NecklaceId = StringOrEmpty(ref reader);
-                    break;
-                case "CoatId":
-                    result.CoatId = StringOrEmpty(ref reader);
-                    break;
-                case "AccessoryId":
-                    result.AccessoryId = StringOrEmpty(ref reader);
-                    break;
-                case "ActiveClothingStyle":
-                    result.ActiveClothingStyle = Enum.TryParse<ClothingStyle>(reader.TokenType == JsonTokenType.String ? reader.GetString() ?? string.Empty : string.Empty, out var style) ? style : ClothingStyle.Default;
-                    break;
-                default:
-                    if (propertyName is "TotalBonusRanchSkill" or "TotalBonusCraftSkill" or "TotalBonusCombatSkill" or "TotalBonusMaxHp" or "TotalBonusMaxEnergy" or "TotalBonusMorale"
-                        && reader.TokenType == JsonTokenType.Number)
-                    {
-                        result.GetType().GetProperty(propertyName)?.SetValue(result, reader.GetInt32());
-                    }
-                    else
-                    {
-                        reader.Skip();
-                    }
-                    break;
-            }
-        }
+			switch (propertyName)
+			{
+				case "ClothesId":
+					result.ClothesId = StringOrEmpty(ref reader);
+					break;
+				case "UnderwearTopId":
+					result.UnderwearTopId = StringOrEmpty(ref reader);
+					break;
+				case "UnderwearBottomId":
+					result.UnderwearBottomId = StringOrEmpty(ref reader);
+					break;
+				case "ArmorId":
+					result.ArmorId = StringOrEmpty(ref reader);
+					break;
+				case "EyesId":
+					result.EyesId = StringOrEmpty(ref reader);
+					break;
+				case "HeadId":
+					result.HeadId = StringOrEmpty(ref reader);
+					break;
+				case "ArmsId":
+					result.ArmsId = StringOrEmpty(ref reader);
+					break;
+				case "LegsId":
+					result.LegsId = StringOrEmpty(ref reader);
+					break;
+				case "NeckId":
+					result.NecklaceId = StringOrEmpty(ref reader);
+					break;
+				case "JacketId":
+					result.CoatId = StringOrEmpty(ref reader);
+					break;
+				case "CollarId":
+					result.AccessoryId = StringOrEmpty(ref reader);
+					break;
+				case "NecklaceId":
+					result.NecklaceId = StringOrEmpty(ref reader);
+					break;
+				case "CoatId":
+					result.CoatId = StringOrEmpty(ref reader);
+					break;
+				case "AccessoryId":
+					result.AccessoryId = StringOrEmpty(ref reader);
+					break;
+				case "ActiveClothingStyle":
+					result.ActiveClothingStyle = Enum.TryParse<ClothingStyle>(reader.TokenType == JsonTokenType.String ? reader.GetString() ?? string.Empty : string.Empty, out var style) ? style : ClothingStyle.Default;
+					break;
+				default:
+					if (propertyName is "TotalBonusRanchSkill" or "TotalBonusCraftSkill" or "TotalBonusCombatSkill" or "TotalBonusMaxHp" or "TotalBonusMaxEnergy" or "TotalBonusMorale"
+						&& reader.TokenType == JsonTokenType.Number)
+					{
+						result.GetType().GetProperty(propertyName)?.SetValue(result, reader.GetInt32());
+					}
+					else
+					{
+						reader.Skip();
+					}
+					break;
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    private static string StringOrEmpty(ref Utf8JsonReader reader)
-    {
-        return reader.TokenType switch
-        {
-            JsonTokenType.String => reader.GetString() ?? string.Empty,
-            JsonTokenType.Number => string.Empty,
-            _ => string.Empty
-        };
-    }
+	private static string StringOrEmpty(ref Utf8JsonReader reader)
+	{
+		return reader.TokenType switch
+		{
+			JsonTokenType.String => reader.GetString() ?? string.Empty,
+			JsonTokenType.Number => string.Empty,
+			_ => string.Empty
+		};
+	}
 
-    public override void Write(Utf8JsonWriter writer, EquipmentState value, JsonSerializerOptions options)
-    {
-        // Clone options without this converter to avoid re-entering it during write.
-        var cleanOptions = new JsonSerializerOptions(options);
-        cleanOptions.Converters.Remove(this);
-        JsonSerializer.Serialize(writer, value, cleanOptions);
-    }
+	public override void Write(Utf8JsonWriter writer, EquipmentState value, JsonSerializerOptions options)
+	{
+		// Clone options without this converter to avoid re-entering it during write.
+		var cleanOptions = new JsonSerializerOptions(options);
+		cleanOptions.Converters.Remove(this);
+		JsonSerializer.Serialize(writer, value, cleanOptions);
+	}
 }

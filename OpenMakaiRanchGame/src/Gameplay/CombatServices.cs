@@ -68,7 +68,7 @@ public sealed class CombatService
             report.TurnLog.Add($"Round {roundNum}: {round.Actions.Count} actions resolved.");
         }
 
-        return FinalizeMissionCombat(mission, partyChars, party, enemySide, report, maxRounds);
+        return FinalizeMissionCombat(mission!, partyChars, party, enemySide, report, maxRounds);
     }
 
     public InteractiveCombatSession StartInteractiveMission(string missionId)

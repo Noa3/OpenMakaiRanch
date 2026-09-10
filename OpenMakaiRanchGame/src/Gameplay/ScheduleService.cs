@@ -7,29 +7,29 @@ namespace OpenMakaiRanch.Gameplay;
 
 public sealed class ScheduleService
 {
-    private readonly SaveState _state;
-    private readonly DataRegistry _data;
+	private readonly SaveState _state;
+	private readonly DataRegistry _data;
 
-    public ScheduleService(SaveState state, DataRegistry data)
-    {
-        _state = state;
-        _data = data;
-    }
+	public ScheduleService(SaveState state, DataRegistry data)
+	{
+		_state = state;
+		_data = data;
+	}
 
-    public IReadOnlyList<JobDefinition> AssignableJobs => _data.AssignableJobs();
+	public IReadOnlyList<JobDefinition> AssignableJobs => _data.AssignableJobs();
 
-    public string GetAssignment(string characterId)
-    {
-        return _state.Schedule.AssignedJobs.TryGetValue(characterId, out var jobId) ? jobId : "rest";
-    }
+	public string GetAssignment(string characterId)
+	{
+		return _state.Schedule.AssignedJobs.TryGetValue(characterId, out var jobId) ? jobId : "rest";
+	}
 
-    public void AssignJob(string characterId, string jobId)
-    {
-        if (!_data.Jobs.ContainsKey(jobId))
-        {
-            return;
-        }
+	public void AssignJob(string characterId, string jobId)
+	{
+		if (!_data.Jobs.ContainsKey(jobId))
+		{
+			return;
+		}
 
-        _state.Schedule.AssignedJobs[characterId] = jobId;
-    }
+		_state.Schedule.AssignedJobs[characterId] = jobId;
+	}
 }
