@@ -1,12 +1,11 @@
 using Godot;
+using OpenMakaiRanch.App;
 
 namespace OpenMakaiRanch.World;
 
 /// <summary>
-/// Idempotently registers the world InputMap actions (keyboard + gamepad) on scene ready.
-/// Keeping the mapping in one place avoids scattering AddAction calls and lets the
-/// smoke test verify the exact action set. The 3D_REMAKE_PLAN requires "keyboard plus
-/// controller mappings" for movement and camera.
+/// Applies shared account-wide keyboard/controller bindings when a playable world is ready.
+/// KeyboardMappings remains public for smoke-test/backwards compatibility.
 /// </summary>
 public partial class WorldInputBootstrap : Node
 {
@@ -24,65 +23,6 @@ public partial class WorldInputBootstrap : Node
 
     public override void _Ready()
     {
-        EnsureAction("move_forward");
-        EnsureAction("move_backward");
-        EnsureAction("move_left");
-        EnsureAction("move_right");
-        EnsureAction("move_sprint");
-        EnsureAction("interact");
-        EnsureAction("camera_look_up");
-        EnsureAction("camera_look_down");
-        EnsureAction("camera_look_left");
-        EnsureAction("camera_look_right");
-        EnsureAction("camera_zoom_in");
-        EnsureAction("camera_zoom_out");
-        EnsureAction("camera_recenter");
-        EnsureAction("camera_first_person");
-        EnsureAction("cycle_character");
-        EnsureAction("toggle_management");
-        EnsureAction("open_help");
-
-        foreach (var (action, _, keycode) in KeyboardMappings)
-        {
-            AddKeyIfAbsent(action, keycode);
-        }
-
-        // Interact on F / Space.
-        AddKeyIfAbsent("interact", (int)Key.F);
-        AddKeyIfAbsent("interact", (int)Key.Space);
-        // Recenter on R; Tab cycles the worker affected by spatial job stations.
-        AddKeyIfAbsent("camera_recenter", (int)Key.R);
-        AddKeyIfAbsent("camera_first_person", (int)Key.V);
-        AddKeyIfAbsent("cycle_character", (int)Key.Tab);
-        AddKeyIfAbsent("toggle_management", (int)Key.M);
-        AddKeyIfAbsent("move_sprint", (int)Key.Shift);
-        AddKeyIfAbsent("open_help", (int)Key.F1);
-    }
-
-    private static void EnsureAction(string action)
-    {
-        if (!InputMap.HasAction(action))
-        {
-            InputMap.AddAction(action);
-        }
-    }
-
-    private static void AddKeyIfAbsent(string action, int keycode)
-    {
-        var existing = InputMap.ActionGetEvents(action);
-        foreach (var ev in existing)
-        {
-            if (ev is InputEventKey k && k.Keycode == (Key)keycode)
-            {
-                return;
-            }
-        }
-
-        var keyEvent = new InputEventKey
-        {
-            Keycode = (Key)keycode,
-            Pressed = true
-        };
-        InputMap.ActionAddEvent(action, keyEvent);
+        InputBindingService.EnsureApplied();
     }
 }
