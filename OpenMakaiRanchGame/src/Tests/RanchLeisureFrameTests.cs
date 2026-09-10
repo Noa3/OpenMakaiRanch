@@ -29,21 +29,21 @@ public static class RanchLeisureFrameTests
             var beforePhase = game.State.Calendar.Phase;
             player.GlobalPosition = leisure.BoardStation!.GlobalPosition;
             await Frames(game, 2);
-            await Key(game, Key.F);
+            await KeyStroke(game, Key.F);
             Check(result, pause.IsCommunityBoardOpen && game.GetTree().Paused,
                 "F at the physical noticeboard opens the existing paused courier board");
             Check(result, game.Economy.Gold == beforeGold && game.State.Ranch.Stockpile["supplies"] == beforeStock,
                 "opening the physical board does not deliver or pay automatically");
-            await Key(game, Key.Escape);
+            await KeyStroke(game, Key.Escape);
             Check(result, pause.IsOpen && !pause.IsCommunityBoardOpen, "physical board keeps existing nested Back-to-pause behavior");
-            await Key(game, Key.Escape);
+            await KeyStroke(game, Key.Escape);
             Check(result, !pause.IsOpen && !game.GetTree().Paused, "second Back returns from the board to the world");
 
             player.GlobalPosition = leisure.CornerStation!.GlobalPosition;
             await Frames(game, 2);
             Check(result, ranch.GetInteractionPresentation().TargetNode == leisure.CornerStation,
                 "quiet corner is selected by the existing nearest-target resolver");
-            await Key(game, Key.F);
+            await KeyStroke(game, Key.F);
             Check(result, pause.IsRanchCornerOpen && game.GetTree().Paused, "F opens the quiet-corner surface with one pause owner");
             var panel = pause.GetNode<Control>("RanchCorner");
             var restore = panel.GetNode<Button>("Margin/Layout/Scroll/Content/Restore");
@@ -64,7 +64,7 @@ public static class RanchLeisureFrameTests
             var visualCount = leisure.GetChildCount();
             for (var i = 0; i < 20; i++) leisure.RefreshFromGame();
             Check(result, visualCount == leisure.GetChildCount(), "repeated visual refreshes do not accumulate props or labels");
-            await Key(game, Key.Escape);
+            await KeyStroke(game, Key.Escape);
             Check(result, !pause.IsOpen && !pause.IsRanchCornerOpen && !game.GetTree().Paused,
                 "Back closes the corner directly to the world without leaving a hidden pause owner");
             var oldGold = game.Economy.Gold;
@@ -75,7 +75,7 @@ public static class RanchLeisureFrameTests
             Check(result, game.TryConductMentorship(resident.Id, game.StateGeneration),
                 "an ordinary existing mentorship spends progression stamina before the break");
             var tiredStamina = game.State.Player.Stamina;
-            await Key(game, Key.F);
+            await KeyStroke(game, Key.F);
             Check(result, pause.IsRanchCornerOpen && !rest.Disabled, "reopening exposes recovery after actual progression spending");
             rest.EmitSignal(BaseButton.SignalName.Pressed);
             Check(result, game.State.Player.Stamina == tiredStamina + RanchLeisureService.DailyRecovery && rest.Disabled,
@@ -97,9 +97,9 @@ public static class RanchLeisureFrameTests
             ranch.RefreshLiveWorld();
             try
             {
-                await Key(game, Key.F);
+                await KeyStroke(game, Key.F);
                 Check(result, pause.IsRanchCornerOpen, "personal station opens even with no available roster worker");
-                await Key(game, Key.Escape);
+                await KeyStroke(game, Key.Escape);
             }
             finally
             {
@@ -110,7 +110,7 @@ public static class RanchLeisureFrameTests
             var savedGold = game.Economy.Gold;
             var savedStamina = game.State.Player.Stamina;
             var savedSupplies = game.State.Ranch.Stockpile["supplies"];
-            await Key(game, Key.F);
+            await KeyStroke(game, Key.F);
             Check(result, pause.IsRanchCornerOpen, "corner can reopen after roster presentation is restored");
             game.NewGame();
             Check(result, !pause.IsOpen && !game.GetTree().Paused && !leisure.ShowsRestoredCorner,
@@ -137,7 +137,7 @@ public static class RanchLeisureFrameTests
         for (var i = 0; i < count; i++) await game.ToSignal(game.GetTree(), SceneTree.SignalName.ProcessFrame);
     }
 
-    private static async Task Key(GameRoot game, Key key)
+    private static async Task KeyStroke(GameRoot game, Key key)
     {
         Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = key, Keycode = key, Pressed = true });
         Input.FlushBufferedEvents();
