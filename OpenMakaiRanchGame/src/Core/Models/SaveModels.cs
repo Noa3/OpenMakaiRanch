@@ -96,7 +96,7 @@ public enum TrainingCategory
 
 public sealed class SaveState
 {
-    public const int CurrentSchemaVersion = 14;
+    public const int CurrentSchemaVersion = 15;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public DateTime? SavedAt { get; set; }
@@ -111,6 +111,7 @@ public sealed class SaveState
     public ResearchState Research { get; set; } = new();
     public PetState Pets { get; set; } = new();
     public BondState Bond { get; set; } = new();
+    public DatingState Dating { get; set; } = new();
     public RecruitmentState Recruitment { get; set; } = new();
     public SettingsState Settings { get; set; } = new();
     public MatureState Mature { get; set; } = new();
@@ -223,7 +224,13 @@ public sealed class PlayerState
 
     public int MaxStamina { get; set; } = 100;
 
-    /// <summary>Prevents repeatedly farming bath/shower recovery during one in-game day.</summary>
+    /// <summary>Temporary capacity bonus available for the current day (for example Well Rested).</summary>
+    public int DailyStaminaBonus { get; set; }
+
+    /// <summary>Bonus scheduled for the next morning by evening routines such as a prepared hot bath.</summary>
+    public int NextDayStaminaBonus { get; set; }
+
+    /// <summary>Prevents repeatedly scheduling bath/shower benefits during one in-game day.</summary>
     public bool BathedToday { get; set; }
 }
 
@@ -429,6 +436,57 @@ public sealed class PetEntryState
 public sealed class BondState
 {
     public List<string> CompletedEventIds { get; set; } = new();
+}
+
+public enum DateInviteApproach
+{
+    Respectful,
+    Pressured,
+    Forced
+}
+
+public enum DateActivityKind
+{
+    RanchWalk,
+    WorkTogether,
+    SharedMeal,
+    TownOuting,
+    QuietRest
+}
+
+public enum RelationshipStage
+{
+    Distant,
+    Familiar,
+    Close,
+    Romantic,
+    DeeplyAttached
+}
+
+/// <summary>
+/// Additive real-time companionship/date state. Core mental progression remains in CharacterState.Mature;
+/// this state records only relationship history, active companionship and anti-spam timing.
+/// </summary>
+public sealed class DatingState
+{
+    public string ActivePartnerId { get; set; } = string.Empty;
+    public DateInviteApproach ActiveApproach { get; set; } = DateInviteApproach.Respectful;
+    public int StartedDay { get; set; }
+    public DayPhase StartedPhase { get; set; } = DayPhase.Morning;
+    public int LastActivityDay { get; set; }
+    public DayPhase LastActivityPhase { get; set; } = DayPhase.Night;
+    public Dictionary<string, DatingPartnerState> Partners { get; set; } = new();
+}
+
+public sealed class DatingPartnerState
+{
+    public int DatesStarted { get; set; }
+    public int SharedActivities { get; set; }
+    public int PositiveMoments { get; set; }
+    public int PressuredMoments { get; set; }
+    public int ForcedMoments { get; set; }
+    public int LastDateDay { get; set; }
+    public string LastActivityId { get; set; } = string.Empty;
 }
 
 public sealed class RecruitmentState
