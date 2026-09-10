@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Keep the source language stable when the installed SDK is upgraded. -->
+    <LangVersion>12.0</LangVersion>
+  </PropertyGroup>
+</Project>
