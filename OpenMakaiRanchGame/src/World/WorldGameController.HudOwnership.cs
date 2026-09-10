@@ -6,20 +6,32 @@ namespace OpenMakaiRanch.World;
 /// <summary>One presentation owner for area HUDs and world-facing actions. No simulation state.</summary>
 public partial class WorldGameController
 {
+    private bool _hudOwnershipBound;
     private WorldTutorialController? _ranchHelp;
     private TownTutorialController? _townHelp;
 
     public bool WorldHelpVisible => _ranchHelp?.HelpVisible == true || _townHelp?.HelpVisible == true;
-    public bool CanOpenWorldHelp => IsInsideTree() && !GetTree().Paused && !IsManagementVisible
+    private bool OrdinaryInterfaceAvailable => IsInsideTree() && !GetTree().Paused && !IsManagementVisible
         && !_flowLocksUi && _pauseMenu?.IsOpen != true && _transition?.IsTransitioning != true
-        && _firstDayFlow?.BlocksWorldInput != true && GameRoot.Instance?.CombatWorldTimeLocked != true
-        && _activeAreaId is "ranch" or "town";
+        && _firstDayFlow?.BlocksWorldInput != true && GameRoot.Instance?.CombatWorldTimeLocked != true;
+
+    public bool CanOpenWorldHelp => OrdinaryInterfaceAvailable && _activeAreaId is "ranch" or "town";
 
     public bool WorldActionsAvailable => CanOpenWorldHelp && !WorldHelpVisible
         && (_activeAreaId == "town" ? _town?.InputGate.WorldInputEnabled : _ranch?.InputGate.WorldInputEnabled) == true;
 
+    // Story code also advances the shared clock in the intro. Player-facing HUD commands apply
+    // their stricter active-area/tutorial gate before calling this common, UI-locked boundary.
+    private bool WorldClockCommandAvailable => OrdinaryInterfaceAvailable && !WorldHelpVisible
+        && (_activeAreaId == "intro" ? _introHouse?.InputGate.WorldInputEnabled
+            : _activeAreaId == "town" ? _town?.InputGate.WorldInputEnabled : _ranch?.InputGate.WorldInputEnabled) == true;
+
+    public void RefreshWorldInputOwnership() => SetTransitionInputLock(_transition?.IsTransitioning == true);
+
     private void BindHudOwnership()
     {
+        if (_hudOwnershipBound) return;
+        _hudOwnershipBound = true;
         _ranchHelp = _ranch?.GetNodeOrNull<WorldTutorialController>("WorldHud/TutorialOverlay");
         _townHelp = _town?.GetNodeOrNull<TownTutorialController>("TownHud/TutorialOverlay");
         if (_ranch is not null) _ranch.InputGate.InputStateDidChange += RefreshHudOwnership;
@@ -30,6 +42,8 @@ public partial class WorldGameController
 
     private void UnbindHudOwnership()
     {
+        if (!_hudOwnershipBound) return;
+        _hudOwnershipBound = false;
         if (_ranch is not null) _ranch.InputGate.InputStateDidChange -= RefreshHudOwnership;
         if (_town is not null) _town.InputGate.InputStateDidChange -= RefreshHudOwnership;
         if (GodotObject.IsInstanceValid(_pauseMenu)) _pauseMenu!.VisibilityChanged -= RefreshHudOwnership;
@@ -60,7 +74,8 @@ public partial class WorldGameController
 
     private void OnHudAdvanceTime()
     {
-        if (_activeAreaId == "ranch" && _ranch?.Hud?.Visible == true) AdvanceWorldTime();
+        if (_activeAreaId == "ranch" && _ranch?.Hud?.Visible == true
+            && WorldActionsAvailable && _firstDayFlow?.IsActive != true) AdvanceWorldTime();
     }
 
     private void OnHudManagement()

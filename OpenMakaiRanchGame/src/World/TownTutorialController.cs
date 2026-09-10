@@ -83,13 +83,14 @@ public partial class TownTutorialController : Control
 
     public void CloseHelp()
     {
-        if (_helpPanel is null || _town is null)
+        if (_helpPanel is null || _town is null || !_helpPanel.Visible)
         {
             return;
         }
 
         _helpPanel.Visible = false;
-        _town.InputGate.SetUiOwnsInput(false);
+        if (_town.GetParent() is WorldGameController host) host.RefreshWorldInputOwnership();
+        else _town.InputGate.SetUiOwnsInput(false);
     }
 
     private void DismissHint()

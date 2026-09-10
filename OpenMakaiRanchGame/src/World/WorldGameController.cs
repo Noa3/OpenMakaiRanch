@@ -38,6 +38,7 @@ public partial class WorldGameController : Node
     private FirstDayFlowController? _firstDayFlow;
     private bool _flowLocksUi;
     private string _activeAreaId = "ranch";
+    private ulong _storyAreaGeneration;
 
     public bool IsManagementVisible => _managementRoot?.Visible == true;
     public bool FlowLocksUi => _flowLocksUi;
@@ -255,6 +256,11 @@ public partial class WorldGameController : Node
             return false;
         }
 
+        // Repeated state-driven screen refreshes must not restart this area's reveal or
+        // teleport the player. A different save/new-game generation still resumes normally.
+        if (_activeAreaId == areaId && _storyAreaGeneration == GameRoot.Instance.StateGeneration)
+            return true;
+        _storyAreaGeneration = GameRoot.Instance.StateGeneration;
         _transition?.CoverInstant();
         if (!SetActiveArea(areaId, reposition))
         {
@@ -293,7 +299,7 @@ public partial class WorldGameController : Node
 
     public void AdvanceWorldTime()
     {
-        if (!WorldActionsAvailable || _firstDayFlow?.IsActive == true) return;
+        if (!WorldClockCommandAvailable) return;
         var game = GameRoot.Instance;
         if (game is null || !GodotObject.IsInstanceValid(game))
         {

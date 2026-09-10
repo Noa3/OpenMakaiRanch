@@ -39,10 +39,10 @@ public partial class UiShellController
         return new ContentFocus(key, controls.Take(index).Count(control => FocusKey(control) == key), index);
     }
 
-    private Control? FirstMenuFocus() => FocusableControls(_content).FirstOrDefault()
-        ?? (_compactNavigationScroll.IsVisibleInTree()
+    private Control? FirstMenuFocus() => (_compactNavigationScroll.IsVisibleInTree()
             ? FocusableControls(_compactNavigation).FirstOrDefault()
-            : FocusableControls(_navigation).FirstOrDefault());
+            : FocusableControls(_navigation).FirstOrDefault())
+        ?? FocusableControls(_content).FirstOrDefault();
 
     private void RestoreContentViewDeferred(ulong revision, int scroll, ContentFocus? focus)
     {
