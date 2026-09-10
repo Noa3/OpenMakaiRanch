@@ -1,0 +1,7 @@
+<Project>
+  <Target Name="RequireCSharp12" BeforeTargets="CoreCompile"
+          Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <Error Condition="'$(LangVersion)' != '12.0'"
+           Text="OpenMakaiRanch requires C# 12. Set LangVersion to 12.0, not latest or preview. The SDK and target framework are configured separately." />
+  </Target>
+</Project>
