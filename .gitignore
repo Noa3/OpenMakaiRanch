@@ -83,3 +83,4 @@ start-comfyui.bat
 
 # Machine-local Git worktrees
 .worktrees/
+.dream-loop/

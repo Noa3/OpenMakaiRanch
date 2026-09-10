@@ -563,6 +563,12 @@ public sealed class MilkEconomyService
         var character = _state.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
         if (character is null) return;
 
+        // Fail-closed: milk economy requires confirmed adult eligibility.
+        // The milk constitution is a body state that can only be set through
+        // gated training actions, but the economy itself must also verify.
+        if (!AdultEligibilityGate.IsEligibleForAdult(character))
+            return;
+
         var milk = character.Milk;
 
         // Only characters with a milk constitution (lactation drug) or
@@ -598,6 +604,11 @@ public sealed class MilkEconomyService
     {
         var character = _state.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
         if (character is null) return 0;
+
+        // Fail-closed: shipping a minor's milk would realize revenue from an
+        // ineligible character. Defence in depth — ProduceMilk is already gated.
+        if (!AdultEligibilityGate.IsEligibleForAdult(character))
+            return 0;
 
         var milk = character.Milk;
         var amount = milk.CurrentAmount;

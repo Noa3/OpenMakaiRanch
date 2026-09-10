@@ -1,0 +1,147 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="10_controller"]
+[ext_resource type="Script" path="res://src/World/WorldStation.cs" id="1_station"]
+[ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="11_player"]
+[ext_resource type="Script" path="res://src/World/WorldCameraRig.cs" id="12_rig"]
+[ext_resource type="Script" path="res://src/World/WorldTravelGate.cs" id="13_gate"]
+[ext_resource type="PackedScene" path="res://assets/3d/signpost.glb" id="2_sign"]
+[ext_resource type="PackedScene" path="res://assets/3d/crates_woodpile.glb" id="3_crates"]
+[ext_resource type="PackedScene" path="res://assets/3d/hedge.glb" id="4_hedge"]
+[ext_resource type="PackedScene" path="res://assets/3d/well.glb" id="5_well"]
+[ext_resource type="PackedScene" path="res://assets/3d/tree_broadleaf.glb" id="6_tree"]
+[ext_resource type="Material" path="res://assets/3d/grass_field.tres" id="7_groundmat"]
+
+[sub_resource type="BoxMesh" id="ground_mesh"]
+size = Vector3(30, 1, 24)
+
+[sub_resource type="BoxShape3D" id="ground_shape"]
+size = Vector3(30, 1, 24)
+
+[sub_resource type="BoxMesh" id="counter_mesh"]
+size = Vector3(2.5, 1.1, 1.2)
+
+[sub_resource type="BoxShape3D" id="counter_shape"]
+size = Vector3(2.5, 1.1, 1.2)
+
+[sub_resource type="BoxMesh" id="player_mesh"]
+size = Vector3(0.5, 1.6, 0.5)
+
+[sub_resource type="BoxShape3D" id="player_shape"]
+size = Vector3(0.5, 1.6, 0.5)
+
+[node name="Town" type="Node3D"]
+script = ExtResource("10_controller")
+AreaId = "town"
+EntryPosition = Vector3(0, 0.8, 9)
+EntryYawDegrees = 180.0
+EntryPitchDegrees = 14.0
+EntryDistance = 8.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0.71, 0, -0.71, 0.7, 0, 8, 0)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("ground_mesh")
+surface_material_override/0 = ExtResource("7_groundmat")
+
+[node name="Collision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("ground_shape")
+
+[node name="ShopCounter" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -6)
+script = ExtResource("1_station")
+TargetId = "STATION_TOWN_SHOP"
+Label = "Town Shop"
+CommandKind = 3
+CommandTargetId = "bandage"
+
+[node name="Mesh" type="MeshInstance3D" parent="ShopCounter"]
+mesh = SubResource("counter_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="ShopCounter"]
+shape = SubResource("counter_shape")
+
+[node name="GuildCounter" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.55, -6)
+script = ExtResource("1_station")
+TargetId = "STATION_TOWN_GUILD"
+Label = "Guild (Recruit)"
+CommandKind = 4
+CommandTargetId = ""
+
+[node name="Mesh" type="MeshInstance3D" parent="GuildCounter"]
+mesh = SubResource("counter_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="GuildCounter"]
+shape = SubResource("counter_shape")
+
+[node name="TravelToRanch" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 11)
+script = ExtResource("13_gate")
+TargetId = "GATE_TOWN_TO_RANCH"
+Destination = "ranch"
+Label = "Travel to Ranch"
+
+[node name="Mesh" type="MeshInstance3D" parent="TravelToRanch"]
+mesh = SubResource("counter_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="TravelToRanch"]
+shape = SubResource("counter_shape")
+
+[node name="Scenery" type="Node3D" parent="."]
+
+[node name="Signpost" parent="Scenery" instance=ExtResource("2_sign")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+
+[node name="Stall" parent="Scenery" instance=ExtResource("3_crates")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -8)
+
+[node name="Hedge" parent="Scenery" instance=ExtResource("4_hedge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 8)
+
+[node name="Well" parent="Scenery" instance=ExtResource("5_well")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)
+
+[node name="Tree_A" parent="Scenery" instance=ExtResource("6_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 7)
+
+[node name="Tree_B" parent="Scenery" instance=ExtResource("6_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, 3)
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 9)
+script = ExtResource("11_player")
+MaxWalkSpeed = 5.0
+Acceleration = 40.0
+Gravity = 20.0
+HeadHeight = 1.6
+
+[node name="CameraTarget" type="Node3D" parent="Player"]
+position = Vector3(0, 1.6, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("player_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Player"]
+shape = SubResource("player_shape")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("12_rig")
+LookRate = 1.5
+ZoomSensitivity = 1.5
+RecenterSpeed = 6.0
+Yaw = -1.5708
+Pitch = 0.5236
+Distance = 7.0
+Target = NodePath("../Player/CameraTarget")
+
+[node name="Camera" type="Camera3D" parent="CameraRig"]
+current = true
+fov = 70.0
