@@ -5,8 +5,8 @@ using OpenMakaiRanch.App;
 namespace OpenMakaiRanch.World;
 
 /// <summary>
-/// In-game ESC menu. It pauses the SceneTree and owns only presentation/routing.
-/// Save/settings operations are delegated back to the existing management UI.
+/// In-game pause menu. It pauses the SceneTree and owns only presentation/routing.
+/// Save/settings/options operations are delegated back to the existing management UI.
 /// </summary>
 public partial class PauseMenuController : Control
 {
@@ -14,6 +14,7 @@ public partial class PauseMenuController : Control
     private Button? _resumeButton;
     private Button? _saveLoadButton;
     private Button? _settingsButton;
+    private Button? _optionsButton;
     private Button? _mainMenuButton;
     private Button? _quitButton;
 
@@ -23,16 +24,20 @@ public partial class PauseMenuController : Control
     public override void _Ready()
     {
         ProcessMode = ProcessModeEnum.Always;
+        InputBindingService.EnsureApplied();
+
         _contextLabel = GetNodeOrNull<Label>("Center/Panel/Content/ContextLabel");
         _resumeButton = GetNodeOrNull<Button>("Center/Panel/Content/ResumeButton");
         _saveLoadButton = GetNodeOrNull<Button>("Center/Panel/Content/SaveLoadButton");
         _settingsButton = GetNodeOrNull<Button>("Center/Panel/Content/SettingsButton");
         _mainMenuButton = GetNodeOrNull<Button>("Center/Panel/Content/MainMenuButton");
         _quitButton = GetNodeOrNull<Button>("Center/Panel/Content/QuitButton");
+        EnsureOptionsButton();
 
         if (_resumeButton is not null) _resumeButton.Pressed += Close;
         if (_saveLoadButton is not null) _saveLoadButton.Pressed += () => OpenManagement("saveload");
         if (_settingsButton is not null) _settingsButton.Pressed += () => OpenManagement("settings");
+        if (_optionsButton is not null) _optionsButton.Pressed += () => OpenManagement("options");
         if (_mainMenuButton is not null) _mainMenuButton.Pressed += ReturnToMainMenu;
         if (_quitButton is not null) _quitButton.Pressed += QuitGame;
 
@@ -41,7 +46,7 @@ public partial class PauseMenuController : Control
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (!Visible || !@event.IsActionPressed("ui_cancel"))
+        if (!Visible || (!@event.IsActionPressed("ui_cancel") && !@event.IsActionPressed("pause_menu")))
         {
             return;
         }
@@ -63,9 +68,15 @@ public partial class PauseMenuController : Control
             _contextLabel.Text = $"{area}  •  Day {game.State.Calendar.Day}  •  {game.State.Calendar.Phase}";
         }
 
+        if (_resumeButton is not null)
+        {
+            _resumeButton.TooltipText = $"Return to the game [{InputBindingService.GetCombinedLabel("pause_menu")} / Back]";
+        }
+
         Visible = true;
         Input.MouseMode = Input.MouseModeEnum.Visible;
         GetTree().Paused = true;
+        CallDeferred(nameof(FocusResume));
     }
 
     public void Close()
@@ -77,6 +88,42 @@ public partial class PauseMenuController : Control
 
         GetTree().Paused = false;
         Visible = false;
+    }
+
+    private void EnsureOptionsButton()
+    {
+        var content = GetNodeOrNull<VBoxContainer>("Center/Panel/Content");
+        if (content is null)
+        {
+            return;
+        }
+
+        _optionsButton = content.GetNodeOrNull<Button>("OptionsButton");
+        if (_optionsButton is not null)
+        {
+            return;
+        }
+
+        _optionsButton = new Button
+        {
+            Name = "OptionsButton",
+            Text = "Options / Controls",
+            TooltipText = "Open graphics, camera, accessibility and remappable controls."
+        };
+        content.AddChild(_optionsButton);
+
+        if (_settingsButton is not null)
+        {
+            content.MoveChild(_optionsButton, _settingsButton.GetIndex() + 1);
+        }
+    }
+
+    private void FocusResume()
+    {
+        if (Visible && _resumeButton is not null && GodotObject.IsInstanceValid(_resumeButton))
+        {
+            _resumeButton.GrabFocus();
+        }
     }
 
     private void OpenManagement(string screenId)
