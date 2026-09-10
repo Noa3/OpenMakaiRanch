@@ -4,7 +4,7 @@
     <RootNamespace>OpenMakaiRanch</RootNamespace>
     <AssemblyName>OpenMakaiRanch</AssemblyName>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <DefaultItemExcludes>$(DefaultItemExcludes);.godot/**;.mono/**</DefaultItemExcludes>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
