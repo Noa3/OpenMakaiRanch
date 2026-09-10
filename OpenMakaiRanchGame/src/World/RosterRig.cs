@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -25,12 +26,34 @@ public partial class RosterRig : Node3D
     [Export] public bool AnimateTravel { get; set; } = true;
     [Export] public float TravelSpeed { get; set; } = 2.4f;
     [Export] public float ArrivalDistance { get; set; } = 0.08f;
+    [Export] public bool CompanionOnly { get; set; }
+    [Export] public float CompanionSideOffset { get; set; } = 1.15f;
+    [Export] public float CompanionBackOffset { get; set; } = 1.35f;
 
     private readonly Dictionary<string, CharacterAvatar3D> _avatars = new();
+    private readonly Dictionary<string, Label3D> _thoughtBubbles = new();
     private readonly Dictionary<string, NavigationAgent3D> _agents = new();
     private readonly Dictionary<string, Vector3> _targets = new();
+    private Node3D? _followTarget;
+    private GameRoot? _game;
+    private string _activeCompanionId = string.Empty;
 
     public int AvatarCount => _avatars.Count;
+    public string ActiveCompanionId => _activeCompanionId;
+
+    public void BindFollowTarget(Node3D? target) => _followTarget = target;
+
+    public bool TryGetAvatar(string characterId, out CharacterAvatar3D? avatar)
+    {
+        if (_avatars.TryGetValue(characterId, out var found) && GodotObject.IsInstanceValid(found))
+        {
+            avatar = found;
+            return true;
+        }
+
+        avatar = null;
+        return false;
+    }
 
     public int TravelingCount => _avatars.Count(pair =>
         _targets.TryGetValue(pair.Key, out var target)
@@ -83,6 +106,19 @@ public partial class RosterRig : Node3D
                 continue;
             }
 
+            if (string.Equals(id, _activeCompanionId, StringComparison.Ordinal)
+                && _followTarget is not null
+                && GodotObject.IsInstanceValid(_followTarget))
+            {
+                target = CompanionFollowTarget(_followTarget);
+                _targets[id] = target;
+                RefreshThoughtBubble(id);
+            }
+            else if (_thoughtBubbles.TryGetValue(id, out var idleBubble) && GodotObject.IsInstanceValid(idleBubble))
+            {
+                idleBubble.Visible = false;
+            }
+
             var current = avatar.GlobalPosition;
             var distance = current.DistanceTo(target);
             if (distance <= ArrivalDistance)
@@ -123,6 +159,9 @@ public partial class RosterRig : Node3D
     /// </summary>
     public int Refresh(GameRoot game)
     {
+        _game = game;
+        _activeCompanionId = game.Dating.ActivePartnerId;
+
         var roster = game.Roster;
         var schedule = game.Schedule;
         var data = game.Data;
@@ -132,6 +171,11 @@ public partial class RosterRig : Node3D
 
         foreach (var character in roster.Characters)
         {
+            if (CompanionOnly && !string.Equals(character.Id, _activeCompanionId, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
             var assignment = schedule.GetAssignment(character.Id);
             var category = JobCategory.Rest;
             if (data.Jobs.TryGetValue(assignment, out var job))
@@ -154,20 +198,28 @@ public partial class RosterRig : Node3D
 
         foreach (var (id, (placement, definition)) in desired)
         {
+            var targetPosition = string.Equals(id, _activeCompanionId, StringComparison.Ordinal)
+                && _followTarget is not null
+                && GodotObject.IsInstanceValid(_followTarget)
+                    ? CompanionFollowTarget(_followTarget)
+                    : placement.Position;
+
             if (_avatars.TryGetValue(id, out var existing))
             {
-                _targets[id] = placement.Position;
+                _targets[id] = targetPosition;
                 if (!AnimateTravel)
                 {
-                    existing.GlobalPosition = placement.Position;
+                    existing.GlobalPosition = targetPosition;
                 }
+                RefreshThoughtBubble(id);
                 continue;
             }
 
             var avatar = CreateAvatar(id, definition);
-            avatar.GlobalPosition = placement.Position;
+            avatar.GlobalPosition = targetPosition;
             _avatars[id] = avatar;
-            _targets[id] = placement.Position;
+            _targets[id] = targetPosition;
+            RefreshThoughtBubble(id);
         }
 
         return _avatars.Count;
@@ -201,8 +253,69 @@ public partial class RosterRig : Node3D
         };
         avatar.AddChild(nameplate);
 
+        var thoughtBubble = new Label3D
+        {
+            Name = "ThoughtBubble",
+            Text = string.Empty,
+            Position = new Vector3(0f, 2.55f, 0f),
+            FontSize = 20,
+            OutlineSize = 5,
+            Visible = false
+        };
+        avatar.AddChild(thoughtBubble);
+        _thoughtBubbles[characterId] = thoughtBubble;
+
         AddChild(avatar);
         return avatar;
+    }
+
+    private Vector3 CompanionFollowTarget(Node3D target)
+    {
+        var basis = target.GlobalTransform.Basis;
+        var right = basis.X;
+        right.Y = 0f;
+        if (right.LengthSquared() < 0.001f)
+            right = Vector3.Right;
+        else
+            right = right.Normalized();
+
+        var forward = -basis.Z;
+        forward.Y = 0f;
+        if (forward.LengthSquared() < 0.001f)
+            forward = Vector3.Forward;
+        else
+            forward = forward.Normalized();
+
+        return target.GlobalPosition - forward * CompanionBackOffset + right * CompanionSideOffset;
+    }
+
+    private void RefreshThoughtBubble(string characterId)
+    {
+        if (!_thoughtBubbles.TryGetValue(characterId, out var bubble) || !GodotObject.IsInstanceValid(bubble))
+            return;
+
+        if (_game is null
+            || !string.Equals(characterId, _activeCompanionId, StringComparison.Ordinal))
+        {
+            bubble.Visible = false;
+            return;
+        }
+
+        var thoughts = _game.Dating.ThoughtsFor(characterId);
+        if (thoughts.Count == 0)
+        {
+            bubble.Visible = false;
+            return;
+        }
+
+        var stableOffset = 0;
+        foreach (var ch in characterId)
+            stableOffset += ch;
+
+        var interval = (long)(Time.GetTicksMsec() / 7000UL);
+        var index = (int)((interval + stableOffset) % thoughts.Count);
+        bubble.Text = thoughts[index];
+        bubble.Visible = true;
     }
 
     private void RemoveAvatar(string characterId)
@@ -215,5 +328,6 @@ public partial class RosterRig : Node3D
         _avatars.Remove(characterId);
         _agents.Remove(characterId);
         _targets.Remove(characterId);
+        _thoughtBubbles.Remove(characterId);
     }
 }
