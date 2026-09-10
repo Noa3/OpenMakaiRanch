@@ -2610,9 +2610,8 @@ public partial class UiShellController
                 T("tooltip.visit.spend_pet", "Uses the existing pet Play action: improves mood/bond and costs its normal small fee."));
             playPet.Pressed += () =>
             {
-                var line = _game.Pets.Play(capturedPetId);
-                SetStatus(line, false);
-                _game.NotifyStateChanged();
+                var line = _game.TryPlayWithPet(capturedPetId);
+                SetStatus(line, line.StartsWith("Played successfully", StringComparison.Ordinal));
             };
             AddFlowButton(freeTimeActions, playPet, 220);
         }
