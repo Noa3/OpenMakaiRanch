@@ -35,6 +35,27 @@ jobs:
       - name: Restore Godot .NET project
         run: dotnet restore OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --ignore-failed-sources
 
+      - name: Verify C# 12 language contract
+        run: |
+          $projects = @(
+            "OpenMakaiRanchGame/OpenMakaiRanchGame.csproj",
+            "OpenMakaiRanchGame/OpenMakaiRanch.csproj"
+          )
+          foreach ($project in $projects) {
+            $output = @(& dotnet msbuild $project -nologo -getProperty:LangVersion)
+            if ($LASTEXITCODE -ne 0 -or $output.Count -eq 0 -or $output[-1].Trim() -ne "12.0") {
+              throw "Expected effective LangVersion 12.0 for $project; got $output"
+            }
+            Write-Output "C# 12 verified: $project"
+          }
+          $denial = & dotnet msbuild $projects[0] -nologo -target:RequireCSharp12 -p:LangVersion=preview 2>&1
+          $denialExit = $LASTEXITCODE
+          if ($denialExit -eq 0 -or "$denial" -notmatch "requires C# 12") {
+            throw "Negative control failed: a preview-language override was not rejected by the language guard. $denial"
+          }
+          Write-Output "C# 12 negative control passed: preview override was rejected."
+          exit 0
+
       - name: Compile Godot .NET project
         run: dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --configuration Debug --no-restore -p:RunAnalyzers=true
 
