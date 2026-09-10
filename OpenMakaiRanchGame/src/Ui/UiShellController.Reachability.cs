@@ -6,6 +6,7 @@ namespace OpenMakaiRanch.Ui;
 /// Keeps every ordinary management feature reachable when responsive layout hides the desktop
 /// navigation and switches to the horizontally scrolling compact navigation. Also keeps the
 /// top-bar player vitality display bound to PlayerState rather than the first ranch resident.
+/// Existing gameplay/eligibility gates remain the authority for whether a screen action is allowed.
 /// </summary>
 public partial class UiShellController
 {
@@ -20,12 +21,20 @@ public partial class UiShellController
 
         if (!_reachabilityCompactRoutesBound && GodotObject.IsInstanceValid(_compactNavigation))
         {
+            // Desktop navigation exposes these as separate destinations, but the authored compact
+            // bar omitted them. Mirror the actual desktop routes instead of hiding gameplay on
+            // narrow windows/mobile.
             AddCompactReachabilityRoute("clothing_list", "Clothes");
+            AddCompactReachabilityRoute("clothing_change", "Change Clothes");
+            AddCompactReachabilityRoute("clothing_strip", "Undress");
             AddCompactReachabilityRoute("visit", "Visit");
             AddCompactReachabilityRoute("room_assign", "Rooms");
             AddCompactReachabilityRoute("magic_basic", "Magic");
+            AddCompactReachabilityRoute("magic_forbidden", "Advanced Magic");
+            AddCompactReachabilityRoute("magic_tentacle", "Special Magic");
             AddCompactReachabilityRoute("ability", "Abilities");
-            AddCompactReachabilityRoute("pharmacy_list", "Pharmacy");
+            AddCompactReachabilityRoute("pharmacy_list", "Potions");
+            AddCompactReachabilityRoute("pharmacy_craft", "Craft Potions");
             AddCompactReachabilityRoute("options", "Options");
             _reachabilityCompactRoutesBound = true;
         }
