@@ -62,7 +62,8 @@ public static class SaveRegressionTests
             "\"Roster\":{\"Characters\":null}",
             "\"Reports\":null,\"Flags\":null",
             "\"Flags\":{\"GlobalBoolFlags\":null,\"GlobalIntFlags\":null,\"TempBoolFlags\":null,\"TempIntFlags\":null,\"CharBoolFlags\":null,\"CharIntFlags\":null}",
-            "\"Flags\":{\"GlobalIntFlags\":{\"2\":19},\"CharBoolFlags\":{\"empty\":null,\"kept\":{\"5\":true}},\"CharIntFlags\":{\"empty\":null,\"kept\":{\"6\":42}}}"
+            "\"Flags\":{\"GlobalIntFlags\":{\"2\":19},\"CharBoolFlags\":{\"empty\":null,\"kept\":{\"5\":true}},\"CharIntFlags\":{\"empty\":null,\"kept\":{\"6\":42}}}",
+            "\"Dating\":null"
         };
         try
         {
@@ -82,7 +83,8 @@ public static class SaveRegressionTests
                         if (!loaded) continue;
                         Check(result, game.State.SchemaVersion == SaveState.CurrentSchemaVersion && game.State.Economy.Gold == 777,
                             $"{label} migrates without losing valid values");
-                        Check(result, game.State.Roster.Characters is not null && game.State.Reports is not null,
+                        Check(result, game.State.Roster.Characters is not null && game.State.Reports is not null
+                            && game.State.Dating is not null && game.State.Dating.Partners is not null,
                             $"{label} collections normalized");
                         if (index == 4)
                         {
