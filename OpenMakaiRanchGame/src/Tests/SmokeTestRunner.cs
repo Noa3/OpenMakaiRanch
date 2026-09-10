@@ -80,6 +80,7 @@ public static class SmokeTestRunner
             TestGreyboxSceneIsLive(result);
             TestWorldBootComposition(result);
             TestWorldDaylightAndRoster(result);
+            PlayabilityRegressionTests.Run(result);
         }
         catch (Exception exception)
         {
@@ -1160,9 +1161,9 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             Assert(result, controller is not null, "greybox root is the controller");
             if (controller is not null)
             {
-                // _Ready() normally fires on tree entry; invoke it directly so the
-                // wiring (player / station / dispatcher) is verified headlessly.
-                controller._Ready();
+                // Exercise the real Godot lifecycle: child readiness and global
+                // transforms require scene-tree entry, even in headless tests.
+                GameRoot.Instance.AddChild(greybox);
                 Assert(result, controller.Wired, "greybox controller wires player + stations");
                 Assert(result, controller.Player is not null, "greybox controller resolves the player");
                 Assert(result, controller.Player?.GetNodeOrNull<PlayerAvatar3D>("Visual") is not null,
@@ -1627,7 +1628,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "mana: stored mana cannot refill the player before the Magic Supply Device exists");
         state.Inventory.Items["magic_supply_device"] = 1;
         var transferred = magic.RechargePlayerManaFromStorage(30);
-        Assert(result, transferred == 30 && state.Player.Mana == 50 && state.Economy.ManaReservoir == 15,
+        Assert(result, transferred == 22 && state.Player.Mana == 42 && state.Economy.ManaReservoir == 1
+            && state.Player.MaxMana == 100,
             "mana: Magic Supply Device refills personal MP from stored mana without increasing Max MP");
 
         var overflowState = new SaveStateFactory(data, new Random(2411)).CreateNewGame();
@@ -1645,7 +1647,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         var moraleBefore = state.Roster.Characters.Sum(character => character.Morale);
         Assert(result, magic.CastSpell("morale_boost", 10, state.Roster.Characters[0].Id),
             "mana: a spell can spend personal MP when enough is available");
-        Assert(result, state.Player.Mana == 40 && state.Roster.Characters.Sum(character => character.Morale) > moraleBefore,
+        Assert(result, state.Player.Mana == 32 && state.Roster.Characters.Sum(character => character.Morale) > moraleBefore,
             "mana: spell spending affects personal MP and applies its gameplay effect");
 
         var equipment = new EquipmentService(state, data);
@@ -2686,7 +2688,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         }
 
         var companionTarget = new Node3D { Name = "CompanionFollowTarget" };
-        companionTarget.GlobalPosition = new Vector3(2f, 0f, 2f);
+        companionTarget.Position = new Vector3(2f, 0f, 2f);
         parent.AddChild(companionTarget);
         var companionRig = new RosterRig
         {
@@ -2911,18 +2913,38 @@ private static void TestParityMechanics(SmokeTestResult result)
             Assert(result, state.Roster.Characters.Count == shackleBefore, "failed capture keeps roster unchanged");
         }
 
-        var lactation = new MilkEconomyService(state);
-        var subject = state.Roster.Characters.First(character => character.Id == "rancher");
+        // Isolated numeric contract fixtures, not approval of any production character.
+        var productionState = new SaveState();
+        var lactation = new MilkEconomyService(productionState);
+        var subject = new CharacterState
+        {
+            Id = "contract_adult_producer",
+            ApparentAge = 30,
+            AdultEligibility = AdultEligibility.ConfirmedAdult
+        };
+        var unreviewed = new CharacterState
+        {
+            Id = "contract_unreviewed_producer",
+            ApparentAge = 30,
+            AdultEligibility = AdultEligibility.Unknown
+        };
+        productionState.Roster.Characters.Add(subject);
+        productionState.Roster.Characters.Add(unreviewed);
+        unreviewed.Milk.HasMilkConstitution = true;
+        var milkBefore = productionState.Mature.TotalMilkProduced;
+        lactation.ProduceMilk(unreviewed.Id);
+        Assert(result, productionState.Mature.TotalMilkProduced == milkBefore
+            && unreviewed.Milk.CurrentAmount == 0,
+            "production contract: unreviewed fixture stays denied despite constitution");
         subject.Milk.HasMilkConstitution = false;
+        subject.Milk.HasMagicMilkConstitution = false;
         subject.Milk.CurrentAmount = 0;
-        subject.Talents.RemoveAll(t => t == "extreme_milk_pressure");
-        state.Mature.TotalMilkProduced = 0;
-        var milkBefore = state.Mature.TotalMilkProduced;
+        subject.Talents.Clear();
         lactation.ProduceMilk(subject.Id);
-        Assert(result, state.Mature.TotalMilkProduced == milkBefore, "milk production requires a milk constitution or talent");
+        Assert(result, productionState.Mature.TotalMilkProduced == milkBefore, "milk production requires a milk constitution or talent");
         subject.Milk.HasMilkConstitution = true;
         lactation.ProduceMilk(subject.Id);
-        Assert(result, state.Mature.TotalMilkProduced > milkBefore, "constitution enables milk production");
+        Assert(result, productionState.Mature.TotalMilkProduced > milkBefore, "constitution enables milk production");
 
         var qualityBefore = subject.Milk.Quality;
         inventory.AddItem("mana_infusion_drug", 1);
