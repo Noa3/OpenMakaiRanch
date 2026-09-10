@@ -21,6 +21,12 @@ public sealed class MagicService
     public const int ModifiedStorageCapacity = 10_000_000;
     public const int MinimumOverflowStorageGain = 1_000;
 
+    /// <summary>
+    /// Original ranch-config rule: replenishing one point of personal MP consumes two points of
+    /// MONEY:貯蔵魔力. This is the supply-device service fee, not a 1:1 transfer.
+    /// </summary>
+    public const int StoredManaPerPersonalMana = 2;
+
     private readonly SaveState _state;
     private readonly DataRegistry _data;
 
@@ -49,9 +55,61 @@ public sealed class MagicService
         return true;
     }
 
+    /// <summary>
+    /// Explicit character-MP API. Player spells keep their existing dedicated path; companion/NPC
+    /// skills can use this without incorrectly consuming the ranch owner's MP.
+    /// </summary>
+    public bool CanSpendCharacterMana(string characterId, int amount)
+    {
+        var character = FindCharacter(characterId);
+        return character is not null && amount >= 0 && character.Mana >= amount;
+    }
+
+    public bool SpendCharacterMana(string characterId, int amount)
+    {
+        var character = FindCharacter(characterId);
+        if (character is null || amount <= 0 || character.Mana < amount)
+            return false;
+
+        character.Mana -= amount;
+        return true;
+    }
+
+    public int RegenerateCharacterMana(string characterId, int amount)
+    {
+        var character = FindCharacter(characterId);
+        if (character is null || amount <= 0)
+            return 0;
+
+        NormalizeCharacterMana(character);
+        var before = character.Mana;
+        character.Mana = Math.Min(character.MaxMana, character.Mana + amount);
+        return character.Mana - before;
+    }
+
+    public int IncreaseCharacterManaCapacity(string characterId, int amount, bool fillNewCapacity = false)
+    {
+        var character = FindCharacter(characterId);
+        if (character is null || amount <= 0)
+            return 0;
+
+        NormalizeCharacterMana(character);
+        var before = character.MaxMana;
+        character.MaxMana = before > int.MaxValue - amount ? int.MaxValue : before + amount;
+        var gained = character.MaxMana - before;
+        if (fillNewCapacity)
+            character.Mana = Math.Min(character.MaxMana, character.Mana + gained);
+        return gained;
+    }
+
     public bool CanCast(string spellId, int manaCost) =>
         !string.IsNullOrWhiteSpace(spellId) && manaCost >= 0 && CanSpendPlayerMana(manaCost);
 
+    /// <summary>
+    /// Existing player-cast path. casterId is retained for event/report attribution; Player.Mana is
+    /// intentionally the resource consumed here. Character-cast systems should call the explicit
+    /// character-MP APIs above.
+    /// </summary>
     public bool CastSpell(string spellId, int manaCost, string casterId)
     {
         if (!CanCast(spellId, manaCost) || !SpendPlayerMana(manaCost))
@@ -63,21 +121,26 @@ public sealed class MagicService
 
     /// <summary>
     /// Original Magic Supply Device behavior: stored mana can refill current personal MP but never
-    /// increases Max MP. Without the device this transfer is unavailable.
+    /// increases Max MP. The source game charges two stored MP for each restored personal MP.
     /// </summary>
     public int RechargePlayerManaFromStorage(int requestedAmount = int.MaxValue)
     {
         Normalize();
         if (!HasManaSupplyDevice || requestedAmount <= 0 || MaxMana <= 0
-            || CurrentMana >= MaxMana || StoredMana <= 0)
+            || CurrentMana >= MaxMana || StoredMana < StoredManaPerPersonalMana)
         {
             return 0;
         }
 
-        var transferred = Math.Min(requestedAmount, Math.Min(MaxMana - CurrentMana, StoredMana));
-        _state.Economy.ManaReservoir -= transferred;
-        _state.Player.Mana += transferred;
-        return transferred;
+        var missingPersonalMana = MaxMana - CurrentMana;
+        var affordablePersonalMana = StoredMana / StoredManaPerPersonalMana;
+        var restored = Math.Min(requestedAmount, Math.Min(missingPersonalMana, affordablePersonalMana));
+        if (restored <= 0)
+            return 0;
+
+        _state.Economy.ManaReservoir -= restored * StoredManaPerPersonalMana;
+        _state.Player.Mana += restored;
+        return restored;
     }
 
     public int IncreasePlayerManaCapacity(int amount, bool fillNewCapacity = false)
@@ -136,6 +199,22 @@ public sealed class MagicService
         return (recovered, state.Economy.ManaReservoir - beforeStored);
     }
 
+    /// <summary>
+    /// Per-character rest recovery. Unlike the ranch owner, ordinary characters do not spill their
+    /// excess MP into the ranch's stored-mana infrastructure.
+    /// </summary>
+    public static int RecoverCharacterManaForRest(CharacterState character)
+    {
+        NormalizeCharacterMana(character);
+        if (character.MaxMana <= 0 || character.ManaRecoveryPercent <= 0)
+            return 0;
+
+        var heal = Math.Max(1, character.MaxMana * character.ManaRecoveryPercent / 100);
+        var before = character.Mana;
+        character.Mana = Math.Min(character.MaxMana, character.Mana + heal);
+        return character.Mana - before;
+    }
+
     public static int StorageCapacityFor(SaveState state)
     {
         if (HasItem(state, "magic_storage_mod") || HasFacility(state, "magic_storage_3"))
@@ -186,6 +265,21 @@ public sealed class MagicService
         var capacity = StorageCapacity;
         if (capacity > 0)
             _state.Economy.ManaReservoir = Math.Min(capacity, _state.Economy.ManaReservoir);
+
+        foreach (var character in _state.Roster.Characters)
+            NormalizeCharacterMana(character);
+    }
+
+    private CharacterState? FindCharacter(string characterId) =>
+        string.IsNullOrWhiteSpace(characterId)
+            ? null
+            : _state.Roster.Characters.FirstOrDefault(character => character.Id == characterId);
+
+    private static void NormalizeCharacterMana(CharacterState character)
+    {
+        character.MaxMana = Math.Max(0, character.MaxMana);
+        character.Mana = Math.Clamp(character.Mana, 0, character.MaxMana);
+        character.ManaRecoveryPercent = Math.Clamp(character.ManaRecoveryPercent, 0, 100);
     }
 
     private static bool HasItem(SaveState state, string itemId) =>
