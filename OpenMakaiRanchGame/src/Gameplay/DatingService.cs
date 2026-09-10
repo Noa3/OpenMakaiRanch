@@ -93,6 +93,7 @@ public sealed class DatingService
             return DatingResult.Fail("End the current outing before inviting someone else.");
 
         var progress = ProgressFor(characterId);
+        NormalizeVoluntaryRelationshipBaseline(character, progress);
         if (string.Equals(ActivePartnerId, characterId, StringComparison.Ordinal))
             return DatingResult.Ok($"{DisplayName(character)} is already accompanying you.");
 
@@ -204,6 +205,7 @@ public sealed class DatingService
 
         var character = FindCharacter(ActivePartnerId)!;
         var progress = ProgressFor(character.Id);
+        NormalizeVoluntaryRelationshipBaseline(character, progress);
         var cost = ActivityCost(kind);
 
         if (kind == DateActivityKind.SharedMeal)
@@ -387,6 +389,24 @@ public sealed class DatingService
             antipathy: severe ? 180 : 120,
             fear: severe ? 90 : 60,
             favorability: severe ? -120 : -80);
+    }
+
+    private static void NormalizeVoluntaryRelationshipBaseline(CharacterState character, DatingPartnerState progress)
+    {
+        // MentalState's historical generic default uses Aversion=10000 for every CharacterState.
+        // A resident who joined voluntarily and has never been pressured should not suddenly become
+        // maximally hostile merely because the dating layer starts tracking them.
+        if (!character.IsCaptured
+            && progress.DatesStarted == 0
+            && progress.SharedActivities == 0
+            && progress.PressuredMoments == 0
+            && progress.ForcedMoments == 0
+            && character.Bond < 10
+            && character.Mature.Favorability == 0
+            && character.Mature.Aversion == 10000)
+        {
+            character.Mature.Aversion = 0;
+        }
     }
 
     private int WillingnessScore(CharacterState character, DatingPartnerState progress)
