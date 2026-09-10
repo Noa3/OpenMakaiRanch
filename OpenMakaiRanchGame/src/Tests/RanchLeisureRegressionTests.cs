@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Core.Resources;
 using OpenMakaiRanch.Gameplay;
 
 namespace OpenMakaiRanch.Tests;
