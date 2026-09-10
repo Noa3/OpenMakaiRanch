@@ -341,14 +341,18 @@ public partial class UiShellController : Control
 			var recovery = CardContainer();
 			recovery.AddThemeConstantOverride("separation", 6);
 			_content.AddChild(recovery);
-			recovery.AddChild(AddStyledLine($"Player Stamina: {_game.State.Player.Stamina}/{_game.State.Player.MaxStamina}", true));
+			var staminaCapacity = _game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus;
+			var restedText = _game.State.Player.DailyStaminaBonus > 0
+				? $"  ·  Well Rested +{_game.State.Player.DailyStaminaBonus}"
+				: string.Empty;
+			recovery.AddChild(AddStyledLine($"Player Stamina: {_game.State.Player.Stamina}/{staminaCapacity}{restedText}", true));
 			var cleanBath = _game.State.Ranch.BathtubClean;
 			var bathLabel = cleanBath
-				? $"Take a hot bath (+{PlayerStaminaService.CleanBathRecovery} Stamina)"
-				: $"Take a quick shower (+{PlayerStaminaService.ShowerRecovery} Stamina)";
+				? $"Take a hot bath (tomorrow +{PlayerStaminaService.HotBathNextDayBonus} STA)"
+				: "Take a quick shower (no Well Rested bonus)";
 			var bath = SecondaryButton(bathLabel,
-				"Evening/Night recovery. Can be used once per day. A prepared bath gives a stronger second wind; a shower remains available if the bath is dirty.");
-			bath.Disabled = _game.State.Player.BathedToday || _game.State.Player.Stamina >= _game.State.Player.MaxStamina;
+				"A prepared Evening/Night hot bath schedules extra stamina for tomorrow. A shower handles hygiene but gives no next-day stamina bonus.");
+			bath.Disabled = _game.State.Player.BathedToday;
 			bath.Pressed += () =>
 			{
 				var result = _game.UsePlayerBath();
