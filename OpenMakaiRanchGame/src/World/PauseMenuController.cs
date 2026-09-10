@@ -89,7 +89,7 @@ public partial class PauseMenuController : Control
     {
         Close();
         GameRoot.PendingInitialScreen = null;
-        var error = GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
+        var error = GetTree().ChangeSceneToFile(GameRouteCatalog.MainMenu);
         if (error != Error.Ok)
         {
             GD.PushError($"Pause menu failed to open MainMenu: {error}");
