@@ -40,6 +40,8 @@ public partial class UiShellController
         }
 
         RefreshCanonicalPlayerVitals();
+        EnsureInputOptionsExtension();
+        EnsureControllerFocus();
     }
 
     private void AddCompactReachabilityRoute(string screenId, string fallbackLabel)
