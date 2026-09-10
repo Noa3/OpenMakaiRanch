@@ -27,6 +27,7 @@ public partial class TownWorldController : Node3D
 
     public DaylightRig? Daylight { get; private set; }
     public TownPresentationBuilder? Presentation { get; private set; }
+    public RosterRig? Companion { get; private set; }
 
     public ThirdPersonPlayerController? Player => _player;
     public WorldCameraRig? CameraRig => _cameraRig;
@@ -71,6 +72,8 @@ public partial class TownWorldController : Node3D
 
         WireDaylight();
         Presentation = GetNodeOrNull<TownPresentationBuilder>("Presentation");
+        Companion = GetNodeOrNull<RosterRig>("CompanionRig");
+        Companion?.BindFollowTarget(_player);
 
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
         {
@@ -113,6 +116,8 @@ public partial class TownWorldController : Node3D
         {
             Daylight?.ApplyFrom(game);
             Presentation?.Refresh(game);
+            Companion?.BindFollowTarget(_player);
+            Companion?.Refresh(game);
         }
 
         UpdateNearbyTargets();
