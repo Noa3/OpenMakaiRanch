@@ -257,7 +257,9 @@ public partial class TownWorldController : Node3D
             var character = GameRoot.Instance?.Roster.Find(_nearbyCompanionId);
             var name = character is null
                 ? _nearbyCompanionId
-                : GameRoot.Instance!.Roster.DefinitionFor(character).DisplayName;
+                : (!string.IsNullOrWhiteSpace(character.DisplayNameOverride)
+                    ? character.DisplayNameOverride
+                    : GameRoot.Instance!.Roster.DefinitionFor(character).DisplayName);
             _hud.SetCompanionPrompt(name, _nearbyCompanionDistance, InteractionRange);
         }
         else if (portalIsClosest)
