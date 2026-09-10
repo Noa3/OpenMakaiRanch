@@ -227,6 +227,19 @@ public partial class TownHudController : CanvasLayer
         }
     }
 
+    public void SetCompanionPrompt(string displayName, float distance, float range)
+    {
+        if (_promptLabel is null)
+        {
+            return;
+        }
+
+        _promptLabel.Text = distance <= range
+            ? $"[F] Talk with {displayName}"
+            : $"{displayName}  {distance:0.0} m";
+        _promptLabel.TooltipText = "Open this companion's Personal Time view for relationship details and shared activities.";
+    }
+
     public void SetTravelPrompt(WorldTravelPortal? portal, float distance, float range)
     {
         if (_promptLabel is null)
