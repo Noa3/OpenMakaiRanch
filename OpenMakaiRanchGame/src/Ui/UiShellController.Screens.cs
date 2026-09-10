@@ -2655,6 +2655,107 @@ public partial class UiShellController
         statsCard.AddChild(AddStyledLine($"{CharacterPickerName(character)} - {T("label.energy", "Energy")} {character.Energy}  {T("label.fatigue", "Fatigue")} {character.Fatigue}  {T("label.bond", "Bond")} {character.Bond}", true));
         statsCard.AddChild(AddStyledLine($"{T("label.morale", "Morale")} {character.Morale}  {T("label.hp", "HP")} {character.Hp}  {T("screen.visit.fall", "Fall State")}: {mental.FallState}", true));
         statsCard.AddChild(AddStyledLine($"{T("label.favorability", "Favorability")} {mental.Favorability}  {T("label.lust", "Lust")} {mental.Lust}  {T("label.submission", "Submission")} {mental.Submission}"));
+        statsCard.AddChild(AddStyledLine($"Resistance {mental.Resistance}  Dignity {mental.Dignity}  Aversion {mental.Aversion}  Antipathy {mental.Antipathy}"));
+
+        // === Companionship / dating ===
+        var dateCard = CardContainer();
+        _content.AddChild(dateCard);
+        dateCard.AddChild(SubtitleLabel("Companionship & Dating"));
+
+        if (character.Id == "anon")
+        {
+            dateCard.AddChild(MutedLabel("Select an eligible adult ranch resident to invite as a companion."));
+        }
+        else if (!_game.Dating.IsEligiblePartner(character))
+        {
+            dateCard.AddChild(MutedLabel("This resident is not currently eligible for an adult companionship/date outing."));
+        }
+        else
+        {
+            dateCard.AddChild(AddStyledLine(_game.Dating.RelationshipSummary(character.Id), true));
+            dateCard.AddChild(MutedLabel(
+                "Relationship outcomes use the same Bond, Morale, Favorability, Aversion, Dignity, Fear and other mental values as the ranch systems. Pressure can produce negative consequences rather than faster romance."));
+
+            var activePartnerId = _game.Dating.ActivePartnerId;
+            if (string.IsNullOrWhiteSpace(activePartnerId))
+            {
+                var inviteRow = FlowRow(8);
+                dateCard.AddChild(inviteRow);
+
+                void AddInvite(DateInviteApproach approach, string label, string tooltip)
+                {
+                    var button = approach == DateInviteApproach.Respectful
+                        ? PrimaryButton(label, tooltip)
+                        : SecondaryButton(label, tooltip);
+                    button.Pressed += () =>
+                    {
+                        var result = _game.StartDate(character.Id, approach);
+                        SetStatus(result.Message, result.Success);
+                        RefreshCurrentScreen();
+                    };
+                    AddFlowButton(inviteRow, button, approach == DateInviteApproach.Respectful ? 168 : 184);
+                }
+
+                AddInvite(DateInviteApproach.Respectful, "Invite Respectfully",
+                    "They may decline if trust and mood are too low. A willing outing is the safest route to a positive relationship.");
+                AddInvite(DateInviteApproach.Pressured, "Press the Invitation",
+                    "They come reluctantly. This can lower mood/trust and raise negative mental values, especially if the activity does not fit their current mood.");
+                AddInvite(DateInviteApproach.Forced, "Force Them to Come",
+                    "Forces the outing but seriously harms Bond/Morale and raises Aversion, Antipathy and Fear. It can erode Dignity, but is not a shortcut to romance.");
+            }
+            else if (!string.Equals(activePartnerId, character.Id, StringComparison.Ordinal))
+            {
+                var active = _game.Roster.Find(activePartnerId);
+                var activeName = active is null ? activePartnerId : CharacterPickerName(active);
+                dateCard.AddChild(MutedLabel($"{activeName} is already accompanying you. End that outing before inviting someone else."));
+            }
+            else
+            {
+                dateCard.AddChild(AddStyledLine("Currently accompanying you", true));
+
+                var thought = _game.Dating.ThoughtsFor(character.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(thought))
+                    dateCard.AddChild(MutedLabel($"Current thought: “{thought}”"));
+
+                var activityRow = FlowRow(8);
+                dateCard.AddChild(activityRow);
+
+                void AddActivity(DateActivityKind kind, string label)
+                {
+                    var cost = _game.Dating.ActivityCost(kind);
+                    var available = _game.Dating.CanPerformActivity(kind, out var reason);
+                    var button = kind == DateActivityKind.TownOuting
+                        ? PrimaryButton($"{label} ({cost} STA)", available ? "Spend meaningful time together." : reason)
+                        : SecondaryButton($"{label} ({cost} STA)", available ? "Spend meaningful time together." : reason);
+                    button.Disabled = !available;
+                    button.Pressed += () =>
+                    {
+                        var result = _game.PerformDateActivity(kind);
+                        SetStatus(result.Message, result.Success);
+                        RefreshCurrentScreen();
+                    };
+                    AddFlowButton(activityRow, button, 170);
+                }
+
+                AddActivity(DateActivityKind.RanchWalk, "Ranch Walk");
+                AddActivity(DateActivityKind.WorkTogether, "Work Together");
+                AddActivity(DateActivityKind.SharedMeal, "Shared Meal");
+                AddActivity(DateActivityKind.TownOuting, "Town Outing");
+                AddActivity(DateActivityKind.QuietRest, "Quiet Rest");
+
+                dateCard.AddChild(MutedLabel(
+                    "Only one meaningful companion activity can be completed per day phase. Walking around together itself is free. Personality, fatigue, mood and invitation approach influence the result."));
+
+                var endDate = SecondaryButton("End Outing", "The companion returns to their normal ranch routine.");
+                endDate.Pressed += () =>
+                {
+                    var result = _game.EndDate();
+                    SetStatus(result.Message, result.Success);
+                    RefreshCurrentScreen();
+                };
+                dateCard.AddChild(endDate);
+            }
+        }
 
         // === Care actions ===
         var careRow = FlowRow(6);
