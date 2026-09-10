@@ -922,7 +922,7 @@ public partial class UiShellController : Control
 
 	private int PlayerStamina() => _game.State.Player.Stamina;
 
-	private int PlayerMaxStamina() => Math.Max(1, _game.State.Player.MaxStamina);
+	private int PlayerMaxStamina() => Math.Max(1, _game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus);
 
 	private void UpdateNavigationState()
 	{
