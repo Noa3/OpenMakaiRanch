@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using OpenMakaiRanch.App;
+using OpenMakaiRanch.Character;
 
 namespace OpenMakaiRanch.World;
 
@@ -30,7 +31,7 @@ public partial class RanchGreyboxController
     {
         UpdateNearbyStation();
 
-        Node3D? npc = null;
+        CharacterAvatar3D? npc = null;
         var npcValid = !string.IsNullOrWhiteSpace(_nearbyCharacterId)
             && Roster is not null
             && Roster.TryGetAvatar(_nearbyCharacterId, out npc)
@@ -84,7 +85,7 @@ public partial class TownWorldController
     {
         UpdateNearbyTargets();
 
-        Node3D? companion = null;
+        CharacterAvatar3D? companion = null;
         var companionValid = !string.IsNullOrWhiteSpace(_nearbyCompanionId)
             && Companion is not null
             && Companion.TryGetAvatar(_nearbyCompanionId, out companion)
