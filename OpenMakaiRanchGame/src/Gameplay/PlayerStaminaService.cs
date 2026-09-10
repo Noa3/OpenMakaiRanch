@@ -27,8 +27,8 @@ public enum PlayerActivityKind
 public sealed class PlayerStaminaService
 {
     public const int DefaultMaxStamina = 100;
-    public const int CleanBathRecovery = 35;
-    public const int ShowerRecovery = 15;
+    public const int HotBathNextDayBonus = 25;
+    public const int MaxRestedBonus = 50;
 
     private readonly SaveState _state;
 
@@ -40,6 +40,8 @@ public sealed class PlayerStaminaService
 
     public int Current => _state.Player.Stamina;
     public int Max => _state.Player.MaxStamina;
+    public int DailyBonus => _state.Player.DailyStaminaBonus;
+    public int CurrentCapacity => _state.Player.MaxStamina + _state.Player.DailyStaminaBonus;
     public bool HasRecoveredFromBathToday => _state.Player.BathedToday;
 
     public int Cost(PlayerActivityKind kind) => kind switch
@@ -85,7 +87,7 @@ public sealed class PlayerStaminaService
             return 0;
 
         var before = _state.Player.Stamina;
-        _state.Player.Stamina = Math.Min(_state.Player.MaxStamina, before + amount);
+        _state.Player.Stamina = Math.Min(CurrentCapacity, before + amount);
         return _state.Player.Stamina - before;
     }
 
@@ -93,25 +95,38 @@ public sealed class PlayerStaminaService
     {
         Normalize();
         if (phase is not (DayPhase.Evening or DayPhase.Night))
-            return new PlayerRecoveryResult(false, false, 0, "Bathing for recovery is available in the Evening or Night.");
+            return new PlayerRecoveryResult(false, false, 0, "Bathing is available for recovery planning in the Evening or Night.");
 
         if (_state.Player.BathedToday)
-            return new PlayerRecoveryResult(false, false, 0, "You already used today's bath/shower recovery.");
+            return new PlayerRecoveryResult(false, false, 0, "You already used today's bath/shower routine.");
 
         _state.Player.BathedToday = true;
-        var usedCleanBath = cleanBathAvailable;
-        var restored = Restore(usedCleanBath ? CleanBathRecovery : ShowerRecovery);
-        var message = usedCleanBath
-            ? $"A proper hot bath restores {restored} stamina."
-            : $"The bath is not prepared, so a quick shower restores {restored} stamina.";
+        if (!cleanBathAvailable)
+        {
+            return new PlayerRecoveryResult(
+                true,
+                false,
+                0,
+                "You take a quick shower. It handles hygiene, but a prepared hot bath is required for tomorrow's Well Rested stamina bonus.");
+        }
 
-        return new PlayerRecoveryResult(true, usedCleanBath, restored, message);
+        _state.Player.NextDayStaminaBonus = Math.Max(
+            _state.Player.NextDayStaminaBonus,
+            HotBathNextDayBonus);
+
+        return new PlayerRecoveryResult(
+            true,
+            true,
+            HotBathNextDayBonus,
+            $"The prepared hot bath leaves you Well Rested: tomorrow starts with +{HotBathNextDayBonus} stamina.");
     }
 
     public void ResetForNewDay()
     {
         Normalize();
-        _state.Player.Stamina = _state.Player.MaxStamina;
+        _state.Player.DailyStaminaBonus = Math.Clamp(_state.Player.NextDayStaminaBonus, 0, MaxRestedBonus);
+        _state.Player.NextDayStaminaBonus = 0;
+        _state.Player.Stamina = _state.Player.MaxStamina + _state.Player.DailyStaminaBonus;
         _state.Player.BathedToday = false;
     }
 
@@ -120,12 +135,14 @@ public sealed class PlayerStaminaService
         if (_state.Player.MaxStamina <= 0)
             _state.Player.MaxStamina = DefaultMaxStamina;
 
-        _state.Player.Stamina = Math.Clamp(_state.Player.Stamina, 0, _state.Player.MaxStamina);
+        _state.Player.DailyStaminaBonus = Math.Clamp(_state.Player.DailyStaminaBonus, 0, MaxRestedBonus);
+        _state.Player.NextDayStaminaBonus = Math.Clamp(_state.Player.NextDayStaminaBonus, 0, MaxRestedBonus);
+        _state.Player.Stamina = Math.Clamp(_state.Player.Stamina, 0, CurrentCapacity);
     }
 }
 
 public readonly record struct PlayerRecoveryResult(
     bool Used,
     bool UsedCleanBath,
-    int Restored,
+    int ScheduledNextDayBonus,
     string Message);
