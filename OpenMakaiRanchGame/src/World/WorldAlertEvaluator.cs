@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenMakaiRanch.App;
+using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Gameplay;
 
 namespace OpenMakaiRanch.World;
 
@@ -35,6 +37,7 @@ public static class WorldAlertEvaluator
         var alerts = new List<WorldAlert>();
         var state = game.State;
 
+        AddCalendarAlerts(game, alerts);
         AddCattleAlerts(game, alerts);
         AddStockpileAlerts(game, alerts);
         AddRosterAlerts(game, alerts);
@@ -42,7 +45,7 @@ public static class WorldAlertEvaluator
         AddRanchConditionAlerts(game, alerts);
         AddEconomyAlerts(game, alerts);
 
-        if (state.Calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night
+        if (state.Calendar.Phase == DayPhase.Night
             && state.Calendar.NightAction is not ("rest" or "train" or "admin"))
         {
             alerts.Add(new WorldAlert(
@@ -57,6 +60,72 @@ public static class WorldAlertEvaluator
             .OrderByDescending(alert => alert.Severity)
             .ThenBy(alert => alert.Id, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static void AddCalendarAlerts(GameRoot game, List<WorldAlert> alerts)
+    {
+        var calendar = game.State.Calendar;
+
+        if (calendar.IsSeasonEnd)
+        {
+            var nextSeason = calendar.Season == Season.Winter
+                ? Season.Spring
+                : (Season)((int)calendar.Season + 1);
+            var nextYear = calendar.Season == Season.Winter ? calendar.Year + 1 : calendar.Year;
+            alerts.Add(new WorldAlert(
+                "season_transition_tomorrow",
+                WorldAlertSeverity.Info,
+                "Season changes tomorrow",
+                $"Today is {calendar.Season} {calendar.DayOfSeason}. Tomorrow begins {nextSeason}, Year {nextYear}. The world dressing and seasonal weather table will change with it.",
+                "ranch"));
+        }
+        else if (calendar.DayOfSeason >= CalendarState.DaysPerSeason - 2)
+        {
+            alerts.Add(new WorldAlert(
+                "season_transition_soon",
+                WorldAlertSeverity.Info,
+                "Season change approaching",
+                $"{CalendarState.DaysPerSeason - calendar.DayOfSeason} day(s) remain in {calendar.Season}.",
+                "ranch"));
+        }
+
+        var tomorrow = calendar.TomorrowWeather;
+        if (tomorrow == Weather.Blizzard)
+        {
+            alerts.Add(new WorldAlert(
+                "forecast_blizzard",
+                WorldAlertSeverity.Warning,
+                "Blizzard forecast tomorrow",
+                "Expect heavy snow, strong wind and reduced visibility. Finish important outdoor planning before the day ends.",
+                "schedule"));
+        }
+        else if (tomorrow is Weather.TorrentialRain or Weather.Storm)
+        {
+            alerts.Add(new WorldAlert(
+                "forecast_storm",
+                WorldAlertSeverity.Warning,
+                "Severe rain forecast tomorrow",
+                "Tomorrow's forecast calls for severe rain. Review staffing and supplies before settling the day.",
+                "schedule"));
+        }
+        else if (tomorrow is Weather.HeavySnow or Weather.HeavyRain or Weather.StrongWind)
+        {
+            alerts.Add(new WorldAlert(
+                "forecast_rough_weather",
+                WorldAlertSeverity.Info,
+                "Rough weather tomorrow",
+                $"Forecast: {tomorrow}. The world presentation will become more severe next morning.",
+                "ranch"));
+        }
+        else if (OriginalCalendarRules.IsSnow(tomorrow) && calendar.Season == Season.Winter)
+        {
+            alerts.Add(new WorldAlert(
+                "forecast_snow",
+                WorldAlertSeverity.Info,
+                "Snow forecast tomorrow",
+                $"Forecast: {tomorrow}. Winter ground and particle presentation will react after rollover.",
+                "ranch"));
+        }
     }
 
     private static void AddCattleAlerts(GameRoot game, List<WorldAlert> alerts)
