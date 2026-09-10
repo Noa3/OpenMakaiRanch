@@ -47,7 +47,10 @@ public sealed class WorldInputGate
 
     public void Reset()
     {
+        var changed = _uiOwnsInput || !_windowFocused;
         _uiOwnsInput = false;
         _windowFocused = true;
+        if (changed)
+            InputStateDidChange?.Invoke();
     }
 }
