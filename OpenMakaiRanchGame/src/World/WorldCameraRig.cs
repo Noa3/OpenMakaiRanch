@@ -156,9 +156,6 @@ public partial class WorldCameraRig : Node3D
                 Pitch = Mathf.Lerp(Pitch, Mathf.DegToRad(30f), t);
             }
 
-            // These mapped actions remain useful for accessibility/controller bindings. Mouse look
-            // is handled in _UnhandledInput so ordinary desktop play no longer depends on synthetic
-            // InputEventAction events.
             if (Input.IsActionPressed("camera_look_up"))
             {
                 Pitch = WorldCameraMath.ClampPitch(Pitch + LookSensitivity * _userSensitivity * 60f * dt * (_invertY ? -1f : 1f));
@@ -233,29 +230,32 @@ public partial class WorldCameraRig : Node3D
 
     private void UpdateCameraTransform()
     {
-        if (_camera is null || Target is null)
+        if (_camera is null || Target is null
+            || !GodotObject.IsInstanceValid(_camera) || !GodotObject.IsInstanceValid(Target))
         {
             return;
         }
 
-        var targetPos = Target.GlobalPosition;
+        // Global transforms are only valid after both nodes enter the SceneTree. Tests and scene
+        // composition can call _Process manually before that happens; falling back to local
+        // coordinates keeps the math deterministic without asking Godot for an invalid transform.
+        var treeReady = IsInsideTree() && _camera.IsInsideTree() && Target.IsInsideTree();
+        var targetPos = treeReady ? Target.GlobalPosition : Target.Position;
 
         if (_firstPerson)
         {
             var viewDirection = WorldCameraMath.ComputeViewDirection(Yaw, Pitch);
             var basis = Basis.LookingAt(viewDirection, Vector3.Up);
-            // Small forward offset keeps the near plane away from the exact character origin while
-            // still behaving as a true eye-level camera.
             var eye = targetPos + viewDirection * 0.04f;
             _desiredPosition = eye;
-            _camera.GlobalTransform = new Transform3D(basis, eye);
+            SetCameraTransform(new Transform3D(basis, eye), treeReady);
             return;
         }
 
         _desiredPosition = WorldCameraMath.ComputeCameraPosition(targetPos, Yaw, Pitch, Distance);
 
         var hitDistance = float.PositiveInfinity;
-        var spaceState = GetWorld3D()?.DirectSpaceState;
+        var spaceState = treeReady ? GetWorld3D()?.DirectSpaceState : null;
         if (spaceState is not null)
         {
             var from = targetPos;
@@ -265,7 +265,7 @@ public partial class WorldCameraRig : Node3D
             if (length > 0.0001f)
             {
                 var query = PhysicsRayQueryParameters3D.Create(from, to);
-                if (Target.GetParent() is CollisionObject3D owner)
+                if (Target.GetParent() is CollisionObject3D owner && owner.IsInsideTree())
                 {
                     query.Exclude = new Godot.Collections.Array<Rid> { owner.GetRid() };
                 }
@@ -285,7 +285,17 @@ public partial class WorldCameraRig : Node3D
             Mathf.Clamp(CollisionClearance, 0.08f, 0.60f));
         var direction = (targetPos - clamped).Normalized();
         var cameraBasis = Basis.LookingAt(direction, Vector3.Up);
-        _camera.GlobalTransform = new Transform3D(cameraBasis, clamped);
+        SetCameraTransform(new Transform3D(cameraBasis, clamped), treeReady);
     }
 
+    private void SetCameraTransform(Transform3D transform, bool global)
+    {
+        if (_camera is null)
+            return;
+
+        if (global)
+            _camera.GlobalTransform = transform;
+        else
+            _camera.Transform = transform;
+    }
 }
