@@ -1,14 +1,11 @@
+using System;
 using Godot;
 
 namespace OpenMakaiRanch.World;
 
 /// <summary>
-/// Third-person player controller for the ranch greybox. Uses a <see cref="CharacterBody3D"/>,
-/// camera-relative movement, and bounded acceleration/gravity via <see cref="WorldMovementMath"/>.
-///
-/// It is deliberately presentation-only: it moves the body and reports nothing to the
-/// simulation. All game effects flow through the <see cref="OpenMakaiRanch.App.GameRoot"/>
-/// command boundary, never through this node.
+/// Camera-relative player movement. This node changes presentation transforms only;
+/// rewards, stamina and the day clock remain owned by GameRoot and its services.
 /// </summary>
 public partial class ThirdPersonPlayerController : CharacterBody3D
 {
@@ -19,36 +16,84 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
     [Export] public float TurnSpeed { get; set; } = 10f;
     [Export] public float HeadHeight { get; set; } = 1.6f;
 
-    public WorldInputGate InputGate { get; set; } = new();
+    private WorldInputGate _inputGate = new();
+    private bool _applicationFocused = true;
 
-    /// <summary>Optional normalized input supplied by the mobile touch overlay.</summary>
+    public WorldInputGate InputGate
+    {
+        get => _inputGate;
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            if (ReferenceEquals(_inputGate, value)) return;
+            _inputGate.InputStateDidChange -= OnInputGateChanged;
+            _inputGate = value;
+            if (IsInsideTree())
+                _inputGate.InputStateDidChange += OnInputGateChanged;
+            OnInputGateChanged();
+        }
+    }
+
+    /// <summary>Normalized input from the existing mobile overlay.</summary>
     public Vector2 MobileMovementInput { get; set; } = Vector2.Zero;
     public bool MobileSprintHeld { get; set; }
 
-    /// <summary>The node the camera should orbit around (the player's head).</summary>
     [Export] public Node3D? CameraTarget { get; set; }
-
-    /// <summary>
-    /// Called once per frame by <see cref="_PhysicsProcess"/>. Exposed for automated
-    /// headless verification: tests can drive the controller with synthetic camera vectors
-    /// without a live mouse/keyboard.
-    /// </summary>
     public Vector3 LastComputedVelocity { get; private set; } = Vector3.Zero;
 
     internal Vector3 CameraBasisForward { get; set; } = Vector3.Back;
     internal Vector3 CameraBasisRight { get; set; } = Vector3.Right;
 
-    private Camera3D? _camera;
+    public override void _EnterTree()
+    {
+        _inputGate.InputStateDidChange += OnInputGateChanged;
+    }
 
     public override void _Ready()
     {
         EnsureCameraTarget();
     }
 
-    /// <summary>
-    /// Ensure the camera has a stable head-height orbit target. The ranch controller calls this
-    /// too so manual/headless scene composition gets the same contract as normal tree entry.
-    /// </summary>
+    public override void _ExitTree()
+    {
+        _inputGate.InputStateDidChange -= OnInputGateChanged;
+    }
+
+    public override void _Notification(int what)
+    {
+        if (what == NotificationApplicationFocusOut)
+        {
+            _applicationFocused = false;
+            InputGate.SetWindowFocused(false);
+            StopHorizontalMovement();
+        }
+        else if (what == NotificationApplicationFocusIn)
+        {
+            _applicationFocused = true;
+            InputGate.SetWindowFocused(true);
+        }
+        else if (what is NotificationPaused or NotificationDisabled)
+        {
+            StopHorizontalMovement();
+        }
+    }
+
+    private void OnInputGateChanged()
+    {
+        if (!InputGate.WorldInputEnabled)
+            StopHorizontalMovement();
+    }
+
+    private void StopHorizontalMovement()
+    {
+        // No residual sliding or held touch sprint after a menu/focus/area transition.
+        // Preserve vertical velocity so an ordinary management overlay does not suspend gravity.
+        Velocity = new Vector3(0f, Velocity.Y, 0f);
+        LastComputedVelocity = Velocity;
+        MobileMovementInput = Vector2.Zero;
+        MobileSprintHeld = false;
+    }
+
     public Node3D EnsureCameraTarget()
     {
         if (CameraTarget is not null && GodotObject.IsInstanceValid(CameraTarget))
@@ -57,8 +102,7 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
             return CameraTarget;
         }
 
-        var target = new Node3D { Name = "CameraTarget" };
-        target.Position = new Vector3(0f, HeadHeight, 0f);
+        var target = new Node3D { Name = "CameraTarget", Position = new Vector3(0f, HeadHeight, 0f) };
         AddChild(target);
         CameraTarget = target;
         return target;
@@ -68,143 +112,73 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
     {
         var visual = GetNodeOrNull<Node3D>("Visual");
         if (visual is not null)
-        {
             visual.Visible = !hidden;
-        }
     }
 
-    private void ResolveCamera()
+    internal void RefreshCameraBasis()
     {
-        if (_camera is null || !_camera.IsInsideTree())
-        {
-            _camera = GetCamera();
-        }
+        if (!IsInsideTree()) return;
 
-        if (_camera is not null && _camera.IsInsideTree())
-        {
-            // ProjectRayNormal from the visible rect center returns the camera's true
-            // forward direction in world space (Godot cameras look along -Z).
-            var viewport = _camera.GetViewport();
-            var visible = viewport?.GetVisibleRect();
-            if (visible.HasValue && visible.Value.Size.X > 0f && visible.Value.Size.Y > 0f)
-            {
-                var center = visible.Value.Size * 0.5f;
-                var forward = _camera.ProjectRayNormal(center);
-                var up = _camera.GlobalTransform.Basis.Y;
-                CameraBasisForward = forward.Normalized();
-                CameraBasisRight = (CameraBasisForward.Cross(up)).Normalized();
-            }
-        }
+        // The viewport is the camera authority. Recursive scene searches can pick a character
+        // preview's SubViewport camera, or retain a previous area's now-inactive camera.
+        var camera = GetViewport().GetCamera3D();
+        if (camera is null || !GodotObject.IsInstanceValid(camera) || !camera.IsInsideTree()) return;
+        var basis = camera.GlobalTransform.Basis;
+        CameraBasisForward = -basis.Z.Normalized();
+        CameraBasisRight = basis.X.Normalized();
     }
 
-    /// <summary>
-    /// Compute the input vector for this frame from the InputMap. Returns (0,0) when the
-    /// input gate is closed (UI owns input or the window lost focus).
-    /// </summary>
     public Vector2 ReadMovementInput()
     {
-        if (!InputGate.WorldInputEnabled)
-        {
+        if (!InputGate.WorldInputEnabled || !_applicationFocused)
             return Vector2.Zero;
-        }
 
-        var forward = (Input.IsActionPressed("move_forward") ? 1f : 0f) - (Input.IsActionPressed("move_backward") ? 1f : 0f);
-        var strafe = (Input.IsActionPressed("move_right") ? 1f : 0f) - (Input.IsActionPressed("move_left") ? 1f : 0f);
-        var input = new Vector2(strafe, forward) + MobileMovementInput;
-        if (input.Length() > 1f)
-        {
-            input = input.Normalized();
-        }
-
-        return input;
+        // Godot applies the configured circular deadzone. Our world convention uses +Y forward.
+        var mapped = Input.GetVector("move_left", "move_right", "move_backward", "move_forward");
+        var touch = MobileMovementInput.IsFinite() ? MobileMovementInput : Vector2.Zero;
+        return (mapped + touch).LimitLength(1f);
     }
 
     public float MoveSpeedFor(bool sprinting)
     {
-        return MaxWalkSpeed * (sprinting ? Mathf.Max(1f, SprintMultiplier) : 1f);
+        return Mathf.Max(0f, MaxWalkSpeed) * (sprinting ? Mathf.Max(1f, SprintMultiplier) : 1f);
     }
+
+    internal Vector3 ComputeDesiredVelocity(Vector2 input, bool sprinting) =>
+        WorldMovementMath.ComputeTargetVelocity(CameraBasisForward, CameraBasisRight, input, MoveSpeedFor(sprinting));
 
     public override void _PhysicsProcess(double delta)
     {
+        if (delta <= 0 || !double.IsFinite(delta)) return;
         var dt = (float)delta;
-        ResolveCamera();
+        RefreshCameraBasis();
 
         var input = ReadMovementInput();
         var direction = WorldMovementMath.ComputeMovementDirection(CameraBasisForward, CameraBasisRight, input);
-        var sprinting = InputGate.WorldInputEnabled && (Input.IsActionPressed("move_sprint") || MobileSprintHeld);
+        var sprinting = InputGate.WorldInputEnabled && _applicationFocused
+            && (Input.IsActionPressed("move_sprint") || MobileSprintHeld);
         var moveSpeed = MoveSpeedFor(sprinting);
-        var targetVelocity = direction * moveSpeed;
+        var targetVelocity = ComputeDesiredVelocity(input, sprinting);
+
+        if (!InputGate.WorldInputEnabled || !_applicationFocused)
+            StopHorizontalMovement();
 
         if (direction.LengthSquared() > 0.0001f)
         {
-            // Godot's conventional character-forward axis is -Z. Rotate the body smoothly toward
-            // camera-relative travel so the visible avatar and movement direction agree.
             var targetYaw = Mathf.Atan2(-direction.X, -direction.Z);
-            Rotation = new Vector3(
-                Rotation.X,
-                Mathf.LerpAngle(Rotation.Y, targetYaw, Mathf.Clamp(TurnSpeed * dt, 0f, 1f)),
-                Rotation.Z);
+            Rotation = new Vector3(Rotation.X,
+                Mathf.LerpAngle(Rotation.Y, targetYaw, Mathf.Clamp(TurnSpeed * dt, 0f, 1f)), Rotation.Z);
         }
 
-        // Gravity (bounded) when not on the floor.
         if (!IsOnFloor())
-        {
             Velocity = WorldMovementMath.ApplyGravity(Velocity, Gravity, dt);
-        }
         else
-        {
             Velocity = new Vector3(Velocity.X, 0f, Velocity.Z);
-        }
 
-        // Bounded horizontal acceleration toward the target.
         var target = new Vector3(targetVelocity.X, Velocity.Y, targetVelocity.Z);
         Velocity = WorldMovementMath.BlendVelocity(Velocity, target, Acceleration, dt);
         Velocity = WorldMovementMath.ClampSpeed(Velocity, moveSpeed);
         LastComputedVelocity = Velocity;
-
         MoveAndSlide();
-    }
-
-    private Camera3D? GetCamera()
-    {
-        // The authored camera lives at RanchGreybox/CameraRig/Camera, so a direct-sibling scan
-        // misses it. Walk each ancestor subtree recursively and prefer the current camera.
-        var root = GetParent();
-        Camera3D? fallback = null;
-        while (root is not null)
-        {
-            var found = FindCameraRecursive(root, ref fallback);
-            if (found is not null)
-            {
-                return found;
-            }
-
-            root = root.GetParent();
-        }
-
-        return fallback ?? GetNodeOrNull<Camera3D>("Camera");
-    }
-
-    private static Camera3D? FindCameraRecursive(Node root, ref Camera3D? fallback)
-    {
-        foreach (var child in root.GetChildren())
-        {
-            if (child is Camera3D camera)
-            {
-                fallback ??= camera;
-                if (camera.Current)
-                {
-                    return camera;
-                }
-            }
-
-            var nested = FindCameraRecursive(child, ref fallback);
-            if (nested is not null)
-            {
-                return nested;
-            }
-        }
-
-        return null;
     }
 }
