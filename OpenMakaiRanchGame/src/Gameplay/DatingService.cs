@@ -182,6 +182,21 @@ public sealed class DatingService
             return false;
         }
 
+        var area = string.IsNullOrWhiteSpace(_state.WorldAreaId) ? "ranch" : _state.WorldAreaId;
+        if (kind is DateActivityKind.RanchWalk or DateActivityKind.WorkTogether or DateActivityKind.QuietRest
+            && !string.Equals(area, "ranch", StringComparison.OrdinalIgnoreCase))
+        {
+            reason = "Return to the ranch for this companion activity.";
+            return false;
+        }
+
+        if (kind == DateActivityKind.TownOuting
+            && !string.Equals(area, "town", StringComparison.OrdinalIgnoreCase))
+        {
+            reason = "Travel to Okachi Town together before starting the town outing.";
+            return false;
+        }
+
         if (!_stamina.CanSpend(ActivityCost(kind)))
         {
             reason = $"Not enough player stamina ({ActivityCost(kind)} required).";
