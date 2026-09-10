@@ -78,6 +78,7 @@ public partial class WorldGameController : Node
         _ranch.TravelRequested += OnTravelRequested;
         _town.TravelRequested += OnTravelRequested;
         _town.ServiceScreenRequested += OnTownServiceRequested;
+        _town.CharacterInteractionRequested += OnCharacterInteractionRequested;
         if (_transition is not null)
         {
             _transition.Completed += OnTransitionCompleted;
@@ -142,6 +143,7 @@ public partial class WorldGameController : Node
         {
             _town.TravelRequested -= OnTravelRequested;
             _town.ServiceScreenRequested -= OnTownServiceRequested;
+            _town.CharacterInteractionRequested -= OnCharacterInteractionRequested;
         }
         if (_transition is not null && GodotObject.IsInstanceValid(_transition))
         {
