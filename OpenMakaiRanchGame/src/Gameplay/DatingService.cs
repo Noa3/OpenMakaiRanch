@@ -59,20 +59,21 @@ public sealed class DatingService
         var m = character.Mature;
 
         if (progress.PositiveMoments >= 8
-            && progress.ForcedMoments == 0
+            && progress.TrustDamage <= 5
             && character.Bond >= 75
             && m.Favorability >= 10000
             && EffectiveAversion(character, progress) <= 500)
             return RelationshipStage.DeeplyAttached;
 
         if (progress.PositiveMoments >= 4
-            && progress.ForcedMoments <= 1
+            && progress.TrustDamage <= 20
             && character.Bond >= 50
             && m.Favorability >= 5000
             && EffectiveAversion(character, progress) <= 1500)
             return RelationshipStage.Romantic;
 
         if (progress.PositiveMoments >= 2
+            && progress.TrustDamage <= 45
             && character.Bond >= 30
             && m.Favorability >= 2000
             && EffectiveAversion(character, progress) <= 3000)
@@ -119,11 +120,13 @@ public sealed class DatingService
                 {
                     character.Morale = Clamp100(character.Morale + 2);
                     character.Bond = Clamp100(character.Bond + 1);
+                    progress.TrustDamage = Math.Max(0, progress.TrustDamage - 1);
                 }
                 break;
 
             case DateInviteApproach.Pressured:
                 progress.PressuredMoments++;
+                progress.TrustDamage = Math.Min(100, progress.TrustDamage + 10);
                 character.Morale = Clamp100(character.Morale - 4);
                 character.Bond = Clamp100(character.Bond - 2);
                 AdjustMind(character, dignity: -20, aversion: 120, antipathy: 80, fear: 20, favorability: -40);
@@ -131,6 +134,7 @@ public sealed class DatingService
 
             case DateInviteApproach.Forced:
                 progress.ForcedMoments++;
+                progress.TrustDamage = Math.Min(100, progress.TrustDamage + 30);
                 character.Morale = Clamp100(character.Morale - 10);
                 character.Bond = Clamp100(character.Bond - 5);
                 // Pressure may erode dignity, but it also makes the social route substantially worse.
@@ -249,6 +253,7 @@ public sealed class DatingService
         if (approach == DateInviteApproach.Pressured && (compatibility < 0 || lowMood))
         {
             progress.PressuredMoments++;
+            progress.TrustDamage = Math.Min(100, progress.TrustDamage + 8);
             character.Morale = Clamp100(character.Morale - 3);
             character.Bond = Clamp100(character.Bond - 1);
             AdjustMind(character, dignity: -15, aversion: 90, antipathy: 70, fear: 10, favorability: -25);
@@ -283,7 +288,7 @@ public sealed class DatingService
             thoughts.Add("I'm exhausted. Somewhere quiet would be nice...");
         if (character.Morale < 30)
             thoughts.Add("I'm not really in the mood for this...");
-        if (EffectiveAversion(character, progress) >= 6000)
+        if (EffectiveAversion(character, progress) >= 6000 || progress.TrustDamage >= 50)
             thoughts.Add("I still don't trust them.");
 
         if (OriginalCalendarRules.IsRain(_state.Calendar.CurrentWeather))
@@ -309,7 +314,8 @@ public sealed class DatingService
             return "Relationship unavailable.";
 
         var stage = StageFor(characterId);
-        return $"{stage} · Bond {character.Bond} · Morale {character.Morale} · Favorability {character.Mature.Favorability} · Aversion {EffectiveAversion(character, ProgressFor(characterId))}";
+        var progress = ProgressFor(characterId);
+        return $"{stage} · Bond {character.Bond} · Morale {character.Morale} · Favorability {character.Mature.Favorability} · Aversion {EffectiveAversion(character, progress)} · Trust damage {progress.TrustDamage}";
     }
 
     private void ApplyPositiveActivity(
@@ -373,6 +379,8 @@ public sealed class DatingService
         }
 
         progress.PositiveMoments++;
+        var repair = pressured ? 1 : compatibility > 0 ? 6 : 4;
+        progress.TrustDamage = Math.Max(0, progress.TrustDamage - repair);
     }
 
     private void ApplyFriendlyMind(CharacterState character, DatingPartnerState progress, int favorability, int aversionReduction)
@@ -394,6 +402,7 @@ public sealed class DatingService
     {
         progress.ForcedMoments++;
         var severe = kind == DateActivityKind.TownOuting || kind == DateActivityKind.WorkTogether;
+        progress.TrustDamage = Math.Min(100, progress.TrustDamage + (severe ? 20 : 14));
         character.Bond = Clamp100(character.Bond - (severe ? 4 : 3));
         character.Morale = Clamp100(character.Morale - (severe ? 9 : 6));
         AdjustMind(
@@ -435,7 +444,8 @@ public sealed class DatingService
             + character.Mature.Favorability / 20
             - aversion / 20
             - character.Mature.Fear / 40
-            - character.Mature.Antipathy / 40;
+            - character.Mature.Antipathy / 40
+            - progress.TrustDamage * 4;
     }
 
     private static int EffectiveAversion(CharacterState character, DatingPartnerState progress)
