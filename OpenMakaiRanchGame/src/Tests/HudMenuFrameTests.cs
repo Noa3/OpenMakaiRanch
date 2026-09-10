@@ -168,6 +168,7 @@ public static class HudMenuFrameTests
         await Frames(game, 3);
         Check(r, beforeScroll > 0 && scroll.ScrollVertical > 0, "same-screen state refresh preserves a scrolled options view");
         Check(r, scroll.FollowFocus, "management scrolling follows keyboard and controller focus");
+        await HudViewStateFrameTests.Run(game, world, r);
         // Force compact navigation without requiring a particular display backend/window size.
         shell.GetNode<Button>(shell.MenuButtonPath).EmitSignal(BaseButton.SignalName.Pressed);
         GetFocus(game)?.ReleaseFocus();

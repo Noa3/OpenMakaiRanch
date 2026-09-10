@@ -2486,6 +2486,21 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 Assert(result, controller.IntroHouse?.InputGate.WorldInputEnabled == true,
                     "day-one bedroom transition returns input to the active story world");
 
+                // The assertions above verify mandatory Day-1 ownership. The clock contract
+                // below concerns an ordinary completed-story session, not bypassing that
+                // tutorial. Full Day-1 and skip routes have separate real-frame coverage.
+                game.State.Calendar.Day = 2;
+                game.State.Calendar.Phase = DayPhase.Morning;
+                game.State.Story.FirstDayCompleted = true;
+                game.State.Story.FirstDayStage = FirstDayFlowController.StageCompleted;
+                controller.FirstDayFlow?.RefreshFromCurrentState();
+                controller.ActivateStoryArea("ranch", reposition: false, firstArrival: false);
+                controller.Transition?.CompleteImmediately();
+                game.NotifyStateChanged();
+                Assert(result, controller.FirstDayFlow?.IsActive == false
+                    && controller.Ranch?.InputGate.WorldInputEnabled == true,
+                    "ordinary clock fixture starts outside mandatory tutorial ownership");
+
                 // WORLD-003d flow: play through the shared clock from the 3D world. Day phases can
                 // advance without opening management; Night with no plan opens the existing choice,
                 // then settlement opens the existing Daily Report.

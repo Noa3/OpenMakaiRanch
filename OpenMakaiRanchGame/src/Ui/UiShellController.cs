@@ -268,7 +268,7 @@ public partial class UiShellController : Control
 		}
 
 		var sameScreenRefresh = _currentScreen == screenId;
-		var previousScroll = sameScreenRefresh && IsInstanceValid(_scroll) ? _scroll.ScrollVertical : 0;
+		var previousScroll = sameScreenRefresh && IsInstanceValid(_scroll) ? CaptureContentScroll() : 0;
 		var focus = sameScreenRefresh ? CaptureContentFocus() : null;
 		var revision = ++_viewRevision;
 		CancelBindingCapture("Binding cancelled.");
