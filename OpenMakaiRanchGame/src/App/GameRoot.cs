@@ -106,9 +106,21 @@ public partial class GameRoot : Node
 		}
 	}
 
-	private void RunSmokeTestsAndExit()
+	private async void RunSmokeTestsAndExit()
 	{
 		var result = SmokeTestRunner.Run();
+		// Keep every assertion and failure; emit one terminal result after both suites.
+		result.Lines.RemoveAll(line => line is "SMOKE PASS" or "SMOKE FAIL");
+		try
+		{
+			await PlayabilityFrameTests.Run(this, result);
+		}
+		catch (Exception exception)
+		{
+			result.Passed = false;
+			result.Lines.Add($"SMOKE FAIL frame test harness: {exception.Message}");
+		}
+		result.Lines.Add(result.Passed ? "SMOKE PASS" : "SMOKE FAIL");
 		foreach (var line in result.Lines)
 		{
 			GD.Print(line);
