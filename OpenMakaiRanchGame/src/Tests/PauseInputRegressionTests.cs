@@ -6,10 +6,24 @@ using OpenMakaiRanch.World;
 
 namespace OpenMakaiRanch.Tests;
 
+// Bind only pause ownership, not heavy world composition. Explicit event callbacks remain real.
+public partial class PauseInputHostFixture : WorldGameController
+{
+    public override void _Ready() { }
+}
+
 public static class PauseInputRegressionTests
 {
     public static void Run(SmokeTestResult result)
     {
+        // This synchronous suite is invoked deferred and may run inside a physics tick.
+        // ActionPress's just-pressed timestamp is therefore not a valid simulated process frame.
+        // Check the no-polling contract explicitly, then exercise actual event-routing methods.
+        var source = Godot.FileAccess.GetFileAsString("res://src/World/WorldGameController.cs");
+        Check(result, !string.IsNullOrWhiteSpace(source), "world input source is available for the ownership guard");
+        Check(result, !source.Contains("Input.IsActionJustPressed(\"ui_cancel\")", StringComparison.Ordinal),
+            "source guard: world updates do not poll Back after the event owner has handled it");
+
         var tree = GameRoot.Instance.GetTree();
         var wasPaused = tree.Paused;
         var pause = new PauseMenuController { Name = "PauseInputFixture" };
@@ -20,30 +34,33 @@ public static class PauseInputRegressionTests
         center.AddChild(panel);
         panel.AddChild(content);
         content.AddChild(new Button { Name = "ResumeButton", Text = "Resume" });
-        var host = new WorldGameController();
+        var host = new PauseInputHostFixture { ProcessMode = Node.ProcessModeEnum.Disabled };
         try
         {
             tree.Root.AddChild(pause);
-            // Isolate the input-owning host from heavy world composition. No production test hook
-            // is added, and the actual _Process implementation is exercised unchanged.
+            tree.Root.AddChild(host);
             var field = typeof(WorldGameController).GetField("_pauseMenu", BindingFlags.Instance | BindingFlags.NonPublic)
                 ?? throw new InvalidOperationException("World pause binding was not found.");
             field.SetValue(host, pause);
-            pause.Open("ranch");
-            Input.ActionPress("ui_cancel");
-            Check(result, Input.IsActionJustPressed("ui_cancel"), "Back remains just-pressed during the current process frame");
-            pause._UnhandledInput(new InputEventAction { Action = "ui_cancel", Pressed = true });
-            Check(result, !pause.IsOpen && !tree.Paused, "Back closes the pause menu before world processing resumes");
-            host._Process(0.0);
-            Check(result, !pause.IsOpen && !tree.Paused,
-                "the same Back press cannot reopen pause in the following world _Process call");
+
+            foreach (var action in new[] { "pause_menu", "ui_cancel" })
+            {
+                pause.Open("ranch");
+                content.GetNode<Button>("CommunityBoardButton").EmitSignal(BaseButton.SignalName.Pressed);
+                Check(result, pause.IsCommunityBoardOpen && tree.Paused, $"{action}: board is open before host routing");
+                host._UnhandledInput(new InputEventAction { Action = action, Pressed = true });
+                Check(result, pause.IsOpen && !pause.IsCommunityBoardOpen && tree.Paused,
+                    $"{action}: host Back closes only the board and keeps the world paused");
+                host._UnhandledInput(new InputEventAction { Action = action, Pressed = true });
+                Check(result, !pause.IsOpen && !tree.Paused, $"{action}: the next Back closes pause");
+                pause.Close();
+            }
         }
         finally
         {
-            Input.ActionRelease("ui_cancel");
+            host.Free();
             pause.Close();
             pause.Free();
-            host.Free();
             tree.Paused = wasPaused;
         }
     }
