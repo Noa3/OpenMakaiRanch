@@ -16,126 +16,53 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-      - name: Apply exact source edits, refusing changed input
+      - name: Wire frame tests only at the existing smoke entry point
         shell: python
         run: |
           import hashlib
           import pathlib
           import subprocess
-
-          path = pathlib.Path('OpenMakaiRanchGame/src/Tests/SmokeTestRunner.cs')
+          path = pathlib.Path('OpenMakaiRanchGame/src/App/GameRoot.cs')
           raw = path.read_bytes()
           blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
-          assert blob == 'd0019d11fc704839c9f43b1ea2011c4c8677d4d3', 'Smoke source changed; review instead of overwriting'
+          assert blob == '22f8cf380dee8fa754555e9bc530a3b9a6a55f4d', 'GameRoot changed; review rather than overwrite'
+          old = ('\tprivate void RunSmokeTestsAndExit()\n\t{\n'
+                 '\t\tvar result = SmokeTestRunner.Run();\n'
+                 '\t\tforeach (var line in result.Lines)\n\t\t{\n'
+                 '\t\t\tGD.Print(line);\n\t\t}\n\n'
+                 '\t\tGetTree().Quit(result.Passed ? 0 : 1);\n\t}')
+          new = ('\tprivate async void RunSmokeTestsAndExit()\n\t{\n'
+                 '\t\tvar result = SmokeTestRunner.Run();\n'
+                 '\t\t// Keep every assertion and failure; emit one terminal result after both suites.\n'
+                 '\t\tresult.Lines.RemoveAll(line => line is "SMOKE PASS" or "SMOKE FAIL");\n'
+                 '\t\ttry\n\t\t{\n'
+                 '\t\t\tawait PlayabilityFrameTests.Run(this, result);\n\t\t}\n'
+                 '\t\tcatch (Exception exception)\n\t\t{\n'
+                 '\t\t\tresult.Passed = false;\n'
+                 '\t\t\tresult.Lines.Add($"SMOKE FAIL frame test harness: {exception.Message}");\n\t\t}\n'
+                 '\t\tresult.Lines.Add(result.Passed ? "SMOKE PASS" : "SMOKE FAIL");\n'
+                 '\t\tforeach (var line in result.Lines)\n\t\t{\n'
+                 '\t\t\tGD.Print(line);\n\t\t}\n\n'
+                 '\t\tGetTree().Quit(result.Passed ? 0 : 1);\n\t}')
           text = raw.decode('utf-8')
-          original_assertions = text.count('Assert(result')
-          def replace_once(old, new):
-              global text
-              assert text.count(old) == 1, 'Expected exactly one source anchor: ' + old[:100]
-              text = text.replace(old, new, 1)
-
-          replace_once('transferred == 30 && state.Player.Mana == 50 && state.Economy.ManaReservoir == 15',
-                       'transferred == 22 && state.Player.Mana == 42 && state.Economy.ManaReservoir == 1\n            && state.Player.MaxMana == 100')
-          replace_once('state.Player.Mana == 40 && state.Roster.Characters.Sum(character => character.Morale) > moraleBefore',
-                       'state.Player.Mana == 32 && state.Roster.Characters.Sum(character => character.Morale) > moraleBefore')
-
-          old = ('        var lactation = new MilkEconomyService(state);\n'
-                 '        var subject = state.Roster.Characters.First(character => character.Id == "rancher");\n'
-                 '        subject.Milk.HasMilkConstitution = false;\n'
-                 '        subject.Milk.CurrentAmount = 0;\n'
-                 '        subject.Talents.RemoveAll(t => t == "extreme_milk_pressure");\n'
-                 '        state.Mature.TotalMilkProduced = 0;\n'
-                 '        var milkBefore = state.Mature.TotalMilkProduced;\n'
-                 '        lactation.ProduceMilk(subject.Id);\n'
-                 '        Assert(result, state.Mature.TotalMilkProduced == milkBefore, "milk production requires a milk constitution or talent");\n'
-                 '        subject.Milk.HasMilkConstitution = true;\n'
-                 '        lactation.ProduceMilk(subject.Id);\n'
-                 '        Assert(result, state.Mature.TotalMilkProduced > milkBefore, "constitution enables milk production");')
-          new = ('        // Isolated numeric contract fixtures, not approval of any production character.\n'
-                 '        var productionState = new SaveState();\n'
-                 '        var lactation = new MilkEconomyService(productionState);\n'
-                 '        var subject = new CharacterState\n'
-                 '        {\n'
-                 '            Id = "contract_adult_producer",\n'
-                 '            ApparentAge = 30,\n'
-                 '            AdultEligibility = AdultEligibility.ConfirmedAdult\n'
-                 '        };\n'
-                 '        var unreviewed = new CharacterState\n'
-                 '        {\n'
-                 '            Id = "contract_unreviewed_producer",\n'
-                 '            ApparentAge = 30,\n'
-                 '            AdultEligibility = AdultEligibility.Unknown\n'
-                 '        };\n'
-                 '        productionState.Roster.Characters.Add(subject);\n'
-                 '        productionState.Roster.Characters.Add(unreviewed);\n'
-                 '        unreviewed.Milk.HasMilkConstitution = true;\n'
-                 '        var milkBefore = productionState.Mature.TotalMilkProduced;\n'
-                 '        lactation.ProduceMilk(unreviewed.Id);\n'
-                 '        Assert(result, productionState.Mature.TotalMilkProduced == milkBefore\n'
-                 '            && unreviewed.Milk.CurrentAmount == 0,\n'
-                 '            "production contract: unreviewed fixture stays denied despite constitution");\n'
-                 '        subject.Milk.HasMilkConstitution = false;\n'
-                 '        subject.Milk.HasMagicMilkConstitution = false;\n'
-                 '        subject.Milk.CurrentAmount = 0;\n'
-                 '        subject.Talents.Clear();\n'
-                 '        lactation.ProduceMilk(subject.Id);\n'
-                 '        Assert(result, productionState.Mature.TotalMilkProduced == milkBefore, "milk production requires a milk constitution or talent");\n'
-                 '        subject.Milk.HasMilkConstitution = true;\n'
-                 '        lactation.ProduceMilk(subject.Id);\n'
-                 '        Assert(result, productionState.Mature.TotalMilkProduced > milkBefore, "constitution enables milk production");')
-          replace_once(old, new)
-          replace_once('                // _Ready() normally fires on tree entry; invoke it directly so the\n'
-                       '                // wiring (player / station / dispatcher) is verified headlessly.\n'
-                       '                controller._Ready();',
-                       '                // Exercise the real Godot lifecycle: child readiness and global\n'
-                       '                // transforms require scene-tree entry, even in headless tests.\n'
-                       '                GameRoot.Instance.AddChild(greybox);')
-          replace_once('        companionTarget.GlobalPosition = new Vector3(2f, 0f, 2f);\n'
-                       '        parent.AddChild(companionTarget);',
-                       '        companionTarget.Position = new Vector3(2f, 0f, 2f);\n'
-                       '        parent.AddChild(companionTarget);')
-          replace_once('            TestWorldDaylightAndRoster(result);',
-                       '            TestWorldDaylightAndRoster(result);\n'
-                       '            PlayabilityRegressionTests.Run(result);')
-          assert text.count('Assert(result') >= original_assertions, 'Do not remove existing assertions'
-          assert len(text.splitlines()) >= 3200, 'Refuse truncated source'
-          path.write_bytes(text.encode('utf-8'))
+          assert text.count(old) == 1, 'Expected exactly one unchanged smoke entry point'
+          path.write_bytes(text.replace(old, new, 1).encode('utf-8'))
           subprocess.run(['git', 'diff', '--check'], check=True)
           evidence = pathlib.Path('.artifacts/reviewed-patch')
           evidence.mkdir(parents=True, exist_ok=True)
-          evidence.joinpath('smoke.patch').write_bytes(subprocess.check_output(['git', 'diff', '--', str(path)]))
-      - name: Commit only the reviewed test source, without force
+          evidence.joinpath('frame-entry.patch').write_bytes(subprocess.check_output(['git', 'diff', '--', str(path)]))
+      - name: Commit only the smoke entry point without force
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- OpenMakaiRanchGame/src/Tests/SmokeTestRunner.cs
-          git commit -m 'test: correct resource contracts and use real scene lifecycles'
+          git add -- OpenMakaiRanchGame/src/App/GameRoot.cs
+          git commit -m 'test: await frame playthrough before reporting the final smoke result'
           git push origin HEAD:refs/heads/playability/csharp12-controls-20260910
-      - name: Package source and exact patch for review
-        if: always()
-        shell: python
-        run: |
-          import pathlib
-          import subprocess
-          import zipfile
-          dest = pathlib.Path('.artifacts/reviewed-patch')
-          dest.mkdir(parents=True, exist_ok=True)
-          paths = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
-          roots = ('OpenMakaiRanchGame/src/', 'OpenMakaiRanchGame/scenes/', 'OpenMakaiRanchGame/docs/',
-                   'OpenMakaiRanchGame/data/', 'Tools/Godot/', '.github/workflows/')
-          exact = {'AGENTS.md', 'global.json', 'Directory.Build.props', 'Directory.Build.targets',
-                   'OpenMakaiRanchGame/project.godot', 'OpenMakaiRanchGame/OpenMakaiRanchGame.csproj'}
-          with zipfile.ZipFile(dest / 'review-source.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
-              for name in paths:
-                  p = pathlib.Path(name)
-                  if name and p.is_file() and not p.is_symlink() and (name.startswith(roots) or name in exact or name.endswith('.csproj')):
-                      archive.write(p, name)
-          dest.joinpath('head.txt').write_bytes(subprocess.check_output(['git', 'rev-parse', 'HEAD']))
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: reviewed-playability-source
+          name: reviewed-frame-entry-patch
           path: .artifacts/reviewed-patch/
           if-no-files-found: error
