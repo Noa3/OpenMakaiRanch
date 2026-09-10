@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Gameplay;
 
 namespace OpenMakaiRanch.World;
 
