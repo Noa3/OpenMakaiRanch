@@ -1,0 +1,80 @@
+name: Rendered UI acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'OpenMakaiRanchGame/src/**'
+      - 'OpenMakaiRanchGame/scenes/**'
+      - 'OpenMakaiRanchGame/project.godot'
+      - 'Tools/Godot/**'
+      - '.github/workflows/ui-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-acceptance-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  rendered-ui:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.401
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install software-rendering dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libxinerama1 libxcursor1 libxi6 libxrandr2
+      - name: Install pinned Godot 4.7.2 Mono
+        run: |
+          set -euo pipefail
+          archive=Godot_v4.7.2-stable_mono_linux_x86_64.zip
+          curl --fail --location --retry 3 "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/$archive" -o "$RUNNER_TEMP/$archive"
+          echo "129f82db7bafd54ae14bb5bb284041c73860e8c7a009a3a026ca5e946cbff247  $RUNNER_TEMP/$archive" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/$archive" -d "$RUNNER_TEMP/godot-ui"
+          engine="$RUNNER_TEMP/godot-ui/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64"
+          chmod +x "$engine"
+          echo "GODOT_BIN=$engine" >> "$GITHUB_ENV"
+          "$engine" --version
+      - name: Build with existing C# 12 contract
+        run: |
+          dotnet restore OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --ignore-failed-sources
+          dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --no-restore
+      - name: Import and run rendered isolated UI acceptance
+        run: |
+          python Tools/Godot/launch.py --mode import --timeout 300
+          xvfb-run -a -s '-screen 0 1920x1080x24' python Tools/Godot/ui_acceptance.py --rendered --timeout 240
+      - name: Record exact reviewed source alongside evidence
+        if: always()
+        run: |
+          mkdir -p .artifacts/ui-source
+          git rev-parse HEAD > .artifacts/ui-source/commit.txt
+          git archive -o .artifacts/ui-source/review-source.zip HEAD OpenMakaiRanchGame/src/Ui OpenMakaiRanchGame/src/App OpenMakaiRanchGame/src/World OpenMakaiRanchGame/src/Tests OpenMakaiRanchGame/scenes Tools/Godot
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-acceptance-evidence
+          retention-days: 14
+          include-hidden-files: true
+          path: |
+            .artifacts/godot/**/console.log
+            .artifacts/godot/**/engine.log
+            .artifacts/godot/**/profile-check.log
+            .artifacts/godot/**/results.json
+            .artifacts/godot/**/*.png
+            .artifacts/ui-source/**
