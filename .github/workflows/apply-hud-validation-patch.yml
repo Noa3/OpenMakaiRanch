@@ -1,0 +1,79 @@
+name: Apply reviewed HUD validation patch
+
+on:
+  push:
+    branches: [ 'playability/ranch-quiet-corner-20260910' ]
+    paths: [ '.github/workflows/apply-hud-validation-patch.yml' ]
+
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/playability/ranch-quiet-corner-20260910'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Apply reviewed edits only to unchanged source
+        shell: python
+        run: |
+          import hashlib
+          import pathlib
+          import subprocess
+          changed = []
+          def patch(name, expected, old, new):
+              p = pathlib.Path(name)
+              raw = p.read_bytes()
+              blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+              assert blob == expected, 'Concurrent source change; review rather than overwrite: ' + name
+              text = raw.decode('utf-8')
+              assert text.count(old) == 1, 'Expected one exact reviewed source anchor: ' + name
+              p.write_bytes(text.replace(old, new, 1).encode('utf-8'))
+              changed.append(name)
+
+          patch('OpenMakaiRanchGame/src/Ui/UiShellController.cs',
+                'b658865491212089966e91b81e127288ba9082ac',
+                'var previousScroll = sameScreenRefresh && IsInstanceValid(_scroll) ? _scroll.ScrollVertical : 0;',
+                'var previousScroll = sameScreenRefresh && IsInstanceValid(_scroll) ? CaptureContentScroll() : 0;')
+
+          patch('OpenMakaiRanchGame/src/Tests/HudMenuFrameTests.cs',
+                '89e3c4cfbafe031a9cd92cf98fa245915bb1b209',
+                '        Check(r, scroll.FollowFocus, "management scrolling follows keyboard and controller focus");',
+                '        Check(r, scroll.FollowFocus, "management scrolling follows keyboard and controller focus");\n'
+                '        await HudViewStateFrameTests.Run(game, world, r);')
+
+          patch('OpenMakaiRanchGame/src/Tests/SmokeTestRunner.cs',
+                '4b6f75bd522a31cf54f93be6a2fcee363fd984f2',
+                '                // WORLD-003d flow: play through the shared clock from the 3D world. Day phases can',
+                '                // The assertions above verify mandatory Day-1 ownership. The clock contract\n'
+                '                // below concerns an ordinary completed-story session, not bypassing that\n'
+                '                // tutorial. Full Day-1 and skip routes have separate real-frame coverage.\n'
+                '                game.State.Calendar.Day = 2;\n'
+                '                game.State.Calendar.Phase = DayPhase.Morning;\n'
+                '                game.State.Story.FirstDayCompleted = true;\n'
+                '                game.State.Story.FirstDayStage = FirstDayFlowController.StageCompleted;\n'
+                '                controller.FirstDayFlow?.RefreshFromCurrentState();\n'
+                '                controller.ActivateStoryArea("ranch", reposition: false, firstArrival: false);\n'
+                '                controller.Transition?.CompleteImmediately();\n'
+                '                game.NotifyStateChanged();\n'
+                '                Assert(result, controller.FirstDayFlow?.IsActive == false\n'
+                '                    && controller.Ranch?.InputGate.WorldInputEnabled == true,\n'
+                '                    "ordinary clock fixture starts outside mandatory tutorial ownership");\n\n'
+                '                // WORLD-003d flow: play through the shared clock from the 3D world. Day phases can')
+
+          helper = pathlib.Path('.github/workflows/apply-hud-validation-patch.yml')
+          helper.unlink()
+          changed.append(str(helper))
+          subprocess.run(['git', 'diff', '--check'], check=True)
+          subprocess.run(['git', 'diff', '--stat'], check=True)
+          subprocess.run(['git', 'add', '--', *changed], check=True)
+      - name: Commit exact paths and remove this one-use helper without force
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(ui): retain pending view snapshots and isolate ordinary clock regression'
+          git push origin HEAD:refs/heads/playability/ranch-quiet-corner-20260910
