@@ -219,6 +219,17 @@ public static class SmokeTestRunner
         state.Economy.Gold = 777;
         state.Settings.AudioEnabled = false;
         state.Settings.HapticsEnabled = false;
+        state.Player.NextDayStaminaBonus = PlayerStaminaService.HotBathNextDayBonus;
+        state.Dating.ActivePartnerId = "rancher";
+        state.Dating.ActiveApproach = DateInviteApproach.Respectful;
+        state.Dating.Partners["rancher"] = new DatingPartnerState
+        {
+            DatesStarted = 2,
+            SharedActivities = 3,
+            PositiveMoments = 2,
+            LastDateDay = state.Calendar.Day,
+            LastActivityId = DateActivityKind.RanchWalk.ToString()
+        };
         new SaveStateFactory(data, new Random(70)).RerollGeneratedRecruits(state);
         var generatedRecruit = state.Roster.Characters.First(character => character.IsGenerated);
 
@@ -234,6 +245,13 @@ public static class SmokeTestRunner
         Assert(result, loaded?.Roster.Characters.Any(character => character.IsGenerated && character.DisplayNameOverride == generatedRecruit.DisplayNameOverride) == true, "generated recruit metadata round-trips");
         Assert(result, loaded?.Roster.Characters.Any(character => character.IsGenerated && character.BodyTypeOverride == generatedRecruit.BodyTypeOverride) == true, "generated recruit body metadata round-trips");
         Assert(result, loaded?.Recruitment.CurrentOffer?.Id == state.Recruitment.CurrentOffer?.Id, "recruitment offer round-trips");
+        Assert(result, loaded?.Player.NextDayStaminaBonus == PlayerStaminaService.HotBathNextDayBonus,
+            "save round-trip preserves scheduled next-day Well Rested bonus");
+        Assert(result, loaded?.Dating.ActivePartnerId == "rancher"
+            && loaded.Dating.Partners.TryGetValue("rancher", out var savedDate)
+            && savedDate.DatesStarted == 2
+            && savedDate.SharedActivities == 3,
+            "save round-trip preserves active companion and relationship history");
         save.Delete(99);
     }
 
