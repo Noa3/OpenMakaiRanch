@@ -17,6 +17,7 @@ public static class SaveRegressionTests
         TestRejectedLoadsPreserveLiveState(result);
         // Courier receipts use this same FlagService/save boundary.
         CommunityRequestRegressionTests.Run(result);
+        PauseInputRegressionTests.Run(result);
     }
 
     private static void TestFlagRoundTrip(SmokeTestResult result)
