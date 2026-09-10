@@ -17,6 +17,7 @@
 
 [ext_resource type="Script" path="res://src/World/WorldBoundaryBuilder.cs" id="13_boundary"]
 [ext_resource type="Script" path="res://src/World/WorldSurfaceInteractionController.cs" id="17_surface"]
+[ext_resource type="Script" path="res://src/World/RosterRig.cs" id="18_roster"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -64,6 +65,13 @@ shape = SubResource("ground_shape")
 
 [node name="Presentation" type="Node3D" parent="."]
 script = ExtResource("7_presentation")
+
+[node name="CompanionRig" type="Node3D" parent="."]
+script = ExtResource("18_roster")
+CompanionOnly = true
+AnimateTravel = true
+TravelSpeed = 3.0
+ArrivalDistance = 0.15
 
 [node name="Services" type="Node3D" parent="."]
 
@@ -162,9 +170,9 @@ PlayerPath = NodePath("../Player")
 [node name="SurfaceInteractions" type="Node3D" parent="."]
 script = ExtResource("17_surface")
 PlayerPath = NodePath("../Player")
-RosterPath = NodePath("")
+RosterPath = NodePath("../CompanionRig")
 MaxMarks = 48
-MaxTrackedActors = 1
+MaxTrackedActors = 2
 MaxPuddles = 8
 
 [node name="Player" type="CharacterBody3D" parent="."]
