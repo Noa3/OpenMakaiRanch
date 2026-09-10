@@ -25,7 +25,7 @@ public partial class WorldInteractionAssistController : Node
 
     public override void _Ready()
     {
-        _world = GetParentOrNull<WorldGameController>();
+        _world = GetParent() as WorldGameController;
         InputBindingService.EnsureApplied();
         BuildHud();
         BuildHighlight();
@@ -181,6 +181,10 @@ public partial class WorldInteractionAssistController : Node
             return;
         }
 
+        if (_canvas is not null)
+        {
+            _canvas.Visible = true;
+        }
         _panel.Visible = true;
         var interactBinding = InputBindingService.GetCombinedLabel("interact");
 
