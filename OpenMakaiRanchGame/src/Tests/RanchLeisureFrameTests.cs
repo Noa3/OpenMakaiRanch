@@ -178,8 +178,21 @@ public static class RanchLeisureFrameTests
             advance.EmitSignal(BaseButton.SignalName.Pressed);
             await Frames(game, 2);
         }
+        // Plan Night deliberately opens management instead of choosing a workload for the player.
+        // Follow that visible choice and the normal End Day button; do not call EndDay directly.
+        Check(result, game.State.Calendar.Day == dayBefore && world.IsManagementVisible
+            && string.IsNullOrWhiteSpace(game.State.Calendar.NightAction),
+            "Plan Night requires an explicit workload choice before settlement");
+        PlayabilityRegressionTests.Press(world.Shell!, "Rest (restore energy)");
+        await Frames(game, 2);
+        Check(result, game.State.Calendar.NightAction == "rest", "the live night-choice button selects ordinary rest");
+        var endDay = world.Shell!.GetNode<Button>("Margin/RootPanel/Root/TopBar/TopBarRow2/EndDayButton");
+        if (!endDay.IsVisibleInTree() || endDay.Disabled || endDay.Text != "End Day")
+            throw new InvalidOperationException("The normal End Day action is unavailable after planning the night");
+        endDay.EmitSignal(BaseButton.SignalName.Pressed);
+        await Frames(game, 2);
         Check(result, game.State.Calendar.Day == dayBefore + 1 && game.LastDailyReport?.Day == dayBefore
-            && world.Shell!.CurrentScreen == "report", "normal phase advancement reaches the Day 3 settlement report once");
+            && world.Shell.CurrentScreen == "report", "normal phase advancement reaches the Day 3 settlement report once");
         Check(result, game.State.Ranch.Stockpile["supplies"] >= RanchLeisureService.RestoreSupplyCost
             && game.LastDailyReport!.Lines.Any(line => line.Contains(officeLabel, StringComparison.Ordinal)),
             "the actual Office Work report accounts for the supplies used by restoration");
