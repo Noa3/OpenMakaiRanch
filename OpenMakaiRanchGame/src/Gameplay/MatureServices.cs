@@ -267,32 +267,7 @@ public sealed class MentalStateService
 {
     public MentalStateEffects ResolveEffects(TrainingActionDefinition action, CharacterState character)
     {
-        var effects = new MentalStateEffects();
-        var baseMental = action.MentalEffect;
-
-        // Pain reduces mental stats
-        effects.ResistanceDelta = -baseMental * 2;
-        effects.DignityDelta = -baseMental * 2;
-        effects.AversionDelta = baseMental;
-        effects.ReasonDelta = -baseMental;
-        effects.MentalStrengthDelta = -baseMental * (action.BasePain > 0 ? 2 : 1);
-
-        // Pleasure increases favorability and lust
-        var pleasure = action.BasePleasure;
-        effects.FavorabilityDelta = pleasure / 3;
-        effects.LustDelta = pleasure / 2;
-        effects.ObedienceDelta = (pleasure - action.BasePain) / 4;
-        effects.SubmissionDelta = action.BasePain / 3;
-        effects.MilkCowDelta = action.BasePain / 4;
-
-        // Pain effects
-        effects.PainDelta = action.BasePain;
-        effects.FearDelta = action.SensationTypes.Contains(SensationType.Fear) ? action.BasePain / 2 : 0;
-        effects.DisgustDelta = action.SensationTypes.Contains(SensationType.Disgust) ? action.BasePain / 3 : 0;
-        effects.AntipathyDelta = action.SensationTypes.Contains(SensationType.Antipathy) ? action.BasePain / 2 : 0;
-        effects.DespairDelta = action.SensationTypes.Contains(SensationType.Despair) ? action.BasePain : 0;
-
-        return effects;
+        return OriginalMentalSourcePipeline.Resolve(action, character);
     }
 
     public void ApplyEffects(CharacterState character, MentalStateEffects effects)
@@ -303,11 +278,16 @@ public sealed class MentalStateService
         m.Aversion = Clamp(m.Aversion + effects.AversionDelta);
         m.Reason = Clamp(m.Reason + effects.ReasonDelta);
         m.MentalStrength = Clamp(m.MentalStrength + effects.MentalStrengthDelta);
-        m.Favorability = Clamp(m.Favorability + effects.FavorabilityDelta, 0, 20000);
+
+        // Original favorability grows in stages: 100% before Love, 200% after Love and much
+        // further after the final relationship state. The current UI primarily uses the first two
+        // bands, but retaining the final cap keeps source-game progression data intact.
+        var favorabilityCap = OriginalMentalSourcePipeline.FavorabilityStageCap(character);
+        m.Favorability = Clamp(m.Favorability + effects.FavorabilityDelta, 0, favorabilityCap);
         m.Lust = Clamp(m.Lust + effects.LustDelta, 0, 20000);
         m.Obedience = Clamp(m.Obedience + effects.ObedienceDelta, 0, 20000);
         m.Submission = Clamp(m.Submission + effects.SubmissionDelta, 0, 20000);
-        m.MilkCow = Clamp(m.MilkCow + effects.MilkCowDelta, 0, 20000);
+        m.MilkCow = Clamp(m.MilkCow + effects.MilkCowDelta, 0, 99900);
         m.Pain = Clamp(m.Pain + effects.PainDelta, 0, 10000);
         m.Fear = Clamp(m.Fear + effects.FearDelta, 0, 10000);
         m.Disgust = Clamp(m.Disgust + effects.DisgustDelta, 0, 10000);
@@ -322,34 +302,45 @@ public sealed class MentalStateService
         var m = character.Mature;
         var wasCollapsed = m.IsCollapsed || m.FallState == FallState.Collapse;
 
-        // The current enum is still a compressed remake representation of the source game's
-        // rejection/succumb/falling/love/slave ladder. Preserve that compatibility here, while
-        // source-traced irreversible collapse effects are applied only on the transition into Collapse.
-        if (m.MentalStrength <= 0 || m.Despair >= 8000)
+        // Source parity: collapse is caused by depleted MentalStrength. Despair is a SOURCE that
+        // can damage MentalStrength under exhaustion; it is not itself an alternate collapse gate.
+        if (m.MentalStrength <= 0)
         {
             m.FallState = FallState.Collapse;
             m.IsCollapsed = true;
             if (!wasCollapsed)
-            {
                 ApplyOriginalCollapseTraitChanges(character);
-            }
             return;
         }
 
         m.IsCollapsed = false;
+
+        // Cattle progression remains a separate high-priority source state in the compressed enum.
         if (m.MilkCow >= 10000)
         {
             m.FallState = FallState.MilkCow;
+            return;
         }
-        else if (m.Obedience >= 15000 && m.Submission >= 12000)
+
+        // Rejection -> Succumb -> Falling are represented losslessly by OriginalMentalProgression.
+        // Keep the legacy saved FallState at Normal until those gates have cleared so Love/Slave
+        // can no longer be reached simply by accumulating lust or obedience early.
+        if (m.Resistance > 0 || m.Dignity > 0 || m.Aversion > 0)
+        {
+            m.FallState = FallState.Normal;
+            return;
+        }
+
+        if (m.Favorability >= 20000)
         {
             m.FallState = FallState.Slave;
         }
-        else if (m.Favorability >= 10000 || m.Lust >= 12000)
+        else if (m.Favorability >= 15000)
         {
+            // Devotion is a remake-only readable intermediate inside the source game's Love band.
             m.FallState = FallState.Devotion;
         }
-        else if (m.Favorability >= 5000 || m.Lust >= 6000)
+        else if (m.Favorability >= 10000)
         {
             m.FallState = FallState.Love;
         }
@@ -361,8 +352,8 @@ public sealed class MentalStateService
 
     private static void ApplyOriginalCollapseTraitChanges(CharacterState character)
     {
-        // Source: CAPITULATION_MIND_BREAK_DELETE_TALENT. Only English equivalents that exist in
-        // the remake's current talent vocabulary are touched here; unrelated traits are preserved.
+        // Source: CAPITULATION_MIND_BREAK_DELETE_TALENT. English equivalents and remake ids are
+        // matched case-insensitively; unrelated personality traits remain untouched.
         var removable = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Prideful",
@@ -377,7 +368,9 @@ public sealed class MentalStateService
             "Charismatic",
             "Righteous",
             "Composure",
-            "Self-Control"
+            "Self-Control",
+            "self_control",
+            "strong_willed"
         };
 
         var removed = character.Talents
@@ -392,9 +385,7 @@ public sealed class MentalStateService
         {
             var marker = $"CollapseLost:{trait}";
             if (!character.Mature.Marks.Contains(marker, StringComparer.OrdinalIgnoreCase))
-            {
                 character.Mature.Marks.Add(marker);
-            }
         }
     }
 
