@@ -32,6 +32,7 @@ public partial class UiLayoutAcceptance : Node
             _rendered = DisplayServer.GetName() != "headless";
             if (OS.GetCmdlineUserArgs().Contains("--require-ui-captures") && !_rendered)
                 throw new InvalidOperationException("A renderer is required; headless is not visual evidence.");
+            ProcessMode = ProcessModeEnum.Always;
             await Frames(3);
             // Keep this opt-in observer alive while the real menu changes the current scene.
             GetTree().CurrentScene = null;
@@ -40,7 +41,7 @@ public partial class UiLayoutAcceptance : Node
             var menu = (MainMenuController)GetTree().CurrentScene;
             var newGame = menu.GetNode<Button>(menu.NewGameButtonPath);
             Check(GetViewport().GuiGetFocusOwner() == newGame, "fresh main menu focuses New Game without a mouse");
-            await Capture("main-menu-1280x720");
+            await CheckStartupLayouts(menu);
             await Click(newGame);
             await Frames(15);
             var world = (WorldGameController)GetTree().CurrentScene;
@@ -56,7 +57,7 @@ public partial class UiLayoutAcceptance : Node
             await Stroke(Key.Tab);
             Check(GetViewport().GuiGetFocusOwner() != name && shell.CurrentScreen == "character_creation",
                 "Tab moves focus within creation instead of toggling management");
-            await Capture("character-creation-1280x720");
+            await CheckCreationLayouts(shell);
 
             // Explicitly synthetic ordinary-session fixture, after proving the real menu route.
             var game = GameRoot.Instance;
@@ -77,8 +78,7 @@ public partial class UiLayoutAcceptance : Node
             foreach (var size in new[] { new Vector2I(1280, 720), new Vector2I(960, 540),
                 new Vector2I(640, 480), new Vector2I(480, 800), new Vector2I(1920, 720) })
             {
-                GetTree().Root.Size = size;
-                await Frames(10);
+                await Resize(size);
                 var tag = $"{size.X}x{size.Y}";
                 Check(world.OpenManagementScreen("options"), $"{tag}: options opens in the live world");
                 await Frames(10);
@@ -112,6 +112,8 @@ public partial class UiLayoutAcceptance : Node
                 // Keep collecting layout evidence even when a click was clipped in the baseline.
                 world.CloseManagement();
             }
+            await CheckGamepadMenus(world);
+            await CheckUiScale(world);
             Check(game.Economy.Gold == gold && game.State.Player.Stamina == stamina && game.State.Calendar.Day == 2,
                 "layout/input inspection does not pay rewards, spend daily stamina or settle the day");
         }
@@ -181,6 +183,7 @@ public partial class UiLayoutAcceptance : Node
     private async Task Click(Control control)
     {
         var point = control.GetGlobalRect().GetCenter();
+        GetViewport().NotifyMouseEntered();
         GetViewport().PushInput(new InputEventMouseMotion { Position = point, GlobalPosition = point }, true);
         GetViewport().PushInput(new InputEventMouseButton { Position = point, GlobalPosition = point,
             ButtonIndex = MouseButton.Left, Pressed = true }, true);

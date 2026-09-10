@@ -247,7 +247,8 @@ public partial class UiShellController
     private static void ConfigureReadableLabel(Label label)
     {
         label.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-        label.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
+        // Wrapped text must contribute its natural height to its container.
+        label.TextOverrunBehavior = TextServer.OverrunBehavior.NoTrimming;
     }
 
     private static void ConfigureReadableButton(Button button)

@@ -111,8 +111,8 @@ public partial class UiShellController : Control
 	private MarginContainer _margin = null!;
 	private PanelContainer _rootPanel = null!;
 	private VBoxContainer _topBar = null!;
-	private HBoxContainer _topBarRow1 = null!;
-	private HBoxContainer _topBarRow2 = null!;
+	private HFlowContainer _topBarRow1 = null!;
+	private HFlowContainer _topBarRow2 = null!;
 	private Label _titleLabel = null!;
 	private Label _dayLabel = null!;
 	private Label _phaseLabel = null!;
@@ -427,8 +427,8 @@ public partial class UiShellController : Control
 		_rootPanel = GetNodeOrNull<PanelContainer>(RootPanelPath)!;
 		var root = _rootPanel?.GetNodeOrNull<VBoxContainer>("Root");
 		_topBar = GetNodeOrNull<VBoxContainer>("Margin/RootPanel/Root/TopBar")!;
-		_topBarRow1 = GetNodeOrNull<HBoxContainer>("Margin/RootPanel/Root/TopBar/TopBarRow1")!;
-		_topBarRow2 = GetNodeOrNull<HBoxContainer>("Margin/RootPanel/Root/TopBar/TopBarRow2")!;
+		_topBarRow1 = GetNodeOrNull<HFlowContainer>("Margin/RootPanel/Root/TopBar/TopBarRow1")!;
+		_topBarRow2 = GetNodeOrNull<HFlowContainer>("Margin/RootPanel/Root/TopBar/TopBarRow2")!;
 		_navigation = GetNodeOrNull<VBoxContainer>(NavigationPath)!;
 		_navPanel = _navigation?.GetParent()?.GetParent() as PanelContainer ?? null!;
 		_body = GetNodeOrNull<HBoxContainer>("Margin/RootPanel/Root/Body")!;
@@ -641,8 +641,10 @@ public partial class UiShellController : Control
 		_rootPanel.Scale = Vector2.One;
 		_body.AddThemeConstantOverride("separation", compact ? 8 : 12);
 		_topBar.AddThemeConstantOverride("separation", compact ? 2 : 4);
-		_topBarRow1.AddThemeConstantOverride("separation", compact ? 4 : 8);
-		_topBarRow2.AddThemeConstantOverride("separation", compact ? 4 : 8);
+		_topBarRow1.AddThemeConstantOverride("h_separation", compact ? 4 : 8);
+		_topBarRow1.AddThemeConstantOverride("v_separation", 4);
+		_topBarRow2.AddThemeConstantOverride("h_separation", compact ? 4 : 8);
+		_topBarRow2.AddThemeConstantOverride("v_separation", 4);
 		_topBar.CustomMinimumSize = new Vector2(0, compact ? 50 : 64);
 		_titleLabel.CustomMinimumSize = new Vector2(tightWidth ? 0 : compact ? 100 : 180, 0);
 		_titleLabel.Visible = !tightWidth;
@@ -673,8 +675,8 @@ public partial class UiShellController : Control
 		ApplyChipMinimum(_healthChip, compact);
 		ApplyChipMinimum(_workloadChip, compact);
 		ApplyChipMinimum(_bathtubChip, compact);
-		_endDayButton.CustomMinimumSize = new Vector2(compact ? 128 : 140, compact ? 26 : 30);
-		_menuButton.CustomMinimumSize = new Vector2(compact ? 58 : 64, compact ? 26 : 30);
+		_endDayButton.CustomMinimumSize = new Vector2(compact ? 128 : 140, 34);
+		_menuButton.CustomMinimumSize = new Vector2(compact ? 58 : 64, 34);
 	}
 
 	private void ToggleNavCollapse()

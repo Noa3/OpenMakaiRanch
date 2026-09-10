@@ -9,6 +9,7 @@ public partial class MainMenuController
 
     public override void _Process(double delta)
     {
+        RefreshMenuLayout();
         if (_initialMenuFocusApplied || !IsVisibleInTree() || GetViewport().GuiGetFocusOwner() is not null)
         {
             return;

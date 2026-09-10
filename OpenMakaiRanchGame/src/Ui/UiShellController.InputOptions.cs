@@ -203,8 +203,7 @@ public partial class UiShellController
 
     private void BeginBindingCapture(string action, string device, Button button)
     {
-        if (!IsVisibleInTree() || _currentScreen != "options" || !GodotObject.IsInstanceValid(button)
-            || !button.IsInsideTree() || !_content.IsAncestorOf(button)) return;
+        if (!IsVisibleInTree() || _currentScreen != "options" || !IsLiveBindingControl(button)) return;
         if (!string.IsNullOrEmpty(_bindingCaptureAction))
         {
             CancelBindingCapture("Previous binding cancelled.");
@@ -226,14 +225,20 @@ public partial class UiShellController
     public override void _Input(InputEvent @event)
     {
         if (!IsVisibleInTree() || _currentScreen != "options"
-            || !GodotObject.IsInstanceValid(_bindingCaptureButton)
-            || !_bindingCaptureButton!.IsInsideTree() || !_content.IsAncestorOf(_bindingCaptureButton))
+            || !IsLiveBindingControl(_bindingCaptureButton))
         {
             CancelBindingCapture("Binding cancelled.");
             return;
         }
-        if (string.IsNullOrEmpty(_bindingCaptureAction) || Time.GetTicksMsec() < _captureArmedAt)
+        if (string.IsNullOrEmpty(_bindingCaptureAction))
         {
+            return;
+        }
+
+        if (TryCancelBindingInput(@event)) return;
+        if (Time.GetTicksMsec() < _captureArmedAt)
+        {
+            if (@event.IsPressed()) GetViewport().SetInputAsHandled();
             return;
         }
 
@@ -323,9 +328,10 @@ public partial class UiShellController
 
     private void RebuildInputOptionsExtension(string message)
     {
+        CancelBindingCapture("Binding cancelled.");
         if (_content.GetNodeOrNull<Control>(ControlsExtensionName) is { } existing)
         {
-            existing.Name = ControlsExtensionName + "_Old";
+            _content.RemoveChild(existing);
             existing.QueueFree();
         }
 
