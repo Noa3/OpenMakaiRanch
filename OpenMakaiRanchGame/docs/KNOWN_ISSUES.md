@@ -1,49 +1,53 @@
 # Known Issues
 
-Updated **2026-09-10** against code `b7cf272d9b1af4a18da0753c992f1eafdf8591bc`. Distinguish reproduced current findings, older audit leads and untested acceptance. See `ASTRA_HANDOFF.md` for exact evidence and the next action.
+Updated **2026-09-10** against code **`40daf7560a53b66d8210989f695bfb3e3a8ec692`**, PR #11. Distinguish executed checks, repaired defects, earlier audit leads and untested acceptance. See `ASTRA_HANDOFF.md` for reproducible evidence and the next work.
 
 ## Current verified status
 
-Godot 4.7 Mono CI #515, run `34509942143`: restore/build/launcher regressions/import succeeded; isolated full smoke produced **1486 OK / 3 FAIL**. All 50 community and 8 pause-input checks passed. The full suite remains red and PR #8 remains unmerged.
+**Godot 4.7 Mono CI #527**, run `34517743009`, and **Build Smoke Check #535**, run `34517742952`, succeeded. Effective C# 12 is verified for both Godot project files; a preview override is deliberately rejected. Restore, primary-game compilation, 34 launcher regressions and Godot 4.7.2 Mono import succeeded. The full isolated suite produced **1,547 OK / zero failed assertions / SMOKE PASS**.
 
-### TEST-STALE-001 — three existing fixture/expectation mismatches
+The final import has no engine errors. The smoke log has **zero out-of-tree Transform3D errors** and five intentional malformed/unsupported-save rejection diagnostics. Those save errors are expected negative-fixture evidence, not newly observed player save failures. Do not hide them to make logs appear clean.
 
-In `src/Tests/SmokeTestRunner.cs`:
+Artifact `10168420601`, SHA-256 `29d9079234d73ec4c1007a1f783e9b0231d6541f34be1e3b41f06f1b95043402`, smoke path `.artifacts/godot/smoke-ozygihzg/console.log`. Documentation may follow the verified code checkpoint without changing code.
 
-- `constitution enables milk production` uses the starting rancher without approved eligibility. The existing production gate denies correctly. Use separate synthetic positive and unreviewed-denial fixtures; do not approve production characters or weaken the gate to satisfy this assertion.
-- The supply-device assertion expects a 1:1 transfer. Current MagicService charges 2 stored MP per personal MP: 20 personal / 45 stored, requested 30 -> restore 22, end at 42 personal / 1 stored.
-- The following 10 MP spell assertion expects 40 personal MP; the current result is 32. Preserve the gameplay-effect assertion when correcting the resource expectation.
+## Open acceptance and risks
 
-These assertions were not removed or masked. New isolated mana contract coverage passes but does not make the old full suite green.
+### UI-PLAY-001 — rendered and physical-device acceptance remains open
 
-### WORLD-ERROR-001 — out-of-tree transform access
+The new frame walkthrough now executes the complete first-day world/story flow, a real production-backed Day 2 delivery, nested Escape/Back and root save/load. It injects keyboard events into Godot and advances real process/physics frames. It stages positions near interactables and activates live buttons by signal, so it does not establish rendered hit targets, accessible routes around obstacles, or physical keyboard/gamepad behavior.
 
-The latest smoke log contains 20 `Condition "!is_inside_tree()"` Transform3D errors. The same count was present in the integration baseline before this slice. Root cause and player-facing impact were not established here; locate the actual accesses before patching. Expected malformed-save rejection diagnostics are separate and should not be suppressed with these engine errors.
+Run the real main-menu -> character creation -> first day and skip-to-night paths in a rendered isolated session. Check mouse capture and Alt-Tab/pause/travel, controller deadzones and look speed, camera collision/recenter feel, narrow-screen scrolling/text clipping, focus visibility and returning from all management screens. Headless mouse ownership checks are not a real OS cursor test. Camera feel and representative-hardware performance remain unmeasured by this continuation.
 
-### UI-PLAY-001 — rendered playability acceptance outstanding
+### GAMEPLAY-BALANCE-001 — optional orders are not long-term progression validation
 
-The new board is compiled/imported and its pause-owned UI, stock/payment logic, real production path and save round-trip are tested. Physical keyboard/controller behavior, rendered Ranch/Town routing, small-window scrolling/text clipping, focus visibility and the complete first-day experience still need manual review. Headless assertions do not certify enjoyment or graphical quality. The reward ceiling is preliminary, not a validated economy balance.
+The courier board remains in Pause -> Community Board and delegates planning to Schedule. It adds no physical noticeboard or new exploration encounters. Its 30-60 G rewards and one-delivery-per-day limit are preliminary bounds, not a validated long-term economy. No injected resources were needed for the tested Day 2 market basket, but that does not prove all upgrade/win paths are balanced. Optional encounters, companion-specific world reactions and visible ranch improvements remain future work.
 
-The courier board currently lives in Pause -> Community Board and delegates planning to Schedule. It does not add a physical town noticeboard or new exploration encounters. Optional world encounters, companion-specific reactions and visible upgrade rewards are future gameplay slices, not completed features.
+### WORLD-NAV-001 — final navigation and visual production remain incomplete
 
-## Repaired in this continuation
+Existing simple navigation/stand-ins are not final obstacle-aware authored environments. The frame walkthrough deliberately stages proximity and is not evidence that every doorway, station and encounter is reachable by ordinary pathfinding. Final character art, animation/morph pipeline, authored collision/navmeshes, weather readability and low/high Forward+ visual acceptance remain separate tasks. No new character identities/designs were approved here.
 
-- **SAVE-REJECT-001:** future schema was stamped to the current version, allowing an unsupported load to replace the live session. It is now rejected before mutation. Null roster entries are also rejected before migration. Existing root state/service/notification/source-preservation checks pass. Schema remains 16; this is not a legacy-save-support expansion.
-- **INPUT-BACK-001:** parent pause routing bypassed the nested board and separately polled Back during world updates. Parent and pause menu now share GoBack, both input actions are event-owned, and the no-polling guard plus explicit handler tests pass after a failing negative-control run. Physical frame timing still needs an actual input playtest.
-- **GAMEPLAY-BOARD-001:** optional deliveries use real stock and the existing gold ledger. One per day, fixed-size saved receipts, stale-command/overflow validation, no repeat payouts after a saved delivery and no penalties for skipped days are covered by tests. This does not establish broad progression balance.
+## Repaired and verified in PR #11
 
-## Earlier audit leads — not revalidated in this continuation
+- **TEST-STALE-001:** the three old assertions now test the valid contracts. A separate synthetic adult numeric fixture tests positive production; a separate Unknown fixture stays denied. No production character approval or runtime gate changes. Supply storage remains 2:1: the test restores 22 personal MP from 45 stored, leaving 42 personal / 1 stored; a subsequent 10 MP spell leaves 32 and must still apply its effect. No assertions were removed to conceal failures.
+- **WORLD-ERROR-001:** the PR #10 log had 16 remaining invalid transform accesses: 15 from a greybox fixture calling _Ready outside the tree, one from setting a companion target's GlobalPosition before tree entry. Tests now use real scene-tree readiness and pre-tree local Position. The final full suite has zero such errors, without suppressing engine logging. Live camera code also refuses detached/freed targets instead of applying an invalid local/global fallback.
+- **INPUT-ANALOG-001:** boolean direction reads and unit-vector normalization discarded analog strength. Movement now retains stick/touch magnitude and reads the current main viewport camera; UI/focus/pause clear residual horizontal motion and touch sprint.
+- **CAMERA-OWNERSHIP-001:** first-person capture no longer relies on a stale boolean after pause changes the real mouse mode. Active-camera ownership is released for UI/focus/pause/disabled/hidden/exit states and restored on a valid active update. A retiring rig cannot steal another camera's ownership. Analog look, default mouse-up, Invert Y, one-press recenter and Reduced Motion behavior have dedicated regressions.
+- **STORY-INPUT-001:** completing a fade now preserves a visible story dialogue's input lock, and closing a dialogue preserves a pending transition/management lock. The skip/night/bath/report path is tested alongside the ordinary first day.
 
-These remain investigation leads, not fresh reproductions or permission to perform unrelated cleanup:
+The intermediate frame-test Escape failure in run `34516975557` was a **test harness issue**: Bootstrap had routed to MainMenu after the fixture captured the old scene, leaving MainMenu active beside the world. The corrected fixture isolates the actual current scene after the deferred route. Actual Escape/Back events remain in the test and pass in `34517743009`; this is not claimed as a separate production Escape fix.
 
-- Importer build reports previously cited an absent Core project and missing Main. Current JSON must not be overwritten from guessed source conversions.
-- ContentValidator was previously reported to check limited .tres metadata rather than full runtime JSON/reference integrity.
-- Earlier source review raised night-growth multiplicity and non-idempotent settlement/auto-rest/report-accounting concerns. Trace current code and reproduce before claiming or fixing a specific bug.
-- Raw development MCP endpoints previously lacked authentication/size/export hardening. Keep them local; bridge tooling is not release-certified.
-- Prior source-audit code hashes can become stale when save/root/UI code changes. Source-only checks are not full-code or identity/design approval.
+## Prior repairs retained
 
-## Scope that remains unverified or incomplete
+**SAVE-REJECT-001:** future schema and null roster entries reject before mutation; failed loads preserve live session/services/source bytes. Schema stays 16, without a legacy-support expansion.
 
-Original-game parity has no certified original-engine differential suite. Final character art, animation/morph pipeline, authored navigation/obstacle behavior, camera feel, weather readability and representative hardware performance remain separate acceptance tasks. Existing eligibility gates are present; an older claim that all gates were absent is historical, not the current state. This continuation changes neither eligibility approvals nor adult-specific content.
+**INPUT-BACK-001:** parent and pause menu share GoBack and do not separately poll ui_cancel after a consumed input event. Existing direct-handler/source checks and the new real-frame Back sequence both pass.
 
-Historical baseline successes and fixes remain in Git/WORK_LOG. Do not apply old 949/1358 assertion counts, schema 14 or September 5 local paths to the current branch without checking repository evidence.
+**GAMEPLAY-BOARD-001:** real stock, existing economy ledger, one-per-day bounded saved receipts, stale-command/overflow rejection and saved delivery replay protection remain covered. This continuation does not change their economic rules.
+
+## Earlier audit leads — not revalidated by this continuation
+
+Importer reports previously cited an absent Core project and missing Main; do not regenerate current JSON from guessed source conversions. ContentValidator was reported to check limited .tres metadata instead of full runtime JSON/reference integrity. Prior source review raised night-growth multiplicity, settlement idempotency and report-accounting questions; reproduce current behavior before claiming a repair. The successful one-day walkthrough is not exhaustive proof against those concerns.
+
+Raw development MCP endpoints previously lacked authentication/size/export hardening; keep them local. Source-audit snapshots can become stale after code changes and are not identity/design approval. Original-game parity still lacks a certified original-engine differential suite.
+
+Historical counts, schema 14, local machine paths and PR #8/#10 pending status in older notes must not be applied to the current branch. Fresh games remain the development target under D-011; preserve current-version save/load and never implicitly delete personal files.
