@@ -1,57 +1,59 @@
 # Known Issues
 
-Updated **2026-09-10**, PR #12, code **`44138f3c9da33dc8a234fb9a13d4701ce7d42b68`**. Separate executed evidence from untested acceptance and historical audit leads. See ASTRA_HANDOFF for the current branch and exact test sequence.
+Updated **2026-09-11**, PR #12, verified head **`9d8eb0967012b9c9c4d7d22fe16e96f1b379327c`**. Distinguish reproduced defects, fixed contracts and untested acceptance. The remake is not certified complete merely because the current suite passes.
 
 ## Current verified status
 
-**Godot 4.7 Mono CI #536**, run `34524505949`, and **Build Smoke Check #544**, run `34524505908`, succeeded. The C# 12 checks, preview-override denial, primary-game compilation, launcher regressions and engine import completed. Full isolated smoke: **1,629 OK / zero failed assertions / SMOKE PASS**, including all 82 new leisure checks.
+**Godot 4.7 Mono CI #545**, run **`34538829758`**, succeeded: effective C# 12 and negative preview-override check, primary-game compilation, 34 launcher regressions, engine import and isolated smoke. Full result: **1,691 OK / zero failed assertions / SMOKE PASS**. All 52 HUD/menu checks and nine additional layout/view-state checks pass alongside existing first-day, leisure, combat, input and save tests.
 
-Artifact `10171044862`, SHA-256 `ec72c327d4459dd6628cf10bfcdf47527a476802c6697a4db20918bf4ffd101c`. Smoke `.artifacts/godot/smoke-59zt22d_/console.log` has **zero out-of-tree transform errors** and five intentional malformed/unsupported-save rejection diagnostics. Those negative-fixture errors were not suppressed.
+Artifact **`10176503313`**, SHA-256 **`f17eeae0fa39320f61a97b0763a02203a6b4b1e0ea234d6c440f2e44fc390ef2`**. Smoke `.artifacts/godot/smoke-ohfy9cr3/console.log` has zero out-of-tree transform errors and five intentional malformed/unsupported-save rejection diagnostics. Do not hide the negative-fixture messages or describe them as newly observed personal-save corruption.
 
-### TOOLS-003 — editor shutdown diagnostic still present
+### TOOLS-003 — editor shutdown diagnostic remains
 
-Import `.artifacts/godot/import-13q8rkmg/console.log` finishes asset import and editor-layout loading, then logs `EditorSettings not instantiated yet when getting setting "export/android/shutdown_adb_on_exit"` from `_EDITOR_GET`. The importer exits successfully and the subsequent runtime smoke passes. Record this as an observed engine/editor-lifecycle diagnostic, not a clean import log or an established gameplay failure. Root cause was not isolated by this slice; do not hide it or mix an unverified engine upgrade into the gameplay PR.
+Import `.artifacts/godot/import-tcn460wg/console.log` finishes successfully but logs `EditorSettings not instantiated yet when getting setting "export/android/shutdown_adb_on_exit"`. This separate editor-lifecycle warning/error remains observed, not isolated as a gameplay failure. No engine upgrade or diagnostic suppression was mixed into these fixes.
 
-## Open acceptance and risks
+## Open acceptance
 
-### UI-PLAY-001 — rendered and physical-device acceptance remains open
+### UI-PLAY-001 — rendered and physical-device coverage
 
-The frame suite now reaches Day 3 through the first-day story, production-backed delivery, the corner's supply-planning route, an explicit Night choice and ordinary settlement. It verifies spatial interaction events, construction, recovery, planning/Back and save/load. It stages positions and invokes live button signals; it does not validate visible hit targets, all traversable routes, main-menu/character-creation input, physical hardware or user enjoyment.
+The suite verifies fifteen ordinary screen destinations have content, HUD ownership, help/Back, hidden callbacks, empty-roster HP, options layout, bindings, night selection and tactical entry/results. It does **not** exercise every feature/action/reward on every menu. Synthetic Day-2 UI fixtures are separate from the resource-backed full first-day/leisure walkthrough.
 
-Run a rendered isolated playthrough with mouse/keyboard and a physical controller. Check pause/Alt-Tab/travel cursor ownership, deadzones, camera collision/recenter feel, narrow-window focus/scrolling/text, and return routes from management. Touch assistance reuses the existing interaction route but is not physically device-tested here. Representative hardware performance remains unmeasured.
+Run the actual Main Menu -> character creation -> world in an isolated rendered session, including ordinary first day and skip, pause/Alt-Tab/travel, tactical results, night/report, board/corner/planning and save/load. Check visible click targets, small-window text/clipping/scrolling and real keyboard/gamepad/touch behavior. Headless input events and button signals are not physical-device or visual acceptance. Representative hardware performance remains unmeasured.
 
-### WORLD-NAV-001 — authored navigation and bench presentation are incomplete
+### WORLD-NAV-001 — authored navigation and presentation
 
-The new quiet corner intentionally uses a greybox bench, with no authored collision, seated pose or sitting animation. Node-visibility and bounded-child-count checks prove state synchronization, not final art or accessible navigation. Existing simple navigation regions and stand-ins still need final obstacle-aware authoring, collision, character animation/morph work, weather readability and low/high Forward+ acceptance. No shipped character identity/design approval or external asset admission was added.
+The corner bench remains greybox geometry with no authored collision, seated pose or sitting animation. Bounded node count and visibility prove synchronization, not visual quality or walkability. Interaction tests stage player proximity. Final obstacle-aware navmeshes, collision, character animation/morph assets, weather readability and Forward+ low/high acceptance remain open. No character design/identity approval or external asset admission was added.
 
-### GAMEPLAY-BALANCE-001 — bounded rewards are not long-term balance certification
+### GAMEPLAY-BALANCE-001 — bounded rewards are not long-term balance proof
 
-The ranch now has a physical Community Board entry in addition to Pause access; both share the existing one-delivery-per-day rule. The optional corner costs 40 G / 3 supplies once and restores at most 10 stamina daily without upkeep or time advancement. Those numbers remain initial bounds. They do not prove all upgrade/win paths or long-term stamina decisions are balanced.
+The physical and Pause community boards share one delivery per day. Corner restoration costs 40 G / 3 supplies once; recovery gives at most 10 stamina daily without upkeep or time advancement. These are initial bounds, not a certification of all upgrades/win paths or long-term stamina decisions.
 
-Starting supplies are consumed by existing facility maintenance. Do not claim restoration is automatically affordable on Day 2. The verified route plans Office Work on Day 2 and restores from Day 3 output; neither production nor maintenance was altered. The panel explains shortages and offers planning. Shared Quiet Rest retains existing cost/phase/eligibility rules; positive numeric verification uses a separate synthetic fixture, not guaranteed access for every starting resident.
+Day-1 facility maintenance consumes starting supplies. The tested route obtains Office Work output for Day-3 restoration. It does not inject stock, money, time or stamina to fund the transaction. Shared Quiet Rest retains existing cost/phase/eligibility requirements; positive synthetic numeric coverage does not approve or guarantee access for every shipped character.
 
-## Implemented and verified in PR #12
+## Fixed and covered HUD/menu integration
 
-**LEISURE-001:** permanent restoration uses live gold/supplies and two bounded FlagService receipts. Insufficient resources, stale day/phase/generation, wrong area and combat reject before mutation. Reentrant construction/recovery, repeated button signals and saved receipt replay are denied. Full stamina preserves the daily break, partial recovery uses it, existing bath bonuses remain intact, and skipped days add no backlog.
+**UI-VIEW-001:** same-screen scroll restoration previously ran amid dynamic container layout, and options appended controls in a later process step. The view now composes those controls before a ProcessFrame-boundary restore. Pending value snapshots retain exact scroll/logical focus across burst notifications; rerouted/hidden/replaced views reject stale callbacks. Nine frame tests cover preservation and cancellation. Normal FollowFocus remains enabled.
 
-**WORLD-POINTS-001:** the physical board and corner use the existing nearest-target/dispatcher/guard route. Personal points do not require a worker or emit job-completion events; ordinary workstations retain that behavior. The corner closes directly to the world, planning hands control to Schedule, and the board keeps its existing nested Back route. Session replacement closes stale UI and updates the existing presentation without node growth.
+**HUD-OWNERSHIP-001:** explicit active-area CanvasLayer visibility; hidden/inactive world time, management and travel callbacks reject without mutation. HP comes from PlayerState rather than indexing a resident. Help closes before Back opens another layer; management retains input ownership when help closes.
 
-The initial new frame fixture failed because it assumed untouched starting supplies; its extension then omitted the intentional Night choice. Both are documented test-harness assumptions, not claims of production defects. The final walkthrough obtains supplies and selects the night workload through ordinary UI. No assertions or valid gameplay rules were removed to make it pass.
+**COMBAT-UI-001:** rejected combat navigation does not lock time; a live tactical session is retained across state notifications and cannot be abandoned by switching ordinary screens. Entry charges stamina once; results exit clears the combat session/clock and restores world time. Night planning remains explicit; the management button reads Plan Night until a choice exists.
 
-## Prior repairs retained and covered
+**INPUT-CAPTURE-001:** retiring/hiding an options screen cancels its binding capture, and an old binding button cannot re-arm capture after routing away. This is not an exhaustive audit of every historical settings callback.
 
-**TEST-STALE-001:** isolated synthetic positive production plus Unknown-denial fixtures retain eligibility gating. Mana supply remains 2 stored MP per personal MP, and the spell-effect assertion remains. No production character was approved to satisfy a test.
+**TEST-CLOCK-001:** the old composition test activated mandatory Day 1 then tried ordinary settlement while tutorial input ownership was active. It now explicitly establishes a completed-story Day-2 fixture for the clock subsection and asserts that ownership. Original fresh-story assertions, settlement assertions, runtime guards, full first-day and skip-to-night tests remain. This is a test-fixture correction, not a newly fixed production skip bug.
 
-**WORLD-ERROR-001:** real scene-tree readiness and pre-tree local positioning repaired prior invalid transform accesses. Current smoke still has zero out-of-tree diagnostics, without suppressed engine logging.
+Pre-fix code `a45a0bc` / CI #540 (`34536254574`) had 1,678 OK and three failures. All three pass in #545 with one additional fixture guard and nine new layout checks. No assertions or gameplay requirements were removed to obtain the result.
 
-**INPUT-ANALOG-001 / CAMERA-OWNERSHIP-001 / STORY-INPUT-001:** analog magnitude, active-viewport movement, input/focus resets, first-person capture ownership, one-press recenter and overlapping story/transition locks from PR #11 remain covered. The earlier frame fixture's Bootstrap/MainMenu issue is historical, not an uncorrected production Escape defect.
+## Prior repairs retained
 
-**SAVE-REJECT-001 / INPUT-BACK-001 / GAMEPLAY-BOARD-001:** future/null-invalid saves reject before mutation; parent and pause share event-owned Back; real stock, the gold ledger, bounded saved courier receipts and replay protection remain intact. Schema stays 16; no legacy-support expansion.
+**LEISURE-001 / WORLD-POINTS-001:** live-resource restoration and bounded saved receipts; shortage/stale/reentrant/hidden-command rejection; capped recovery; independent bath bonus; personal points without workers; existing Schedule/Back handoff; session replacement and root save/load remain covered.
 
-## Earlier audit leads — not certified by this slice
+**WORLD-ERROR-001 / INPUT-ANALOG-001 / CAMERA-OWNERSHIP-001 / STORY-INPUT-001:** real scene-tree readiness, active-viewport/analog controls, focus resets, first-person capture, one-press recenter and overlapping transition/story input locks remain covered. Earlier Bootstrap/MainMenu fixture interference is historical.
 
-Importer reports previously cited an absent Core project/missing Main; do not regenerate JSON from guessed conversions. ContentValidator was reported to check limited metadata instead of complete runtime reference integrity. Prior source review raised night-growth multiplicity, settlement idempotency and report-ledger concerns; reproduce current behavior before claiming a repair. The successful two-settlement walkthrough is not exhaustive proof against every reentrancy or accounting issue.
+**SAVE-REJECT-001 / INPUT-BACK-001 / GAMEPLAY-BOARD-001 / TEST-STALE-001:** invalid saves reject before mutation, nested Back stays event-owned, courier transactions persist together, production fixtures retain gating, and stored mana remains 2:1. No production character was approved to satisfy tests. Schema remains 16; no legacy expansion.
 
-Raw development MCP endpoints have separate authentication/size/export-hardening leads; keep them local. Old source-audit snapshots are not current code verification or identity/design approval. Original-game parity still lacks a certified original-engine differential suite.
+## Earlier audit leads — not certified here
 
-Historical counts, schema 14, machine-local engine paths and old pending-PR notes do not describe this branch. Preserve the original read-only source and current-version personal saves under D-011.
+Importer recovery, complete runtime JSON/reference validation, night-growth multiplicity, exhaustive settlement idempotency/report ledger accounting, and original-engine parity still require dedicated reproduction/verification. Successful bounded walkthroughs are not exhaustive proof. Keep raw development MCP endpoints local pending separate authentication/size/export hardening. Source-audit snapshots are not current implementation or character-design approval.
+
+Preserve current-version personal files and the original read-only source. Old schema-14 counts, local engine paths and pending-PR notes must not override current code and executed evidence.
