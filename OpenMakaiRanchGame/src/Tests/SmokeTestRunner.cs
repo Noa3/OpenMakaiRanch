@@ -1581,7 +1581,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         var underageState = new SaveStateFactory(data, new Random(2603)).CreateNewGame();
         var underageDating = new DatingService(underageState, new PlayerStaminaService(underageState));
         var underage = underageState.Roster.Characters.First(character => character.Id != "anon");
-        underage.AdultEligibility = AdultEligibility.IneligibleMinor;
+        underage.AdultEligibility = AdultEligibility.Minor;
         Assert(result, !underageDating.IsEligiblePartner(underage)
             && !underageDating.StartDate(underage.Id, DateInviteApproach.Respectful).Success,
             "dating: adult relationship system fails closed for ineligible minors");
