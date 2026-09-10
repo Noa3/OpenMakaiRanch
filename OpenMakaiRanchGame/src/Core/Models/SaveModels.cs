@@ -96,7 +96,7 @@ public enum TrainingCategory
 
 public sealed class SaveState
 {
-    public const int CurrentSchemaVersion = 15;
+    public const int CurrentSchemaVersion = 16;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public DateTime? SavedAt { get; set; }
@@ -161,15 +161,15 @@ public sealed class FlagStorage
     // Global flags (Flag.csv) - 537 flags
     public Dictionary<int, bool> GlobalBoolFlags { get; set; } = new();
     public Dictionary<int, int> GlobalIntFlags { get; set; } = new();
-    
+
     // Temporary flags (Tflag.csv) - 104 flags
     public Dictionary<int, bool> TempBoolFlags { get; set; } = new();
     public Dictionary<int, int> TempIntFlags { get; set; } = new();
-    
+
     // Character flags (Cflag.csv) - 125 flags per character
     public Dictionary<string, Dictionary<int, bool>> CharBoolFlags { get; set; } = new();
     public Dictionary<string, Dictionary<int, int>> CharIntFlags { get; set; } = new();
-    
+
     public void Clear()
     {
         GlobalBoolFlags.Clear();
@@ -207,6 +207,20 @@ public sealed class PlayerState
     public string StartingMountId { get; set; } = "none";
     public string TailType { get; set; } = "None";
     public string BodyFur { get; set; } = "None";
+
+    // Original Chara0 BASE values. These are personal resources and deliberately separate from
+    // ranch-wide stored resources and the remake's real-time action Stamina budget.
+    public int Hp { get; set; } = 2000;
+    public int MaxHp { get; set; } = 2000;
+    public int Sp { get; set; } = 2000;
+    public int MaxSp { get; set; } = 2000;
+    public int Spirit { get; set; } = 1000;
+    public int MaxSpirit { get; set; } = 1000;
+    public int Level { get; set; } = 1;
+    public int CombatPower { get; set; }
+    public int UltimateCharges { get; set; }
+    public int RecoveryCharges { get; set; }
+
     /// <summary>Current personal MP, separate from ranch-stored mana like the original BASE:0:魔力.</summary>
     public int Mana { get; set; } = 100;
 
@@ -287,11 +301,36 @@ public sealed class CalendarState
 
 public sealed class EconomyState
 {
+    /// <summary>Original MONEY:所持金 - spendable cash carried by the ranch owner.</summary>
     public int Gold { get; set; } = 500;
     public int LastIncome { get; set; }
     public int LastExpenses { get; set; }
+
+    // Original MONEY 1-4 bookkeeping. These remain separate from cash so purchases/settlement can
+    // later reproduce the original budget/loan rules without overloading Gold.
+    public int ExpenseAccount { get; set; }
+    public int LoanBalance { get; set; }
+    public int BatterySurcharge { get; set; }
+    public int PendingMilkRevenue { get; set; }
+
+    /// <summary>Original MONEY:貯蔵霊力 - ranch-wide stored EP, not the player's personal Spirit.</summary>
     public int SpiritEnergy { get; set; }
+
+    /// <summary>Original MONEY:貯蔵魔力 - ranch-wide stored MP, separate from Player.Mana.</summary>
     public int ManaReservoir { get; set; }
+
+    public int ContributionPoints { get; set; }
+    public int CompoundingProgress { get; set; }
+    public int BathhouseCleaningProgress { get; set; }
+
+    /// <summary>Current AP pools matching Money.csv entries 20-24.</summary>
+    public Dictionary<string, int> ActionPoints { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Accumulation toward the next AP gain, matching Money.csv entries 30-34.</summary>
+    public Dictionary<string, int> ActionPointProgress { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Lifetime AP totals used by progression/NG+, matching Money.csv entries 40-44.</summary>
+    public Dictionary<string, long> LifetimeActionPoints { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
 public sealed class RanchState
@@ -338,32 +377,44 @@ public sealed class CharacterState
     public int CraftSkill { get; set; }
     public int CombatSkill { get; set; }
     public int MagicPower { get; set; }
+
+    // Original-style personal resources. Energy remains the remake's existing SP-like action pool;
+    // MagicPower remains magical aptitude while Mana is the spendable MP pool.
+    public int Mana { get; set; }
+    public int MaxMana { get; set; }
+    public int ManaRecoveryPercent { get; set; } = 10;
+    public int Spirit { get; set; }
+    public int MaxSpirit { get; set; }
+    public int Level { get; set; } = 1;
+    public int UltimateCharges { get; set; }
+    public int RecoveryCharges { get; set; }
+
     public Dictionary<string, int> SkillXp { get; set; } = new();
     public bool HasGrownToday { get; set; }
     public Dictionary<string, string> EquippedItems { get; set; } = new();
 
     // NSFW fields
-        public MentalState Mature { get; set; } = new();
-        public MilkState Milk { get; set; } = new();
-        public AddictionState Addictions { get; set; } = new();
-        public EquipmentState Equipment { get; set; } = new();
-        public List<string> Talents { get; set; } = new();
-        public string Race { get; set; } = string.Empty;
-        public string Personality { get; set; } = string.Empty;
-        public string JobClass { get; set; } = string.Empty;
-        public string HairColor { get; set; } = string.Empty;
-        public string HairStyle { get; set; } = string.Empty;
-        public string EyeColor { get; set; } = string.Empty;
-        public string SkinColor { get; set; } = string.Empty;
-        public int Height { get; set; } = 1600;
-        public int ApparentAge { get; set; } = 18;
-        public int BustSize { get; set; } = 3;
+    public MentalState Mature { get; set; } = new();
+    public MilkState Milk { get; set; } = new();
+    public AddictionState Addictions { get; set; } = new();
+    public EquipmentState Equipment { get; set; } = new();
+    public List<string> Talents { get; set; } = new();
+    public string Race { get; set; } = string.Empty;
+    public string Personality { get; set; } = string.Empty;
+    public string JobClass { get; set; } = string.Empty;
+    public string HairColor { get; set; } = string.Empty;
+    public string HairStyle { get; set; } = string.Empty;
+    public string EyeColor { get; set; } = string.Empty;
+    public string SkinColor { get; set; } = string.Empty;
+    public int Height { get; set; } = 1600;
+    public int ApparentAge { get; set; } = 18;
+    public int BustSize { get; set; } = 3;
 
-        // Adult eligibility (fail-closed)
-        public AdultEligibility AdultEligibility { get; set; } = AdultEligibility.Unknown;
-                public CharacterProvenance Provenance { get; set; } = CharacterProvenance.Unknown;
-                public string AgeContextNote { get; set; } = string.Empty;
-            }
+    // Adult eligibility (fail-closed)
+    public AdultEligibility AdultEligibility { get; set; } = AdultEligibility.Unknown;
+    public CharacterProvenance Provenance { get; set; } = CharacterProvenance.Unknown;
+    public string AgeContextNote { get; set; } = string.Empty;
+}
 
 public sealed class ScheduleState
 {
