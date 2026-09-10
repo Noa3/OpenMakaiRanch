@@ -22,6 +22,10 @@ public sealed class DayCycleService
         _state.Calendar.CurrentWeather = _state.Calendar.TomorrowWeather;
         _state.Calendar.TomorrowWeather = OriginalCalendarRules.RollTomorrow(_state.Calendar);
         _state.Calendar.TrainedToday = 0;
+        MagicService.RecoverPlayerManaForRest(_state);
+        new PlayerStaminaService(_state).ResetForNewDay();
+        _state.Dating.ActivePartnerId = string.Empty;
+        _state.Dating.ActiveApproach = DateInviteApproach.Respectful;
     }
 
     public bool AdvancePhase()

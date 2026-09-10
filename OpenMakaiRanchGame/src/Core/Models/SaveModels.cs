@@ -61,6 +61,7 @@ public enum MissionOutcome
 public enum CombatPhase
 {
     PreBattle,
+    PlayerTurn,
     BattleResults,
     PostBattle
 }
@@ -95,7 +96,7 @@ public enum TrainingCategory
 
 public sealed class SaveState
 {
-    public const int CurrentSchemaVersion = 14;
+    public const int CurrentSchemaVersion = 15;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public DateTime? SavedAt { get; set; }
@@ -110,6 +111,7 @@ public sealed class SaveState
     public ResearchState Research { get; set; } = new();
     public PetState Pets { get; set; } = new();
     public BondState Bond { get; set; } = new();
+    public DatingState Dating { get; set; } = new();
     public RecruitmentState Recruitment { get; set; } = new();
     public SettingsState Settings { get; set; } = new();
     public MatureState Mature { get; set; } = new();
@@ -205,6 +207,31 @@ public sealed class PlayerState
     public string StartingMountId { get; set; } = "none";
     public string TailType { get; set; } = "None";
     public string BodyFur { get; set; } = "None";
+    /// <summary>Current personal MP, separate from ranch-stored mana like the original BASE:0:魔力.</summary>
+    public int Mana { get; set; } = 100;
+
+    /// <summary>Personal MP capacity. The original player character starts at 100.</summary>
+    public int MaxMana { get; set; } = 100;
+
+    /// <summary>Percent of MaxMana recovered at rest/day rollover. Original Chara0 starts at 10%.</summary>
+    public int ManaRecoveryPercent { get; set; } = 10;
+
+    /// <summary>
+    /// Daily real-time action budget. Locomotion/exploration never spends this; persistent
+    /// progression actions do. This replaces the original turn-slot "action done" constraint.
+    /// </summary>
+    public int Stamina { get; set; } = 100;
+
+    public int MaxStamina { get; set; } = 100;
+
+    /// <summary>Temporary capacity bonus available for the current day (for example Well Rested).</summary>
+    public int DailyStaminaBonus { get; set; }
+
+    /// <summary>Bonus scheduled for the next morning by evening routines such as a prepared hot bath.</summary>
+    public int NextDayStaminaBonus { get; set; }
+
+    /// <summary>Prevents repeatedly scheduling bath/shower benefits during one in-game day.</summary>
+    public bool BathedToday { get; set; }
 }
 
 public sealed class CalendarState
@@ -411,6 +438,58 @@ public sealed class BondState
     public List<string> CompletedEventIds { get; set; } = new();
 }
 
+public enum DateInviteApproach
+{
+    Respectful,
+    Pressured,
+    Forced
+}
+
+public enum DateActivityKind
+{
+    RanchWalk,
+    WorkTogether,
+    SharedMeal,
+    TownOuting,
+    QuietRest
+}
+
+public enum RelationshipStage
+{
+    Distant,
+    Familiar,
+    Close,
+    Romantic,
+    DeeplyAttached
+}
+
+/// <summary>
+/// Additive real-time companionship/date state. Core mental progression remains in CharacterState.Mature;
+/// this state records only relationship history, active companionship and anti-spam timing.
+/// </summary>
+public sealed class DatingState
+{
+    public string ActivePartnerId { get; set; } = string.Empty;
+    public DateInviteApproach ActiveApproach { get; set; } = DateInviteApproach.Respectful;
+    public int StartedDay { get; set; }
+    public DayPhase StartedPhase { get; set; } = DayPhase.Morning;
+    public int LastActivityDay { get; set; }
+    public DayPhase LastActivityPhase { get; set; } = DayPhase.Night;
+    public Dictionary<string, DatingPartnerState> Partners { get; set; } = new();
+}
+
+public sealed class DatingPartnerState
+{
+    public int DatesStarted { get; set; }
+    public int SharedActivities { get; set; }
+    public int PositiveMoments { get; set; }
+    public int PressuredMoments { get; set; }
+    public int ForcedMoments { get; set; }
+    public int TrustDamage { get; set; }
+    public int LastDateDay { get; set; }
+    public string LastActivityId { get; set; } = string.Empty;
+}
+
 public sealed class RecruitmentState
 {
     public CharacterState? CurrentOffer { get; set; }
@@ -554,6 +633,7 @@ public sealed class CombatReport
     public List<BattleRound> Rounds { get; set; } = new();
     public List<CombatantSnapshot> PartyState { get; set; } = new();
     public List<CombatantSnapshot> EnemyState { get; set; } = new();
+    public int PlayerManaSpent { get; set; }
 }
 
 public sealed class BattleRound
@@ -571,6 +651,8 @@ public sealed class BattleAction
     public int Healing { get; set; }
     public string Description { get; set; } = string.Empty;
     public bool KilledTarget { get; set; }
+    public int ResourceCost { get; set; }
+    public string ResourceName { get; set; } = string.Empty;
 }
 
 public sealed class CombatantSnapshot
@@ -581,6 +663,8 @@ public sealed class CombatantSnapshot
     public int MaxHp { get; set; }
     public int CurrentSp { get; set; }
     public int MaxSp { get; set; }
+    public int CurrentMana { get; set; }
+    public int MaxMana { get; set; }
     public bool IsAlive { get; set; }
     public bool IsEnemy { get; set; }
     public int Attack { get; set; }

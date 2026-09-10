@@ -78,6 +78,7 @@ public partial class WorldGameController : Node
         _ranch.TravelRequested += OnTravelRequested;
         _town.TravelRequested += OnTravelRequested;
         _town.ServiceScreenRequested += OnTownServiceRequested;
+        _town.CharacterInteractionRequested += OnCharacterInteractionRequested;
         if (_transition is not null)
         {
             _transition.Completed += OnTransitionCompleted;
@@ -142,6 +143,7 @@ public partial class WorldGameController : Node
         {
             _town.TravelRequested -= OnTravelRequested;
             _town.ServiceScreenRequested -= OnTownServiceRequested;
+            _town.CharacterInteractionRequested -= OnCharacterInteractionRequested;
         }
         if (_transition is not null && GodotObject.IsInstanceValid(_transition))
         {
@@ -441,7 +443,13 @@ public partial class WorldGameController : Node
                 && game.State.Calendar.Day == 1
                 && !game.State.Story.FirstDayCompleted;
 
-            if (!firstDayPending)
+            if (firstDayPending)
+            {
+                // ScreenChanged subscribers are not ordered by ownership. Re-evaluate the story
+                // only after this host has released its full-screen UI lock.
+                _firstDayFlow?.RefreshFromCurrentState();
+            }
+            else
             {
                 SetTransitionInputLock(true);
                 RevealArea("ranch", firstArrival: true);

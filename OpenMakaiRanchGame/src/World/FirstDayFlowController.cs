@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Gameplay;
 
 namespace OpenMakaiRanch.World;
 
@@ -139,6 +140,11 @@ public partial class FirstDayFlowController : Control
 
     private void InitializeDeferred()
     {
+        if (_initialized)
+        {
+            return;
+        }
+
         _host = GetParent() as WorldGameController
             ?? GetParent()?.GetParent() as WorldGameController;
         _game = GameRoot.Instance;
@@ -156,6 +162,25 @@ public partial class FirstDayFlowController : Control
         _host.Shell.ScreenChanged += OnScreenChanged;
         _initialized = true;
         TryStartOrResume();
+    }
+
+    /// <summary>
+    /// Re-evaluate Day-1 ownership after another system changes the full-screen UI lock.
+    /// This makes the handoff deterministic regardless of ScreenChanged subscriber order.
+    /// </summary>
+    public void RefreshFromCurrentState()
+    {
+        if (!_initialized)
+        {
+            // Normal runtime reaches this through CallDeferred. Headless smoke and any future
+            // synchronous UI handoff may arrive first, so initialize on demand once the host is ready.
+            InitializeDeferred();
+        }
+
+        if (_initialized)
+        {
+            TryStartOrResume();
+        }
     }
 
     private void TryStartOrResume()
@@ -393,9 +418,7 @@ public partial class FirstDayFlowController : Control
         {
             ShowDialogue(
                 "Combat Tutorial",
-                $"{outcomeText}
-
-The tutorial opponent is intentionally weak; you can retry without changing the story outcome.",
+                $"{outcomeText}\n\nThe tutorial opponent is intentionally weak; you can retry without changing the story outcome.",
                 ("Retry", StartIntruderCombat));
             return;
         }
@@ -406,9 +429,7 @@ The tutorial opponent is intentionally weak; you can retry without changing the 
 
         ShowDialogue(
             "Combat Tutorial",
-            $"{outcomeText}
-
-{roundSummary}",
+            $"{outcomeText}\n\n{roundSummary}",
             ("Detain the intruder", FinishIntruderEncounter));
     }
 
@@ -480,10 +501,10 @@ The tutorial opponent is intentionally weak; you can retry without changing the 
         ShowDialogueBase(
             GuideName(),
             _game.State.Ranch.BathtubClean
-                ? "You're exhausted. You can take a bath before sleeping, go straight to bed, or use the existing night workload choices for training/admin."
-                : "You're exhausted. The bath is dirty, so either go straight to bed or choose one of the existing night workload options. Assign Cleaning on a later day to prepare the bath again.");
+                ? $"You're exhausted. A prepared hot bath will make you Well Rested tomorrow (+{PlayerStaminaService.HotBathNextDayBonus} STA); you can also go straight to bed or use the night workload choices."
+                : "You're exhausted. The main bath is not prepared. A quick shower is still available for hygiene, but it gives no Well Rested bonus tomorrow. Assign Cleaning on a later day to prepare the bath again.");
 
-        AddChoice("Take a bath, then sleep", ChooseBathAndSleep, disabled: !_game.State.Ranch.BathtubClean);
+        AddChoice(_game.State.Ranch.BathtubClean ? "Take a hot bath, then sleep" : "Take a quick shower, then sleep", ChooseBathAndSleep);
         AddChoice("Go straight to bed", () => ChooseNight("rest"));
         AddChoice("Night training", () => ChooseNight("train"));
         AddChoice("Handle administration", () => ChooseNight("admin"));
@@ -497,7 +518,7 @@ The tutorial opponent is intentionally weak; you can retry without changing the 
             return;
         }
 
-        FinishFirstDay("You take a quiet bath, then head to bed.");
+        FinishFirstDay("You wash up, relax for a moment, then head to bed.");
     }
 
     private void ChooseNight(string action)

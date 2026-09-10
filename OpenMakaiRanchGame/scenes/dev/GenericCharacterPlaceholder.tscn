@@ -1,0 +1,67 @@
+[gd_scene load_steps=8 format=3]
+
+[sub_resource type="StandardMaterial3D" id="body_material"]
+albedo_color = Color(0.32, 0.46, 0.68, 1)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="accent_material"]
+albedo_color = Color(0.78, 0.82, 0.9, 1)
+roughness = 0.78
+
+[sub_resource type="CapsuleMesh" id="body_mesh"]
+radius = 0.31
+height = 1.18
+
+[sub_resource type="SphereMesh" id="head_mesh"]
+radius = 0.23
+height = 0.46
+
+[sub_resource type="BoxMesh" id="limb_mesh"]
+size = Vector3(0.16, 0.72, 0.16)
+
+[sub_resource type="BoxMesh" id="arm_mesh"]
+size = Vector3(0.14, 0.62, 0.14)
+
+[sub_resource type="CylinderMesh" id="marker_mesh"]
+top_radius = 0.16
+bottom_radius = 0.2
+height = 0.16
+
+[node name="GenericCharacterPlaceholder" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.02, 0)
+mesh = SubResource("body_mesh")
+material_override = SubResource("body_material")
+
+[node name="Head" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.78, 0)
+mesh = SubResource("head_mesh")
+material_override = SubResource("accent_material")
+
+[node name="LegLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-0.16, 0.38, 0)
+mesh = SubResource("limb_mesh")
+material_override = SubResource("body_material")
+
+[node name="LegRight" type="MeshInstance3D" parent="."]
+position = Vector3(0.16, 0.38, 0)
+mesh = SubResource("limb_mesh")
+material_override = SubResource("body_material")
+
+[node name="ArmLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-0.4, 1.08, 0)
+rotation_degrees = Vector3(0, 0, -8)
+mesh = SubResource("arm_mesh")
+material_override = SubResource("accent_material")
+
+[node name="ArmRight" type="MeshInstance3D" parent="."]
+position = Vector3(0.4, 1.08, 0)
+rotation_degrees = Vector3(0, 0, 8)
+mesh = SubResource("arm_mesh")
+material_override = SubResource("accent_material")
+
+[node name="DebugMarker" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.12, 0)
+mesh = SubResource("marker_mesh")
+material_override = SubResource("accent_material")

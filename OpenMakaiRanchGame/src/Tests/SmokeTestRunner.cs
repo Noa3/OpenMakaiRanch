@@ -68,6 +68,10 @@ public static class SmokeTestRunner
             TestFirstDaySystems(result);
             TestOriginalCalendarAndWeather(result);
             TestCombatWorldTimeLock(result);
+            TestPlayerStaminaAndRecovery(result);
+            TestDatingAndCompanionRelationships(result);
+            TestPlayerManaAndCombatResources(result);
+            TestInteractiveCombatSession(result);
             TestCameraInspectionAndBoundaryMath(result);
             TestCharacterAvatar(result);
             TestEventDialogueStaging(result);
@@ -193,7 +197,7 @@ public static class SmokeTestRunner
         var adventure = new AdventureService(state, data, economy, inventory, milestones, new Random(17));
         var party = state.Roster.Characters.Select(character => character.Id).ToList();
         var guaranteedMission = data.Missions.Values
-            .Where(mission => mission.Tier == MissionTier.Local)
+            .Where(mission => mission.Tier == MissionTier.Local && mission.RewardGold > 0)
             .OrderBy(mission => mission.Difficulty)
             .First();
 
@@ -215,6 +219,17 @@ public static class SmokeTestRunner
         state.Economy.Gold = 777;
         state.Settings.AudioEnabled = false;
         state.Settings.HapticsEnabled = false;
+        state.Player.NextDayStaminaBonus = PlayerStaminaService.HotBathNextDayBonus;
+        state.Dating.ActivePartnerId = "rancher";
+        state.Dating.ActiveApproach = DateInviteApproach.Respectful;
+        state.Dating.Partners["rancher"] = new DatingPartnerState
+        {
+            DatesStarted = 2,
+            SharedActivities = 3,
+            PositiveMoments = 2,
+            LastDateDay = state.Calendar.Day,
+            LastActivityId = DateActivityKind.RanchWalk.ToString()
+        };
         new SaveStateFactory(data, new Random(70)).RerollGeneratedRecruits(state);
         var generatedRecruit = state.Roster.Characters.First(character => character.IsGenerated);
 
@@ -230,6 +245,13 @@ public static class SmokeTestRunner
         Assert(result, loaded?.Roster.Characters.Any(character => character.IsGenerated && character.DisplayNameOverride == generatedRecruit.DisplayNameOverride) == true, "generated recruit metadata round-trips");
         Assert(result, loaded?.Roster.Characters.Any(character => character.IsGenerated && character.BodyTypeOverride == generatedRecruit.BodyTypeOverride) == true, "generated recruit body metadata round-trips");
         Assert(result, loaded?.Recruitment.CurrentOffer?.Id == state.Recruitment.CurrentOffer?.Id, "recruitment offer round-trips");
+        Assert(result, loaded?.Player.NextDayStaminaBonus == PlayerStaminaService.HotBathNextDayBonus,
+            "save round-trip preserves scheduled next-day Well Rested bonus");
+        Assert(result, loaded?.Dating.ActivePartnerId == "rancher"
+            && loaded.Dating.Partners.TryGetValue("rancher", out var savedDate)
+            && savedDate.DatesStarted == 2
+            && savedDate.SharedActivities == 3,
+            "save round-trip preserves active companion and relationship history");
         save.Delete(99);
     }
 
@@ -704,7 +726,7 @@ public static class SmokeTestRunner
         Assert(result, state.WorldAreaId == "ranch", "new game starts in the ranch world area");
         Assert(result, state.Story is not null && state.Story.FirstDayStage == FirstDayFlowController.StageWakeUp,
             "new game starts before the guided first-day wake-up");
-        Assert(result, !state.Story.FirstDayCompleted,
+        Assert(result, state.Story?.FirstDayCompleted == false,
             "new game first-day story is initially incomplete");
         Assert(result, state.Settings.TutorialHintsEnabled, "tutorial hints default to enabled");
         Assert(result, state.Settings.SeenTutorialIds.Count == 0, "new settings start with no tutorial acknowledgements");
@@ -1343,6 +1365,434 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "calendar: rollover crosses Spring -> Summer at day 29");
         Assert(result, state.Calendar.CurrentWeather == Weather.Cloudy,
             "calendar: saved tomorrow forecast becomes today's weather at rollover");
+
+        Assert(result, WorldSurfaceInteractionController.ReactionFor(Season.Winter, Weather.Snow) == WorldSurfaceReaction.SnowTrack,
+            "surface weather: snow produces bounded character tracks");
+        Assert(result, WorldSurfaceInteractionController.ReactionFor(Season.Summer, Weather.Rain) == WorldSurfaceReaction.WetStep,
+            "surface weather: rain produces wet-step feedback");
+        Assert(result, WorldSurfaceInteractionController.ReactionFor(Season.Autumn, Weather.Clear) == WorldSurfaceReaction.LeafRustle,
+            "surface weather: calm autumn produces leaf-rustle feedback");
+        Assert(result, WorldSurfaceInteractionController.ReactionFor(Season.Summer, Weather.Clear) == WorldSurfaceReaction.None,
+            "surface weather: calm summer does not allocate unnecessary surface marks");
+        Assert(result, WorldShelterVolume.ContainsOffset(new Vector3(0.5f, 1f, -0.5f), new Vector3(2f, 2f, 2f))
+            && !WorldShelterVolume.ContainsOffset(new Vector3(2.5f, 0f, 0f), new Vector3(2f, 2f, 2f)),
+            "surface weather: shelter containment is deterministic without physics queries");
+
+        var lowProfile = GraphicsQualityProfile.Resolve("Low");
+        var mediumProfile = GraphicsQualityProfile.Resolve("Medium");
+        var highProfile = GraphicsQualityProfile.Resolve("High");
+        var ultraProfile = GraphicsQualityProfile.Resolve("Ultra");
+        Assert(result, !lowProfile.Shadows && !lowProfile.AdvancedLighting && !lowProfile.Ssao
+            && lowProfile.SurfaceMarkBudget < mediumProfile.SurfaceMarkBudget,
+            "graphics quality: Low removes expensive Forward+ features and reduces reactive-world budget");
+        Assert(result, mediumProfile.Ssao && !mediumProfile.Ssil && !mediumProfile.Ssr && !mediumProfile.VolumetricFog,
+            "graphics quality: Medium keeps affordable SSAO but defers heavier Forward+ effects");
+        Assert(result, highProfile.Ssao && highProfile.Ssil && highProfile.Ssr && highProfile.VolumetricFog,
+            "graphics quality: High enables the complete situation-aware Forward+ feature set");
+        Assert(result, ultraProfile.SsrMaxSteps > highProfile.SsrMaxSteps
+            && ultraProfile.VolumetricFogLength > highProfile.VolumetricFogLength
+            && ultraProfile.SurfaceMarkBudget > highProfile.SurfaceMarkBudget,
+            "graphics quality: Ultra increases expensive effect quality and bounded world-reaction budgets");
+
+        var presetState = new SettingsState();
+        RuntimeSettingsService.ApplyQualityPreset(presetState, "High");
+        Assert(result, presetState.GraphicsQuality == highProfile.Name
+            && Math.Abs(presetState.RenderScale - highProfile.RenderScale) < 0.001f
+            && presetState.AdvancedLightingEnabled == highProfile.AdvancedLighting
+            && presetState.FrameRateLimit == highProfile.DefaultFrameRateLimit,
+            "graphics quality: preset application derives from the central profile instead of duplicate switches");
+    }
+
+    private static void TestPlayerStaminaAndRecovery(SmokeTestResult result)
+    {
+        var game = GameRoot.Instance;
+        game.NewGame();
+
+        Assert(result, game.State.Player.Stamina == PlayerStaminaService.DefaultMaxStamina
+            && game.State.Player.MaxStamina == PlayerStaminaService.DefaultMaxStamina,
+            "stamina: new game starts with a full independent daily player budget");
+
+        game.State.Roster.Characters[0].Energy = 1;
+        Assert(result, game.State.Player.Stamina == 100,
+            "stamina: player daily stamina is not the first roster character's Energy");
+
+        game.State.Player.Stamina = 70;
+        game.State.Calendar.Phase = DayPhase.Morning;
+        Assert(result, game.AdvanceTime() && game.State.Player.Stamina == 70,
+            "stamina: ordinary world phase progression does not consume the exploration budget");
+
+        game.State.Player.Stamina = 60;
+        game.State.Calendar.Phase = DayPhase.Evening;
+        game.State.Ranch.BathtubClean = true;
+        var bath = game.UsePlayerBath();
+        Assert(result, bath.Used && bath.UsedCleanBath
+            && bath.ScheduledNextDayBonus == PlayerStaminaService.HotBathNextDayBonus
+            && game.State.Player.Stamina == 60
+            && game.State.Player.NextDayStaminaBonus == PlayerStaminaService.HotBathNextDayBonus
+            && !game.State.Ranch.BathtubClean,
+            "stamina: an evening prepared bath schedules tomorrow's Well Rested bonus without refilling today");
+        Assert(result, string.IsNullOrWhiteSpace(game.State.Calendar.NightAction),
+            "stamina: evening bath does not silently choose or end the Night action");
+        Assert(result, !game.UsePlayerBath().Used,
+            "stamina: bath/shower routine cannot be farmed repeatedly on the same day");
+
+        new DayCycleService(game.State).AdvanceToNextDay();
+        Assert(result,
+            game.State.Player.DailyStaminaBonus == PlayerStaminaService.HotBathNextDayBonus
+            && game.State.Player.NextDayStaminaBonus == 0
+            && game.State.Player.Stamina == game.State.Player.MaxStamina + PlayerStaminaService.HotBathNextDayBonus
+            && !game.State.Player.BathedToday,
+            "stamina: prepared evening bath creates extra starting stamina and capacity on the next day");
+
+        new DayCycleService(game.State).AdvanceToNextDay();
+        Assert(result, game.State.Player.DailyStaminaBonus == 0
+            && game.State.Player.Stamina == game.State.Player.MaxStamina,
+            "stamina: Well Rested bonus expires after one day unless another prepared bath schedules it again");
+
+        game.NewGame();
+        game.State.Player.Stamina = 40;
+        game.State.Calendar.Phase = DayPhase.Night;
+        game.State.Ranch.BathtubClean = false;
+        var shower = game.UsePlayerBath();
+        Assert(result, shower.Used && !shower.UsedCleanBath && shower.ScheduledNextDayBonus == 0
+            && game.State.Player.Stamina == 40 && game.State.Player.NextDayStaminaBonus == 0
+            && game.State.Calendar.NightAction == "rest",
+            "stamina: dirty bath falls back to hygiene-only shower without immediate or next-day stamina");
+
+        new DayCycleService(game.State).AdvanceToNextDay();
+        Assert(result, game.State.Player.DailyStaminaBonus == 0
+            && game.State.Player.Stamina == game.State.Player.MaxStamina
+            && !game.State.Player.BathedToday,
+            "stamina: shower-only night starts the next day at the ordinary stamina cap");
+
+        game.NewGame();
+        var character = game.Roster.Characters.First();
+        character.Bond = 0;
+        game.State.Player.Stamina = game.PlayerStaminaCost(PlayerActivityKind.Mentorship) - 1;
+        var bondBefore = character.Bond;
+        Assert(result, !game.TryConductMentorship(character.Id, game.StateGeneration)
+            && character.Bond == bondBefore,
+            "stamina: insufficient budget blocks repeatable progression without granting rewards");
+
+        game.State.Player.Stamina = 60;
+        var staminaBeforeMentorship = game.State.Player.Stamina;
+        Assert(result, game.TryConductMentorship(character.Id, game.StateGeneration)
+            && game.State.Player.Stamina == staminaBeforeMentorship - game.PlayerStaminaCost(PlayerActivityKind.Mentorship),
+            "stamina: successful progression spends its declared cost exactly once");
+
+        game.State.Player.Stamina = game.PlayerStaminaCost(PlayerActivityKind.Adventure) - 1;
+        Assert(result, !game.CanStartAdventure("road_patrol")
+            && game.CanStartAdventure("tutorial_ranch_intruder"),
+            "stamina: ordinary adventures respect the budget while the mandatory Day-1 tutorial remains free");
+
+        game.NewGame();
+    }
+
+    private static void TestDatingAndCompanionRelationships(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data, new Random(2601)).CreateNewGame();
+        var stamina = new PlayerStaminaService(state);
+        var dating = new DatingService(state, stamina);
+        var partner = state.Roster.Characters.First(character => character.Id != "anon");
+        partner.AdultEligibility = AdultEligibility.ConfirmedAdult;
+        partner.Mature.Aversion = 10000;
+        partner.Mature.Favorability = 0;
+        partner.Bond = 0;
+        partner.Morale = 60;
+
+        var invitation = dating.StartDate(partner.Id, DateInviteApproach.Respectful);
+        Assert(result, invitation.Success && state.Dating.ActivePartnerId == partner.Id,
+            "dating: eligible ranch resident can voluntarily accompany the player");
+        Assert(result, partner.Mature.Aversion == 0,
+            "dating: untouched voluntary resident is not treated as maximally hostile by the historical generic mental default");
+
+        partner.Mature.Aversion = 500;
+        var favorabilityBeforeWork = partner.Mature.Favorability;
+        var staminaBeforeWork = state.Player.Stamina;
+        var workTogether = dating.PerformActivity(DateActivityKind.WorkTogether);
+        Assert(result, workTogether.Success
+            && partner.Mature.Aversion < 500
+            && partner.Mature.Favorability == favorabilityBeforeWork,
+            "dating: shared work follows source rule by reducing existing aversion before granting favorability");
+        Assert(result, state.Player.Stamina == staminaBeforeWork - dating.ActivityCost(DateActivityKind.WorkTogether),
+            "dating: meaningful shared activity spends its declared daily stamina exactly once");
+
+        Assert(result, !dating.PerformActivity(DateActivityKind.RanchWalk).Success,
+            "dating: a second meaningful activity in the same phase is blocked against spam farming");
+
+        state.Calendar.Phase = DayPhase.Afternoon;
+        state.Inventory.Items["meal_box"] = 2;
+        var mealsBefore = state.Inventory.Items["meal_box"];
+        Assert(result, dating.PerformActivity(DateActivityKind.SharedMeal).Success
+            && state.Inventory.Items["meal_box"] == mealsBefore - 1,
+            "dating: shared meal can happen in a later phase and consumes one meal_box");
+
+        var positiveHistory = state.Dating.Partners[partner.Id];
+        positiveHistory.PositiveMoments = 5;
+        positiveHistory.ForcedMoments = 0;
+        partner.Bond = 60;
+        partner.Mature.Favorability = 6000;
+        partner.Mature.Aversion = 0;
+        Assert(result, dating.StageFor(partner.Id) == RelationshipStage.Romantic,
+            "dating: sustained voluntary positive time can reach the Romantic relationship stage");
+
+        new DayCycleService(state).AdvanceToNextDay();
+        Assert(result, string.IsNullOrWhiteSpace(state.Dating.ActivePartnerId)
+            && state.Dating.Partners[partner.Id].SharedActivities >= 2,
+            "dating: day rollover ends active following but preserves relationship history");
+
+        var forcedState = new SaveStateFactory(data, new Random(2602)).CreateNewGame();
+        var forcedStamina = new PlayerStaminaService(forcedState);
+        var forcedDating = new DatingService(forcedState, forcedStamina);
+        var forcedPartner = forcedState.Roster.Characters.First(character => character.Id != "anon");
+        forcedPartner.AdultEligibility = AdultEligibility.ConfirmedAdult;
+        forcedPartner.Bond = 20;
+        forcedPartner.Morale = 60;
+        forcedPartner.Mature.Aversion = 0;
+        forcedPartner.Mature.Antipathy = 0;
+        forcedPartner.Mature.Fear = 0;
+        forcedPartner.Mature.Dignity = 10000;
+        var forced = forcedDating.StartDate(forcedPartner.Id, DateInviteApproach.Forced);
+
+        Assert(result, forced.Success
+            && forcedPartner.Bond < 20
+            && forcedPartner.Morale < 60
+            && forcedPartner.Mature.Dignity < 10000
+            && forcedPartner.Mature.Aversion > 0
+            && forcedPartner.Mature.Antipathy > 0
+            && forcedPartner.Mature.Fear > 0,
+            "dating: forcing companionship erodes dignity but damages trust/mood and raises negative mental values");
+        Assert(result, forcedDating.ThoughtsFor(forcedPartner.Id)
+                .Any(line => line.Contains("go back", StringComparison.OrdinalIgnoreCase)
+                    || line.Contains("made to", StringComparison.OrdinalIgnoreCase)),
+            "dating: forced companion expresses discomfort through contextual thought text");
+
+        var forcedProgress = forcedState.Dating.Partners[forcedPartner.Id];
+        forcedProgress.PositiveMoments = 6;
+        forcedProgress.ForcedMoments = 2;
+        forcedPartner.Bond = 65;
+        forcedPartner.Mature.Favorability = 6500;
+        forcedPartner.Mature.Aversion = 0;
+        Assert(result, (int)forcedDating.StageFor(forcedPartner.Id) < (int)RelationshipStage.Romantic,
+            "dating: repeated force prevents high positive relationship stages even when raw favorability is high");
+
+        var mental = new MentalStateService();
+        forcedPartner.Talents = new List<string> { "Stubborn", "Optimistic", "Charismatic", "Kind" };
+        forcedPartner.Mature.MentalStrength = 0;
+        mental.RecalculateFallState(forcedPartner);
+        Assert(result, forcedPartner.Mature.FallState == FallState.Collapse
+            && !forcedPartner.Talents.Contains("Stubborn")
+            && !forcedPartner.Talents.Contains("Optimistic")
+            && !forcedPartner.Talents.Contains("Charismatic")
+            && forcedPartner.Talents.Contains("Kind"),
+            "dating/parity: mental Collapse destroys only source-traced matching traits and preserves unrelated traits");
+        Assert(result, forcedPartner.Mature.Marks.Any(mark => mark.StartsWith("CollapseLost:", StringComparison.Ordinal)),
+            "dating/parity: irreversible collapse trait changes leave an auditable character marker");
+
+        forcedPartner.Mature.MentalStrength = 5000;
+        forcedPartner.Mature.Despair = 0;
+        mental.RecalculateFallState(forcedPartner);
+        Assert(result, !forcedPartner.Mature.IsCollapsed,
+            "dating/parity: recovery from collapse clears the derived IsCollapsed flag while lost traits remain lost");
+
+        var underageState = new SaveStateFactory(data, new Random(2603)).CreateNewGame();
+        var underageDating = new DatingService(underageState, new PlayerStaminaService(underageState));
+        var underage = underageState.Roster.Characters.First(character => character.Id != "anon");
+        underage.AdultEligibility = AdultEligibility.Minor;
+        Assert(result, !underageDating.IsEligiblePartner(underage)
+            && !underageDating.StartDate(underage.Id, DateInviteApproach.Respectful).Success,
+            "dating: adult relationship system fails closed for ineligible minors");
+    }
+
+    private static void TestPlayerManaAndCombatResources(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data, new Random(2409)).CreateNewGame();
+
+        Assert(result, state.Player.Mana == 100 && state.Player.MaxMana == 100 && state.Player.ManaRecoveryPercent == 10,
+            "mana: new game matches original Chara0 personal MP and 10% recovery defaults");
+
+        state.Player.MaxMana = 100;
+        state.Player.Mana = 10;
+        state.Player.ManaRecoveryPercent = 10;
+        var cycle = new DayCycleService(state);
+        cycle.AdvanceToNextDay();
+        Assert(result, state.Player.Mana == 20,
+            "mana: new-day recovery restores the configured percentage of personal Max MP");
+
+        state.Economy.ManaReservoir = 45;
+        var magic = new MagicService(state, data);
+        Assert(result, magic.RechargePlayerManaFromStorage(30) == 0,
+            "mana: stored mana cannot refill the player before the Magic Supply Device exists");
+        state.Inventory.Items["magic_supply_device"] = 1;
+        var transferred = magic.RechargePlayerManaFromStorage(30);
+        Assert(result, transferred == 30 && state.Player.Mana == 50 && state.Economy.ManaReservoir == 15,
+            "mana: Magic Supply Device refills personal MP from stored mana without increasing Max MP");
+
+        var overflowState = new SaveStateFactory(data, new Random(2411)).CreateNewGame();
+        overflowState.Player.MaxMana = 100_000;
+        overflowState.Player.Mana = 99_000;
+        overflowState.Player.ManaRecoveryPercent = 10;
+        overflowState.Inventory.Items["magic_storage_small"] = 1;
+        var overflowCycle = new DayCycleService(overflowState);
+        overflowCycle.AdvanceToNextDay();
+        Assert(result, overflowState.Player.Mana == 100_000 && overflowState.Economy.ManaReservoir == 1_800,
+            "mana: rest stores one fifth of sufficiently large recovery overflow in an installed reservoir");
+        Assert(result, MagicService.StorageCapacityFor(overflowState) == MagicService.HomeStorageCapacity,
+            "mana: home reservoir exposes the original 10,000 MP storage capacity");
+
+        var moraleBefore = state.Roster.Characters.Sum(character => character.Morale);
+        Assert(result, magic.CastSpell("morale_boost", 10, state.Roster.Characters[0].Id),
+            "mana: a spell can spend personal MP when enough is available");
+        Assert(result, state.Player.Mana == 40 && state.Roster.Characters.Sum(character => character.Morale) > moraleBefore,
+            "mana: spell spending affects personal MP and applies its gameplay effect");
+
+        var equipment = new EquipmentService(state, data);
+        var talents = new TalentService(state, data);
+        var playerCharacter = state.Roster.Characters[0];
+        playerCharacter.MaxHpOverride = 2000;
+        playerCharacter.Hp = 800;
+        playerCharacter.Energy = 200;
+        state.Player.MaxMana = 40;
+        state.Player.Mana = 30;
+
+        var combat = new CombatService(state, data, equipment, talents, magic);
+        var beforeMana = state.Player.Mana;
+        var magicReport = combat.ResolveMissionRounds("tutorial_ranch_intruder", autoResolve: true);
+        var magicActions = magicReport.Rounds.SelectMany(round => round.Actions)
+            .Where(action => action.ActionType == "Magic").ToList();
+        Assert(result, magicActions.Count > 0,
+            "combat: player AI uses personal MP for a magical support action when an ally is wounded");
+        Assert(result, magicActions.All(action => action.Damage == 0 && action.Healing > 0
+                && action.ResourceName == "MP" && action.ResourceCost == CombatService.PlayerMagicHealCost),
+            "combat: magic support heals without accidentally damaging its ally and records MP cost");
+        Assert(result, magicReport.PlayerManaSpent > 0
+                && state.Player.Mana == beforeMana - magicReport.PlayerManaSpent,
+            "combat: report and persistent player MP agree on mana consumed");
+
+        var companionState = new SaveStateFactory(data, new Random(2412)).CreateNewGame();
+        companionState.Adventure.SelectedPartyIds.Clear();
+        companionState.Adventure.SelectedPartyIds.Add("rancher");
+        companionState.Player.Mana = 30;
+        var companionEquipment = new EquipmentService(companionState, data);
+        var companionTalents = new TalentService(companionState, data);
+        var companionMagic = new MagicService(companionState, data);
+        var companionCombat = new CombatService(companionState, data, companionEquipment, companionTalents, companionMagic);
+        var companionManaBefore = companionState.Player.Mana;
+        var companionReport = companionCombat.ResolveMissionRounds("tutorial_ranch_intruder", autoResolve: true);
+        Assert(result, companionState.Player.Mana == companionManaBefore && companionReport.PlayerManaSpent == 0,
+            "combat: a companion-only party cannot spend the PlayerState personal MP pool");
+
+        var wornCharacter = state.Roster.Characters.First(value => value.Id == "anon");
+        var wornSnapshot = magicReport.PartyState.First(value => value.Id == "anon");
+        Assert(result, wornSnapshot.CurrentHp == wornSnapshot.MaxHp || wornCharacter.Hp < 800,
+            "combat: non-trivial battle damage carries into persistent character HP instead of disappearing after results");
+
+        var skillState = new SaveStateFactory(data, new Random(2410)).CreateNewGame();
+        var skillEquipment = new EquipmentService(skillState, data);
+        var skillTalents = new TalentService(skillState, data);
+        var skillMagic = new MagicService(skillState, data);
+        skillState.Player.Mana = 0; // force the personal actor down the finite-SP support path
+        var skillPlayer = skillState.Roster.Characters[0];
+        skillPlayer.MaxHpOverride = 2000;
+        skillPlayer.Hp = 800;
+        skillPlayer.Energy = 200;
+        var skillCombat = new CombatService(skillState, data, skillEquipment, skillTalents, skillMagic);
+        var skillReport = skillCombat.ResolveMissionRounds("tutorial_ranch_intruder", autoResolve: true);
+        var skillActions = skillReport.Rounds.SelectMany(round => round.Actions)
+            .Where(action => action.ActionType == "Skill").ToList();
+        Assert(result, skillActions.Count > 0,
+            "combat: non-magic support skill is available when combat SP is sufficient");
+        Assert(result, skillActions.All(action => action.Damage == 0 && action.Healing > 0
+                && action.ResourceName == "SP" && action.ResourceCost == CombatService.SkillSpCost),
+            "combat: support skills heal without friendly-fire damage and consume finite SP");
+        Assert(result, skillReport.PartyState.Any(member => member.CurrentSp < member.MaxSp),
+            "combat: spent skill SP remains visible in the final combat snapshot");
+    }
+
+    private static void TestInteractiveCombatSession(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data, new Random(2510)).CreateNewGame();
+        state.Adventure.SelectedPartyIds.Clear();
+        state.Adventure.SelectedPartyIds.Add("anon");
+        var playerCharacter = state.Roster.Characters.First(character => character.Id == "anon");
+        playerCharacter.MaxHpOverride = 2400;
+        playerCharacter.Hp = 2400;
+        playerCharacter.Energy = 400;
+        playerCharacter.CombatSkill = Math.Max(playerCharacter.CombatSkill, 25);
+        state.Player.Mana = 100;
+        state.Player.MaxMana = 100;
+
+        var equipment = new EquipmentService(state, data);
+        var talents = new TalentService(state, data);
+        var magic = new MagicService(state, data);
+        var combat = new CombatService(state, data, equipment, talents, magic);
+        var session = combat.StartInteractiveMission("tutorial_ranch_intruder");
+
+        Assert(result, !session.IsFinished && session.AwaitingPlayerInput && session.PlayerState?.Id == "anon",
+            "combat interactive: tactical session pauses only on the original player combatant");
+        Assert(result, session.RoundNumber == 1 && session.EnemyState.Any(enemy => enemy.IsAlive),
+            "combat interactive: first player turn exposes live round and enemy snapshots");
+
+        var enemyId = session.EnemyState.First(enemy => enemy.IsAlive).Id;
+        var actionsBefore = session.Report.Rounds.Sum(round => round.Actions.Count);
+        Assert(result, session.SubmitPlayerCommand(CombatPlayerCommand.Attack, enemyId),
+            "combat interactive: explicit player Attack command is accepted");
+        Assert(result, session.Report.Rounds.Sum(round => round.Actions.Count) > actionsBefore
+            && session.Report.Rounds.SelectMany(round => round.Actions)
+                .Any(action => action.ActorName == session.PartyState.First(member => member.Id == "anon").DisplayName
+                    && action.ActionType == "Attack"),
+            "combat interactive: player command resolves into the shared battle log instead of an AI placeholder");
+
+        if (!session.IsFinished)
+            session.AutoFinish();
+
+        Assert(result, session.IsFinished && session.Report.Outcome != MissionOutcome.None,
+            "combat interactive: Auto Finish completes the same tactical session and produces a normal outcome");
+        Assert(result, session.Report.PartyState.Count > 0 && session.Report.EnemyState.Count > 0,
+            "combat interactive: final tactical report exposes both sides for results UI");
+
+        var game = GameRoot.Instance;
+        game.NewGame();
+        game.State.Adventure.SelectedPartyIds.Clear();
+        game.State.Adventure.SelectedPartyIds.Add("anon");
+        var gamePlayer = game.Roster.Find("anon")!;
+        gamePlayer.MaxHpOverride = 4000;
+        gamePlayer.Hp = 4000;
+        gamePlayer.Energy = 500;
+        gamePlayer.CombatSkill = Math.Max(gamePlayer.CombatSkill, 30);
+        game.State.Player.Stamina = game.State.Player.MaxStamina;
+        var staminaBefore = game.State.Player.Stamina;
+        var expectedCost = game.AdventureStaminaCost("road_patrol");
+
+        Assert(result, game.BeginInteractiveCombat("road_patrol"),
+            "combat interactive: GameRoot can start a tactical mission through the shared combat lifecycle");
+        Assert(result, game.CombatWorldTimeLocked,
+            "combat interactive: tactical battle keeps world time locked");
+        Assert(result, game.State.Player.Stamina == staminaBefore - expectedCost,
+            "combat interactive: entering a real tactical battle commits daily stamina exactly once");
+
+        if (game.ActiveCombatSession is { IsFinished: false })
+            game.AutoFinishInteractiveCombat();
+
+        Assert(result, game.State.Player.Stamina == staminaBefore - expectedCost,
+            "combat interactive: resolving remaining turns does not charge daily stamina again");
+        Assert(result, game.CurrentCombatPhase == CombatPhase.BattleResults,
+            "combat interactive: completed tactical session transitions into the existing results phase");
+
+        game.EndCombatSession();
+        Assert(result, !game.CombatWorldTimeLocked && game.ActiveCombatSession is null
+            && game.CurrentCombatPhase == CombatPhase.PreBattle,
+            "combat interactive: leaving results releases world-time ownership and transient session state");
+
+        game.NewGame();
+        game.State.Adventure.SelectedPartyIds.Clear();
+        game.State.Adventure.SelectedPartyIds.Add("rancher");
+        Assert(result, !game.CanStartInteractiveCombat("road_patrol"),
+            "combat interactive: companion-only parties cannot impersonate the player tactical turn");
+        game.NewGame();
     }
 
     private static void TestCombatWorldTimeLock(SmokeTestResult result)
@@ -1376,8 +1826,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, target.DistanceTo(closeWall) >= WorldCameraMath.GeometryMinDistance,
             "camera: geometry clamp remains in front of the target instead of crossing through it");
 
-        var view = WorldCameraMath.ComputeViewDirection(0f, 0f);
-        Assert(result, view.IsNormalized() && view.Z < -0.99f,
+        const float viewYaw = 0.73f;
+        const float viewPitch = -0.21f;
+        var orbitCamera = WorldCameraMath.ComputeCameraPosition(target, viewYaw, viewPitch, 7f);
+        var orbitView = WorldCameraMath.ComputeLookAt(orbitCamera, target);
+        var view = WorldCameraMath.ComputeViewDirection(viewYaw, viewPitch);
+        Assert(result, view.IsNormalized() && view.Dot(orbitView) > 0.999f,
             "camera: first-person view direction matches the orbit orientation");
 
         var boundary = new WorldBoundaryBuilder
@@ -1430,7 +1884,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, profile.AdultEligibility == AdultEligibility.ConfirmedAdult, "profile: fail-closed eligibility carried forward");
         Assert(result, !string.IsNullOrWhiteSpace(profile.PlaceholderModelPath)
             && ResourceLoader.Exists(profile.PlaceholderModelPath),
-            "profile: admitted CC0 placeholder model path resolves");
+            "profile: project debug placeholder scene path resolves");
         // Presentation ≠ gameplay state: no HP, skill, bond, reward fields exist.
         Assert(result, !typeof(CharacterVisualProfile).GetProperties().Any(p =>
             p.Name is "MaxHp" or "RanchSkill" or "BondLevel" or "RewardGold" or "Energy"),
@@ -1445,7 +1899,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         Assert(result, avatar.GetNodeOrNull<Node3D>("NavigationSentinel") is not null,
             "avatar: rebuild preserves navigation/nameplate-style external children");
         Assert(result, avatar.UsesExternalPlaceholder,
-            "avatar: admitted CC0 placeholder scene is instantiated when available");
+            "avatar: project debug placeholder scene is instantiated when available");
         Assert(result, avatar.Body is not null, "avatar: body capsule generated");
         Assert(result, avatar.Head is not null, "avatar: head sphere generated");
         Assert(result, avatar.Body!.Mesh is CapsuleMesh, "avatar: body is capsule stand-in");
@@ -1810,6 +2264,9 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             AssertNodeExists(result, root, "RanchWorld/FirstDayIntruder", "ranch contains the hidden first-day intruder staging actor");
             AssertNodeExists(result, root, "RanchWorld/Atmosphere", "ranch contains weather/season particle presentation");
             AssertNodeExists(result, root, "TownWorld/Atmosphere", "town contains weather/season particle presentation");
+            AssertNodeExists(result, root, "RanchWorld/SurfaceInteractions", "ranch contains bounded weather surface reactions");
+            AssertNodeExists(result, root, "TownWorld/SurfaceInteractions", "town contains bounded weather surface reactions");
+            AssertNodeExists(result, root, "TownWorld/CompanionRig", "town contains companion-only date presentation rig");
             AssertNodeExists(result, root, "RanchWorld/WorldBoundary", "ranch contains finite-world collision/dressing");
             AssertNodeExists(result, root, "TownWorld/WorldBoundary", "town contains finite-world collision/dressing");
             AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
@@ -1903,6 +2360,36 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
 
             if (controller.Town is not null)
             {
+                var datePartner = game.Roster.Characters.First(character => character.Id != "anon");
+                datePartner.AdultEligibility = AdultEligibility.ConfirmedAdult;
+                game.State.Dating.ActivePartnerId = datePartner.Id;
+                game.State.Dating.ActiveApproach = DateInviteApproach.Respectful;
+                game.NotifyStateChanged();
+                controller.Town.Refresh();
+
+                Assert(result, controller.Town.Companion is not null
+                    && controller.Town.Companion.AvatarCount == 1
+                    && controller.Town.Companion.ActiveCompanionId == datePartner.Id,
+                    "town dating: only the active date partner is carried into Okachi Town");
+
+                if (controller.Town.Companion?.TryGetAvatar(datePartner.Id, out var companionAvatar) == true
+                    && companionAvatar is not null
+                    && controller.Town.Player is not null)
+                {
+                    var bubble = companionAvatar.GetNodeOrNull<Label3D>("ThoughtBubble");
+                    Assert(result, bubble is not null && bubble.Visible && !string.IsNullOrWhiteSpace(bubble.Text),
+                        "town dating: active companion exposes a contextual world thought bubble");
+
+                    controller.Town.Player.GlobalPosition = companionAvatar.GlobalPosition;
+                    controller.Town._Process(0.016);
+                    Assert(result, controller.Town.TryInteract(),
+                        "town dating: F-style world interaction can target the nearby companion");
+                    Assert(result, controller.IsManagementVisible && controller.Shell?.CurrentScreen == "character_detail",
+                        "town dating: companion interaction routes to the existing character detail UI");
+                    Assert(result, controller.CloseManagement(),
+                        "town dating: companion details can return cleanly to the 3D outing");
+                }
+
                 var research = controller.Town.Services.FirstOrDefault(service => service.ServiceId == "research_office");
                 Assert(result, research is not null && !research.IsAvailable,
                     "town Research Office preserves the existing Workshop progression requirement");
@@ -1973,6 +2460,10 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
 
             if (controller.Shell is not null)
             {
+                // The earlier assertions intentionally exercise the ordinary completed-story world.
+                // Reset to a genuinely fresh state before testing the mandatory Day-1 UI handoff.
+                game.NewGame();
+                GameRoot.PendingInitialScreen = null;
                 controller.Shell.ShowScreen("character_creation");
                 Assert(result, controller.FlowLocksUi && controller.IsManagementVisible,
                     "character creation forces the management layer visible");
@@ -1985,9 +2476,12 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
 
                 controller.Shell.ShowScreen("ranch");
                 Assert(result, !controller.FlowLocksUi && !controller.IsManagementVisible,
-                    "finishing the mandatory new-game flow automatically reveals the 3D ranch");
-                Assert(result, controller.Ranch?.InputGate.WorldInputEnabled == true,
-                    "new-game flow completion returns input to the world");
+                    "finishing the mandatory new-game UI flow reveals the 3D story world");
+                Assert(result, controller.FirstDayFlow?.IsActive == true && controller.ActiveAreaId == "intro",
+                    "fresh day-one flow resumes in the ranch-house bedroom instead of skipping the guided opening");
+                controller.Transition?.CompleteImmediately();
+                Assert(result, controller.IntroHouse?.InputGate.WorldInputEnabled == true,
+                    "day-one bedroom transition returns input to the active story world");
 
                 // WORLD-003d flow: play through the shared clock from the 3D world. Day phases can
                 // advance without opening management; Night with no plan opens the existing choice,
@@ -2189,6 +2683,47 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         finally
         {
             rosterRig.Free();
+        }
+
+        var companionTarget = new Node3D { Name = "CompanionFollowTarget" };
+        companionTarget.GlobalPosition = new Vector3(2f, 0f, 2f);
+        parent.AddChild(companionTarget);
+        var companionRig = new RosterRig
+        {
+            CompanionOnly = true,
+            AnimateTravel = true,
+            TravelSpeed = 4f
+        };
+        parent.AddChild(companionRig);
+        try
+        {
+            var partner = game.Roster.Characters.First(character => character.Id != "anon");
+            game.State.Dating.ActivePartnerId = partner.Id;
+            game.State.Dating.ActiveApproach = DateInviteApproach.Respectful;
+            companionRig.BindFollowTarget(companionTarget);
+            var count = companionRig.Refresh(game);
+            Assert(result, count == 1 && companionRig.ActiveCompanionId == partner.Id,
+                "roster dating: companion-only rig contains exactly the active partner");
+            Assert(result, companionRig.TryGetTarget(partner.Id, out var initialCompanionTarget),
+                "roster dating: active partner receives a player-relative follow target");
+
+            companionTarget.GlobalPosition += new Vector3(3f, 0f, 0f);
+            companionRig._PhysicsProcess(0.5);
+            Assert(result, companionRig.TryGetTarget(partner.Id, out var movedCompanionTarget)
+                && movedCompanionTarget != initialCompanionTarget,
+                "roster dating: active partner target tracks player movement instead of the normal work anchor");
+
+            if (companionRig.TryGetAvatar(partner.Id, out var companionAvatar) && companionAvatar is not null)
+            {
+                var thought = companionAvatar.GetNodeOrNull<Label3D>("ThoughtBubble");
+                Assert(result, thought is not null && thought.Visible && !string.IsNullOrWhiteSpace(thought.Text),
+                    "roster dating: active partner presents non-empty contextual thought text");
+            }
+        }
+        finally
+        {
+            companionRig.Free();
+            companionTarget.Free();
         }
 
         game.NewGame();

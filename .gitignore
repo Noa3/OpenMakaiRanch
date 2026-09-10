@@ -80,3 +80,6 @@ start-comfyui.bat
 
 # UID files (re-generated)
 **/*.uid
+
+# Machine-local Git worktrees
+.worktrees/

@@ -336,6 +336,32 @@ public partial class UiShellController : Control
 			default: RenderRanch(); break;
 		}
 
+		if (_game.State.Calendar.Phase is DayPhase.Evening or DayPhase.Night && !nowFullScreen && screenId is not "report")
+		{
+			var recovery = CardContainer();
+			recovery.AddThemeConstantOverride("separation", 6);
+			_content.AddChild(recovery);
+			var staminaCapacity = _game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus;
+			var restedText = _game.State.Player.DailyStaminaBonus > 0
+				? $"  ·  Well Rested +{_game.State.Player.DailyStaminaBonus}"
+				: string.Empty;
+			recovery.AddChild(AddStyledLine($"Player Stamina: {_game.State.Player.Stamina}/{staminaCapacity}{restedText}", true));
+			var cleanBath = _game.State.Ranch.BathtubClean;
+			var bathLabel = cleanBath
+				? $"Take a hot bath (tomorrow +{PlayerStaminaService.HotBathNextDayBonus} STA)"
+				: "Take a quick shower (no Well Rested bonus)";
+			var bath = SecondaryButton(bathLabel,
+				"A prepared Evening/Night hot bath schedules extra stamina for tomorrow. A shower handles hygiene but gives no next-day stamina bonus.");
+			bath.Disabled = _game.State.Player.BathedToday;
+			bath.Pressed += () =>
+			{
+				var result = _game.UsePlayerBath();
+				SetStatus(result.Message, result.Used);
+				ShowScreen(_currentScreen);
+			};
+			recovery.AddChild(bath);
+		}
+
 		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not "report")
 		{
 			var selected = _game.State.Calendar.NightAction;
@@ -821,7 +847,8 @@ public partial class UiShellController : Control
 	_hpBar.CustomMinimumSize = new Vector2(0, 4);
 
 		_spiritLabel.Text = $"Energy {eco.SpiritEnergy}";
-		_manaLabel.Text = $"Mana {eco.ManaReservoir}";
+		_manaLabel.Text = $"MP {player.Mana}/{player.MaxMana} • Stored {eco.ManaReservoir}";
+		_manaLabel.TooltipText = "Personal MP fuels magic; Stored Mana is the ranch reserve used to recharge it.";
 		_healthLabel.Text = $"Health {ranch.CattleHealth}%";
 		_healthBar.MinValue = 0;
 		_healthBar.MaxValue = 100;
@@ -893,18 +920,9 @@ public partial class UiShellController : Control
 		return pc.MaxHpOverride.HasValue ? pc.MaxHpOverride.Value : Math.Max(1, pc.Hp);
 	}
 
-	private int PlayerStamina()
-	{
-		if (_game.State.Roster.Characters.Count == 0) return 0;
-		return _game.State.Roster.Characters[0].Energy;
-	}
+	private int PlayerStamina() => _game.State.Player.Stamina;
 
-	private int PlayerMaxStamina()
-	{
-		if (_game.State.Roster.Characters.Count == 0) return 1;
-		var pc = _game.State.Roster.Characters[0];
-		return pc.MaxEnergyOverride.HasValue ? pc.MaxEnergyOverride.Value : Math.Max(1, pc.Energy);
-	}
+	private int PlayerMaxStamina() => Math.Max(1, _game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus);
 
 	private void UpdateNavigationState()
 	{

@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://src/World/RanchGreyboxController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -14,11 +14,12 @@
 [ext_resource type="Script" path="res://src/World/SimpleNavigationRegionBuilder.cs" id="12_navigation"]
 [ext_resource type="Script" path="res://src/World/WorldTravelPortal.cs" id="13_travel"]
 [ext_resource type="Script" path="res://src/World/WorldAlertPanelController.cs" id="14_alert"]
-[ext_resource type="PackedScene" path="res://assets/vendor/kaykit_adventurers/Rogue_Hooded.glb" id="15_intruder"]
+[ext_resource type="PackedScene" path="res://scenes/dev/GenericCharacterPlaceholder.tscn" id="15_intruder"]
 
 [ext_resource type="Script" path="res://src/World/WorldAtmosphereController.cs" id="16_atmosphere"]
 
 [ext_resource type="Script" path="res://src/World/WorldBoundaryBuilder.cs" id="17_boundary"]
+[ext_resource type="Script" path="res://src/World/WorldSurfaceInteractionController.cs" id="18_surface"]
 
 [sub_resource type="BoxMesh" id="ground_mesh"]
 size = Vector3(40, 1, 30)
@@ -269,6 +270,14 @@ outline_size = 6
 [node name="Atmosphere" type="Node3D" parent="."]
 script = ExtResource("16_atmosphere")
 PlayerPath = NodePath("../Player")
+
+[node name="SurfaceInteractions" type="Node3D" parent="."]
+script = ExtResource("18_surface")
+PlayerPath = NodePath("../Player")
+RosterPath = NodePath("../RosterRig")
+MaxMarks = 64
+MaxTrackedActors = 8
+MaxPuddles = 10
 
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
@@ -544,7 +553,7 @@ theme_override_font_sizes/font_size = 17
 
 [node name="LoopLabel" type="Label" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]
 layout_mode = 2
-text = "1. Choose a worker with Tab.\n2. Assign work in the 3D ranch or full Management.\n3. Walk up to residents and press F to open their existing character details.\n4. Check facilities, roster, supplies and plans in Management.\n5. Advance the day when ready.\n6. At Night choose a night plan, then End Day.\n7. Review the Daily Report and adjust tomorrow's plan."
+text = "1. Choose a worker with Tab.\n2. Assign work in the 3D ranch or full Management.\n3. Walk up to residents and press F to open their existing character details.\n4. STA is your daily budget for repeatable progress actions — walking, sprinting, exploring, shopping and ordinary dialogue are free.\n5. A prepared Evening/Night hot bath gives a Well Rested STA bonus tomorrow; a quick shower does not.\n6. Invite an eligible adult resident from Personal Time. An active companion can follow you around the ranch and town and react with thoughts.\n7. Advance the day when ready.\n8. At Night choose a night plan, then End Day.\n9. Review the Daily Report and adjust tomorrow's plan."
 autowrap_mode = 2
 
 [node name="TutorialToggle" type="CheckButton" parent="WorldHud/TutorialOverlay/HelpPanel/Inner"]

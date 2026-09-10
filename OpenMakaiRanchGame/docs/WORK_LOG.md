@@ -280,3 +280,54 @@ Still required before merge:
 - run existing local Godot 4.7.x Mono / `build-and-verify.bat`;
 - manually verify NavigationAgent path behavior after NavigationServer sync, camera ownership during travel, Town service prompts, F1 layouts, save/load area restoration and UI-return travel;
 - when real CC0 building/fence collision is admitted, replace the simple navigation region with an editor-baked navmesh and add bounded stuck recovery.
+
+
+## 2026-09-09 — PR #3 runtime verification + mana/weather follow-up
+
+Branch: `feat/runtime-validation-ngplus-cleanup`, PR #3.
+
+Runtime/CI verification:
+- Replaced the stale Godot 4.6.x CI path with the repository launcher and the official **Godot 4.7.2 Mono** Windows archive.
+- Archive SHA-256 is pinned to `a2a48473a7414c5f19fab690518caebb738c09ef9601f6bd2388676a7f53b3c0`.
+- CI intentionally launches the full `Godot_v4.7.2-stable_mono_win64.exe`; the ~198 KB console executable is a stub and remains rejected by launcher policy.
+- Successful GitHub Actions run: **Godot 4.7 Mono CI #265**, run `34394447281`, commit `0ae82f4ca51fab903061c433e576753ddf403186`.
+- Verified in that run: .NET 8 restore/build, Python launcher regressions, Godot version/discovery, real headless project import, isolated Godot smoke.
+- Smoke evidence: **1358 `SMOKE OK` assertions, 0 `SMOKE FAIL`, final `SMOKE PASS`**.
+- Later branch commits change only CI scheduling/trigger policy and documentation unless a subsequent entry says otherwise. Feature/fix branch push + PR events now dedupe by branch and cancel stale runs.
+
+Regressions found and fixed by real runtime validation:
+- repaired merged multiline C# string syntax and missing namespace/import issues;
+- corrected Godot C# type casing and Environment ambiguity;
+- fixed text-based character height conversion;
+- aligned launcher tests with the intentional console-stub rejection policy and canonical Windows paths;
+- replaced four accidentally tracked **0-byte** KayKit GLBs with a project-authored text-based debug mannequin scene, eliminating invalid glTF import errors;
+- made First-Day UI→world handoff deterministic and able to initialize synchronously after the host releases its fullscreen lock;
+- corrected smoke fixtures for mission rewards, NG+ notification counting, ordinary-vs-Day-1 world setup and finite combat SP;
+- removed tracked local `.worktrees/*` gitlinks and ignored `.worktrees/` to stop checkout/submodule noise.
+
+Lifecycle / NG+:
+- `GameRoot.ResetTransientRuntimeState()` now clears transient daily/combat reports, combat phase/round, combat world-time lock and `PendingInitialScreen`.
+- New Game, NG+ and successful Load use the same cleanup boundary.
+- NG+ regression coverage proves fresh Day-1 story/world/calendar state while state-bound services rebind to the new generation.
+
+Mana / combat parity foundation:
+- Corrected the player baseline against original `Chara0_あなた.csv`: **100/100 personal MP, 10% rest recovery**.
+- Personal MP and Stored Mana are separate pools.
+- Original storage capacities are represented: 10,000 / 50,000 / 1,000,000 / 10,000,000 MP.
+- Rest recovery stores one fifth of sufficiently large overflow when a reservoir exists, matching the original `MP_HEAL_CHARGE` direction.
+- Reservoir→player replenishment requires the original **Magic Supply Device** and never raises Max MP.
+- Magic UI casts from personal MP and exposes personal MP, recovery, Stored Mana/capacity and the replenishment action.
+- Round combat support magic spends persistent personal MP; non-magic support skills spend finite SP and report resource cost.
+
+World/weather presentation foundation:
+- Added `WorldShelterVolume`: cheap box-containment shelter checks, no per-frame physics query requirement.
+- Ranch facility proxies and Town service buildings register shelter volumes.
+- Player-local rain/snow/season particles suppress under shelter.
+- Added `WorldSurfaceInteractionController`: bounded surface feedback for player + a limited number of nearby roster avatars.
+- Snow leaves capped track proxies, rain leaves capped wet-step feedback plus capped local puddles, calm Autumn can leave capped leaf-rustle marks.
+- Mark/puddle budgets scale with graphics quality and are explicitly bounded so long sessions/NPC count cannot grow node cost without limit.
+
+Remaining limitations:
+- The successful headless run verifies code/resource contracts, not graphical quality.
+- Forward+ Low/Medium/High/Ultra presentation, camera feel, shelter-edge transitions, puddle placement, particle readability and representative GPU frame-time still require a real graphical art-direction/performance pass.
+- Procedural/debug world and character stand-ins are not final art.

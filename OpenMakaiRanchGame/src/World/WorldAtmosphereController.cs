@@ -18,15 +18,18 @@ public partial class WorldAtmosphereController : Node3D
     [Export] public float FollowRadius { get; set; } = 13.0f;
 
     private ThirdPersonPlayerController? _player;
-    private GPUParticles3D? _weather;
-    private GPUParticles3D? _seasonal;
-    private GPUParticles3D? _nightMotes;
+    private GpuParticles3D? _weather;
+    private GpuParticles3D? _seasonal;
+    private GpuParticles3D? _nightMotes;
     private MeshInstance3D? _groundMesh;
     private Weather _lastWeather = (Weather)(-1);
     private Season _lastSeason = (Season)(-1);
     private DayPhase _lastPhase = (DayPhase)(-1);
     private string _lastQuality = string.Empty;
     private bool _lastParticlesEnabled;
+    private bool _lastSheltered;
+
+    public bool IsPlayerSheltered => _lastSheltered;
 
     public int WeatherParticleAmount => _weather?.Amount ?? 0;
     public int SeasonalParticleAmount => _seasonal?.Amount ?? 0;
@@ -68,9 +71,13 @@ public partial class WorldAtmosphereController : Node3D
             var cal = game.State.Calendar;
             var quality = game.State.Settings.GraphicsQuality;
             var enabled = game.RuntimeSettings.EffectiveWorldParticlesEnabled;
+            var sheltered = _player is not null && GodotObject.IsInstanceValid(_player)
+                && WorldShelterVolume.IsPointSheltered(GetTree(), _player.GlobalPosition);
             if (cal.CurrentWeather != _lastWeather || cal.Season != _lastSeason || cal.Phase != _lastPhase
-                || !string.Equals(quality, _lastQuality, StringComparison.Ordinal) || enabled != _lastParticlesEnabled)
+                || !string.Equals(quality, _lastQuality, StringComparison.Ordinal) || enabled != _lastParticlesEnabled
+                || sheltered != _lastSheltered)
             {
+                _lastSheltered = sheltered;
                 Refresh();
             }
         }
@@ -88,10 +95,13 @@ public partial class WorldAtmosphereController : Node3D
         var settings = game.State.Settings;
         var particlesEnabled = game.RuntimeSettings.EffectiveWorldParticlesEnabled;
         var density = Mathf.Clamp(game.RuntimeSettings.ParticleDensity, 0.15f, 1.3f);
+        _lastSheltered = _player is not null && GodotObject.IsInstanceValid(_player)
+            && WorldShelterVolume.IsPointSheltered(GetTree(), _player.GlobalPosition);
+        var localOutdoorEffects = particlesEnabled && !_lastSheltered;
 
-        ConfigureWeather(_weather, cal.CurrentWeather, particlesEnabled, density);
-        ConfigureSeasonal(_seasonal, cal.Season, cal.CurrentWeather, particlesEnabled, density);
-        ConfigureNightMotes(_nightMotes, cal.Season, cal.Phase, cal.CurrentWeather, particlesEnabled, density);
+        ConfigureWeather(_weather, cal.CurrentWeather, localOutdoorEffects, density);
+        ConfigureSeasonal(_seasonal, cal.Season, cal.CurrentWeather, localOutdoorEffects, density);
+        ConfigureNightMotes(_nightMotes, cal.Season, cal.Phase, cal.CurrentWeather, localOutdoorEffects, density);
         ApplyGroundSurface(cal.Season, cal.CurrentWeather);
 
         _lastWeather = cal.CurrentWeather;
@@ -147,9 +157,9 @@ public partial class WorldAtmosphereController : Node3D
         AddChild(_nightMotes);
     }
 
-    private GPUParticles3D CreateEmitter(string name)
+    private GpuParticles3D CreateEmitter(string name)
     {
-        var particles = new GPUParticles3D
+        var particles = new GpuParticles3D
         {
             Name = name,
             Emitting = false,
@@ -166,7 +176,7 @@ public partial class WorldAtmosphereController : Node3D
         return particles;
     }
 
-    private void ConfigureWeather(GPUParticles3D particles, Weather weather, bool enabled, float density)
+    private void ConfigureWeather(GpuParticles3D particles, Weather weather, bool enabled, float density)
     {
         if (!enabled || (!OriginalCalendarRules.IsRain(weather) && !OriginalCalendarRules.IsSnow(weather)))
         {
@@ -199,7 +209,7 @@ public partial class WorldAtmosphereController : Node3D
         particles.Emitting = true;
     }
 
-    private void ConfigureSeasonal(GPUParticles3D particles, Season season, Weather weather, bool enabled, float density)
+    private void ConfigureSeasonal(GpuParticles3D particles, Season season, Weather weather, bool enabled, float density)
     {
         // Severe precipitation already provides enough motion/readability.
         if (!enabled || OriginalCalendarRules.IsSevere(weather) || weather == Weather.Storm
@@ -241,7 +251,7 @@ public partial class WorldAtmosphereController : Node3D
     }
 
     private void ConfigureNightMotes(
-        GPUParticles3D particles,
+        GpuParticles3D particles,
         Season season,
         DayPhase phase,
         Weather weather,

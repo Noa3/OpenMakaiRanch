@@ -22,11 +22,14 @@ public partial class TownWorldController : Node3D
     private WorldTravelPortal? _returnPortal;
     private TownServicePoint? _nearbyService;
     private float _nearbyServiceDistance = float.PositiveInfinity;
+    private string _nearbyCompanionId = string.Empty;
+    private float _nearbyCompanionDistance = float.PositiveInfinity;
     private float _returnPortalDistance = float.PositiveInfinity;
     private Button? _returnRanchButton;
 
     public DaylightRig? Daylight { get; private set; }
     public TownPresentationBuilder? Presentation { get; private set; }
+    public RosterRig? Companion { get; private set; }
 
     public ThirdPersonPlayerController? Player => _player;
     public WorldCameraRig? CameraRig => _cameraRig;
@@ -35,6 +38,7 @@ public partial class TownWorldController : Node3D
     public WorldTravelPortal? ReturnPortal => _returnPortal;
 
     public event Action<string>? ServiceScreenRequested;
+    public event Action<string>? CharacterInteractionRequested;
     public event Action<string>? TravelRequested;
 
     public override void _Ready()
@@ -71,6 +75,8 @@ public partial class TownWorldController : Node3D
 
         WireDaylight();
         Presentation = GetNodeOrNull<TownPresentationBuilder>("Presentation");
+        Companion = GetNodeOrNull<RosterRig>("CompanionRig");
+        Companion?.BindFollowTarget(_player);
 
         if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
         {
@@ -113,6 +119,8 @@ public partial class TownWorldController : Node3D
         {
             Daylight?.ApplyFrom(game);
             Presentation?.Refresh(game);
+            Companion?.BindFollowTarget(_player);
+            Companion?.Refresh(game);
         }
 
         UpdateNearbyTargets();
@@ -125,8 +133,20 @@ public partial class TownWorldController : Node3D
 
         var portalInRange = _returnPortal is not null && _returnPortalDistance <= InteractionRange;
         var serviceInRange = _nearbyService is not null && _nearbyServiceDistance <= InteractionRange;
+        var companionInRange = !string.IsNullOrWhiteSpace(_nearbyCompanionId)
+            && _nearbyCompanionDistance <= InteractionRange;
 
-        if (portalInRange && (!serviceInRange || _returnPortalDistance <= _nearbyServiceDistance))
+        if (companionInRange
+            && (!portalInRange || _nearbyCompanionDistance < _returnPortalDistance)
+            && (!serviceInRange || _nearbyCompanionDistance < _nearbyServiceDistance))
+        {
+            CharacterInteractionRequested?.Invoke(_nearbyCompanionId);
+            return true;
+        }
+
+        if (portalInRange
+            && (!companionInRange || _returnPortalDistance <= _nearbyCompanionDistance)
+            && (!serviceInRange || _returnPortalDistance <= _nearbyServiceDistance))
         {
             TravelRequested?.Invoke(_returnPortal!.DestinationId);
             return true;
@@ -182,6 +202,8 @@ public partial class TownWorldController : Node3D
     {
         _nearbyService = null;
         _nearbyServiceDistance = float.PositiveInfinity;
+        _nearbyCompanionId = string.Empty;
+        _nearbyCompanionDistance = float.PositiveInfinity;
         _returnPortalDistance = float.PositiveInfinity;
 
         if (_player is null)
@@ -199,6 +221,14 @@ public partial class TownWorldController : Node3D
             }
         }
 
+        if (Companion is not null
+            && Companion.TryFindNearest(_player.GlobalPosition, InteractionRange * 1.5f,
+                out var companionId, out _, out var companionDistance))
+        {
+            _nearbyCompanionId = companionId;
+            _nearbyCompanionDistance = companionDistance;
+        }
+
         if (_returnPortal is not null)
         {
             _returnPortalDistance = _player.GlobalPosition.DistanceTo(_returnPortal.GlobalPosition);
@@ -214,10 +244,25 @@ public partial class TownWorldController : Node3D
 
         _hud.Refresh(GameRoot.Instance);
 
-        var portalIsClosest = _returnPortal is not null
+        var companionIsClosest = !string.IsNullOrWhiteSpace(_nearbyCompanionId)
+            && (_nearbyService is null || _nearbyCompanionDistance < _nearbyServiceDistance)
+            && (_returnPortal is null || _nearbyCompanionDistance < _returnPortalDistance);
+
+        var portalIsClosest = !companionIsClosest
+            && _returnPortal is not null
             && (_nearbyService is null || _returnPortalDistance <= _nearbyServiceDistance);
 
-        if (portalIsClosest)
+        if (companionIsClosest)
+        {
+            var character = GameRoot.Instance?.Roster.Find(_nearbyCompanionId);
+            var name = character is null
+                ? _nearbyCompanionId
+                : (!string.IsNullOrWhiteSpace(character.DisplayNameOverride)
+                    ? character.DisplayNameOverride
+                    : GameRoot.Instance!.Roster.DefinitionFor(character).DisplayName);
+            _hud.SetCompanionPrompt(name, _nearbyCompanionDistance, InteractionRange);
+        }
+        else if (portalIsClosest)
         {
             _hud.SetTravelPrompt(_returnPortal, _returnPortalDistance, InteractionRange);
         }

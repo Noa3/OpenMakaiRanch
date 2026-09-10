@@ -1,61 +1,86 @@
-name: CI
+name: Godot 4.7 Mono CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'feat/**', 'fix/**' ]
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-test:
+  build-import-smoke:
     runs-on: windows-latest
+    timeout-minutes: 30
     defaults:
       run:
         shell: pwsh
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET SDK
+      - name: Setup .NET 8 SDK
         uses: actions/setup-dotnet@v4
         with:
-          # Use .NET 8 for broader compatibility; can be changed to 10 if needed
           dotnet-version: '8.0.x'
 
-      - name: Restore NuGet packages
-        run: dotnet restore OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-      - name: Build project
-        run: dotnet build --configuration Release OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
+      - name: Restore Godot .NET project
+        run: dotnet restore OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --ignore-failed-sources
 
-      - name: Run content validation
-        # Ensure the validator project is built and executed
+      - name: Compile Godot .NET project
+        run: dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --configuration Debug --no-restore -p:RunAnalyzers=true
+
+      - name: Run launcher regression tests
+        run: python -m unittest discover -s Tools/Godot -p "test_*.py"
+
+      - name: Install verified Godot 4.7.2 Mono
         run: |
-          dotnet build --configuration Release OpenMakaiRanchGame/Tools/ContentValidator.cs
-          dotnet run --project OpenMakaiRanchGame/Tools/ContentValidator.cs --configuration Release
-
-      - name: Install Godot (headless)
-        # This step downloads a portable Godot headless build for Windows.
-        # Adjust version as needed.
-        run: |
-          $url = "https://downloads.tuxfamily.org/godotengine/4.6.3/mono/Godot_v4.6.3-stable_mono_win64.zip"
-          $zip = "$env:RUNNER_TEMP\godot.zip"
+          $version = "4.7.2"
+          $archive = "Godot_v$version-stable_mono_win64.zip"
+          $url = "https://github.com/godotengine/godot-builds/releases/download/$version-stable/$archive"
+          $zip = Join-Path $env:RUNNER_TEMP $archive
+          $installDir = Join-Path $env:RUNNER_TEMP "godot-$version-mono"
           Invoke-WebRequest -Uri $url -OutFile $zip
-          Expand-Archive -Path $zip -DestinationPath $env:RUNNER_TEMP\godot
-          $env:PATH += ";$env:RUNNER_TEMP\godot"
 
-      - name: Run Godot headless smoke tests
-        # Assumes a script or scene that runs the smoke tests on startup.
-        # The project includes a command‑line entry point for tests.
-        run: |
-          $godotExe = "godot.exe"
-          & $godotExe --headless --path . --run-tests
+          $expectedSha256 = "a2a48473a7414c5f19fab690518caebb738c09ef9601f6bd2388676a7f53b3c0"
+          $actualSha256 = (Get-FileHash -Path $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualSha256 -ne $expectedSha256) {
+            throw "Godot archive checksum mismatch: expected $expectedSha256, got $actualSha256"
+          }
 
-      - name: Upload build artifacts
+          Expand-Archive -Path $zip -DestinationPath $installDir -Force
+          $godotExe = Get-ChildItem -Path $installDir -Recurse -File -Filter "Godot_v$version-stable_mono_win64.exe" |
+            Select-Object -First 1 -ExpandProperty FullName
+          if (-not $godotExe) {
+            throw "Godot $version Mono engine executable was not found after extraction."
+          }
+
+          "GODOT_BIN=$godotExe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & $godotExe --version
+
+      - name: Verify launcher resolves Godot 4.7 Mono
+        run: python Tools/Godot/launch.py --mode check
+
+      - name: Import project with Godot 4.7 Mono
+        run: python Tools/Godot/launch.py --mode import --timeout 300
+
+      - name: Run isolated Godot smoke suite
+        run: python Tools/Godot/launch.py --mode smoke --timeout 300
+
+      - name: Upload verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
+          name: godot-4.7-verification
+          if-no-files-found: ignore
           path: |
-            OpenMakaiRanchGame/bin/Release/**
-            OpenMakaiRanchGame/**/*.pck
+            .artifacts/godot/**
+            OpenMakaiRanchGame/bin/Debug/**

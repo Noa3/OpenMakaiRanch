@@ -161,12 +161,15 @@ public partial class TownHudController : CanvasLayer
 
         if (_economyLabel is not null)
         {
-            _economyLabel.Text = $"{economy.Gold:N0} G   Mana {economy.ManaReservoir:N0}";
+            var player = game.State.Player;
+            var staminaCapacity = player.MaxStamina + player.DailyStaminaBonus;
+            var rested = player.DailyStaminaBonus > 0 ? $"(+{player.DailyStaminaBonus} Rested)" : string.Empty;
+            _economyLabel.Text = $"{economy.Gold:N0} G   STA {player.Stamina}/{staminaCapacity}{rested}   MP {player.Mana:N0}/{player.MaxMana:N0}   Stored {economy.ManaReservoir:N0}";
         }
 
         if (_guidanceLabel is not null)
         {
-            var supplies = game.State.Ranch.Stockpile.GetValueOrDefault("supplies");
+            var supplies = game.State.Ranch.Stockpile.TryGetValue("supplies", out var supplyCount) ? supplyCount : 0;
             var workshopBuilt = game.Ranch.Facilities.TryGetValue("workshop", out var workshopLevel) && workshopLevel > 0;
 
             if (calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night)
@@ -222,6 +225,19 @@ public partial class TownHudController : CanvasLayer
             _promptLabel.Text = $"{service.Label}  {distance:0.0} m   •   move closer";
             _promptLabel.TooltipText = service.Description;
         }
+    }
+
+    public void SetCompanionPrompt(string displayName, float distance, float range)
+    {
+        if (_promptLabel is null)
+        {
+            return;
+        }
+
+        _promptLabel.Text = distance <= range
+            ? $"[F] Talk with {displayName}"
+            : $"{displayName}  {distance:0.0} m";
+        _promptLabel.TooltipText = "Open this companion's Personal Time view for relationship details and shared activities.";
     }
 
     public void SetTravelPrompt(WorldTravelPortal? portal, float distance, float range)

@@ -52,6 +52,9 @@ public partial class GameRoot : Node
 	public MilkEconomyService MilkEconomy { get; private set; } = null!;
 	public AddictionService Addiction { get; private set; } = null!;
 	public CombatService Combat { get; private set; } = null!;
+	public MagicService Magic { get; private set; } = null!;
+	public PlayerStaminaService PlayerStamina { get; private set; } = null!;
+	public DatingService Dating { get; private set; } = null!;
 	public DiscoveryService Discovery { get; private set; } = null!;
 	public MercenaryService Mercenary { get; private set; } = null!;
 	public WinConditionService WinCondition { get; private set; } = null!;
@@ -61,6 +64,7 @@ public partial class GameRoot : Node
 	public FlagService Flags { get; private set; } = null!;
 	public DailyReport? LastDailyReport { get; set; }
 	public CombatReport? LastCombatReport { get; set; }
+	public InteractiveCombatSession? ActiveCombatSession { get; private set; }
 	public CombatPhase CurrentCombatPhase { get; set; } = CombatPhase.PreBattle;
 	public static string? PendingInitialScreen { get; set; }
 	public int CurrentCombatRound { get; set; }
@@ -113,14 +117,22 @@ public partial class GameRoot : Node
 		GetTree().Quit(result.Passed ? 0 : 1);
 	}
 
+	private void ResetTransientRuntimeState()
+	{
+		LastDailyReport = null;
+		LastCombatReport = null;
+		ActiveCombatSession = null;
+		CurrentCombatPhase = CombatPhase.PreBattle;
+		CurrentCombatRound = 0;
+		_combatWorldTimeLocked = false;
+		PendingInitialScreen = null;
+	}
 	public void NewGame()
 	{
 		var persistedSettings = State.Settings.Clone();
 		State = new SaveStateFactory(Data).CreateNewGame();
 		State.Settings = persistedSettings;
-		LastDailyReport = null;
-		LastCombatReport = null;
-		_combatWorldTimeLocked = false;
+		ResetTransientRuntimeState();
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -200,11 +212,14 @@ public partial class GameRoot : Node
 			}
 		}
 
-		// Carry over player customization
+		// Carry over player customization, but not transient daily-rest economy from the previous run.
 		State.Player = oldState.Player;
+		State.Player.Stamina = State.Player.MaxStamina;
+		State.Player.DailyStaminaBonus = 0;
+		State.Player.NextDayStaminaBonus = 0;
+		State.Player.BathedToday = false;
 
-		LastDailyReport = null;
-		LastCombatReport = null;
+		ResetTransientRuntimeState();
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -358,25 +373,109 @@ public partial class GameRoot : Node
 
 	public bool TryConductMentorship(string? characterId, ulong expectedGeneration)
 	{
-		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(characterId) || Roster.Find(characterId) is null)
+		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(characterId) || Roster.Find(characterId) is null
+			|| !PlayerStamina.CanSpend(PlayerActivityKind.Mentorship))
 		{
 			return false;
 		}
 
 		Bond.ConductMentorship(characterId);
+		PlayerStamina.Spend(PlayerActivityKind.Mentorship);
 		StateChanged?.Invoke();
 		return true;
 	}
 
 	public bool TryCompleteBondEvent(string? eventId, ulong expectedGeneration)
 	{
-		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(eventId) || !Bond.CompleteEvent(eventId))
+		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(eventId)
+			|| !PlayerStamina.CanSpend(PlayerActivityKind.BondEvent)
+			|| !Bond.CompleteEvent(eventId))
 		{
 			return false;
 		}
 
+		PlayerStamina.Spend(PlayerActivityKind.BondEvent);
 		StateChanged?.Invoke();
 		return true;
+	}
+
+	public int PlayerStaminaCost(PlayerActivityKind kind) => PlayerStamina.Cost(kind);
+
+	public bool CanSpendPlayerStamina(PlayerActivityKind kind) => PlayerStamina.CanSpend(kind);
+
+	public string TryFeedPet(string petId)
+	{
+		if (!PlayerStamina.CanSpend(PlayerActivityKind.PetFeed))
+			return "Not enough player stamina. Pet care can continue tomorrow.";
+
+		var result = Pets.Feed(petId);
+		if (!result.StartsWith("Fed successfully", StringComparison.Ordinal))
+			return result;
+
+		PlayerStamina.Spend(PlayerActivityKind.PetFeed);
+		StateChanged?.Invoke();
+		return result;
+	}
+
+	public string TryPlayWithPet(string petId)
+	{
+		if (!PlayerStamina.CanSpend(PlayerActivityKind.PetPlay))
+			return "Not enough player stamina. Rest, bathe in the evening, or continue tomorrow.";
+
+		var result = Pets.Play(petId);
+		if (!result.StartsWith("Played successfully", StringComparison.Ordinal))
+			return result;
+
+		PlayerStamina.Spend(PlayerActivityKind.PetPlay);
+		StateChanged?.Invoke();
+		return result;
+	}
+
+	public string TryTrainPet(string petId)
+	{
+		if (!PlayerStamina.CanSpend(PlayerActivityKind.PetTraining))
+			return "Not enough player stamina. Rest, bathe in the evening, or continue tomorrow.";
+
+		var result = Pets.Train(petId);
+		if (!result.StartsWith("Trained successfully", StringComparison.Ordinal))
+			return result;
+
+		PlayerStamina.Spend(PlayerActivityKind.PetTraining);
+		StateChanged?.Invoke();
+		return result;
+	}
+
+	public string TryVisitCare(string characterId, string action, string? itemId = null)
+	{
+		var kind = action switch
+		{
+			"feed" => PlayerActivityKind.VisitFeed,
+			"gift" => PlayerActivityKind.VisitGift,
+			_ => PlayerActivityKind.VisitCare
+		};
+		if (!PlayerStamina.CanSpend(kind))
+			return "Not enough player stamina. Exploration and ordinary world interaction remain available.";
+
+		var result = action switch
+		{
+			"feed" => Visit.CareFeed(characterId),
+			"bathe" => Visit.CareBathe(characterId),
+			"talk" => Visit.CareTalk(characterId),
+			"groom" => Visit.CareGroom(characterId),
+			"rest" => Visit.CareRest(characterId),
+			"gift" when !string.IsNullOrWhiteSpace(itemId) => Visit.CareGift(characterId, itemId),
+			_ => "Unknown care action."
+		};
+
+		if (result is "Character not found." or "No meal_box available. Buy one at the General Store." or "That is not a gift item."
+			|| result.StartsWith("No ", StringComparison.Ordinal) || result == "Unknown care action.")
+		{
+			return result;
+		}
+
+		PlayerStamina.Spend(kind);
+		StateChanged?.Invoke();
+		return result;
 	}
 
 	public bool LoadSlot(int slot)
@@ -395,9 +494,7 @@ public partial class GameRoot : Node
 			State.WorldAreaId = "ranch";
 		}
 		State.Settings = SettingsStorage.Load();
-		LastDailyReport = null;
-		LastCombatReport = null;
-		_combatWorldTimeLocked = false;
+		ResetTransientRuntimeState();
 		SyncFeedbackSettings();
 		BuildServices();
 		EnsureCharacterMagicPowerInitialized();
@@ -801,18 +898,67 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public DatingResult StartDate(string characterId, DateInviteApproach approach)
+	{
+		var result = Dating.StartDate(characterId, approach);
+		if (result.Success)
+		{
+			StateChanged?.Invoke();
+		}
+		return result;
+	}
+
+	public DatingResult EndDate()
+	{
+		var result = Dating.EndDate();
+		if (result.Success)
+		{
+			StateChanged?.Invoke();
+		}
+		return result;
+	}
+
+	public DatingResult PerformDateActivity(DateActivityKind kind)
+	{
+		var result = Dating.PerformActivity(kind);
+		if (result.Success)
+		{
+			StateChanged?.Invoke();
+		}
+		return result;
+	}
+
+	public PlayerRecoveryResult UsePlayerBath()
+	{
+		var recovery = PlayerStamina.TryBathRecovery(State.Ranch.BathtubClean, State.Calendar.Phase);
+		if (!recovery.Used)
+		{
+			return recovery;
+		}
+
+		if (recovery.UsedCleanBath)
+		{
+			State.Ranch.BathtubClean = false;
+		}
+
+		if (State.Calendar.Phase == DayPhase.Night)
+		{
+			State.Calendar.NightAction = "rest";
+		}
+
+		State.Story.PlayerBathedOnFirstNight = State.Calendar.Day == 1 || State.Story.PlayerBathedOnFirstNight;
+		StateChanged?.Invoke();
+		return recovery;
+	}
+
 	public bool UsePlayerBathForNight()
 	{
-		if (!State.Ranch.BathtubClean || State.Calendar.Phase != DayPhase.Night)
+		if (State.Calendar.Phase != DayPhase.Night)
 		{
 			return false;
 		}
 
-		State.Ranch.BathtubClean = false;
-		State.Calendar.NightAction = "rest";
-		State.Story.PlayerBathedOnFirstNight = State.Calendar.Day == 1 || State.Story.PlayerBathedOnFirstNight;
-		StateChanged?.Invoke();
-		return true;
+		return UsePlayerBath().Used;
 	}
 
 	public bool AutosaveCheckpoint(string reason)
@@ -845,15 +991,65 @@ public partial class GameRoot : Node
 		return LastDailyReport;
 	}
 
+	public int RechargePlayerManaFromStorage(int requestedAmount = int.MaxValue)
+	{
+		var transferred = Magic.RechargePlayerManaFromStorage(requestedAmount);
+		if (transferred > 0)
+		{
+			StateChanged?.Invoke();
+		}
+		return transferred;
+	}
+
+	public int IncreasePlayerManaCapacity(int amount, bool fillNewCapacity = false)
+	{
+		var gained = Magic.IncreasePlayerManaCapacity(amount, fillNewCapacity);
+		if (gained > 0)
+		{
+			StateChanged?.Invoke();
+		}
+		return gained;
+	}
+
+	public bool CastPlayerSpell(string spellId, int manaCost)
+	{
+		if (!Magic.CastSpell(spellId, manaCost, State.Roster.Characters.FirstOrDefault()?.Id ?? string.Empty))
+		{
+			return false;
+		}
+		StateChanged?.Invoke();
+		return true;
+	}
+
 	public CombatReport RunMission(string missionId)
 	{
 		return RunMission(missionId, false);
 	}
 
+	public int AdventureStaminaCost(string missionId) =>
+		string.Equals(missionId, "tutorial_ranch_intruder", StringComparison.OrdinalIgnoreCase)
+			? 0
+			: PlayerStamina.Cost(PlayerActivityKind.Adventure);
+
+	public bool CanStartAdventure(string missionId)
+	{
+		if (!Data.Missions.ContainsKey(missionId))
+			return false;
+
+		var hasParty = State.Roster.Characters.Any(character =>
+			State.Adventure.SelectedPartyIds.Count == 0 || State.Adventure.SelectedPartyIds.Contains(character.Id));
+		return hasParty && PlayerStamina.CanSpend(AdventureStaminaCost(missionId));
+	}
+
 	public CombatReport RunMission(string missionId, bool attemptCapture)
 	{
+		if (!CanStartAdventure(missionId))
+			return BlockedCombatReport(missionId, "Adventure blocked: not enough stamina, no valid party, or mission unavailable.");
+
 		var party = State.Adventure.SelectedPartyIds.Count > 0 ? State.Adventure.SelectedPartyIds : State.Roster.Characters.ConvertAll(character => character.Id);
 		LastCombatReport = Adventure.ResolveMission(missionId, party, attemptCapture);
+		if (LastCombatReport.Outcome != MissionOutcome.None)
+			PlayerStamina.Spend(AdventureStaminaCost(missionId));
 		CombatResolved?.Invoke(LastCombatReport);
 		StateChanged?.Invoke();
 		return LastCombatReport;
@@ -861,7 +1057,13 @@ public partial class GameRoot : Node
 
 	public CombatReport RunRoundBasedMission(string missionId, bool autoResolve)
 	{
+		ActiveCombatSession = null;
+		if (!CanStartAdventure(missionId))
+			return BlockedCombatReport(missionId, "Adventure blocked: not enough stamina, no valid party, or mission unavailable.");
+
 		LastCombatReport = Combat.ResolveMissionRounds(missionId, autoResolve);
+		if (LastCombatReport.Outcome != MissionOutcome.None)
+			PlayerStamina.Spend(AdventureStaminaCost(missionId));
 		CurrentCombatPhase = CombatPhase.BattleResults;
 		CurrentCombatRound = LastCombatReport.Rounds.Count;
 		CombatResolved?.Invoke(LastCombatReport);
@@ -871,12 +1073,110 @@ public partial class GameRoot : Node
 
 	public CombatReport RunRoundBasedCapture(string missionId)
 	{
+		ActiveCombatSession = null;
+		if (!CanStartAdventure(missionId))
+			return BlockedCombatReport(missionId, "Capture battle blocked: not enough stamina, no valid party, or mission unavailable.");
+
 		LastCombatReport = Combat.AttemptCapture(missionId);
+		if (LastCombatReport.Rounds.Count > 0)
+			PlayerStamina.Spend(AdventureStaminaCost(missionId));
 		CurrentCombatPhase = CombatPhase.BattleResults;
 		CurrentCombatRound = LastCombatReport.Rounds.Count;
 		CombatResolved?.Invoke(LastCombatReport);
 		StateChanged?.Invoke();
 		return LastCombatReport;
+	}
+
+	private static CombatReport BlockedCombatReport(string missionId, string summary) => new()
+	{
+		MissionId = missionId,
+		Outcome = MissionOutcome.None,
+		Summary = summary,
+		IsRoundBased = true,
+		TurnLog = new List<string> { summary }
+	};
+
+	public bool CanStartInteractiveCombat(string missionId)
+	{
+		if (!CanStartAdventure(missionId))
+			return false;
+
+		return State.Roster.Characters.Any(character =>
+			(character.Provenance == CharacterProvenance.OriginalPlayer || string.Equals(character.Id, "anon", StringComparison.OrdinalIgnoreCase))
+			&& (State.Adventure.SelectedPartyIds.Count == 0 || State.Adventure.SelectedPartyIds.Contains(character.Id)));
+	}
+
+	public bool BeginInteractiveCombat(string missionId)
+	{
+		if (!CanStartInteractiveCombat(missionId))
+			return false;
+
+		BeginCombatSession();
+		var session = Combat.StartInteractiveMission(missionId);
+		ActiveCombatSession = session;
+		LastCombatReport = session.Report;
+
+		if (session.Report.Rounds.Count > 0 && !session.IsFinished)
+		{
+			PlayerStamina.Spend(AdventureStaminaCost(missionId));
+		}
+
+		if (session.IsFinished)
+		{
+			if (session.Report.Rounds.Count > 0)
+				PlayerStamina.Spend(AdventureStaminaCost(missionId));
+			CurrentCombatPhase = CombatPhase.BattleResults;
+			CurrentCombatRound = session.Report.Rounds.Count;
+			CombatResolved?.Invoke(session.Report);
+		}
+		else
+		{
+			CurrentCombatPhase = CombatPhase.PlayerTurn;
+			CurrentCombatRound = session.RoundNumber;
+		}
+
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool SubmitInteractiveCombatAction(CombatPlayerCommand command, string? targetId = null)
+	{
+		var session = ActiveCombatSession;
+		if (session is null || session.IsFinished || !session.AwaitingPlayerInput)
+			return false;
+
+		if (!session.SubmitPlayerCommand(command, targetId))
+			return false;
+
+		LastCombatReport = session.Report;
+		CurrentCombatRound = session.RoundNumber;
+		if (session.IsFinished)
+		{
+			CurrentCombatPhase = CombatPhase.BattleResults;
+			CombatResolved?.Invoke(session.Report);
+		}
+		else
+		{
+			CurrentCombatPhase = CombatPhase.PlayerTurn;
+		}
+
+		StateChanged?.Invoke();
+		return true;
+	}
+
+	public bool AutoFinishInteractiveCombat()
+	{
+		var session = ActiveCombatSession;
+		if (session is null || session.IsFinished)
+			return false;
+
+		session.AutoFinish();
+		LastCombatReport = session.Report;
+		CurrentCombatRound = session.Report.Rounds.Count;
+		CurrentCombatPhase = CombatPhase.BattleResults;
+		CombatResolved?.Invoke(session.Report);
+		StateChanged?.Invoke();
+		return true;
 	}
 
 	public void StartNewCombat()
@@ -887,6 +1187,7 @@ public partial class GameRoot : Node
 	public void BeginCombatSession()
 	{
 		_combatWorldTimeLocked = true;
+		ActiveCombatSession = null;
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 		LastCombatReport = null;
@@ -901,6 +1202,7 @@ public partial class GameRoot : Node
 		}
 
 		_combatWorldTimeLocked = false;
+		ActiveCombatSession = null;
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 		LastCombatReport = null;
@@ -1030,14 +1332,6 @@ public partial class GameRoot : Node
 		return revenue;
 	}
 
-	public void ProduceAllMilk()
-	{
-		foreach (var character in State.Roster.Characters)
-		{
-			MilkEconomy.ProduceMilk(character.Id);
-		}
-	}
-
 	private bool TryAutosave(string reason)
 	{
 		if (State is null || !State.Settings.AutosaveEnabled || SmokeTestRunner.ShouldRun())
@@ -1062,6 +1356,9 @@ public partial class GameRoot : Node
 		Talents = new TalentService(State, Data);
 		Ranch = new RanchService(State, Data, Equipment, Talents);
 		Economy = new EconomyService(State);
+		Magic = new MagicService(State, Data);
+		PlayerStamina = new PlayerStaminaService(State);
+		Dating = new DatingService(State, PlayerStamina);
 		Inventory = new InventoryService(State);
 		Milestones = new MilestoneService(State, Data, Economy);
 		Shop = new ShopService(Data, Economy, Inventory);
@@ -1078,7 +1375,7 @@ public partial class GameRoot : Node
 		Visit = new VisitService(State, Data);
 		MilkEconomy = new MilkEconomyService(State);
 		Addiction = new AddictionService(State);
-		Combat = new CombatService(State, Data, Equipment, Talents);
+		Combat = new CombatService(State, Data, Equipment, Talents, Magic);
 		Discovery = new DiscoveryService(State, Data);
 		Mercenary = new MercenaryService(State, Economy);
 		WinCondition = new WinConditionService(State, Data);

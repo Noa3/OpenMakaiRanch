@@ -633,9 +633,25 @@ public partial class UiShellController
         var definition = _game.Roster.DefinitionFor(character);
         _game.Clothing.SyncCharacterEquipment(character);
 
+        var detailActions = FlowRow(8);
+        _content.AddChild(detailActions);
+
         var backBtn = SecondaryButton(T("label.back", "← Back to Roster"));
         backBtn.Pressed += () => ShowScreen("roster");
-        _content.AddChild(backBtn);
+        AddFlowButton(detailActions, backBtn, 148);
+
+        if (character.Id != "anon")
+        {
+            var personalTime = PrimaryButton("Personal Time", "Open care, relationship and companionship/date options for this resident.");
+            personalTime.Pressed += () =>
+            {
+                var index = _game.Roster.Characters.ToList().FindIndex(value => value.Id == character.Id);
+                if (index >= 0)
+                    _visitCharIdx = index;
+                ShowScreen("visit");
+            };
+            AddFlowButton(detailActions, personalTime, 150);
+        }
 
         AddTitle(CharacterPickerName(character));
 
@@ -1287,6 +1303,12 @@ public partial class UiShellController
             return;
         }
 
+        if (_game.CurrentCombatPhase == CombatPhase.PlayerTurn)
+        {
+            RenderCombatPlayerTurn();
+            return;
+        }
+
         if (_game.CurrentCombatPhase == CombatPhase.BattleResults)
         {
             RenderCombatResults();
@@ -1341,25 +1363,184 @@ public partial class UiShellController
         var actions = FlowRow(10);
         _content.AddChild(actions);
 
-        var autoBtn = PrimaryButton(T("screen.combat.auto_battle", "Auto Battle"), T("tooltip.auto_battle", "Resolve all combat rounds automatically with AI tactics"));
+        var activeMissionId = mission?.Id ?? _game.State.Adventure.LastMissionId;
+        var adventureCost = _game.AdventureStaminaCost(activeMissionId);
+        var tacticalLabel = adventureCost > 0 ? $"Tactical Battle ({adventureCost} Stamina)" : "Tactical Battle (Tutorial — free)";
+        var tacticalBtn = PrimaryButton(tacticalLabel, "Control the ranch owner each round. Companions and enemies act automatically; HP/SP/MP persist through the battle.");
+        tacticalBtn.Disabled = !_game.CanStartInteractiveCombat(activeMissionId);
+        tacticalBtn.Pressed += () =>
+        {
+            if (_game.BeginInteractiveCombat(activeMissionId))
+                ShowScreen(_currentScreen);
+        };
+        AddFlowButton(actions, tacticalBtn, 178);
+
+        var autoLabel = adventureCost > 0 ? $"Auto Battle ({adventureCost} Stamina)" : "Auto Battle (Tutorial — free)";
+        var autoBtn = SecondaryButton(autoLabel, T("tooltip.auto_battle", "Resolve all combat rounds automatically with AI tactics. World time stays paused."));
+        autoBtn.Disabled = !_game.CanStartAdventure(activeMissionId);
         autoBtn.Pressed += () =>
         {
-            _game.RunRoundBasedMission(mission?.Id ?? _game.State.Adventure.LastMissionId, true);
+            _game.RunRoundBasedMission(activeMissionId, true);
             ShowScreen(_currentScreen);
         };
         AddFlowButton(actions, autoBtn, 150);
 
-        var captureBtn = SecondaryButton(T("screen.combat.capture_battle", "Capture Battle"), T("tooltip.capture_battle", "Fight with capture attempt. Success may recruit an enemy!"));
+        var captureBtn = SecondaryButton(adventureCost > 0 ? $"Capture Battle ({adventureCost} Stamina)" : "Capture Battle (Tutorial — free)", T("tooltip.capture_battle", "Fight with capture attempt. Success may recruit an enemy!"));
+        captureBtn.Disabled = !_game.CanStartAdventure(activeMissionId);
         captureBtn.Pressed += () =>
         {
-            _game.RunRoundBasedCapture(mission?.Id ?? _game.State.Adventure.LastMissionId);
+            _game.RunRoundBasedCapture(activeMissionId);
             ShowScreen(_currentScreen);
         };
         AddFlowButton(actions, captureBtn, 160);
 
         var backBtn = SecondaryButton(T("common.back", "Back"));
-        backBtn.Pressed += () => ShowScreen("adventure");
+        backBtn.Pressed += () =>
+        {
+            _game.EndCombatSession();
+            ShowScreen("adventure");
+        };
         AddFlowButton(actions, backBtn, 96);
+
+        if (!_game.CanStartInteractiveCombat(activeMissionId) && _game.CanStartAdventure(activeMissionId))
+            _content.AddChild(RequirementLabel("Tactical Battle requires the ranch owner in the selected party."));
+    }
+
+    private void RenderCombatPlayerTurn()
+    {
+        var session = _game.ActiveCombatSession;
+        if (session is null)
+        {
+            var missing = CardContainer();
+            _content.AddChild(missing);
+            missing.AddChild(AddStyledLine("No active tactical combat session."));
+            var returnBtn = SecondaryButton(T("common.back", "Back"));
+            returnBtn.Pressed += () =>
+            {
+                _game.EndCombatSession();
+                ShowScreen("adventure");
+            };
+            _content.AddChild(returnBtn);
+            return;
+        }
+
+        var player = session.PlayerState;
+        if (player is null)
+        {
+            var waiting = CardContainer();
+            _content.AddChild(waiting);
+            waiting.AddChild(AddStyledLine("Resolving companion and enemy turns..."));
+            return;
+        }
+
+        var turnCard = CardContainer();
+        _content.AddChild(turnCard);
+        turnCard.AddChild(SubtitleLabel($"Round {session.RoundNumber} — {player.DisplayName}'s Turn"));
+        turnCard.AddChild(AddStyledLine(
+            $"HP {player.CurrentHp}/{player.MaxHp}   SP {player.CurrentSp}/{player.MaxSp}   MP {player.CurrentMana}/{player.MaxMana}", true));
+        turnCard.AddChild(MutedLabel(
+            "Daily Stamina was committed when the battle began. Combat commands use combat HP/SP/MP, not additional daily Stamina."));
+
+        var enemyCard = CardContainer();
+        _content.AddChild(enemyCard);
+        enemyCard.AddChild(SubtitleLabel("Enemies"));
+        foreach (var enemy in session.EnemyState)
+        {
+            var status = enemy.IsAlive ? $"{enemy.CurrentHp}/{enemy.MaxHp} HP" : "Defeated";
+            enemyCard.AddChild(AddStyledLine($"{enemy.DisplayName}: {status}"));
+        }
+
+        var partyCard = CardContainer();
+        _content.AddChild(partyCard);
+        partyCard.AddChild(SubtitleLabel("Party"));
+        foreach (var ally in session.PartyState)
+        {
+            var status = ally.IsAlive
+                ? $"{ally.CurrentHp}/{ally.MaxHp} HP   {ally.CurrentSp}/{ally.MaxSp} SP"
+                : "Fallen";
+            partyCard.AddChild(AddStyledLine($"{ally.DisplayName}: {status}"));
+        }
+
+        var attackCard = CardContainer();
+        _content.AddChild(attackCard);
+        attackCard.AddChild(SubtitleLabel("Attack"));
+        var attackRow = FlowRow(8);
+        attackCard.AddChild(attackRow);
+        foreach (var enemy in session.EnemyState.Where(value => value.IsAlive))
+        {
+            var capturedEnemyId = enemy.Id;
+            var attack = PrimaryButton($"Attack {enemy.DisplayName}", $"Basic attack against {enemy.DisplayName}. No SP or MP cost.");
+            attack.Pressed += () =>
+            {
+                if (!_game.SubmitInteractiveCombatAction(CombatPlayerCommand.Attack, capturedEnemyId))
+                    SetStatus(_game.ActiveCombatSession?.LastError ?? "Attack could not be resolved.", false);
+                ShowScreen(_currentScreen);
+            };
+            AddFlowButton(attackRow, attack, 148);
+        }
+
+        var tacticsCard = CardContainer();
+        _content.AddChild(tacticsCard);
+        tacticsCard.AddChild(SubtitleLabel("Tactics"));
+        var tacticsRow = FlowRow(8);
+        tacticsCard.AddChild(tacticsRow);
+
+        var defend = SecondaryButton("Defend", "Halve all incoming attack damage for the rest of this round.");
+        defend.Pressed += () =>
+        {
+            if (!_game.SubmitInteractiveCombatAction(CombatPlayerCommand.Defend))
+                SetStatus(_game.ActiveCombatSession?.LastError ?? "Defend could not be resolved.", false);
+            ShowScreen(_currentScreen);
+        };
+        AddFlowButton(tacticsRow, defend, 120);
+
+        var injuredAllies = session.PartyState.Where(value => value.IsAlive && value.CurrentHp < value.MaxHp).ToList();
+        foreach (var ally in injuredAllies)
+        {
+            var capturedAllyId = ally.Id;
+            var skill = SecondaryButton($"Skill Heal {ally.DisplayName} (-{CombatService.SkillSpCost} SP)",
+                "Combat support skill. Uses this combatant's finite SP.");
+            skill.Disabled = player.CurrentSp < CombatService.SkillSpCost;
+            skill.Pressed += () =>
+            {
+                if (!_game.SubmitInteractiveCombatAction(CombatPlayerCommand.Skill, capturedAllyId))
+                    SetStatus(_game.ActiveCombatSession?.LastError ?? "Skill could not be resolved.", false);
+                ShowScreen(_currentScreen);
+            };
+            AddFlowButton(tacticsRow, skill, 190);
+
+            var magic = SecondaryButton($"Magic Heal {ally.DisplayName} (-{CombatService.PlayerMagicHealCost} MP)",
+                "Uses the ranch owner's persistent personal MP pool.");
+            magic.Disabled = player.CurrentMana < CombatService.PlayerMagicHealCost;
+            magic.Pressed += () =>
+            {
+                if (!_game.SubmitInteractiveCombatAction(CombatPlayerCommand.Magic, capturedAllyId))
+                    SetStatus(_game.ActiveCombatSession?.LastError ?? "Magic could not be resolved.", false);
+                ShowScreen(_currentScreen);
+            };
+            AddFlowButton(tacticsRow, magic, 194);
+        }
+
+        var autoFinish = SecondaryButton("Auto Finish", "Hand the remaining player turns to the same deterministic combat AI.");
+        autoFinish.Pressed += () =>
+        {
+            _game.AutoFinishInteractiveCombat();
+            ShowScreen(_currentScreen);
+        };
+        AddFlowButton(tacticsRow, autoFinish, 132);
+
+        if (!string.IsNullOrWhiteSpace(session.LastError))
+            _content.AddChild(RequirementLabel(session.LastError));
+
+        var latestRound = session.Report.Rounds.LastOrDefault();
+        if (latestRound is not null && latestRound.Actions.Count > 0)
+        {
+            var log = CardContainer();
+            _content.AddChild(log);
+            log.AddChild(SubtitleLabel($"Round {latestRound.RoundNumber} actions"));
+            foreach (var action in latestRound.Actions.TakeLast(8))
+                log.AddChild(MutedLabel(action.Description));
+        }
     }
 
     private void RenderCombatResults()
@@ -1473,7 +1654,11 @@ public partial class UiShellController
         }
 
         var btn = PrimaryButton(T("common.back", "Back"));
-        btn.Pressed += () => ShowScreen("adventure");
+        btn.Pressed += () =>
+        {
+            _game.EndCombatSession();
+            ShowScreen("adventure");
+        };
         _content.AddChild(btn);
     }
 
@@ -1587,7 +1772,9 @@ public partial class UiShellController
             header.AddChild(info);
             info.AddChild(SubtitleLabel($"{definition.DisplayName} — Bond {character.Bond}"));
 
-            var mentorBtn = SecondaryButton("Mentorship (+4 bond, -4 fatigue)", "Spend 4 fatigue: +5 bond, +4 morale");
+            var mentorshipCost = _game.PlayerStaminaCost(PlayerActivityKind.Mentorship);
+            var mentorBtn = SecondaryButton($"Mentorship ({mentorshipCost} Stamina)", "Spend daily player stamina: +5 bond, +4 morale, +4 character fatigue.");
+            mentorBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.Mentorship);
             mentorBtn.Pressed += () => ExecuteUiAction(() => _game.TryConductMentorship(character.Id, generation), true);
             info.AddChild(mentorBtn);
 
@@ -1630,7 +1817,9 @@ public partial class UiShellController
                 };
                 narrativeBox.AddChild(narrativeLabel);
 
-                var completeBtn = PrimaryButton("Complete Event", "Complete this bond event to earn rewards and progress the story");
+                var bondEventCost = _game.PlayerStaminaCost(PlayerActivityKind.BondEvent);
+                var completeBtn = PrimaryButton($"Complete Event ({bondEventCost} Stamina)", "Complete this bond event to earn rewards and progress the story."); 
+                completeBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.BondEvent);
                 completeBtn.Pressed += () =>
                 {
                     if (generation != _game.StateGeneration) return;
@@ -1681,17 +1870,23 @@ public partial class UiShellController
                 var actions = FlowRow(6);
                 petCard.AddChild(actions);
 
-                var feedBtn = PrimaryButton($"{T("screen.pets.feed", "Feed")} (10{T("unit.g", "g")})", T("tooltip.feed_pet", "Feed the pet: Hunger+20, Mood+5, Bond+2"));
-                feedBtn.Pressed += () => { var result = _game.Pets.Feed(pet.Id); _game.Feedback.PlayConfirm(); ShowScreen(_currentScreen); };
-                AddFlowButton(actions, feedBtn, 120);
+                var feedCost = _game.PlayerStaminaCost(PlayerActivityKind.PetFeed);
+                var feedBtn = PrimaryButton($"{T("screen.pets.feed", "Feed")} (10{T("unit.g", "g")} + {feedCost} STA)", T("tooltip.feed_pet", "Feed the pet: Hunger+20, Mood+5, Bond+2"));
+                feedBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.PetFeed);
+                feedBtn.Pressed += () => { var result = _game.TryFeedPet(pet.Id); SetStatus(result, result.StartsWith("Fed successfully", StringComparison.Ordinal)); ShowScreen(_currentScreen); };
+                AddFlowButton(actions, feedBtn, 150);
 
-                var playBtn = SecondaryButton($"{T("screen.pets.play", "Play")} (5{T("unit.g", "g")})", T("tooltip.play_pet", "Play with the pet: Mood+15, Bond+3, Hunger-5"));
-                playBtn.Pressed += () => { var result = _game.Pets.Play(pet.Id); _game.Feedback.PlayConfirm(); ShowScreen(_currentScreen); };
-                AddFlowButton(actions, playBtn, 120);
+                var playCost = _game.PlayerStaminaCost(PlayerActivityKind.PetPlay);
+                var playBtn = SecondaryButton($"{T("screen.pets.play", "Play")} (5{T("unit.g", "g")} + {playCost} STA)", T("tooltip.play_pet", "Play with the pet: Mood+15, Bond+3, Hunger-5"));
+                playBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.PetPlay);
+                playBtn.Pressed += () => { var result = _game.TryPlayWithPet(pet.Id); SetStatus(result, result.StartsWith("Played successfully", StringComparison.Ordinal)); ShowScreen(_currentScreen); };
+                AddFlowButton(actions, playBtn, 150);
 
-                var trainBtn = SecondaryButton($"{T("screen.pets.train", "Train")} (15{T("unit.g", "g")})", T("tooltip.train_pet", "Train the pet: Training+10, Bond+1, Hunger-10, Mood-5"));
-                trainBtn.Pressed += () => { var result = _game.Pets.Train(pet.Id); _game.Feedback.PlayConfirm(); ShowScreen(_currentScreen); };
-                AddFlowButton(actions, trainBtn, 120);
+                var trainCost = _game.PlayerStaminaCost(PlayerActivityKind.PetTraining);
+                var trainBtn = SecondaryButton($"{T("screen.pets.train", "Train")} (15{T("unit.g", "g")} + {trainCost} STA)", T("tooltip.train_pet", "Train the pet: Training+10, Bond+1, Hunger-10, Mood-5"));
+                trainBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.PetTraining);
+                trainBtn.Pressed += () => { var result = _game.TryTrainPet(pet.Id); SetStatus(result, result.StartsWith("Trained successfully", StringComparison.Ordinal)); ShowScreen(_currentScreen); };
+                AddFlowButton(actions, trainBtn, 160);
 
                 // Progress bars
                 AddMentalBar(petCard, T("screen.pets.stats", "Hunger"), entry.Hunger, 100, "ffaa44");
@@ -2431,9 +2626,8 @@ public partial class UiShellController
                 T("tooltip.visit.spend_pet", "Uses the existing pet Play action: improves mood/bond and costs its normal small fee."));
             playPet.Pressed += () =>
             {
-                var line = _game.Pets.Play(capturedPetId);
-                SetStatus(line, false);
-                _game.NotifyStateChanged();
+                var line = _game.TryPlayWithPet(capturedPetId);
+                SetStatus(line, line.StartsWith("Played successfully", StringComparison.Ordinal));
             };
             AddFlowButton(freeTimeActions, playPet, 220);
         }
@@ -2476,51 +2670,157 @@ public partial class UiShellController
         statsCard.AddChild(AddStyledLine($"{CharacterPickerName(character)} - {T("label.energy", "Energy")} {character.Energy}  {T("label.fatigue", "Fatigue")} {character.Fatigue}  {T("label.bond", "Bond")} {character.Bond}", true));
         statsCard.AddChild(AddStyledLine($"{T("label.morale", "Morale")} {character.Morale}  {T("label.hp", "HP")} {character.Hp}  {T("screen.visit.fall", "Fall State")}: {mental.FallState}", true));
         statsCard.AddChild(AddStyledLine($"{T("label.favorability", "Favorability")} {mental.Favorability}  {T("label.lust", "Lust")} {mental.Lust}  {T("label.submission", "Submission")} {mental.Submission}"));
+        statsCard.AddChild(AddStyledLine($"Resistance {mental.Resistance}  Dignity {mental.Dignity}  Aversion {mental.Aversion}  Antipathy {mental.Antipathy}"));
+
+        // === Companionship / dating ===
+        var dateCard = CardContainer();
+        _content.AddChild(dateCard);
+        dateCard.AddChild(SubtitleLabel("Companionship & Dating"));
+
+        if (character.Id == "anon")
+        {
+            dateCard.AddChild(MutedLabel("Select an eligible adult ranch resident to invite as a companion."));
+        }
+        else if (!_game.Dating.IsEligiblePartner(character))
+        {
+            dateCard.AddChild(MutedLabel("This resident is not currently eligible for an adult companionship/date outing."));
+        }
+        else
+        {
+            dateCard.AddChild(AddStyledLine(_game.Dating.RelationshipSummary(character.Id), true));
+            dateCard.AddChild(MutedLabel(
+                "Relationship outcomes use the same Bond, Morale, Favorability, Aversion, Dignity, Fear and other mental values as the ranch systems. Pressure can produce negative consequences rather than faster romance."));
+
+            var activePartnerId = _game.Dating.ActivePartnerId;
+            if (string.IsNullOrWhiteSpace(activePartnerId))
+            {
+                var inviteRow = FlowRow(8);
+                dateCard.AddChild(inviteRow);
+
+                void AddInvite(DateInviteApproach approach, string label, string tooltip)
+                {
+                    var button = approach == DateInviteApproach.Respectful
+                        ? PrimaryButton(label, tooltip)
+                        : SecondaryButton(label, tooltip);
+                    button.Pressed += () =>
+                    {
+                        var result = _game.StartDate(character.Id, approach);
+                        SetStatus(result.Message, result.Success);
+                        RefreshCurrentScreen();
+                    };
+                    AddFlowButton(inviteRow, button, approach == DateInviteApproach.Respectful ? 168 : 184);
+                }
+
+                AddInvite(DateInviteApproach.Respectful, "Invite Respectfully",
+                    "They may decline if trust and mood are too low. A willing outing is the safest route to a positive relationship.");
+                AddInvite(DateInviteApproach.Pressured, "Press the Invitation",
+                    "They come reluctantly. This can lower mood/trust and raise negative mental values, especially if the activity does not fit their current mood.");
+                AddInvite(DateInviteApproach.Forced, "Force Them to Come",
+                    "Forces the outing but seriously harms Bond/Morale and raises Aversion, Antipathy and Fear. It can erode Dignity, but is not a shortcut to romance.");
+            }
+            else if (!string.Equals(activePartnerId, character.Id, StringComparison.Ordinal))
+            {
+                var active = _game.Roster.Find(activePartnerId);
+                var activeName = active is null ? activePartnerId : CharacterPickerName(active);
+                dateCard.AddChild(MutedLabel($"{activeName} is already accompanying you. End that outing before inviting someone else."));
+            }
+            else
+            {
+                dateCard.AddChild(AddStyledLine("Currently accompanying you", true));
+
+                var thought = _game.Dating.ThoughtsFor(character.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(thought))
+                    dateCard.AddChild(MutedLabel($"Current thought: “{thought}”"));
+
+                var activityRow = FlowRow(8);
+                dateCard.AddChild(activityRow);
+
+                void AddActivity(DateActivityKind kind, string label)
+                {
+                    var cost = _game.Dating.ActivityCost(kind);
+                    var available = _game.Dating.CanPerformActivity(kind, out var reason);
+                    var button = kind == DateActivityKind.TownOuting
+                        ? PrimaryButton($"{label} ({cost} STA)", available ? "Spend meaningful time together." : reason)
+                        : SecondaryButton($"{label} ({cost} STA)", available ? "Spend meaningful time together." : reason);
+                    button.Disabled = !available;
+                    button.Pressed += () =>
+                    {
+                        var result = _game.PerformDateActivity(kind);
+                        SetStatus(result.Message, result.Success);
+                        RefreshCurrentScreen();
+                    };
+                    AddFlowButton(activityRow, button, 170);
+                }
+
+                AddActivity(DateActivityKind.RanchWalk, "Ranch Walk");
+                AddActivity(DateActivityKind.WorkTogether, "Work Together");
+                AddActivity(DateActivityKind.SharedMeal, "Shared Meal");
+                AddActivity(DateActivityKind.TownOuting, "Town Outing");
+                AddActivity(DateActivityKind.QuietRest, "Quiet Rest");
+
+                dateCard.AddChild(MutedLabel(
+                    "Only one meaningful companion activity can be completed per day phase. Walking around together itself is free. Personality, fatigue, mood and invitation approach influence the result."));
+
+                var endDate = SecondaryButton("End Outing", "The companion returns to their normal ranch routine.");
+                endDate.Pressed += () =>
+                {
+                    var result = _game.EndDate();
+                    SetStatus(result.Message, result.Success);
+                    RefreshCurrentScreen();
+                };
+                dateCard.AddChild(endDate);
+            }
+        }
 
         // === Care actions ===
         var careRow = FlowRow(6);
         _content.AddChild(careRow);
 
-        var feedBtn = PrimaryButton("Feed", T("tooltip.visit_feed", "Feed a meal_box: Fatigue-18, Energy+10, Morale+8, Bond+4"));
+        var feedBtn = PrimaryButton($"Feed ({_game.PlayerStaminaCost(PlayerActivityKind.VisitFeed)} STA)", T("tooltip.visit_feed", "Feed a meal_box: Fatigue-18, Energy+10, Morale+8, Bond+4"));
+        feedBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitFeed);
         feedBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareFeed(character.Id);
+            var line = _game.TryVisitCare(character.Id, "feed");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
         careRow.AddChild(feedBtn);
 
-        var batheBtn = SecondaryButton("Bathe", T("tooltip.visit_bathe", "Wash and groom her: Fatigue-12, Morale+6, Bond+2"));
+        var batheBtn = SecondaryButton($"Bathe ({_game.PlayerStaminaCost(PlayerActivityKind.VisitCare)} STA)", T("tooltip.visit_bathe", "Wash and groom her: Fatigue-12, Morale+6, Bond+2"));
+        batheBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare);
         batheBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareBathe(character.Id);
+            var line = _game.TryVisitCare(character.Id, "bathe");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
         careRow.AddChild(batheBtn);
 
-        var talkBtn = SecondaryButton("Talk", T("tooltip.visit_talk", "Talk and comfort: Morale+7, Bond+3, Favorability+150"));
+        var talkBtn = SecondaryButton($"Talk ({_game.PlayerStaminaCost(PlayerActivityKind.VisitCare)} STA)", T("tooltip.visit_talk", "Talk and comfort: Morale+7, Bond+3, Favorability+150"));
+        talkBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare);
         talkBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareTalk(character.Id);
+            var line = _game.TryVisitCare(character.Id, "talk");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
         careRow.AddChild(talkBtn);
 
-        var groomBtn = SecondaryButton("Groom", T("tooltip.visit_groom", "Brush and groom: Morale+5, Bond+3"));
+        var groomBtn = SecondaryButton($"Groom ({_game.PlayerStaminaCost(PlayerActivityKind.VisitCare)} STA)", T("tooltip.visit_groom", "Brush and groom: Morale+5, Bond+3"));
+        groomBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare);
         groomBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareGroom(character.Id);
+            var line = _game.TryVisitCare(character.Id, "groom");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
         careRow.AddChild(groomBtn);
 
-        var restBtn = SecondaryButton("Rest", T("tooltip.visit_rest", "Let her rest: Energy+25, Fatigue-10, Morale+3"));
+        var restBtn = SecondaryButton($"Rest ({_game.PlayerStaminaCost(PlayerActivityKind.VisitCare)} STA)", T("tooltip.visit_rest", "Let her rest: Energy+25, Fatigue-10, Morale+3"));
+        restBtn.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare);
         restBtn.Pressed += () =>
         {
-            var line = _game.Visit.CareRest(character.Id);
+            var line = _game.TryVisitCare(character.Id, "rest");
             SetStatus(line, false);
             RefreshCurrentScreen();
         };
@@ -2541,10 +2841,11 @@ public partial class UiShellController
                 var row = FlowRow(8);
                 giftCard.AddChild(row);
                 row.AddChild(AddStyledLine($"{def.DisplayName} x{count}", true));
-                var give = SecondaryButton(T("screen.visit.give", "Give"), $"Give {def.DisplayName}: Bond+8, Morale+5, Favorability+400");
+                var give = SecondaryButton($"{T("screen.visit.give", "Give")} ({_game.PlayerStaminaCost(PlayerActivityKind.VisitGift)} STA)", $"Give {def.DisplayName}: Bond+8, Morale+5, Favorability+400");
+                give.Disabled = !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitGift);
                 give.Pressed += () =>
                 {
-                    var line = _game.Visit.CareGift(character.Id, itemId);
+                    var line = _game.TryVisitCare(character.Id, "gift", itemId);
                     SetStatus(line, false);
                     RefreshCurrentScreen();
                 };
@@ -2645,16 +2946,6 @@ public partial class UiShellController
         var actions = FlowRow(10);
         _content.AddChild(actions);
 
-        var produceBtn = PrimaryButton(T("screen.milk.produce", "Produce Milk Now"), T("tooltip.produce_milk", "Generate milk based on production rate, quality, and constitution traits"));
-        produceBtn.TooltipText = T("tooltip.produce_milk", "Generate milk based on production rate, quality, and constitution traits");
-        produceBtn.Pressed += () =>
-        {
-            _game.MilkEconomy.ProduceMilk(character.Id);
-            _game.Feedback.PlayConfirm();
-            ShowScreen(_currentScreen);
-        };
-        actions.AddChild(produceBtn);
-
         var shipBtn = PrimaryButton($"{T("screen.milk.ship", "Ship")} ({milk.CurrentAmount} {T("unit.units", "units")})", T("tooltip.ship_milk", "Sell all stored milk from this character. Price depends on quality and concentration."));
         shipBtn.Pressed += () =>
         {
@@ -2677,7 +2968,7 @@ public partial class UiShellController
         _content.AddChild(shipAll);
 
         if (milk.CurrentAmount == 0)
-            _content.AddChild(MutedLabel(T("screen.milk.no_milk", "No milk stored. Use Produce to generate milk, or advance a day for automatic production.")));
+            _content.AddChild(MutedLabel(T("screen.milk.no_milk", "No milk stored. Production is calculated once during daily settlement; advance/end the day to produce the next batch.")));
     }
 
     private static string ConcentrationLabel(string concentration) => concentration switch
@@ -4160,6 +4451,7 @@ public partial class UiShellController
         ClearContent();
         UpdateTopBar();
         AddTitle(T("screen.magic.title", "Magic"));
+        AddManaResourceCard("magic_basic");
 
         var spells = _game.Data.Spells.Values.ToList();
 
@@ -4185,19 +4477,17 @@ public partial class UiShellController
             spellInner.AddChild(SubtitleLabel(spell.DisplayName));
             spellInner.AddChild(MutedLabel(spell.Description));
             spellInner.AddChild(MutedLabel("Type: " + spell.Type));
-            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " personal MP"));
 
             var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
-            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            castBtn.Disabled = !_game.Magic.CanSpendPlayerMana(spell.ManaCost);
             var capturedSpell = spell;
             castBtn.Pressed += () =>
             {
                 ExecuteUiAction(() =>
                 {
-                    if (_game.State.Economy.ManaReservoir >= capturedSpell.ManaCost)
+                    if (_game.CastPlayerSpell(capturedSpell.Id, capturedSpell.ManaCost))
                     {
-                        _game.State.Economy.ManaReservoir -= capturedSpell.ManaCost;
-                        _game.NotifyStateChanged();
                         _game.Feedback.PlayConfirm();
                         SetStatus("Cast: " + capturedSpell.DisplayName + " - " + capturedSpell.EffectDescription, true);
                         ShowScreen("magic_basic");
@@ -4205,14 +4495,14 @@ public partial class UiShellController
                     else
                     {
                         _game.Feedback.PlayError();
-                        SetStatus("Need " + (capturedSpell.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                        SetStatus("Need " + Math.Max(0, capturedSpell.ManaCost - _game.Magic.CurrentMana) + " personal MP", true);
                     }
                 }, true, "magic_basic");
             };
             spellInner.AddChild(castBtn);
             if (castBtn.Disabled)
             {
-                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+                spellInner.AddChild(RequirementLabel("Need " + Math.Max(0, capturedSpell.ManaCost - _game.Magic.CurrentMana) + " personal MP"));
             }
         }
 
@@ -4226,6 +4516,7 @@ public partial class UiShellController
         ClearContent();
         UpdateTopBar();
         AddTitle(T("screen.magic.forbidden_title", "Magic — Restricted Spells"));
+        AddManaResourceCard("magic_forbidden");
 
         var spells = _game.Data.Spells.Values.ToList();
 
@@ -4251,19 +4542,17 @@ public partial class UiShellController
             spellInner.AddChild(SubtitleLabel(spell.DisplayName));
             spellInner.AddChild(MutedLabel(spell.Description));
             spellInner.AddChild(MutedLabel("Type: " + spell.Type));
-            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " personal MP"));
 
             var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
-            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            castBtn.Disabled = !_game.Magic.CanSpendPlayerMana(spell.ManaCost);
             var capturedSpell2 = spell;
             castBtn.Pressed += () =>
             {
                 ExecuteUiAction(() =>
                 {
-                    if (_game.State.Economy.ManaReservoir >= capturedSpell2.ManaCost)
+                    if (_game.CastPlayerSpell(capturedSpell2.Id, capturedSpell2.ManaCost))
                     {
-                        _game.State.Economy.ManaReservoir -= capturedSpell2.ManaCost;
-                        _game.NotifyStateChanged();
                         _game.Feedback.PlayConfirm();
                         SetStatus("Cast: " + capturedSpell2.DisplayName + " - " + capturedSpell2.EffectDescription, true);
                         ShowScreen("magic_forbidden");
@@ -4271,14 +4560,14 @@ public partial class UiShellController
                     else
                     {
                         _game.Feedback.PlayError();
-                        SetStatus("Need " + (capturedSpell2.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                        SetStatus("Need " + Math.Max(0, capturedSpell2.ManaCost - _game.Magic.CurrentMana) + " personal MP", true);
                     }
                 }, true, "magic_forbidden");
             };
             spellInner.AddChild(castBtn);
             if (castBtn.Disabled)
             {
-                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell2.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+                spellInner.AddChild(RequirementLabel("Need " + Math.Max(0, capturedSpell2.ManaCost - _game.Magic.CurrentMana) + " personal MP"));
             }
         }
 
@@ -4292,6 +4581,7 @@ public partial class UiShellController
         ClearContent();
         UpdateTopBar();
         AddTitle(T("screen.magic.tentacle_title", "Magic — Special Spells"));
+        AddManaResourceCard("magic_tentacle");
 
         var spells = _game.Data.Spells.Values.ToList();
 
@@ -4317,19 +4607,17 @@ public partial class UiShellController
             spellInner.AddChild(SubtitleLabel(spell.DisplayName));
             spellInner.AddChild(MutedLabel(spell.Description));
             spellInner.AddChild(MutedLabel("Type: " + spell.Type));
-            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " mana"));
+            spellInner.AddChild(MutedLabel("Cost: " + spell.ManaCost + " personal MP"));
 
             var castBtn = PrimaryButton(T("screen.magic.cast", "Cast"), "Cast " + spell.DisplayName);
-            castBtn.Disabled = _game.State.Economy.ManaReservoir < spell.ManaCost;
+            castBtn.Disabled = !_game.Magic.CanSpendPlayerMana(spell.ManaCost);
             var capturedSpell3 = spell;
             castBtn.Pressed += () =>
             {
                 ExecuteUiAction(() =>
                 {
-                    if (_game.State.Economy.ManaReservoir >= capturedSpell3.ManaCost)
+                    if (_game.CastPlayerSpell(capturedSpell3.Id, capturedSpell3.ManaCost))
                     {
-                        _game.State.Economy.ManaReservoir -= capturedSpell3.ManaCost;
-                        _game.NotifyStateChanged();
                         _game.Feedback.PlayConfirm();
                         SetStatus("Cast: " + capturedSpell3.DisplayName + " - " + capturedSpell3.EffectDescription, true);
                         ShowScreen("magic_tentacle");
@@ -4337,14 +4625,14 @@ public partial class UiShellController
                     else
                     {
                         _game.Feedback.PlayError();
-                        SetStatus("Need " + (capturedSpell3.ManaCost - _game.State.Economy.ManaReservoir) + " mana", true);
+                        SetStatus("Need " + Math.Max(0, capturedSpell3.ManaCost - _game.Magic.CurrentMana) + " personal MP", true);
                     }
                 }, true, "magic_tentacle");
             };
             spellInner.AddChild(castBtn);
             if (castBtn.Disabled)
             {
-                spellInner.AddChild(RequirementLabel("Need " + (capturedSpell3.ManaCost - _game.State.Economy.ManaReservoir) + " mana"));
+                spellInner.AddChild(RequirementLabel("Need " + Math.Max(0, capturedSpell3.ManaCost - _game.Magic.CurrentMana) + " personal MP"));
             }
         }
 
@@ -4352,5 +4640,55 @@ public partial class UiShellController
         backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
         _content.AddChild(backBtn);
     }
+
+    private void AddManaResourceCard(string returnScreen)
+    {
+        var magic = _game.Magic;
+        var card = CardContainer();
+        _content.AddChild(card);
+        var inner = CardContent();
+        card.AddChild(inner);
+        inner.AddChild(SubtitleLabel("Mana Resources"));
+        inner.AddChild(MutedLabel($"Personal MP: {magic.CurrentMana:N0}/{magic.MaxMana:N0}  •  Rest recovery: {_game.State.Player.ManaRecoveryPercent}%"));
+
+        if (magic.StorageCapacity > 0)
+        {
+            inner.AddChild(MutedLabel($"Stored Mana: {magic.StoredMana:N0}/{magic.StorageCapacity:N0} MP"));
+        }
+        else
+        {
+            inner.AddChild(MutedLabel("Stored Mana: no reservoir installed"));
+        }
+
+        var refill = SecondaryButton("Replenish Personal MP", "Use the Magic Supply Device to move Stored Mana into personal MP without increasing Max MP.");
+        refill.Disabled = !magic.HasManaSupplyDevice || magic.StoredMana <= 0 || magic.CurrentMana >= magic.MaxMana;
+        refill.Pressed += () =>
+        {
+            ExecuteUiAction(() =>
+            {
+                var transferred = _game.RechargePlayerManaFromStorage();
+                if (transferred > 0)
+                {
+                    _game.Feedback.PlayConfirm();
+                    SetStatus($"Replenished {transferred:N0} personal MP from Stored Mana.", true);
+                }
+                else
+                {
+                    _game.Feedback.PlayError();
+                    SetStatus(magic.HasManaSupplyDevice
+                        ? "No Stored Mana can be transferred right now."
+                        : "A Magic Supply Device is required to replenish personal MP from the reservoir.", true);
+                }
+                ShowScreen(returnScreen);
+            }, true, returnScreen);
+        };
+        inner.AddChild(refill);
+
+        if (!magic.HasManaSupplyDevice)
+        {
+            inner.AddChild(RequirementLabel("Magic Supply Device required for reservoir → personal MP transfer."));
+        }
+    }
+
 
 }

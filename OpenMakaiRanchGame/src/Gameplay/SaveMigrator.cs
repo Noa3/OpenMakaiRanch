@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenMakaiRanch.Core.Models;
@@ -117,6 +118,11 @@ public static class SaveMigrator
             state.SchemaVersion = 14;
         }
 
+        if (state.SchemaVersion == 14)
+        {
+            state.SchemaVersion = 15;
+        }
+
         state.Schedule.AssignedJobs ??= new Dictionary<string, string>();
         state.Inventory.Items ??= new Dictionary<string, int>();
         state.Adventure.SelectedPartyIds ??= new List<string>();
@@ -132,6 +138,26 @@ public static class SaveMigrator
                 state.Pets.Entries[petId] = new PetEntryState();
         }
         state.Bond.CompletedEventIds ??= new List<string>();
+        state.Dating ??= new DatingState();
+        state.Dating.Partners ??= new Dictionary<string, DatingPartnerState>();
+        state.Dating.ActivePartnerId ??= string.Empty;
+        foreach (var partnerId in state.Dating.Partners.Keys.ToList())
+        {
+            var relationship = state.Dating.Partners[partnerId];
+            if (relationship is null)
+            {
+                state.Dating.Partners[partnerId] = new DatingPartnerState();
+                continue;
+            }
+
+            relationship.DatesStarted = Math.Max(0, relationship.DatesStarted);
+            relationship.SharedActivities = Math.Max(0, relationship.SharedActivities);
+            relationship.PositiveMoments = Math.Max(0, relationship.PositiveMoments);
+            relationship.PressuredMoments = Math.Max(0, relationship.PressuredMoments);
+            relationship.ForcedMoments = Math.Max(0, relationship.ForcedMoments);
+            relationship.TrustDamage = Math.Clamp(relationship.TrustDamage, 0, 100);
+            relationship.LastActivityId ??= string.Empty;
+        }
         state.Adventure.LastCaptureSummary ??= string.Empty;
         foreach (var character in state.Roster.Characters)
                     {
@@ -186,6 +212,14 @@ public static class SaveMigrator
         if (string.IsNullOrWhiteSpace(state.Player.HairStyle)) state.Player.HairStyle = "Short";
         if (string.IsNullOrWhiteSpace(state.Player.EyeColor)) state.Player.EyeColor = "Red";
         if (string.IsNullOrWhiteSpace(state.Player.EyeShape)) state.Player.EyeShape = "Standard";
+        state.Player.MaxMana = Math.Max(0, state.Player.MaxMana);
+        state.Player.Mana = Math.Clamp(state.Player.Mana, 0, state.Player.MaxMana);
+        state.Player.ManaRecoveryPercent = Math.Clamp(state.Player.ManaRecoveryPercent, 0, 100);
+        state.Player.MaxStamina = Math.Max(1, state.Player.MaxStamina);
+        state.Player.DailyStaminaBonus = Math.Clamp(state.Player.DailyStaminaBonus, 0, PlayerStaminaService.MaxRestedBonus);
+        state.Player.NextDayStaminaBonus = Math.Clamp(state.Player.NextDayStaminaBonus, 0, PlayerStaminaService.MaxRestedBonus);
+        state.Player.Stamina = Math.Clamp(state.Player.Stamina, 0, state.Player.MaxStamina + state.Player.DailyStaminaBonus);
+        state.Economy.ManaReservoir = Math.Max(0, state.Economy.ManaReservoir);
 
         return state;
     }

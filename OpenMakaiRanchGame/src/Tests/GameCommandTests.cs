@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using OpenMakaiRanch.App;
+using OpenMakaiRanch.Core.Models;
+using OpenMakaiRanch.Gameplay;
 using OpenMakaiRanch.Ui;
 
 namespace OpenMakaiRanch.Tests;
@@ -45,23 +48,29 @@ public static class GameCommandTests
             character.Bond = 0;
             character.Morale = 50;
             character.Fatigue = 0;
+            var staminaBeforeMentorship = root.State.Player.Stamina;
             shell.ShowScreen("bond");
             Buttons(shell).First(button => button.Text.StartsWith("Mentorship")).EmitSignal(BaseButton.SignalName.Pressed);
             Check(result, character.Bond == 5 && character.Morale == 54 && character.Fatigue == 4,
                 "command UI mentorship keeps existing service effects");
+            Check(result, root.State.Player.Stamina == staminaBeforeMentorship - root.PlayerStaminaCost(PlayerActivityKind.Mentorship),
+                "command UI mentorship spends player daily stamina exactly once");
             Check(result, notifications == 1 && secondObserverNotifications == 1,
                 "command UI mentorship notifies both observers exactly once");
 
             notifications = secondObserverNotifications = 0;
             character.Bond = 100;
             var eventId = root.Bond.AvailableEvents(character.Id).First().Id;
+            var staminaBeforeEvent = root.State.Player.Stamina;
             shell.ShowScreen("bond");
-            var completeButton = Buttons(shell).First(button => button.Text == "Complete Event");
+            var completeButton = Buttons(shell).First(button => button.Text.StartsWith("Complete Event", StringComparison.Ordinal));
             completeButton.EmitSignal(BaseButton.SignalName.Pressed);
             // First click finishes typewriting; only the next click may complete the event.
             if (!root.State.Bond.CompletedEventIds.Contains(eventId))
                 completeButton.EmitSignal(BaseButton.SignalName.Pressed);
             Check(result, root.State.Bond.CompletedEventIds.Contains(eventId), "command UI completes existing bond event");
+            Check(result, root.State.Player.Stamina == staminaBeforeEvent - root.PlayerStaminaCost(PlayerActivityKind.BondEvent),
+                "command UI bond event spends player daily stamina exactly once");
             Check(result, notifications == 1 && secondObserverNotifications == 1,
                 "command UI bond event notifies both observers exactly once");
         }
@@ -155,8 +164,11 @@ public static class GameCommandTests
             Check(result, !root.TryCompleteBondEvent(bondEvent.Id, generation) && notifications == 0,
                 "command locked event emits no change");
             character.Bond = 100;
+            var eventStaminaBefore = root.State.Player.Stamina;
             Check(result, root.TryCompleteBondEvent(bondEvent.Id, generation) && notifications == 1,
                 "command valid event emits one change");
+            Check(result, root.State.Player.Stamina == eventStaminaBefore - root.PlayerStaminaCost(PlayerActivityKind.BondEvent),
+                "command valid event spends stamina at the same successful boundary");
             var stockpile = root.State.Ranch.Stockpile.ToDictionary(pair => pair.Key, pair => pair.Value);
             Check(result, !root.TryCompleteBondEvent(bondEvent.Id, generation) && notifications == 1
                 && stockpile.Count == root.State.Ranch.Stockpile.Count
@@ -173,11 +185,44 @@ public static class GameCommandTests
                 notifications = 0;
                 if (replacement == "new") root.NewGame();
                 else if (replacement == "load") Check(result, root.LoadSlot(99), "command lifecycle fixture loads");
-                else root.StartNewGamePlus();
+                else
+                {
+                    root.BeginCombatSession();
+                    root.CurrentCombatPhase = CombatPhase.PostBattle;
+                    root.CurrentCombatRound = 4;
+                    root.LastDailyReport = new DailyReport { Day = 99 };
+                    root.LastCombatReport = new CombatReport { MissionId = "transient_fixture" };
+                    GameRoot.PendingInitialScreen = "victory";
+                    root.State.Story.FirstDayStage = 7;
+                    root.State.Story.FirstDayCompleted = true;
+                    root.State.Story.PersonalEveningCompleted = true;
+                    root.State.WorldAreaId = "town";
+                    // BeginCombatSession is part of fixture setup and legitimately emits StateChanged.
+                    // Count only the lifecycle replacement itself for the "exactly once" assertion.
+                    notifications = 0;
+                    root.StartNewGamePlus();
+                }
                 Check(result, root.StateGeneration == oldGeneration + 1 && observedGeneration == root.StateGeneration
                     && ReferenceEquals(observedState, root.State) && !ReferenceEquals(oldState, root.State)
                     && !ReferenceEquals(oldSchedule, root.Schedule) && !ReferenceEquals(oldBond, root.Bond)
                     && notifications == 1, $"command {replacement} exposes rebound services and generation once");
+                if (replacement == "ngplus")
+                {
+                    Check(result,
+                        root.CurrentCombatPhase == CombatPhase.PreBattle
+                        && root.CurrentCombatRound == 0
+                        && !root.CombatWorldTimeLocked
+                        && root.LastDailyReport is null
+                        && root.LastCombatReport is null
+                        && GameRoot.PendingInitialScreen is null
+                        && root.State.Story.FirstDayStage == 0
+                        && !root.State.Story.FirstDayCompleted
+                        && !root.State.Story.PersonalEveningCompleted
+                        && root.State.WorldAreaId == "ranch"
+                        && root.State.Calendar.Day == 1
+                        && root.State.Calendar.Phase == DayPhase.Morning,
+                        "command ngplus resets transient combat story world and calendar state");
+                }
                 notifications = 0;
                 Check(result, !root.TryAssignJob(id, "pasture", oldGeneration)
                     && !root.TryConductMentorship(id, oldGeneration)

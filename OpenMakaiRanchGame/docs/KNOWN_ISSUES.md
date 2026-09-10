@@ -1,10 +1,8 @@
 # Known Issues
 
-Updated 2026-09-05. Source-visible risks are not automatically reproduced bugs. Baseline smoke success is not a waiver for these issues.
+Updated 2026-09-09. Source-visible risks are not automatically reproduced bugs. Baseline smoke success is not a waiver for these issues.
 
 ## Open
-
-- **BUG-001 / low — compiler warning:** actual batch rebuild reports CS8604 at `src/Ui/UiShellController.Screens.cs:3594`, nullable Path.Combine path1. Existing code, scoped fix pending; incremental zero-warning build does not erase this result.
 
 - **SAVE-001 resolved:** root saves now synchronize all flag tiers; roster normalization precedes schema-13 migration; null Reports/Flags/maps normalize without losing neighboring entries. Verified with real root roundtrips and rejection fixtures: 81 new assertions, full smoke 949 PASS. This is not exhaustive validation of every malformed save structure. Evidence: `.artifacts/save-001-verification.log`.
 - **CORE-002 foundation resolved:** job assignment, mentorship and bond-event UI now use generation-checked root commands and one StateChanged notification. NewGame/LoadSlot/NG+ and stale queued UI signals covered. Other raw service calls are not universally wrapped; future world navigation/reservation cancellation still requires integration.
@@ -16,10 +14,13 @@ Updated 2026-09-05. Source-visible risks are not automatically reproduced bugs. 
 - **CORE-004 / medium — settlement semantics:** EndDay lacks idempotency/transaction guard; auto-rest overwrites intent, effective-job rules are distributed, and report NetGold is not a complete ledger of event deltas. Must be specified/tested before physical progress affects rewards.
 - **TOOLS-002 / medium — raw MCP development endpoint:** loopback listeners lack authentication, request-size enforcement and release/export gating. Adapter policy is not protection against direct TCP clients. Project-path validation is not a unique session token. Keep ports local; do not ship bridge as release-approved tooling.
 - **TOOLS-003 / low — editor exit warning:** import/exit logs `EditorSettings not instantiated yet when getting setting "export/android/shutdown_adb_on_exit".` Exit code 0. Not proven to originate from game code; no speculative engine/config change.
-- **UI-001 / medium — visual coverage incomplete:** only Main Menu and Character Creation were visually checked in baseline. Full management playthrough, narrow-screen action reachability and 3D input/camera feel remain unverified.
+- **UI-001 / medium — visual coverage incomplete:** Main Menu/Character Creation have prior screenshot evidence, but full management and narrow-screen action reachability still need graphical review.
+- **WORLD-VIS-001 / medium — 3D feel/art direction not certified:** Godot 4.7.2 headless compile/import and 1358 smoke assertions pass, including Ranch/Town, Day 1, particles, shelter/surface contracts and bounded budgets. This does not certify camera feel, puddle placement, shelter-edge appearance, particle readability, animation quality or representative GPU performance.
 - **PARITY-001 — not certified:** no original-engine differential fixture suite. Existing named parity tests assert remake rules only.
 
 ## Fixed in baseline working patch
+
+- **BUG-001 compiler warning:** nullable `Path.Combine` warning was fixed; subsequent .NET 8 CI builds complete successfully.
 
 - Six malformed `|[node` headers removed from Game.tscn; Rooms/Bond/Pets nodes restored. Smoke checks exact sidebar and intentional compact subsets.
 - Stale expected BondButton/MilkButton names and compact/full-sidebar count equality corrected against scene-authored UI.
@@ -31,4 +32,4 @@ Updated 2026-09-05. Source-visible risks are not automatically reproduced bugs. 
 
 ## Not implemented, not hidden bugs
 
-Third-person player/camera, 3D world, avatars, animation/morph labs, spatial NPC routines, reservations, toon-shader selection and a complete 3D saved/loaded day are future milestones. No reference image or model has been approved.
+Third-person Ranch/Town traversal, shared-simulation HUD/day flow, stand-in avatars and basic NavigationAgent movement now exist and are runtime-smoke verified. Final character art/animation/morph labs, obstacle-authored navigation, reservations, toon-shader/art-direction certification and representative performance testing remain future milestones. No identity-specific final character model is approved.

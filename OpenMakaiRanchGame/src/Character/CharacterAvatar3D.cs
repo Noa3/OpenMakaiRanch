@@ -7,7 +7,7 @@ namespace OpenMakaiRanch.Character;
 /// <summary>
 /// Presentation-only 3D placeholder bound to a stable CharacterVisualProfile.
 ///
-/// The preferred placeholder is a generic CC0 rigged character. It deliberately remains marked
+/// The preferred placeholder is a project-authored generic debug mannequin. It deliberately remains marked
 /// IsDebugStandIn=true and does not claim identity parity with the source character. If the external
 /// resource cannot load, the old capsule/sphere geometry stays as a visible fallback.
 ///

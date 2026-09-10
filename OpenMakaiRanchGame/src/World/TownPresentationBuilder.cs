@@ -129,6 +129,7 @@ public partial class TownPresentationBuilder : Node3D
         var wall = index % 2 == 0 ? WallA : WallB;
         var roof = index % 2 == 0 ? RoofA : RoofB;
 
+        Node3D? externalModel = null;
         var externalLoaded = ServiceModels.TryGetValue(service.ServiceId, out var externalPath)
             && TryAddExternalScene(
                 $"External_{service.ServiceId}",
@@ -136,7 +137,7 @@ public partial class TownPresentationBuilder : Node3D
                 new Vector3(center.X, 0.03f, center.Z),
                 Vector3.One * 2.0f,
                 0f,
-                out var externalModel);
+                out externalModel);
 
         if (externalLoaded && externalModel is not null)
         {
@@ -148,6 +149,13 @@ public partial class TownPresentationBuilder : Node3D
         _serviceBuildings[service.ServiceId] = building;
         var roofProxy = AddBox($"Roof_{service.ServiceId}", center + new Vector3(0,1.55f,0), new Vector3(4.6f,0.55f,3.8f), roof);
         roofProxy.Visible = !externalLoaded;
+
+        _generated!.AddChild(new WorldShelterVolume
+        {
+            Name = $"Shelter_{service.ServiceId}",
+            Position = center + new Vector3(0f, 0.65f, 0f),
+            HalfExtents = new Vector3(2.25f, 1.75f, 1.95f)
+        });
 
         var towardPlaza = -radial;
         var door = center + towardPlaza * 1.78f + new Vector3(0,-0.35f,0);

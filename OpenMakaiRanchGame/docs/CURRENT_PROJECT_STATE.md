@@ -1,10 +1,10 @@
 # Current Project State
 
-Latest follow-up: CORE-002 command/rebinding foundation complete. Existing schedule/mentorship/bond-event UI uses generation-checked GameRoot commands; full smoke 984 PASS including 35 new command assertions. See WORK_LOG and `.artifacts/core-002-verification.log`. No 3D world or universal service notification layer exists yet. Earlier CORE-002 pending statements below describe the preceding checkpoint.
+Current follow-up (2026-09-09): the Ranch + Okachi Town 3D composition, resumable first-day flow, shared world/day loop, NG+ transient reset, original-style personal/stored mana split and bounded weather surface reactions are implemented on PR #3's branch. Official Godot **4.7.2 Mono** CI successfully completed .NET 8 compile, launcher regression tests, real headless import and **1358 isolated smoke assertions with 0 failures** on commit `0ae82f4`. Later branch commits only adjust CI trigger/concurrency behavior and documentation unless WORK_LOG states otherwise.
 
-Latest checkpoint: SAVE-001 complete. Root flags persist; explicit-null roster/Reports/Flags migration covered. Full smoke now 949 assertions (81 root-save regressions), PASS; analyzer build succeeds with existing CS8604. See WORK_LOG and `.artifacts/save-001-verification.log`. Historical baseline details below remain useful; earlier save-gap observations are resolved within this tested scope. CORE-002 remains pending; further work paused to conserve user weekly GPT allowance.
+Graphical acceptance remains separate: headless CI does not certify camera feel, particle/puddle/shelter art direction, animation quality, final assets or representative GPU performance. See `KANBAN.md`, `KNOWN_ISSUES.md` and the latest `WORK_LOG.md` entries for current scope.
 
-Baseline audit: 2026-09-05. This file separates executed checks, source-visible behavior and future work. Paths are relative to repository root unless stated otherwise. Canonical documentation lives in `OpenMakaiRanchGame/docs/`.
+Historical baseline audit below: 2026-09-05. It is retained as provenance and should not be read as the current feature inventory. This file separates executed checks, source-visible behavior and future work. Paths are relative to repository root unless stated otherwise. Canonical documentation lives in `OpenMakaiRanchGame/docs/`.
 
 ## Repository and engine
 

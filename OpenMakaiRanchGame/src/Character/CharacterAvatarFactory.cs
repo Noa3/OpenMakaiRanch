@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using OpenMakaiRanch.Core.Resources;
 
@@ -18,13 +19,9 @@ namespace OpenMakaiRanch.Character;
 /// </summary>
 public static class CharacterAvatarFactory
 {
-    private static readonly string[] PlaceholderModels =
-    {
-        "res://assets/vendor/kaykit_adventurers/Knight.glb",
-        "res://assets/vendor/kaykit_adventurers/Mage.glb",
-        "res://assets/vendor/kaykit_adventurers/Rogue_Hooded.glb",
-        "res://assets/vendor/kaykit_adventurers/Barbarian.glb"
-    };
+    // Project-authored, text-based stand-in. Keeping the placeholder inside the repository avoids
+    // pretending that incomplete/empty vendor binaries are usable character art.
+    private const string DebugPlaceholderScene = "res://scenes/dev/GenericCharacterPlaceholder.tscn";
 
     /// <summary>
     /// Build a presentation-only profile from a <see cref="CharacterDefinition"/>.
@@ -47,8 +44,8 @@ public static class CharacterAvatarFactory
             IsDebugStandIn = true,
             BodyColor = MapSkinColor(definition.SkinColor),
             HeadColor = MapHairColor(definition.HairColor),
-            Height = Mathf.Clamp(definition.Height / 1000f, 1.45f, 2.25f),
-            PlaceholderModelPath = PlaceholderModels[StablePlaceholderIndex(definition.Id)]
+            Height = ResolveHeightMeters(definition.Height),
+            PlaceholderModelPath = DebugPlaceholderScene
         };
     }
 
@@ -79,15 +76,40 @@ public static class CharacterAvatarFactory
         return new CharacterAvatar3D { Profile = profile };
     }
 
-    private static int StablePlaceholderIndex(string id)
+    private static float ResolveHeightMeters(string height)
     {
-        var hash = 17;
-        foreach (var ch in id ?? string.Empty)
+        if (!string.IsNullOrWhiteSpace(height))
         {
-            hash = unchecked(hash * 31 + ch);
+            var digits = string.Empty;
+            foreach (var ch in height)
+            {
+                if (char.IsDigit(ch))
+                {
+                    digits += ch;
+                }
+                else if (digits.Length > 0)
+                {
+                    break;
+                }
+            }
+
+            if (int.TryParse(digits, out var centimeters) && centimeters is >= 100 and <= 250)
+            {
+                return Mathf.Clamp(centimeters / 100f, 1.45f, 2.25f);
+            }
+
+            if (height.Contains("short", StringComparison.OrdinalIgnoreCase))
+            {
+                return 1.55f;
+            }
+
+            if (height.Contains("tall", StringComparison.OrdinalIgnoreCase))
+            {
+                return 1.82f;
+            }
         }
 
-        return (hash & 0x7fffffff) % PlaceholderModels.Length;
+        return 1.70f;
     }
 
     /// <summary>Map a neutral skin-color name to a stand-in body tint. Unknown → default.</summary>
