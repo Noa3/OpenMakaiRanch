@@ -320,14 +320,24 @@ public sealed class MentalStateService
     public void RecalculateFallState(CharacterState character)
     {
         var m = character.Mature;
+        var wasCollapsed = m.IsCollapsed || m.FallState == FallState.Collapse;
 
-        // Fall state determination
+        // The current enum is still a compressed remake representation of the source game's
+        // rejection/succumb/falling/love/slave ladder. Preserve that compatibility here, while
+        // source-traced irreversible collapse effects are applied only on the transition into Collapse.
         if (m.MentalStrength <= 0 || m.Despair >= 8000)
         {
             m.FallState = FallState.Collapse;
             m.IsCollapsed = true;
+            if (!wasCollapsed)
+            {
+                ApplyOriginalCollapseTraitChanges(character);
+            }
+            return;
         }
-        else if (m.MilkCow >= 10000)
+
+        m.IsCollapsed = false;
+        if (m.MilkCow >= 10000)
         {
             m.FallState = FallState.MilkCow;
         }
@@ -346,6 +356,45 @@ public sealed class MentalStateService
         else
         {
             m.FallState = FallState.Normal;
+        }
+    }
+
+    private static void ApplyOriginalCollapseTraitChanges(CharacterState character)
+    {
+        // Source: CAPITULATION_MIND_BREAK_DELETE_TALENT. Only English equivalents that exist in
+        // the remake's current talent vocabulary are touched here; unrelated traits are preserved.
+        var removable = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Prideful",
+            "Proud",
+            "Arrogant",
+            "Stubborn",
+            "Defiant",
+            "Definant",
+            "Rebellious",
+            "Sassy",
+            "Optimistic",
+            "Charismatic",
+            "Righteous",
+            "Composure",
+            "Self-Control"
+        };
+
+        var removed = character.Talents
+            .Where(talent => removable.Contains(talent))
+            .ToList();
+
+        if (removed.Count == 0)
+            return;
+
+        character.Talents.RemoveAll(talent => removable.Contains(talent));
+        foreach (var trait in removed)
+        {
+            var marker = $"CollapseLost:{trait}";
+            if (!character.Mature.Marks.Contains(marker, StringComparer.OrdinalIgnoreCase))
+            {
+                character.Mature.Marks.Add(marker);
+            }
         }
     }
 
