@@ -141,6 +141,23 @@ public static class SaveMigrator
         state.Dating ??= new DatingState();
         state.Dating.Partners ??= new Dictionary<string, DatingPartnerState>();
         state.Dating.ActivePartnerId ??= string.Empty;
+        foreach (var partnerId in state.Dating.Partners.Keys.ToList())
+        {
+            var relationship = state.Dating.Partners[partnerId];
+            if (relationship is null)
+            {
+                state.Dating.Partners[partnerId] = new DatingPartnerState();
+                continue;
+            }
+
+            relationship.DatesStarted = Math.Max(0, relationship.DatesStarted);
+            relationship.SharedActivities = Math.Max(0, relationship.SharedActivities);
+            relationship.PositiveMoments = Math.Max(0, relationship.PositiveMoments);
+            relationship.PressuredMoments = Math.Max(0, relationship.PressuredMoments);
+            relationship.ForcedMoments = Math.Max(0, relationship.ForcedMoments);
+            relationship.TrustDamage = Math.Clamp(relationship.TrustDamage, 0, 100);
+            relationship.LastActivityId ??= string.Empty;
+        }
         state.Adventure.LastCaptureSummary ??= string.Empty;
         foreach (var character in state.Roster.Characters)
                     {
