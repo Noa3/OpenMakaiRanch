@@ -21,15 +21,20 @@ public static class PlayabilityFrameTests
     {
         var settings = game.State.Settings.Clone();
         var tree = game.GetTree();
-        var priorScene = tree.CurrentScene;
-        var priorMode = priorScene?.ProcessMode ?? Node.ProcessModeEnum.Inherit;
-        var priorVisible = priorScene is CanvasItem canvas && canvas.Visible;
+        Node? priorScene = null;
+        var priorMode = Node.ProcessModeEnum.Inherit;
+        var priorVisible = false;
         WorldGameController? world = null;
         try
         {
             tree.Paused = false;
             // Earlier synchronous tests queue temporary nodes for deletion. Let the real tree flush.
             await Frames(game, 3);
+            // Bootstrap can route to MainMenu during those frames. Capture the actual current
+            // scene now, not its already-freed predecessor, before isolating the playable world.
+            priorScene = tree.CurrentScene;
+            priorMode = priorScene?.ProcessMode ?? Node.ProcessModeEnum.Inherit;
+            priorVisible = priorScene is CanvasItem canvas && canvas.Visible;
             if (priorScene is not null && GodotObject.IsInstanceValid(priorScene))
             {
                 priorScene.ProcessMode = Node.ProcessModeEnum.Disabled;
@@ -115,8 +120,13 @@ public static class PlayabilityFrameTests
             await Frames(game, 2);
 
             // Exercise both pause routing and a real production-backed order, not injected stock.
+            var pauseEntry = $"handler={world.IsProcessingUnhandledInput()}, process={world.CanProcess()}, "
+                + $"management={world.IsManagementVisible}, flow={world.FlowLocksUi}, "
+                + $"story={flow.BlocksWorldInput}, transition={world.Transition?.IsTransitioning}, "
+                + $"focus={game.GetViewport().GuiGetFocusOwner()?.GetPath()}, scene={tree.CurrentScene?.SceneFilePath}";
             await KeyStroke(game, Key.Escape);
-            Check(result, world.PauseMenu!.IsOpen && tree.Paused, "real Escape input opens pause");
+            Check(result, world.PauseMenu!.IsOpen && tree.Paused,
+                $"real Escape input opens pause (before: {pauseEntry}; after open={world.PauseMenu.IsOpen}, paused={tree.Paused})");
             PlayabilityRegressionTests.Press(world.PauseMenu, "Community Board");
             var offer = game.GetCommunityRequests().First(value => value.Id == "market_basket");
             var gold = game.Economy.Gold;
