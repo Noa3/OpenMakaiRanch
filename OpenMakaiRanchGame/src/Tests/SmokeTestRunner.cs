@@ -2266,6 +2266,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             AssertNodeExists(result, root, "TownWorld/Atmosphere", "town contains weather/season particle presentation");
             AssertNodeExists(result, root, "RanchWorld/SurfaceInteractions", "ranch contains bounded weather surface reactions");
             AssertNodeExists(result, root, "TownWorld/SurfaceInteractions", "town contains bounded weather surface reactions");
+            AssertNodeExists(result, root, "TownWorld/CompanionRig", "town contains companion-only date presentation rig");
             AssertNodeExists(result, root, "RanchWorld/WorldBoundary", "ranch contains finite-world collision/dressing");
             AssertNodeExists(result, root, "TownWorld/WorldBoundary", "town contains finite-world collision/dressing");
             AssertNodeExists(result, root, "RanchWorld", "world boot contains the 3D ranch");
@@ -2359,6 +2360,36 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
 
             if (controller.Town is not null)
             {
+                var datePartner = game.Roster.Characters.First(character => character.Id != "anon");
+                datePartner.AdultEligibility = AdultEligibility.ConfirmedAdult;
+                game.State.Dating.ActivePartnerId = datePartner.Id;
+                game.State.Dating.ActiveApproach = DateInviteApproach.Respectful;
+                game.NotifyStateChanged();
+                controller.Town.Refresh();
+
+                Assert(result, controller.Town.Companion is not null
+                    && controller.Town.Companion.AvatarCount == 1
+                    && controller.Town.Companion.ActiveCompanionId == datePartner.Id,
+                    "town dating: only the active date partner is carried into Okachi Town");
+
+                if (controller.Town.Companion?.TryGetAvatar(datePartner.Id, out var companionAvatar) == true
+                    && companionAvatar is not null
+                    && controller.Town.Player is not null)
+                {
+                    var bubble = companionAvatar.GetNodeOrNull<Label3D>("ThoughtBubble");
+                    Assert(result, bubble is not null && bubble.Visible && !string.IsNullOrWhiteSpace(bubble.Text),
+                        "town dating: active companion exposes a contextual world thought bubble");
+
+                    controller.Town.Player.GlobalPosition = companionAvatar.GlobalPosition;
+                    controller.Town._Process(0.016);
+                    Assert(result, controller.Town.TryInteract(),
+                        "town dating: F-style world interaction can target the nearby companion");
+                    Assert(result, controller.IsManagementVisible && controller.Shell?.CurrentScreen == "character_detail",
+                        "town dating: companion interaction routes to the existing character detail UI");
+                    Assert(result, controller.CloseManagement(),
+                        "town dating: companion details can return cleanly to the 3D outing");
+                }
+
                 var research = controller.Town.Services.FirstOrDefault(service => service.ServiceId == "research_office");
                 Assert(result, research is not null && !research.IsAvailable,
                     "town Research Office preserves the existing Workshop progression requirement");
@@ -2652,6 +2683,47 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         finally
         {
             rosterRig.Free();
+        }
+
+        var companionTarget = new Node3D { Name = "CompanionFollowTarget" };
+        companionTarget.GlobalPosition = new Vector3(2f, 0f, 2f);
+        parent.AddChild(companionTarget);
+        var companionRig = new RosterRig
+        {
+            CompanionOnly = true,
+            AnimateTravel = true,
+            TravelSpeed = 4f
+        };
+        parent.AddChild(companionRig);
+        try
+        {
+            var partner = game.Roster.Characters.First(character => character.Id != "anon");
+            game.State.Dating.ActivePartnerId = partner.Id;
+            game.State.Dating.ActiveApproach = DateInviteApproach.Respectful;
+            companionRig.BindFollowTarget(companionTarget);
+            var count = companionRig.Refresh(game);
+            Assert(result, count == 1 && companionRig.ActiveCompanionId == partner.Id,
+                "roster dating: companion-only rig contains exactly the active partner");
+            Assert(result, companionRig.TryGetTarget(partner.Id, out var initialCompanionTarget),
+                "roster dating: active partner receives a player-relative follow target");
+
+            companionTarget.GlobalPosition += new Vector3(3f, 0f, 0f);
+            companionRig._PhysicsProcess(0.5);
+            Assert(result, companionRig.TryGetTarget(partner.Id, out var movedCompanionTarget)
+                && movedCompanionTarget != initialCompanionTarget,
+                "roster dating: active partner target tracks player movement instead of the normal work anchor");
+
+            if (companionRig.TryGetAvatar(partner.Id, out var companionAvatar) && companionAvatar is not null)
+            {
+                var thought = companionAvatar.GetNodeOrNull<Label3D>("ThoughtBubble");
+                Assert(result, thought is not null && thought.Visible && !string.IsNullOrWhiteSpace(thought.Text),
+                    "roster dating: active partner presents non-empty contextual thought text");
+            }
+        }
+        finally
+        {
+            companionRig.Free();
+            companionTarget.Free();
         }
 
         game.NewGame();
