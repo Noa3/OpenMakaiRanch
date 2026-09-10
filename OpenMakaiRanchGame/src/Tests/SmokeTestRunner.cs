@@ -69,6 +69,7 @@ public static class SmokeTestRunner
             TestOriginalCalendarAndWeather(result);
             TestCombatWorldTimeLock(result);
             TestPlayerStaminaAndRecovery(result);
+            TestDatingAndCompanionRelationships(result);
             TestPlayerManaAndCombatResources(result);
             TestInteractiveCombatSession(result);
             TestCameraInspectionAndBoundaryMath(result);
@@ -1406,26 +1407,45 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         game.State.Calendar.Phase = DayPhase.Evening;
         game.State.Ranch.BathtubClean = true;
         var bath = game.UsePlayerBath();
-        Assert(result, bath.Used && bath.UsedCleanBath && bath.Restored == PlayerStaminaService.CleanBathRecovery
-            && game.State.Player.Stamina == 95 && !game.State.Ranch.BathtubClean,
-            "stamina: an evening clean bath gives the stronger once-per-day second wind without ending the day");
+        Assert(result, bath.Used && bath.UsedCleanBath
+            && bath.ScheduledNextDayBonus == PlayerStaminaService.HotBathNextDayBonus
+            && game.State.Player.Stamina == 60
+            && game.State.Player.NextDayStaminaBonus == PlayerStaminaService.HotBathNextDayBonus
+            && !game.State.Ranch.BathtubClean,
+            "stamina: an evening prepared bath schedules tomorrow's Well Rested bonus without refilling today");
         Assert(result, string.IsNullOrWhiteSpace(game.State.Calendar.NightAction),
             "stamina: evening bath does not silently choose or end the Night action");
         Assert(result, !game.UsePlayerBath().Used,
-            "stamina: bath/shower recovery cannot be farmed repeatedly on the same day");
+            "stamina: bath/shower routine cannot be farmed repeatedly on the same day");
+
+        new DayCycleService(game.State).AdvanceToNextDay();
+        Assert(result,
+            game.State.Player.DailyStaminaBonus == PlayerStaminaService.HotBathNextDayBonus
+            && game.State.Player.NextDayStaminaBonus == 0
+            && game.State.Player.Stamina == game.State.Player.MaxStamina + PlayerStaminaService.HotBathNextDayBonus
+            && !game.State.Player.BathedToday,
+            "stamina: prepared evening bath creates extra starting stamina and capacity on the next day");
+
+        new DayCycleService(game.State).AdvanceToNextDay();
+        Assert(result, game.State.Player.DailyStaminaBonus == 0
+            && game.State.Player.Stamina == game.State.Player.MaxStamina,
+            "stamina: Well Rested bonus expires after one day unless another prepared bath schedules it again");
 
         game.NewGame();
         game.State.Player.Stamina = 40;
         game.State.Calendar.Phase = DayPhase.Night;
         game.State.Ranch.BathtubClean = false;
         var shower = game.UsePlayerBath();
-        Assert(result, shower.Used && !shower.UsedCleanBath && shower.Restored == PlayerStaminaService.ShowerRecovery
-            && game.State.Player.Stamina == 55 && game.State.Calendar.NightAction == "rest",
-            "stamina: dirty bath falls back to a weaker shower and Night recovery routes into rest");
+        Assert(result, shower.Used && !shower.UsedCleanBath && shower.ScheduledNextDayBonus == 0
+            && game.State.Player.Stamina == 40 && game.State.Player.NextDayStaminaBonus == 0
+            && game.State.Calendar.NightAction == "rest",
+            "stamina: dirty bath falls back to hygiene-only shower without immediate or next-day stamina");
 
         new DayCycleService(game.State).AdvanceToNextDay();
-        Assert(result, game.State.Player.Stamina == game.State.Player.MaxStamina && !game.State.Player.BathedToday,
-            "stamina: next day fully refreshes stamina and the once-per-day bath recovery");
+        Assert(result, game.State.Player.DailyStaminaBonus == 0
+            && game.State.Player.Stamina == game.State.Player.MaxStamina
+            && !game.State.Player.BathedToday,
+            "stamina: shower-only night starts the next day at the ordinary stamina cap");
 
         game.NewGame();
         var character = game.Roster.Characters.First();
@@ -1448,6 +1468,123 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "stamina: ordinary adventures respect the budget while the mandatory Day-1 tutorial remains free");
 
         game.NewGame();
+    }
+
+    private static void TestDatingAndCompanionRelationships(SmokeTestResult result)
+    {
+        var data = DataRegistry.CreateSeeded();
+        var state = new SaveStateFactory(data, new Random(2601)).CreateNewGame();
+        var stamina = new PlayerStaminaService(state);
+        var dating = new DatingService(state, stamina);
+        var partner = state.Roster.Characters.First(character => character.Id != "anon");
+        partner.AdultEligibility = AdultEligibility.ConfirmedAdult;
+        partner.Mature.Aversion = 10000;
+        partner.Mature.Favorability = 0;
+        partner.Bond = 0;
+        partner.Morale = 60;
+
+        var invitation = dating.StartDate(partner.Id, DateInviteApproach.Respectful);
+        Assert(result, invitation.Success && state.Dating.ActivePartnerId == partner.Id,
+            "dating: eligible ranch resident can voluntarily accompany the player");
+        Assert(result, partner.Mature.Aversion == 0,
+            "dating: untouched voluntary resident is not treated as maximally hostile by the historical generic mental default");
+
+        partner.Mature.Aversion = 500;
+        var favorabilityBeforeWork = partner.Mature.Favorability;
+        var staminaBeforeWork = state.Player.Stamina;
+        var workTogether = dating.PerformActivity(DateActivityKind.WorkTogether);
+        Assert(result, workTogether.Success
+            && partner.Mature.Aversion < 500
+            && partner.Mature.Favorability == favorabilityBeforeWork,
+            "dating: shared work follows source rule by reducing existing aversion before granting favorability");
+        Assert(result, state.Player.Stamina == staminaBeforeWork - dating.ActivityCost(DateActivityKind.WorkTogether),
+            "dating: meaningful shared activity spends its declared daily stamina exactly once");
+
+        Assert(result, !dating.PerformActivity(DateActivityKind.RanchWalk).Success,
+            "dating: a second meaningful activity in the same phase is blocked against spam farming");
+
+        state.Calendar.Phase = DayPhase.Afternoon;
+        state.Inventory.Items["meal_box"] = 2;
+        var mealsBefore = state.Inventory.Items["meal_box"];
+        Assert(result, dating.PerformActivity(DateActivityKind.SharedMeal).Success
+            && state.Inventory.Items["meal_box"] == mealsBefore - 1,
+            "dating: shared meal can happen in a later phase and consumes one meal_box");
+
+        var positiveHistory = state.Dating.Partners[partner.Id];
+        positiveHistory.PositiveMoments = 5;
+        positiveHistory.ForcedMoments = 0;
+        partner.Bond = 60;
+        partner.Mature.Favorability = 6000;
+        partner.Mature.Aversion = 0;
+        Assert(result, dating.StageFor(partner.Id) == RelationshipStage.Romantic,
+            "dating: sustained voluntary positive time can reach the Romantic relationship stage");
+
+        new DayCycleService(state).AdvanceToNextDay();
+        Assert(result, string.IsNullOrWhiteSpace(state.Dating.ActivePartnerId)
+            && state.Dating.Partners[partner.Id].SharedActivities >= 2,
+            "dating: day rollover ends active following but preserves relationship history");
+
+        var forcedState = new SaveStateFactory(data, new Random(2602)).CreateNewGame();
+        var forcedStamina = new PlayerStaminaService(forcedState);
+        var forcedDating = new DatingService(forcedState, forcedStamina);
+        var forcedPartner = forcedState.Roster.Characters.First(character => character.Id != "anon");
+        forcedPartner.AdultEligibility = AdultEligibility.ConfirmedAdult;
+        forcedPartner.Bond = 20;
+        forcedPartner.Morale = 60;
+        forcedPartner.Mature.Aversion = 0;
+        forcedPartner.Mature.Antipathy = 0;
+        forcedPartner.Mature.Fear = 0;
+        forcedPartner.Mature.Dignity = 10000;
+        var forced = forcedDating.StartDate(forcedPartner.Id, DateInviteApproach.Forced);
+
+        Assert(result, forced.Success
+            && forcedPartner.Bond < 20
+            && forcedPartner.Morale < 60
+            && forcedPartner.Mature.Dignity < 10000
+            && forcedPartner.Mature.Aversion > 0
+            && forcedPartner.Mature.Antipathy > 0
+            && forcedPartner.Mature.Fear > 0,
+            "dating: forcing companionship erodes dignity but damages trust/mood and raises negative mental values");
+        Assert(result, forcedDating.ThoughtsFor(forcedPartner.Id)
+                .Any(line => line.Contains("go back", StringComparison.OrdinalIgnoreCase)
+                    || line.Contains("made to", StringComparison.OrdinalIgnoreCase)),
+            "dating: forced companion expresses discomfort through contextual thought text");
+
+        var forcedProgress = forcedState.Dating.Partners[forcedPartner.Id];
+        forcedProgress.PositiveMoments = 6;
+        forcedProgress.ForcedMoments = 2;
+        forcedPartner.Bond = 65;
+        forcedPartner.Mature.Favorability = 6500;
+        forcedPartner.Mature.Aversion = 0;
+        Assert(result, (int)forcedDating.StageFor(forcedPartner.Id) < (int)RelationshipStage.Romantic,
+            "dating: repeated force prevents high positive relationship stages even when raw favorability is high");
+
+        var mental = new MentalStateService();
+        forcedPartner.Talents = new List<string> { "Stubborn", "Optimistic", "Charismatic", "Kind" };
+        forcedPartner.Mature.MentalStrength = 0;
+        mental.RecalculateFallState(forcedPartner);
+        Assert(result, forcedPartner.Mature.FallState == FallState.Collapse
+            && !forcedPartner.Talents.Contains("Stubborn")
+            && !forcedPartner.Talents.Contains("Optimistic")
+            && !forcedPartner.Talents.Contains("Charismatic")
+            && forcedPartner.Talents.Contains("Kind"),
+            "dating/parity: mental Collapse destroys only source-traced matching traits and preserves unrelated traits");
+        Assert(result, forcedPartner.Mature.Marks.Any(mark => mark.StartsWith("CollapseLost:", StringComparison.Ordinal)),
+            "dating/parity: irreversible collapse trait changes leave an auditable character marker");
+
+        forcedPartner.Mature.MentalStrength = 5000;
+        forcedPartner.Mature.Despair = 0;
+        mental.RecalculateFallState(forcedPartner);
+        Assert(result, !forcedPartner.Mature.IsCollapsed,
+            "dating/parity: recovery from collapse clears the derived IsCollapsed flag while lost traits remain lost");
+
+        var underageState = new SaveStateFactory(data, new Random(2603)).CreateNewGame();
+        var underageDating = new DatingService(underageState, new PlayerStaminaService(underageState));
+        var underage = underageState.Roster.Characters.First(character => character.Id != "anon");
+        underage.AdultEligibility = AdultEligibility.IneligibleMinor;
+        Assert(result, !underageDating.IsEligiblePartner(underage)
+            && !underageDating.StartDate(underage.Id, DateInviteApproach.Respectful).Success,
+            "dating: adult relationship system fails closed for ineligible minors");
     }
 
     private static void TestPlayerManaAndCombatResources(SmokeTestResult result)
