@@ -2,19 +2,18 @@ using Godot;
 
 namespace OpenMakaiRanch.World;
 
-/// <summary>Handles the configurable pause shortcut in addition to the standard UI Back fallback.</summary>
+/// <summary>Single event-owned route for the configurable pause shortcut and standard UI Back.</summary>
 public partial class WorldGameController
 {
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (!@event.IsActionPressed("pause_menu") || _flowLocksUi)
-        {
+        if (@event.IsEcho() || _flowLocksUi
+            || (!@event.IsActionPressed("pause_menu") && !@event.IsActionPressed("ui_cancel")))
             return;
-        }
 
         if (_pauseMenu?.IsOpen == true)
         {
-            _pauseMenu.Close();
+            _pauseMenu.GoBack();
             GetViewport().SetInputAsHandled();
             return;
         }
@@ -27,9 +26,7 @@ public partial class WorldGameController
         }
 
         if (_transition?.IsTransitioning == true || _firstDayFlow?.BlocksWorldInput == true)
-        {
             return;
-        }
 
         _pauseMenu?.Open(_activeAreaId);
         GetViewport().SetInputAsHandled();

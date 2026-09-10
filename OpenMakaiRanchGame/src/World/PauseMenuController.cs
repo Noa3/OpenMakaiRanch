@@ -57,10 +57,16 @@ public partial class PauseMenuController : Control
             || (!@event.IsActionPressed("ui_cancel") && !@event.IsActionPressed("pause_menu")))
             return;
 
-        // Back leaves only the innermost panel. Browsing or closing the board never resumes time.
+        GoBack();
+        GetViewport().SetInputAsHandled();
+    }
+
+    /// <summary>Back leaves only the innermost panel; returning from the board retains pause.</summary>
+    public void GoBack()
+    {
+        if (!Visible) return;
         if (IsCommunityBoardOpen) CloseCommunityBoard();
         else Close();
-        GetViewport().SetInputAsHandled();
     }
 
     public void Open(string areaId)

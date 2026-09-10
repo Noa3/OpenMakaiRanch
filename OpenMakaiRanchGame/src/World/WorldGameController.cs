@@ -187,23 +187,8 @@ public partial class WorldGameController : Node
             return;
         }
 
-        if (!Input.IsActionJustPressed("ui_cancel") || _flowLocksUi)
-        {
-            return;
-        }
-
-        if (IsManagementVisible)
-        {
-            CloseManagement();
-            return;
-        }
-
-        if (_transition?.IsTransitioning == true || _firstDayFlow?.BlocksWorldInput == true)
-        {
-            return;
-        }
-
-        _pauseMenu?.Open(_activeAreaId);
+        // Pause/Back are event-owned in _UnhandledInput. Polling ui_cancel here would reopen
+        // pause in the same frame after a handled Back event closed it and resumed processing.
     }
 
     public bool OpenManagement()
