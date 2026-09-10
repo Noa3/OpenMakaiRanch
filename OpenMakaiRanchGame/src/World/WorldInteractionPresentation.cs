@@ -30,9 +30,10 @@ public partial class RanchGreyboxController
     {
         UpdateNearbyStation();
 
+        Node3D? npc = null;
         var npcValid = !string.IsNullOrWhiteSpace(_nearbyCharacterId)
             && Roster is not null
-            && Roster.TryGetAvatar(_nearbyCharacterId, out var npc)
+            && Roster.TryGetAvatar(_nearbyCharacterId, out npc)
             && npc is not null;
         var stationValid = _nearbyStation is not null && GodotObject.IsInstanceValid(_nearbyStation);
         var travelValid = _travelPortal is not null && GodotObject.IsInstanceValid(_travelPortal);
@@ -83,9 +84,10 @@ public partial class TownWorldController
     {
         UpdateNearbyTargets();
 
+        Node3D? companion = null;
         var companionValid = !string.IsNullOrWhiteSpace(_nearbyCompanionId)
             && Companion is not null
-            && Companion.TryGetAvatar(_nearbyCompanionId, out var companion)
+            && Companion.TryGetAvatar(_nearbyCompanionId, out companion)
             && companion is not null;
         var serviceValid = _nearbyService is not null && GodotObject.IsInstanceValid(_nearbyService);
         var portalValid = _returnPortal is not null && GodotObject.IsInstanceValid(_returnPortal);
