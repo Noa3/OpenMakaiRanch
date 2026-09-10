@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import struct
 from pathlib import Path
 import sys
 import tempfile
@@ -26,6 +27,44 @@ def isolated_environment(run_dir: Path, source: dict[str, str], platform: str) -
     env["OMR_EXPECTED_USER_ROOT"] = str(run_dir.resolve())
     env["OMR_UI_EVIDENCE_DIR"] = str(run_dir.resolve())
     return env
+
+
+def valid_evidence(run_dir: Path, code: int, text: str, require_rendered: bool) -> bool:
+    lines = text.splitlines()
+    if code or lines.count("UI ACCEPTANCE PASS") != 1:
+        return False
+    # Unlike the full smoke suite this UI scenario deliberately submits no invalid-save fixtures.
+    # A C# exception inside a Godot signal may be logged without propagating into the test task.
+    if any(line.lstrip().startswith(("ERROR:", "SCRIPT ERROR:", "UI FAIL ")) for line in lines):
+        return False
+    report_path = run_dir / "results.json"
+    if not report_path.is_file():
+        return False
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    if not isinstance(report, dict) or report.get("passed") is not True:
+        return False
+    checks = report.get("checks")
+    if not isinstance(checks, list) or not checks or not all(
+        isinstance(check, dict) and check.get("Passed") is True for check in checks
+    ):
+        return False
+    if require_rendered:
+        captures = report.get("captures")
+        if report.get("rendered") is not True or not isinstance(captures, list) or not captures:
+            return False
+        for name in captures:
+            if not isinstance(name, str) or Path(name).name != name or "\\" in name or not name.endswith(".png"):
+                return False
+            image_path = run_dir / name
+            if not image_path.is_file():
+                return False
+            with image_path.open("rb") as image:
+                header = image.read(24)
+            if len(header) != 24 or header[:8] != b"\x89PNG\r\n\x1a\n" or header[12:16] != b"IHDR":
+                return False
+            if not all(0 < side <= 16384 for side in struct.unpack(">II", header[16:24])):
+                return False
+    return True
 
 
 def main(argv=None) -> int:
@@ -59,15 +98,7 @@ def main(argv=None) -> int:
         command += ["--require-ui-captures"]
     print(f"UI evidence: {run_dir}; engine: {version}", flush=True)
     code, text = launch.invoke(command, env, args.timeout, run_dir / "console.log")
-    report_path = run_dir / "results.json"
-    if code or not report_path.is_file():
-        return code or 1
-    report = json.loads(report_path.read_text(encoding="utf-8"))
-    if report.get("passed") is not True or "UI ACCEPTANCE PASS" not in text.splitlines():
-        return 1
-    if args.rendered and (report.get("rendered") is not True or not report.get("captures")):
-        return 1
-    return 0
+    return 0 if valid_evidence(run_dir, code, text, args.rendered) else 1
 
 
 if __name__ == "__main__":
