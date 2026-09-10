@@ -8,7 +8,10 @@ using OpenMakaiRanch.World;
 
 namespace OpenMakaiRanch.Tests;
 
-/// <summary>Extends the existing production-backed Day 2 walkthrough. Proximity is explicitly staged.</summary>
+/// <summary>
+/// Extends the existing Day 2 walkthrough through ordinary supply production and Day 3 restoration.
+/// Proximity is explicitly staged; no stock, money, day or stamina is injected into this progression.
+/// </summary>
 public static class RanchLeisureFrameTests
 {
     public static async Task Run(GameRoot game, WorldGameController world, SmokeTestResult result)
@@ -22,6 +25,7 @@ public static class RanchLeisureFrameTests
             Check(result, leisure.CornerStation is not null && leisure.BoardStation is not null
                 && ranch.Stations.Contains(leisure.CornerStation) && ranch.Stations.Contains(leisure.BoardStation),
                 "authored live world registers both personal points in the existing interaction list");
+            await ProduceRestorationSupplies(game, world, leisure, result);
             var assignments = string.Join("|", game.State.Schedule.AssignedJobs.OrderBy(pair => pair.Key));
             var beforeStock = game.State.Ranch.Stockpile["supplies"];
             var beforeGold = game.Economy.Gold;
@@ -49,7 +53,7 @@ public static class RanchLeisureFrameTests
             var restore = panel.GetNode<Button>("Margin/Layout/Scroll/Content/Restore");
             var rest = panel.GetNode<Button>("Margin/Layout/Scroll/Content/Rest");
             var share = panel.GetNode<Button>("Margin/Layout/Scroll/Content/Share");
-            Check(result, !restore.Disabled, "actual Day 2 starting supplies and earned gold cover optional restoration");
+            Check(result, !restore.Disabled, "ordinary supply production and earned gold cover optional restoration");
             restore.EmitSignal(BaseButton.SignalName.Pressed);
             Check(result, game.IsRanchCornerRestored && leisure.ShowsRestoredCorner,
                 "restoration changes the visible greybox bench immediately through shared-state notification");
@@ -130,6 +134,58 @@ public static class RanchLeisureFrameTests
             Input.FlushBufferedEvents();
             pause.Close();
         }
+    }
+
+    private static async Task ProduceRestorationSupplies(GameRoot game, WorldGameController world,
+        RanchLeisureController leisure, SmokeTestResult result)
+    {
+        var ranch = world.Ranch!;
+        var pause = world.PauseMenu!;
+        // Day 1 consumes starting supplies for existing facility maintenance. The UI must explain
+        // the resulting shortage and lead to real production, not assume those supplies survived.
+        ranch.Player!.GlobalPosition = leisure.CornerStation!.GlobalPosition;
+        await Frames(game, 2);
+        await KeyStroke(game, Key.F);
+        var panel = pause.GetNode<Control>("RanchCorner");
+        var status = game.GetRanchCornerStatus();
+        Check(result, game.State.Calendar.Day == 2 && !status.CanRestore
+            && status.Supplies < RanchLeisureService.RestoreSupplyCost
+            && status.RestoreReason.Contains("supplies", StringComparison.OrdinalIgnoreCase),
+            "after real facility upkeep the corner explains the missing supplies instead of taking partial payment");
+        panel.GetNode<Button>("Margin/Layout/Scroll/Content/PlanSupplies").EmitSignal(BaseButton.SignalName.Pressed);
+        await Frames(game, 2);
+        Check(result, world.IsManagementVisible && world.Shell!.CurrentScreen == "schedule" && !game.GetTree().Paused,
+            "the shortage's planning route opens the normal schedule without a leftover pause");
+        var officeLabel = game.Data.Jobs["office"].DisplayName;
+        var workers = game.Roster.Characters.ToList();
+        var workerIndex = workers.FindIndex(character => game.Schedule.GetAssignment(character.Id) != "dairy");
+        var officeButtons = PlayabilityRegressionTests.Buttons(world.Shell!)
+            .Where(button => button.Text == officeLabel).ToArray();
+        if (workerIndex < 0 || workerIndex >= officeButtons.Length || officeButtons[workerIndex].Disabled)
+            throw new InvalidOperationException("Supply-producing Office Work assignment is unavailable");
+        officeButtons[workerIndex].EmitSignal(BaseButton.SignalName.Pressed);
+        Check(result, game.Schedule.GetAssignment(workers[workerIndex].Id) == "office",
+            "a live Schedule button assigns an existing worker to supply production");
+        world.GetNode<Button>("ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton")
+            .EmitSignal(BaseButton.SignalName.Pressed);
+        await Frames(game, 2);
+        var dayBefore = game.State.Calendar.Day;
+        var advance = ranch.GetNode<Button>("WorldHud/AdvanceTimeButton");
+        for (var phase = 0; phase < 4 && game.State.Calendar.Day == dayBefore; phase++)
+        {
+            if (!advance.IsVisibleInTree() || advance.Disabled)
+                throw new InvalidOperationException("Normal world phase advance is unavailable");
+            advance.EmitSignal(BaseButton.SignalName.Pressed);
+            await Frames(game, 2);
+        }
+        Check(result, game.State.Calendar.Day == dayBefore + 1 && game.LastDailyReport?.Day == dayBefore
+            && world.Shell!.CurrentScreen == "report", "normal phase advancement reaches the Day 3 settlement report once");
+        Check(result, game.State.Ranch.Stockpile["supplies"] >= RanchLeisureService.RestoreSupplyCost
+            && game.LastDailyReport!.Lines.Any(line => line.Contains(officeLabel, StringComparison.Ordinal)),
+            "the actual Office Work report accounts for the supplies used by restoration");
+        world.GetNode<Button>("ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton")
+            .EmitSignal(BaseButton.SignalName.Pressed);
+        await Frames(game, 2);
     }
 
     private static async Task Frames(GameRoot game, int count)
