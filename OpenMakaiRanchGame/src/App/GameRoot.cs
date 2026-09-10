@@ -54,6 +54,7 @@ public partial class GameRoot : Node
 	public CombatService Combat { get; private set; } = null!;
 	public MagicService Magic { get; private set; } = null!;
 	public PlayerStaminaService PlayerStamina { get; private set; } = null!;
+	public DatingService Dating { get; private set; } = null!;
 	public DiscoveryService Discovery { get; private set; } = null!;
 	public MercenaryService Mercenary { get; private set; } = null!;
 	public WinConditionService WinCondition { get; private set; } = null!;
@@ -211,8 +212,12 @@ public partial class GameRoot : Node
 			}
 		}
 
-		// Carry over player customization
+		// Carry over player customization, but not transient daily-rest economy from the previous run.
 		State.Player = oldState.Player;
+		State.Player.Stamina = State.Player.MaxStamina;
+		State.Player.DailyStaminaBonus = 0;
+		State.Player.NextDayStaminaBonus = 0;
+		State.Player.BathedToday = false;
 
 		ResetTransientRuntimeState();
 		SyncFeedbackSettings();
@@ -893,6 +898,36 @@ public partial class GameRoot : Node
 		return true;
 	}
 
+	public DatingResult StartDate(string characterId, DateInviteApproach approach)
+	{
+		var result = Dating.StartDate(characterId, approach);
+		if (result.Success)
+		{
+			StateChanged?.Invoke();
+		}
+		return result;
+	}
+
+	public DatingResult EndDate()
+	{
+		var result = Dating.EndDate();
+		if (result.Success)
+		{
+			StateChanged?.Invoke();
+		}
+		return result;
+	}
+
+	public DatingResult PerformDateActivity(DateActivityKind kind)
+	{
+		var result = Dating.PerformActivity(kind);
+		if (result.Success)
+		{
+			StateChanged?.Invoke();
+		}
+		return result;
+	}
+
 	public PlayerRecoveryResult UsePlayerBath()
 	{
 		var recovery = PlayerStamina.TryBathRecovery(State.Ranch.BathtubClean, State.Calendar.Phase);
@@ -1323,6 +1358,7 @@ public partial class GameRoot : Node
 		Economy = new EconomyService(State);
 		Magic = new MagicService(State, Data);
 		PlayerStamina = new PlayerStaminaService(State);
+		Dating = new DatingService(State, PlayerStamina);
 		Inventory = new InventoryService(State);
 		Milestones = new MilestoneService(State, Data, Economy);
 		Shop = new ShopService(Data, Economy, Inventory);
