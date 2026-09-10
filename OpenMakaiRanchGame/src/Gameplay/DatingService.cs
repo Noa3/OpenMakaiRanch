@@ -8,14 +8,16 @@ namespace OpenMakaiRanch.Gameplay;
 /// <summary>
 /// Real-time companionship/date layer.
 ///
-/// This does not replace the source game's mental model. It feeds Bond/Morale and the existing
-/// Resistance/Dignity/Aversion/Favorability/etc. values, while persisting only date history and
-/// the currently accompanying ranch resident.
+/// Dates never replace the original mental model. They feed the same Bond/Morale and
+/// Resistance/Dignity/Aversion/Favorability/Fear/Antipathy values used elsewhere, then immediately
+/// run the shared MentalStateService so threshold crossings and source-traced Collapse trait losses
+/// cannot remain stale until some unrelated training action occurs.
 /// </summary>
 public sealed class DatingService
 {
     private readonly SaveState _state;
     private readonly PlayerStaminaService _stamina;
+    private readonly MentalStateService _mentalState = new();
 
     public DatingService(SaveState state, PlayerStaminaService stamina)
     {
@@ -29,9 +31,7 @@ public sealed class DatingService
     public bool HasActivePartner => !string.IsNullOrWhiteSpace(ActivePartnerId);
 
     public IReadOnlyList<CharacterState> EligiblePartners() =>
-        _state.Roster.Characters
-            .Where(IsEligiblePartner)
-            .ToList();
+        _state.Roster.Characters.Where(IsEligiblePartner).ToList();
 
     public bool IsEligiblePartner(CharacterState character) =>
         character.Id != "anon"
@@ -56,32 +56,42 @@ public sealed class DatingService
             return RelationshipStage.Distant;
 
         var progress = ProgressFor(characterId);
-        var m = character.Mature;
+        var mind = character.Mature;
 
+        // Relationship stage measures a positive bond. Coercion can alter original-era mental
+        // parameters, but it is deliberately not a shortcut to romance.
         if (progress.PositiveMoments >= 8
             && progress.TrustDamage <= 5
             && character.Bond >= 75
-            && m.Favorability >= 10000
+            && mind.Favorability >= 10000
             && EffectiveAversion(character, progress) <= 500)
             return RelationshipStage.DeeplyAttached;
 
         if (progress.PositiveMoments >= 4
             && progress.TrustDamage <= 20
             && character.Bond >= 50
-            && m.Favorability >= 5000
+            && mind.Favorability >= 5000
             && EffectiveAversion(character, progress) <= 1500)
             return RelationshipStage.Romantic;
 
         if (progress.PositiveMoments >= 2
             && progress.TrustDamage <= 45
             && character.Bond >= 30
-            && m.Favorability >= 2000
+            && mind.Favorability >= 2000
             && EffectiveAversion(character, progress) <= 3000)
             return RelationshipStage.Close;
 
         return progress.DatesStarted > 0 || character.Bond >= 10
             ? RelationshipStage.Familiar
             : RelationshipStage.Distant;
+    }
+
+    public OriginalMentalProgressStage MentalStageFor(string characterId)
+    {
+        var character = FindCharacter(characterId);
+        return character is null
+            ? OriginalMentalProgressStage.Guarded
+            : OriginalMentalProgression.StageFor(character);
     }
 
     public DatingResult StartDate(string characterId, DateInviteApproach approach)
@@ -137,12 +147,13 @@ public sealed class DatingService
                 progress.TrustDamage = Math.Min(100, progress.TrustDamage + 30);
                 character.Morale = Clamp100(character.Morale - 10);
                 character.Bond = Clamp100(character.Bond - 5);
-                // Pressure may erode dignity, but it also makes the social route substantially worse.
-                // This prevents forced outings from becoming an optimal shortcut to positive romance.
+                // Force can erode dignity while simultaneously increasing active resistance/hostility.
+                // That distinction is important: breaking a parameter is not treated as affection.
                 AdjustMind(character, resistance: 120, dignity: -100, aversion: 320, antipathy: 260, fear: 120, favorability: -180);
                 break;
         }
 
+        RecalculateMentalState(character);
         return DatingResult.Ok(approach switch
         {
             DateInviteApproach.Respectful => $"{DisplayName(character)} agrees to spend time with you and will accompany you.",
@@ -243,25 +254,30 @@ public sealed class DatingService
         var compatibility = Compatibility(character, kind);
         var lowMood = character.Morale < 30 || character.Fatigue >= 75;
         var approach = _state.Dating.ActiveApproach;
+        string message;
 
         if (approach == DateInviteApproach.Forced)
         {
             ApplyForcedActivity(character, progress, kind);
-            return DatingResult.Ok($"{DisplayName(character)} goes through with {ActivityName(kind)}, but the forced outing worsens trust and mood.");
+            message = $"{DisplayName(character)} goes through with {ActivityName(kind)}, but the forced outing worsens trust and mood.";
         }
-
-        if (approach == DateInviteApproach.Pressured && (compatibility < 0 || lowMood))
+        else if (approach == DateInviteApproach.Pressured && (compatibility < 0 || lowMood))
         {
             progress.PressuredMoments++;
             progress.TrustDamage = Math.Min(100, progress.TrustDamage + 8);
             character.Morale = Clamp100(character.Morale - 3);
             character.Bond = Clamp100(character.Bond - 1);
             AdjustMind(character, dignity: -15, aversion: 90, antipathy: 70, fear: 10, favorability: -25);
-            return DatingResult.Ok($"{DisplayName(character)} clearly isn't enjoying {ActivityName(kind)}. Pressing on creates distance.");
+            message = $"{DisplayName(character)} clearly isn't enjoying {ActivityName(kind)}. Pressing on creates distance.";
+        }
+        else
+        {
+            ApplyPositiveActivity(character, progress, kind, compatibility, lowMood, approach == DateInviteApproach.Pressured);
+            message = $"{DisplayName(character)} spends time with you: {ActivityName(kind)}.";
         }
 
-        ApplyPositiveActivity(character, progress, kind, compatibility, lowMood, approach == DateInviteApproach.Pressured);
-        return DatingResult.Ok($"{DisplayName(character)} spends time with you: {ActivityName(kind)}. {RelationshipSummary(character.Id)}");
+        RecalculateMentalState(character);
+        return DatingResult.Ok($"{message} {RelationshipSummary(character.Id)}");
     }
 
     public IReadOnlyList<string> ThoughtsFor(string characterId)
@@ -291,6 +307,22 @@ public sealed class DatingService
         if (EffectiveAversion(character, progress) >= 6000 || progress.TrustDamage >= 50)
             thoughts.Add("I still don't trust them.");
 
+        switch (OriginalMentalProgression.StageFor(character))
+        {
+            case OriginalMentalProgressStage.ResistanceBroken:
+                thoughts.Add("I don't have the energy to keep pushing back like before...");
+                break;
+            case OriginalMentalProgressStage.DignityBroken:
+                thoughts.Add("I barely recognize the way I think about myself anymore...");
+                break;
+            case OriginalMentalProgressStage.AversionCleared:
+                thoughts.Add("The resistance I used to feel is fading...");
+                break;
+            case OriginalMentalProgressStage.WillBroken:
+                thoughts.Add("I can't bring myself to decide anything right now...");
+                break;
+        }
+
         if (OriginalCalendarRules.IsRain(_state.Calendar.CurrentWeather))
             thoughts.Add("We should find somewhere dry.");
         else if (OriginalCalendarRules.IsSnow(_state.Calendar.CurrentWeather))
@@ -315,7 +347,8 @@ public sealed class DatingService
 
         var stage = StageFor(characterId);
         var progress = ProgressFor(characterId);
-        return $"{stage} · Bond {character.Bond} · Morale {character.Morale} · Favorability {character.Mature.Favorability} · Aversion {EffectiveAversion(character, progress)} · Trust damage {progress.TrustDamage}";
+        var mentalStage = OriginalMentalProgression.Describe(character);
+        return $"{stage} · Bond {character.Bond} · Morale {character.Morale} · Favorability {character.Mature.Favorability} · Aversion {EffectiveAversion(character, progress)} · Trust damage {progress.TrustDamage} · Mental: {mentalStage}";
     }
 
     private void ApplyPositiveActivity(
@@ -338,8 +371,8 @@ public sealed class DatingService
         {
             case DateActivityKind.WorkTogether:
             {
-                // Source parity: working alongside the player first lowers aversion; once it is gone,
-                // the same shared work begins increasing favorability.
+                // Source parity: shared work first reduces existing aversion. Favorability starts
+                // increasing only after that resistance has been worked through.
                 var roll = StableRoll(character.Id, _state.Calendar.Day, (int)_state.Calendar.Phase, 50);
                 if (EffectiveAversion(character, progress) > 0)
                     character.Mature.Aversion = ClampMind(character.Mature.Aversion - Scale(100 + roll));
@@ -386,13 +419,9 @@ public sealed class DatingService
     private void ApplyFriendlyMind(CharacterState character, DatingPartnerState progress, int favorability, int aversionReduction)
     {
         if (EffectiveAversion(character, progress) > 0)
-        {
             character.Mature.Aversion = ClampMind(character.Mature.Aversion - aversionReduction);
-        }
         else
-        {
             character.Mature.Favorability = ClampFavorability(character.Mature.Favorability + favorability);
-        }
 
         character.Mature.Antipathy = ClampMind(character.Mature.Antipathy - Math.Max(10, aversionReduction / 3));
         character.Mature.Fear = ClampMind(character.Mature.Fear - Math.Max(5, aversionReduction / 6));
@@ -417,9 +446,9 @@ public sealed class DatingService
 
     private static void NormalizeVoluntaryRelationshipBaseline(CharacterState character, DatingPartnerState progress)
     {
-        // MentalState's historical generic default uses Aversion=10000 for every CharacterState.
-        // A resident who joined voluntarily and has never been pressured should not suddenly become
-        // maximally hostile merely because the dating layer starts tracking them.
+        // Older remake saves used Aversion=10000 as a generic untouched default. A voluntary,
+        // never-pressured ranch resident should not become maximally hostile just because the dating
+        // layer begins tracking them.
         if (!character.IsCaptured
             && progress.DatesStarted == 0
             && progress.SharedActivities == 0
@@ -435,9 +464,6 @@ public sealed class DatingService
 
     private int WillingnessScore(CharacterState character, DatingPartnerState progress)
     {
-        // Older remake saves leave untouched non-captured residents at the generic 10000 mental
-        // defaults. Do not treat that uninitialized placeholder as established hatred. Captured or
-        // previously pressured residents always use their actual aversion.
         var aversion = EffectiveAversion(character, progress);
         return character.Bond * 30
             + character.Morale * 10
@@ -490,13 +516,18 @@ public sealed class DatingService
         int fear = 0,
         int favorability = 0)
     {
-        var m = character.Mature;
-        m.Resistance = ClampMind(m.Resistance + resistance);
-        m.Dignity = ClampMind(m.Dignity + dignity);
-        m.Aversion = ClampMind(m.Aversion + aversion);
-        m.Antipathy = ClampMind(m.Antipathy + antipathy);
-        m.Fear = ClampMind(m.Fear + fear);
-        m.Favorability = ClampFavorability(m.Favorability + favorability);
+        var mind = character.Mature;
+        mind.Resistance = ClampMind(mind.Resistance + resistance);
+        mind.Dignity = ClampMind(mind.Dignity + dignity);
+        mind.Aversion = ClampMind(mind.Aversion + aversion);
+        mind.Antipathy = ClampMind(mind.Antipathy + antipathy);
+        mind.Fear = ClampMind(mind.Fear + fear);
+        mind.Favorability = ClampFavorability(mind.Favorability + favorability);
+    }
+
+    private void RecalculateMentalState(CharacterState character)
+    {
+        _mentalState.RecalculateFallState(character);
     }
 
     private DatingPartnerState ProgressFor(string characterId)
@@ -506,7 +537,6 @@ public sealed class DatingService
             progress = new DatingPartnerState();
             _state.Dating.Partners[characterId] = progress;
         }
-
         return progress;
     }
 
