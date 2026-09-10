@@ -183,6 +183,7 @@ public partial class RanchGreyboxController : Node3D
         var rosterRig = GetNodeOrNull<RosterRig>("RosterRig");
         if (rosterRig is not null)
         {
+            rosterRig.BindFollowTarget(_player);
             rosterRig.Refresh(game);
             Roster = rosterRig;
         }
