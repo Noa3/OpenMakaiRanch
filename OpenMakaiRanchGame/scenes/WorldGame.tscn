@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://src/World/WorldGameController.cs" id="1_controller"]
 [ext_resource type="PackedScene" path="res://scenes/dev/RanchGreybox.tscn" id="2_ranch"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://src/World/MobileWorldControls.cs" id="7_mobile"]
 [ext_resource type="PackedScene" path="res://scenes/dev/RanchHouseIntro.tscn" id="8_intro_house"]
 [ext_resource type="Script" path="res://src/World/FirstDayFlowController.cs" id="9_first_day"]
+[ext_resource type="Script" path="res://src/World/WorldInteractionAssistController.cs" id="10_interaction_assist"]
 
 [node name="WorldGame" type="Node"]
 script = ExtResource("1_controller")
@@ -22,6 +23,9 @@ process_mode = 4
 [node name="TownWorld" parent="." instance=ExtResource("4_town")]
 visible = false
 process_mode = 4
+
+[node name="InteractionAssist" type="Node" parent="."]
+script = ExtResource("10_interaction_assist")
 
 [node name="ManagementLayer" type="CanvasLayer" parent="."]
 layer = 50
