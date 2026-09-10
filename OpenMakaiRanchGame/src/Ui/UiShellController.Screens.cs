@@ -633,9 +633,25 @@ public partial class UiShellController
         var definition = _game.Roster.DefinitionFor(character);
         _game.Clothing.SyncCharacterEquipment(character);
 
+        var detailActions = FlowRow(8);
+        _content.AddChild(detailActions);
+
         var backBtn = SecondaryButton(T("label.back", "← Back to Roster"));
         backBtn.Pressed += () => ShowScreen("roster");
-        _content.AddChild(backBtn);
+        AddFlowButton(detailActions, backBtn, 148);
+
+        if (character.Id != "anon")
+        {
+            var personalTime = PrimaryButton("Personal Time", "Open care, relationship and companionship/date options for this resident.");
+            personalTime.Pressed += () =>
+            {
+                var index = _game.Roster.Characters.ToList().FindIndex(value => value.Id == character.Id);
+                if (index >= 0)
+                    _visitCharIdx = index;
+                ShowScreen("visit");
+            };
+            AddFlowButton(detailActions, personalTime, 150);
+        }
 
         AddTitle(CharacterPickerName(character));
 
