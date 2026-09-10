@@ -3,10 +3,8 @@ using Godot;
 namespace OpenMakaiRanch.Ui;
 
 /// <summary>
-/// Keeps every ordinary management feature reachable when responsive layout hides the desktop
-/// navigation and switches to the horizontally scrolling compact navigation. Also keeps the
-/// top-bar player vitality display bound to PlayerState rather than the first ranch resident.
-/// Existing gameplay/eligibility gates remain the authority for whether a screen action is allowed.
+/// Keeps ordinary management features reachable in compact layouts, keeps canonical player HP visible,
+/// and attaches controller/input options without duplicating the authored options screen.
 /// </summary>
 public partial class UiShellController
 {
@@ -14,16 +12,10 @@ public partial class UiShellController
 
     public override void _Process(double delta)
     {
-        if (!_shellReady)
-        {
-            return;
-        }
+        if (!_shellReady) return;
 
         if (!_reachabilityCompactRoutesBound && GodotObject.IsInstanceValid(_compactNavigation))
         {
-            // Desktop navigation exposes these as separate destinations, but the authored compact
-            // bar omitted them. Mirror the actual desktop routes instead of hiding gameplay on
-            // narrow windows/mobile.
             AddCompactReachabilityRoute("clothing_list", "Clothes");
             AddCompactReachabilityRoute("clothing_change", "Change Clothes");
             AddCompactReachabilityRoute("clothing_strip", "Undress");
@@ -40,15 +32,13 @@ public partial class UiShellController
         }
 
         RefreshCanonicalPlayerVitals();
+        EnsureInputOptionsExtension();
+        EnsureControllerFocus();
     }
 
     private void AddCompactReachabilityRoute(string screenId, string fallbackLabel)
     {
-        if (_compactNavButtons.ContainsKey(screenId))
-        {
-            return;
-        }
-
+        if (_compactNavButtons.ContainsKey(screenId)) return;
         var title = ScreenTitle(screenId);
         var button = new Button
         {
@@ -58,25 +48,15 @@ public partial class UiShellController
             CustomMinimumSize = new Vector2(84, 34),
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
         };
-
         ApplySecondaryButtonStyle(button);
-        button.Pressed += () =>
-        {
-            _game.Feedback.PlayNavigate();
-            ShowScreen(screenId);
-        };
-
+        button.Pressed += () => { _game.Feedback.PlayNavigate(); ShowScreen(screenId); };
         _compactNavigation.AddChild(button);
         _compactNavButtons[screenId] = button;
     }
 
     private void RefreshCanonicalPlayerVitals()
     {
-        if (!GodotObject.IsInstanceValid(_hpLabel) || !GodotObject.IsInstanceValid(_hpBar))
-        {
-            return;
-        }
-
+        if (!GodotObject.IsInstanceValid(_hpLabel) || !GodotObject.IsInstanceValid(_hpBar)) return;
         var player = _game.State.Player;
         var maxHp = System.Math.Max(1, player.MaxHp);
         var hp = System.Math.Clamp(player.Hp, 0, maxHp);
