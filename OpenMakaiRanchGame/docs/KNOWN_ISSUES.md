@@ -1,35 +1,49 @@
 # Known Issues
 
-Updated 2026-09-09. Source-visible risks are not automatically reproduced bugs. Baseline smoke success is not a waiver for these issues.
+Updated **2026-09-10** against code `b7cf272d9b1af4a18da0753c992f1eafdf8591bc`. Distinguish reproduced current findings, older audit leads and untested acceptance. See `ASTRA_HANDOFF.md` for exact evidence and the next action.
 
-## Open
+## Current verified status
 
-- **SAVE-001 resolved:** root saves now synchronize all flag tiers; roster normalization precedes schema-13 migration; null Reports/Flags/maps normalize without losing neighboring entries. Verified with real root roundtrips and rejection fixtures: 81 new assertions, full smoke 949 PASS. This is not exhaustive validation of every malformed save structure. Evidence: `.artifacts/save-001-verification.log`.
-- **CORE-002 foundation resolved:** job assignment, mentorship and bond-event UI now use generation-checked root commands and one StateChanged notification. NewGame/LoadSlot/NG+ and stale queued UI signals covered. Other raw service calls are not universally wrapped; future world navigation/reservation cancellation still requires integration.
-- **DATA-002 / high — age/design safeguards absent:** source Slay/Maria have minor apparent ages; generator includes 12/14/16, and definition age/asset approval fields are missing. Audit clears nobody. Do not create adult-specific presentation. Neutral audit/world work remains separate.
-- **DATA-001 evidence freshness:** the original 11 CSV hashes and 136 listed citations still match. The full code snapshot is stale for `SaveMigrator.cs`, `GameRoot.cs` and `UiShellController.Screens.cs` after SAVE-001/CORE-002; re-audit those boundaries before updating hashes. TOOLS-004 now rejects this explicitly, including under `python -O`. Source-only success does not validate the code snapshot or grant adult clearance.
-- **DATA-003 / medium — importer cannot build:** `Tools/EraDataImporter/EraDataImporter.csproj` references absent Core csproj and has no Main. Reproduced MSB9008/CS5001. No implementation recovered in broader source searches; do not overwrite current JSON with guessed outputs.
-- **DATA-004 / medium — ContentValidator placeholder:** checks .tres text IDs, not full JSON integrity or referenced images. Not a valid completeness gate.
-- **CORE-003 / medium — night growth multiplicity:** night training calls whole-roster growth inside roster iteration, then settlement applies growth again. Source-visible risk; intended original behavior and exact regression test pending.
-- **CORE-004 / medium — settlement semantics:** EndDay lacks idempotency/transaction guard; auto-rest overwrites intent, effective-job rules are distributed, and report NetGold is not a complete ledger of event deltas. Must be specified/tested before physical progress affects rewards.
-- **TOOLS-002 / medium — raw MCP development endpoint:** loopback listeners lack authentication, request-size enforcement and release/export gating. Adapter policy is not protection against direct TCP clients. Project-path validation is not a unique session token. Keep ports local; do not ship bridge as release-approved tooling.
-- **TOOLS-003 / low — editor exit warning:** import/exit logs `EditorSettings not instantiated yet when getting setting "export/android/shutdown_adb_on_exit".` Exit code 0. Not proven to originate from game code; no speculative engine/config change.
-- **UI-001 / medium — visual coverage incomplete:** Main Menu/Character Creation have prior screenshot evidence, but full management and narrow-screen action reachability still need graphical review.
-- **WORLD-VIS-001 / medium — 3D feel/art direction not certified:** Godot 4.7.2 headless compile/import and 1358 smoke assertions pass, including Ranch/Town, Day 1, particles, shelter/surface contracts and bounded budgets. This does not certify camera feel, puddle placement, shelter-edge appearance, particle readability, animation quality or representative GPU performance.
-- **PARITY-001 — not certified:** no original-engine differential fixture suite. Existing named parity tests assert remake rules only.
+Godot 4.7 Mono CI #515, run `34509942143`: restore/build/launcher regressions/import succeeded; isolated full smoke produced **1486 OK / 3 FAIL**. All 50 community and 8 pause-input checks passed. The full suite remains red and PR #8 remains unmerged.
 
-## Fixed in baseline working patch
+### TEST-STALE-001 — three existing fixture/expectation mismatches
 
-- **BUG-001 compiler warning:** nullable `Path.Combine` warning was fixed; subsequent .NET 8 CI builds complete successfully.
+In `src/Tests/SmokeTestRunner.cs`:
 
-- Six malformed `|[node` headers removed from Game.tscn; Rooms/Bond/Pets nodes restored. Smoke checks exact sidebar and intentional compact subsets.
-- Stale expected BondButton/MilkButton names and compact/full-sidebar count equality corrected against scene-authored UI.
-- Plugin descriptor now uses Godot 4's `[plugin]`; live editor bridge confirmed.
-- Launchers share discovered/verified stable 4.7 .NET executable; no hardcoded drive required.
-- Smoke launch profile is isolated and engine-resolved user:// checked before tests overwrite/delete disposable slot 99. Direct raw smoke use remains unsafe.
-- Four duplicate portrait UID sidecars backed up and regenerated by Godot; no portrait pixels changed. Subsequent graphical editor startup had no duplicate warning.
-- Baseline MCP review found cross-project runtime read risk and false success for nonexistent scene opening. Added per-response project identity, request-side project mismatch rejection, file existence check and active-scene readback. Unit regressions reproduced failures before fixes; live verification recorded in WORK_LOG.
+- `constitution enables milk production` uses the starting rancher without approved eligibility. The existing production gate denies correctly. Use separate synthetic positive and unreviewed-denial fixtures; do not approve production characters or weaken the gate to satisfy this assertion.
+- The supply-device assertion expects a 1:1 transfer. Current MagicService charges 2 stored MP per personal MP: 20 personal / 45 stored, requested 30 -> restore 22, end at 42 personal / 1 stored.
+- The following 10 MP spell assertion expects 40 personal MP; the current result is 32. Preserve the gameplay-effect assertion when correcting the resource expectation.
 
-## Not implemented, not hidden bugs
+These assertions were not removed or masked. New isolated mana contract coverage passes but does not make the old full suite green.
 
-Third-person Ranch/Town traversal, shared-simulation HUD/day flow, stand-in avatars and basic NavigationAgent movement now exist and are runtime-smoke verified. Final character art/animation/morph labs, obstacle-authored navigation, reservations, toon-shader/art-direction certification and representative performance testing remain future milestones. No identity-specific final character model is approved.
+### WORLD-ERROR-001 — out-of-tree transform access
+
+The latest smoke log contains 20 `Condition "!is_inside_tree()"` Transform3D errors. The same count was present in the integration baseline before this slice. Root cause and player-facing impact were not established here; locate the actual accesses before patching. Expected malformed-save rejection diagnostics are separate and should not be suppressed with these engine errors.
+
+### UI-PLAY-001 — rendered playability acceptance outstanding
+
+The new board is compiled/imported and its pause-owned UI, stock/payment logic, real production path and save round-trip are tested. Physical keyboard/controller behavior, rendered Ranch/Town routing, small-window scrolling/text clipping, focus visibility and the complete first-day experience still need manual review. Headless assertions do not certify enjoyment or graphical quality. The reward ceiling is preliminary, not a validated economy balance.
+
+The courier board currently lives in Pause -> Community Board and delegates planning to Schedule. It does not add a physical town noticeboard or new exploration encounters. Optional world encounters, companion-specific reactions and visible upgrade rewards are future gameplay slices, not completed features.
+
+## Repaired in this continuation
+
+- **SAVE-REJECT-001:** future schema was stamped to the current version, allowing an unsupported load to replace the live session. It is now rejected before mutation. Null roster entries are also rejected before migration. Existing root state/service/notification/source-preservation checks pass. Schema remains 16; this is not a legacy-save-support expansion.
+- **INPUT-BACK-001:** parent pause routing bypassed the nested board and separately polled Back during world updates. Parent and pause menu now share GoBack, both input actions are event-owned, and the no-polling guard plus explicit handler tests pass after a failing negative-control run. Physical frame timing still needs an actual input playtest.
+- **GAMEPLAY-BOARD-001:** optional deliveries use real stock and the existing gold ledger. One per day, fixed-size saved receipts, stale-command/overflow validation, no repeat payouts after a saved delivery and no penalties for skipped days are covered by tests. This does not establish broad progression balance.
+
+## Earlier audit leads — not revalidated in this continuation
+
+These remain investigation leads, not fresh reproductions or permission to perform unrelated cleanup:
+
+- Importer build reports previously cited an absent Core project and missing Main. Current JSON must not be overwritten from guessed source conversions.
+- ContentValidator was previously reported to check limited .tres metadata rather than full runtime JSON/reference integrity.
+- Earlier source review raised night-growth multiplicity and non-idempotent settlement/auto-rest/report-accounting concerns. Trace current code and reproduce before claiming or fixing a specific bug.
+- Raw development MCP endpoints previously lacked authentication/size/export hardening. Keep them local; bridge tooling is not release-certified.
+- Prior source-audit code hashes can become stale when save/root/UI code changes. Source-only checks are not full-code or identity/design approval.
+
+## Scope that remains unverified or incomplete
+
+Original-game parity has no certified original-engine differential suite. Final character art, animation/morph pipeline, authored navigation/obstacle behavior, camera feel, weather readability and representative hardware performance remain separate acceptance tasks. Existing eligibility gates are present; an older claim that all gates were absent is historical, not the current state. This continuation changes neither eligibility approvals nor adult-specific content.
+
+Historical baseline successes and fixes remain in Git/WORK_LOG. Do not apply old 949/1358 assertion counts, schema 14 or September 5 local paths to the current branch without checking repository evidence.
