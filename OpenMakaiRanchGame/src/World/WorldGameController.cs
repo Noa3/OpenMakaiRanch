@@ -581,9 +581,12 @@ public partial class WorldGameController : Node
 
     private void SetTransitionInputLock(bool locked)
     {
-        if (_activeAreaId == "town") _town?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
-        else if (_activeAreaId == "intro") _introHouse?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
-        else _ranch?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);
+        // Ending a fade releases only the transition's ownership, not a still-visible story/UI.
+        var uiOwnsInput = locked || IsManagementVisible || _flowLocksUi
+            || _firstDayFlow?.BlocksWorldInput == true;
+        if (_activeAreaId == "town") _town?.InputGate.SetUiOwnsInput(uiOwnsInput);
+        else if (_activeAreaId == "intro") _introHouse?.InputGate.SetUiOwnsInput(uiOwnsInput);
+        else _ranch?.InputGate.SetUiOwnsInput(uiOwnsInput);
     }
 
     private void RevealInitialWorld()

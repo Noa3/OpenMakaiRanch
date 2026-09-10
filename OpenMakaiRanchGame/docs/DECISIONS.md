@@ -43,3 +43,7 @@ The present importer csproj fails with missing Core project and Main. Treat exis
 ## D-011 — No pre-release legacy-save support requirement
 
 User clarified that nothing is publicly released and games start fresh. Old-save migrations and backwards compatibility are not development goals or release gates. Keep current-version save/load and live-state correctness; focus effort on playable features. Existing migration code/tests are not being removed as unrelated cleanup, but require no further expansion. Preserve user files. This supersedes earlier migration/old-save commitments in planning documents.
+
+## D-012 — C# 12 is the source-language contract (2026-09-10)
+
+Explicit user request: use C# 12 throughout this project. Pin LangVersion to 12.0 in the game and repository defaults, and reject accidental latest/preview overrides at CoreCompile. A newer installed .NET SDK is not permission to use newer syntax. Preserve the existing target framework and Godot versions; the source-language requirement is independent of those versions. New changes and test fixtures must compile under this contract.

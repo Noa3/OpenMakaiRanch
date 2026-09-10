@@ -13,7 +13,7 @@ Godot 4.7 .NET (C#) game — a NSFW remake of eraMakaiRanch.
 - **UiShellController**: All UI screens in a single scene, controlled via `Screen` state
 - **DataRegistry**: Loads JSON first into typed `Resource` subclasses; seeded fallback remains. No CSV at runtime.
 - **Services**: `RanchService`, `DailySettlementService`, `InventoryService`, `AdventureService`, `MilestoneService`, `BondService`, etc.
-- **Save System**: `SaveState` POCO with `SchemaVersion` (current: 14), JSON serialization with `System.Text.Json`
+- **Save System**: `SaveState` POCO with `SchemaVersion` (current: 16), JSON serialization with `System.Text.Json`
 
 ## 3D Migration Continuity
 - Canonical docs live in `OpenMakaiRanchGame/docs/`, not a second root-level docs tree.
@@ -23,7 +23,7 @@ Godot 4.7 .NET (C#) game — a NSFW remake of eraMakaiRanch.
 - Original `eraMakaiRanch-game-eng-translation/` is read-only. Adult-specific visuals remain blocked pending per-character identity/design validation; see `ADULT_CHARACTER_VALIDATION.md`.
 
 ## Conventions
-- C# with GodotSharp, not GDScript
+- C# 12 with GodotSharp, not GDScript. Keep `LangVersion` at `12.0`, never `latest` or `preview`. SDK and target-framework versions are separate settings. Root Directory.Build.props/targets enforce the language contract.
 - `[Export]` for inspector properties
 - Signals via C# `[Signal]` delegate syntax
 - `Resource` classes with `[GlobalClass]` for data

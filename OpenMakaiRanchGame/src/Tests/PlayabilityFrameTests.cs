@@ -196,7 +196,16 @@ public static class PlayabilityFrameTests
     {
         Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = key, Keycode = key, Pressed = true });
         Input.FlushBufferedEvents();
-        await Frames(game, holdFrames);
+        // Headless render frames may run faster than physics. Movement must span actual ticks.
+        if (key == Key.W)
+        {
+            for (var i = 0; i < holdFrames; i++)
+                await game.ToSignal(game.GetTree(), SceneTree.SignalName.PhysicsFrame);
+        }
+        else
+        {
+            await Frames(game, holdFrames);
+        }
         ReleaseKey(key);
         await Frames(game, 2);
     }

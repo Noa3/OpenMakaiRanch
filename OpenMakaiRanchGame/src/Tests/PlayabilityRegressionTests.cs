@@ -94,11 +94,11 @@ public static class PlayabilityRegressionTests
             Check(result, player.ReadMovementInput() == Vector2.Zero, "UI blocks mapped and touch movement");
             gate.SetUiOwnsInput(false);
             Input.ActionPress("move_forward", 1f);
-            player._Notification(Node.NotificationApplicationFocusOut);
+            player._Notification((int)Node.NotificationApplicationFocusOut);
             gate.Reset();
             Check(result, player.ReadMovementInput() == Vector2.Zero,
                 "an area gate reset cannot reenable movement while application focus is still lost");
-            player._Notification(Node.NotificationApplicationFocusIn);
+            player._Notification((int)Node.NotificationApplicationFocusIn);
             Check(result, player.ReadMovementInput().Y > 0f, "focus return restores mapped movement");
         }
         finally
@@ -140,11 +140,11 @@ public static class PlayabilityRegressionTests
             rig.RefreshMouseCapture();
             Check(result, rig.OwnsMouseCapture, "closing management restores active camera ownership");
 
-            rig._Notification(Node.NotificationApplicationFocusOut);
+            rig._Notification((int)Node.NotificationApplicationFocusOut);
             gate.Reset();
             rig.RefreshMouseCapture();
             Check(result, !rig.OwnsMouseCapture, "gate reset cannot capture the mouse in an unfocused application");
-            rig._Notification(Node.NotificationApplicationFocusIn);
+            rig._Notification((int)Node.NotificationApplicationFocusIn);
             rig.RefreshMouseCapture();
             Check(result, rig.OwnsMouseCapture, "focus return permits active first-person capture again");
 

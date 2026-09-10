@@ -72,7 +72,7 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
             _applicationFocused = true;
             InputGate.SetWindowFocused(true);
         }
-        else if (what is NotificationPaused or NotificationDisabled)
+        else if (what == NotificationPaused || what == NotificationDisabled)
         {
             StopHorizontalMovement();
         }

@@ -806,15 +806,18 @@ public partial class FirstDayFlowController : Control
             return;
         }
 
+        // Closing a dialogue must not unlock a pending scene fade or management overlay.
+        var uiOwnsInput = locked || _host.IsManagementVisible || _host.FlowLocksUi
+            || _host.Transition?.IsTransitioning == true;
         if (_host.ActiveAreaId == "intro")
         {
-            _intro?.InputGate.SetUiOwnsInput(locked);
+            _intro?.InputGate.SetUiOwnsInput(uiOwnsInput);
         }
         else
         {
-            _ranch?.InputGate.SetUiOwnsInput(locked || _host.IsManagementVisible);
+            _ranch?.InputGate.SetUiOwnsInput(uiOwnsInput);
         }
 
-        _host.MobileControls?.SetBlocked(locked || _host.IsManagementVisible);
+        _host.MobileControls?.SetBlocked(uiOwnsInput);
     }
 }

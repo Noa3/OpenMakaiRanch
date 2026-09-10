@@ -106,7 +106,7 @@ public partial class WorldCameraRig : Node3D
             _applicationFocused = true;
             InputGate.SetWindowFocused(true);
         }
-        else if (what is NotificationPaused or NotificationDisabled)
+        else if (what == NotificationPaused || what == NotificationDisabled)
         {
             _recentering = false;
             ReleaseMouseCapture();
