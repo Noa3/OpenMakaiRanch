@@ -5,12 +5,21 @@ using Godot;
 
 namespace OpenMakaiRanch.Ui;
 
-/// <summary>Preserves focus/scroll only for the current view; never retains gameplay state.</summary>
+/// <summary>Preserves focus/scroll only for the current view; never retains gameplay state or retired controls.</summary>
 public partial class UiShellController
 {
     private bool _routingScreen;
     private ulong _viewRevision;
     private sealed record ContentFocus(string Key, int Occurrence, int Index);
+    private sealed record ContentView(ulong Revision, ulong Generation, string Screen, int Scroll, ContentFocus? Focus);
+    private ContentView? _pendingContentView;
+
+    private bool HasPendingContentView => _pendingContentView is { } view
+        && view.Revision == _viewRevision && view.Generation == _game.StateGeneration
+        && view.Screen == _currentScreen;
+
+    private int CaptureContentScroll() => HasPendingContentView
+        ? _pendingContentView!.Scroll : _scroll.ScrollVertical;
 
     private static IEnumerable<Control> FocusableControls(Node root)
     {
@@ -30,6 +39,9 @@ public partial class UiShellController
     private ContentFocus? CaptureContentFocus()
     {
         if (!IsVisibleInTree()) return null;
+        // Several StateChanged notifications may rebuild the same view before Godot lays it out.
+        // Keep the original snapshot rather than capturing a temporarily empty/clamped view.
+        if (HasPendingContentView) return _pendingContentView!.Focus;
         var owner = GetViewport().GuiGetFocusOwner();
         if (owner is null || !_content.IsAncestorOf(owner)) return null;
         var controls = FocusableControls(_content).ToList();
@@ -48,17 +60,36 @@ public partial class UiShellController
     {
         _scroll.FollowFocus = true;
         _compactNavigationScroll.FollowFocus = true;
-        var generation = _game.StateGeneration;
-        Callable.From(() =>
+        // Options used to append this card in _Process, after restoration had already run.
+        // Compose the complete view before waiting for its container layout.
+        EnsureInputOptionsExtension();
+        var view = new ContentView(revision, _game.StateGeneration, _currentScreen, scroll, focus);
+        _pendingContentView = view;
+        var tree = GetTree();
+        void AfterLayout()
         {
-            if (!GodotObject.IsInstanceValid(this) || !IsInsideTree() || !IsVisibleInTree()
-                || _viewRevision != revision || _game.StateGeneration != generation) return;
-            _scroll.ScrollVertical = scroll;
-            if (focus is null) return;
-            var controls = FocusableControls(_content).ToList();
-            var target = controls.Where(control => FocusKey(control) == focus.Key).Skip(focus.Occurrence).FirstOrDefault()
-                ?? (controls.Count > 0 ? controls[Math.Min(focus.Index, controls.Count - 1)] : null);
-            target?.GrabFocus();
-        }).CallDeferred();
+            // One-shot even when the shell was hidden, freed, rerouted, or replaced by a load.
+            tree.ProcessFrame -= AfterLayout;
+            if (!GodotObject.IsInstanceValid(this) || !IsInsideTree()
+                || !ReferenceEquals(_pendingContentView, view)) return;
+            _pendingContentView = null;
+            if (!IsVisibleInTree() || _viewRevision != view.Revision
+                || _game.StateGeneration != view.Generation || _currentScreen != view.Screen) return;
+
+            if (view.Focus is { } savedFocus)
+            {
+                var controls = FocusableControls(_content).ToList();
+                var target = controls.Where(control => FocusKey(control) == savedFocus.Key)
+                    .Skip(savedFocus.Occurrence).FirstOrDefault()
+                    ?? (controls.Count > 0 ? controls[Math.Min(savedFocus.Index, controls.Count - 1)] : null);
+                target?.GrabFocus();
+            }
+            // Restore after focus: FollowFocus may otherwise replace the user's chosen position.
+            // ScrollContainer clamps naturally if the new content is shorter.
+            _scroll.ScrollVertical = view.Scroll;
+        }
+        // CallDeferred alone can run in the same message-queue flush as nested container sorts.
+        // Godot requires a process-frame boundary before scrolling to newly added controls.
+        tree.ProcessFrame += AfterLayout;
     }
 }
