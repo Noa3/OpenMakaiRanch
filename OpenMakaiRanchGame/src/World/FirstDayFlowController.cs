@@ -500,8 +500,8 @@ public partial class FirstDayFlowController : Control
         ShowDialogueBase(
             GuideName(),
             _game.State.Ranch.BathtubClean
-                ? "You're exhausted. A prepared hot bath gives the strongest stamina recovery before sleep; you can also go straight to bed or use the night workload choices."
-                : "You're exhausted. The main bath is not prepared, but a quick shower is still available for a smaller stamina recovery. Assign Cleaning on a later day to prepare the full bath again.");
+                ? $"You're exhausted. A prepared hot bath will make you Well Rested tomorrow (+{PlayerStaminaService.HotBathNextDayBonus} STA); you can also go straight to bed or use the night workload choices."
+                : "You're exhausted. The main bath is not prepared. A quick shower is still available for hygiene, but it gives no Well Rested bonus tomorrow. Assign Cleaning on a later day to prepare the bath again.");
 
         AddChoice(_game.State.Ranch.BathtubClean ? "Take a hot bath, then sleep" : "Take a quick shower, then sleep", ChooseBathAndSleep);
         AddChoice("Go straight to bed", () => ChooseNight("rest"));
