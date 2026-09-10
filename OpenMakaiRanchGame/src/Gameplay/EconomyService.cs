@@ -52,8 +52,13 @@ public sealed class EconomyService
         _state.Economy.Gold = SaturatingAdd(_state.Economy.Gold, amount);
     }
 
-    public bool TrySpendExpenseAccount(int amount) =>
-        TrySpend(ref _state.Economy.ExpenseAccount, amount);
+    public bool TrySpendExpenseAccount(int amount)
+    {
+        if (amount < 0 || _state.Economy.ExpenseAccount < amount)
+            return false;
+        _state.Economy.ExpenseAccount -= amount;
+        return true;
+    }
 
     public void AddExpenseAccount(int amount) =>
         _state.Economy.ExpenseAccount = SaturatingAdd(_state.Economy.ExpenseAccount, amount);
@@ -72,14 +77,24 @@ public sealed class EconomyService
         return payment > 0;
     }
 
-    public bool TrySpendStoredSpirit(int amount) =>
-        TrySpend(ref _state.Economy.SpiritEnergy, amount);
+    public bool TrySpendStoredSpirit(int amount)
+    {
+        if (amount < 0 || _state.Economy.SpiritEnergy < amount)
+            return false;
+        _state.Economy.SpiritEnergy -= amount;
+        return true;
+    }
 
     public void AddStoredSpirit(int amount) =>
         _state.Economy.SpiritEnergy = SaturatingAdd(_state.Economy.SpiritEnergy, amount);
 
-    public bool TrySpendStoredMana(int amount) =>
-        TrySpend(ref _state.Economy.ManaReservoir, amount);
+    public bool TrySpendStoredMana(int amount)
+    {
+        if (amount < 0 || _state.Economy.ManaReservoir < amount)
+            return false;
+        _state.Economy.ManaReservoir -= amount;
+        return true;
+    }
 
     public void AddStoredMana(int amount, int capacity = int.MaxValue)
     {
@@ -89,8 +104,13 @@ public sealed class EconomyService
         _state.Economy.ManaReservoir = (int)Math.Min(Math.Min(target, int.MaxValue), capacity);
     }
 
-    public bool TrySpendContributionPoints(int amount) =>
-        TrySpend(ref _state.Economy.ContributionPoints, amount);
+    public bool TrySpendContributionPoints(int amount)
+    {
+        if (amount < 0 || _state.Economy.ContributionPoints < amount)
+            return false;
+        _state.Economy.ContributionPoints -= amount;
+        return true;
+    }
 
     public void AddContributionPoints(int amount) =>
         _state.Economy.ContributionPoints = SaturatingAdd(_state.Economy.ContributionPoints, amount);
@@ -199,14 +219,6 @@ public sealed class EconomyService
 
     private static int GetNonNegative(Dictionary<string, int> values, string key) =>
         values.TryGetValue(key, out var value) ? Math.Max(0, value) : 0;
-
-    private static bool TrySpend(ref int balance, int amount)
-    {
-        if (amount < 0 || balance < amount)
-            return false;
-        balance -= amount;
-        return true;
-    }
 
     private static int SaturatingAdd(int value, int amount)
     {
