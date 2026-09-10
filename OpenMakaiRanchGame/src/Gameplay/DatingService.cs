@@ -275,9 +275,9 @@ public sealed class DatingService
             thoughts.Add("The snow makes the ranch look different today.");
 
         var stage = StageFor(characterId);
-        if (stage >= RelationshipStage.Romantic)
+        if ((int)stage >= (int)RelationshipStage.Romantic)
             thoughts.Add("I like being together like this.");
-        else if (stage >= RelationshipStage.Close)
+        else if ((int)stage >= (int)RelationshipStage.Close)
             thoughts.Add("This is actually rather nice.");
         else if (active)
             thoughts.Add("I wonder where we're going.");
