@@ -243,10 +243,15 @@ public partial class RosterRig : Node3D
         avatar.AddChild(agent);
         _agents[characterId] = agent;
 
+        var character = _game?.Roster.Find(characterId);
+        var displayName = character is not null && !string.IsNullOrWhiteSpace(character.DisplayNameOverride)
+            ? character.DisplayNameOverride
+            : definition.DisplayName;
+
         var nameplate = new Label3D
         {
             Name = "Nameplate",
-            Text = definition.DisplayName,
+            Text = displayName,
             Position = new Vector3(0f, 2.05f, 0f),
             FontSize = 28,
             OutlineSize = 6
