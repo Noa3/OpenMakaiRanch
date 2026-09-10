@@ -16,53 +16,94 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-      - name: Wire frame tests only at the existing smoke entry point
+      - name: Apply exact reviewed replacements to unchanged sources
         shell: python
         run: |
           import hashlib
           import pathlib
           import subprocess
-          path = pathlib.Path('OpenMakaiRanchGame/src/App/GameRoot.cs')
-          raw = path.read_bytes()
-          blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
-          assert blob == '22f8cf380dee8fa754555e9bc530a3b9a6a55f4d', 'GameRoot changed; review rather than overwrite'
-          old = ('\tprivate void RunSmokeTestsAndExit()\n\t{\n'
-                 '\t\tvar result = SmokeTestRunner.Run();\n'
-                 '\t\tforeach (var line in result.Lines)\n\t\t{\n'
-                 '\t\t\tGD.Print(line);\n\t\t}\n\n'
-                 '\t\tGetTree().Quit(result.Passed ? 0 : 1);\n\t}')
-          new = ('\tprivate async void RunSmokeTestsAndExit()\n\t{\n'
-                 '\t\tvar result = SmokeTestRunner.Run();\n'
-                 '\t\t// Keep every assertion and failure; emit one terminal result after both suites.\n'
-                 '\t\tresult.Lines.RemoveAll(line => line is "SMOKE PASS" or "SMOKE FAIL");\n'
-                 '\t\ttry\n\t\t{\n'
-                 '\t\t\tawait PlayabilityFrameTests.Run(this, result);\n\t\t}\n'
-                 '\t\tcatch (Exception exception)\n\t\t{\n'
-                 '\t\t\tresult.Passed = false;\n'
-                 '\t\t\tresult.Lines.Add($"SMOKE FAIL frame test harness: {exception.Message}");\n\t\t}\n'
-                 '\t\tresult.Lines.Add(result.Passed ? "SMOKE PASS" : "SMOKE FAIL");\n'
-                 '\t\tforeach (var line in result.Lines)\n\t\t{\n'
-                 '\t\t\tGD.Print(line);\n\t\t}\n\n'
-                 '\t\tGetTree().Quit(result.Passed ? 0 : 1);\n\t}')
-          text = raw.decode('utf-8')
-          assert text.count(old) == 1, 'Expected exactly one unchanged smoke entry point'
-          path.write_bytes(text.replace(old, new, 1).encode('utf-8'))
+          changed = []
+          def patch(name, expected, edits):
+              p = pathlib.Path(name)
+              raw = p.read_bytes()
+              blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+              assert blob == expected, 'Source changed; review instead of overwriting: ' + name
+              text = raw.decode('utf-8')
+              for old, new, count in edits:
+                  assert text.count(old) == count, 'Source anchor mismatch: ' + name + ': ' + old[:80]
+                  text = text.replace(old, new)
+              p.write_bytes(text.encode('utf-8'))
+              changed.append(name)
+          notification = [('what is NotificationPaused or NotificationDisabled',
+                           'what == NotificationPaused || what == NotificationDisabled', 1)]
+          patch('OpenMakaiRanchGame/src/World/ThirdPersonPlayerController.cs',
+                '262470686c122ca32d0bfb64b5baad5435356cff', notification)
+          patch('OpenMakaiRanchGame/src/World/WorldCameraRig.cs',
+                '25489389d000ef1ad36f92bff08b5771cfec4d97', notification)
+          patch('OpenMakaiRanchGame/src/Tests/PlayabilityRegressionTests.cs',
+                'f289333fb46b0303ff5921a61c712bea4b0f7caa', [
+                ('_Notification(Node.NotificationApplicationFocusOut)', '_Notification((int)Node.NotificationApplicationFocusOut)', 2),
+                ('_Notification(Node.NotificationApplicationFocusIn)', '_Notification((int)Node.NotificationApplicationFocusIn)', 2)])
+          patch('OpenMakaiRanchGame/src/Tests/PlayabilityFrameTests.cs',
+                '9192a5100291ac1598f45594e5018814691e8170', [
+                ('        await Frames(game, holdFrames);\n        ReleaseKey(key);',
+                 '        // Headless render frames may run faster than physics. Movement must span actual ticks.\n'
+                 '        if (key == Key.W)\n        {\n'
+                 '            for (var i = 0; i < holdFrames; i++)\n'
+                 '                await game.ToSignal(game.GetTree(), SceneTree.SignalName.PhysicsFrame);\n'
+                 '        }\n        else\n        {\n'
+                 '            await Frames(game, holdFrames);\n        }\n'
+                 '        ReleaseKey(key);', 1)])
+          patch('OpenMakaiRanchGame/src/World/WorldGameController.cs',
+                '13b447c40a9885e563ddbb55ffee21e91b1cbf54', [
+                ('        if (_activeAreaId == "town") _town?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);\n'
+                 '        else if (_activeAreaId == "intro") _introHouse?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);\n'
+                 '        else _ranch?.InputGate.SetUiOwnsInput(locked || IsManagementVisible);',
+                 '        // Ending a fade releases only the transition\'s ownership, not a still-visible story/UI.\n'
+                 '        var uiOwnsInput = locked || IsManagementVisible || _flowLocksUi\n'
+                 '            || _firstDayFlow?.BlocksWorldInput == true;\n'
+                 '        if (_activeAreaId == "town") _town?.InputGate.SetUiOwnsInput(uiOwnsInput);\n'
+                 '        else if (_activeAreaId == "intro") _introHouse?.InputGate.SetUiOwnsInput(uiOwnsInput);\n'
+                 '        else _ranch?.InputGate.SetUiOwnsInput(uiOwnsInput);', 1)])
+          patch('OpenMakaiRanchGame/src/World/FirstDayFlowController.cs',
+                '79cf6c6c90abccddd51b3c961c71f8039e4ef245', [
+                ('        if (_host.ActiveAreaId == "intro")\n        {\n'
+                 '            _intro?.InputGate.SetUiOwnsInput(locked);\n        }\n        else\n        {\n'
+                 '            _ranch?.InputGate.SetUiOwnsInput(locked || _host.IsManagementVisible);\n        }\n\n'
+                 '        _host.MobileControls?.SetBlocked(locked || _host.IsManagementVisible);',
+                 '        // Closing a dialogue must not unlock a pending scene fade or management overlay.\n'
+                 '        var uiOwnsInput = locked || _host.IsManagementVisible || _host.FlowLocksUi\n'
+                 '            || _host.Transition?.IsTransitioning == true;\n'
+                 '        if (_host.ActiveAreaId == "intro")\n        {\n'
+                 '            _intro?.InputGate.SetUiOwnsInput(uiOwnsInput);\n        }\n        else\n        {\n'
+                 '            _ranch?.InputGate.SetUiOwnsInput(uiOwnsInput);\n        }\n\n'
+                 '        _host.MobileControls?.SetBlocked(uiOwnsInput);', 1)])
+          patch('AGENTS.md', 'caf87da9c053b3d4f1963e22e07e5d79648472c4', [
+                ('`SchemaVersion` (current: 14)', '`SchemaVersion` (current: 16)', 1),
+                ('- C# with GodotSharp, not GDScript',
+                 '- C# 12 with GodotSharp, not GDScript. Keep `LangVersion` at `12.0`, never `latest` or `preview`. SDK and target-framework versions are separate settings. Root Directory.Build.props/targets enforce the language contract.', 1)])
+          p = pathlib.Path('OpenMakaiRanchGame/docs/DECISIONS.md')
+          raw = p.read_bytes()
+          assert hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == '916fb27783ae6478543fa970a21e05ce9898f3de'
+          p.write_bytes(raw + ('\n## D-012 — C# 12 is the source-language contract (2026-09-10)\n\n'
+              'Explicit user request: use C# 12 throughout this project. Pin LangVersion to 12.0 in the game and repository defaults, and reject accidental latest/preview overrides at CoreCompile. A newer installed .NET SDK is not permission to use newer syntax. Preserve the existing target framework and Godot versions; the source-language requirement is independent of those versions. New changes and test fixtures must compile under this contract.\n').encode('utf-8'))
+          changed.append(str(p))
           subprocess.run(['git', 'diff', '--check'], check=True)
           evidence = pathlib.Path('.artifacts/reviewed-patch')
           evidence.mkdir(parents=True, exist_ok=True)
-          evidence.joinpath('frame-entry.patch').write_bytes(subprocess.check_output(['git', 'diff', '--', str(path)]))
-      - name: Commit only the smoke entry point without force
+          evidence.joinpath('controls.patch').write_bytes(subprocess.check_output(['git', 'diff', '--', *changed]))
+          subprocess.run(['git', 'add', '--', *changed], check=True)
+      - name: Commit the reviewed paths without force
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- OpenMakaiRanchGame/src/App/GameRoot.cs
-          git commit -m 'test: await frame playthrough before reporting the final smoke result'
+          git commit -m 'fix: preserve story and transition input ownership under C# 12'
           git push origin HEAD:refs/heads/playability/csharp12-controls-20260910
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: reviewed-frame-entry-patch
+          name: reviewed-controls-patch
           path: .artifacts/reviewed-patch/
           if-no-files-found: error
