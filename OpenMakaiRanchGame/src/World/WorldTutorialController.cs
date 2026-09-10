@@ -205,7 +205,8 @@ public partial class WorldTutorialController : Control
 
     public void ToggleHelp()
     {
-        if (_helpPanel is null || _worldGame?.IsManagementVisible == true)
+        if (_helpPanel is null || !IsVisibleInTree() || !CanProcess()
+            || (_worldGame is not null && !_worldGame.CanOpenWorldHelp))
         {
             return;
         }

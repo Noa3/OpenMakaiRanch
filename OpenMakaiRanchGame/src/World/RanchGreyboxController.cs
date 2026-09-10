@@ -246,6 +246,8 @@ public partial class RanchGreyboxController : Node3D
     /// </summary>
     public bool TryInteractWithNearestWorldTarget()
     {
+        if (!IsInsideTree() || !IsVisibleInTree() || !CanProcess() || !InputGate.WorldInputEnabled
+            || GetTree().Paused) return false;
         UpdateNearbyStation();
 
         var npcInRange = !string.IsNullOrWhiteSpace(_nearbyCharacterId)
@@ -279,6 +281,8 @@ public partial class RanchGreyboxController : Node3D
     /// </summary>
     public bool TryInteractWithNearestStation()
     {
+        if (!IsInsideTree() || !IsVisibleInTree() || !CanProcess() || !InputGate.WorldInputEnabled
+            || GetTree().Paused) return false;
         UpdateNearbyStation();
 
         if (_player is null || _nearbyStation is null)

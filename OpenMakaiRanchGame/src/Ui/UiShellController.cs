@@ -205,6 +205,8 @@ public partial class UiShellController : Control
 
 	public override void _Notification(int what)
 	{
+		if (what == NotificationVisibilityChanged && _shellReady && !IsVisibleInTree())
+			CancelBindingCapture("Binding cancelled.");
 		if (what == NotificationResized && _shellReady)
 		{
 			ApplyResponsiveLayout();
@@ -250,15 +252,13 @@ public partial class UiShellController : Control
 
 	public void ShowScreen(string screenId)
 	{
+		if (_routingScreen) return;
+		if (_game.ActiveCombatSession is { IsFinished: false } && screenId != "combat")
+		{
+			SetStatus("Finish the encounter using the battle controls before leaving combat.", true);
+			return;
+		}
 		var previousScreen = _currentScreen;
-		if (screenId == "combat" && previousScreen != "combat" && !_game.CombatWorldTimeLocked)
-		{
-			_game.BeginCombatSession();
-		}
-		else if (previousScreen == "combat" && screenId != "combat" && _game.CombatWorldTimeLocked)
-		{
-			_game.EndCombatSession();
-		}
 
 		if (!CanEnterScreen(screenId, out var blockedReason))
 		{
@@ -269,10 +269,23 @@ public partial class UiShellController : Control
 
 		var sameScreenRefresh = _currentScreen == screenId;
 		var previousScroll = sameScreenRefresh && IsInstanceValid(_scroll) ? _scroll.ScrollVertical : 0;
+		var focus = sameScreenRefresh ? CaptureContentFocus() : null;
+		var revision = ++_viewRevision;
+		CancelBindingCapture("Binding cancelled.");
+		_controlsLiveStatus = null;
 		var wasFullScreen = _fullScreenMode;
 		var nowFullScreen = screenId is "character_creation" or "prologue" or "victory" or "title";
 		_fullScreenMode = nowFullScreen;
 		_currentScreen = screenId;
+		// Publish the destination before ending combat: EndCombatSession notifies observers.
+		// A screen refresh must not reopen the previous combat view during that notification.
+		_routingScreen = true;
+		try
+		{
+			if (previousScreen == "combat" && screenId != "combat" && _game.CombatWorldTimeLocked)
+				_game.EndCombatSession();
+		}
+		finally { _routingScreen = false; }
 		ScreenChanged?.Invoke(screenId);
 
 		if (nowFullScreen != wasFullScreen)
@@ -336,7 +349,7 @@ public partial class UiShellController : Control
 			default: RenderRanch(); break;
 		}
 
-		if (_game.State.Calendar.Phase is DayPhase.Evening or DayPhase.Night && !nowFullScreen && screenId is not "report")
+		if (_game.State.Calendar.Phase is DayPhase.Evening or DayPhase.Night && !nowFullScreen && screenId is not ("report" or "combat"))
 		{
 			var recovery = CardContainer();
 			recovery.AddThemeConstantOverride("separation", 6);
@@ -362,7 +375,7 @@ public partial class UiShellController : Control
 			recovery.AddChild(bath);
 		}
 
-		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not "report")
+		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not ("report" or "combat"))
 		{
 			var selected = _game.State.Calendar.NightAction;
 			var hasChoice = selected is "rest" or "train" or "admin";
@@ -393,6 +406,7 @@ public partial class UiShellController : Control
 				AddNightButton("admin", T("screen.night.admin", "Admin (reduce workload)"));
 			}
 		}
+		RestoreContentViewDeferred(revision, previousScroll, focus);
 	}
 
 	private static string NightActionLabel(string action) => action switch
@@ -505,6 +519,14 @@ public partial class UiShellController : Control
 		ApplyPrimaryButtonStyle(_endDayButton);
 		_endDayButton.Pressed += () =>
 		{
+			if (!IsVisibleInTree() || _fullScreenMode || _game.CombatWorldTimeLocked) return;
+			if (_game.State.Calendar.Phase == DayPhase.Night
+				&& _game.State.Calendar.NightAction is not ("rest" or "train" or "admin"))
+			{
+				ShowScreen("ranch");
+				SetStatus("Choose tonight's work before ending the day.");
+				return;
+			}
 			var dayBefore = _game.State.Calendar.Day;
 			ExecuteUiAction(() => _game.AdvanceTime(), true);
 			if (_game.State.Calendar.Day != dayBefore && _game.State.Calendar.Phase == DayPhase.Morning)
@@ -805,6 +827,7 @@ public partial class UiShellController : Control
 
 	private void RefreshCurrentScreen()
 	{
+		if (!_shellReady || _routingScreen) return;
 		// Character-creation controls already reflect their own edit locally, while the embedded
 		// PlayerAvatar3D listens directly to GameRoot.StateChanged. Rebuilding the entire scene on
 		// every keystroke/picker change would destroy focus and make name entry unusable.
@@ -839,7 +862,7 @@ public partial class UiShellController : Control
 		_hpLabel.Text = $"HP {PlayerHp()}";
 		_hpBar.MinValue = 0;
 		_hpBar.MaxValue = PlayerMaxHp();
-		_hpBar.Value = (float)_game.State.Roster.Characters[0].Hp;
+		_hpBar.Value = Math.Clamp(player.Hp, 0, PlayerMaxHp());
 		_hpBar.ShowPercentage = false;
 		_hpBar.AddThemeStyleboxOverride("fill", new StyleBoxFlat { BgColor = new Color(0.3333f, 0.8392f, 0.7451f, 1.0f), BorderColor = Colors.Transparent, BorderWidthLeft = 0, BorderWidthTop = 0, BorderWidthRight = 0, BorderWidthBottom = 0, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
 		_hpBar.AddThemeStyleboxOverride("background", new StyleBoxFlat { BgColor = Palette.StatBarBackground, BorderColor = Palette.StatBarBorder, BorderWidthLeft = 1, BorderWidthTop = 1, BorderWidthRight = 1, BorderWidthBottom = 1, CornerRadiusTopLeft = 2, CornerRadiusTopRight = 2, CornerRadiusBottomRight = 2, CornerRadiusBottomLeft = 2 });
@@ -885,9 +908,14 @@ public partial class UiShellController : Control
 			? $"Night: {NightActionLabel(cal.NightAction)}"
 			: "";
 
-		_endDayButton.Text = cal.Phase == DayPhase.Night ? "End Day" : "Advance Phase";
+		_endDayButton.Text = cal.Phase == DayPhase.Night
+			? cal.NightAction is "rest" or "train" or "admin" ? "End Day" : "Plan Night"
+			: "Advance Phase";
 		_screenLabel.Text = ScreenTitle(_currentScreen);
-		_endDayButton.Disabled = _currentScreen == "title";
+		_endDayButton.Disabled = _fullScreenMode || _game.CombatWorldTimeLocked;
+		_endDayButton.TooltipText = _game.CombatWorldTimeLocked
+			? "Finish or leave the encounter before advancing world time."
+			: cal.Phase == DayPhase.Night ? "Choose tonight's work, then settle the day once." : "Advance to the next day phase.";
 	}
 
 	private string WeatherSymbol(Weather w) => w switch
@@ -906,19 +934,9 @@ public partial class UiShellController : Control
 		_ => "☀ Clear"
 	};
 
-	private string PlayerHp()
-	{
-		if (_game.State.Roster.Characters.Count == 0) return "--";
-		var pc = _game.State.Roster.Characters[0];
-		return pc.MaxHpOverride.HasValue ? $"{pc.Hp}/{pc.MaxHpOverride.Value}" : $"{pc.Hp}";
-	}
+	private string PlayerHp() => $"{Math.Clamp(_game.State.Player.Hp, 0, PlayerMaxHp())}/{PlayerMaxHp()}";
 
-	private int PlayerMaxHp()
-	{
-		if (_game.State.Roster.Characters.Count == 0) return 1;
-		var pc = _game.State.Roster.Characters[0];
-		return pc.MaxHpOverride.HasValue ? pc.MaxHpOverride.Value : Math.Max(1, pc.Hp);
-	}
+	private int PlayerMaxHp() => Math.Max(1, _game.State.Player.MaxHp);
 
 	private int PlayerStamina() => _game.State.Player.Stamina;
 
@@ -989,6 +1007,11 @@ public partial class UiShellController : Control
 	private bool CanEnterScreen(string screenId, out string requirement)
 	{
 		requirement = string.Empty;
+		if (_game.ActiveCombatSession is { IsFinished: false } && screenId != "combat")
+		{
+			requirement = "Finish the encounter using the battle controls first.";
+			return false;
+		}
 		return screenId switch
 		{
 			"combat" => CanEnterCombat(out requirement),

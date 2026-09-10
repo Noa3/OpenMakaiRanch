@@ -64,6 +64,8 @@ public partial class TownTutorialController : Control
 
     public void ToggleHelp()
     {
+        var host = _town?.GetParent() as WorldGameController;
+        if (!IsVisibleInTree() || !CanProcess() || (host is not null && !host.CanOpenWorldHelp)) return;
         if (_helpPanel is null || _town is null)
         {
             return;

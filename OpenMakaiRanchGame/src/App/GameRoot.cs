@@ -114,6 +114,7 @@ public partial class GameRoot : Node
 		try
 		{
 			await PlayabilityFrameTests.Run(this, result);
+			await HudMenuFrameTests.Run(this, result);
 		}
 		catch (Exception exception)
 		{
@@ -1110,7 +1111,7 @@ public partial class GameRoot : Node
 
 	public bool CanStartInteractiveCombat(string missionId)
 	{
-		if (!CanStartAdventure(missionId))
+		if (ActiveCombatSession is { IsFinished: false } || !CanStartAdventure(missionId))
 			return false;
 
 		return State.Roster.Characters.Any(character =>
@@ -1123,7 +1124,8 @@ public partial class GameRoot : Node
 		if (!CanStartInteractiveCombat(missionId))
 			return false;
 
-		BeginCombatSession();
+		// Do not publish a half-initialized combat session to a live menu observer.
+		ResetCombatSessionForStart();
 		var session = Combat.StartInteractiveMission(missionId);
 		ActiveCombatSession = session;
 		LastCombatReport = session.Report;
@@ -1198,12 +1200,17 @@ public partial class GameRoot : Node
 
 	public void BeginCombatSession()
 	{
+		ResetCombatSessionForStart();
+		NotifyStateChanged();
+	}
+
+	private void ResetCombatSessionForStart()
+	{
 		_combatWorldTimeLocked = true;
 		ActiveCombatSession = null;
 		CurrentCombatPhase = CombatPhase.PreBattle;
 		CurrentCombatRound = 0;
 		LastCombatReport = null;
-		NotifyStateChanged();
 	}
 
 	public void EndCombatSession()

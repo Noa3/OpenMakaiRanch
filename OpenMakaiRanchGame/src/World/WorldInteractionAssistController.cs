@@ -45,7 +45,7 @@ public partial class WorldInteractionAssistController : Node
             || _world.PauseMenu?.IsOpen == true
             || _world.Transition?.IsTransitioning == true
             || _world.FirstDayFlow?.BlocksWorldInput == true
-            || _world.FlowLocksUi;
+            || _world.FlowLocksUi || _world.WorldHelpVisible;
         if (blocked || _world.ActiveAreaId is not ("ranch" or "town"))
         {
             SetVisible(false);
@@ -256,7 +256,7 @@ public partial class WorldInteractionAssistController : Node
 
     private void ActivateCurrentTarget()
     {
-        if (_world is null || _world.IsManagementVisible || _world.PauseMenu?.IsOpen == true)
+        if (_world is null || !_world.WorldActionsAvailable)
         {
             return;
         }

@@ -129,6 +129,8 @@ public partial class TownWorldController : Node3D
 
     public bool TryInteract()
     {
+        if (!IsInsideTree() || !IsVisibleInTree() || !CanProcess() || !InputGate.WorldInputEnabled
+            || GetTree().Paused) return false;
         UpdateNearbyTargets();
 
         var portalInRange = _returnPortal is not null && _returnPortalDistance <= InteractionRange;
@@ -170,6 +172,7 @@ public partial class TownWorldController : Node3D
 
     private void RequestReturnToRanch()
     {
+        if (!IsVisibleInTree() || !CanProcess() || !InputGate.WorldInputEnabled || GetTree().Paused) return;
         TravelRequested?.Invoke("ranch");
     }
 

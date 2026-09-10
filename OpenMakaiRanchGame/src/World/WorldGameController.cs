@@ -96,17 +96,18 @@ public partial class WorldGameController : Node
 
         if (_managementButton is not null)
         {
-            _managementButton.Pressed += ToggleManagement;
+            _managementButton.Pressed += OnHudManagement;
         }
         if (_advanceTimeButton is not null)
         {
-            _advanceTimeButton.Pressed += AdvanceWorldTime;
+            _advanceTimeButton.Pressed += OnHudAdvanceTime;
         }
         if (_returnToWorldButton is not null)
         {
             _returnToWorldButton.Pressed += CloseManagementFromUi;
         }
 
+        BindHudOwnership();
         _flowLocksUi = RequiresFullScreenUi(_shell.CurrentScreen);
         var savedArea = GameRoot.Instance is { } game && game.State.WorldAreaId is "ranch" or "town"
             ? game.State.WorldAreaId
@@ -127,6 +128,7 @@ public partial class WorldGameController : Node
 
     public override void _ExitTree()
     {
+        UnbindHudOwnership();
         if (_shell is not null && GodotObject.IsInstanceValid(_shell))
         {
             _shell.ScreenChanged -= OnShellScreenChanged;
@@ -166,11 +168,11 @@ public partial class WorldGameController : Node
 
         if (_managementButton is not null && GodotObject.IsInstanceValid(_managementButton))
         {
-            _managementButton.Pressed -= ToggleManagement;
+            _managementButton.Pressed -= OnHudManagement;
         }
         if (_advanceTimeButton is not null && GodotObject.IsInstanceValid(_advanceTimeButton))
         {
-            _advanceTimeButton.Pressed -= AdvanceWorldTime;
+            _advanceTimeButton.Pressed -= OnHudAdvanceTime;
         }
         if (_returnToWorldButton is not null && GodotObject.IsInstanceValid(_returnToWorldButton))
         {
@@ -181,11 +183,7 @@ public partial class WorldGameController : Node
     public override void _Process(double delta)
     {
         RefreshMobileControls();
-        if (Input.IsActionJustPressed("toggle_management") && _pauseMenu?.IsOpen != true)
-        {
-            ToggleManagement();
-            return;
-        }
+        RefreshHudOwnership();
 
         // Pause/Back are event-owned in _UnhandledInput. Polling ui_cancel here would reopen
         // pause in the same frame after a handled Back event closed it and resumed processing.
@@ -203,11 +201,19 @@ public partial class WorldGameController : Node
             return false;
         }
 
+        if (GameRoot.Instance?.ActiveCombatSession is { IsFinished: false })
+        {
+            ActiveStatus("Finish the encounter using the battle controls first.");
+            return false;
+        }
+        if (_shell?.CurrentScreen == "combat") _shell.ShowScreen("adventure");
         return ApplyManagementVisibility(false);
     }
 
     public void ToggleManagement()
     {
+        if (_pauseMenu?.IsOpen == true || _transition?.IsTransitioning == true
+            || _firstDayFlow?.BlocksWorldInput == true) return;
         if (_firstDayFlow?.BlocksManagement == true)
         {
             ActiveStatus("Finish the current first-day tutorial step before opening Management.");
@@ -266,7 +272,7 @@ public partial class WorldGameController : Node
     /// </summary>
     public bool TravelTo(string destinationId)
     {
-        if (IsManagementVisible || _flowLocksUi)
+        if (!WorldActionsAvailable || _firstDayFlow?.IsActive == true)
         {
             return false;
         }
@@ -287,6 +293,7 @@ public partial class WorldGameController : Node
 
     public void AdvanceWorldTime()
     {
+        if (!WorldActionsAvailable || _firstDayFlow?.IsActive == true) return;
         var game = GameRoot.Instance;
         if (game is null || !GodotObject.IsInstanceValid(game))
         {
@@ -329,7 +336,7 @@ public partial class WorldGameController : Node
         }
 
         _shell.ShowScreen(screenId);
-        return OpenManagement();
+        return _shell.CurrentScreen == screenId && OpenManagement();
     }
 
     private void OnCharacterInteractionRequested(string characterId)
@@ -345,7 +352,7 @@ public partial class WorldGameController : Node
 
     private void OnMobileInteractPressed()
     {
-        if (IsManagementVisible || _pauseMenu?.IsOpen == true || _transition?.IsTransitioning == true)
+        if (!WorldActionsAvailable)
         {
             return;
         }
@@ -362,7 +369,7 @@ public partial class WorldGameController : Node
 
     private void OnMobileCycleWorker()
     {
-        if (_activeAreaId == "ranch" && !IsManagementVisible)
+        if (_activeAreaId == "ranch" && WorldActionsAvailable)
         {
             _ranch?.CycleSelectedCharacter();
         }
@@ -454,7 +461,9 @@ public partial class WorldGameController : Node
             return false;
         }
 
+        if (visible && _pauseMenu?.IsOpen == true) return false;
         _managementRoot.Visible = visible;
+        if (visible) CloseWorldHelp();
         if (_returnToWorldButton is not null)
         {
             _returnToWorldButton.Visible = visible && !_flowLocksUi;
@@ -479,6 +488,8 @@ public partial class WorldGameController : Node
             _town.Refresh();
         }
 
+        SetTransitionInputLock(_transition?.IsTransitioning == true);
+        RefreshHudOwnership();
         return true;
     }
 
@@ -494,6 +505,7 @@ public partial class WorldGameController : Node
             return false;
         }
 
+        CloseWorldHelp();
         _activeAreaId = destinationId;
         var introActive = destinationId == "intro";
         var ranchActive = destinationId == "ranch";
@@ -557,6 +569,7 @@ public partial class WorldGameController : Node
 
         _ranch.RefreshLiveWorld();
         _town.Refresh();
+        RefreshHudOwnership();
         return true;
     }
 
@@ -583,7 +596,7 @@ public partial class WorldGameController : Node
     {
         // Ending a fade releases only the transition's ownership, not a still-visible story/UI.
         var uiOwnsInput = locked || IsManagementVisible || _flowLocksUi
-            || _firstDayFlow?.BlocksWorldInput == true;
+            || _firstDayFlow?.BlocksWorldInput == true || WorldHelpVisible;
         if (_activeAreaId == "town") _town?.InputGate.SetUiOwnsInput(uiOwnsInput);
         else if (_activeAreaId == "intro") _introHouse?.InputGate.SetUiOwnsInput(uiOwnsInput);
         else _ranch?.InputGate.SetUiOwnsInput(uiOwnsInput);

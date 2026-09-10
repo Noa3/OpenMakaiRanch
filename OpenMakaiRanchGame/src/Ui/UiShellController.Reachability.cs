@@ -39,7 +39,7 @@ public partial class UiShellController
             _reachabilityCompactRoutesBound = true;
         }
 
-        RefreshCanonicalPlayerVitals();
+
         EnsureInputOptionsExtension();
         EnsureControllerFocus();
     }
@@ -72,19 +72,4 @@ public partial class UiShellController
         _compactNavButtons[screenId] = button;
     }
 
-    private void RefreshCanonicalPlayerVitals()
-    {
-        if (!GodotObject.IsInstanceValid(_hpLabel) || !GodotObject.IsInstanceValid(_hpBar))
-        {
-            return;
-        }
-
-        var player = _game.State.Player;
-        var maxHp = System.Math.Max(1, player.MaxHp);
-        var hp = System.Math.Clamp(player.Hp, 0, maxHp);
-        _hpLabel.Text = $"HP {hp}/{maxHp}";
-        _hpBar.MinValue = 0;
-        _hpBar.MaxValue = maxHp;
-        _hpBar.Value = hp;
-    }
 }

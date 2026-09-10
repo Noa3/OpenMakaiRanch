@@ -83,7 +83,7 @@ public partial class UiShellController
         _controlsLiveStatus.Modulate = new Color(0.64f, 0.82f, 0.82f);
         body.AddChild(_controlsLiveStatus);
 
-        var accessibilityRow = new HBoxContainer();
+        var accessibilityRow = new HFlowContainer();
         accessibilityRow.AddThemeConstantOverride("separation", 8);
         body.AddChild(accessibilityRow);
 
@@ -116,7 +116,7 @@ public partial class UiShellController
         };
         accessibilityRow.AddChild(resetAll);
 
-        var header = new HBoxContainer();
+        var header = new HFlowContainer();
         header.AddThemeConstantOverride("separation", 8);
         body.AddChild(header);
         header.AddChild(ColumnLabel("Action", 190));
@@ -132,7 +132,7 @@ public partial class UiShellController
 
     private Control BuildBindingRow(InputBindingService.ActionDescriptor descriptor)
     {
-        var row = new HBoxContainer
+        var row = new HFlowContainer
         {
             Name = $"Binding_{descriptor.Action}",
             SizeFlagsHorizontal = SizeFlags.ExpandFill
@@ -178,7 +178,7 @@ public partial class UiShellController
             InputBindingService.ResetAction(descriptor.Action);
             keyboard.Text = InputBindingService.GetKeyboardLabel(descriptor.Action);
             controller.Text = InputBindingService.GetGamepadLabel(descriptor.Action);
-            if (_controlsLiveStatus is not null)
+            if (GodotObject.IsInstanceValid(_controlsLiveStatus))
             {
                 _controlsLiveStatus.Text = $"Reset {descriptor.DisplayName}.";
             }
@@ -203,6 +203,8 @@ public partial class UiShellController
 
     private void BeginBindingCapture(string action, string device, Button button)
     {
+        if (!IsVisibleInTree() || _currentScreen != "options" || !GodotObject.IsInstanceValid(button)
+            || !button.IsInsideTree() || !_content.IsAncestorOf(button)) return;
         if (!string.IsNullOrEmpty(_bindingCaptureAction))
         {
             CancelBindingCapture("Previous binding cancelled.");
@@ -213,7 +215,7 @@ public partial class UiShellController
         _bindingCaptureButton = button;
         _captureArmedAt = Time.GetTicksMsec() + 180;
         button.Text = device == "keyboard" ? "Press a key…" : "Press button / move stick…";
-        if (_controlsLiveStatus is not null)
+        if (GodotObject.IsInstanceValid(_controlsLiveStatus))
         {
             _controlsLiveStatus.Text = device == "keyboard"
                 ? "Waiting for keyboard input. Esc cancels."
@@ -223,6 +225,13 @@ public partial class UiShellController
 
     public override void _Input(InputEvent @event)
     {
+        if (!IsVisibleInTree() || _currentScreen != "options"
+            || !GodotObject.IsInstanceValid(_bindingCaptureButton)
+            || !_bindingCaptureButton!.IsInsideTree() || !_content.IsAncestorOf(_bindingCaptureButton))
+        {
+            CancelBindingCapture("Binding cancelled.");
+            return;
+        }
         if (string.IsNullOrEmpty(_bindingCaptureAction) || Time.GetTicksMsec() < _captureArmedAt)
         {
             return;
@@ -287,7 +296,7 @@ public partial class UiShellController
         _bindingCaptureAction = string.Empty;
         _bindingCaptureDevice = string.Empty;
         _bindingCaptureButton = null;
-        if (_controlsLiveStatus is not null)
+        if (GodotObject.IsInstanceValid(_controlsLiveStatus))
         {
             _controlsLiveStatus.Text = $"{message}  •  {InputBindingService.ConnectedControllerSummary()}";
         }
@@ -306,7 +315,7 @@ public partial class UiShellController
         _bindingCaptureAction = string.Empty;
         _bindingCaptureDevice = string.Empty;
         _bindingCaptureButton = null;
-        if (_controlsLiveStatus is not null)
+        if (GodotObject.IsInstanceValid(_controlsLiveStatus))
         {
             _controlsLiveStatus.Text = message;
         }
@@ -330,17 +339,10 @@ public partial class UiShellController
 
     private void EnsureControllerFocus()
     {
-        if (!IsVisibleInTree() || GetViewport().GuiGetFocusOwner() is not null)
-        {
-            return;
-        }
-
-        if (_navButtons.TryGetValue(_currentScreen, out var current)
-            && GodotObject.IsInstanceValid(current)
-            && current.Visible
-            && !current.Disabled)
-        {
-            current.GrabFocus();
-        }
+        if (!IsVisibleInTree() || !CanProcess()) return;
+        var owner = GetViewport().GuiGetFocusOwner();
+        if (owner is not null && owner.IsVisibleInTree() && IsAncestorOf(owner)
+            && owner is not BaseButton { Disabled: true }) return;
+        FirstMenuFocus()?.GrabFocus();
     }
 }
