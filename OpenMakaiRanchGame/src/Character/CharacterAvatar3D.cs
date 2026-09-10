@@ -19,6 +19,15 @@ public partial class CharacterAvatar3D : Node3D
 {
     [Export] public CharacterVisualProfile? Profile { get; set; }
 
+    /// <summary>
+    /// Recovered merge contract used by capture/dev tooling. For primitive fallbacks it applies the
+    /// project's soft-anime material; external authored placeholder models retain their own materials.
+    /// </summary>
+    [Export] public bool UseSoftShading { get; set; }
+
+    /// <summary>Optional code-side tuning for the soft fallback material.</summary>
+    public SoftShadingMath.SoftParameters? SoftParams { get; set; }
+
     public MeshInstance3D? Body { get; private set; }
     public MeshInstance3D? Head { get; private set; }
     public Node3D? PlaceholderModel { get; private set; }
@@ -55,9 +64,7 @@ public partial class CharacterAvatar3D : Node3D
         Head = null;
 
         if (Profile is null)
-        {
             return;
-        }
 
         _ownedVisualRoot = new Node3D { Name = "AvatarVisual" };
         AddChild(_ownedVisualRoot);
@@ -69,15 +76,11 @@ public partial class CharacterAvatar3D : Node3D
         PlayLocomotion(0f, false);
     }
 
-    /// <summary>
-    /// Presentation-only locomotion cue. Does not modify CharacterState or gameplay.
-    /// </summary>
+    /// <summary>Presentation-only locomotion cue. Does not modify CharacterState or gameplay.</summary>
     public void PlayLocomotion(float horizontalSpeed, bool sprinting)
     {
         if (_animationPlayer is null)
-        {
             return;
-        }
 
         var desired = horizontalSpeed <= 0.05f
             ? _idleAnimation
@@ -86,14 +89,10 @@ public partial class CharacterAvatar3D : Node3D
                 : _walkAnimation;
 
         if (string.IsNullOrWhiteSpace(desired))
-        {
             desired = _idleAnimation;
-        }
 
         if (string.IsNullOrWhiteSpace(desired) || string.Equals(_currentAnimation, desired, StringComparison.Ordinal))
-        {
             return;
-        }
 
         _animationPlayer.Play(desired, customBlend: 0.15);
         _currentAnimation = desired;
@@ -110,15 +109,11 @@ public partial class CharacterAvatar3D : Node3D
 
         var packed = GD.Load<PackedScene>(Profile.PlaceholderModelPath);
         if (packed is null)
-        {
             return false;
-        }
 
         var instance = packed.Instantiate<Node3D>();
         if (instance is null)
-        {
             return false;
-        }
 
         instance.Name = "ExternalPlaceholder";
         var sourceHeight = 1.8f;
@@ -132,15 +127,20 @@ public partial class CharacterAvatar3D : Node3D
     private void BuildPrimitiveFallback(bool visible)
     {
         if (Profile is null || _ownedVisualRoot is null)
-        {
             return;
-        }
+
+        Material bodyMaterial = UseSoftShading
+            ? SoftMaterialFactory.Create(Profile.BodyColor, SoftParams)
+            : new StandardMaterial3D { AlbedoColor = Profile.BodyColor };
+        Material headMaterial = UseSoftShading
+            ? SoftMaterialFactory.Create(Profile.HeadColor, SoftParams)
+            : new StandardMaterial3D { AlbedoColor = Profile.HeadColor };
 
         Body = new MeshInstance3D
         {
             Name = "FallbackBody",
             Mesh = new CapsuleMesh { Radius = 0.3f, Height = 1.4f },
-            MaterialOverride = new StandardMaterial3D { AlbedoColor = Profile.BodyColor },
+            MaterialOverride = bodyMaterial,
             Position = new Vector3(0f, 0.9f, 0f),
             Visible = visible
         };
@@ -149,7 +149,7 @@ public partial class CharacterAvatar3D : Node3D
         {
             Name = "FallbackHead",
             Mesh = new SphereMesh { Radius = 0.22f },
-            MaterialOverride = new StandardMaterial3D { AlbedoColor = Profile.HeadColor },
+            MaterialOverride = headMaterial,
             Position = new Vector3(0f, 1.85f, 0f),
             Visible = visible
         };
@@ -161,15 +161,11 @@ public partial class CharacterAvatar3D : Node3D
     private void CacheAnimations()
     {
         if (PlaceholderModel is null)
-        {
             return;
-        }
 
         _animationPlayer = FindAnimationPlayer(PlaceholderModel);
         if (_animationPlayer is null)
-        {
             return;
-        }
 
         var names = _animationPlayer.GetAnimationList().Select(name => name.ToString()).ToArray();
         _idleAnimation = FindAnimation(names, "idle");
@@ -177,29 +173,21 @@ public partial class CharacterAvatar3D : Node3D
         _runAnimation = FindAnimation(names, "run", "jog");
 
         if (string.IsNullOrWhiteSpace(_idleAnimation))
-        {
             _idleAnimation = names.FirstOrDefault(name => !name.Equals("RESET", StringComparison.OrdinalIgnoreCase)) ?? string.Empty;
-        }
 
         if (string.IsNullOrWhiteSpace(_walkAnimation))
-        {
             _walkAnimation = _runAnimation;
-        }
     }
 
     private static AnimationPlayer? FindAnimationPlayer(Node node)
     {
         if (node is AnimationPlayer player)
-        {
             return player;
-        }
 
         foreach (var child in node.GetChildren())
         {
             if (FindAnimationPlayer(child) is { } nested)
-            {
                 return nested;
-            }
         }
 
         return null;
