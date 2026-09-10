@@ -66,20 +66,15 @@ public partial class RanchWorldController : Node3D, ITravelHandler
         foreach (var area in _areas)
         {
             if (area is null) continue;
-            // In-world "Open Management UI" requests the overlay through this composition.
             area.ManagementUiRequested += HandleManagementUiRequested;
         }
 
-        // Activate the initial area (persisted player location, else the authored default).
         var initial = FindArea(ResolveInitialAreaId()) ?? _primaryArea;
         SetActiveArea(initial, reposition: true);
 
-        // Boot in world mode: 3D visible, management overlay hidden — unless the player must
-        // complete a setup screen first (new game / character creation).
         if (_overlay is not null)
-        {
             _overlay.Visible = _bootInManagement;
-        }
+
         if (_bootInManagement)
         {
             _activeArea?.EnterManagementUi();
@@ -94,15 +89,12 @@ public partial class RanchWorldController : Node3D, ITravelHandler
     private void CollectAreas()
     {
         _areas.Clear();
-        // Discover every authored area that is a direct child (RanchGreyboxController root).
-        // The ranch is the primary area (input gate, boot default); the rest register by their AreaId.
         foreach (var child in GetChildren())
         {
             if (child is RanchGreyboxController area)
-            {
                 _areas.Add(area);
-            }
         }
+
         _primaryArea = null;
         foreach (var area in _areas)
         {
@@ -112,11 +104,10 @@ public partial class RanchWorldController : Node3D, ITravelHandler
                 break;
             }
         }
+
         _primaryArea ??= _areas.Count > 0 ? _areas[0] : null;
         if (_primaryArea is null)
-        {
             GD.PushError("RanchWorldController: no 3D world area found (expected RanchGreyboxController children).");
-        }
     }
 
     // ── ITravelHandler ──────────────────────────────────────────────────
@@ -129,24 +120,24 @@ public partial class RanchWorldController : Node3D, ITravelHandler
     public bool TravelTo(string areaId, ulong _expectedGeneration = 0)
     {
         if (string.IsNullOrEmpty(areaId))
-        {
             return false;
-        }
+
         var area = FindArea(areaId);
         if (area is null)
         {
             GD.PushWarning($"RanchWorldController: travel to unknown area '{areaId}' ignored");
             return false;
         }
+
         if (ReferenceEquals(area, _activeArea))
-        {
-            return false; // already here — no-op (don't reposition / no double work)
-        }
+            return false;
+
         SetActiveArea(area, reposition: true);
 
-        // Persist the new area so a save/load restores the player here, not always the ranch (AC #16).
-        // No StateGeneration bump: travel is pure presentation, not a simulation change.
-        GameRoot.Instance?.State.Player.CurrentArea = area.AreaId;
+        // Canonical persisted location. The dev merge previously referenced Player.CurrentArea,
+        // while the current production world/save path uses SaveState.WorldAreaId.
+        if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game))
+            game.State.WorldAreaId = area.AreaId;
 
         return true;
     }
@@ -156,103 +147,73 @@ public partial class RanchWorldController : Node3D, ITravelHandler
         foreach (var area in _areas)
         {
             if (area is not null && string.Equals(area.AreaId, areaId, System.StringComparison.OrdinalIgnoreCase))
-            {
                 return area;
-            }
         }
         return null;
     }
 
     /// <summary>
-    /// Resolve the initial area id: prefer the persisted player location (save/load), fall back
-    /// to the authored <see cref="InitialAreaId"/> export. This is how a save that was made in
-    /// the town restores the player to the town, not always the ranch (AC #16).
+    /// Resolve the initial area id from the canonical saved world location, then fall back to the
+    /// authored <see cref="InitialAreaId"/>. This avoids maintaining two competing area fields.
     /// </summary>
     private string ResolveInitialAreaId()
     {
-        var saved = GameRoot.Instance?.State?.Player?.CurrentArea;
+        var saved = GameRoot.Instance?.State?.WorldAreaId;
         if (!string.IsNullOrWhiteSpace(saved) && FindArea(saved) is not null)
-        {
             return saved;
-        }
         return InitialAreaId;
     }
 
-    /// <summary>
-    /// Make one area active (visible + processed) and the rest inactive (hidden + process-disabled),
-    /// reposition the active area's player/camera to its entry point, and promote its environment so
-    /// the right sky/fog wins while that area is on screen.
-    /// </summary>
     private void SetActiveArea(RanchGreyboxController? area, bool reposition)
     {
         if (area is null)
-        {
             return;
-        }
 
-        foreach (var a in _areas)
+        foreach (var candidate in _areas)
         {
-            if (a is null)
-            {
+            if (candidate is null)
                 continue;
-            }
-            bool active = ReferenceEquals(a, area);
-            a.Visible = active;
-            a.ProcessMode = active ? Node.ProcessModeEnum.Inherit : Node.ProcessModeEnum.Disabled;
+            var active = ReferenceEquals(candidate, area);
+            candidate.Visible = active;
+            candidate.ProcessMode = active ? Node.ProcessModeEnum.Inherit : Node.ProcessModeEnum.Disabled;
         }
 
         _activeArea = area;
-        area.RefreshFromGame(); // re-derive daylight + roster from shared state for the active area
+        area.RefreshFromGame();
 
         if (reposition && area.Player is not null)
-        {
-            // The third-person camera rig follows the player each frame, so moving the player
-            // to the entry position is enough for the camera to settle on it.
             area.Player.GlobalPosition = area.EntryPosition;
-        }
     }
 
-    // ── Management UI (existing behavior, now area-aware) ───────────────
+    // ── Management UI ───────────────────────────────────────────────────
 
-    /// <summary>Open the management UI over the active world area (world input suspended via the shared gate).</summary>
     public bool EnterManagement()
     {
         if (CurrentMode == Mode.Management)
-        {
-            return true; // already open
-        }
+            return true;
         if (_activeArea is null)
-        {
             return false;
-        }
 
-        _activeArea.EnterManagementUi(); // shared gate -> UI owns input (movement + camera + interaction stop)
+        _activeArea.EnterManagementUi();
         if (_overlay is not null)
-        {
             _overlay.Visible = true;
-        }
         _uiShell?.ShowScreen("ranch");
         CurrentMode = Mode.Management;
         return true;
     }
 
-    /// <summary>Return to the 3D world (world input resumed safely via the shared gate).</summary>
     public bool ReturnToWorld()
     {
         if (CurrentMode == Mode.World)
-        {
-            return true; // already in world
-        }
-        _activeArea?.LeaveManagementUi(); // shared gate -> world owns input again (never left UI-owned)
+            return true;
+
+        _activeArea?.LeaveManagementUi();
         if (_overlay is not null)
-        {
             _overlay.Visible = false;
-        }
         CurrentMode = Mode.World;
         return true;
     }
 
-    /// <summary>Toggle between the 3D world and the management UI.</summary>
     public bool ToggleManagement()
     {
         return CurrentMode == Mode.World ? EnterManagement() : ReturnToWorld();
@@ -260,16 +221,10 @@ public partial class RanchWorldController : Node3D, ITravelHandler
 
     private void HandleManagementUiRequested()
     {
-        // The area controller already flipped its shared gate (EnterManagementUi). Reveal the
-        // overlay and record the mode. No double gate flip — EnterManagement would be a no-op.
         if (CurrentMode == Mode.Management)
-        {
             return;
-        }
         if (_overlay is not null)
-        {
             _overlay.Visible = true;
-        }
         _uiShell?.ShowScreen("ranch");
         CurrentMode = Mode.Management;
     }
@@ -277,14 +232,11 @@ public partial class RanchWorldController : Node3D, ITravelHandler
     public override void _ExitTree()
     {
         foreach (var area in _areas)
-        {
             area?.ManagementUiRequested -= HandleManagementUiRequested;
-        }
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        // Esc returns from management to the world. (The 2D UI keeps its own navigation while open.)
         if (@event.IsActionPressed("ui_cancel"))
         {
             _ = ReturnToWorld();
