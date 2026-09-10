@@ -99,7 +99,7 @@ public partial class RanchGreyboxController : Node3D
                 station.Dispatcher = new GameRootCommandDispatcher();
             }
 
-            station.AvailabilityResolver = () => ResolveStationAvailability(station);
+            station.AvailabilityResolver ??= () => ResolveStationAvailability(station);
         }
 
         // Legacy prompt is retained for backwards-compatible scene/tests but hidden by the authored
@@ -300,7 +300,7 @@ public partial class RanchGreyboxController : Node3D
         }
 
         var characterId = ResolveSelectedCharacterId();
-        if (string.IsNullOrWhiteSpace(characterId))
+        if (_nearbyStation.RequiresWorker && string.IsNullOrWhiteSpace(characterId))
         {
             SetFeedback("No roster worker is available.");
             return false;
@@ -312,8 +312,11 @@ public partial class RanchGreyboxController : Node3D
         if (ok)
         {
             var worker = ResolveSelectedCharacterName();
-            SetFeedback($"{_nearbyStation.Label}: {worker} updated.");
-            StationInteractionSucceeded?.Invoke(characterId, _nearbyStation.CommandTargetId);
+            SetFeedback(_nearbyStation.RequiresWorker
+                ? $"{_nearbyStation.Label}: {worker} updated."
+                : _nearbyStation.SuccessFeedback);
+            if (_nearbyStation.RequiresWorker)
+                StationInteractionSucceeded?.Invoke(characterId, _nearbyStation.CommandTargetId);
             RefreshLiveWorld();
         }
         else

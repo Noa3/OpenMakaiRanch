@@ -91,6 +91,7 @@ public partial class PauseMenuController : Control
 
     public void Close()
     {
+        _ranchCorner?.Close();
         _communityBoard?.Close();
         if (_menuCenter is not null) _menuCenter.Visible = true;
         if (!Visible && !GetTree().Paused) return;
@@ -158,7 +159,7 @@ public partial class PauseMenuController : Control
 
     private void FocusResume()
     {
-        if (Visible && !IsCommunityBoardOpen && _resumeButton is not null
+        if (Visible && !IsCommunityBoardOpen && !IsRanchCornerOpen && _resumeButton is not null
             && GodotObject.IsInstanceValid(_resumeButton))
             _resumeButton.GrabFocus();
     }

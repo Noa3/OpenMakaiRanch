@@ -81,6 +81,7 @@ public static class SmokeTestRunner
             TestWorldBootComposition(result);
             TestWorldDaylightAndRoster(result);
             PlayabilityRegressionTests.Run(result);
+            RanchLeisureRegressionTests.Run(result);
         }
         catch (Exception exception)
         {

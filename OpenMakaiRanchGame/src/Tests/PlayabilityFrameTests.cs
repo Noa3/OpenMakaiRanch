@@ -154,6 +154,7 @@ public static class PlayabilityFrameTests
                 && game.Economy.Gold == savedGold && game.State.Ranch.Stockpile[offer.ResourceId] == savedStock
                 && game.GetCommunityRequests().All(value => !value.CanDeliver),
                 "story, day, stock, gold and one-per-day receipt survive load together");
+            await RanchLeisureFrameTests.Run(game, world, result);
         }
         catch (Exception exception)
         {
