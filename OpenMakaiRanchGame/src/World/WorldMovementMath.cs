@@ -38,6 +38,19 @@ public static class WorldMovementMath
     }
 
     /// <summary>
+    /// Preserve stick/touch magnitude after resolving a unit camera-relative direction.
+    /// Keyboard diagonals stay bounded; a partly tilted stick does not become full-speed movement.
+    /// </summary>
+    public static Vector3 ComputeTargetVelocity(Vector3 cameraForward, Vector3 cameraRight, Vector2 input, float maxSpeed)
+    {
+        if (!input.IsFinite() || !float.IsFinite(maxSpeed) || maxSpeed <= 0f)
+            return Vector3.Zero;
+
+        var direction = ComputeMovementDirection(cameraForward, cameraRight, input);
+        return direction * Mathf.Min(input.Length(), 1f) * maxSpeed;
+    }
+
+    /// <summary>
     /// Blend the current velocity toward the target using exponential smoothing, so acceleration is bounded
     /// and the controller does not snap to full speed in one frame.
     /// </summary>
