@@ -18,8 +18,6 @@ namespace OpenMakaiRanch.World;
 ///
 /// New avatars spawn at their current logical anchor. When an existing character's assignment
 /// changes, its target changes and the stand-in walks toward that target instead of teleporting.
-/// The current greybox has open traversal space; obstacle-aware NavigationAgent3D remains a later
-/// environment slice once authored navigation geometry exists.
 /// </summary>
 public partial class RosterRig : Node3D
 {
@@ -57,7 +55,8 @@ public partial class RosterRig : Node3D
 
     public int TravelingCount => _avatars.Count(pair =>
         _targets.TryGetValue(pair.Key, out var target)
-        && pair.Value.GlobalPosition.DistanceTo(target) > ArrivalDistance);
+        && GodotObject.IsInstanceValid(pair.Value)
+        && PositionOf(pair.Value).DistanceTo(target) > ArrivalDistance);
 
     public bool TryGetTarget(string characterId, out Vector3 target)
     {
@@ -77,7 +76,7 @@ public partial class RosterRig : Node3D
                 continue;
             }
 
-            var candidateDistance = worldPosition.DistanceTo(candidate.GlobalPosition);
+            var candidateDistance = worldPosition.DistanceTo(PositionOf(candidate));
             if (candidateDistance > maxDistance || candidateDistance >= distance)
             {
                 continue;
@@ -119,17 +118,17 @@ public partial class RosterRig : Node3D
                 idleBubble.Visible = false;
             }
 
-            var current = avatar.GlobalPosition;
+            var current = PositionOf(avatar);
             var distance = current.DistanceTo(target);
             if (distance <= ArrivalDistance)
             {
-                avatar.GlobalPosition = target;
+                SetPosition(avatar, target);
                 avatar.PlayLocomotion(0f, false);
                 continue;
             }
 
             var travelTarget = target;
-            if (_agents.TryGetValue(id, out var agent) && GodotObject.IsInstanceValid(agent))
+            if (_agents.TryGetValue(id, out var agent) && GodotObject.IsInstanceValid(agent) && agent.IsInsideTree())
             {
                 agent.TargetPosition = target;
                 var nextPath = agent.GetNextPathPosition();
@@ -148,7 +147,7 @@ public partial class RosterRig : Node3D
                 avatar.Rotation = new Vector3(avatar.Rotation.X, yaw, avatar.Rotation.Z);
             }
 
-            avatar.GlobalPosition = next;
+            SetPosition(avatar, next);
             avatar.PlayLocomotion(TravelSpeed, false);
         }
     }
@@ -209,14 +208,14 @@ public partial class RosterRig : Node3D
                 _targets[id] = targetPosition;
                 if (!AnimateTravel)
                 {
-                    existing.GlobalPosition = targetPosition;
+                    SetPosition(existing, targetPosition);
                 }
                 RefreshThoughtBubble(id);
                 continue;
             }
 
             var avatar = CreateAvatar(id, definition);
-            avatar.GlobalPosition = targetPosition;
+            SetPosition(avatar, targetPosition);
             _avatars[id] = avatar;
             _targets[id] = targetPosition;
             RefreshThoughtBubble(id);
@@ -276,22 +275,38 @@ public partial class RosterRig : Node3D
 
     private Vector3 CompanionFollowTarget(Node3D target)
     {
-        var basis = target.GlobalTransform.Basis;
+        if (!target.IsInsideTree())
+        {
+            var basis = target.Transform.Basis;
+            return target.Position - FlatForward(basis) * CompanionBackOffset + FlatRight(basis) * CompanionSideOffset;
+        }
+
+        var globalBasis = target.GlobalTransform.Basis;
+        return target.GlobalPosition - FlatForward(globalBasis) * CompanionBackOffset + FlatRight(globalBasis) * CompanionSideOffset;
+    }
+
+    private static Vector3 FlatRight(Basis basis)
+    {
         var right = basis.X;
         right.Y = 0f;
-        if (right.LengthSquared() < 0.001f)
-            right = Vector3.Right;
-        else
-            right = right.Normalized();
+        return right.LengthSquared() < 0.001f ? Vector3.Right : right.Normalized();
+    }
 
+    private static Vector3 FlatForward(Basis basis)
+    {
         var forward = -basis.Z;
         forward.Y = 0f;
-        if (forward.LengthSquared() < 0.001f)
-            forward = Vector3.Forward;
-        else
-            forward = forward.Normalized();
+        return forward.LengthSquared() < 0.001f ? Vector3.Forward : forward.Normalized();
+    }
 
-        return target.GlobalPosition - forward * CompanionBackOffset + right * CompanionSideOffset;
+    private static Vector3 PositionOf(Node3D node) => node.IsInsideTree() ? node.GlobalPosition : node.Position;
+
+    private static void SetPosition(Node3D node, Vector3 position)
+    {
+        if (node.IsInsideTree())
+            node.GlobalPosition = position;
+        else
+            node.Position = position;
     }
 
     private void RefreshThoughtBubble(string characterId)
