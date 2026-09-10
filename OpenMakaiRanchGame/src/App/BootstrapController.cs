@@ -4,13 +4,13 @@ namespace OpenMakaiRanch.App;
 
 /// <summary>
 /// Minimal bootstrap scene controller. It validates the critical playable scene graph once,
-/// then routes into the main menu after autoload initialization has completed.
+/// applies account-wide input preferences, then routes into the main menu.
 /// </summary>
 public partial class BootstrapController : Control
 {
 	public override void _Ready()
 	{
-		// Defer scene swap so autoloads and this root are fully initialized first.
+		InputBindingService.EnsureApplied();
 		CallDeferred(nameof(RouteToMainMenu));
 	}
 
