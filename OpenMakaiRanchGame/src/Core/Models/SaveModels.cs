@@ -485,6 +485,7 @@ public sealed class DatingPartnerState
     public int PositiveMoments { get; set; }
     public int PressuredMoments { get; set; }
     public int ForcedMoments { get; set; }
+    public int TrustDamage { get; set; }
     public int LastDateDay { get; set; }
     public string LastActivityId { get; set; } = string.Empty;
 }
