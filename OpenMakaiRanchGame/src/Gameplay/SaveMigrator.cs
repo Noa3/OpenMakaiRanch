@@ -10,6 +10,15 @@ public static class SaveMigrator
 {
     public static SaveState Migrate(SaveState state)
     {
+        ArgumentNullException.ThrowIfNull(state);
+
+        // Reject unsupported data before normalization can change the caller's object.
+        // SaveService catches this and GameRoot keeps the current session untouched.
+        if (state.SchemaVersion > SaveState.CurrentSchemaVersion)
+            throw new InvalidOperationException($"Save schema {state.SchemaVersion} is newer than supported schema {SaveState.CurrentSchemaVersion}.");
+        if (state.Roster?.Characters?.Any(character => character is null) == true)
+            throw new InvalidOperationException("Save roster contains a null character.");
+
         if (state.SchemaVersion <= 0)
         {
             state.SchemaVersion = 1;
@@ -212,8 +221,10 @@ public static class SaveMigrator
         NormalizeNonNegative(state.Economy.ActionPointProgress);
         NormalizeNonNegative(state.Economy.LifetimeActionPoints);
 
-        // Never return a partially migrated version after normalization.
-        state.SchemaVersion = SaveState.CurrentSchemaVersion;
+        // Only explicit migrations may advance the version. Never disguise a missing migration
+        // (or future data) as a successfully loaded current-version save.
+        if (state.SchemaVersion != SaveState.CurrentSchemaVersion)
+            throw new InvalidOperationException($"Save schema {state.SchemaVersion} did not migrate to supported schema {SaveState.CurrentSchemaVersion}.");
         return state;
     }
 
