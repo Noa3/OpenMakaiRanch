@@ -48,13 +48,23 @@ public static class HudViewStateFrameTests
         Check(result, restored?.Name == "Keyboard_interact" && scroll.ScrollVertical == 0,
             "an unchanged focus key preserves deliberate manual scrolling away from the control");
 
-        // Synthetic presentation-only phase-change fixture: the old key disappears during
-        // composition, so its index fallback must become visible instead of inheriting zero.
-        if (restored is not null) restored.Name = "RemovedCommandFixture";
+        // Synthetic presentation-only phase-change fixture. The interaction binding can
+        // already fit at scroll zero on a large headless viewport; use the last binding and
+        // prove it starts clipped before testing that a different fallback must be revealed.
+        var removed = PlayabilityRegressionTests.Buttons(content)
+            .Last(button => button.Name.ToString().StartsWith("Keyboard_", StringComparison.Ordinal));
+        var replacementName = removed.Name;
+        removed.GrabFocus();
+        await Frames(game, 2);
+        scroll.ScrollVertical = 0;
+        await Frames(game, 2);
+        Check(result, removed.GetGlobalRect().End.Y > scroll.GetGlobalRect().End.Y + 1,
+            "replacement-focus fixture starts with a genuinely clipped command");
+        removed.Name = "RemovedCommandFixture";
         game.NotifyStateChanged();
         await Frames(game, 3);
         restored = game.GetViewport().GuiGetFocusOwner();
-        Check(result, restored?.Name == "Keyboard_interact" && scroll.ScrollVertical > 0
+        Check(result, restored?.Name == replacementName && scroll.ScrollVertical > 0
             && restored.GetGlobalRect().Position.Y >= scroll.GetGlobalRect().Position.Y - 1
             && restored.GetGlobalRect().End.Y <= scroll.GetGlobalRect().End.Y + 1,
             $"a removed command's replacement focus is scrolled into view after layout (key={restored?.Name}, scroll={scroll.ScrollVertical}, target={restored?.GetGlobalRect()}, viewport={scroll.GetGlobalRect()})");
@@ -65,7 +75,8 @@ public static class HudViewStateFrameTests
         await Frames(game, 3);
         Check(result, shell.CurrentScreen == "schedule" && scroll.ScrollVertical == 0,
             "a pending options restore cannot scroll a newly selected screen");
-        Check(result, game.GetViewport().GuiGetFocusOwner()?.Name != "Keyboard_interact",
+        Check(result, game.GetViewport().GuiGetFocusOwner()?.Name != "Keyboard_interact"
+            && game.GetViewport().GuiGetFocusOwner()?.Name != replacementName,
             "a pending options restore cannot focus a retired binding after routing");
 
         shell.ShowScreen("options");
