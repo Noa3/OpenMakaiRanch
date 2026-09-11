@@ -5,10 +5,12 @@ import zlib
 from pathlib import Path
 
 branch = "feature/world-stations-and-interiors-20260911"
-base = "3c0b0198b900ea4b8579df343c8d3fef7e34a9f4"
+base = "d0f02154e7accec2c62042c32026aa7931d39a0e"
 def git(*args):
     return subprocess.check_output(["git", *args], text=True).strip()
-if git("branch", "--show-current") != branch or git("rev-parse", "HEAD^") != base:
+# Read the commit object directly: a shallow checkout deliberately has no HEAD^ object.
+parents = [line[7:] for line in git("cat-file", "-p", "HEAD").splitlines() if line.startswith("parent ")]
+if git("branch", "--show-current") != branch or parents != [base]:
     raise SystemExit("Unexpected branch/source; refusing to replace concurrent work")
 patch = zlib.decompress(Path("Tools/Godot/world-continuation.zlib").read_bytes())
 if hashlib.sha256(patch).hexdigest() != "a45f1ab03dae16e95b009f8faa8b448fe80ab169b1cddc0e00e32db793e29f15":
