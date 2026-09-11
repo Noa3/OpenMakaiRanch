@@ -1,9 +1,14 @@
 # Gameplay-only progression continuation
 
-Branch: `feature/gameplay-progression-20260912`, based on merged main
+Branch: `feature/gameplay-progression-20260912`, **PR #19**, based on merged main
 `1e7f90936849443f1605e573a37d3e43e0676245`. The merged anime-material work is inherited,
 not edited. No scenes, shaders, models, world layout, UI renderer or graphics settings
 are changed. C# 12, net8.0, pinned Godot/SDK, original source and save schema 16 remain.
+
+**Verified code head: `90fdf47c30f671c869da1c102091a613d4a8f59f`.** All three workflows
+pass: 2,000 smoke assertions, 526 rendered checks and 69 full-repository Python tests.
+Exact source receipt, artifact hashes, measured policies and limits are in
+**GAMEPLAY_PROGRESSION_VALIDATION.md**. Documentation-only commits may follow.
 
 ## Changes players receive through existing actions
 
@@ -52,6 +57,10 @@ There is no mandatory attempt, failure penalty, streak reset, minimum date or ne
 Success appears once in the existing report as a zero-currency event and remains a durable
 run-local record. No permanent stat multipliers or automatic New Game+ are added.
 
+A well team means positive HP/energy, fatigue below 70, morale at least 50 and no collapse;
+profit challenges also reject a shift that automatically rested an assigned worker. These are
+optional challenge conditions, not extra restrictions on ordinary work or campaign victory.
+
 Flags `1_230_500` through `1_230_505` hold a last-observed day and five first-success days.
 Queries do not allocate history. Current-schema save/load retains them; explicit New Game+
 starts fresh optional records under existing new-run behavior. This is not a global leaderboard.
@@ -59,7 +68,7 @@ starts fresh optional records under existing new-run behavior. This is not a glo
 ## Presentation integration (no UI files changed)
 
 - `GameRoot.InspectNextLunch()` returns `LunchPlan`: workers, pantry meals, portable boxes,
-  and missing servings based on the *current* assignments/stocks.
+  and missing servings based on the current assignments/stocks.
 - `RanchService.InspectWorkBenefit(JobDefinition)` returns the local tier contribution.
 - `JobOutputPreview.Amount` already includes the contribution; `Gold` stays ordinary pay.
   Existing station forecasts automatically show the new total. Future breakdown layout can
@@ -70,6 +79,10 @@ starts fresh optional records under existing new-run behavior. This is not a glo
   not a serialized second economy. Reports use the existing event list.
 - Text entries use existing `locale/en.json` and `locale/de.json` loading/export paths.
   Existing `locale/ui` catalogs, layouts and scene files remain unchanged.
+
+No separate challenge screen, campaign-ending navigation repair or new character story was
+created. Those presentation/content tasks remain with their owners. This branch does not
+modify the parallel character-presence/world-style branch (PR #18).
 
 ## Verification scope
 
@@ -82,7 +95,9 @@ portable-food dairy/office, adaptive pantry/kitchen, and the same adaptive polic
 paid kitchen upgrade. They pay construction/groceries and reconcile the wallet with every
 actual settlement including events. These are reproducible subsystem comparisons, not
 physical traversal, an optimal solver, an organically completed campaign or final balancing.
-Their full lines begin `BALANCE`; record actual results after CI finishes, not predictions.
+Their full lines begin `BALANCE`; actual results are recorded in the validation document.
 
-Validation status when first committed: two new Python catalog checks pass locally;
-engine/build/smoke/UI outcomes are pending remote execution. Existing tests remain registered.
+The first local review subset passed 57 Python tests; it excluded main's later anime-tool
+checks. Full CI ran all 69 tests and the actual pinned engine successfully. No local
+Godot/compiler execution is claimed. Existing rendered scenarios remain unchanged and pass;
+no new graphical acceptance, new UI layout or physical-device claim is implied.
