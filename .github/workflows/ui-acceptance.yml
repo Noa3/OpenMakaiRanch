@@ -6,6 +6,7 @@ on:
     paths:
       - 'OpenMakaiRanchGame/src/**'
       - 'OpenMakaiRanchGame/scenes/**'
+      - 'OpenMakaiRanchGame/locale/**'
       - 'OpenMakaiRanchGame/project.godot'
       - 'Tools/Godot/**'
       - '.github/workflows/ui-acceptance.yml'
@@ -64,7 +65,8 @@ jobs:
         run: |
           mkdir -p .artifacts/ui-source
           git rev-parse HEAD > .artifacts/ui-source/commit.txt
-          git archive -o .artifacts/ui-source/review-source.zip HEAD OpenMakaiRanchGame/src/Ui OpenMakaiRanchGame/src/App OpenMakaiRanchGame/src/World OpenMakaiRanchGame/src/Tests OpenMakaiRanchGame/scenes Tools/Godot
+          # Tracked review inputs only, never profiles, compiled output, original-game content or assets.
+          git archive -o .artifacts/ui-source/review-source.zip HEAD OpenMakaiRanchGame/src OpenMakaiRanchGame/locale OpenMakaiRanchGame/data OpenMakaiRanchGame/docs OpenMakaiRanchGame/scenes OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/OpenMakaiRanchGame.csproj Tools/Godot AGENTS.md Directory.Build.props Directory.Build.targets global.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
