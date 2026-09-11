@@ -1,0 +1,100 @@
+name: Anime lookdev rendered acceptance
+
+on:
+  pull_request:
+    branches: [main, feature/anime-lookdev-pipeline-20260911]
+    paths:
+      - 'OpenMakaiRanchGame/src/Visuals/**'
+      - 'OpenMakaiRanchGame/src/App/GraphicsQualityProfile.cs'
+      - 'OpenMakaiRanchGame/shaders/characters/**'
+      - 'OpenMakaiRanchGame/scenes/dev/AnimeLookDev*.tscn'
+      - 'Tools/Godot/*anime_lookdev.py'
+      - '.github/workflows/anime-lookdev.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: anime-lookdev-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  review-source:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Archive the exact code and documentation used for review
+        run: |
+          git rev-parse HEAD > "$RUNNER_TEMP/review-source-commit.txt"
+          git archive --format=zip --output="$RUNNER_TEMP/anime-review-source.zip" HEAD \
+            AGENTS.md Directory.Build.props Directory.Build.targets global.json \
+            OpenMakaiRanchGame/OpenMakaiRanchGame.csproj \
+            OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/src \
+            OpenMakaiRanchGame/shaders OpenMakaiRanchGame/scenes \
+            OpenMakaiRanchGame/docs Tools/Godot .github/workflows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: anime-review-source
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/anime-review-source.zip
+            ${{ runner.temp }}/review-source-commit.txt
+
+  material-study:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        renderer: [forward_plus, gl_compatibility]
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.401
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install software rendering dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 mesa-vulkan-drivers libvulkan1 libxinerama1 libxcursor1 libxi6 libxrandr2
+          icd=$(find /usr/share/vulkan/icd.d -name 'lvp_icd*.json' | head -1)
+          test -n "$icd"
+          echo "VK_ICD_FILENAMES=$icd" >> "$GITHUB_ENV"
+      - name: Install existing pinned Godot 4.7.2 Mono
+        run: |
+          set -euo pipefail
+          archive=Godot_v4.7.2-stable_mono_linux_x86_64.zip
+          curl --fail --location --retry 3 "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/$archive" -o "$RUNNER_TEMP/$archive"
+          echo "129f82db7bafd54ae14bb5bb284041c73860e8c7a009a3a026ca5e946cbff247  $RUNNER_TEMP/$archive" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/$archive" -d "$RUNNER_TEMP/godot-lookdev"
+          engine="$RUNNER_TEMP/godot-lookdev/Godot_v4.7.2-stable_mono_linux_x86_64/Godot_v4.7.2-stable_mono_linux.x86_64"
+          chmod +x "$engine"
+          echo "GODOT_BIN=$engine" >> "$GITHUB_ENV"
+          "$engine" --version
+      - name: Test staging and evidence guards
+        run: python -m unittest discover -s Tools/Godot -p 'test_anime_lookdev.py' -v
+      - name: Build full game with existing C# 12 contract
+        run: |
+          dotnet restore OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --ignore-failed-sources
+          dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --no-restore
+      - name: Render autoload-free material study
+        run: xvfb-run -a -s '-screen 0 1280x720x24' python Tools/Godot/anime_lookdev.py --renderer '${{ matrix.renderer }}' --timeout 420
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: anime-lookdev-${{ matrix.renderer }}
+          retention-days: 14
+          include-hidden-files: true
+          path: .artifacts/anime-lookdev/**/evidence/*
