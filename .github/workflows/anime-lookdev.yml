@@ -62,7 +62,9 @@ jobs:
       - name: Test staging and evidence guards
         run: python -m unittest discover -s Tools/Godot -p 'test_anime_lookdev.py' -v
       - name: Build full game with existing C# 12 contract
-        run: dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
+        run: |
+          dotnet restore OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --ignore-failed-sources
+          dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --no-restore
       - name: Render autoload-free material study
         run: xvfb-run -a -s '-screen 0 1280x720x24' python Tools/Godot/anime_lookdev.py --renderer '${{ matrix.renderer }}' --timeout 420
       - uses: actions/upload-artifact@v4

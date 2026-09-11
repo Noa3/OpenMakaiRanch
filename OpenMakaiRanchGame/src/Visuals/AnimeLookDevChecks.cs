@@ -107,6 +107,7 @@ public partial class AnimeLookDevChecks : Node
 
     private void Contracts()
     {
+        AnimeAvatarMaterialChecks.Run(Check);
         foreach (var kind in Enum.GetValues<AnimeSurfaceKind>())
         {
             var path = AnimeMaterialFactory.ResolveShader(kind, "High", "forward_plus");

@@ -162,6 +162,10 @@ public partial class PlayerAvatar3D : Node3D
             AddGlasses(root, scale, dark);
         }
 
+        // Session-only opt-in for the generated stand-in; imported NPCs and saved settings stay intact.
+        OpenMakaiRanch.Visuals.AnimeAvatarMaterials.ApplyPlayer(root,
+            GameRoot.Instance?.State.Settings.GraphicsQuality ?? "Medium",
+            OpenMakaiRanch.Visuals.AnimeAvatarMaterials.PreviewRequested);
         RebuildCount += 1;
     }
 
