@@ -66,6 +66,15 @@ public partial class UiLayoutAcceptance
                 "resident: the real practice button changes the shared skill/energy/slot once without early work output");
             Check(ButtonNamed("ResidentPractice_magic").Disabled,
                 "resident: another focus cannot buy a second lesson for the same resident today");
+            var feedback = Descendants(panel).OfType<Label>().Single(l => l.Name == "ResidentFeedback");
+            var contentScroll = Descendants(panel).OfType<ScrollContainer>().Single(s => s.Name == "StationScroll");
+            Check(Encloses(contentScroll.GetGlobalRect(), feedback.GetGlobalRect()),
+                "resident: finishing a lesson reveals its full outcome instead of stranding it above the scroll position");
+            var reason = game.Residents.Inspect(id, ResidentAction.CraftPractice).Reason;
+            Check(Descendants(panel).OfType<Label>().Count(l => l.Text == reason) == 1
+                && Descendants(panel).OfType<Button>().Where(b => b.Name.ToString().StartsWith("ResidentPractice_"))
+                    .All(b => b.TooltipText == reason),
+                "resident: the shared daily lesson limit is explained once while every affected control keeps its reason");
             game.SetLocale("de"); await Frames(8);
             CheckLocalizedPanelGeometry(panel, "resident practice German 640x480");
             Check(ButtonNamed("ResidentPractice_craft").Text.Contains("Handwerk", StringComparison.Ordinal)
@@ -100,6 +109,9 @@ public partial class UiLayoutAcceptance
             await ClickStationButton(ButtonNamed("ResidentGift_gift_journal"));
             Check((game.State.Inventory.Items.TryGetValue("gift_journal", out n) ? n : 0) == gifts - 1,
                 "resident: the actual selected gift consumes its own item, not a quest keepsake");
+            feedback = Descendants(panel).OfType<Label>().Single(l => l.Name == "ResidentFeedback");
+            Check(Encloses(contentScroll.GetGlobalRect(), feedback.GetGlobalRect()),
+                "resident: giving a gift also reveals its complete outcome without repeating a warning beneath every item");
             await Capture("resident-gifts-480x800");
             var retired = ButtonNamed("ResidentSectionBack");
             world.CloseManagement(); retired.EmitSignal(BaseButton.SignalName.Pressed);

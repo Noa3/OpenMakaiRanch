@@ -101,9 +101,17 @@ public partial class WorldStationPanel
         {
             var result = _world.TryResidentAction(id, action, generation, day, phase, itemId);
             _residentFeedback = result.Message;
-            // The full localized result stays in the scrollable conversation, not only a two-line footer.
+            // A completed daily action is now disabled; reveal its outcome rather than preserving
+            // an unrelated position deep in the gift/lesson list. Do not reclaim a retired view.
+            if (result.Changed && IsVisibleInTree() && ContextMatches())
+            { _close.GrabFocus(); _scroll.ScrollVertical = 0; }
             return "";
         }, !offer.Available);
-        if (!offer.Available) _content.AddChild(Text(offer.Reason));
+        var button = _content.GetChild<Button>(_content.GetChildCount() - 1);
+        button.TooltipText = offer.Reason;
+        // One shared explanation is enough when several choices have the same daily limit.
+        // Every affected button still retains its complete reason as a tooltip.
+        if (!offer.Available && !_content.GetChildren().OfType<Label>().Any(l => l.Text == offer.Reason))
+            _content.AddChild(Text(offer.Reason));
     }
 }
