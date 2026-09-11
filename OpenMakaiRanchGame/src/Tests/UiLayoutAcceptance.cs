@@ -87,6 +87,7 @@ public partial class UiLayoutAcceptance : Node
         Check(GetViewport().GuiGetFocusOwner() != name && shell.CurrentScreen == "character_creation",
             "Tab moves focus within creation instead of toggling management");
         await CheckCreationLayouts(shell);
+        await CheckOpeningJourney(world);
 
         // Explicitly synthetic ordinary-session fixture, after proving the real menu route.
         var game = GameRoot.Instance;
