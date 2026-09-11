@@ -101,10 +101,16 @@ public static class LocaleCatalog
     }
 
     // Never change CurrentCulture: parsing saves, IDs, controls and simulation is not localization.
-    // A translator's malformed format string must not break an action or swallow its callback.
+    // Match argument sets as well as syntax: silently losing a price or resident name is a defect.
     internal static string FormatForDisplay(string translated, string english, IFormatProvider culture, params object[] args)
     {
         if (args.Length == 0) return translated;
+        if (!LocaleTemplate.Matches(translated, english, args.Length))
+        {
+            translated = english;
+            culture = CultureInfo.GetCultureInfo("en");
+            if (!LocaleTemplate.Matches(english, english, args.Length)) return english;
+        }
         try { return string.Format(culture, translated, args); }
         catch (FormatException)
         {
