@@ -212,7 +212,8 @@ public partial class UiLayoutAcceptance : Node
 
     private async Task Click(Control control)
     {
-        var point = control.GetGlobalRect().GetCenter();
+        // Include CanvasLayer transforms; synthetic mouse input is viewport-local.
+        var point = control.GetGlobalTransformWithCanvas() * (control.Size / 2f);
         GetViewport().PushInput(new InputEventMouseMotion { Position = point, GlobalPosition = point }, true);
         GetViewport().PushInput(new InputEventMouseButton { Position = point, GlobalPosition = point,
             ButtonIndex = MouseButton.Left, Pressed = true }, true);

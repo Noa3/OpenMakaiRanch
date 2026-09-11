@@ -31,6 +31,13 @@ public partial class UiLayoutAcceptance
             Check(LocaleCatalog.FormatForDisplay("Broken {9}", "Day {0}", CultureInfo.GetCultureInfo("de"), 3) == "Day 3"
                 && LocaleCatalog.FormatForDisplay("Value {", "Value {0}", CultureInfo.GetCultureInfo("de"), 2) == "Value 2",
                 "locale: malformed or out-of-range translation placeholders fall back without interrupting UI callbacks");
+            var de = CultureInfo.GetCultureInfo("de");
+            Check(LocaleCatalog.FormatForDisplay("Missing price", "Price {0}", de, 6) == "Price 6"
+                && LocaleCatalog.FormatForDisplay("{0} {2}", "{0} {1}", de, "A", "B") == "A B",
+                "locale: dropped or extra slots retain the English price and identity");
+            Check(LocaleCatalog.FormatForDisplay("{1} / {0}", "{0} / {1}", de, "A", "B") == "B / A"
+                && LocaleCatalog.FormatForDisplay("{0,9999}", "{0}", de, "A") == "A",
+                "locale: reordering remains supported while excessive alignment falls back");
             var vista = menu.GetNode<SubViewport>("Root/Background/TitleVista/VistaViewport");
             Check(vista.OwnWorld3D && vista.GetNodeOrNull<Camera3D>("VistaWorld/VistaCamera") is not null,
                 "title: the rendered diorama owns a separate world and camera instead of loading a player save");
@@ -188,15 +195,27 @@ public partial class UiLayoutAcceptance
         picker.GrabFocus(); await Frames(6);
         Check(VisibleTarget(picker), "locale: the language picker is a visible physical hit target");
         await Click(picker);
+        Check(GodotObject.IsInstanceValid(picker),
+            "locale: opening the picker does not execute an unrelated setting or retire its control");
         var popup = picker.GetPopup();
         Check(popup.Visible, "locale: clicking the language picker opens its actual popup");
         var index = Array.IndexOf(LocaleCatalog.AvailableLocales, locale);
         if (index < 0) throw new InvalidOperationException("The requested test language is not offered.");
-        // Send input through the owning window so its embedded-popup routing runs.
-        // Calling Viewport.PushInput on PopupMenu directly bypasses WindowInput.
-        await Stroke(Key.Home);
-        for (var step = 0; step < index; step++) await Stroke(Key.Down);
-        await Stroke(Key.Enter);
+        // Opening above is a viewport click. Choice keys explicitly exercise the
+        // popup's WindowInput boundary, not ItemSelected or SetLocale directly.
+        async Task PopupKey(Key key)
+        {
+            popup.EmitSignal(Window.SignalName.WindowInput,
+                new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = true });
+            await Frames(1);
+            if (GodotObject.IsInstanceValid(popup))
+                popup.EmitSignal(Window.SignalName.WindowInput,
+                    new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = false });
+            await Frames(2);
+        }
+        await PopupKey(Key.Home);
+        for (var step = 0; step < index; step++) await PopupKey(Key.Down);
+        await PopupKey(Key.Enter);
         await Frames(10);
         Check(LocaleCatalog.CurrentLocale == locale && GameRoot.Instance.State.Settings.Locale == locale,
             $"locale: popup keyboard navigation selects {locale} through the real picker callback (catalog={LocaleCatalog.CurrentLocale}, saved={GameRoot.Instance.State.Settings.Locale})");
