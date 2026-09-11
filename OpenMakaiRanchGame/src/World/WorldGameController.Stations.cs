@@ -85,10 +85,10 @@ public partial class WorldGameController
         return roster is not null && roster.TryGetAvatar(id, out var avatar) ? avatar : null;
     }
 
-    public bool CanVisitResidentHere(string id) => !IsGuidedOpening && !_flowLocksUi && !GetTree().Paused
+    public bool CanVisitResidentHere(string id) => (_activeAreaId is "ranch" or "town") && !IsGuidedOpening && !_flowLocksUi && !GetTree().Paused
         && _transition?.IsTransitioning != true && !GameRoot.Instance.CombatWorldTimeLocked
         && GameRoot.Instance.Roster.Find(id) is not null && ActivePlayer is { } player
-        && ResolveResidentNode(id) is { } resident && resident.IsInsideTree()
+        && ResolveResidentNode(id) is { } resident && resident.IsInsideTree() && resident.IsVisibleInTree()
         && player.GlobalPosition.DistanceTo(resident.GlobalPosition) <= 2.6f;
 
     public void OpenWorldGuide()

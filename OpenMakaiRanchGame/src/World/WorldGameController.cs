@@ -352,14 +352,8 @@ public partial class WorldGameController : Node
 
     private void OnCharacterInteractionRequested(string characterId)
     {
-        if (_stationPanel is null || !WorldActionsAvailable || !CanVisitResidentHere(characterId))
-        {
+        if (!OpenResident(characterId))
             ActiveStatus(IsGuidedOpening ? "Follow the current introduction objective first." : "Move closer to this resident.");
-            return;
-        }
-        _stationPanel.OpenResident(characterId);
-        ActiveEnterManagement();
-        RefreshHudOwnership();
     }
 
     private void OnMobileInteractPressed()

@@ -2806,6 +2806,7 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
         {
             Id = "test_migrated",
             DefinitionId = "slay",
+            Hp = 50, // A living fixture: this test covers zero MagicPower, not incapacitation.
             Energy = 50
         };
         state.Roster.Characters.Add(customChar);

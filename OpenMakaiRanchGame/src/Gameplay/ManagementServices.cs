@@ -664,56 +664,41 @@ public sealed class TrainingService
         _talents = talents;
     }
 
-    public bool Train(string characterId, string focus)
+    // Validate before paying any cost. The former switch rejected an unknown focus only
+    // after changing Energy/Fatigue/Morale; capped skills also consumed a training slot.
+    public bool CanTrain(string characterId, string focus)
     {
         var character = _state.Roster.Characters.FirstOrDefault(value => value.Id == characterId);
-        if (character is null || character.Energy < 10)
+        if (character is null || character.Hp <= 0 || character.Energy < 10
+            || _state.Calendar.TrainedToday >= 2 || character.Fatigue >= 80
+            || character.Mature.FallState == FallState.Collapse || character.Mature.IsCollapsed) return false;
+        return focus switch
         {
-            return false;
-        }
+            "ranch" => character.RanchSkill < 10,
+            "craft" => character.CraftSkill < 10,
+            "combat" => character.CombatSkill < 10,
+            "magic" => character.MagicPower <= int.MaxValue - 2,
+            _ => false
+        };
+    }
 
-        // Original-game rule: only two slaves can be trained per day.
-        if (_state.Calendar.TrainedToday >= 2)
-        {
-            return false;
-        }
-
-        if (character.Fatigue >= 80)
-        {
-            return false;
-        }
-
-        if (character.Mature.FallState == FallState.Collapse)
-        {
-            return false;
-        }
-
+    public bool Train(string characterId, string focus)
+    {
+        if (!CanTrain(characterId, focus)) return false;
+        var character = _state.Roster.Characters.First(value => value.Id == characterId);
         var efficiency = _talents.TrainingEfficiency(characterId);
-        var fatigueCost = Math.Max(1, (int)(12 / efficiency));
-        character.Energy = Math.Max(0, character.Energy - 10);
-        character.Fatigue = Math.Clamp(character.Fatigue + fatigueCost, 0, 100);
-        character.Morale = Math.Clamp(character.Morale + 1, 0, 100);
-
+        if (!float.IsFinite(efficiency) || efficiency <= 0) return false;
+        var fatigueCost = (int)Math.Clamp(12.0 / efficiency, 1, 100);
+        character.Energy -= 10;
+        character.Fatigue = (int)Math.Clamp((long)character.Fatigue + fatigueCost, 0, 100);
+        character.Morale = (int)Math.Clamp((long)character.Morale + 1, 0, 100);
         switch (focus)
         {
-            case "ranch":
-                character.RanchSkill = Math.Clamp(character.RanchSkill + 1, 1, 10);
-                break;
-            case "craft":
-                character.CraftSkill = Math.Clamp(character.CraftSkill + 1, 1, 10);
-                break;
-            case "combat":
-                character.CombatSkill = Math.Clamp(character.CombatSkill + 1, 1, 10);
-                break;
-            case "magic":
-                if (character.MagicPower < 1)
-                    character.MagicPower = 1;
-                character.MagicPower += 2;
-                break;
-            default:
-                return false;
+            case "ranch": character.RanchSkill = Math.Clamp(character.RanchSkill + 1, 1, 10); break;
+            case "craft": character.CraftSkill = Math.Clamp(character.CraftSkill + 1, 1, 10); break;
+            case "combat": character.CombatSkill = Math.Clamp(character.CombatSkill + 1, 1, 10); break;
+            case "magic": character.MagicPower = Math.Max(1, character.MagicPower) + 2; break;
         }
-
         _state.Calendar.TrainedToday += 1;
         return true;
     }
@@ -838,7 +823,7 @@ public sealed class VisitService
         character.Fatigue = Math.Clamp(character.Fatigue - 18, 0, 100);
         character.Morale = Math.Clamp(character.Morale + 8, 0, 100);
         character.Bond = Math.Clamp(character.Bond + 4, 0, 100);
-        character.Energy = Math.Clamp(character.Energy + 10, 0, character.MaxEnergyOverride ?? 150);
+        RecoverEnergy(character, 10);
         return "Fed. Fatigue-18, Energy+10, Morale+8, Bond+4.";
     }
 
@@ -903,7 +888,7 @@ public sealed class VisitService
         if (!TryGetCharacter(characterId, out var character))
             return "Character not found.";
 
-        character.Energy = Math.Clamp(character.Energy + 25, 0, character.MaxEnergyOverride ?? 150);
+        RecoverEnergy(character, 25);
         character.Fatigue = Math.Clamp(character.Fatigue - 10, 0, 100);
         character.Morale = Math.Clamp(character.Morale + 3, 0, 100);
         return "You let her rest. Energy+25, Fatigue-10, Morale+3.";
@@ -921,6 +906,14 @@ public sealed class VisitService
         character.Bond = Math.Clamp(character.Bond + 3, 0, 100);
         character.Fatigue = Math.Clamp(character.Fatigue + 1, 0, 100);
         return "You brush and groom her. Morale+5, Bond+3.";
+    }
+
+    private void RecoverEnergy(CharacterState character, int amount)
+    {
+        var limit = Math.Max(1, character.MaxEnergyOverride
+            ?? (_data.Characters.TryGetValue(character.DefinitionId, out var definition) ? definition.MaxEnergy : 150));
+        // A recovery item must not lower an already boosted resource value.
+        character.Energy = (int)Math.Min(Math.Max(character.Energy, limit), (long)character.Energy + amount);
     }
 
     private bool TryGetCharacter(string characterId, out CharacterState character)

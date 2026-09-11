@@ -36,6 +36,8 @@ public partial class RosterRig : Node3D
     private GameRoot? _game;
     private string _activeCompanionId = string.Empty;
 
+    // Presentation-only: talking pauses this avatar, never its scheduled production.
+    public string ConversationFocusId { get; set; } = string.Empty;
     public int AvatarCount => _avatars.Count;
     public string ActiveCompanionId => _activeCompanionId;
 
@@ -104,6 +106,8 @@ public partial class RosterRig : Node3D
             {
                 continue;
             }
+
+            if (id == ConversationFocusId) { avatar.PlayLocomotion(0f, false); continue; }
 
             if (string.Equals(id, _activeCompanionId, StringComparison.Ordinal)
                 && _followTarget is not null
@@ -217,7 +221,7 @@ public partial class RosterRig : Node3D
             if (_avatars.TryGetValue(id, out var existing))
             {
                 _targets[id] = targetPosition;
-                if (!AnimateTravel)
+                if (!AnimateTravel && id != ConversationFocusId)
                 {
                     SetPosition(existing, targetPosition);
                 }

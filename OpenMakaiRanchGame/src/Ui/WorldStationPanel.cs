@@ -62,12 +62,14 @@ public partial class WorldStationPanel : Control
 
     public void Bind(WorldGameController world)
     {
+        if (GodotObject.IsInstanceValid(_game)) _game.StateChanged -= OnStateChanged;
         _world = world; _game = GameRoot.Instance;
         _game.StateChanged += OnStateChanged;
     }
 
     public override void _ExitTree()
     {
+        if (GodotObject.IsInstanceValid(_world)) _world.SetResidentConversationFocus("");
         if (GodotObject.IsInstanceValid(_game)) _game.StateChanged -= OnStateChanged;
     }
 
@@ -89,6 +91,8 @@ public partial class WorldStationPanel : Control
 
     private void Open(string kind, string id)
     {
+        _residentPage = "overview"; _residentFeedback = "";
+        _world.SetResidentConversationFocus(kind == "resident" ? id : "");
         _kind = kind; _id = id; _generation = _game.StateGeneration;
         _day = _game.State.Calendar.Day; _phase = _game.State.Calendar.Phase;
         _refreshPending = false; _status.Text = ""; _scroll.ScrollVertical = 0; Visible = true;
@@ -101,6 +105,7 @@ public partial class WorldStationPanel : Control
     {
         if (!Visible) return;
         Visible = false; _revision++; _kind = ""; _id = "";
+        _world.SetResidentConversationFocus("");
         if (GetViewport().GuiGetFocusOwner() is { } owner && IsAncestorOf(owner)) owner.ReleaseFocus();
         Closed?.Invoke();
     }
@@ -127,7 +132,7 @@ public partial class WorldStationPanel : Control
         var focusName = oldFocus is not null && _content.IsAncestorOf(oldFocus) ? oldFocus.Name.ToString() : null;
         var scroll = _scroll.ScrollVertical;
         var revision = ++_revision;
-        if (_renderedLocale != CurrentLocale) { _status.Text = ""; _status.TooltipText = ""; _renderedLocale = CurrentLocale; }
+        if (_renderedLocale != CurrentLocale) { _status.Text = ""; _status.TooltipText = ""; _residentFeedback = ""; _renderedLocale = CurrentLocale; }
         _close.Text = T("world.back", "Back to the world");
         foreach (var node in _content.GetChildren()) { _content.RemoveChild(node); node.QueueFree(); }
         BuildContent();
@@ -217,24 +222,6 @@ public partial class WorldStationPanel : Control
             if (!_game.Ranch.UpgradeFacility(id, _game.Economy)) return T("world.facility.requirements", "The upgrade requirements are not met.");
             _game.NotifyStateChanged(); return T("world.facility.success", "Facility upgraded.");
         }, _game.Economy.Gold < cost);
-    }
-
-    private void RenderResident()
-    {
-        var character = _game.Roster.Find(_id);
-        if (character is null) { Close(); return; }
-        var name = string.IsNullOrWhiteSpace(character.DisplayNameOverride) ? _game.Roster.DefinitionFor(character).DisplayName : character.DisplayNameOverride;
-        _title.Text = name;
-        RenderVoluntaryCompanionship(_id);
-        _content.AddChild(Text(T("world.resident.stats", "Energy {0} • Fatigue {1} • Morale {2} • Bond {3}", character.Energy, character.Fatigue, character.Morale, character.Bond)));
-        _content.AddChild(Text(T("world.resident.help", "A conversation here stays with this resident. Work is assigned at the relevant station.")));
-        var care = _game.PlayerStaminaCost(PlayerActivityKind.VisitCare);
-        var feed = _game.PlayerStaminaCost(PlayerActivityKind.VisitFeed);
-        Action("ResidentTalk", T("world.resident.talk", "Talk — {0} stamina", care), () => _game.TryVisitCare(_id, "talk"), !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare));
-        Action("ResidentFeed", T("world.resident.feed", "Offer a meal box — {0} stamina", feed), () => _game.TryVisitCare(_id, "feed"),
-            !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitFeed) || !_game.State.Inventory.Items.TryGetValue("meal_box", out var meals) || meals < 1);
-        Action("ResidentRest", T("world.resident.day_off", "Give the day off"), () => _game.TryAssignJob(_id, "rest", _generation) ? T("world.resident.rest_success", "Rest assigned. No production was paid early.") : T("world.resident.already_resting", "Already resting."),
-            _game.Schedule.GetAssignment(_id) == "rest");
     }
 
     private void RenderHouse()
