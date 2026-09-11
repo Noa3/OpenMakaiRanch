@@ -16,8 +16,9 @@ The owned talent and the temporary active flag are separate: this function does 
 the talent merely because the resource is low. There are also original state-dependent
 bypasses, including coercive conditions. Those bypasses are not implemented in this slice.
 
-`CharacterProtectionService` exposes exact known catalog ID `2` / earlier `talent_2`,
-EP reserve status and the separate MP values. `WardReserveReady` means ONLY that the
+`CharacterProtectionService` exposes exact known catalog ID `2`, earlier `talent_2`, and
+the remake's existing semantic ID `virginity_barrier`, EP reserve status and the separate MP
+values. `WardReserveReady` means ONLY that the
 resource prerequisite is met; it is NOT a complete reconstruction of the source's active
 flag and is NOT permission for an interaction. Unknown capacities fail closed. Depletion,
 affection or incapacity never removes the trait through this adapter. Nothing here authorizes

@@ -65,8 +65,12 @@ boundary now shares the same helper used by development benefits.
 `GameRoot.GetCharacterDevelopment(id)` returns fresh, read-only values containing baseline,
 current fields, revision, first observed day, recent changes and protection. The morph value
 contains `Conditioning` and `Attunement` in 0..1, the current authored `BodyTypeId`, and
-`HeightMillimetres` (1600 is 1.6 metres, NOT 1600 centimetres). These channels carry gameplay
-state; no mesh, blendshape name, camera or shader implementation is implied.
+`HeightMillimetres` (1600 is 1.6 metres, NOT 1600 centimetres). Body identity and HP/SP
+capacities resolve through the existing RosterService definition, including its fallback for
+uncatalogued residents. Blank body overrides no longer produce a different snapshot merely
+because the existing save loader normalizes them. No authored body override is replaced by
+development. These channels carry gameplay state; no mesh, blendshape name, camera or shader
+implementation is implied.
 
 `GameRoot.GetCharacterProtection(id)` returns the protection snapshot alone. Existing
 `StateChanged` is the invalidation signal after the real command; do not retain another
