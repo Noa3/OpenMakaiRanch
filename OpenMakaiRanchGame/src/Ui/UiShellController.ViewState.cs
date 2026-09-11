@@ -63,6 +63,7 @@ public partial class UiShellController
         // Options used to append this card in _Process, after restoration had already run.
         // Compose the complete view before waiting for its container layout.
         EnsureInputOptionsExtension();
+        FinalizeSequentialManagementCards();
         var view = new ContentView(revision, _game.StateGeneration, _currentScreen, scroll, focus);
         _pendingContentView = view;
         var tree = GetTree();

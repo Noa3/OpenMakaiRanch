@@ -37,8 +37,7 @@ public partial class UiLayoutAcceptance
         var status = shell.GetNode<Label>(shell.StatusLabelPath);
         Check(!string.IsNullOrEmpty(status.Text) && status.TooltipText == status.Text,
             "bounded header retains the complete status message in its tooltip");
-        var initialChoices = Descendants(shell).OfType<Button>()
-            .Where(b => b.Name.ToString().StartsWith("NightChoice_")).ToArray();
+        var initialChoices = Descendants(shell).OfType<Button>().Where(b => b.Name.ToString().StartsWith("NightChoice_")).ToArray();
         Check(initialChoices.Length == 3 && initialChoices[0].GetGlobalRect().End.Y <= initialChoices[1].GlobalPosition.Y
             && initialChoices[1].GetGlobalRect().End.Y <= initialChoices[2].GlobalPosition.Y,
             "nightly choices have separate non-overlapping hit targets, not stacked panel children");
@@ -104,6 +103,7 @@ public partial class UiLayoutAcceptance
             && game.State.Reports.Any(r => r.Day == day && r.NetGold == report.NetGold && r.Income == report.Income && r.Expenses == report.Expenses),
             "day, wallet and complete report totals survive current-schema saving together");
         game.Save.Delete(99);
+        await CheckAdventureJourney(world);
     }
 
     private async Task FocusClick(Button button)
