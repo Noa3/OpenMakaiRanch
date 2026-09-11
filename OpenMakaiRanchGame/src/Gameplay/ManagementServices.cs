@@ -368,11 +368,13 @@ public sealed class MilestoneService
             }
 
             _state.Milestones.CompletedIds.Add(milestone.Id);
+            var beforeGold = _economy.Gold;
             _economy.AddGold(milestone.RewardGold);
-            _state.Economy.LastIncome += milestone.RewardGold;
-            report.Income += milestone.RewardGold;
-            report.NetGold += milestone.RewardGold;
-            report.Lines.Add($"Milestone unlocked: {milestone.DisplayName} (+{milestone.RewardGold} gold)." );
+            var credited = _economy.Gold - beforeGold;
+            _state.Economy.LastIncome = (int)Math.Clamp((long)_state.Economy.LastIncome + credited, int.MinValue, int.MaxValue);
+            report.Income = (int)Math.Clamp((long)report.Income + credited, int.MinValue, int.MaxValue);
+            report.NetGold = (int)Math.Clamp((long)report.NetGold + credited, int.MinValue, int.MaxValue);
+            report.Lines.Add($"Milestone unlocked: {milestone.DisplayName} (+{credited} gold credited)." );
         }
     }
 

@@ -77,6 +77,7 @@ public static class DaySettlementRegressionTests
             "an unaffordable event does not report a payment or deduct gold");
 
         CheckRootCommands(result);
+        DayCommandRegressionTests.Run(result, data);
     }
 
     private static void CheckRootCommands(SmokeTestResult result)

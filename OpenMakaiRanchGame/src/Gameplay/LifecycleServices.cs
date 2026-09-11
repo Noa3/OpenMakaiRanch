@@ -42,7 +42,9 @@ public sealed class DailyEventService
             };
             var evt = goodEvents[rng.Next(goodEvents.Count)];
             int gold = evt.goldMin > 0 ? rng.Next(evt.goldMin, evt.goldMax + 1) : 0;
+            var beforeGold = _economy.Gold;
             if (gold > 0) _economy.AddGold(gold);
+            gold = _economy.Gold - beforeGold; // Actual credit after wallet limits.
             if (!string.IsNullOrEmpty(evt.item))
                 _state.Inventory.Items[evt.item] = _state.Inventory.Items.GetValueOrDefault(evt.item) + evt.itemAmt;
             if (evt.title == "Lucky Day")
@@ -119,7 +121,7 @@ public sealed class CharacterGrowthService
     {
         foreach (var character in _state.Roster.Characters)
         {
-            character.HasGrownToday = false;
+            // DailySettlementService resets this once before both possible growth passes.
             var jobId = _state.Schedule.AssignedJobs.GetValueOrDefault(character.Id) ?? "rest";
             if (jobId == "rest") continue;
 

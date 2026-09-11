@@ -42,6 +42,9 @@ public sealed class DailySettlementService
     {
         var report = new DailyReport { Day = _state.Calendar.Day };
         var income = 0;
+        var ledger = new DailyGoldLedger(_economy.Gold);
+        // Clear once per day, not between night training and ordinary growth.
+        foreach (var character in _state.Roster.Characters) character.HasGrownToday = false;
 
         _resources.ConsumeResources(report);
         ApplyNightAction(report);
@@ -76,6 +79,7 @@ public sealed class DailySettlementService
         }
 
         _economy.ApplySettlement(income, expenses);
+        ledger.RecordWorkAndUpkeep(income, expenses, _economy.Gold);
         report.Income = income;
         report.Expenses = expenses;
         report.NetGold = income - expenses;
@@ -83,12 +87,13 @@ public sealed class DailySettlementService
 
         _ranch.ApplyAutomation(report);
 
-        int milkRevenue = 0;
+        var beforeShipping = _economy.Gold;
         foreach (var character in _state.Roster.Characters)
         {
             _milkEconomy.ProduceMilk(character.Id);
-            milkRevenue += _milkEconomy.ShipMilk(character.Id);
+            _milkEconomy.ShipMilk(character.Id);
         }
+        var milkRevenue = ledger.RecordChange(beforeShipping, _economy.Gold);
         if (milkRevenue > 0)
         {
             report.MilkRevenue = milkRevenue;
@@ -96,9 +101,14 @@ public sealed class DailySettlementService
             report.Lines.Add($"Auto-shipped milk for {milkRevenue} gold.");
         }
 
+        var beforeEvents = _economy.Gold;
         _events.GenerateEvents(report);
+        ledger.RecordChange(beforeEvents, _economy.Gold);
         _growth.ApplyGrowth(report);
+        var beforeMilestones = _economy.Gold;
         _milestones.CheckAfterSettlement(report);
+        ledger.RecordChange(beforeMilestones, _economy.Gold);
+        ledger.Complete(report, _state.Economy);
         _dayCycle.AdvanceToNextDay();
 
         // Original ANNIVERSARY_MESSAGE parity: announce the first day of a new season/year after
@@ -143,21 +153,21 @@ public sealed class DailySettlementService
         {
             case "train":
             {
-                // Training at night: everyone gets a small stat gain and a day off fatigue
+                // One extra ranch-wide pass, independent of resident count.
                 foreach (var character in _state.Roster.Characters)
                 {
                     character.Bond = Math.Clamp(character.Bond + 1, 0, 100);
                     character.Morale = Math.Clamp(character.Morale + 2, 0, 100);
-                    // Static workload: night training leans on stamina instead
-                    _growth.ApplyGrowth(report);
+
                 }
 
-                report.Lines.Add("Night training: everyone practiced. Effort improves growth.");
+                _growth.ApplyGrowth(report);
+                report.Lines.Add("Night training: one extra growth pass for working residents; bond +1 and morale +2.");
                 break;
             }
             case "admin":
             {
-                // Administrative work cuts facility expenses this day
+                // Reduces workload, not upkeep or gold costs.
                 _state.Ranch.Workload = Math.Max(0, _state.Ranch.Workload - 10);
                 report.Lines.Add("Night administrative work: paperwork handled, workload reduced.");
                 break;

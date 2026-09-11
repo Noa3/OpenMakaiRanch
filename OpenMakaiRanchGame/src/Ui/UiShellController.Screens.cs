@@ -74,6 +74,7 @@ public partial class UiShellController
     {
         AddTitle(T("screen.ranch", "Ranch Overview"));
 
+        if (_game.State.Calendar.Phase == DayPhase.Night) AddNightPlanningCard();
         AddRanchCommandDeck();
 
         var chars = _game.Roster.Characters.ToList();
@@ -204,8 +205,7 @@ public partial class UiShellController
         var actions = FlowRow(8);
         inner.AddChild(actions);
 
-        var advance = PrimaryButton(_game.State.Calendar.Phase == DayPhase.Night ? T("screen.ranch.end_day", "End Day") : T("screen.ranch.advance_phase", "Advance Phase"), T("tooltip.advance_time", "Advance the current phase and process daily settlement at night."));
-        advance.Pressed += () => ExecuteUiAction(() => _game.AdvanceTime(), true);
+        var advance = DayAdvanceButton();
         AddFlowButton(actions, advance, 150);
         AddFlowButton(actions, DestinationButton(T("screen.schedule", "Daily Schedule"), "schedule", tooltip: T("tooltip.schedule", "Assign jobs before advancing time.")), 150);
         AddFlowButton(actions, DestinationButton(T("screen.town", "Town Hub"), "town", tooltip: T("tooltip.town", "Build facilities and visit town services.")), 132);
@@ -342,7 +342,7 @@ public partial class UiShellController
         var headerInner = CardContent();
         header.AddChild(headerInner);
         headerInner.AddChild(SubtitleLabel(T("screen.report.title_pattern", "Day {0} Report", rpt.Day)));
-        var milkSuffix = rpt.MilkRevenue > 0 ? $" | Milk: +{rpt.MilkRevenue}g" : string.Empty;
+        var milkSuffix = rpt.MilkRevenue > 0 ? $" | Shipments included: {rpt.MilkRevenue}g" : string.Empty;
         headerInner.AddChild(AddStyledLine($"Income: {rpt.Income}g | Expenses: {rpt.Expenses}g | Net: {rpt.NetGold}g{milkSuffix}"));
         if (rpt.SkillGains > 0)
         {

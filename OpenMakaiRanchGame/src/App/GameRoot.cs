@@ -895,7 +895,8 @@ public partial class GameRoot : Node
 
 	public bool AdvanceTime()
 	{
-		if (_combatWorldTimeLocked)
+		if (_settlingDay || _combatWorldTimeLocked
+			|| (State.Calendar.Phase == DayPhase.Night && !HasNightPlan))
 		{
 			return false;
 		}
@@ -954,7 +955,7 @@ public partial class GameRoot : Node
 			State.Ranch.BathtubClean = false;
 		}
 
-		if (State.Calendar.Phase == DayPhase.Night)
+		if (State.Calendar.Phase == DayPhase.Night && !HasNightPlan)
 		{
 			State.Calendar.NightAction = "rest";
 		}
@@ -979,30 +980,10 @@ public partial class GameRoot : Node
 		return TryAutosave(reason);
 	}
 
-	public void SetNightAction(string action)
-	{
-		if (action is not ("rest" or "train" or "admin")) return;
-		State.Calendar.NightAction = action;
-		StateChanged?.Invoke();
-	}
+	public void SetNightAction(string action) =>
+		TrySelectNightAction(action, StateGeneration, State.Calendar.Day);
 
-	public DailyReport EndDay()
-	{
-		var dayCycle = new DayCycleService(State);
-		var settlement = new DailySettlementService(State, Data, Schedule, Ranch, Economy, dayCycle, Milestones, Inventory, Talents);
-		LastDailyReport = settlement.SettleDay();
-		State.Reports.RemoveAll(report => report.Day == LastDailyReport.Day);
-		State.Reports.Add(LastDailyReport);
-		DaySettled?.Invoke(LastDailyReport);
-		StateChanged?.Invoke();
-		TryAutosave("day settled");
-		if (WinCondition.IsGameComplete() && !State.VictoryDay.HasValue)
-		{
-			State.VictoryDay = State.Calendar.Day;
-			GameComplete?.Invoke();
-		}
-		return LastDailyReport;
-	}
+	public DailyReport EndDay() => SettleAndPublishDay();
 
 	public int RechargePlayerManaFromStorage(int requestedAmount = int.MaxValue)
 	{

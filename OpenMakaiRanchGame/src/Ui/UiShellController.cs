@@ -366,8 +366,12 @@ public partial class UiShellController : Control
 			var bath = SecondaryButton(bathLabel,
 				"A prepared Evening/Night hot bath schedules extra stamina for tomorrow. A shower handles hygiene but gives no next-day stamina bonus.");
 			bath.Disabled = _game.State.Player.BathedToday;
+			var bathGeneration = _game.StateGeneration;
+			var bathDay = _game.State.Calendar.Day;
+			var bathPhase = _game.State.Calendar.Phase;
 			bath.Pressed += () =>
 			{
+				if (!IsLiveDayControl(bath, revision, bathGeneration, bathDay, bathPhase)) return;
 				var result = _game.UsePlayerBath();
 				SetStatus(result.Message, result.Used);
 				ShowScreen(_currentScreen);
@@ -375,37 +379,8 @@ public partial class UiShellController : Control
 			recovery.AddChild(bath);
 		}
 
-		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not ("report" or "combat"))
-		{
-			var selected = _game.State.Calendar.NightAction;
-			var hasChoice = selected is "rest" or "train" or "admin";
-
-			var banner = CardContainer();
-			banner.AddThemeConstantOverride("separation", 6);
-			_content.AddChild(banner);
-
-			var title = AddStyledLine(T("screen.night.title", "Night Phase — Choose Tonight's Work"), true);
-			title.TooltipText = T("tooltip.night", "Pick how the ranch spends the night. Applied when you End Day.");
-			banner.AddChild(title);
-
-			if (hasChoice)
-			{
-				banner.AddChild(MutedLabel($"{T("screen.night.selected", "Selected")}: {NightActionLabel(selected)}"));
-			}
-			else
-			{
-				void AddNightButton(string action, string label)
-				{
-					var button = PrimaryButton(label, "");
-					button.Pressed += () => { _game.SetNightAction(action); ShowScreen(_currentScreen); };
-					banner.AddChild(button);
-				}
-
-				AddNightButton("rest", T("screen.night.rest", "Rest (restore energy)"));
-				AddNightButton("train", T("screen.night.train", "Train (growth practice)"));
-				AddNightButton("admin", T("screen.night.admin", "Admin (reduce workload)"));
-			}
-		}
+		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not ("ranch" or "report" or "combat"))
+			AddNightPlanningCard();
 		RestoreContentViewDeferred(revision, previousScroll, focus);
 	}
 
@@ -517,23 +492,8 @@ public partial class UiShellController : Control
 		ApplyChipPanelStyle(_workloadChip);
 		ApplyChipPanelStyle(_bathtubChip);
 		ApplyPrimaryButtonStyle(_endDayButton);
-		_endDayButton.Pressed += () =>
-		{
-			if (!IsVisibleInTree() || _fullScreenMode || _game.CombatWorldTimeLocked) return;
-			if (_game.State.Calendar.Phase == DayPhase.Night
-				&& _game.State.Calendar.NightAction is not ("rest" or "train" or "admin"))
-			{
-				ShowScreen("ranch");
-				SetStatus("Choose tonight's work before ending the day.");
-				return;
-			}
-			var dayBefore = _game.State.Calendar.Day;
-			ExecuteUiAction(() => _game.AdvanceTime(), true);
-			if (_game.State.Calendar.Day != dayBefore && _game.State.Calendar.Phase == DayPhase.Morning)
-			{
-				ShowScreen("report");
-			}
-		};
+		_endDayButton.Pressed += () => AdvanceFromManagement(
+			_game.StateGeneration, _game.State.Calendar.Day, _game.State.Calendar.Phase);
 
 		if (_menuButton is not null)
 		{
