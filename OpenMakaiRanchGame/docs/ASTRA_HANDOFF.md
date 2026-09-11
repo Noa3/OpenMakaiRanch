@@ -1,54 +1,57 @@
 # ASTRA Handoff
 
-Checkpoint **2026-09-11**, verified code-inclusive head **`897871eadbdf02c19d905c6e0b33e5edf335e649`**. **1,691 smoke assertions, 207 rendered UI assertions and 48 launcher/evidence tests pass.** The rendered run produced 31 viewport PNGs. This is bounded gameplay/interface evidence, not a finished-game or physical-device certification. Documentation-only commits may follow; the live PR records subsequent exact-head results.
+Checkpoint **2026-09-11**, verified code-inclusive head **`6af8466dc3bd4338339a6c9b79ea4dd344e6b9db`**. **1,728 smoke assertions, 240 rendered UI assertions and 48 Python launcher/evidence tests pass.** Rendered evidence contains 34 viewport PNGs. This is bounded gameplay/interface evidence, not certification that the entire remake or every device is finished. Documentation-only commits may follow; consult the live PR for subsequent exact-head results.
 
-## Branch and requirements
+## Current branch and requirements
 
-- Repository `Noa3/OpenMakaiRanch`; branch `playability/ranch-quiet-corner-20260910`; PR **#12** against `main`. Base `6f4512c7ef50754c7f88cc490564c2ee608534e5` is merged PR #11. Read live Git before editing; never force-reset concurrent work or automatically merge.
-- **C# 12 only**, effective `LangVersion=12.0`, enforced by Directory.Build.props/targets and CI including preview-override rejection. SDK **10.0.401**, primary target **net8.0**, engine **Godot 4.7.2 Mono**. The rendered Linux job installs the .NET 8 runtime alongside the pinned SDK; this is not a project framework/engine upgrade.
-- Save schema **16**. D-011 targets fresh games while preserving current-version personal saves; expanding legacy migration is not a development goal. Keep `eraMakaiRanch-game-eng-translation/` read-only.
-- GameRoot and existing services remain the sole calendar/economy/progression authority. No character eligibility approvals, identity changes or adult-specific assets were added.
+- Repository `Noa3/OpenMakaiRanch`; working branch **`fix/daily-gameplay-loop-20260911`**, **PR #13** against main. PR #12 was merged externally during this continuation at **`f420bee96e9b99a38ea1260705dbf1e4fe7030d6`**. That merge included the new failing baseline tests; PR #13 repairs them. Do not continue on the old PR #12 branch from stale chat notes.
+- Read live Git before editing. Preserve concurrent changes; no force resets or automatic merge. The new branch followed main without divergence.
+- **C# 12 only**, effective LangVersion 12.0, enforced by Directory.Build.props/targets and CI including deliberate preview denial. SDK **10.0.401**, primary target **net8.0**, Godot **4.7.2 Mono**. Linux rendered CI additionally installs the .NET 8 runtime; source/framework/engine versions were not upgraded here.
+- Save schema **16**. D-011 targets fresh games while preserving current-version personal saves; no legacy-migration expansion. Original `eraMakaiRanch-game-eng-translation/` stays read-only.
+- GameRoot and existing services remain the sole simulation/calendar/economy authority. No character identity/eligibility approvals or adult-specific assets were added.
 
-## Gameplay slice retained
+## Latest gameplay continuation
 
-The physical Community Board and Pause entry share courier stock, rewards and one-delivery-per-day receipts. Opening the board does not deliver or pay. The permanent quiet corner costs **40 G / 3 supplies** once, has no upkeep, and updates its existing greybox presentation without accumulating nodes. Solo recovery restores up to **10 stamina once per day**, capped at current daily capacity. Full stamina preserves the break; partial recovery uses it. No walking tax, phase advance, backlog or replacement of the prepared bath's next-morning bonus. Shared Quiet Rest delegates to the existing voluntary activity rules and does not also grant solo recovery.
+**Night training:** one extra ranch-wide growth pass, not one pass per resident. Ordinary growth, fatigue/talent modifiers and rest-job exclusions remain. Reset HasGrownToday once at settlement start so a level-up in night training is not erased by ordinary growth.
 
-Personal points need no selected worker or new job assignment. Commands retain generation/day/phase, area, combat, proximity and captured-partner checks. FlagService receipts **1230100** (restored) and **1230101** (last recovery day) are bounded, saved together and written before notifications. The existing resource-backed walkthrough obtains real Day-3 Office Work supplies after Day-1 upkeep and an explicit Night choice; it does not inject transaction funding. The bench still lacks authored collision, seated pose and sitting animation.
+**Complete daily accounting:** DailyGoldLedger observes payments already made by work/upkeep, shipments, events and milestones. It pays nothing and changes no reward rates. Report income/expenses/net and the overview's LastIncome/LastExpenses reconcile to the wallet. Capped event/milestone entries report actual credit rather than nominal awards. Existing int display fields remain bounded; an additional balance line records exact long totals at display limits. Exhaustive overflow of every upstream producer is not certified.
 
-## Latest interface work
+**Guarded decisions and completion:** ordinary AdvanceTime requires a valid Night plan. TryAdvanceTime and TrySelectNightAction validate captured session/day/phase and reject stale or repeated commands. The EndDay completion guard remains active through notifications/autosave, preventing synchronous observers from settling tomorrow or advancing its Morning. Observer NewGame/Load cannot attach/publish/save the old report into the replacement session. Raw EndDay retains explicit simulation-call compatibility; this is not universal idempotency for arbitrary sequential simulation calls, multithreaded transactions or exception rollback.
 
-The previous HUD/menu integration remains: active-area CanvasLayer ownership, canonical player HP including empty rosters, help/Back coordination, rejection of hidden world callbacks, Plan Night, safe binding capture, retained unresolved tactical combat and results/clock release. Pending scroll/focus snapshots remain value-only, revision/generation/visibility guarded and one-shot.
+**Playable night planning:** Rest, Training and Admin stay available for revision until End Day. Their current effects are explained; choosing them does not immediately apply recovery, growth, workload reduction or stamina cost. Overview shows Plan Night until a choice exists and puts the planning card first. Retired view/session/day controls reject old callbacks. Bathing preserves an already selected Training/Admin plan and its separate next-day stamina bonus; without a plan a night bath still selects Rest.
 
-The rendered continuation repairs a disposed MainMenu event subscription on scene exit; uses readable small-window canvas dimensions while preserving HiDPI/ultrawide behavior and independent user scale; wraps management header rows; adapts main-menu/creation minimum widths and creation grids; preserves wrapped-label height; and bounds binding-button captions. Escape and controller Back cancel either capture device even during arming. Removed/reset binding cards cannot re-arm.
-
-Compact Ranch/Town HUDs separate summary/actions, workers and warnings. Optional detail is compacted, not marked completed. Full resource, tutorial and alert detail remains in bounded scrollable Help. The interaction strip reflows and hides duplicate legacy prompts after area binding. Existing work/facility gates are unchanged.
-
-Options Scale Up/Down now call the single central SetUiScale authority, without an additional panel transform or duplicate notification. Short logical window heights use the denser header and hide the decorative title in compact mode, retaining space to reach Scale Down. Twelve actual scale-button clicks cover both existing 0.85–1.35 limits, caption values, single scaling, pre-click visibility, panel bounds and return to the world.
+**Night UI layout:** the header's status column has bounded width/lines with complete tooltip text, rather than growing vertically until content disappears. New nightly choices and the existing recovery card use the normal CardContent VBox inside their PanelContainer, so text/buttons no longer share an overlapping rectangle. Both planning and bath are exercised with viewport clicks, not merely emitted signals.
 
 ## Executed verification
 
-All three workflows passed on **`897871eadbdf02c19d905c6e0b33e5edf335e649`**:
+All three workflows succeeded on **`6af8466dc3bd4338339a6c9b79ea4dd344e6b9db`**:
 
-- **Godot CI #563 / `34546801277`**: C# 12 and preview denial, compilation, launcher tests, verified import and isolated full smoke. **1,691 OK, zero failed assertions, one SMOKE PASS**. Retains the 52 HUD/menu and nine view-state checks alongside first-day, leisure, combat, save and input coverage.
-- **Build #571 / `34546801316`**: success.
-- **Rendered UI #17 / `34546801281`**: **207 OK, zero failed assertions, one UI ACCEPTANCE PASS, 31 PNGs**, using Mesa/Xvfb OpenGL Compatibility. Actual viewport mouse/key/standardized joypad events; not physical controllers. Windows/Linux profile isolation and evidence rejection have **48 Python tests** (34 prior plus 14 new); the local rerun also passed all 48.
+| Workflow | Run | Result |
+| --- | --- | --- |
+| Godot 4.7 Mono CI #581 | `34558277149` | success |
+| Build Smoke Check #589 | `34558277154` | success |
+| Rendered UI acceptance #29 | `34558277148` | success |
 
-Both artifacts were independently downloaded and their SHA-256 checked:
+C# 12/preview denial, compilation, 48 launcher tests, verified engine import and isolated smoke pass. The downloaded smoke log contains **1,728 OK / zero failed assertions / one SMOKE PASS**, including all **36 day-contract checks** and the additional explicit-night save-fixture guard. Existing first-day, skip, leisure, combat, input, save and prior HUD/view-state checks remain.
+
+The rendered JSON contains **240 passing checks / zero failures / one UI ACCEPTANCE PASS / 34 PNGs**. The previous 207 UI assertions remain, followed by 33 night/report checks: actual revisions among all three choices, separate hit targets, full status context, stale-control denial, actual prepared-bath click, End Day/report, matching wallet totals, next-day stamina bonus and current-schema save/load. Day-2 interface setup remains explicitly synthetic; no claim that this is an organically earned full playthrough. The prior resource-backed first-day/leisure walkthroughs remain separate.
+
+Both downloaded archives were SHA-256 checked; the night-planning and daily-report screenshots were opened and inspected:
 
 | Evidence | Artifact ID | SHA-256 |
 | --- | --- | --- |
-| Godot import/smoke | `10179353049` | `932387a80b5844ec3e29600cc71034e85932dcd79da7b8b1a920067bcacc060a` |
-| Rendered UI/source/screens | `10179361232` | `671af1cfafa35895ef8fcf634170af9de5db59924706fcea7c57c43ebae2f92a` |
+| Godot import/smoke | `10183422808` | `0b31f56d257b358472728cf2b8ab8c0f735a2831ecbd2167f18db817159a3bd9` |
+| Rendered UI/source/screens | `10183428448` | `0efd594f124c9ef89b5fec5086d7b024e8d60008ae41b6011e84cc898b39223a` |
 
-Smoke `.artifacts/godot/smoke-b9q6dgw7/console.log`: zero out-of-tree transform errors and five intentional invalid-save diagnostics. Import `.artifacts/godot/import-ke9xntab/console.log`: successful exit, but the known EditorSettings shutdown diagnostic remains. UI evidence `godot/ui-ly84_15e/` inside its artifact: no runtime ERROR/SCRIPT ERROR, retained unsupported-VSync driver warning. Do not describe all logs as warning-free. Rendered artifacts expire after 14 days; regenerate rather than invent missing evidence.
+Smoke `.artifacts/godot/smoke-xltt6pti/console.log`: five expected invalid-save diagnostics, no out-of-tree transform errors. Import `.artifacts/godot/import-gg4bwbuj/console.log`: successful exit with the known EditorSettings shutdown diagnostic. UI evidence `godot/ui-tpwvo56m/`: no runtime ERROR/SCRIPT ERROR or prior native shutdown fatal; the unsupported-VSync driver warning remains. Logs were not filtered to manufacture success. Rendered artifacts expire after 14 days; regenerate missing evidence.
 
-## Fixture boundaries and next work
+## Baselines and remaining limits
 
-`UI_LAYOUT_ACCEPTANCE.md` records the failed baselines and fixes. A doubled focus-scroll request and the mistaken expectation of an active unbuilt Dairy Barn button were fixture errors. The former extra request was removed; the latter now has an explicit negative control followed by the built Pasture. The high-scale unreachable Scale Down button was a real layout defect. Original assertions/gates were retained and coverage strengthened.
+DAY_LOOP_VALIDATION.md records the nine pre-fix day-contract failures at f420bee, the corrected old save fixture, the long-header regression and the newly composed overlapping-night-card defect found during rendered testing. Original assertions and gameplay guards remain. The separate native shutdown failure was addressed by retiring/finalizing the temporary test world while the engine is alive; forced collection is test teardown only, not normal gameplay or proof that every engine lifecycle issue is fixed.
 
-The rendered suite proves MainMenu entry, name typing/focus, selected creation layouts, menus, scale controls, help and staged world interaction presentation. Its ordinary Day-2 state is explicitly synthetic, not earned progression. It does not exercise every character picker, every menu action or the entire rendered first-day/combat/leisure/save journey. The separate resource-backed smoke walkthrough remains.
+Prior gameplay remains: shared physical/Pause courier board and daily receipt; optional 40 G / 3 supplies quiet corner; up to 10 daily stamina recovery without walking tax/upkeep; independent prepared-bath bonus; voluntary shared activity guards; bounded saved receipts and actual resource-backed construction. Bench collision/sitting animation remain unfinished. Prior responsive menu, camera, help, input ownership and scale repairs are retained; UI_LAYOUT_ACCEPTANCE/HUD_MENU_VALIDATION record those historical scopes.
 
-Next prioritize an isolated full rendered playthrough and physical mouse/controller/touch/Alt-Tab acceptance, then authored collision and obstacle-aware navigation. The current greybox models, route traversal, final art/animation, weather readability, representative-hardware Forward+ low/high performance and long-term balance remain open. Prefer fixing demonstrated friction over adding mandatory daily systems. See KNOWN_ISSUES for earlier unreproduced audit leads.
+Next prioritize a complete rendered first-day/skip/combat/courier/leisure/save journey and physical mouse/controller/touch/Alt-Tab acceptance, followed by authored collision and obstacle-aware navigation. Selected menu actions and staged proximity are not proof of every action or traversable route. Final assets, weather readability, representative-hardware Forward+ low/high performance, long-term balance and original-engine differential parity remain open. See KNOWN_ISSUES for untouched importer/content-validation/MCP audit leads.
 
 ## Commands and safety
 
@@ -61,4 +64,4 @@ python Tools/Godot/ui_acceptance.py --rendered
 python Tools/Godot/launch.py --mode runtime --isolated
 ```
 
-Smoke overwrites/deletes disposable slot 99: use the isolated launcher, never the raw smoke flag on personal saves. UI acceptance requires its own verified disposable profile and debug-only dev scene. Its CI is read-only and uploads only whitelisted evidence/source, not saves. Temporary exact-hash, branch-scoped patch helpers removed themselves after non-force commits; no automatic merge was used. Older KANBAN/WORK_LOG/PLAYABILITY snapshots are historical, not current verification.
+Smoke and the opt-in UI scenario write/delete disposable slot 99: use the isolated launchers, never raw test flags on personal saves. UI CI is read-only and uploads whitelisted evidence/source, not personal profiles. Temporary branch-scoped source patch helpers used exact blob guards, explicit staged paths and non-force pushes, removed themselves, and are absent from the final diff. Older KANBAN/WORK_LOG snapshots and PR #12 pending notes are historical, not current verification.
