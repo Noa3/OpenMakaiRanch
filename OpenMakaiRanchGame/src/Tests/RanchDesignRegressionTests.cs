@@ -38,6 +38,18 @@ public static class RanchDesignRegressionTests
             building.Free();
         }
 
+        Check(RanchDressingClearance.Allows(new Rect2(-0.2f, 1.8f, 0.4f, 0.4f)), "small decorative footprint fits an unreserved plaza location");
+        Check(!RanchDressingClearance.Allows(RanchBuildingPlots.GateApproach)
+            && !RanchDressingClearance.Allows(new Rect2(0, 0, float.NaN, 1)), "dressing rejects the gate and malformed mesh dimensions");
+        Check(plots.All(plot => !RanchDressingClearance.Allows(plot.ReservedBounds)
+            && !RanchDressingClearance.Allows(plot.EntranceBounds)), "trees cannot occupy any reserved roof or entrance");
+        var decoration = new Node3D { Position = new Vector3(0, 0, 2) };
+        decoration.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = Vector3.One * 0.2f } });
+        Check(RanchDressingClearance.AllowsMeshes(decoration), "mesh clearance composes local transforms safely before tree entry");
+        decoration.Position = new Vector3(plots[0].Center.X, 0, plots[0].Center.Y);
+        Check(!RanchDressingClearance.AllowsMeshes(decoration), "moving a mesh into a plot rejects it before instantiation into the world");
+        decoration.Free();
+
         var data = DataRegistry.CreateSeeded();
         var state = new SaveState(); var flags = new FlagService();
         var economy = new EconomyService(state);

@@ -232,11 +232,15 @@ public partial class RanchPresentationBuilder : Node3D
     private void AddTree(string name, Vector3 basePosition, float scale)
     {
         if (TryAddExternalScene(name, $"{VendorRoot}/decoration/nature/tree_single_A.gltf",
-                basePosition, Vector3.One * (1.35f * scale), 0f))
+                basePosition, Vector3.One * (1.35f * scale), 0f, requirePlotClearance: true))
         {
             return;
         }
 
+        // The fallback crown must respect the same reserved plots as an imported mesh.
+        var radius = scale + 0.12f;
+        if (!RanchDressingClearance.Allows(new Rect2(new Vector2(basePosition.X, basePosition.Z)
+            - Vector2.One * radius, Vector2.One * (radius * 2)))) return;
         AddCylinder($"{name}_Trunk", basePosition + new Vector3(0f, 0.75f * scale, 0f),
             0.18f * scale, 1.5f * scale, WoodColor);
         AddSphere($"{name}_Crown", basePosition + new Vector3(0f, 2.05f * scale, 0f),
@@ -259,7 +263,7 @@ public partial class RanchPresentationBuilder : Node3D
         AddBox(name, midpoint, new Vector3(width, 0.055f, length), PathColor, yaw);
     }
 
-    private bool TryAddExternalScene(string name, string path, Vector3 position, Vector3 scale, float yaw)
+    private bool TryAddExternalScene(string name, string path, Vector3 position, Vector3 scale, float yaw, bool requirePlotClearance = false)
     {
         if (_generated is null || string.IsNullOrWhiteSpace(path) || !ResourceLoader.Exists(path))
         {
@@ -282,6 +286,11 @@ public partial class RanchPresentationBuilder : Node3D
         instance.Position = position;
         instance.Scale = scale;
         instance.Rotation = new Vector3(0f, yaw, 0f);
+        if (requirePlotClearance && !RanchDressingClearance.AllowsMeshes(instance))
+        {
+            instance.Free();
+            return false;
+        }
         _generated.AddChild(instance);
         return true;
     }
