@@ -55,7 +55,7 @@ public sealed class DatingService
         if (character is null)
             return RelationshipStage.Distant;
 
-        var progress = ProgressFor(characterId);
+        var progress = _state.Dating.Partners.GetValueOrDefault(characterId) ?? new DatingPartnerState();
         var mind = character.Mature;
 
         // Relationship stage measures a positive bond. Coercion can alter original-era mental

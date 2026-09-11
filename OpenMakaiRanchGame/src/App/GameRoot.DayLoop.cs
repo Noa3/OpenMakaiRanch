@@ -40,9 +40,12 @@ public partial class GameRoot
         {
             var state = State;
             var generation = StateGeneration;
+            var evening = SharedEvening;
+            var sharedNight = evening.CaptureForSettlement();
             var settlement = new DailySettlementService(state, Data, Schedule, Ranch, Economy,
                 new DayCycleService(state), Milestones, Inventory, Talents);
             var report = settlement.SettleDay();
+            evening.CompleteAfterSettlement(sharedNight, report);
             _settlingReport = report;
             LastDailyReport = report;
             state.Reports.RemoveAll(entry => entry.Day == report.Day);

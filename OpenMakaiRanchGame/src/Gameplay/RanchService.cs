@@ -33,6 +33,8 @@ public sealed class RanchService
         }
 
         _state.Ranch.Facilities.TryGetValue(facilityId, out var currentLevel);
+        if (currentLevel < 0 || currentLevel == int.MaxValue
+            || (long)definition.BuildCost + (long)currentLevel * 75 > int.MaxValue || definition.BuildCost < 0) return false;
         var nextLevel = currentLevel + 1;
         var cost = FacilityUpgradeCost(definition, currentLevel);
         if (!economy.Spend(cost))
@@ -46,7 +48,7 @@ public sealed class RanchService
 
     public int FacilityUpgradeCost(FacilityDefinition definition, int currentLevel)
     {
-        return definition.BuildCost + Math.Max(0, currentLevel) * 75;
+        return (int)Math.Clamp((long)definition.BuildCost + Math.Max(0L, currentLevel) * 75, 0L, int.MaxValue);
     }
 
     public int FacilityUpkeep()

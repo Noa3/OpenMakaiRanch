@@ -81,6 +81,9 @@ public partial class RanchPresentationBuilder : Node3D
                 && GodotObject.IsInstanceValid(landmark))
             {
                 landmark.SetBuiltColor(built);
+                var visualLevel = string.IsNullOrWhiteSpace(child.RequiredFacilityId) ? 1
+                    : game.State.Ranch.Facilities.GetValueOrDefault(child.RequiredFacilityId);
+                landmark.SetFacilityLevel(visualLevel);
             }
 
             if (child.GetNodeOrNull<Label3D>("Label") is { } label)
@@ -187,6 +190,8 @@ public partial class RanchPresentationBuilder : Node3D
     {
         var ranch = GetParent();
         if (ranch is null) return;
+        var plotErrors = RanchBuildingPlots.Validate(RanchBuildingPlots.All);
+        if (plotErrors.Count > 0) throw new InvalidOperationException(string.Join("; ", plotErrors));
         // Created before the parent ranch collects physical stations. No additional reward authority.
         foreach (var (id, label, position) in new[]
         {
@@ -206,21 +211,12 @@ public partial class RanchPresentationBuilder : Node3D
         {
             if (!station.RequiresWorker) continue;
             var original = station.Position;
-            var outward = new Vector3(original.X, 0, original.Z);
-            if (outward.LengthSquared() < 0.01f) outward = Vector3.Forward;
-            outward = outward.Normalized();
-            var footprint = station.TargetId switch
-            {
-                "dairy_barn" => new Vector2(7.6f, 6.6f),
-                "ranch_house" => new Vector2(7.2f, 6.4f),
-                "pet_care" => new Vector2(4.6f, 4.4f),
-                _ => new Vector2(6.2f, 5.6f)
-            };
-            var towardHub = -outward;
+            var plot = RanchBuildingPlots.Find(station.TargetId);
+            if (plot is null) continue; // New building types require an authored, validated plot.
             var building = new WalkInBuilding { Name = "Building_" + station.TargetId,
-                BuildingId = station.TargetId, Footprint = footprint,
-                Position = new Vector3(original.X, 0, original.Z) + outward * (footprint.Y / 2 + 0.7f),
-                Rotation = new Vector3(0, Mathf.Atan2(towardHub.X, towardHub.Z), 0),
+                BuildingId = station.TargetId, Footprint = plot.Footprint,
+                Position = new Vector3(plot.Center.X, 0, plot.Center.Y),
+                Rotation = new Vector3(0, plot.Yaw, 0),
                 Player = ranch.GetNodeOrNull<ThirdPersonPlayerController>("Player"),
                 WallColor = station.TargetId == "dairy_barn" ? new Color("abc0bb") : new Color("b9ac8a") };
             _generated!.AddChild(building);

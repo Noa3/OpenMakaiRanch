@@ -13,6 +13,7 @@ public static class DaySettlementRegressionTests
 {
     public static void Run(SmokeTestResult result)
     {
+        RanchDesignRegressionTests.Run(result);
         var data = DataRegistry.CreateSeeded();
         foreach (var count in new[] { 1, 4, 8 })
         {

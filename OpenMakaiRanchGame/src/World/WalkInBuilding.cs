@@ -22,6 +22,22 @@ public partial class WalkInBuilding : Node3D
     private readonly List<(Node3D Wall, Vector3 Normal)> _wallVisuals = new();
     private readonly List<MeshInstance3D> _plaster = new();
     private bool _built;
+    public int VisualGrade { get; private set; } = -1;
+    private Node3D? _upgrades;
+
+    public void SetFacilityLevel(int level)
+    {
+        var grade = RanchBuildingPlots.VisualGrade(level);
+        if (!_built || grade == VisualGrade) return;
+        VisualGrade = grade;
+        if (_upgrades is not null) { RemoveChild(_upgrades); _upgrades.QueueFree(); }
+        _upgrades = new Node3D { Name = "UpgradeDetails" }; AddChild(_upgrades);
+        // Wall-mounted details stay inside the original collision envelope and away from the aisle.
+        if (grade >= 2)
+            Mesh(_upgrades, "WallShelf", new(0, 1.9f, -Footprint.Y / 2 + 0.28f), new(1.8f, 0.14f, 0.4f), new Color("a68a59"));
+        if (grade >= 3)
+            Mesh(_upgrades, "CraftedWallPanel", new(0, 2.35f, -Footprint.Y / 2 + 0.15f), new(1.5f, 0.55f, 0.12f), new Color("c7ad74"));
+    }
 
     public override void _Ready() => Build();
 

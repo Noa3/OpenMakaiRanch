@@ -74,7 +74,7 @@ def validate_repository(game: Path = GAME) -> int:
     for path in (game / "src").rglob("*.cs"):
         if "Tests" in path.parts:
             continue
-        for key in re.findall(r'\bT\("(world\.[^"\n]+)"\s*,', path.read_text(encoding="utf-8")):
+        for key in re.findall(r'\bT\("((?:world|project|evening)\.[^"\n]+)"\s*,', path.read_text(encoding="utf-8")):
             if key not in english:
                 raise ValueError(f"Missing source translation {key} referenced by {path}")
     filters = re.findall(r'^include_filter="([^"]*)"', (game / "export_presets.cfg").read_text(), re.M)

@@ -210,6 +210,7 @@ public partial class WorldStationPanel : Control
         if (!_game.Data.Facilities.TryGetValue(id, out var facility) || facility.BuildCost <= 0) return;
         var level = _game.Ranch.Facilities.TryGetValue(id, out var value) ? value : 0;
         var cost = _game.Ranch.FacilityUpgradeCost(facility, level);
+        _content.AddChild(Text(T("world.facility.envelope", "Equipment upgrades use the reserved footprint. Higher levels do not enlarge the building or block its entrance.")));
         _content.AddChild(Text(T("world.facility.summary", "Facility level {0} • upkeep {1} G/day. Wallet: {2} G.", level, facility.UpkeepGold, _game.Economy.Gold)));
         Action("FacilityUpgrade", level == 0 ? T("world.facility.build", "Build this facility — {0} G", cost) : T("world.facility.upgrade", "Upgrade this facility — {0} G", cost), () =>
         {
@@ -224,6 +225,7 @@ public partial class WorldStationPanel : Control
         if (character is null) { Close(); return; }
         var name = string.IsNullOrWhiteSpace(character.DisplayNameOverride) ? _game.Roster.DefinitionFor(character).DisplayName : character.DisplayNameOverride;
         _title.Text = name;
+        RenderVoluntaryCompanionship(_id);
         _content.AddChild(Text(T("world.resident.stats", "Energy {0} • Fatigue {1} • Morale {2} • Bond {3}", character.Energy, character.Fatigue, character.Morale, character.Bond)));
         _content.AddChild(Text(T("world.resident.help", "A conversation here stays with this resident. Work is assigned at the relevant station.")));
         var care = _game.PlayerStaminaCost(PlayerActivityKind.VisitCare);
@@ -246,12 +248,17 @@ public partial class WorldStationPanel : Control
         {
             foreach (var (id, text) in new[] { ("rest", T("world.house.plan.rest", "Rest — recover resident energy")), ("train", T("world.house.plan.train", "Training — one extra growth pass")), ("admin", T("world.house.plan.admin", "Admin — reduce workload")) })
                 Action("HousePlan_" + id, text, () => _game.TrySelectNightAction(id, _generation, _day) ? T("world.house.selected", "Night plan selected.") : T("world.house.unchanged", "Plan unchanged."), _game.State.Calendar.NightAction == id);
+            RenderSharedEvening();
             Action("HouseSleep", T("world.house.sleep", "Sleep and settle the day"), () =>
             {
                 var generation = _generation;
                 if (!_game.TryAdvanceTime(generation, _day, _phase)) return T("world.house.select_first", "Select a night plan first.");
                 // The state notification closes this stale-day panel. Open only the matching report.
-                if (_game.StateGeneration == generation) _world.OpenDedicatedService("report");
+                if (_game.StateGeneration == generation)
+                {
+                    _world.OpenDedicatedService("report");
+                    _world.RevealSharedEvening(generation, _day);
+                }
                 return T("world.house.new_day", "A new day begins.");
             }, !_game.HasNightPlan);
         }
@@ -269,7 +276,9 @@ public partial class WorldStationPanel : Control
 
     private void RenderGuide()
     {
+        if (_id == "projects") { RenderProjects(); return; }
         _title.Text = T("world.guide.title", "Places");
+        Action("OpenProjects", T("project.journal.open", "Ranch projects — what could I do next?"), () => { Open("guide", "projects"); return ""; });
         _content.AddChild(Text(T("world.guide.help", "Choose one destination to mark. Follow its arrow, then interact there. This guide never assigns work, spends resources or teleports you.")));
         foreach (var station in _world.Ranch!.Stations.Where(s => s.RequiresWorker || s.TargetId is "ranch_house" or "pet_care"))
             Destination(new WorldDestination("ranch", station.TargetId, station.Label));
