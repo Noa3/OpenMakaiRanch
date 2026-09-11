@@ -77,17 +77,26 @@ public partial class UiShellController
             if (!IsVisibleInTree() || _viewRevision != view.Revision
                 || _game.StateGeneration != view.Generation || _currentScreen != view.Screen) return;
 
+            Control? replacementFocus = null;
             if (view.Focus is { } savedFocus)
             {
                 var controls = FocusableControls(_content).ToList();
                 var target = controls.Where(control => FocusKey(control) == savedFocus.Key)
-                    .Skip(savedFocus.Occurrence).FirstOrDefault()
-                    ?? (controls.Count > 0 ? controls[Math.Min(savedFocus.Index, controls.Count - 1)] : null);
+                    .Skip(savedFocus.Occurrence).FirstOrDefault();
+                if (target is null && controls.Count > 0)
+                {
+                    // A phase change can remove the old command entirely (for example,
+                    // Auto Finish becomes the results Back button). A newly chosen fallback
+                    // must be visible; retaining an unrelated log position strands its focus.
+                    replacementFocus = controls[Math.Min(savedFocus.Index, controls.Count - 1)];
+                    target = replacementFocus;
+                }
                 target?.GrabFocus();
             }
-            // Restore after focus: FollowFocus may otherwise replace the user's chosen position.
-            // ScrollContainer clamps naturally if the new content is shorter.
+            // Exact matches retain the user's scroll, including deliberate scrolling away
+            // from a focused control. Only a different fallback command follows its new focus.
             _scroll.ScrollVertical = view.Scroll;
+            if (replacementFocus is not null) _scroll.EnsureControlVisible(replacementFocus);
         }
         // CallDeferred alone can run in the same message-queue flush as nested container sorts.
         // Godot requires a process-frame boundary before scrolling to newly added controls.

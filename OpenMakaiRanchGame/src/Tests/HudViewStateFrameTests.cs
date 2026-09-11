@@ -40,6 +40,25 @@ public static class HudViewStateFrameTests
             "focus restoration does not overwrite the previously visible options position");
         Check(result, scroll.FollowFocus, "normal focus-following remains enabled after restoration");
 
+        // An exact key must respect a deliberate manual scroll away from the focused input.
+        scroll.ScrollVertical = 0;
+        game.NotifyStateChanged();
+        await Frames(game, 3);
+        restored = game.GetViewport().GuiGetFocusOwner();
+        Check(result, restored?.Name == "Keyboard_interact" && scroll.ScrollVertical == 0,
+            "an unchanged focus key preserves deliberate manual scrolling away from the control");
+
+        // Synthetic presentation-only phase-change fixture: the old key disappears during
+        // composition, so its index fallback must become visible instead of inheriting zero.
+        if (restored is not null) restored.Name = "RemovedCommandFixture";
+        game.NotifyStateChanged();
+        await Frames(game, 3);
+        restored = game.GetViewport().GuiGetFocusOwner();
+        Check(result, restored?.Name == "Keyboard_interact" && scroll.ScrollVertical > 0
+            && restored.GetGlobalRect().Position.Y >= scroll.GetGlobalRect().Position.Y - 1
+            && restored.GetGlobalRect().End.Y <= scroll.GetGlobalRect().End.Y + 1,
+            "a removed command's replacement focus is scrolled into view after layout");
+
         // Queue a restore and leave before it runs. It must not scroll/focus the destination.
         game.NotifyStateChanged();
         shell.ShowScreen("schedule");

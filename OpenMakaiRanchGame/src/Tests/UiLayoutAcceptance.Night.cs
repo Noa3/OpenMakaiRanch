@@ -104,6 +104,7 @@ public partial class UiLayoutAcceptance
             "day, wallet and complete report totals survive current-schema saving together");
         game.Save.Delete(99);
         await CheckAdventureJourney(world);
+        await CheckManagementJourney(world);
     }
 
     private async Task FocusClick(Button button)

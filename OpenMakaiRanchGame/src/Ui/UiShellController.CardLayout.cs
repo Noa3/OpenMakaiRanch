@@ -1,5 +1,6 @@
 using System.Linq;
 using Godot;
+using OpenMakaiRanch.Gameplay;
 
 namespace OpenMakaiRanch.Ui;
 
@@ -11,8 +12,33 @@ public partial class UiShellController
         // gives every direct Control child the same rectangle. Normalize once, during
         // composition, before focus restoration/container layout. Do not touch authored
         // overlays, character previews or other screens that may intentionally overlap.
-        if (_currentScreen is "adventure" or "combat")
+        if (_currentScreen == "adventure") AddAdventureReadinessCard();
+        if (_currentScreen is "adventure" or "combat" or "shop" or "schedule" or "research" or "milestones")
             StackSequentialCards(_content);
+    }
+
+    private void AddAdventureReadinessCard()
+    {
+        if (_content.GetNodeOrNull<Control>("AdventureReadinessCard") is not null) return;
+        var card = CardContainer();
+        card.Name = "AdventureReadinessCard";
+        _content.AddChild(card);
+        _content.MoveChild(card, 1);
+        var content = CardContent();
+        card.AddChild(content);
+        var player = _game.State.Player;
+        var cost = _game.PlayerStaminaCost(PlayerActivityKind.Adventure);
+        content.AddChild(SubtitleLabel($"Daily Stamina: {player.Stamina}/{player.MaxStamina + player.DailyStaminaBonus}"));
+        var automatic = _game.State.Adventure.SelectedPartyIds.Count == 0;
+        var partyCount = _game.Roster.Characters.Count(character => automatic
+            || _game.State.Adventure.SelectedPartyIds.Contains(character.Id));
+        content.AddChild(MutedLabel(automatic
+            ? $"Party: all {partyCount} residents (automatic when nobody is explicitly selected)."
+            : $"Party: {partyCount} selected residents. Add the ranch owner to use Tactical Battle."));
+        content.AddChild(MutedLabel($"An ordinary mission costs {cost} daily Stamina once when combat starts. Preparing a mission is free; individual turns use combat HP, SP and MP instead."));
+        content.AddChild(MutedLabel("Choose Fight below, then Tactical Battle for direct commands or Auto Battle. Use Back from the result to resume world time."));
+        if (player.Stamina < cost)
+            content.AddChild(RequirementLabel("Not enough daily Stamina for an ordinary mission. Rest or finish the day before starting another expedition."));
     }
 
     internal static void StackSequentialCards(Node root)

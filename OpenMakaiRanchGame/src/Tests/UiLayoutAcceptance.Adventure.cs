@@ -62,16 +62,17 @@ public partial class UiLayoutAcceptance
             "adventure: both the visible time control and shared clock remain blocked during battle");
         CheckAdventureCardGeometry(shell, "player turn 640x480");
         await Capture("combat-player-turn-640x480");
+        var playerName = game.ActiveCombatSession!.PlayerState!.DisplayName;
         var defend = Descendants(shell).OfType<Button>().Single(button => button.Text == "Defend");
         await ClickAdventureButton(defend, "Defend in the actual player turn");
         var report = game.LastCombatReport!;
-        Check(report.Rounds.SelectMany(round => round.Actions).Any(action => action.ActionType == "Defend"),
+        Check(report.Rounds.SelectMany(round => round.Actions).Any(action => action.ActorName == playerName && action.ActionType == "Defend"),
             "adventure: the real Defend hit target adds a defensive action to the combat log");
         if (game.ActiveCombatSession is { IsFinished: false })
         {
             var attack = Descendants(shell).OfType<Button>().First(button => button.Text.StartsWith("Attack ", StringComparison.Ordinal));
             await ClickAdventureButton(attack, "Attack a living enemy");
-            Check(game.LastCombatReport!.Rounds.SelectMany(round => round.Actions).Any(action => action.ActionType == "Attack"),
+            Check(game.LastCombatReport!.Rounds.SelectMany(round => round.Actions).Any(action => action.ActorName == playerName && action.ActionType == "Attack"),
                 "adventure: the real Attack hit target resolves an attack through the shared combat service");
         }
         if (game.ActiveCombatSession is { IsFinished: false })
@@ -82,6 +83,10 @@ public partial class UiLayoutAcceptance
         Check(game.State.Player.Stamina == stamina - game.AdventureStaminaCost(missionId)
             && game.State.Calendar.Day == day && game.State.Calendar.Phase == phase,
             "adventure: turns/results do not charge entry stamina again or silently advance the day");
+        var resultBack = Descendants(shell.GetNode<Control>(shell.ContentPath)).OfType<Button>()
+            .Single(button => button.Text == "Back");
+        Check(ReferenceEquals(GetViewport().GuiGetFocusOwner(), resultBack) && VisibleTarget(resultBack),
+            "adventure: replacing battle commands with the results Back button restores a visible focus target");
         var resolvedGold = game.Economy.Gold;
         var resolvedStamina = game.State.Player.Stamina;
         shell.ShowScreen("combat");
