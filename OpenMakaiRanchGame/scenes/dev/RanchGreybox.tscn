@@ -515,7 +515,7 @@ offset_bottom = -18.0
 text = "?"
 tooltip_text = "Help and controls [F1]"
 
-[node name="HelpPanel" type="PanelContainer" parent="WorldHud/TutorialOverlay"]
+[node name="HelpPanel" type="ScrollContainer" parent="WorldHud/TutorialOverlay"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5

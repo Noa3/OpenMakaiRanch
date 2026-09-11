@@ -142,6 +142,7 @@ public partial class TownHudController : CanvasLayer
             _tutorialHelpButton.OffsetTop = -72f - metrics.SafeBottom;
             _tutorialHelpButton.OffsetBottom = -18f - metrics.SafeBottom;
         }
+        WorldHudResponsiveLayout.Apply(this, metrics, ranch: false);
     }
 
     public void Refresh(GameRoot? game)

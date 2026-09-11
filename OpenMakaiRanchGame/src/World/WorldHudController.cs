@@ -195,6 +195,7 @@ public partial class WorldHudController : CanvasLayer
             _tutorialHelpButton.OffsetTop = -72f - metrics.SafeBottom;
             _tutorialHelpButton.OffsetBottom = -18f - metrics.SafeBottom;
         }
+        WorldHudResponsiveLayout.Apply(this, metrics, ranch: true);
     }
 
     /// <summary>Refresh normal ranch/session values from the shared simulation.</summary>

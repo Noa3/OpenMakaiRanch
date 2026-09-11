@@ -316,7 +316,7 @@ offset_bottom = -18.0
 text = "?"
 tooltip_text = "Town help and controls [F1]"
 
-[node name="HelpPanel" type="PanelContainer" parent="TownHud/TutorialOverlay"]
+[node name="HelpPanel" type="ScrollContainer" parent="TownHud/TutorialOverlay"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5

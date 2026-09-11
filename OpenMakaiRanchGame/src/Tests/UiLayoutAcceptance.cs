@@ -92,10 +92,13 @@ public partial class UiLayoutAcceptance : Node
                 Check(content.Size.X <= scroll.Size.X + 1, $"{tag}: options do not require horizontal content scrolling");
                 Check(VisibleTarget(back), $"{tag}: Return to World is visible, unclipped and at least 24 physical pixels high");
                 Check(VisibleTarget(shell.GetNode<Button>(shell.EndDayButtonPath)), $"{tag}: time button is visible, unclipped and at least 24 physical pixels high");
+                shell.GetNode<Button>(shell.MenuButtonPath).GrabFocus();
+                scroll.ScrollVertical = 0;
+                await Frames(3);
                 await Capture("options-top-" + tag);
                 var binding = Descendants(content).OfType<Button>().First(button => button.Name == "Keyboard_interact");
                 binding.GrabFocus();
-                scroll.EnsureControlVisible(binding);
+                // FollowFocus owns this scroll; a second same-frame request sees stale geometry.
                 await Frames(4);
                 Check(VisibleTarget(binding), $"{tag}: keyboard focus scrolls the interaction binding fully into view");
                 var oldBinding = InputBindingService.GetKeyboardLabel("interact");
@@ -114,6 +117,7 @@ public partial class UiLayoutAcceptance : Node
             }
             await CheckGamepadMenus(world);
             await CheckUiScale(world);
+            await CheckWorldLayouts(world);
             Check(game.Economy.Gold == gold && game.State.Player.Stamina == stamina && game.State.Calendar.Day == 2,
                 "layout/input inspection does not pay rewards, spend daily stamina or settle the day");
         }
@@ -183,7 +187,6 @@ public partial class UiLayoutAcceptance : Node
     private async Task Click(Control control)
     {
         var point = control.GetGlobalRect().GetCenter();
-        GetViewport().NotifyMouseEntered();
         GetViewport().PushInput(new InputEventMouseMotion { Position = point, GlobalPosition = point }, true);
         GetViewport().PushInput(new InputEventMouseButton { Position = point, GlobalPosition = point,
             ButtonIndex = MouseButton.Left, Pressed = true }, true);

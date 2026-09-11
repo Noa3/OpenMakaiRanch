@@ -49,7 +49,7 @@ public partial class WorldTutorialController : Control
     private Button? _dismissButton;
     private Button? _skipButton;
     private Button? _helpButton;
-    private PanelContainer? _helpPanel;
+    private ScrollContainer? _helpPanel;
     private Button? _closeHelpButton;
     private CheckButton? _tutorialToggle;
     private Button? _resetTutorialButton;
@@ -82,7 +82,7 @@ public partial class WorldTutorialController : Control
         _dismissButton = GetNodeOrNull<Button>("HintCard/Inner/Actions/DismissButton");
         _skipButton = GetNodeOrNull<Button>("HintCard/Inner/Actions/SkipButton");
         _helpButton = GetNodeOrNull<Button>("HelpButton");
-        _helpPanel = GetNodeOrNull<PanelContainer>("HelpPanel");
+        _helpPanel = GetNodeOrNull<ScrollContainer>("HelpPanel");
         _closeHelpButton = GetNodeOrNull<Button>("HelpPanel/Inner/CloseButton");
         _tutorialToggle = GetNodeOrNull<CheckButton>("HelpPanel/Inner/TutorialToggle");
         _resetTutorialButton = GetNodeOrNull<Button>("HelpPanel/Inner/ResetTutorialButton");
@@ -217,7 +217,10 @@ public partial class WorldTutorialController : Control
             return;
         }
 
+        WorldHudResponsiveLayout.PrepareHelp(_helpPanel, _visibleStepIndex >= 0 && _visibleStepIndex < Steps.Length
+            ? $"{Steps[_visibleStepIndex].Title}\n{Steps[_visibleStepIndex].Body}\n{Steps[_visibleStepIndex].KeyHint}" : string.Empty);
         _helpPanel.Visible = true;
+        _helpPanel.GrabFocus();
         _ranch?.InputGate.SetUiOwnsInput(true);
     }
 
@@ -339,7 +342,8 @@ public partial class WorldTutorialController : Control
         }
 
         _visibleStepIndex = next;
-        _hintCard.Visible = _worldGame?.IsManagementVisible != true;
+        _hintCard.Visible = _worldGame?.IsManagementVisible != true
+            && GetViewport().GetVisibleRect().Size.Y >= 480;
         if (!_hintCard.Visible)
         {
             return;

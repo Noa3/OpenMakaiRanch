@@ -57,6 +57,7 @@ public partial class WorldInteractionAssistController : Node
             : _world.Ranch?.GetInteractionPresentation() ?? WorldInteractionPresentation.None(2.5f);
 
         RefreshHud(presentation);
+        RefreshHudLayout();
         RefreshHighlight(presentation, delta);
     }
 
@@ -105,7 +106,7 @@ public partial class WorldInteractionAssistController : Node
         });
         root.AddChild(_panel);
 
-        var row = new HBoxContainer { Name = "Row" };
+        var row = new BoxContainer { Name = "Row" };
         row.AddThemeConstantOverride("separation", 12);
         _panel.AddChild(row);
 
@@ -228,6 +229,7 @@ public partial class WorldInteractionAssistController : Node
         var management = InputBindingService.GetCombinedLabel("toggle_management");
         var pause = InputBindingService.GetCombinedLabel("pause_menu");
         var help = InputBindingService.GetCombinedLabel("open_help");
+        if (GetViewport().GetVisibleRect().Size.X < 900) return $"Interact {interact}   •   Help {help}";
         return $"Interact {interact}   •   Management {management}   •   Pause {pause}   •   Help {help}";
     }
 

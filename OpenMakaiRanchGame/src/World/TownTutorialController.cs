@@ -13,7 +13,7 @@ public partial class TownTutorialController : Control
     private Label? _hintLabel;
     private Button? _dismissButton;
     private Button? _helpButton;
-    private PanelContainer? _helpPanel;
+    private ScrollContainer? _helpPanel;
     private Button? _closeHelpButton;
     private bool _serviceUsed;
 
@@ -27,7 +27,7 @@ public partial class TownTutorialController : Control
         _hintLabel = GetNodeOrNull<Label>("HintCard/Inner/HintLabel");
         _dismissButton = GetNodeOrNull<Button>("HintCard/Inner/DismissButton");
         _helpButton = GetNodeOrNull<Button>("HelpButton");
-        _helpPanel = GetNodeOrNull<PanelContainer>("HelpPanel");
+        _helpPanel = GetNodeOrNull<ScrollContainer>("HelpPanel");
         _closeHelpButton = GetNodeOrNull<Button>("HelpPanel/Inner/CloseButton");
 
         if (_helpPanel is not null) _helpPanel.Visible = false;
@@ -77,7 +77,9 @@ public partial class TownTutorialController : Control
             return;
         }
 
+        WorldHudResponsiveLayout.PrepareHelp(_helpPanel, _hintLabel?.Text ?? string.Empty);
         _helpPanel.Visible = true;
+        _helpPanel.GrabFocus();
         _town.InputGate.SetUiOwnsInput(true);
     }
 

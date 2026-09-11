@@ -150,6 +150,8 @@ public partial class UiShellController
         var keyboard = new Button
         {
             Name = $"Keyboard_{descriptor.Action}",
+            ClipText = true,
+            TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
             Text = InputBindingService.GetKeyboardLabel(descriptor.Action),
             TooltipText = $"Rebind keyboard input for {descriptor.DisplayName}.",
             CustomMinimumSize = new Vector2(180, 36)
@@ -160,6 +162,8 @@ public partial class UiShellController
         var controller = new Button
         {
             Name = $"Controller_{descriptor.Action}",
+            ClipText = true,
+            TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
             Text = InputBindingService.GetGamepadLabel(descriptor.Action),
             TooltipText = $"Rebind controller button or stick direction for {descriptor.DisplayName}.",
             CustomMinimumSize = new Vector2(190, 36)

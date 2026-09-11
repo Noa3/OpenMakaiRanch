@@ -12,6 +12,14 @@ public partial class WorldAlertPanelController : PanelContainer
 {
     private Label? _header;
     private Label? _body;
+    private bool _compact;
+
+    public void SetCompact(bool compact)
+    {
+        if (_compact == compact) return;
+        _compact = compact;
+        Refresh();
+    }
 
     public int AlertCount { get; private set; }
     public WorldAlertSeverity? HighestSeverity { get; private set; }
@@ -65,7 +73,9 @@ public partial class WorldAlertPanelController : PanelContainer
 
         if (_body is not null)
         {
-            _body.Text = string.Join("\n", top.Select(alert =>
+            _body.MaxLinesVisible = _compact ? 2 : -1;
+            _body.TextOverrunBehavior = _compact ? TextServer.OverrunBehavior.TrimEllipsis : TextServer.OverrunBehavior.NoTrimming;
+            _body.Text = _compact ? top[0].Title + " (F1: details)" : string.Join("\n", top.Select(alert =>
                 $"{SeverityPrefix(alert.Severity)} {alert.Title}: {alert.Detail}"))
                 + (alerts.Count > top.Length ? $"\n+{alerts.Count - top.Length} more — open Management [M]" : string.Empty);
 
