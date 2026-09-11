@@ -1,43 +1,40 @@
 # HUD and menu integration validation
 
-Continuation: **2026-09-11**, PR #12, `playability/ranch-quiet-corner-20260910`.
-C# 12 remains enforced. No SDK, engine, target-framework or save-schema change.
+Updated 2026-09-11, PR #12, `playability/ranch-quiet-corner-20260910`. This page records the retained headless integration contracts. **Current rendered scope, screenshots and exact checkpoint evidence are in `UI_LAYOUT_ACCEPTANCE.md` and `ASTRA_HANDOFF.md`.** C# 12, SDK, engine, target framework and save schema are unchanged.
 
-## Executed result
+## Historical integration checkpoint, retained by the current suite
 
-Verified head **`9d8eb0967012b9c9c4d7d22fe16e96f1b379327c`**, **Godot 4.7 Mono CI #545**, run **`34538829758`**: **success**. Includes C#-12 checks/preview denial, primary-game build, all 34 launcher regressions, verified Godot 4.7.2 Mono import and isolated full smoke.
+Head `9d8eb0967012b9c9c4d7d22fe16e96f1b379327c`, Godot 4.7 Mono CI #545 / run `34538829758`, passed **1,691 assertions**, including **52 HUD/menu integration checks**, **nine view-state checks** and the ordinary-clock fixture guard. It also ran the then-current 34 launcher regressions. Artifact `10176503313`, SHA-256 `f17eeae0fa39320f61a97b0763a02203a6b4b1e0ea234d6c440f2e44fc390ef2`, records that historical proof, not automatic certification of later changes. Current launcher coverage has 48 tests.
 
-**1,691 passing assertions / zero failures / one terminal SMOKE PASS**. All **52 HUD/menu integration checks** and **nine additional view-state checks** pass, together with the existing suites and the additional ordinary-clock fixture guard. Documentation-only updates may follow; the PR records subsequent exact-head status.
+The smoke log had zero out-of-tree transform errors and five deliberately malformed/unsupported-save diagnostics. Import succeeded with the separately tracked EditorSettings shutdown diagnostic. Neither category was suppressed.
 
-Artifact **`10176503313`**, SHA-256 **`f17eeae0fa39320f61a97b0763a02203a6b4b1e0ea234d6c440f2e44fc390ef2`**. Smoke `.artifacts/godot/smoke-ohfy9cr3/console.log`; import `.artifacts/godot/import-tcn460wg/console.log`.
+## Retained repairs and regression coverage
 
-Smoke has zero out-of-tree transform errors and five expected malformed/unsupported-save diagnostics. Import succeeds with the separately tracked EditorSettings shutdown diagnostic. Neither diagnostic category was suppressed.
+The pre-fix `a45a0bc` / CI #540 (`34536254574`) compiled but had 1,678 passing assertions and three failures: ordinary settlement twice and same-screen options scroll preservation. The three original assertions remain.
 
-## Starting evidence and repairs
+`UiShellController.ViewState` composes the input extension before a ProcessFrame-boundary restore, preserves pending scroll/logical focus across notification bursts, restores focus before scroll and retains FollowFocus. Revision, screen, generation, visibility and instance guards reject retired callbacks. Snapshots hold values, not old controls; frame callbacks are one-shot.
 
-Code `a45a0bc8d4331ac122c1873947dd8a7b4067088b` compiled, but Godot CI #540 (run `34536254574`) failed: **1,678 OK / three failed assertions**. The failures were the two ordinary world settlement assertions and same-screen options scroll preservation. The earlier 1,629-check leisure result did not certify the later HUD changes.
+The ordinary clock subsection explicitly establishes a completed-story Day-2 fixture. It previously activated the fresh mandatory tutorial and then attempted ordinary settlement through that tutorial's input lock. Runtime guards, explicit night choice, original fresh-story assertions and separate full-first-day/skip walkthroughs remain. This correction is not a production skip fix or organically earned progression.
 
-`UiShellController.ViewState.cs` now composes the options input extension before restoring the view and waits for the next SceneTree.ProcessFrame instead of only CallDeferred. Nested layout changes can clamp a rebuilt scrollbar before final sizing. A pending snapshot preserves scroll/logical focus across multiple notifications during that interval. Restoration applies focus first, then the user's scroll; FollowFocus remains available afterward. Revision, screen, generation, visibility and node-validity checks reject retired callbacks. Snapshots hold values rather than discarded controls; callbacks unsubscribe on their first call.
-
-The ordinary clock fixture explicitly establishes a completed-story Day-2 session before Morning -> Night -> planning -> settlement -> report. Previously it activated the mandatory fresh tutorial, then attempted ordinary settlement through that tutorial's input lock. All original assertions and runtime guards remain. Separate full first-day and skip-to-night walkthroughs still pass. This synthetic clock fixture is not described as earned progression or a new production skip fix.
-
-## Related changes verified on this branch
-
-The previous continuation supplied active Ranch/Town HUD ownership, canonical PlayerState HP, combat entry/exit clock ownership, hidden/inactive world-action rejection, help/Back coordination, Plan Night and retired binding-capture cancellation. These are now verified in the same complete suite as leisure, save/load and first-day behavior.
-
-| Scope | Executed coverage | Boundary |
+| Scope | Retained integration coverage | Boundary |
 | --- | --- | --- |
-| HUD / world | Active area, management visibility, hidden time/travel/management callbacks, help/Back and pause | Not a rendered HUD overlap/clipping review |
-| Ordinary menus | Fifteen routes contain live content; browsing preserves gold, stamina and day; research gating remains | Not every command on every route |
+| HUD/world | Active area, management visibility, hidden time/travel/management callbacks, help/Back, pause | The original headless checks alone do not prove visible layout |
+| Menus | Fifteen routes contain live content; browsing preserves gold, stamina and day; research gating | Not every command on every route |
 | Player status | Immediate canonical HP with normal and empty rosters | Not every stat/bar value |
-| Options | Exact scroll across repeated notifications, replacement-control focus, focus-follow, route/hide cancellation, reopening, retired binding capture | Not every settings callback or physical device |
-| Clock | Explicit Night choice, ordinary settlement/report and separate complete first-day/skip paths | Not exhaustive economic settlement/idempotency proof |
-| Combat | Rejected entry, actual Fight/Tactical Battle buttons, one stamina charge, retained unresolved session, disabled time controls, results exit and restored clock | Not all missions or difficulty balance |
+| Options | Exact burst-refresh scroll, replacement-control focus, focus-follow, route/hide cancellation, reopening, retired capture | Not every settings callback or physical device |
+| Clock | Explicit Night choice, ordinary settlement/report and separate first-day/skip paths | Not exhaustive settlement/idempotency accounting |
+| Combat | Rejected entry, Fight/Tactical buttons, one stamina charge, retained unresolved session, results exit/clock release | Not all missions or difficulty balance |
 
-`HudViewStateFrameTests` adds nine checks: exact scroll under four same-frame notifications, logical focus on the replacement binding control, preserved scroll after focus restoration, focus-follow retention, route-scroll cancellation, route-focus cancellation, hide/world ownership, hidden focus rejection and clean reopening.
+The nine view-state checks cover exact scroll across four same-frame notifications, replacement-control logical focus, preserved scroll after focusing, focus-follow retention, route-scroll cancellation, route-focus cancellation, hide/world ownership, hidden focus rejection and clean reopening.
+
+## Rendered continuation and latest reproduced issue
+
+The separate opt-in acceptance suite starts through the actual Main Menu and character creation, then declares a synthetic Day-2 fixture for menu testing. It routes mouse, key and standardized joypad events through the viewport instead of emitting button signals. At `9f2a768`, **166 checks and 29 viewport PNGs** passed. That includes small-window layouts, typing/focus, binding cancellation, compact navigation, Ranch/Town help, full warning detail and existing facility gating. See the rendered evidence page for run/artifact IDs and the distinction between production repairs and fixture corrections.
+
+The actual Scale Up/Down follow-up removed a redundant RootPanel scale alongside the central viewport scale. Its first rendered run (`c4ee73a`, #14 / `34546331041`) passed 189 of 195 checks but exposed six failed Scale Down clicks: at high scale the header consumed nearly all remaining logical height. Root panel bounds alone had not detected the unusable content area. The next correction suppresses the decorative title in compact mode and treats short logical height as a dense-layout condition. All six failing commands remain, with twelve added checks requiring each scale button to be fully visible before clicking. Do not label that follow-up successful before its exact-head evidence is recorded.
 
 ## Remaining acceptance
 
-Use the real Main Menu and character creation in an isolated rendered session. Play first day and shortcut, travel, open/close menus/help, finish tactical combat, plan Night, inspect the report, use board/corner/planning and save/load. Inspect narrow-window text, scrolling, visible hit targets, mouse/controller/touch focus and Alt-Tab. No headless signal invocation can certify those presentation results.
+The rendered continuation narrows the earlier visual/input gap; it does not certify every screen/action, physical controller/touch behavior, Alt-Tab on target hardware or a complete rendered first-day/combat/courier/leisure/save journey. The resource-backed first-day/leisure smoke walkthrough remains separate from synthetic interface fixtures and staged world proximity.
 
-Gameplay/economy changes still go through GameRoot and existing services. UI tests use explicitly synthetic Day-2 state; the separate production walkthrough obtains actual resources. World interaction proximity is staged and buttons use live signals. Authored navigation, representative-hardware Forward+ performance, final art and long-term balance remain open.
+Original gameplay, economy, costs and progression stay with GameRoot and existing services. Authored obstacle-aware navigation/collision, representative Forward+ low/high performance, final art and long-term balance remain open. Prefer demonstrated playability fixes over additional mandatory daily systems.
