@@ -30,7 +30,9 @@ public static class PresenceCalibrationShapes
                 {
                     var side = p.X < 0 ? -1f : 1f;
                     var u = (p.X - side * .078f) / .06f;
-                    p.Y = .037f + side * u * .005f + (family == "eye" ? (p.Y - .037f) * .025f : 0);
+                    // Retain a finite dark lid strip; a collapsed strip disappears under backface culling.
+                    p.Y = .037f + side * u * .005f + (family == "eye" ? (p.Y - .037f) * .025f
+                        : (uv[i].Y - .5f) * .003f * Mathf.Sin(uv[i].X * Mathf.Pi));
                 }
                 if (name == "brow_raise" && p.Y > .08f) p.Y += .017f;
                 if (name == "brow_pinch" && p.Y > .08f) p.Y -= .013f * Math.Clamp(1 - Math.Abs(p.X) / .15f, 0, 1);
@@ -39,6 +41,9 @@ public static class PresenceCalibrationShapes
                 if (name == "jaw_open") p.Y += ((uv[i].Y - .5f) * .024f - .004f) * Mathf.Sin(uv[i].X * Mathf.Pi);
                 // Keep the altered graphic accent in front of the curved face rather than inside it.
                 p.Z += AnimeCalibrationGeometry.Front(p.X, p.Y) - AnimeCalibrationGeometry.Front(p.X, oldY);
+                // Flatten the eye bulge at closure so the white cannot protrude over the lid crease.
+                if (name == "blink" && (family == "eye" || oldY < .074f))
+                    p.Z = AnimeCalibrationGeometry.Front(p.X, p.Y) + (family == "eye" ? .003f : .006f);
                 target[i] = p;
             }
             var arrays = new Godot.Collections.Array(); arrays.Resize((int)Mesh.ArrayType.Max);

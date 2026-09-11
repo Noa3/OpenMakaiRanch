@@ -131,6 +131,14 @@ public partial class AnimeLookDevChecks
         study.ApplyPresencePose(new PresencePose(1, 0, 0, 0, 0, Vector3.Zero, Vector3.Zero));
         var blinkImage = await Capture("presence-blink");
         Check("presence blink changes actual rendered pixels", Difference(open, blinkImage) > .00001);
+        var creasePoint = AnimeCalibrationGeometry.HeadOrigin + new Vector3(.078f, .037f,
+            AnimeCalibrationGeometry.Front(.078f, .037f) + .006f);
+        var lidPoint = AnimeCalibrationGeometry.HeadOrigin + new Vector3(.078f, .046f,
+            AnimeCalibrationGeometry.Front(.078f, .046f));
+        var creaseColor = Sample(blinkImage, study.StudyCamera.UnprojectPosition(creasePoint));
+        var lidColor = Sample(blinkImage, study.StudyCamera.UnprojectPosition(lidPoint));
+        Check("presence closed lids retain a visible dark crease", (lidColor.R + lidColor.G + lidColor.B)
+            - (creaseColor.R + creaseColor.G + creaseColor.B) > .05f);
         Check("presence blink writes instance weight not shared source", Mathf.IsEqualApprox(study.PresenceEye.GetBlendShapeValue(blinkIndex), 1)
             && study.PresenceEye.Mesh == sourceMesh);
         study.ApplyPresencePose(new PresencePose(0, .7f, .5f, 0, .4f, new Vector3(2, 4, 1), new Vector3(.002f, .002f, 0)));
