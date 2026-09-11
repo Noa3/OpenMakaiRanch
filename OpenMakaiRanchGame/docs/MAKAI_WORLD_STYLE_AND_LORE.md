@@ -1,73 +1,76 @@
-# Makai: inhabited otherworld, not a generic lava level
+# Makai world direction: a green, welcoming ranch
 
-Checkpoint: 2026-09-12. Branch: `feature/makai-presence-and-worldstyle-20260911`, from fixed main `1e7f90936849443f1605e573a37d3e43e0676245`. The earlier anime pipeline/material branches are already included in that main snapshot. This document extends [ANIME_REFERENCE_QUALITY.md](ANIME_REFERENCE_QUALITY.md); it does not replace world simulation or the other agent's stations/interiors work.
+**Art-direction revision, 2026-09-12: the user's natural starter-area direction supersedes the previous demon-frontier proposal.** Continue on `feature/makai-presence-and-worldstyle-20260911` / PR #18; other agents retain gameplay and navigation ownership. Reference character materials remain described in [ANIME_REFERENCE_QUALITY.md](ANIME_REFERENCE_QUALITY.md).
 
-## Source findings and confidence
+## Approved direction, not an optional alternative
 
-The English text bundled in this repository is a translated snapshot, not a guarantee of the Japanese author's latest wording or release. Source paths below are under `eraMakaiRanch-game-eng-translation/`, read at the fixed main commit above.
+The ranch is in an ordinary-looking, beautiful green area: **grass-covered ground, familiar trees, a naturally flowing river, a predominantly blue daytime sky, a sun and ordinary weather**. It should feel like an attractive starter area where the player wants to spend time. Makai's premise does not require every object to look demonic.
 
-| Source | Directly supported | Limits |
+**Do not build the rejected proposal into this area:** volcanic/black-basalt dominance, alien tree/root shapes, floating land, reversed waterfalls, supernatural marsh reflections or exaggerated demonic roofs. These ideas are not automatically approved for later regions either. Do not preserve them as default implementation tasks elsewhere in the roadmap.
+
+Fantasy should be quiet, understandable and selective: a normal-looking moon with an additional **fictional Earth-like companion world** at night, modest mana phenomena, and lamps powered visually by softly luminous stones. The companion world is an adjustable visual choice, not a statement that the real Earth is physically orbiting Makai. No new astronomy, lunar calendar, gravity, tides, consumable fuel or mana economy is implied.
+
+## Visual rules
+
+- **Landscape:** fresh but varied greens, ordinary broadleaf trees, open grass, readable paths, plausible riverbanks and gentle terrain. Do not make every surface noisy, glossy, luminous or fantastical. Preserve existing accessible routes while authored terrain is developed.
+- **Water:** downstream motion, calm pools and natural river bends. The starter river must eventually have coherent banks, bridges/crossings, collision/navigation and a deliberate playable boundary. A decorative water strip is not a complete playable river.
+- **Sky:** blue by day, familiar clouds and sunshine, softer warm horizons at dusk, dark blue at night. Keep both celestial bodies behind clouds and scene geometry; no planetary disc pasted over a roof or thunderstorm. A small companion world should invite noticing, not dominate the entire sky.
+- **Architecture:** approachable rural buildings with natural wood/plaster/stone and restrained proportions. No mandatory gothic/demonic silhouette. Existing buildings are not replaced in this pass.
+- **Mana lighting:** an opaque, pale stone inside a recognizable lantern housing, warm local illumination at night, subdued daytime appearance. No forced purple cast on skin, no flashing, no continuous pulsing, no requirement for bloom to understand that the stone emits light.
+- **Characters:** face and hand readability remain important, but achieve this through composition, lighting and sensible detail density, not by making the whole landscape empty. Existing microgesture/personality work remains applicable.
+
+“AAA” remains the intended production ambition, not a quality certification for procedural placeholders. Final foliage, terrain, architecture, water, facial rigs, motion and target-hardware performance need authored assets and separate acceptance.
+
+## Implemented follow-up
+
+`PastoralSky` supplies an original Godot sky material with blue-sky gradients, an ordinary sun disc, clouds, a moon and an optional fictional blue/green companion world. Celestial bodies appear in the evening/night rather than changing the familiar daytime view. Cloud cover is applied after them, so overcast hides them. Terrain/roofs occlude the sky normally. Body positions and cloud shapes are currently static; this is not an orbital or animated-weather simulation. The sky deliberately omits TIME/POSITION so idle frames do not invalidate its radiance cubemap. Native background evaluation retains celestial edge detail while the incremental reflection map stays bounded at 128x128. Small celestial discs are omitted from that reflection map to avoid unstable bright specks; literal reflected moon/planet discs are not delivered.
+
+`ManaStoneLantern3D` supplies an original small lamp with a metal frame, ordinary support and luminous stone. Its light comes on from caller-supplied evening/night state. Low retains the visible emissive stone without a point light; Medium omits lamp shadow passes; High/Ultra may use shadows when the existing settings permit them. The point-light radius is 4.5 world units with camera-distance fading. Exterior local lights are suppressed while the viewer is sheltered; the mesh still obeys ordinary visibility/occlusion. It has no inventory, charging or fuel behavior.
+
+**Actual ranch integration:** `WorldGame.tscn` mounts `RanchSkyAndLanterns` under the existing RanchWorld, adding the sky to that ranch camera and exactly two decorative gate-side lanterns. It does not replace the ranch scene, terrain, trees, water, buildings, colliders, navigation or world boundary. The gate/path is not moved. Lantern supports remain decorative geometry without new collision.
+
+The adapter takes a camera-local duplicate of the existing environment after the authoritative DaylightRig handlers finish. Exposure, fog and lighting settings come from that source; the global WorldEnvironment and the town/intro cameras remain untouched. Existing authored sky/camera overrides are not silently replaced. External camera takeover makes the layer yield; disabling restores its original null camera override only while it still owns it. Canonical calendar/weather/settings remain the source of truth. There is no second day/season clock and no world-layout change on another agent's branch.
+
+**Separate style study:** `AnimeLookDevPastoral.tscn` shows an original green meadow, ordinary placeholder trees, low hills and a normal-direction river surface, plus the same sky and lantern components. It is an isolated viewing scene, not replacement production terrain. Riverbank geometry, depth, water collision, authored vegetation and naturalistic water shading are not certified by this specimen. Existing character/material/presence acceptance remains a separate study and is not weakened to accommodate the revised palette.
+
+The accepted mana-veil prototype and existing ranch night-mote/weather effects are retained; this pass does not automatically blanket the ranch in an aurora. Otherworldly spectacles should remain optional accents to the natural area.
+
+## Run and handoff
+
+```bash
+# Existing isolated launcher; neither command reads normal personal save slots.
+python Tools/Godot/anime_lookdev.py --pastoral --renderer forward_plus --interactive --timeout 3600
+python Tools/Godot/anime_lookdev.py --pastoral --renderer gl_compatibility
+```
+
+Use the installed Godot Mono binary via GODOT_BIN or --godot, and a display/xvfb-run on Linux. The normal WorldGame on this branch includes the camera/lantern integration. In the scene inspector, `RanchWorld/PastoralSkyAndLamps` has `Enabled` and `ShowCompanionWorld` controls; no new user settings/save schema is introduced. See [PASTORAL_RANCH_VALIDATION.md](PASTORAL_RANCH_VALIDATION.md) for executed results and remaining limitations.
+
+Next: one coherent authored green ranch area and organic river/crossing, reviewed with a high-quality character. Preserve the other agents' doors, stations and navigation; terrain cannot simply be painted across them. Improve face/gaze/gesture assets alongside the environment rather than generating a larger collection of placeholders.
+
+## Original-game evidence retained
+
+The revised art direction is the user's interpretation, not invented original canon. The source findings below were read from the bundled translated snapshot at `1e7f90936849443f1605e573a37d3e43e0676245`, under `eraMakaiRanch-game-eng-translation/`.
+
+| Source | Supported finding | Boundary |
 | --- | --- | --- |
-| `CSV/GameBase.csv`, blob `796758501feb311a46567b9df1ec16f56af47d0e` | Names **polt**, development years **2021–2024**, stored version **1041**, and unfinished development. | This is bundled metadata, not an independently established first publication date or latest upstream version. |
-| `ERB/●スタートアップ設定/◯プロローグ.ERB`, blob `3e74815a15588f58802d38670ccd7c9b3623e332` | Makai and surface humans are in conflict. Many demons do not wish to fight. The protagonist avoids joining the demon lord's army and already operates a small countryside ranch. | Do not replace the civilian premise with a mandatory battlefield or assume a particular real-world theology. |
-| Same prologue | A visiting researcher, paperwork, a regular collection service and a Makai agricultural cooperative establish institutions and civilian routines. | These support a lived-in setting, not a complete geography or visual canon. The original also has coercive adult premises; this neutral visual work neither reproduces them nor certifies character/content eligibility. |
-| Same prologue, `SIF FLAG:ジョーク表示` | The line naming **Okachi / Makkai Plains** is conditional on joke display. | Do not silently make this a binding serious location name. |
-| `ERB/表示関数/日付表示.ERB`, blob `cd5725ef38d40bd7cccfed16305186e7d005608e` | Seven-day weeks, 28-day seasons, four seasons and a 112-day year. `DATE_CALC` computes the displayed date. | Reuse the remake's canonical calendar. No extra celestial clock that advances gameplay independently. |
-| `ERB/●スタートアップ設定/ゲーム内readme.ERB`, blob `6310c517371daaf9cca400a9cf556b6af53119ce` | Identifies an eramaker/Emuera variant and the player as a Makaian ranch operator. | The generic mention of fan creations does not establish a connection to a specific franchise. |
-| Headers of `ERB/○口上/○専用口上ベース.ERB` and several generic dialogue files | Identify authors/contributors and explicitly carry **CC BY-NC** notices. | The remake repository's license is not a blanket permission for every bundled upstream text or asset. Review provenance and reuse permission separately; this pass copies no original dialogue into runtime content. |
+| `CSV/GameBase.csv` (`796758501feb311a46567b9df1ec16f56af47d0e`) | polt; metadata years 2021–2024; stored version 1041; unfinished development. | Not proof of the first publication or latest Japanese release. |
+| `ERB/●スタートアップ設定/◯プロローグ.ERB` (`3e74815a15588f58802d38670ccd7c9b3623e332`) | Makai and surface humans are in conflict; many demons do not want to fight; the protagonist operates a countryside ranch rather than joining the demon lord's army. | Does not prescribe lava, alien vegetation, supernatural architecture or a real-world theology. |
+| Same prologue | Research, paperwork, regular collection and a Makai agricultural cooperative establish civilian life. | Not a complete geography or visual canon. |
+| Same prologue, `SIF FLAG:ジョーク表示` | Okachi / Makkai Plains naming is conditional on joke display. | Not automatically a mandatory serious place name. |
+| `ERB/表示関数/日付表示.ERB` (`cd5725ef38d40bd7cccfed16305186e7d005608e`) | Seven-day weeks, 28-day seasons, four seasons and 112-day years. | Reuse the existing canonical calendar. |
+| `ERB/●スタートアップ設定/ゲーム内readme.ERB` (`6310c517371daaf9cca400a9cf556b6af53119ce`) | An eramaker/Emuera variant and a Makaian ranch operator. | Does not establish a specific franchise's canon. |
+| Selected dialogue headers | Author/contributor names and CC BY-NC notices. | Upstream text/assets need their own provenance review; this pass copies none into new runtime content. |
 
-The community Era Wiki describes a farm in hell and expressly distinguishes this setting from Touhou's Makai [1]. It is **secondary** evidence: its displayed version 1.011 and September 2024 edit date are stale relative to the bundled metadata. The linked GitGud upstream and original developer thread were not readable during this pass. A mirrored developer-thread introduction was found [2], but it is not treated as authenticated current author guidance. The exact first release history and current Japanese upstream state remain unresolved. The strongest design evidence here is the bundled prologue/calendar/metadata, not a search-result summary.
+The earlier community Era Wiki page distinguished this setting from Touhou's Makai, but its historical version/date are not current upstream authority. The original developer thread and GitGud upstream were not directly verifiable in that research pass. First-publication history and current Japanese upstream state remain unresolved. This follow-up does not claim a new historical investigation.
 
-## Interpretation adopted for look development
+Historical references: https://wiki.eragames.rip/index.php/EraMakaiRanch ; https://www.kyodemo.net/sdemo/r/s_otaku_16783/1683559340/ ; https://jbbs.shitaraba.net/bbs/read.cgi/otaku/16783/1683559340/ . Pinned bundled source: https://github.com/Noa3/OpenMakaiRanch/tree/1e7f90936849443f1605e573a37d3e43e0676245/eraMakaiRanch-game-eng-translation .
 
-**A beautiful, inhabited demon frontier: familiar everyday life under unfamiliar natural laws.** This is our proposed interpretation, not a claim that the original specifies auroras, floating islands or these biome names.
+## Technical references checked for this revision
 
-The ranch is an understandable, welcoming place inside a much stranger world. Buildings, trade, work, rest, shared meals and sheltered interiors make everyday life legible. Distant skies and ecosystems supply the extraordinary element. The conflict can appear through distant landmarks, repairs, notices and character histories without making every outdoor surface hostile.
+Godot 4.7 sky shader and radiance invalidation: https://docs.godotengine.org/en/4.7/tutorials/shaders/shader_reference/sky_shader.html
 
-Use the existing soft anime character direction. Character faces, hands and silhouettes carry fine expressive detail; the environment uses larger, quieter color/value masses behind them. Finish one actual ranch exterior/interior/conversation slice before multiplying biomes or placeholder residents. “AAA” is an aspiration evaluated through authored assets, animation, composition and measured performance, not a checkbox or a promise attached to this prototype.
+Sky update/radiance modes: https://docs.godotengine.org/en/4.7/classes/class_sky.html
 
-## Art direction
+Environment/camera presentation: https://docs.godotengine.org/en/4.7/classes/class_environment.html
 
-**Architecture.** Warm timber, dark volcanic masonry, patinated metal fittings and pale plaster or mineral surfaces. Believable doors, stairs, ceilings, furniture and sightlines relative to resident height. Slightly unusual arches and roof silhouettes distinguish Makai without obstructing movement or interactions. Preserve the world agent's collision/door/interior ownership.
-
-**Landscape.** Lush rather than permanently burnt. Broad leaf clusters and readable grass silhouettes, muted local rock/soil color, occasional emissive veins or luminous vegetation. More detail at touchable places and landmarks; less high-frequency texture noise behind dialogue faces. Avoid one enormous glowing material on every surface.
-
-**Light and palette.** Restrained cool exterior fill, warmer inhabited windows, locally controlled accents. Keep the sun/day/night/weather grammar understandable even with a supernatural sky. Do not replace all ordinary light with purple rim light. Keep non-emissive skin readable at night without rendering it self-luminous. Gameplay remains sharp; cinematic blur is not a substitute for geometry or texture quality.
-
-**Phenomenon proposals.** One dominant impossible rule per region, with visual limits and ordinary spaces between events:
-
-| Working concept | Visual idea | Gameplay/readability rule | This branch |
-| --- | --- | --- | --- |
-| Mana veil | Slow teal/violet ribbons high above the horizon with sparse motes. | Evening/night only; no screen flashes, no extra weather rolls, no compulsory light on faces. | Optional lab prototype implemented. |
-| Reversed falls | Water rises through a small rift before returning to a basin. | Stable collision and clear water boundaries; not random gravity on the player. | Design only. |
-| Glassroot groves | Translucent roots and a restrained seasonal bloom under solid canopies. | Ground routes remain opaque and visible; color does not replace icons. | Design only. |
-| Drifting basalt crowns | Distant floating stone formations moving extremely slowly. | Sky landmarks, not unbounded explorable terrain or surprise falling hazards. | Design only. |
-| Mirror marsh | A reflective wetland showing a different celestial pattern. | Do not depend on expensive screen-space reflection for essential clues. | Design only. |
-
-Do not activate every phenomenon simultaneously. Characters may notice a **visible, accessible** phenomenon when free, but the atmosphere effect must not grant rewards, override jobs or decide who goes on a date.
-
-## Implemented prototype and its boundaries
-
-`MakaiPhenomenon3D` is an explicit optional scene node. It draws an original low-poly ribbon plus a bounded instanced mote set. The caller supplies enabled state, phase, quality, shelter and reduced motion. Its visual time is caller-advanced and pauseable; the shader deliberately does not use uncontrolled `TIME`.
-
-Mote budgets: **Low/unknown: 0, Medium: 24, High: 64, Ultra: 96**. Low and reduced motion retain a static veil; reduced motion disables motes. Morning/afternoon, shelter and disabled state suppress the effect. There are no new lights, global sky/environment replacements, collisions, weather seeds, game-time changes or rewards. In the lab, it is behind the specimen, not a filter painted over the face.
-
-The prototype is **not integrated into `WorldAtmosphereController` or a production ranch scene**. Those systems already own weather/season effects and other agents are editing the world. Integration should mount one approved node at a curated location, feed existing canonical state, hide it indoors/offscreen and keep the current atmosphere controller as sole owner. One global instancing batch is not a license to scatter unlimited emitters across the map.
-
-## Production acceptance gates
-
-1. Compare an original/licensed rigged hero character in the actual exterior and interior, with post-processing disabled first. Review silhouette, materials, face readability and interaction visibility.
-2. Review front/three-quarter/profile, several skin/hair palettes, rain/snow/day/night, and a moving camera. Static lab success does not establish temporal stability or art quality.
-3. Author environmental landmarks and props with provenance, texture density, LODs, collision, navigation, interior occlusion and lighting transitions; no arbitrary imported asset collection.
-4. Profile a specified minimum/target PC at a stated resolution and resident count. Record CPU/GPU frame time, VRAM, draw/shadow passes and animation cost before setting final budgets. Software-rendered CI is not an FPS benchmark.
-5. Test reduced motion, low graphics, UI readability and indoor suppression. No flashing spectacles or foreground particles that obscure gestures and input prompts.
-
-## Sources
-
-[1] Era Wiki, community overview: https://wiki.eragames.rip/index.php/EraMakaiRanch (historical secondary page; not latest-version authority).
-
-[2] Mirror of developer thread with polt introduction: https://www.kyodemo.net/sdemo/r/s_otaku_16783/1683559340/ . Original linked thread: https://jbbs.shitaraba.net/bbs/read.cgi/otaku/16783/1683559340/ . Original and GitGud upstream could not be verified directly in this pass.
-
-Primary bundled source browser, pinned to the inspected commit: https://github.com/Noa3/OpenMakaiRanch/tree/1e7f90936849443f1605e573a37d3e43e0676245/eraMakaiRanch-game-eng-translation . Exact paths and blob IDs are in the source table.
-
-Godot MultiMesh documentation: https://docs.godotengine.org/en/stable/classes/class_multimesh.html . This is an implementation reference, not proof of either reference artist's renderer.
+Bounded point lights: https://docs.godotengine.org/en/4.7/classes/class_omnilight3d.html and https://docs.godotengine.org/en/4.7/classes/class_light3d.html

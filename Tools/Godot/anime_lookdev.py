@@ -28,6 +28,10 @@ EXPECTED_CAPTURES = {
     "presence-neutral.png", "presence-blink.png", "presence-warm.png",
     "makai-off.png", "makai-night.png",
 }
+PASTORAL_CAPTURES = {
+    "pastoral-day.png", "pastoral-night.png", "pastoral-moon-only.png", "pastoral-overcast.png",
+    "pastoral-low.png", "pastoral-lantern-on.png", "pastoral-lantern-off.png",
+}
 PROJECT = '''config_version=5
 [application]
 config/name="OpenMakaiRanchLookDevValidation"
@@ -56,7 +60,7 @@ CSPROJ = '''<Project Sdk="Godot.NET.Sdk/4.7.0">
 '''
 
 
-def stage(root: Path, destination: Path, renderer: str, interactive: bool) -> None:
+def stage(root: Path, destination: Path, renderer: str, interactive: bool, *, pastoral: bool = False) -> None:
     """Create a new host, refusing overwrite and all source-tree escape/symlink cases."""
     if renderer not in {"forward_plus", "gl_compatibility"}:
         raise ValueError("Unsupported renderer")
@@ -77,8 +81,9 @@ def stage(root: Path, destination: Path, renderer: str, interactive: bool) -> No
         target = destination / file.relative_to(source)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(file, target)
+    scene = ("AnimeLookDevPastoral" if interactive else "AnimeLookDevPastoralChecks") if pastoral else ("AnimeLookDev" if interactive else "AnimeLookDevChecks")
     (destination / "project.godot").write_text(PROJECT.format(
-        scene="AnimeLookDev" if interactive else "AnimeLookDevChecks", renderer=renderer), encoding="utf-8")
+        scene=scene, renderer=renderer), encoding="utf-8")
     (destination / "AnimeLookDevValidation.csproj").write_text(CSPROJ, encoding="utf-8")
 
 
@@ -124,7 +129,9 @@ def run_command(args: list[str], cwd: Path, env: dict[str, str], log: Path, time
         raise RuntimeError(f"Command failed ({completed.returncode}); full unfiltered log: {log}")
 
 
-def validate_evidence(output: Path, renderer: str, run_id: str, commit: str) -> dict:
+def validate_evidence(output: Path, renderer: str, run_id: str, commit: str,
+                      *, expected_captures: set[str] | None = None) -> dict:
+    expected = EXPECTED_CAPTURES if expected_captures is None else expected_captures
     result = json.loads((output / "results.json").read_text(encoding="utf-8"))
     if (result.get("schema") != 1 or result.get("passed") is not True or result.get("failures") != 0
             or result.get("run_id") != run_id or result.get("renderer") != renderer
@@ -134,7 +141,7 @@ def validate_evidence(output: Path, renderer: str, run_id: str, commit: str) -> 
     if len(checks) < 40 or not all(check.get("passed") is True for check in checks):
         raise ValueError("Missing or failing material checks")
     captures = result.get("captures", [])
-    if len(captures) != len(EXPECTED_CAPTURES) or {c.get("file") for c in captures} != EXPECTED_CAPTURES:
+    if len(captures) != len(expected) or {c.get("file") for c in captures} != expected:
         raise ValueError("Missing, duplicate or unexpected captures")
     for capture in captures:
         path = output / capture["file"]
@@ -165,6 +172,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--renderer", choices=("forward_plus", "gl_compatibility"), default="forward_plus")
     parser.add_argument("--timeout", type=int, default=420)
     parser.add_argument("--interactive", action="store_true", help="Open the lab instead of running acceptance; no game autoloads")
+    parser.add_argument("--pastoral", action="store_true", help="Study the revised green-ranch sky and mana-stone lamps")
     args = parser.parse_args(argv)
     if args.timeout < 10:
         parser.error("--timeout must be at least 10 seconds")
@@ -178,9 +186,9 @@ def main(argv: list[str] | None = None) -> int:
     commit_proc = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True)
     commit = commit_proc.stdout.strip()
     run_id = uuid.uuid4().hex
-    run = root / ".artifacts" / "anime-lookdev" / (args.renderer + "-" + run_id)
+    run = root / ".artifacts" / "anime-lookdev" / (("pastoral-" if args.pastoral else "") + args.renderer + "-" + run_id)
     run.mkdir(parents=True, exist_ok=False)
-    stage(root, run / "project", args.renderer, args.interactive)
+    stage(root, run / "project", args.renderer, args.interactive, pastoral=args.pastoral)
     env = isolated_environment(run, args.renderer, run_id, commit)
     output = run / "evidence"
     (output / "source.json").write_text(json.dumps({"source_commit": commit, "engine": version,
@@ -192,7 +200,8 @@ def main(argv: list[str] | None = None) -> int:
     run_command(runtime_arguments(engine, project, args.renderer),
                 project, env, output / "runtime.log", args.timeout)
     if not args.interactive:
-        result = validate_evidence(output, args.renderer, run_id, commit)
+        result = validate_evidence(output, args.renderer, run_id, commit,
+                                   expected_captures=PASTORAL_CAPTURES if args.pastoral else None)
         print(f"PASS: {len(result['checks'])} checks, {len(result['captures'])} rendered PNGs; {output}")
     return 0
 

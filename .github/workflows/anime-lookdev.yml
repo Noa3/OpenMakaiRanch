@@ -5,10 +5,11 @@ on:
     branches: [main, feature/anime-lookdev-pipeline-20260911]
     paths:
       - 'OpenMakaiRanchGame/src/Visuals/**'
+      - 'OpenMakaiRanchGame/src/World/RanchSkyAndLanterns.cs'
       - 'OpenMakaiRanchGame/src/App/GraphicsQualityProfile.cs'
       - 'OpenMakaiRanchGame/shaders/characters/**'
       - 'OpenMakaiRanchGame/scenes/dev/AnimeLookDev*.tscn'
-      - 'Tools/Godot/*anime_lookdev.py'
+      - 'Tools/Godot/*lookdev.py'
       - '.github/workflows/anime-lookdev.yml'
   workflow_dispatch:
 
@@ -84,13 +85,15 @@ jobs:
           echo "GODOT_BIN=$engine" >> "$GITHUB_ENV"
           "$engine" --version
       - name: Test staging and evidence guards
-        run: python -m unittest discover -s Tools/Godot -p 'test_anime_lookdev.py' -v
+        run: python -m unittest discover -s Tools/Godot -p 'test_*lookdev.py' -v
       - name: Build full game with existing C# 12 contract
         run: |
           dotnet restore OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --ignore-failed-sources
           dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj --no-restore
       - name: Render autoload-free material study
         run: xvfb-run -a -s '-screen 0 1280x720x24' python Tools/Godot/anime_lookdev.py --renderer '${{ matrix.renderer }}' --timeout 420
+      - name: Render revised green-ranch sky and lantern study
+        run: xvfb-run -a -s '-screen 0 1280x720x24' python Tools/Godot/anime_lookdev.py --pastoral --renderer '${{ matrix.renderer }}' --timeout 240
       - uses: actions/upload-artifact@v4
         if: always()
         with:

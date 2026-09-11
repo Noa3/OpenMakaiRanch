@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://src/World/WorldGameController.cs" id="1_controller"]
 [ext_resource type="PackedScene" path="res://scenes/dev/RanchGreybox.tscn" id="2_ranch"]
@@ -13,6 +13,8 @@
 
 [ext_resource type="Script" path="res://src/World/RanchLeisureController.cs" id="11_leisure"]
 
+[ext_resource type="Script" path="res://src/World/RanchSkyAndLanterns.cs" id="12_pastoral"]
+
 [node name="WorldGame" type="Node"]
 script = ExtResource("1_controller")
 
@@ -21,6 +23,9 @@ visible = false
 process_mode = 4
 
 [node name="RanchWorld" parent="." instance=ExtResource("2_ranch")]
+
+[node name="PastoralSkyAndLamps" type="Node3D" parent="RanchWorld"]
+script = ExtResource("12_pastoral")
 
 [node name="Leisure" type="Node3D" parent="RanchWorld"]
 script = ExtResource("11_leisure")

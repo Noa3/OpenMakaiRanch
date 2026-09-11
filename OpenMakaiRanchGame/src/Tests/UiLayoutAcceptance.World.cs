@@ -11,6 +11,19 @@ public partial class UiLayoutAcceptance
     private async Task CheckWorldLayouts(WorldGameController world)
     {
         world.CloseManagement();
+        await Frames(4);
+        var pastoral = world.Ranch!.GetNode<RanchSkyAndLanterns>("PastoralSkyAndLamps");
+        var ranchCamera = world.Ranch.CameraRig!.GetNode<Camera3D>("Camera");
+        var sourceEnvironment = world.Ranch.GetNode<WorldEnvironment>("WorldEnvironment").Environment;
+        Check(pastoral.SkyActive && pastoral.LampCount == 2, "ranch mounts the pastoral sky and exactly two lanterns");
+        Check(ranchCamera.Environment != sourceEnvironment && sourceEnvironment.Sky is null,
+            "ranch sky uses a camera-local copy, not the global canonical environment");
+        pastoral.Enabled = false;
+        await Frames(4);
+        Check(!pastoral.SkyActive && ranchCamera.Environment is null, "disabling the pastoral layer restores the camera fallback");
+        pastoral.Enabled = true;
+        await Frames(4);
+        Check(pastoral.SkyActive, "pastoral presentation can be explicitly re-enabled");
         foreach (var size in new[] { new Vector2I(640, 480), new Vector2I(480, 800), new Vector2I(960, 540) })
         {
             await Resize(size);
