@@ -71,7 +71,7 @@ public partial class RanchGreyboxController
                 _nearbyDistance,
                 InteractionRange,
                 (HasStationPresentation && _nearbyStation.RequiresWorker) || _nearbyStation.IsAvailable,
-                HasStationPresentation && _nearbyStation.RequiresWorker ? string.Empty : _nearbyStation.UnavailableReason ?? string.Empty);
+                _nearbyStation.UnavailableReason ?? string.Empty);
         }
 
         return WorldInteractionPresentation.None(InteractionRange);

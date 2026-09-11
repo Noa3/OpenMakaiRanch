@@ -127,6 +127,13 @@ public partial class GameRoot : Node
 			GD.Print(line);
 		}
 
+		// Smoke-only: async fixtures have returned and their temporary worlds have retired.
+		// Finalize managed engine wrappers while the C# bridge is still alive, even on failure.
+		if (GetTree().CurrentScene is { } scene && scene != this) scene.QueueFree();
+		for (var i = 0; i < 4; i++) await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+		for (var i = 0; i < 3; i++) await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 		GetTree().Quit(result.Passed ? 0 : 1);
 	}
 

@@ -39,9 +39,8 @@ public static class RanchLeisureFrameTests
             Check(result, game.Economy.Gold == beforeGold && game.State.Ranch.Stockpile["supplies"] == beforeStock,
                 "opening the physical board does not deliver or pay automatically");
             await KeyStroke(game, Key.Escape);
-            Check(result, pause.IsOpen && !pause.IsCommunityBoardOpen, "physical board keeps existing nested Back-to-pause behavior");
-            await KeyStroke(game, Key.Escape);
-            Check(result, !pause.IsOpen && !game.GetTree().Paused, "second Back returns from the board to the world");
+            Check(result, !pause.IsOpen && !pause.IsCommunityBoardOpen && !game.GetTree().Paused,
+                "physical board returns directly to the world with no remote pause hub");
 
             player.GlobalPosition = leisure.CornerStation!.GlobalPosition;
             await Frames(game, 2);
@@ -88,8 +87,9 @@ public static class RanchLeisureFrameTests
             Check(result, game.State.Player.Stamina == tiredStamina + RanchLeisureService.DailyRecovery,
                 "repeated button signal cannot bypass the daily receipt");
             panel.GetNode<Button>("Margin/Layout/Scroll/Content/PlanSupplies").EmitSignal(BaseButton.SignalName.Pressed);
-            Check(result, !pause.IsOpen && !game.GetTree().Paused && world.IsManagementVisible && world.Shell!.CurrentScreen == "schedule",
-                "planning supplies hands ownership to the existing Schedule screen");
+            Check(result, !pause.IsOpen && !game.GetTree().Paused && world.IsStationPanelOpen
+                && world.StationPanel!.ContextKind == "guide" && !world.Shell!.IsVisibleInTree(),
+                "finding supplies opens the place guide without a remote work or pause surface");
             world.CloseManagement();
             await Frames(game, 2);
             Check(result, ranch.InputGate.WorldInputEnabled, "returning from planning restores world controls");
@@ -154,19 +154,33 @@ public static class RanchLeisureFrameTests
             "after real facility upkeep the corner explains the missing supplies instead of taking partial payment");
         panel.GetNode<Button>("Margin/Layout/Scroll/Content/PlanSupplies").EmitSignal(BaseButton.SignalName.Pressed);
         await Frames(game, 2);
-        Check(result, world.IsManagementVisible && world.Shell!.CurrentScreen == "schedule" && !game.GetTree().Paused,
-            "the shortage's planning route opens the normal schedule without a leftover pause");
+        Check(result, world.IsStationPanelOpen && world.StationPanel!.ContextKind == "guide" && !game.GetTree().Paused,
+            "the shortage's planning route opens the place guide without a leftover pause");
+        var beforePlanningGold = game.Economy.Gold;
+        var beforePlanningStock = game.State.Ranch.Stockpile["supplies"];
+        PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(button => button.Name == "Place_office")
+            .EmitSignal(BaseButton.SignalName.Pressed);
+        await Frames(game, 2);
+        Check(result, !world.IsManagementVisible && world.NavigationGuide!.Target?.TargetId == "office"
+            && game.Economy.Gold == beforePlanningGold && game.State.Ranch.Stockpile["supplies"] == beforePlanningStock,
+            "the actual Office destination marks a place without teleporting, spending or paying production");
+        var office = ranch.Stations.Single(station => station.TargetId == "office");
+        ranch.Player!.GlobalPosition = office.GlobalPosition;
+        await Frames(game, 3);
+        await KeyStroke(game, Key.F);
+        Check(result, world.IsStationPanelOpen && world.StationPanel!.ContextId == "office",
+            "F at the physical Office opens its own local assignment surface");
         var officeLabel = game.Data.Jobs["office"].DisplayName;
-        var workers = game.Roster.Characters.ToList();
-        var workerIndex = workers.FindIndex(character => game.Schedule.GetAssignment(character.Id) != "dairy");
-        var officeButtons = PlayabilityRegressionTests.Buttons(world.Shell!)
-            .Where(button => button.Text == officeLabel).ToArray();
-        if (workerIndex < 0 || workerIndex >= officeButtons.Length || officeButtons[workerIndex].Disabled)
-            throw new InvalidOperationException("Supply-producing Office Work assignment is unavailable");
-        officeButtons[workerIndex].EmitSignal(BaseButton.SignalName.Pressed);
-        Check(result, game.Schedule.GetAssignment(workers[workerIndex].Id) == "office",
-            "a live Schedule button assigns an existing worker to supply production");
-        world.GetNode<Button>("ManagementLayer/ManagementUi/UiShell/Margin/RootPanel/Root/TopBar/TopBarRow1/ReturnToWorldButton")
+        var worker = game.Roster.Characters.First(character => game.Schedule.GetAssignment(character.Id) != "dairy");
+        var officeButton = PlayabilityRegressionTests.Buttons(world.StationPanel!)
+            .Single(button => button.Name == "Assign_" + worker.Id);
+        if (officeButton.Disabled) throw new InvalidOperationException("Supply-producing Office Work assignment is unavailable");
+        officeButton.EmitSignal(BaseButton.SignalName.Pressed);
+        await Frames(game, 3);
+        Check(result, game.Schedule.GetAssignment(worker.Id) == "office" && game.Economy.Gold == beforePlanningGold
+            && game.State.Ranch.Stockpile["supplies"] == beforePlanningStock,
+            "a local Office assignment changes the shared schedule without paying production before settlement");
+        PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(button => button.Name == "StationClose")
             .EmitSignal(BaseButton.SignalName.Pressed);
         await Frames(game, 2);
         var dayBefore = game.State.Calendar.Day;
@@ -178,19 +192,25 @@ public static class RanchLeisureFrameTests
             advance.EmitSignal(BaseButton.SignalName.Pressed);
             await Frames(game, 2);
         }
-        // Plan Night deliberately opens management instead of choosing a workload for the player.
-        // Follow that visible choice and the normal End Day button; do not call EndDay directly.
-        Check(result, game.State.Calendar.Day == dayBefore && world.IsManagementVisible
-            && string.IsNullOrWhiteSpace(game.State.Calendar.NightAction),
-            "Plan Night requires an explicit workload choice before settlement");
-        PlayabilityRegressionTests.Press(world.Shell!, "Rest (restore energy)");
-        await Frames(game, 2);
-        Check(result, game.State.Calendar.NightAction == "rest", "the live night-choice button selects ordinary rest");
-        var endDay = world.Shell!.GetNode<Button>("Margin/RootPanel/Root/TopBar/TopBarRow2/EndDayButton");
-        if (!endDay.IsVisibleInTree() || endDay.Disabled || endDay.Text != "End Day")
-            throw new InvalidOperationException("The normal End Day action is unavailable after planning the night");
+        Check(result, game.State.Calendar.Day == dayBefore && !world.IsManagementVisible
+            && string.IsNullOrWhiteSpace(game.State.Calendar.NightAction)
+            && world.NavigationGuide!.Target?.TargetId == "ranch_house",
+            "Plan Night marks the house and requires an explicit local workload choice before settlement");
+        var house = ranch.Stations.Single(station => station.TargetId == "ranch_house");
+        ranch.Player!.GlobalPosition = house.GlobalPosition;
+        await Frames(game, 3);
+        await KeyStroke(game, Key.F);
+        Check(result, world.IsStationPanelOpen && world.StationPanel!.ContextId == "ranch_house",
+            "the house opens through the same physical interaction used by the player");
+        PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(button => button.Name == "HousePlan_rest")
+            .EmitSignal(BaseButton.SignalName.Pressed);
+        await Frames(game, 3);
+        Check(result, game.State.Calendar.NightAction == "rest", "the local night-choice button selects ordinary rest");
+        var endDay = PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(button => button.Name == "HouseSleep");
+        if (!endDay.IsVisibleInTree() || endDay.Disabled)
+            throw new InvalidOperationException("Sleep at the house is unavailable after planning the night");
         endDay.EmitSignal(BaseButton.SignalName.Pressed);
-        await Frames(game, 2);
+        await Frames(game, 3);
         Check(result, game.State.Calendar.Day == dayBefore + 1 && game.LastDailyReport?.Day == dayBefore
             && world.Shell.CurrentScreen == "report", "normal phase advancement reaches the Day 3 settlement report once");
         Check(result, game.State.Ranch.Stockpile["supplies"] >= RanchLeisureService.RestoreSupplyCost
