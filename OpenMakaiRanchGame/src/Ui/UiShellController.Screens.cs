@@ -4197,27 +4197,14 @@ public partial class UiShellController
 
         uiInner.AddChild(AddStyledLine("UI Scale: " + (settings.UiScale * 100).ToString("F0") + "%"));
         var scaleUpBtn = PrimaryButton(T("screen.options.scale_up", "Scale Up"));
-        scaleUpBtn.Pressed += () =>
-        {
-            var newScale = Mathf.Min(2.0f, settings.UiScale + 0.1f);
-            _game.SetUiScale(newScale);
-            _rootPanel.Scale = Vector2.One * newScale;
-            _game.NotifyStateChanged();
-            _game.Feedback.PlayConfirm();
-            ShowScreen("options");
-        };
+        // RuntimeSettings owns viewport scaling; scaling this panel as well applies it twice.
+        scaleUpBtn.Pressed += () => ExecuteUiAction(
+            () => _game.SetUiScale(_game.State.Settings.UiScale + 0.1f), true);
         uiInner.AddChild(scaleUpBtn);
 
         var scaleDownBtn = SecondaryButton(T("screen.options.scale_down", "Scale Down"));
-        scaleDownBtn.Pressed += () =>
-        {
-            var newScale2 = Mathf.Max(0.5f, settings.UiScale - 0.1f);
-            _game.SetUiScale(newScale2);
-            _rootPanel.Scale = Vector2.One * newScale2;
-            _game.NotifyStateChanged();
-            _game.Feedback.PlayConfirm();
-            ShowScreen("options");
-        };
+        scaleDownBtn.Pressed += () => ExecuteUiAction(
+            () => _game.SetUiScale(_game.State.Settings.UiScale - 0.1f), true);
         uiInner.AddChild(scaleDownBtn);
 
         var dataCard = CardContainer();

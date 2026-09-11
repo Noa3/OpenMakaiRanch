@@ -118,6 +118,7 @@ public partial class UiLayoutAcceptance : Node
             await CheckGamepadMenus(world);
             await CheckUiScale(world);
             await CheckWorldLayouts(world);
+            await CheckScaleButtons(world);
             Check(game.Economy.Gold == gold && game.State.Player.Stamina == stamina && game.State.Calendar.Day == 2,
                 "layout/input inspection does not pay rewards, spend daily stamina or settle the day");
         }
