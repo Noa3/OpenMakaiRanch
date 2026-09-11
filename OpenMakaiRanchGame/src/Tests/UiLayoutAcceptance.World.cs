@@ -16,17 +16,26 @@ public partial class UiLayoutAcceptance
             await Resize(size);
             var ranch = world.Ranch!;
             var hud = ranch.Hud!;
-            // Staged proximity exercises an existing affordable station's presentation, not a walking route.
-            var station = ranch.Stations.First(point => point.Name == "Station");
-            ranch.Player!.GlobalPosition = station.GlobalPosition + new Vector3(0, 0, 1.1f);
+            var assist = Descendants(world).OfType<PanelContainer>().First(panel => panel.Name == "InteractionPanel");
+            var interact = assist.GetNode<Button>("Row/ActionButton");
+            // The authored primary Station is the unbuilt Dairy Barn, not an available facility.
+            // Keep that real progression gate as a negative control; do not unlock it for layout tests.
+            var locked = ranch.Stations.First(point => point.TargetId == "dairy_barn");
+            ranch.Player!.GlobalPosition = locked.GlobalPosition + new Vector3(0, 0, 1.1f);
+            await Frames(8);
+            Check(!locked.IsAvailable && !interact.Visible
+                && assist.GetNode<Label>("Row/PromptLabel").Text.Contains("not built"),
+                $"{size}: the unbuilt dairy station retains its lock and explains the unavailable action");
+            // Staged proximity exercises a built facility's presentation, not a walking route.
+            var station = ranch.Stations.First(point => point.TargetId == "pasture");
+            Check(station.IsAvailable, $"{size}: the existing Pasture supplies the positive interaction fixture");
+            ranch.Player.GlobalPosition = station.GlobalPosition + new Vector3(0, 0, 1.1f);
             await Frames(8);
             Check(VisibleTarget(hud.GetNode<Button>("ManagementButton")) && VisibleTarget(hud.GetNode<Button>("AdvanceTimeButton")),
                 $"{size}: ranch world action buttons retain usable hit targets");
             var worker = hud.GetNode<Control>("WorkerPanel").GetGlobalRect();
             var alerts = hud.GetNode<Control>("AlertPanel").GetGlobalRect();
             Check(!worker.Intersects(alerts), $"{size}: worker and attention panels do not overlap");
-            var assist = Descendants(world).OfType<PanelContainer>().First(panel => panel.Name == "InteractionPanel");
-            var interact = assist.GetNode<Button>("Row/ActionButton");
             Check(assist.IsVisibleInTree() && Encloses(GetViewport().GetVisibleRect(), assist.GetGlobalRect()),
                 $"{size}: interaction panel remains inside the viewport");
             Check(VisibleTarget(interact), $"{size}: staged nearby station exposes an unclipped interaction button");
