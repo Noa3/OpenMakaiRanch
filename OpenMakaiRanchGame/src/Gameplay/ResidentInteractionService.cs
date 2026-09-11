@@ -60,7 +60,7 @@ public sealed class ResidentInteractionService
         if (character is null || id == "anon") return No(T("world.resident.reason.target", "Choose another resident who is still on the ranch."));
         if (!_state.Story.FirstDayCompleted || _state.Calendar.Day < 2)
             return No(T("world.resident.reason.intro", "Finish the guided introduction first."));
-        if (character.Hp <= 0 || character.Mature.IsCollapsed || character.Mature.FallState == FallState.Collapse)
+        if (CharacterProtectionService.NeedsRecovery(character))
             return No(T("world.resident.reason.unwell", "This resident needs recovery. Give them time off before asking for an activity."));
         if (action == ResidentAction.Chat) return new(true, 0, "");
         var flag = ReceiptFlag(action);
@@ -102,6 +102,8 @@ public sealed class ResidentInteractionService
         var focus = PracticeFocus(action);
         var beforeSkill = SkillValue(character, focus);
         var beforeEnergy = character.Energy;
+        var development = new CharacterDevelopmentService(_state, _data, _flags);
+        var observation = focus is not null ? development.Capture(character.Id, DevelopmentCause.Practice) : null;
         if (focus is not null)
         {
             if (!_training.Train(character.Id, focus))
@@ -133,6 +135,9 @@ public sealed class ResidentInteractionService
                 ResidentAction.Recovery => T("world.resident.result.recovery", "A recovery break: energy +25, fatigue -10 and morale +3, up to their limits. Daily work is not paid or reassigned."),
                 _ => T("world.resident.result.mentor", "You share practical advice. Bond and morale improve; fatigue increases slightly. Today's work is unchanged.")
             };
+        foreach (var change in development.Complete(observation))
+            if (change.Field is DevelopmentField.MaxHp or DevelopmentField.MaxMana)
+                message += " " + CharacterDevelopmentService.Describe(character.DisplayNameOverride, change);
         return new(true, true, message);
     }
 
