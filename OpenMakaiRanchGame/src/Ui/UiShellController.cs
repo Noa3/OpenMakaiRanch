@@ -252,7 +252,7 @@ public partial class UiShellController : Control
 
 	public void ShowScreen(string screenId)
 	{
-		if (_routingScreen) return;
+		if (_routingScreen || !ServiceAllowsScreen(screenId)) return;
 		if (WorldHost() is { } host && !host.CanRouteManagementScreen(screenId)) return;
 		if (_game.ActiveCombatSession is { IsFinished: false } && screenId != "combat")
 		{
@@ -314,7 +314,7 @@ public partial class UiShellController : Control
 		switch (screenId)
 		{
 			case "title": RenderTitle(); break;
-			case "ranch": RenderRanch(); break;
+			case "ranch": if (IsDedicatedService) RenderFacilityPlanning(); else RenderRanch(); break;
 			case "report": RenderDailyReport(); break;
 			case "roster": RenderRoster(); break;
 			case "schedule": RenderSchedule(); break;
@@ -350,7 +350,7 @@ public partial class UiShellController : Control
 			default: RenderRanch(); break;
 		}
 
-		if (_game.State.Calendar.Phase is DayPhase.Evening or DayPhase.Night && !nowFullScreen && screenId is not ("report" or "combat"))
+		if (!IsDedicatedService && _game.State.Calendar.Phase is DayPhase.Evening or DayPhase.Night && !nowFullScreen && screenId is not ("report" or "combat"))
 		{
 			var recovery = CardContainer();
 			recovery.Name = "PlayerRecoveryCard";
@@ -383,7 +383,7 @@ public partial class UiShellController : Control
 			recoveryInner.AddChild(bath);
 		}
 
-		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not ("ranch" or "report" or "combat"))
+		if (!IsDedicatedService && _game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not ("ranch" or "report" or "combat"))
 			AddNightPlanningCard();
 		RestoreContentViewDeferred(revision, previousScroll, focus);
 	}
@@ -643,6 +643,7 @@ public partial class UiShellController : Control
 		_endDayButton.CustomMinimumSize = new Vector2(compact ? 128 : 140, 34);
 		_menuButton.CustomMinimumSize = new Vector2(compact ? 58 : 64, 34);
 		ApplyOpeningUtilityLayout();
+		ApplyDedicatedServiceLayout();
 	}
 
 	private void ToggleNavCollapse()

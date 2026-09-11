@@ -42,6 +42,7 @@ public partial class UiShellController
 
         EnsureInputOptionsExtension();
         ApplyOpeningUtilityLayout();
+        ApplyDedicatedServiceLayout();
         EnsureControllerFocus();
     }
 

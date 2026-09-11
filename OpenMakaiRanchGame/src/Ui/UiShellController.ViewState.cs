@@ -13,6 +13,8 @@ public partial class UiShellController
     private sealed record ContentFocus(string Key, int Occurrence, int Index);
     private sealed record ContentView(ulong Revision, ulong Generation, string Screen, int Scroll, ContentFocus? Focus);
     private ContentView? _pendingContentView;
+    private Vector2 _lastViewSize;
+    private float _lastViewScale;
 
     private bool HasPendingContentView => _pendingContentView is { } view
         && view.Revision == _viewRevision && view.Generation == _game.StateGeneration
@@ -65,6 +67,7 @@ public partial class UiShellController
         EnsureInputOptionsExtension();
         FinalizeSequentialManagementCards();
         ApplyOpeningUtilityLayout();
+        ApplyDedicatedServiceLayout();
         var view = new ContentView(revision, _game.StateGeneration, _currentScreen, scroll, focus);
         _pendingContentView = view;
         var tree = GetTree();
@@ -78,6 +81,10 @@ public partial class UiShellController
             if (!IsVisibleInTree() || _viewRevision != view.Revision
                 || _game.StateGeneration != view.Generation || _currentScreen != view.Screen) return;
 
+            var resized = !_lastViewSize.IsEqualApprox(GetViewport().GetVisibleRect().Size)
+                || !Mathf.IsEqualApprox(_lastViewScale, _game.State.Settings.UiScale);
+            _lastViewSize = GetViewport().GetVisibleRect().Size;
+            _lastViewScale = _game.State.Settings.UiScale;
             Control? replacementFocus = null;
             if (view.Focus is { } savedFocus)
             {
@@ -93,9 +100,10 @@ public partial class UiShellController
                     target = replacementFocus;
                 }
                 target?.GrabFocus();
+                if (resized && target is not null) replacementFocus = target;
             }
             // Exact matches retain the user's scroll, including deliberate scrolling away
-            // from a focused control. Only a different fallback command follows its new focus.
+            // from a focused control. A changed viewport/scale must also reveal the active command.
             _scroll.ScrollVertical = view.Scroll;
             if (replacementFocus is not null) _scroll.EnsureControlVisible(replacementFocus);
         }

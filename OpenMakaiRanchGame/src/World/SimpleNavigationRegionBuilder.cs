@@ -2,41 +2,36 @@ using Godot;
 
 namespace OpenMakaiRanch.World;
 
-/// <summary>
-/// Authors a simple rectangular NavigationRegion3D at runtime for the current open greybox.
-///
-/// This is deliberately conservative: it gives NavigationAgent3D a real map today while the current
-/// placeholder landmarks remain collision-free. When final buildings/fences receive collision, this
-/// region can be replaced by an editor-baked navmesh without changing RosterRig.
-/// </summary>
+/// <summary>Bakes the bounded area's real static collision once, after procedural shells are ready.</summary>
 public partial class SimpleNavigationRegionBuilder : NavigationRegion3D
 {
     [Export] public Vector2 Size { get; set; } = new(36f, 26f);
     [Export] public float Y { get; set; } = 0.02f;
+    public bool CollisionBakeComplete { get; private set; }
 
     public override void _Ready()
     {
-        if (NavigationMesh is not null && NavigationMesh.GetPolygonCount() > 0)
-        {
-            return;
-        }
+        // Until the deferred bake, there is deliberately no pretend obstacle-free rectangle.
+        CallDeferred(nameof(BakeCollision));
+    }
 
-        var halfX = Mathf.Max(1f, Size.X * 0.5f);
-        var halfZ = Mathf.Max(1f, Size.Y * 0.5f);
-
-        Vector3[] vertices =
-        {
-            new(-halfX, Y,  halfZ),
-            new( halfX, Y,  halfZ),
-            new( halfX, Y, -halfZ),
-            new(-halfX, Y, -halfZ)
-        };
-
+    private void BakeCollision()
+    {
+        if (!IsInsideTree() || CollisionBakeComplete) return;
         var mesh = new NavigationMesh
         {
-            Vertices = vertices
+            GeometryParsedGeometryType = NavigationMesh.ParsedGeometryType.StaticColliders,
+            GeometryCollisionMask = 1,
+            AgentRadius = 0.4f, AgentHeight = 2.25f, AgentMaxClimb = 0.25f,
+            CellSize = 0.25f, CellHeight = 0.25f, RegionMinSize = 0.5f,
+            FilterWalkableLowHeightSpans = true, FilterLedgeSpans = true,
+            FilterBakingAabb = new Aabb(new Vector3(-Size.X / 2, -0.3f, -Size.Y / 2), new Vector3(Size.X, 3.2f, Size.Y))
         };
-        mesh.AddPolygon(new[] { 0, 1, 2, 3 });
+        using var geometry = new NavigationMeshSourceGeometryData3D();
+        NavigationServer3D.ParseSourceGeometryData(mesh, geometry, GetParent());
+        NavigationServer3D.BakeFromSourceGeometryData(mesh, geometry);
         NavigationMesh = mesh;
+        CollisionBakeComplete = mesh.GetPolygonCount() > 0;
+        if (!CollisionBakeComplete) GD.PushError($"No walkable collision was baked for {GetParent().Name}.");
     }
 }

@@ -8,15 +8,16 @@ namespace OpenMakaiRanch.World;
 /// <summary>
 /// Lightweight stylized presentation pass for the ranch while final authored/CC0 assets are gated.
 ///
-/// Everything created here is decorative and collision-free. Existing world stations, facility IDs,
-/// collision, schedule and settlement remain authoritative. This layer can therefore be replaced
+/// Dressing is decorative; WalkInBuilding supplies the physical building shells. Existing world stations, facility IDs,
+/// schedule and settlement remain authoritative. This layer can therefore be replaced
 /// piece-by-piece with real assets without changing gameplay.
 /// </summary>
 public partial class RanchPresentationBuilder : Node3D
 {
     [Export] public bool BuildPlaceholderLandmarks { get; set; } = true;
 
-    private readonly Dictionary<string, MeshInstance3D> _facilityLandmarks = new();
+    private readonly Dictionary<string, WalkInBuilding> _facilityLandmarks = new();
+    public IReadOnlyDictionary<string, WalkInBuilding> Buildings => _facilityLandmarks;
     private Node3D? _generated;
     private Label3D? _entrySign;
 
@@ -79,7 +80,7 @@ public partial class RanchPresentationBuilder : Node3D
             if (_facilityLandmarks.TryGetValue(child.TargetId, out var landmark)
                 && GodotObject.IsInstanceValid(landmark))
             {
-                landmark.MaterialOverride = CreateMaterial(built ? BuiltColor : LockedColor);
+                landmark.SetBuiltColor(built);
             }
 
             if (child.GetNodeOrNull<Label3D>("Label") is { } label)
@@ -178,60 +179,57 @@ public partial class RanchPresentationBuilder : Node3D
 
         for (var i = 0; i < positions.Length; i++)
         {
-            AddTree($"Tree_{i:00}", positions[i], 0.85f + (i % 3) * 0.12f);
+            AddTree($"Tree_{i:00}", new Vector3(positions[i].X * 1.34f, 0, positions[i].Z * 1.43f), 0.85f + (i % 3) * 0.12f);
         }
     }
 
     private void BuildFacilityLandmarks()
     {
         var ranch = GetParent();
-        if (ranch is null)
+        if (ranch is null) return;
+        // Created before the parent ranch collects physical stations. No additional reward authority.
+        foreach (var (id, label, position) in new[]
         {
-            return;
+            ("ranch_house", "Ranch house", new Vector3(6, 0.5f, 10)),
+            ("pet_care", "Pet care", new Vector3(-6, 0.5f, -8))
+        })
+        {
+            var station = new WorldStation { Name = "Station_" + id, TargetId = id, Label = label,
+                CommandTargetId = "rest", Position = position };
+            _generated!.AddChild(station);
+            station.AddChild(new Label3D { Name = "Label", Text = label, Position = new Vector3(0, 1.5f, 0),
+                FontSize = 28, OutlineSize = 5, Billboard = BaseMaterial3D.BillboardModeEnum.Enabled });
         }
-
-        foreach (var station in EnumerateStations(ranch))
+        // Snapshot: adding a building must not expand the enumeration recursively.
+        var stations = new List<WorldStation>(EnumerateStations(ranch));
+        foreach (var station in stations)
         {
-            var stationPos = station.Position;
-            var outward = new Vector3(stationPos.X, 0f, stationPos.Z);
-            if (outward.LengthSquared() < 0.01f)
-            {
-                outward = Vector3.Back;
-            }
+            if (!station.RequiresWorker) continue;
+            var original = station.Position;
+            var outward = new Vector3(original.X, 0, original.Z);
+            if (outward.LengthSquared() < 0.01f) outward = Vector3.Forward;
             outward = outward.Normalized();
-
-            var buildingPos = stationPos + outward * 2.15f;
-            buildingPos.Y = 1.05f;
-
-            var shell = AddBox(
-                $"Landmark_{station.TargetId}",
-                buildingPos,
-                new Vector3(3.4f, 2.1f, 2.8f),
-                BuiltColor);
-            _facilityLandmarks[station.TargetId] = shell;
-
-            AddBox(
-                $"Roof_{station.TargetId}",
-                buildingPos + new Vector3(0f, 1.28f, 0f),
-                new Vector3(3.8f, 0.48f, 3.2f),
-                RoofColor);
-
-            _generated!.AddChild(new WorldShelterVolume
+            var footprint = station.TargetId switch
             {
-                Name = $"Shelter_{station.TargetId}",
-                Position = buildingPos + new Vector3(0f, 0.65f, 0f),
-                HalfExtents = new Vector3(1.9f, 1.55f, 1.65f)
-            });
-
-            // A bright front marker helps identify the approach side even before final art exists.
+                "dairy_barn" => new Vector2(7.6f, 6.6f),
+                "ranch_house" => new Vector2(7.2f, 6.4f),
+                "pet_care" => new Vector2(4.6f, 4.4f),
+                _ => new Vector2(6.2f, 5.6f)
+            };
             var towardHub = -outward;
-            var front = buildingPos + towardHub * 1.45f + new Vector3(0f, -0.2f, 0f);
-            AddBox(
-                $"Door_{station.TargetId}",
-                front,
-                new Vector3(0.85f, 1.45f, 0.16f),
-                WoodColor,
-                Mathf.Atan2(towardHub.X, towardHub.Z));
+            var building = new WalkInBuilding { Name = "Building_" + station.TargetId,
+                BuildingId = station.TargetId, Footprint = footprint,
+                Position = new Vector3(original.X, 0, original.Z) + outward * (footprint.Y / 2 + 0.7f),
+                Rotation = new Vector3(0, Mathf.Atan2(towardHub.X, towardHub.Z), 0),
+                Player = ranch.GetNodeOrNull<ThirdPersonPlayerController>("Player"),
+                WallColor = station.TargetId == "dairy_barn" ? new Color("abc0bb") : new Color("b9ac8a") };
+            _generated!.AddChild(building);
+            _facilityLandmarks[station.TargetId] = building;
+            // Keep the stable station node and identifier, now just inside its actual doorway.
+            station.Position = building.Position + new Basis(Vector3.Up, building.Rotation.Y) * building.WorkLocal;
+            if (station.GetNodeOrNull<MeshInstance3D>("Mesh") is { } oldBlock) oldBlock.Visible = false;
+            AddPath("Approach_" + station.TargetId, new Vector3(original.X, 0.03f, original.Z),
+                new Vector3(station.Position.X, 0.03f, station.Position.Z), 1.8f);
         }
     }
 

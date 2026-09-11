@@ -29,6 +29,10 @@ public partial class WorldGameController
     {
         if (_shell is null || _flowLocksUi || !IsGuidedOpening || screenId == _shell.CurrentScreen) return true;
         if (IsUtilityScreen(screenId)) return true;
+        // A fresh NewGame may enter its mandatory creator in the existing host. No ordinary
+        // utility/navigation button offers this route, and later story stages cannot return here.
+        if (screenId == "character_creation" && GameRoot.Instance.State.Story.FirstDayStage == FirstDayFlowController.StageWakeUp)
+            return true;
         return screenId == "schedule"
             && GameRoot.Instance.State.Story.FirstDayStage == FirstDayFlowController.StageManagementDairy
             && _firstDayFlow?.BlocksWorldInput != true;

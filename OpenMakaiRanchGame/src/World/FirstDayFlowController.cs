@@ -126,7 +126,7 @@ public partial class FirstDayFlowController : Control
             }
             else if (hasDairy)
             {
-                SetObjective("Dairy Work is covered. Close Management / Return to World to continue the tour.");
+                SetObjective("Dairy Work is covered. Close the workstation to continue the tour.");
             }
 
             return;
@@ -276,7 +276,7 @@ public partial class FirstDayFlowController : Control
             case StageRanchWelcome:
                 ShowDialogue(
                     GuideName(),
-                    "Welcome outside. The HUD shows the day, resources, warnings and your selected worker. Workstations let you assign jobs physically; Management [M] contains the full schedule, facilities, town, inventory and other systems.",
+                    "Welcome outside. Each building has its own workstation. Walk up and interact to choose who works there. Warning markers identify places needing attention; Places [M] gives directions without performing remote work.",
                     ("Show me the ranch", () =>
                     {
                         SetStage(StagePastureAssignment);
@@ -293,12 +293,12 @@ public partial class FirstDayFlowController : Control
             case StageManagementDairy:
                 ShowDialogue(
                     GuideName(),
-                    "Good. Spatial stations are quick, but the full Schedule is in Management. One important existing settlement rule is Dairy Work: leaving it completely unstaffed adds maintenance cost and hurts morale.",
-                    ("Open Schedule", () =>
+                    "Good. Next visit the Dairy Barn workstation. Leaving Dairy Work completely unstaffed adds maintenance cost and hurts morale. Assign a resident there; merely opening the station never pays production.",
+                    ("Find the Dairy Barn", () =>
                     {
                         HideDialogue();
-                        _host?.OpenManagementScreen("schedule");
-                        SetObjective("Management tutorial: assign at least one resident to Dairy Work, then Return to World.");
+                        _host?.NavigationGuide?.Track(new WorldDestination("ranch", "dairy_barn", "Dairy Barn"));
+                        SetObjective("Follow the Dairy Barn marker. Interact with its station and assign at least one resident.");
                     }));
                 break;
 

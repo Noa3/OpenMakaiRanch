@@ -105,6 +105,7 @@ public partial class UiLayoutAcceptance
         game.Save.Delete(99);
         await CheckAdventureJourney(world);
         await CheckManagementJourney(world);
+        await CheckStationJourney(world);
     }
 
     private async Task FocusClick(Button button)

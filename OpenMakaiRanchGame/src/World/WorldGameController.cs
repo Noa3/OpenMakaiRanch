@@ -41,7 +41,7 @@ public partial class WorldGameController : Node
     private ulong _storyAreaGeneration;
     private ulong _areaStateGeneration;
 
-    public bool IsManagementVisible => _managementRoot?.Visible == true;
+    public bool IsManagementVisible => _managementRoot?.Visible == true || IsStationPanelOpen;
     public bool FlowLocksUi => _flowLocksUi;
     public string ActiveAreaId => _activeAreaId;
     public IntroHouseController? IntroHouse => _introHouse;
@@ -110,6 +110,7 @@ public partial class WorldGameController : Node
         }
 
         BindHudOwnership();
+        BindStationPresentation();
         _flowLocksUi = RequiresFullScreenUi(_shell.CurrentScreen);
         var savedArea = GameRoot.Instance is { } game && game.State.WorldAreaId is "ranch" or "town"
             ? game.State.WorldAreaId
@@ -130,6 +131,7 @@ public partial class WorldGameController : Node
 
     public override void _ExitTree()
     {
+        UnbindStationPresentation();
         UnbindHudOwnership();
         if (_shell is not null && GodotObject.IsInstanceValid(_shell))
         {
@@ -199,6 +201,7 @@ public partial class WorldGameController : Node
 
     public bool CloseManagement()
     {
+        if (IsStationPanelOpen) { _stationPanel!.Close(); return true; }
         if (_flowLocksUi)
         {
             return false;
@@ -210,7 +213,9 @@ public partial class WorldGameController : Node
             return false;
         }
         if (_shell?.CurrentScreen == "combat") _shell.ShowScreen("adventure");
-        return ApplyManagementVisibility(false);
+        var closed = ApplyManagementVisibility(false);
+        if (closed) _shell?.ClearServiceContext();
+        return closed;
     }
 
     public void ToggleManagement()
@@ -235,11 +240,7 @@ public partial class WorldGameController : Node
             return;
         }
 
-        if (_shell is not null)
-        {
-            _shell.ShowScreen(_activeAreaId == "town" ? "town" : "ranch");
-        }
-        OpenManagement();
+        OpenWorldGuide();
     }
 
     private void CloseManagementFromUi()
@@ -311,8 +312,8 @@ public partial class WorldGameController : Node
         if (game.State.Calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Night
             && game.State.Calendar.NightAction is not ("rest" or "train" or "admin"))
         {
-            OpenManagementScreen("ranch");
-            _ranch?.Hud?.SetStatus("Choose tonight's work in management before ending the day.");
+            _navigationGuide?.Track(WorldDestinationCatalog.House);
+            ActiveStatus("Follow the marker to the Ranch house. Choose a night plan and sleep there.");
             return;
         }
 
@@ -327,7 +328,7 @@ public partial class WorldGameController : Node
             && game.State.Calendar.Phase == OpenMakaiRanch.Core.Models.DayPhase.Morning
             && game.LastDailyReport is not null)
         {
-            OpenManagementScreen("report");
+            OpenDedicatedService("report");
             return;
         }
 
@@ -343,19 +344,21 @@ public partial class WorldGameController : Node
             return false;
         }
 
+        if (IsStationPanelOpen) _stationPanel!.Close();
         _shell.ShowScreen(screenId);
         return _shell.CurrentScreen == screenId && OpenManagement();
     }
 
     private void OnCharacterInteractionRequested(string characterId)
     {
-        if (_shell is null || !_shell.ShowCharacterDetailFromWorld(characterId))
+        if (_stationPanel is null || !WorldActionsAvailable || !CanVisitResidentHere(characterId))
         {
-            ActiveStatus("Character details are unavailable.");
+            ActiveStatus(IsGuidedOpening ? "Follow the current introduction objective first." : "Move closer to this resident.");
             return;
         }
-
-        OpenManagement();
+        _stationPanel.OpenResident(characterId);
+        ActiveEnterManagement();
+        RefreshHudOwnership();
     }
 
     private void OnMobileInteractPressed()
@@ -388,7 +391,8 @@ public partial class WorldGameController : Node
 
     private void OnPauseManagementRequested(string screenId)
     {
-        OpenManagementScreen(screenId);
+        if (screenId is "options" or "settings" or "saveload") OpenDedicatedService(screenId);
+        else OpenWorldGuide();
     }
 
     private void OnTownServiceRequested(string screenId)
@@ -399,7 +403,7 @@ public partial class WorldGameController : Node
             return;
         }
 
-        OpenManagementScreen(screenId);
+        OpenDedicatedService(screenId);
     }
 
     private void OnUiWorldTravelRequested(string destinationId)
@@ -530,6 +534,8 @@ public partial class WorldGameController : Node
         _ranch.ProcessMode = ranchActive ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
         _town.Visible = townActive;
         _town.ProcessMode = townActive ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
+        if (_ranch.GetNodeOrNull<NavigationRegion3D>("NavigationRegion") is { } ranchNavigation) ranchNavigation.Enabled = ranchActive;
+        if (_town.GetNodeOrNull<NavigationRegion3D>("NavigationRegion") is { } townNavigation) townNavigation.Enabled = townActive;
 
         if (_introHouse.CameraRig?.GetNodeOrNull<Camera3D>("Camera") is { } introCamera)
         {

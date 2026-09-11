@@ -128,14 +128,18 @@ public partial class RosterRig : Node3D
             }
 
             var travelTarget = target;
-            if (_agents.TryGetValue(id, out var agent) && GodotObject.IsInstanceValid(agent) && agent.IsInsideTree())
+            // Standalone visual previews can move directly. Actual areas must obey their baked
+            // collision map; missing/unreachable paths never fall back to walking through walls.
+            if (GetParent() is RanchGreyboxController or TownWorldController)
             {
-                agent.TargetPosition = target;
+                if (!_agents.TryGetValue(id, out var agent) || !GodotObject.IsInstanceValid(agent) || !agent.IsInsideTree()
+                    || NavigationServer3D.MapGetIterationId(agent.GetNavigationMap()) == 0)
+                { avatar.PlayLocomotion(0, false); continue; }
+                if (agent.TargetPosition.DistanceSquaredTo(target) > 0.0025f) agent.TargetPosition = target;
                 var nextPath = agent.GetNextPathPosition();
-                if (nextPath.DistanceTo(current) > 0.01f && nextPath.DistanceTo(current) < 8.0f)
-                {
-                    travelTarget = nextPath;
-                }
+                if (agent.IsNavigationFinished() || nextPath.DistanceTo(current) > 8f)
+                { avatar.PlayLocomotion(0, false); continue; }
+                travelTarget = new Vector3(nextPath.X, current.Y, nextPath.Z);
             }
 
             var next = current.MoveToward(travelTarget, step);
@@ -187,6 +191,13 @@ public partial class RosterRig : Node3D
             seenPerAnchor[anchorId] = ordinal + 1;
 
             var placement = RosterPlacementMath.Place(character.Id, category, ordinal);
+            if (GetParent() is RanchGreyboxController ranch && assignment != "rest"
+                && ranch.Stations.FirstOrDefault(station => station.CommandTargetId == assignment && station.RequiresWorker) is { } station)
+            {
+                var target = station.GlobalPosition + new Vector3(Mathf.Clamp((ordinal % 3 - 1) * 0.75f, -0.75f, 0.75f), 0, -(ordinal / 3) * 0.55f);
+                target.Y = 0;
+                placement = placement with { Position = target };
+            }
             desired[character.Id] = (placement, roster.DefinitionFor(character));
         }
 

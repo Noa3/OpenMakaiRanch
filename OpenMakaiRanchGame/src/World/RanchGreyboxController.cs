@@ -51,6 +51,14 @@ public partial class RanchGreyboxController : Node3D
     /// mutated through GameRoot before this event fires.
     /// </summary>
     public event Action<string, string>? StationInteractionSucceeded;
+    public event Action<WorldStation>? StationPanelRequested;
+    public bool HasStationPresentation => StationPanelRequested is not null;
+
+    public void NotifyStationAssignment(string characterId, string jobId)
+    {
+        StationInteractionSucceeded?.Invoke(characterId, jobId);
+        RefreshLiveWorld();
+    }
 
     /// <summary>
     /// Requests the already-existing character detail UI for a nearby roster member. This event
@@ -272,6 +280,11 @@ public partial class RanchGreyboxController : Node3D
             return true;
         }
 
+        if (stationInRange && _nearbyStation!.RequiresWorker && StationPanelRequested is not null)
+        {
+            StationPanelRequested.Invoke(_nearbyStation);
+            return true;
+        }
         return TryInteractWithNearestStation();
     }
 
