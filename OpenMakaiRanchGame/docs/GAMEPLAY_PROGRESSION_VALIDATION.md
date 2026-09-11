@@ -16,7 +16,7 @@ Documentation-only commits may follow. This is not the parallel presentation PR 
 
 - **2,000 SMOKE OK, zero SMOKE FAIL, one SMOKE PASS.** This includes 111 new gameplay-progression assertions on top of the existing 1,889. No existing tests were removed or weakened.
 - **526/526 rendered checks and 64 PNG captures**, one UI ACCEPTANCE PASS, zero UI runtime ERROR/SCRIPT ERROR. These are retained regression scenarios, not newly implemented graphics or a separate rendered challenge menu.
-- **69 Python tests pass** in the complete repository (19.841 seconds in the inspected Godot job). The local downloaded review subset separately passed 57 in 22.606 seconds; its missing 12 anime-tool tests are not described as locally executed.
+- **69 Python tests pass** in the complete repository. The local downloaded review subset separately passed 57; its missing 12 anime-tool tests are not described as locally executed.
 - Build succeeds with **zero errors**, but **19 warnings** in the inspected Godot compile step: unavailable developer-local NuGet source, inherited deprecated drawing calls and a nullable test warning. Import retains the known EditorSettings shutdown diagnostic; software rendering retains its VSync warning. Smoke contains exactly five intentional invalid-save ERROR diagnostics. No filtering change hid errors.
 - C# 12, net8.0, SDK 10.0.401, Godot 4.7.2 Mono and schema 16 remain unchanged. No local Godot or .NET execution is claimed.
 
@@ -75,14 +75,16 @@ and charge consumed portable meals at replacement price; lucky income cannot qua
 
 ## Evidence receipts
 
-The downloaded ZIP bytes were independently SHA-256 checked:
+The downloaded ZIP bytes were independently SHA-256 checked. The smoke receipt below was
+corrected against both the actual archive and live artifact metadata; an earlier draft listed
+an incorrect checksum and temporary directory. The gameplay code and test outcomes did not change.
 
 | Evidence | Artifact ID | SHA-256 |
 | --- | --- | --- |
-| Godot import/smoke | `10284909168` | `3792d96dc3296327d41d27face66294503fba9bd96535eb3b805eb18e8f5ee30` |
+| Godot import/smoke | `10284909168` | `8602f218c8c66ad98be2ef1c276d469e8d0080ca48727af437e04add58b2fab4` |
 | Rendered regression/review source | `10284919413` | `228791dcf1c58c236f88ab02ed22de0caea31c63370726f32b2653dba0ab8a25` |
 
-Smoke console: `.artifacts/godot/smoke-etzrz5lx/console.log`; import `import-dof3wrfq`.
+Smoke console: `.artifacts/godot/smoke-wzy8k0jb/console.log`; import `import-d43jv04d`.
 UI results/console: `godot/ui-6fszsc79/`; import `godot/import-r0xxbdmx/`.
 `ui-source/commit.txt` contains the exact tested merge above. The reviewed gameplay test and
 tier-calculator source bytes match the staged local source. Artifacts contain expiring evidence
