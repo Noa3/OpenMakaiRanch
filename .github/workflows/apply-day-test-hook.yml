@@ -1,0 +1,41 @@
+name: Apply reviewed daily-test hook
+on:
+  push:
+    branches: ['playability/ranch-quiet-corner-20260910']
+    paths: ['.github/workflows/apply-day-test-hook.yml']
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/playability/ranch-quiet-corner-20260910'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Insert one test hook into unchanged source
+        shell: python
+        run: |
+          import hashlib, pathlib, subprocess
+          p = pathlib.Path('OpenMakaiRanchGame/src/Tests/SmokeTestRunner.cs')
+          raw = p.read_bytes()
+          blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+          if blob != '315ad87e0945129d9fd4ea8264cb3625aa423950':
+              raise RuntimeError('Smoke source changed; review instead of overwriting.')
+          text = raw.decode('utf-8')
+          old = '            PlayabilityRegressionTests.Run(result);'
+          if text.count(old) != 1:
+              raise RuntimeError('Expected exactly one unchanged test anchor.')
+          p.write_bytes(text.replace(old, old + '\n            DaySettlementRegressionTests.Run(result);', 1).encode('utf-8'))
+          helper = pathlib.Path('.github/workflows/apply-day-test-hook.yml')
+          helper.unlink()
+          subprocess.run(['git', 'diff', '--check'], check=True)
+          subprocess.run(['git', 'add', '--', str(p), str(helper)], check=True)
+      - name: Commit only the reviewed paths without force
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'test: run daily settlement regressions alongside the existing smoke suite'
+          git push origin HEAD:refs/heads/playability/ranch-quiet-corner-20260910
