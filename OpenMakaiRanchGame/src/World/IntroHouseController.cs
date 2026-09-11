@@ -92,7 +92,7 @@ public partial class IntroHouseController : Node3D
         if (_prompt is not null)
         {
             _prompt.Text = distance <= DoorInteractionRange
-                ? $"[{OpenMakaiRanch.Ui.InputBindingService.GetCombinedLabel("interact")}] Follow your childhood friend outside"
+                ? $"[{InputBindingService.GetCombinedLabel("interact")}] Follow your childhood friend outside"
                 : $"Bedroom door  {distance:0.0} m";
         }
 
@@ -116,7 +116,7 @@ public partial class IntroHouseController : Node3D
             _prompt.Visible = enabled;
             if (enabled)
             {
-                _prompt.Text = "Walk to the bedroom door and press F.";
+                _prompt.Text = $"Walk to the bedroom door and press {InputBindingService.GetCombinedLabel("interact")}.";
             }
         }
     }
