@@ -19,6 +19,11 @@ public partial class AnimeSurfaceProfile : Resource
     [Export(PropertyHint.Range, "0,1,0.01")] public float NormalStrength { get; set; } = 0.5f;
     [Export(PropertyHint.Range, "0,1,0.01")] public float OcclusionStrength { get; set; } = 0.5f;
     [Export] public Texture2D? AlbedoTexture { get; set; }
+    /// <summary>Linear R: 0 preserves painted color, 1 applies BaseColor. Missing mask tints everything.</summary>
+    [Export] public Texture2D? TintMaskTexture { get; set; }
+    /// <summary>Shared UV1 transform for all maps. Zero/non-finite scale components fall back to 1.</summary>
+    [Export] public Vector2 UvScale { get; set; } = Vector2.One;
+    [Export] public Vector2 UvOffset { get; set; } = Vector2.Zero;
     [Export] public Texture2D? NormalTexture { get; set; }
     /// <summary>Linear RGBA: AO, roughness multiplier, specular multiplier, SSS multiplier. NOT glTF ORM.</summary>
     [Export] public Texture2D? SurfaceMask { get; set; }
@@ -44,6 +49,15 @@ public partial class AnimeSurfaceProfile : Resource
 
     internal static float Bounded(float value, float fallback, float min, float max)
         => float.IsFinite(value) ? Math.Clamp(value, min, max) : fallback;
+
+    internal static Vector2 SafeUvScale(Vector2 value)
+        => new(Scale(value.X), Scale(value.Y));
+
+    private static float Scale(float value)
+        => !float.IsFinite(value) || Math.Abs(value) < 0.001f ? 1f : Math.Clamp(value, -64f, 64f);
+
+    internal static Vector2 SafeUvOffset(Vector2 value)
+        => new(Bounded(value.X, 0f, -64f, 64f), Bounded(value.Y, 0f, -64f, 64f));
 
     internal static Color SafeColor(Color color)
         => new(Bounded(color.R, 0.5f, 0f, 1f), Bounded(color.G, 0.5f, 0f, 1f),

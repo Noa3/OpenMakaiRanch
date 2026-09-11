@@ -31,6 +31,9 @@ public static class AnimeMaterialFactory
         var shader = GD.Load<Shader>(path) ?? throw new InvalidOperationException($"Missing character shader: {path}");
         var material = new ShaderMaterial { Shader = shader, ResourceLocalToScene = true };
         material.SetShaderParameter("base_color", AnimeSurfaceProfile.SafeColor(profile.BaseColor));
+        material.SetShaderParameter("uv_scale", AnimeSurfaceProfile.SafeUvScale(profile.UvScale));
+        material.SetShaderParameter("uv_offset", AnimeSurfaceProfile.SafeUvOffset(profile.UvOffset));
+        Texture(material, "tint_mask_texture", "use_tint_mask", profile.TintMaskTexture);
         Set(material, "roughness", profile.Roughness, 0.46f, 0.18f, 1f);
         Set(material, "specular_strength", profile.Specular, 0.38f, 0f, 1f);
         Set(material, "rim_strength", profile.Rim, 0.035f, 0f, 0.3f);

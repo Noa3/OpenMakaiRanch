@@ -28,6 +28,21 @@ internal static class AnimeAvatarMaterialChecks
         check("player preview does not traverse nested/imported models", nested.MaterialOverride == original);
         check("player preview preserves transparency", hair.MaterialOverride == alpha);
         check("player preview is idempotent for an existing generation", AnimeAvatarMaterials.ApplyPlayer(root, "High", true) == 0);
+        var textureImage = Image.CreateEmpty(4, 4, false, Image.Format.Rgba8);
+        textureImage.Fill(Colors.White);
+        var textured = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.8f, 0.9f, 0.7f), AlbedoTexture = ImageTexture.CreateFromImage(textureImage),
+            Uv1Scale = new Vector3(2f, 0.5f, 1f), Uv1Offset = new Vector3(0.15f, 0.25f, 0f)
+        };
+        eye.MaterialOverride = textured;
+        check("textured generated eye is eligible for explicit preview", AnimeAvatarMaterials.ApplyPlayer(root, "High", true) == 1);
+        var converted = (ShaderMaterial)eye.MaterialOverride;
+        check("textured eye is never painted over with procedural iris", !(bool)converted.GetShaderParameter("procedural_iris"));
+        check("textured eye retains source albedo and tint", converted.GetShaderParameter("albedo_texture").AsGodotObject() == textured.AlbedoTexture
+            && (Color)converted.GetShaderParameter("base_color") == textured.AlbedoColor);
+        check("generated preview retains UV scale and offset", (Vector2)converted.GetShaderParameter("uv_scale") == new Vector2(2f, 0.5f)
+            && (Vector2)converted.GetShaderParameter("uv_offset") == new Vector2(0.15f, 0.25f));
         root.Free();
     }
 }
