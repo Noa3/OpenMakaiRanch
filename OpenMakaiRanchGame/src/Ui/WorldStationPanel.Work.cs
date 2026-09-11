@@ -138,17 +138,18 @@ public partial class WorldStationPanel
         _content.AddChild(Text(T("world.station.upgrade.wallet", "One-time price: {0} G • Your wallet: {1} G", offer.Cost, _game.Economy.Gold)));
         _content.AddChild(Text(T("world.station.upgrade.local_upkeep", "This facility before research: {0} → {1} G/day", offer.BaseUpkeepBefore, offer.BaseUpkeepAfter)));
         _content.AddChild(Text(T("world.station.upgrade.total_upkeep", "Whole-ranch facility upkeep: {0} → {1} G/day, including your research discount.", offer.RanchUpkeepBefore, offer.RanchUpkeepAfter)));
-        _content.AddChild(Text(T("world.station.upgrade.expenses", "Pet care and any unstaffed-dairy penalty are separate daily costs.")));
-        _content.AddChild(Text(T("world.facility.envelope", "Equipment upgrades use the reserved footprint. Higher levels do not enlarge the building or block its entrance.")));
-        _content.AddChild(Text(T("world.station.upgrade.output", "An equipment level is not a multiplier on daily job output. Workers and research still determine production; existing automation and project rules remain in effect.")));
         var stationId = station.TargetId; var generation = _generation; var day = _day; var phase = _phase;
         var button = Action("FacilityUpgrade", offer.Level == 0 ? T("world.facility.build", "Build this facility — {0} G", offer.Cost)
             : T("world.station.upgrade.confirm", "Confirm level {0} — {1} G", offer.NextLevel, offer.Cost),
-            () => StationResult(_world.TryUpgradeAtStation(stationId, offer, generation, day, phase)), !offer.CanUpgrade);
+            () => StationResult(_world.TryUpgradeAtStation(stationId, offer, generation, day, phase), returnToOverview: true), !offer.CanUpgrade);
         button.TooltipText = offer.Reason;
         if (!offer.CanUpgrade) _content.AddChild(Text(offer.Reason));
         if (!_world.IsGuidedOpening)
             Action("StationCancelUpgrade", T("world.station.upgrade.back", "Back without buying"), () => ShowStationPage("overview"));
+        // The price and recurring bill precede the decision; longer explanations follow it.
+        _content.AddChild(Text(T("world.station.upgrade.expenses", "Pet care and any unstaffed-dairy penalty are separate daily costs.")));
+        _content.AddChild(Text(T("world.facility.envelope", "Equipment upgrades use the reserved footprint. Higher levels do not enlarge the building or block its entrance.")));
+        _content.AddChild(Text(T("world.station.upgrade.output", "An equipment level is not a multiplier on daily job output. Workers and research still determine production; existing automation and project rules remain in effect.")));
     }
 
     private string ShowStationPage(string page)
@@ -158,10 +159,11 @@ public partial class WorldStationPanel
         return "";
     }
 
-    private string StationResult(StationActionResult result)
+    private string StationResult(StationActionResult result, bool returnToOverview = false)
     {
         if (Visible && ContextMatches())
         {
+            if (result.Success && returnToOverview) _stationPage = "overview";
             _stationFeedback = result.Message;
             _close.GrabFocus(); _scroll.ScrollVertical = 0;
         }

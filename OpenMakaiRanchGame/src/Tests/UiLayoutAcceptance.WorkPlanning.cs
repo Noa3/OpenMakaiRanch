@@ -62,10 +62,23 @@ public partial class UiLayoutAcceptance
             Check(panel.StationPage == "upgrade" && panel.ContextId == "kitchen", "work planning: changing language retains the reviewed equipment page");
             await Resize(new Vector2I(640, 480)); await Frames(8);
             CheckLocalizedPanelGeometry(panel, "kitchen equipment German 640x480");
+            Check(VisibleTarget(ButtonNamed("FacilityUpgrade")),
+                "work planning: the reviewed price and confirmation are reachable without scrolling past long explanatory text");
             await Capture("kitchen-equipment-german-640x480");
             var gold = game.Economy.Gold; var stamina = game.State.Player.Stamina;
             var day = game.State.Calendar.Day; var phase = game.State.Calendar.Phase; var generation = game.StateGeneration;
             var stock = JsonSerializer.Serialize(game.State.Ranch.Stockpile);
+            snapshot = JsonSerializer.Serialize(game.State);
+            var position = world.ActivePlayer!.GlobalPosition;
+            var armed = ButtonNamed("FacilityUpgrade");
+            Check(!armed.Disabled && quote.CanUpgrade, "work planning: remote/closed rejection starts with an affordable, enabled purchase");
+            world.ActivePlayer.GlobalPosition = new Vector3(0, 0.8f, 10);
+            Check(!world.TryUpgradeAtStation("kitchen", quote, generation, day, phase).Success
+                && snapshot == JsonSerializer.Serialize(game.State), "work planning: a remote call cannot buy while an otherwise actionable panel is still visible");
+            world.ActivePlayer.GlobalPosition = position;
+            world.CloseManagement(); armed.EmitSignal(BaseButton.SignalName.Pressed);
+            Check(snapshot == JsonSerializer.Serialize(game.State), "work planning: an enabled purchase control cannot charge after its panel was closed");
+            await OpenKitchen(); await ClickStationButton(ButtonNamed("StationTab_upgrade"));
             await ClickStationButton(ButtonNamed("FacilityUpgrade"));
             Check(game.State.Ranch.Facilities["kitchen"] == quote.NextLevel && game.Economy.Gold == gold - quote.Cost
                 && game.Ranch.FacilityUpkeep() == quote.RanchUpkeepAfter,
@@ -79,19 +92,13 @@ public partial class UiLayoutAcceptance
                 && outcome.GetGlobalRect().Position.Y >= scroll.GetGlobalRect().Position.Y - 1
                 && outcome.GetGlobalRect().End.Y <= scroll.GetGlobalRect().End.Y + 1,
                 "work planning: purchase outcome and charged amount are visible after the old button is replaced");
+            Check(panel.StationPage == "overview" && VisibleTarget(ButtonNamed("StationManageTeam"))
+                && !Descendants(panel).OfType<Button>().Any(b => b.Name == "FacilityUpgrade"),
+                "work planning: a completed upgrade returns to a visible team-planning next step, not another purchase button");
             await Capture("kitchen-purchased-german-640x480");
             snapshot = JsonSerializer.Serialize(game.State);
             Check(!world.TryUpgradeAtStation("kitchen", quote, generation, day, phase).Success
                 && snapshot == JsonSerializer.Serialize(game.State), "work planning: an old successful price quote cannot buy another level");
-            var livingQuote = game.Ranch.InspectFacilityUpgrade("kitchen");
-            var position = world.ActivePlayer!.GlobalPosition;
-            world.ActivePlayer.GlobalPosition = new Vector3(0, 0.8f, 10);
-            Check(!world.TryUpgradeAtStation("kitchen", livingQuote, generation, day, phase).Success
-                && snapshot == JsonSerializer.Serialize(game.State), "work planning: a remote call cannot buy while an old panel is still visible");
-            world.ActivePlayer.GlobalPosition = position;
-            var retired = ButtonNamed("FacilityUpgrade");
-            world.CloseManagement(); retired.EmitSignal(BaseButton.SignalName.Pressed);
-            Check(snapshot == JsonSerializer.Serialize(game.State), "work planning: a closed purchase control cannot charge anything");
             await OpenKitchen(); await ClickStationButton(ButtonNamed("StationTab_team"));
             var job = world.ResolveStation("kitchen")!.CommandTargetId;
             var worker = game.Roster.Characters.First(c => game.Schedule.GetAssignment(c.Id) != job);
