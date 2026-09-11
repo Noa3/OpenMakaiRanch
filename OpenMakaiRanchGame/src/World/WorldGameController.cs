@@ -39,6 +39,7 @@ public partial class WorldGameController : Node
     private bool _flowLocksUi;
     private string _activeAreaId = "ranch";
     private ulong _storyAreaGeneration;
+    private ulong _areaStateGeneration;
 
     public bool IsManagementVisible => _managementRoot?.Visible == true;
     public bool FlowLocksUi => _flowLocksUi;
@@ -192,7 +193,8 @@ public partial class WorldGameController : Node
 
     public bool OpenManagement()
     {
-        return ApplyManagementVisibility(true);
+        return _shell is not null && CanOpenManagementScreen(_shell.CurrentScreen)
+            && ApplyManagementVisibility(true);
     }
 
     public bool CloseManagement()
@@ -336,7 +338,7 @@ public partial class WorldGameController : Node
 
     public bool OpenManagementScreen(string screenId)
     {
-        if (_shell is null)
+        if (_shell is null || !CanOpenManagementScreen(screenId))
         {
             return false;
         }
@@ -358,10 +360,13 @@ public partial class WorldGameController : Node
 
     private void OnMobileInteractPressed()
     {
-        if (!WorldActionsAvailable)
+        if (_activeAreaId == "intro")
         {
+            if (OrdinaryInterfaceAvailable && _introHouse?.InputGate.WorldInputEnabled == true)
+                _introHouse.TryInteract();
             return;
         }
+        if (!WorldActionsAvailable) return;
 
         if (_activeAreaId == "town")
         {
@@ -394,8 +399,7 @@ public partial class WorldGameController : Node
             return;
         }
 
-        _shell.ShowScreen(screenId);
-        OpenManagement();
+        OpenManagementScreen(screenId);
     }
 
     private void OnUiWorldTravelRequested(string destinationId)
@@ -483,10 +487,12 @@ public partial class WorldGameController : Node
         }
         else
         {
-            var savedArea = GameRoot.Instance?.State.WorldAreaId;
-            if (savedArea is "ranch" or "town" && savedArea != _activeAreaId)
+            // Utility panels are overlays, not travel. Only a replaced save/session may
+            // restore an area; Intro is resolved from its story stage, never WorldAreaId.
+            if (GameRoot.Instance is { } game && _areaStateGeneration != game.StateGeneration)
             {
-                SetActiveArea(savedArea, reposition: false);
+                SetActiveArea(ResumeAreaFor(game), reposition: false);
+                _firstDayFlow?.RefreshFromCurrentState();
             }
 
             ActiveLeaveManagement();
@@ -513,6 +519,7 @@ public partial class WorldGameController : Node
 
         CloseWorldHelp();
         _activeAreaId = destinationId;
+        _areaStateGeneration = GameRoot.Instance.StateGeneration;
         var introActive = destinationId == "intro";
         var ranchActive = destinationId == "ranch";
         var townActive = destinationId == "town";

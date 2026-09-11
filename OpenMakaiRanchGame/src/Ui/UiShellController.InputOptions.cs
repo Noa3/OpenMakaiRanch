@@ -19,7 +19,7 @@ public partial class UiShellController
 
     private void EnsureInputOptionsExtension()
     {
-        if (!IsVisibleInTree() || _currentScreen != "options" || !GodotObject.IsInstanceValid(_content))
+        if (!IsVisibleInTree() || _currentScreen is not ("options" or "settings") || !GodotObject.IsInstanceValid(_content))
         {
             if (!string.IsNullOrEmpty(_bindingCaptureAction))
             {
@@ -207,7 +207,7 @@ public partial class UiShellController
 
     private void BeginBindingCapture(string action, string device, Button button)
     {
-        if (!IsVisibleInTree() || _currentScreen != "options" || !IsLiveBindingControl(button)) return;
+        if (!IsVisibleInTree() || _currentScreen is not ("options" or "settings") || !IsLiveBindingControl(button)) return;
         if (!string.IsNullOrEmpty(_bindingCaptureAction))
         {
             CancelBindingCapture("Previous binding cancelled.");
@@ -228,7 +228,7 @@ public partial class UiShellController
 
     public override void _Input(InputEvent @event)
     {
-        if (!IsVisibleInTree() || _currentScreen != "options"
+        if (!IsVisibleInTree() || _currentScreen is not ("options" or "settings")
             || !IsLiveBindingControl(_bindingCaptureButton))
         {
             CancelBindingCapture("Binding cancelled.");

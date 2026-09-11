@@ -64,6 +64,7 @@ public partial class UiShellController
         // Compose the complete view before waiting for its container layout.
         EnsureInputOptionsExtension();
         FinalizeSequentialManagementCards();
+        ApplyOpeningUtilityLayout();
         var view = new ContentView(revision, _game.StateGeneration, _currentScreen, scroll, focus);
         _pendingContentView = view;
         var tree = GetTree();

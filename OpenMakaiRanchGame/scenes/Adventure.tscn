@@ -100,7 +100,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 3)
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 10)
 script = ExtResource("11_player")
-MaxWalkSpeed = 5.0
+MaxWalkSpeed = 6.5
 Acceleration = 40.0
 Gravity = 20.0
 HeadHeight = 1.6

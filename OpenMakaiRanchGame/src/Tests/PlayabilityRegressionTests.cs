@@ -181,12 +181,19 @@ public static class PlayabilityRegressionTests
             Check(result, quarterTurn > 0f && Math.Abs(Math.Abs(rig.Yaw) - quarterTurn * 4f) < 0.0001f,
                 "analog camera turn rate scales continuously with stick strength");
 
+            foreach (var direction in new[] { Vector3.Forward, Vector3.Back, Vector3.Left, Vector3.Right,
+                new Vector3(1, 0, -1).Normalized() })
+            {
+                var facing = new Basis(Vector3.Up, WorldMovementMath.ModelForwardYaw(direction)).Z;
+                Check(result, facing.Dot(direction) > 0.999f,
+                    $"the shared positive-Z model faces its movement direction {direction}, not the camera");
+            }
             rig.SetFirstPerson(false);
             player.Rotation = new Vector3(0f, 0.73f, 0f);
             rig.SetOrbit(-2f, -0.5f, 5f);
             rig.RequestRecenter();
             for (var i = 0; i < 180; i++) rig._Process(1.0 / 60.0);
-            var expectedYaw = Mathf.Atan2(player.GlobalTransform.Basis.Z.Z, player.GlobalTransform.Basis.Z.X);
+            var expectedYaw = Mathf.Atan2(-player.GlobalTransform.Basis.Z.Z, -player.GlobalTransform.Basis.Z.X);
             Check(result, !rig.IsRecentering && Math.Abs(Mathf.Wrap(rig.Yaw - expectedYaw, -Mathf.Pi, Mathf.Pi)) < 0.005f,
                 "one recenter request completes behind the player's facing direction");
             Check(result, Math.Abs(rig.Pitch - Mathf.DegToRad(30f)) < 0.005f && Math.Abs(rig.Distance - 5f) < 0.001f,

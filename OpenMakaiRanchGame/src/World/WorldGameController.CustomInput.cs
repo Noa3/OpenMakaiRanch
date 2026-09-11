@@ -34,8 +34,8 @@ public partial class WorldGameController
             GetViewport().SetInputAsHandled();
             return;
         }
-        if (_transition?.IsTransitioning == true || _firstDayFlow?.BlocksWorldInput == true) return;
-        _pauseMenu?.Open(_activeAreaId);
+        if (_transition?.IsTransitioning == true) return;
+        _pauseMenu?.Open(_activeAreaId, restrictWorldShortcuts: IsGuidedOpening);
         GetViewport().SetInputAsHandled();
     }
 }

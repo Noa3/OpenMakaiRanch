@@ -53,7 +53,9 @@ public partial class WorldGameController
     private void RefreshHudOwnership()
     {
         // Node3D.Visible does not control descendant CanvasLayers. Explicitly switch both HUDs.
-        var showHud = !IsManagementVisible && !_flowLocksUi;
+        var showHud = !IsManagementVisible && !_flowLocksUi && _pauseMenu?.IsOpen != true;
+        if (_introHouse?.GetNodeOrNull<CanvasLayer>("IntroHud") is { } introHud)
+            introHud.Visible = showHud && _activeAreaId == "intro";
         if (_ranch?.Hud is { } ranchHud) ranchHud.Visible = showHud && _activeAreaId == "ranch";
         if (_town?.Hud is { } townHud) townHud.Visible = showHud && _activeAreaId == "town";
         if (_managementButton is not null)

@@ -253,6 +253,7 @@ public partial class UiShellController : Control
 	public void ShowScreen(string screenId)
 	{
 		if (_routingScreen) return;
+		if (WorldHost() is { } host && !host.CanRouteManagementScreen(screenId)) return;
 		if (_game.ActiveCombatSession is { IsFinished: false } && screenId != "combat")
 		{
 			SetStatus("Finish the encounter using the battle controls before leaving combat.", true);
@@ -326,7 +327,7 @@ public partial class UiShellController : Control
 			case "bond": RenderBond(); break;
 			case "pets": RenderPets(); break;
 			case "saveload": RenderSaveLoad(); break;
-			case "settings": RenderSettings(); break;
+			case "settings": RenderOptions(); break;
 			case "training": RenderTraining(); break;
 			case "visit": RenderVisit(); break;
 			case "milk": RenderMilkEconomy(); break;
@@ -641,6 +642,7 @@ public partial class UiShellController : Control
 		ApplyChipMinimum(_bathtubChip, compact);
 		_endDayButton.CustomMinimumSize = new Vector2(compact ? 128 : 140, 34);
 		_menuButton.CustomMinimumSize = new Vector2(compact ? 58 : 64, 34);
+		ApplyOpeningUtilityLayout();
 	}
 
 	private void ToggleNavCollapse()

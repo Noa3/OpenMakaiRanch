@@ -61,6 +61,12 @@ public partial class IntroHouseController : Node3D
         SetDoorEnabled(true);
     }
 
+    public void SynchronizeWakeState(bool awake)
+    {
+        SetWakePresentation(!awake);
+        SetDoorEnabled(awake);
+    }
+
     private void SetWakePresentation(bool sleeping)
     {
         if (_wakeVisual is not null)
@@ -86,16 +92,20 @@ public partial class IntroHouseController : Node3D
         if (_prompt is not null)
         {
             _prompt.Text = distance <= DoorInteractionRange
-                ? "[F] Follow your childhood friend outside"
+                ? $"[{OpenMakaiRanch.Ui.InputBindingService.GetCombinedLabel("interact")}] Follow your childhood friend outside"
                 : $"Bedroom door  {distance:0.0} m";
         }
 
-        if (InputGate.WorldInputEnabled
-            && distance <= DoorInteractionRange
-            && Input.IsActionJustPressed("interact"))
-        {
-            ExitRequested?.Invoke();
-        }
+        if (Input.IsActionJustPressed("interact")) TryInteract();
+    }
+
+    public bool TryInteract()
+    {
+        if (!IsVisibleInTree() || !CanProcess() || !_doorEnabled || !InputGate.WorldInputEnabled
+            || _player is null || _doorPoint is null
+            || _player.GlobalPosition.DistanceTo(_doorPoint.GlobalPosition) > DoorInteractionRange) return false;
+        ExitRequested?.Invoke();
+        return true;
     }
 
     public void SetDoorEnabled(bool enabled)

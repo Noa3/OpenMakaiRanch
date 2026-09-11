@@ -21,6 +21,7 @@ public partial class PauseMenuController : Control
     private Button? _communityButton;
     private Control? _menuCenter;
     private CommunityBoardPanel? _communityBoard;
+    private bool _worldShortcutsAllowed = true;
 
     public bool IsOpen => Visible;
     public bool IsCommunityBoardOpen => Visible && _communityBoard?.Visible == true;
@@ -43,7 +44,12 @@ public partial class PauseMenuController : Control
 
         if (_resumeButton is not null) _resumeButton.Pressed += Close;
         if (_saveLoadButton is not null) _saveLoadButton.Pressed += () => OpenManagement("saveload");
-        if (_settingsButton is not null) _settingsButton.Pressed += () => OpenManagement("settings");
+        // Retain the authored node for scene compatibility; expose only one destination.
+        if (_settingsButton is not null)
+        {
+            _settingsButton.Visible = false;
+            _settingsButton.Disabled = true;
+        }
         if (_optionsButton is not null) _optionsButton.Pressed += () => OpenManagement("options");
         if (_mainMenuButton is not null) _mainMenuButton.Pressed += ReturnToMainMenu;
         if (_quitButton is not null) _quitButton.Pressed += QuitGame;
@@ -69,13 +75,20 @@ public partial class PauseMenuController : Control
         else Close();
     }
 
-    public void Open(string areaId)
+    public void Open(string areaId, bool restrictWorldShortcuts = false)
     {
         if (Visible) return;
+        _worldShortcutsAllowed = !restrictWorldShortcuts && areaId != "intro";
+        if (_communityButton is not null)
+        {
+            _communityButton.Visible = _worldShortcutsAllowed;
+            _communityButton.Disabled = !_worldShortcutsAllowed;
+        }
 
         if (_contextLabel is not null && GameRoot.Instance is { } game)
         {
-            var area = areaId == "town" ? "Okachi Town" : game.State.Player.RanchName;
+            var area = areaId == "intro" ? "Ranch House"
+                : areaId == "town" ? "Okachi Town" : game.State.Player.RanchName;
             _contextLabel.Text = $"{area}  •  Day {game.State.Calendar.Day}  •  {game.State.Calendar.Phase}";
         }
         if (_resumeButton is not null)
@@ -127,7 +140,7 @@ public partial class PauseMenuController : Control
 
     private void OpenCommunityBoard()
     {
-        if (!Visible || _communityBoard is null || _menuCenter is null
+        if (!Visible || !_worldShortcutsAllowed || _communityBoard is null || _menuCenter is null
             || GameRoot.Instance is not { } game || !GodotObject.IsInstanceValid(game)) return;
         _menuCenter.Visible = false;
         _communityBoard.Open(game);
@@ -149,7 +162,7 @@ public partial class PauseMenuController : Control
 
         _optionsButton = new Button
         {
-            Name = "OptionsButton", Text = "Options / Controls",
+            Name = "OptionsButton", Text = "Options",
             TooltipText = "Open graphics, camera, accessibility and remappable controls."
         };
         content.AddChild(_optionsButton);
@@ -166,6 +179,7 @@ public partial class PauseMenuController : Control
 
     private void OpenManagement(string screenId)
     {
+        if (!Visible || (!_worldShortcutsAllowed && screenId is not ("options" or "settings" or "saveload"))) return;
         Close();
         ManagementScreenRequested?.Invoke(screenId);
     }

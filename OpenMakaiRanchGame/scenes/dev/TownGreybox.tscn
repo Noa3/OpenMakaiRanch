@@ -178,7 +178,7 @@ MaxPuddles = 8
 [node name="Player" type="CharacterBody3D" parent="."]
 position = Vector3(0, 0.8, 10)
 script = ExtResource("2_player")
-MaxWalkSpeed = 5.0
+MaxWalkSpeed = 6.5
 SprintMultiplier = 1.65
 Acceleration = 40.0
 Gravity = 20.0

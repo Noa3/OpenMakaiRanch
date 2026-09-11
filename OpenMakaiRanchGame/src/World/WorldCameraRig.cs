@@ -195,7 +195,7 @@ public partial class WorldCameraRig : Node3D
         _recenterYaw = Mathf.DegToRad(-90f);
         if (Target?.GetParent() is Node3D actor && actor.IsInsideTree())
         {
-            var behind = actor.GlobalTransform.Basis.Z;
+            var behind = -actor.GlobalTransform.Basis.Z; // The stand-in model faces local +Z.
             if (new Vector2(behind.X, behind.Z).LengthSquared() > 0.0001f)
                 _recenterYaw = Mathf.Atan2(behind.Z, behind.X);
         }

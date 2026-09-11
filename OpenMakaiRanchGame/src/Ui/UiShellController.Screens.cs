@@ -4183,9 +4183,8 @@ public partial class UiShellController
 
     private void RenderOptions()
     {
-        ClearContent();
-        UpdateTopBar();
-        AddTitle(T("screen.options.title", "Options"));
+        // Settings is the legacy route alias. Both routes compose the complete set once.
+        RenderSettings();
 
         var settings = _game.State.Settings;
 
@@ -4235,8 +4234,14 @@ public partial class UiShellController
         };
         dataInner.AddChild(exportBtn);
 
-        var backBtn = SecondaryButton(T("label.back", "Back"), T("tooltip.options_back", "Return to ranch overview"));
-        backBtn.Pressed += () => { _game.Feedback.PlayConfirm(); ShowScreen("ranch"); };
+        var backBtn = SecondaryButton(T("label.back", "Back"), "Close options and resume the current location.");
+        backBtn.Name = "OptionsBack";
+        backBtn.Pressed += () =>
+        {
+            _game.Feedback.PlayConfirm();
+            if (WorldHost() is { } host) host.CloseManagement();
+            else ShowScreen("ranch");
+        };
         _content.AddChild(backBtn);
     }
 

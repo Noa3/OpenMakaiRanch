@@ -38,12 +38,16 @@ public partial class FirstDayFlowController : Control
     private PanelContainer? _dialoguePanel;
     private Label? _speakerLabel;
     private Label? _bodyLabel;
-    private HBoxContainer? _choiceRow;
+    private HFlowContainer? _choiceRow;
     private Button? _skipButton;
 
     private bool _active;
     private bool _pendingPresentation;
     private bool _initialized;
+    private ulong _presentationGeneration;
+    private int _resumedStage = -1;
+    private ulong _choiceRevision;
+    private bool _awaitingEndDay;
 
     public bool IsActive => _active;
     public bool BlocksWorldInput => _active && _dialoguePanel?.Visible == true;
@@ -82,11 +86,18 @@ public partial class FirstDayFlowController : Control
             return;
         }
 
-        if (!_active)
+        UpdateDialogueLayout();
+        if (_host?.IsManagementVisible == true || _host?.FlowLocksUi == true || GetTree().Paused)
+        {
+            Visible = false;
+            return;
+        }
+        if (!_active || _presentationGeneration != _game?.StateGeneration)
         {
             TryStartOrResume();
             return;
         }
+        Visible = true;
 
         if (_pendingPresentation && _host?.Transition?.IsTransitioning != true)
         {
@@ -192,19 +203,27 @@ public partial class FirstDayFlowController : Control
 
         if (_game.State.NgPlusActive || _game.State.Story.FirstDayCompleted || _game.State.Calendar.Day != 1)
         {
-            _active = false;
-            Visible = false;
+            // The last dialogue still owns its End Day command until the player accepts it.
+            if (_awaitingEndDay && _active && _presentationGeneration == _game.StateGeneration
+                && _game.State.Calendar.Day == 1) return;
+            _awaitingEndDay = false;
+            CompleteFlowPresentation();
             return;
         }
 
         // Character creation and the authored prologue still own the screen first.
-        if (_host.FlowLocksUi || _host.Shell.CurrentScreen != "ranch")
+        if (_host.FlowLocksUi || _host.IsManagementVisible)
         {
             return;
         }
 
+        if (_active && _presentationGeneration == _game.StateGeneration && _resumedStage == CurrentStage) return;
+        _awaitingEndDay = false;
+        _presentationGeneration = _game.StateGeneration;
+        _resumedStage = CurrentStage;
         _active = true;
         Visible = true;
+        ClearChoices();
         ResumeStage();
     }
 
@@ -219,7 +238,7 @@ public partial class FirstDayFlowController : Control
         if (stage <= StageLeaveBedroom)
         {
             _host.ActivateStoryArea("intro", reposition: true, firstArrival: false);
-            _intro.SetDoorEnabled(stage >= StageLeaveBedroom);
+            _intro.SynchronizeWakeState(stage >= StageLeaveBedroom);
         }
         else
         {
@@ -539,6 +558,9 @@ public partial class FirstDayFlowController : Control
             return;
         }
 
+        _awaitingEndDay = true;
+        _resumedStage = StageCompleted;
+        _pendingPresentation = false;
         _game.State.Story.FirstDayCompleted = true;
         _game.State.Story.FirstDayStage = StageCompleted;
         _game.State.WorldAreaId = "ranch";
@@ -551,6 +573,7 @@ public partial class FirstDayFlowController : Control
             ("End Day", () =>
             {
                 HideDialogue();
+                _awaitingEndDay = false;
                 _active = false;
                 Visible = false;
                 _host.AdvanceWorldTime();
@@ -559,7 +582,9 @@ public partial class FirstDayFlowController : Control
 
     private void RequestSkipToNight()
     {
-        if (!_active || _game is null)
+        if (!_active || _game is null || !IsVisibleInTree() || GetTree().Paused
+            || _host?.IsManagementVisible == true || _host?.FlowLocksUi == true
+            || _host?.Transition?.IsTransitioning == true)
         {
             return;
         }
@@ -581,6 +606,8 @@ public partial class FirstDayFlowController : Control
         _game.State.Story.RanchTourCompleted = true;
         _game.State.Story.IntruderEncounterCompleted = true;
         _game.State.Story.PersonalEveningCompleted = true;
+        _resumedStage = StageNightRoutine;
+        _pendingPresentation = false;
         _game.State.Story.FirstDayStage = StageNightRoutine;
 
         // Story skip moves only the shared phase. It does not settle jobs, produce resources, grant
@@ -614,6 +641,8 @@ public partial class FirstDayFlowController : Control
             return;
         }
 
+        _resumedStage = stage;
+        _pendingPresentation = false;
         _game.State.Story.FirstDayStage = stage;
         _game.NotifyStateChanged();
         _game.AutosaveCheckpoint($"first-day stage {stage}");
@@ -727,13 +756,10 @@ public partial class FirstDayFlowController : Control
         _bodyLabel.AddThemeFontSizeOverride("font_size", 17);
         content.AddChild(_bodyLabel);
 
-        _choiceRow = new HBoxContainer
-        {
-            Name = "Choices",
-            Alignment = BoxContainer.AlignmentMode.End
-        };
+        _choiceRow = new HFlowContainer { Name = "Choices" };
         _choiceRow.AddThemeConstantOverride("separation", 8);
         content.AddChild(_choiceRow);
+        StyleOpeningDialogue(content);
     }
 
     private void ShowDialogue(string speaker, string body, params (string Label, Action Action)[] choices)
@@ -770,6 +796,7 @@ public partial class FirstDayFlowController : Control
 
     private void ClearChoices()
     {
+        _choiceRevision++;
         if (_choiceRow is null)
         {
             return;
@@ -795,7 +822,18 @@ public partial class FirstDayFlowController : Control
             Disabled = disabled,
             FocusMode = FocusModeEnum.All
         };
-        button.Pressed += action;
+        var revision = _choiceRevision;
+        var generation = _game?.StateGeneration;
+        var stage = CurrentStage;
+        button.CustomMinimumSize = new Vector2(0, 44);
+        button.Pressed += () =>
+        {
+            if (!_active || !IsVisibleInTree() || GetTree().Paused || button.Disabled
+                || revision != _choiceRevision || generation != _game?.StateGeneration || stage != CurrentStage
+                || button.GetParent() != _choiceRow || _host?.IsManagementVisible == true
+                || _host?.FlowLocksUi == true || _host?.Transition?.IsTransitioning == true) return;
+            action();
+        };
         _choiceRow.AddChild(button);
     }
 

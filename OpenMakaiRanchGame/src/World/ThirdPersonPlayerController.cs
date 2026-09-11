@@ -165,7 +165,7 @@ public partial class ThirdPersonPlayerController : CharacterBody3D
 
         if (direction.LengthSquared() > 0.0001f)
         {
-            var targetYaw = Mathf.Atan2(-direction.X, -direction.Z);
+            var targetYaw = WorldMovementMath.ModelForwardYaw(direction);
             Rotation = new Vector3(Rotation.X,
                 Mathf.LerpAngle(Rotation.Y, targetYaw, Mathf.Clamp(TurnSpeed * dt, 0f, 1f)), Rotation.Z);
         }

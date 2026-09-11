@@ -10,6 +10,9 @@ namespace OpenMakaiRanch.World;
 /// </summary>
 public static class WorldMovementMath
 {
+    /// <summary>The shared stand-in model faces local +Z, independently of camera -Z forward.</summary>
+    public static float ModelForwardYaw(Vector3 direction) => Mathf.Atan2(direction.X, direction.Z);
+
     /// <summary>
     /// Compute the camera-relative movement direction on the world XZ plane.
     /// </summary>
