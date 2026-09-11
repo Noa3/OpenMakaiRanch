@@ -610,7 +610,7 @@ public partial class UiShellController : Control
 		var viewportSize = metrics.ViewportSize;
 		var mobile = _game.RuntimeSettings.IsMobilePlatform;
 		var compact = _navCollapsed || mobile || viewportSize.X <= 900 || viewportSize.Y <= 520;
-		var tightWidth = viewportSize.X <= 680 || (mobile && viewportSize.Y <= 900);
+		var tightWidth = viewportSize.X <= 760 || viewportSize.Y <= 460 || (mobile && viewportSize.Y <= 900);
 		var ultraTight = viewportSize.X <= 560 || (mobile && viewportSize.Y <= 720);
 		var margin = compact ? 8f : 18f;
 
@@ -647,7 +647,8 @@ public partial class UiShellController : Control
 		_topBarRow2.AddThemeConstantOverride("v_separation", 4);
 		_topBar.CustomMinimumSize = new Vector2(0, compact ? 50 : 64);
 		_titleLabel.CustomMinimumSize = new Vector2(tightWidth ? 0 : compact ? 100 : 180, 0);
-		_titleLabel.Visible = !tightWidth;
+		// Compact headers must reserve vertical space for reachable screen actions.
+		_titleLabel.Visible = !compact;
 		_statusLabel.Visible = !compact || !string.IsNullOrWhiteSpace(_statusLabel.Text);
 		_screenLabel.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
 

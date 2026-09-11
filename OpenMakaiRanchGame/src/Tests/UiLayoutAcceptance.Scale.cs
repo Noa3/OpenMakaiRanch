@@ -29,6 +29,7 @@ public partial class UiLayoutAcceptance
                     var button = Descendants(shell).OfType<Button>().First(control => control.Text == direction);
                     button.GrabFocus();
                     await Frames(3);
+                    Check(VisibleTarget(button), $"{direction} click {i + 1}: the real button is fully visible before activation");
                     var expected = Mathf.Clamp(game.State.Settings.UiScale + (direction == "Scale Up" ? 0.1f : -0.1f), 0.85f, 1.35f);
                     await Click(button);
                     await Frames(3);
