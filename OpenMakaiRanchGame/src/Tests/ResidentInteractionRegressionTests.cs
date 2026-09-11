@@ -51,6 +51,9 @@ public static class ResidentInteractionRegressionTests
         before = Snapshot();
         Check(!service.Execute(resident.Id, ResidentAction.Meal).Success && before == Snapshot(), "ambiguous duplicate resident IDs are not valid targets");
         state.Roster.Characters.RemoveAt(state.Roster.Characters.Count - 1);
+        // A new game includes meals. Remove only this isolated fixture's starting stock so
+        // the missing-item assertion actually exercises a missing item.
+        state.Inventory.Items.Remove("meal_box");
         before = Snapshot();
         Check(!service.Execute(resident.Id, ResidentAction.Meal).Success && before == Snapshot(), "missing meal does not consume player energy");
         state.Inventory.Items["meal_box"] = 2;

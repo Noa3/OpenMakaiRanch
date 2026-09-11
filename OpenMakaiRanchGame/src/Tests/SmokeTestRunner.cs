@@ -3003,6 +3003,13 @@ Assert(result, subject.Milk.Quality >= qualityBefore, "mana infusion raises milk
         traineeB.Energy = 100;
         traineeA.Fatigue = 0;
         traineeB.Fatigue = 0;
+        // This tests the two-slot budget, not injuries left by the preceding adventure.
+        // Explicitly restore living, recovered trainees and uncapped lesson skills.
+        traineeA.Hp = 100; traineeB.Hp = 100;
+        traineeA.Mature.IsCollapsed = false; traineeB.Mature.IsCollapsed = false;
+        traineeA.Mature.FallState = FallState.Normal; traineeB.Mature.FallState = FallState.Normal;
+        traineeA.RanchSkill = 2; traineeB.CombatSkill = 2;
+        state.Calendar.TrainedToday = 0;
         Assert(result, training.Train(traineeA.Id, "ranch"), "first training slot succeeds");
         Assert(result, training.Train(traineeB.Id, "combat"), "second training slot succeeds");
         Assert(result, !training.Train(traineeB.Id, "craft"), "third training slot blocked by two-per-day rule");
