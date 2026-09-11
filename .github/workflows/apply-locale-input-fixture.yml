@@ -1,0 +1,89 @@
+name: Apply reviewed locale input fixture
+on:
+  push:
+    branches: [feature/world-stations-and-interiors-20260911]
+    paths: [.github/workflows/apply-locale-input-fixture.yml]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/feature/world-stations-and-interiors-20260911'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/world-stations-and-interiors-20260911
+      - name: Apply exact fixture edits, remove this helper and fast-forward only the work branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenMakaiRanch maintenance'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python - <<'PY'
+          import hashlib, subprocess
+          from pathlib import Path
+          branch = 'feature/world-stations-and-interiors-20260911'
+          if subprocess.check_output(['git','branch','--show-current'],text=True).strip() != branch:
+              raise SystemExit('Wrong branch')
+          names = {'UiLayoutAcceptance.cs':'5dc5905ee412fa4153d9832af5b63766bb7852dc',
+                   'UiLayoutAcceptance.Localization.cs':'a76a030933d33b464c827dcac7ebfebe22e305e8'}
+          source = {}
+          root = Path('OpenMakaiRanchGame/src/Tests')
+          for name, sha in names.items():
+              raw = (root/name).read_bytes()
+              if hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()!=sha:
+                  raise SystemExit('Source changed: '+name)
+              source[name] = raw.decode('utf-8')
+          def edit(name, old, new):
+              if source[name].count(old)!=1: raise SystemExit('Ambiguous source anchor: '+name)
+              source[name]=source[name].replace(old,new)
+          edit('UiLayoutAcceptance.cs',
+               '        var point = control.GetGlobalRect().GetCenter();',
+               '        // Control global rectangles omit CanvasLayer transforms. Input is viewport-local.\n        var point = control.GetGlobalTransformWithCanvas() * (control.Size / 2f);')
+          edit('UiLayoutAcceptance.Localization.cs',
+               '''        // Send input through the owning window so its embedded-popup routing runs.
+                  // Calling Viewport.PushInput on PopupMenu directly bypasses WindowInput.
+                  await Stroke(Key.Home);
+                  for (var step = 0; step < index; step++) await Stroke(Key.Down);
+                  await Stroke(Key.Enter);''',
+               '''        // PopupMenu processes its owning WindowInput signal, not child Control GUI input.
+                  // Opening above is a viewport mouse click. Choice keys below are explicitly
+                  // synthetic window-boundary events, never ItemSelected or a direct SetLocale.
+                  async Task PopupKey(Key key)
+                  {
+                      popup.EmitSignal(Window.SignalName.WindowInput,
+                          new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = true });
+                      await Frames(1);
+                      if (GodotObject.IsInstanceValid(popup))
+                          popup.EmitSignal(Window.SignalName.WindowInput,
+                              new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = false });
+                      await Frames(2);
+                  }
+                  await PopupKey(Key.Home);
+                  for (var step = 0; step < index; step++) await PopupKey(Key.Down);
+                  await PopupKey(Key.Enter);''')
+          edit('UiLayoutAcceptance.Localization.cs',
+               '        var popup = picker.GetPopup();\n        await Frames(3);',
+               '''        Check(GodotObject.IsInstanceValid(picker),
+                      "locale: opening the picker does not execute an unrelated setting or retire its control");
+                  var popup = picker.GetPopup();
+                  await Frames(3);
+                  Check(popup.Visible, "locale: the actual language dropdown is open before window input is sent");''')
+          edit('UiLayoutAcceptance.Localization.cs',
+               '        var viewport = Descendants(menu).OfType<SubViewport>().SingleOrDefault();',
+               '''        Check(LocaleCatalog.FormatForDisplay("Missing price", "Price {0}", de, 6) == "Price 6"
+                      && LocaleCatalog.FormatForDisplay("{0} {2}", "{0} {1}", de, "A", "B") == "A B",
+                      "locale: dropped or extra argument slots retain the English price and identity instead of silently losing them");
+                  Check(LocaleCatalog.FormatForDisplay("{1} / {0}", "{0} / {1}", de, "A", "B") == "B / A"
+                      && LocaleCatalog.FormatForDisplay("{0,9999}", "{0}", de, "A") == "A",
+                      "locale: valid reordering remains supported while excessive alignment falls back without allocating a huge label");
+                  var viewport = Descendants(menu).OfType<SubViewport>().SingleOrDefault();''')
+          for name,text in source.items(): (root/name).write_text(text,encoding='utf-8')
+          helper = '.github/workflows/apply-locale-input-fixture.yml'
+          Path(helper).unlink()
+          subprocess.run(['git','add','--',*[str(root/n) for n in names],helper],check=True)
+          subprocess.run(['git','diff','--cached','--check'],check=True)
+          subprocess.run(['git','commit','-m','test(ui): route translated picker input through its canvas and popup window'],check=True)
+          subprocess.run(['git','push','origin','HEAD:refs/heads/'+branch],check=True)
+          PY
