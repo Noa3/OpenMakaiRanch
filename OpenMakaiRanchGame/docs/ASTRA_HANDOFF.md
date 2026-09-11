@@ -1,75 +1,56 @@
 # ASTRA Handoff
 
-Checkpoint **2026-09-11**, verified code head **`2a958b1c4425e31acd48cf5f604cdda378fc4846`**. **1,731 smoke assertions, 316 rendered UI assertions and 48 Python launcher/evidence tests pass.** Rendered evidence contains 43 viewport PNGs. The build reports zero warnings and zero errors. This is bounded gameplay/interface evidence, not certification that the entire remake or every device is finished. Documentation-only commits may follow; consult the live PR for subsequent exact-head results.
+Checkpoint **2026-09-11**. Translation/playability head **`fc6994a2c36fd0345319499ee8dbb6510aa77967`** is verified: **1,740 passing smoke assertions, 408/408 rendered UI checks, 55 Python tests and 53 PNGs**. All three CI workflows succeeded. LOCALIZATION_UI_VALIDATION.md records exact runs, source receipt, inspected screenshots and independently checked archive hashes.
 
-## Current branch and requirements
+**Concurrent continuation:** while recording this checkpoint, `6324763653433c22d1736ffe034c65523ce71c10` landed additional ranch projects, shared evenings, reserved building plots and more translation keys. Those changes were preserved. The documentation update follows that commit without resetting the branch. The 200-key / 408-check receipts below describe the verified fc699 slice, not an assertion that those additional gameplay changes were tested in the same run. Consult live CI for their later status; their initial workflows required action rather than executing. Documentation-only updates after 6324763 do not remove its code.
 
-- Repository `Noa3/OpenMakaiRanch`; working branch **`fix/daily-gameplay-loop-20260911`**, **PR #13** against main. PR #12 was merged externally at **`f420bee96e9b99a38ea1260705dbf1e4fe7030d6`**. That merge included failing baseline tests repaired by PR #13. Do not continue on the old PR #12 branch from stale chat notes.
-- Read live Git before editing. Preserve concurrent changes; no force resets or automatic merge.
-- **C# 12 only**, effective LangVersion 12.0, enforced by Directory.Build.props/targets and CI including deliberate preview denial. SDK **10.0.401**, primary target **net8.0**, Godot **4.7.2 Mono**. Linux rendered CI also installs the .NET 8 runtime; source/framework/engine versions were not upgraded.
-- Save schema **16**. D-011 targets fresh games while preserving current-version personal saves; no legacy-migration expansion. Original `eraMakaiRanch-game-eng-translation/` stays read-only.
-- GameRoot and existing services remain the sole simulation/calendar/economy authority. No character identity/eligibility approvals or adult-specific assets were added.
+## Branch and requirements
 
-## Latest core playability continuation
+- Continue on **`feature/world-stations-and-interiors-20260911`**, **PR #15**, repository `Noa3/OpenMakaiRanch`. Main was last checked at merged PR #13 `3209f4c`. PR #14's test-only intro baseline is included and repaired here; do not merge it separately.
+- Read live Git before editing. Preserve concurrent changes, no force push or automatic merge. One-use exact-source patch helpers remove themselves; do not retain them as normal workflows.
+- **C#12**, SDK **10.0.401**, target **net8.0**, **Godot4.7.2 Mono**, save schema **16**. These are separate contracts and were not upgraded. Fresh games are expected (D-011), current saves work, personal files must not be deleted. Original reference content stays read-only.
+- GameRoot/services remain the sole simulation/economy authority. No adult-specific assets or character eligibility approvals were added.
+- User requires translation-aware UI. Read TRANSLATION_GUIDE.md: use existing LocaleCatalog, complete keyed sentences, stable command IDs, adaptable layouts, English fallback and safe language-only setting changes. A selectable language is not a claim of complete translation.
 
-**Usable sequential cards:** Adventure, Combat, Shop, Schedule, Research and Milestones no longer place multiple sequential controls in the same PanelContainer rectangle. A scoped composition pass supplies a VBox while preserving original nodes, subscriptions, order and logical focus. Already authored single-content cards and other intentional overlays remain untouched; composition is idempotent.
+## Verified implementation at fc6994a
 
-**Visible replacement commands:** a real rendered battle exposed an offscreen focused Back after Auto Finish disappeared. Replacement focus now scrolls into view after layout. Exact-key restoration still preserves deliberate manual scroll; stale session/revision/route/hidden-view protections remain.
+**Held movement:** InputBindingService stops rebuilding the InputMap during ordinary HUD reads. Tests retain the exact held key event and pressed state across repeated hints, then physically walk through the barn doorway.
 
-**Compact mission guidance:** the guild displays canonical daily stamina/capacity, ordinary entry cost, automatic-all versus selected party and free preparation. Detailed tooltip help distinguishes daily stamina from combat resources and explains tactical/automatic resolution and returning from results. No duplicate stamina rules or combat tuning were added.
+**Guided construction:** the first-day Dairy step now explains Build and its displayed price before assignment, and a different resident to preserve Pasture staffing. Frame tests build using actual starting funds and canonical cost, without a fixture unlock or early production payment.
 
-**Actual connected menu journeys:** Road Patrol preparation, Tactical Battle, Defend, Attack, Auto Finish, Back and Return to World are exercised with viewport clicks. Checks cover one-time entry cost, time lock, player-authored actions, no duplicate rewards, restored world input and battle-wear persistence. Store purchase, worker assignment, milestone layout and actual Slot 3 Save/Load are exercised afterward. An unsaved second purchase proves that Load genuinely restores wallet/inventory/job, rather than merely returning success on unchanged state.
+**Physical supply planning:** visible corner/community-board planning can reach the read-only Places guide while global management shortcuts remain restricted. Marking the Office does not assign work, grant resources or teleport. Existing hidden/stale/reentrant guards remain.
 
-See **CORE_PLAYABILITY_VALIDATION.md** for exact artifacts, reproduced failures, the corrected headless fixture, files changed and limits. The new journeys inherit synthetic Day-2 resources/strong stats; they are not combat balancing or an organically earned start-to-finish playthrough.
+**Translation:** 200 matching English/German entries in the initial slice cover the title, physical station panels, destinations, direction hints and ranch warnings. Existing Japanese text remains, with English fallback for missing new keys. Locale normalization/native names and display-only formatting do not change global culture, save parsing or command IDs. Bounded template checks reject missing/extra/invalid slots and huge alignment; valid argument reordering works. Validator tests and all five export filters cover raw JSON inclusion.
 
-## Prior day-loop repairs retained
+**Safe switching/layout:** SetLocale persists only language rather than reapplying window mode, resolution, audio or controls. Real title and Options pickers are selected with Input.ParseInputEvent, window IDs and balanced mouse/key events, not direct ItemSelected. Separate refresh tests intentionally call SetLocale. German title/Places panels fit 640x480 and 480x800; Dairy fits 640x480. Open station context and stable focus, destination IDs, session/day/resources remain intact.
 
-**Night training:** one extra ranch-wide growth pass, not one per resident. Ordinary growth, fatigue/talent modifiers and rest-job exclusions remain. Reset HasGrownToday once at settlement start so a night-training level-up is not erased by ordinary growth.
+**Main menu:** a small procedural ranch diorama owns a separate SubViewport/world/camera and capped rendering resolution. Reduced Motion stops camera drift. Title/actions have clearer styling and wrap translated labels. This remains placeholder art, not final AAA presentation or the playable organic town/river.
 
-**Complete daily accounting:** DailyGoldLedger observes payments already made by work/upkeep, shipments, events and milestones. It pays nothing and changes no reward rates. Report income/expenses/net and LastIncome/LastExpenses reconcile to the wallet. Capped event/milestone entries report actual credit; bounded int fields retain an exact long balance line at display limits. Exhaustive overflow of every upstream producer is not certified.
+## Earlier work retained and now exercised
 
-**Guarded decisions/completion:** ordinary AdvanceTime requires a valid Night plan. Captured session/day/phase guards reject stale or repeated commands. The EndDay completion guard remains active through notifications/autosave, preventing synchronous observers from settling tomorrow or advancing its Morning. Observer NewGame/Load cannot publish/save the old report into a replacement session. Raw EndDay retains simulation-call compatibility, not universal idempotency for arbitrary sequential calls, multithreaded transactions or exception rollback.
+The formerly downloadable opening patch is integrated: non-erasing typewriter completion, same-bedroom utility return, guarded first-day callbacks/navigation, dialogue layout and forward-facing outdoor movement. The player-facing global hub is replaced by physical station/resident entry points and Places; service renderers are context-restricted, not entirely deleted.
 
-**Playable night planning:** Rest, Training and Admin remain revisable until End Day; selecting them does not immediately apply recovery, growth, workload reduction or stamina cost. Overview shows Plan Night until a choice exists and puts planning first. Old controls reject stale callbacks. A bath preserves an already selected Training/Admin plan and the separate next-day stamina bonus; without a plan a night bath still selects Rest.
+Walk-in shells have metre-scale door clearance, segmented wall/furniture collision, shelter and visual roof/wall cutaways; ranch navigation is baked from collision. Selected rays, actual doorway walking, Build/Assign, resolved warnings and remote/stale denial pass. This is not proof of every route, NPC recovery or camera angle. Large world labels and overlapping HUD/tutorial elements still need polish.
 
-**Night layout:** bounded header text keeps content reachable with full tooltip context. Night choices and recovery use vertical card content. Actual revisions, bath, End Day/report and current-schema saving remain tested. DAY_LOOP_VALIDATION.md retains prior scope and baseline receipts, including the nine reproduced day-contract failures and intermediate layout/shutdown defects.
+PR #13 night growth/ledger/planning/reentrancy, adventure costs/results and save/load remain; historical receipts are in DAY_LOOP_VALIDATION.md and CORE_PLAYABILITY_VALIDATION.md.
 
-## Executed verification
+## Verification and remaining limits
 
-All three workflows succeeded on **`2a958b1c4425e31acd48cf5f604cdda378fc4846`**:
+fc699 workflows: Build #639 `34609768470`, Godot #631 `34609768598`, UI #69 `34609768503`: all success. PR CI checked merge `193a690066db97c240c789613f0650da32c87557`, recorded in the source archive. Smoke: 1,740 OK, zero FAIL, five intentional invalid-save errors and no GCHandle/native fatal. UI:408 OK, zero runtime errors,53 PNGs. German title/Places/Dairy and walked doorway images were opened and inspected.
 
-| Workflow | Run | Result |
-| --- | --- | --- |
-| Godot 4.7 Mono CI #591 | `34587496873` | success |
-| Build Smoke Check #599 | `34587496874` | success |
-| Rendered UI acceptance #34 | `34587496917` | success |
+Build succeeds but is not warning-free: CI lacks the developer-local NuGet source and RanchLeisureFrameTests retains CS8602. Import still logs the known EditorSettings shutdown diagnostic; software rendering warns about VSync. Smoke-only scene retention/teardown is not normal-game GC or a universal lifecycle fix. The later UI sequence uses synthetic Day-2 resources/strong stats; only its named paths are established.
 
-C# 12/preview denial, compilation, 48 Python tests, verified engine import and isolated smoke pass. Downloaded logs contain **1,731 OK / zero failed smoke assertions / one SMOKE PASS**. The rendered JSON has **316 passing checks / zero failures / 43 PNGs**. This adds three headless assertions and 76 rendered assertions/nine PNGs to the prior 1,728/240/34 checkpoint; previous assertions remain.
+Next finish the localized stepwise creator with retained preview and stable Back/Next/Start. Extend physical service/result-message translation, improve world label/HUD density and actual NPC/camera traversal, then organic town/river landmarks. Full language coverage, RTL/scripts/plurals, actual exported builds, physical input devices, Forward+ hardware performance, long-term balance and original-engine parity remain open. Review the concurrent design work's GAME_DESIGN_DIRECTION.md, LOCALIZATION_ROADMAP.md and BUILDING_PLOTS.md without equating them to the earlier verified slice.
 
-Both final downloaded archives were SHA-256 checked; selected guild/combat/store/schedule/save screenshots were opened and inspected:
-
-| Evidence | Artifact ID | SHA-256 |
-| --- | --- | --- |
-| Godot import/smoke | `10194262176` | `576c5c344957b472ed671b0a52318edd84395a17360a34bc1687e83a9a2788fd` |
-| Rendered UI/source/screens | `10194281155` | `7a36cebde5371c8e952c7f862a04d9aa4fcc685889e80f0585e938a11ff199e8` |
-
-Smoke retains five expected invalid-save diagnostics; import exits successfully with the known EditorSettings shutdown diagnostic. Rendered evidence has zero runtime ERROR/SCRIPT ERROR; the unsupported-VSync driver warning remains. Logs were not filtered to manufacture success. The earlier native C# shutdown failure was addressed in test-only teardown; this is not proof that all engine lifecycle failures are fixed. Rendered artifacts expire; regenerate missing evidence. Included whitelisted review source is not a full standalone game/export.
-
-## Remaining priorities and limits
-
-Prior gameplay remains: shared physical/Pause courier board and daily receipt; optional 40 G / 3 supplies quiet corner; up to 10 daily stamina recovery without walking tax/upkeep; independent prepared-bath bonus; voluntary shared activity guards; bounded saved receipts and resource-backed construction. Bench collision/sitting animation remain unfinished. Previous responsive menu, camera, help, input ownership and scale repairs are retained.
-
-Next prioritize an uninterrupted organically earned first-day/skip/world/combat/courier/leisure/save journey, plus physical mouse/controller/touch/Alt-Tab acceptance and authored collision/obstacle-aware navigation. The selected rendered mission and management paths are now covered, but not every action, dungeon, outcome or traversable route. Research receives the layout repair without a complete research-action journey. Final assets, weather readability, representative-hardware Forward+ performance, long-term balance and original-engine differential parity remain open. KNOWN_ISSUES retains untouched importer/content-validation/MCP audit leads.
-
-## Commands and safety
+## Safe commands
 
 ```bash
-dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
+python Tools/Godot/validate_locales.py
 python -m unittest discover -s Tools/Godot -p "test_*.py"
-python Tools/Godot/launch.py --mode import
+dotnet build OpenMakaiRanchGame/OpenMakaiRanchGame.csproj
 python Tools/Godot/launch.py --mode smoke
 python Tools/Godot/ui_acceptance.py --rendered
 python Tools/Godot/launch.py --mode runtime --isolated
 ```
 
-Use isolated launchers, never raw test flags on personal saves. Smoke/UI fixtures use disposable slot 99; the extended UI journey also writes/deletes slot 3 to exercise authored Save/Load buttons, validates profile isolation first and refuses an occupied slot. UI CI uploads whitelisted evidence/source, not personal profiles. Older branch-scoped patch helpers removed themselves and are absent from the final diff. KANBAN/WORK_LOG snapshots and PR #12 pending notes are historical, not current verification.
+Use isolated launchers only: acceptance writes/deletes disposable slots 99 and 3. Artifacts contain review inputs/logs/screens, not a standalone exported game. Numerical KANBAN/WORK_LOG snapshots are historical; live Git and exact-head receipts take precedence.
