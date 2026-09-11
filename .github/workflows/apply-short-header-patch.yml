@@ -1,0 +1,56 @@
+name: Apply reviewed short-window header patch
+on:
+  push:
+    branches: ['playability/ranch-quiet-corner-20260910']
+    paths: ['.github/workflows/apply-short-header-patch.yml']
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/playability/ranch-quiet-corner-20260910'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Apply only hash-checked source edits
+        shell: python
+        run: |
+          import hashlib, pathlib, subprocess
+          changed = []
+          def patch(name, expected, edits):
+              p = pathlib.Path(name)
+              raw = p.read_bytes()
+              sha = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+              if sha != expected:
+                  raise RuntimeError('Concurrent source change: ' + name)
+              text = raw.decode('utf-8')
+              for old, new in edits:
+                  if text.count(old) != 1:
+                      raise RuntimeError('Expected one exact source anchor: ' + name)
+                  text = text.replace(old, new, 1)
+              p.write_bytes(text.encode('utf-8'))
+              changed.append(name)
+          patch('OpenMakaiRanchGame/src/Ui/UiShellController.cs', '3c6d237537745905a16efa4c3ea3b785e121ac84', [
+              ('var tightWidth = viewportSize.X <= 680 || (mobile && viewportSize.Y <= 900);',
+               'var tightWidth = viewportSize.X <= 760 || viewportSize.Y <= 460 || (mobile && viewportSize.Y <= 900);'),
+              ('_titleLabel.Visible = !tightWidth;',
+               '// Compact headers must reserve vertical space for reachable screen actions.\n\t\t_titleLabel.Visible = !compact;'),
+          ])
+          patch('OpenMakaiRanchGame/src/Tests/UiLayoutAcceptance.Scale.cs', 'abea53d13536592a163e56545ed6f1a285dd72a3', [
+              ('                    await Frames(3);\n                    var expected =',
+               '                    await Frames(3);\n                    Check(VisibleTarget(button), $"{direction} click {i + 1}: the real button is fully visible before activation");\n                    var expected ='),
+          ])
+          helper = pathlib.Path('.github/workflows/apply-short-header-patch.yml')
+          helper.unlink()
+          changed.append(str(helper))
+          subprocess.run(['git', 'diff', '--check'], check=True)
+          subprocess.run(['git', 'add', '--', *changed], check=True)
+      - name: Commit exact paths and remove the helper without force
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(ui): reserve content space in short-window management headers'
+          git push origin HEAD:refs/heads/playability/ranch-quiet-corner-20260910
