@@ -32,6 +32,11 @@ public partial class UiLayoutAcceptance
         await FocusClick(time);
         Check(game.State.Calendar.Day == day && gold == game.Economy.Gold && shell.CurrentScreen == "ranch",
             "clicking Plan Night opens planning without settling or paying");
+        Check(shell.GetNode<ScrollContainer>(shell.ScrollPath).Size.Y >= 96,
+            "long planning status leaves a usable content viewport instead of expanding the whole header");
+        var status = shell.GetNode<Label>(shell.StatusLabelPath);
+        Check(!string.IsNullOrEmpty(status.Text) && status.TooltipText == status.Text,
+            "bounded header retains the complete status message in its tooltip");
         foreach (var choice in new[] { "rest", "train", "admin", "rest" })
         {
             var button = Descendants(shell).OfType<Button>().Single(b => b.Name == "NightChoice_" + choice);
@@ -68,10 +73,11 @@ public partial class UiLayoutAcceptance
         var beforeGold = game.Economy.Gold;
         var beforeReports = game.State.Reports.Count;
         await FocusClick(ending);
-        var report = game.LastDailyReport!;
+        var report = game.LastDailyReport;
         Check(game.State.Calendar.Day == day + 1 && game.State.Calendar.Phase == DayPhase.Morning
             && game.State.Calendar.NightAction == string.Empty && game.State.Reports.Count == beforeReports + 1
-            && shell.CurrentScreen == "report", "the actual End Day button reaches one next-morning settlement report");
+            && shell.CurrentScreen == "report" && report is not null, "the actual End Day button reaches one next-morning settlement report");
+        if (report is null) throw new System.InvalidOperationException("The actual End Day click produced no daily report.");
         Check(report.NetGold == (long)game.Economy.Gold - beforeGold
             && (long)report.Income - report.Expenses == report.NetGold
             && game.State.Economy.LastIncome == report.Income && game.State.Economy.LastExpenses == report.Expenses,

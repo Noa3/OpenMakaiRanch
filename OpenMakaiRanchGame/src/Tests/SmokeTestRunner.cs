@@ -2050,7 +2050,9 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             root.AdvanceTime(); // -> Afternoon
             root.AdvanceTime(); // -> Evening
             root.AdvanceTime(); // -> Night
-            root.AdvanceTime(); // Night + settle -> new day, Morning
+            Assert(result, root.TrySelectNightAction("rest", root.StateGeneration, root.State.Calendar.Day),
+                "save round-trip: explicitly choose the night action before settling");
+            root.AdvanceTime(); // Planned Night + settle -> new day, Morning
             Assert(result, root.State.Calendar.Day == dayBefore + 1,
                 "save round-trip: a full day transition advances to the next day");
             Assert(result, root.State.Calendar.Phase == DayPhase.Morning,

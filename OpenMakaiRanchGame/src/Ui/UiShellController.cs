@@ -610,7 +610,7 @@ public partial class UiShellController : Control
 		// Compact headers must reserve vertical space for reachable screen actions.
 		_titleLabel.Visible = !compact;
 		_statusLabel.Visible = !compact || !string.IsNullOrWhiteSpace(_statusLabel.Text);
-		_screenLabel.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
+		BoundHeaderText(compact, metrics.ContentWidth);
 
 		_dayChip.Visible = true;
 		_phaseChip.Visible = !tightWidth;
@@ -875,6 +875,8 @@ public partial class UiShellController : Control
 			? cal.NightAction is "rest" or "train" or "admin" ? "End Day" : "Plan Night"
 			: "Advance Phase";
 		_screenLabel.Text = ScreenTitle(_currentScreen);
+		_screenLabel.TooltipText = _screenLabel.Text;
+		_statusLabel.TooltipText = _statusLabel.Text;
 		_endDayButton.Disabled = _fullScreenMode || _game.CombatWorldTimeLocked;
 		_endDayButton.TooltipText = _game.CombatWorldTimeLocked
 			? "Finish or leave the encounter before advancing world time."
