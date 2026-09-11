@@ -1,0 +1,94 @@
+name: Apply reviewed localized stations
+on:
+  push:
+    branches: [feature/world-stations-and-interiors-20260911]
+    paths: [.github/workflows/apply-localized-stations.yml, Tools/Godot/localized-patch/**]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/feature/world-stations-and-interiors-20260911'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/world-stations-and-interiors-20260911
+          fetch-depth: 0
+      - name: Apply exact reviewed source, preserve concurrent station fixes, remove helpers and fast-forward only the work branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenMakaiRanch maintenance'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python - <<'PY'
+          import hashlib, json, re, subprocess, zlib
+          from pathlib import Path
+          branch = 'feature/world-stations-and-interiors-20260911'
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          if git('branch', '--show-current') != branch:
+              raise SystemExit('Refusing a different branch')
+          parts = [Path(f'Tools/Godot/localized-patch/{i:02}.bin') for i in range(13)]
+          packed = b''.join(path.read_bytes() for path in parts)
+          if hashlib.sha256(packed).hexdigest() != '3d19cba09b0e5381fe7a43f11e3f3bc1df72030827d5e961f209a3306724af7e':
+              raise SystemExit('Reviewed patch checksum mismatch')
+          raw = zlib.decompress(packed)
+          if len(raw) > 400000:
+              raise SystemExit('Patch exceeds reviewed size bound')
+          payload = json.loads(raw)
+          # These station continuity changes landed independently at 61f748d. Keep them,
+          # their direct place-guide path and their test-only teardown, without duplicating either.
+          omitted = {
+              'OpenMakaiRanchGame/src/App/GameRoot.cs',
+              'OpenMakaiRanchGame/src/App/GameRoot.SmokeTeardown.cs',
+              'OpenMakaiRanchGame/src/Tests/RanchLeisureFrameTests.cs',
+              'OpenMakaiRanchGame/src/World/WorldGameController.cs',
+          }
+          guards = {name: sha for name, sha in payload['guards'].items() if name not in omitted}
+          guards['OpenMakaiRanchGame/src/World/WorldInteractionPresentation.cs'] = 'aa5f5c391a0376b986cb139326258900b6c94fa5'
+          for name, expected in guards.items():
+              path = Path(name)
+              if path.is_absolute() or '..' in path.parts:
+                  raise SystemExit('Invalid reviewed path')
+              if expected is None:
+                  if path.exists(): raise SystemExit(f'New path exists: {name}')
+              else:
+                  data = path.read_bytes()
+                  actual = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+                  if actual != expected: raise SystemExit(f'Source changed: {name}; inspect before editing')
+          sections = re.split(r'(?=^diff --git )', payload['patch'], flags=re.M)
+          selected = []
+          for section in sections:
+              if not section.strip(): continue
+              name = section.splitlines()[0].split(' b/', 1)[1]
+              if name in omitted: continue
+              if name not in guards: raise SystemExit(f'Unreviewed patch path: {name}')
+              selected.append(section)
+          patch = ''.join(selected).encode('utf-8')
+          # Three-way application retains the independently identical warning-reason fix.
+          # Any conflicting hunk fails closed and never reaches the commit/push below.
+          subprocess.run(['git', 'apply', '--3way', '--index', '-'], input=patch, check=True)
+          export = Path('OpenMakaiRanchGame/export_presets.cfg')
+          text = export.read_text(encoding='utf-8')
+          if text.count('include_filter=""') != 5: raise SystemExit('Export presets changed')
+          export.write_text(text.replace('include_filter=""', 'include_filter="data/*.json,locale/*.json,locale/ui/*.json"'), encoding='utf-8')
+          workflow = Path('.github/workflows/ui-acceptance.yml')
+          text = workflow.read_text(encoding='utf-8')
+          old = "      - 'OpenMakaiRanchGame/project.godot'\n"
+          if text.count(old) != 1: raise SystemExit('CI trigger anchor changed')
+          text = text.replace(old, old + "      - 'OpenMakaiRanchGame/export_presets.cfg'\n")
+          old = 'OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/OpenMakaiRanchGame.csproj'
+          if text.count(old) != 1: raise SystemExit('CI archive anchor changed')
+          text = text.replace(old, 'OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/export_presets.cfg OpenMakaiRanchGame/OpenMakaiRanchGame.csproj')
+          workflow.write_text(text, encoding='utf-8')
+          subprocess.run(['python', 'Tools/Godot/validate_locales.py'], check=True)
+          helper = Path('.github/workflows/apply-localized-stations.yml')
+          for path in [*parts, helper]: path.unlink()
+          subprocess.run(['git', 'add', '--', *guards, *map(str, parts), str(helper)], check=True)
+          subprocess.run(['git', 'diff', '--cached', '--check'], check=True)
+          if not set(git('diff', '--cached', '--name-only').splitlines()) <= set(guards) | set(map(str, parts)) | {str(helper)}:
+              raise SystemExit('Unexpected staged paths')
+          subprocess.run(['git', 'commit', '-m', 'feat(ui): localize stations, navigation and a living title screen'], check=True)
+          subprocess.run(['git', 'push', 'origin', 'HEAD:refs/heads/' + branch], check=True)
+          PY
