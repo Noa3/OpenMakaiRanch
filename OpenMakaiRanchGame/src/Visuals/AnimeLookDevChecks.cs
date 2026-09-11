@@ -70,9 +70,34 @@ public partial class AnimeLookDevChecks : Node
             _study.SetPortrait(true);
             var expectedDof = RenderingServer.GetCurrentRenderingMethod().ToString() == "forward_plus";
             Check("portrait DOF follows renderer capability", ((CameraAttributesPractical)_study.StudyCamera.Attributes).DofBlurFarEnabled == expectedDof);
-            await Capture("portrait-high");
+            Check("portrait hides peripheral swatches", !_study.SwatchesVisible);
+            var portrait = await Capture("portrait-high");
+            var irisPosition = _study.StudyCamera.UnprojectPosition(AnimeCalibrationGeometry.HeadOrigin + AnimeCalibrationGeometry.EyePoint(-1f, 0.25f, 0.2f));
+            var whitePosition = _study.StudyCamera.UnprojectPosition(AnimeCalibrationGeometry.HeadOrigin + AnimeCalibrationGeometry.EyePoint(-1f, -0.8f, 0f));
+            _study.SetIrisColor(new Color(0.10f, 0.36f, 0.85f));
+            var blue = await Capture("portrait-blue-iris-high");
+            var irisDelta = ColorDifference(Sample(portrait, irisPosition), Sample(blue, irisPosition));
+            var whiteDelta = ColorDifference(Sample(portrait, whitePosition), Sample(blue, whitePosition));
+            Check("rendered iris palette visibly changes", irisDelta > 0.015);
+            Check("masked palette preserves rendered eye whites", whiteDelta < 0.035 && irisDelta > whiteDelta * 2);
+            _study.SetEyeTintMask(false);
+            var unmasked = await Capture("portrait-unmasked-high");
+            Check("removing tint mask changes rendered eye whites", ColorDifference(Sample(blue, whitePosition), Sample(unmasked, whitePosition)) > 0.015);
+            _study.SetEyeTintMask(true);
+            _study.SetEyeUv(new Vector2(0.75f, 1f), new Vector2(0.18f, 0f));
+            var shifted = await Capture("portrait-uv-shift-high");
+            Check("UV transform changes rendered eye artwork", Difference(blue, shifted) > 0.00005);
+            _study.SetEyeUv(Vector2.One, Vector2.Zero);
+            _study.SetIrisColor(new Color(0.73f, 0.46f, 0.10f));
             _study.SpecimenRoot.RotationDegrees = new Vector3(0f, 30f, 0f);
             await Capture("portrait-rotated-high");
+            _study.SpecimenRoot.RotationDegrees = new Vector3(0f, 70f, 0f);
+            await Capture("portrait-profile-high");
+            _study.SpecimenRoot.RotationDegrees = Vector3.Zero;
+            _study.SetLighting(4);
+            await Capture("portrait-night-high");
+            _study.SetPortrait(false);
+            Check("full framing restores material swatches", _study.SwatchesVisible);
             Check("quality and lighting changes do not add samples", _study.SampleCount == count);
             Check("sample viewport stays at native render scale", Mathf.IsEqualApprox(_study.StudyViewport.Scaling3DScale, 1f));
         }
@@ -108,6 +133,7 @@ public partial class AnimeLookDevChecks : Node
     private void Contracts()
     {
         AnimeAvatarMaterialChecks.Run(Check);
+        AnimeMaterialDetailChecks.Run(Check);
         foreach (var kind in Enum.GetValues<AnimeSurfaceKind>())
         {
             var path = AnimeMaterialFactory.ResolveShader(kind, "High", "forward_plus");
@@ -201,6 +227,20 @@ public partial class AnimeLookDevChecks : Node
         _captures.Add(new { file, width = image.GetWidth(), height = image.GetHeight(), luminance_min = min, luminance_max = max, taa = _study.StudyViewport.UseTaa, warmup_frames = warmupFrames });
         return image;
     }
+
+    private static Color Sample(Image image, Vector2 position)
+    {
+        var x = Mathf.RoundToInt(position.X); var y = Mathf.RoundToInt(position.Y);
+        if (x < 2 || y < 2 || x >= image.GetWidth() - 2 || y >= image.GetHeight() - 2)
+            throw new InvalidOperationException("Material probe projected outside the captured viewport.");
+        var color = new Color(0f, 0f, 0f, 0f);
+        for (var dy = -1; dy <= 1; dy++)
+        for (var dx = -1; dx <= 1; dx++) color += image.GetPixel(x + dx, y + dy);
+        return color / 9f;
+    }
+
+    private static double ColorDifference(Color a, Color b)
+        => (Math.Abs(a.R - b.R) + Math.Abs(a.G - b.G) + Math.Abs(a.B - b.B)) / 3.0;
 
     private static double Difference(Image a, Image b)
     {

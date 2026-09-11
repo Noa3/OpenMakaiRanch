@@ -68,7 +68,7 @@ public static class AnimeCalibrationGeometry
                 builder.Patch(40, 2, (u, v) =>
                 {
                     var p = EyePoint(side, u * 1.996f - 0.998f, upper ? 1f : -1f);
-                    var taper = Mathf.Pow(Mathf.Sin(u * Mathf.Pi), 0.45f);
+                    var taper = Mathf.Pow(Mathf.Max(0f, Mathf.Sin(u * Mathf.Pi)), 0.45f);
                     p.Y += (v - 0.5f) * (upper ? 0.006f : 0.0025f) * taper;
                     p.Z += 0.002f;
                     return p;
@@ -78,7 +78,7 @@ public static class AnimeCalibrationGeometry
             {
                 var x = side * 0.078f + (u - 0.5f) * 0.102f;
                 var y = 0.092f + 0.009f * Mathf.Sin(u * Mathf.Pi) + side * (u - 0.5f) * 0.008f
-                    + (v - 0.5f) * 0.006f * Mathf.Pow(Mathf.Sin(u * Mathf.Pi), 0.4f);
+                    + (v - 0.5f) * 0.006f * Mathf.Pow(Mathf.Max(0f, Mathf.Sin(u * Mathf.Pi)), 0.4f);
                 return new Vector3(x, y, Front(x, y) + 0.003f);
             });
         }

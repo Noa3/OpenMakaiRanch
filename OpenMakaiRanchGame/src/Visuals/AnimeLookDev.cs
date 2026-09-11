@@ -27,6 +27,13 @@ public partial class AnimeLookDev : Control
     private DirectionalLight3D _key = null!, _fill = null!, _rim = null!;
     private Label _status = null!;
     private Node3D _world = null!;
+    private Node3D _swatches = null!;
+    public bool SwatchesVisible => _swatches.Visible;
+    public AnimeSurfaceProfile PortraitEyeProfile { get; private set; } = null!;
+    public void SetIrisColor(Color color) { PortraitEyeProfile.BaseColor = AnimeSurfaceProfile.SafeColor(color); ApplyMaterials(); }
+    public void SetEyeUv(Vector2 scale, Vector2 offset) { PortraitEyeProfile.UvScale = scale; PortraitEyeProfile.UvOffset = offset; ApplyMaterials(); }
+    public void SetEyeTintMask(bool enabled) { PortraitEyeProfile.TintMaskTexture = enabled ? _eyeTint : null; ApplyMaterials(); }
+    private Texture2D? _eyeTint;
     private bool ForwardPlus => RenderingServer.GetCurrentRenderingMethod().ToString() == "forward_plus";
 
     public override void _Ready()
@@ -127,22 +134,39 @@ public partial class AnimeLookDev : Control
         var skin = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Skin, new Color(0.82f, 0.66f, 0.55f));
         var cloth = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Cloth, new Color(0.17f, 0.30f, 0.28f));
         var hair = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Hair, new Color(0.24f, 0.43f, 0.35f));
+        skin.Roughness = 0.53f;
+        skin.AlbedoTexture = AnimeCalibrationTextures.Skin();
+        var hairMaps = AnimeCalibrationTextures.Hair();
+        hair.AlbedoTexture = hairMaps.Color;
+        hair.SurfaceMask = hairMaps.Surface;
         var eye = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Eye, new Color(0.9f, 0.92f, 0.88f));
         eye.ProceduralIris = true;
         eye.IrisColor = new Color(0.73f, 0.46f, 0.10f);
         // Fully clothed and deliberately geometric. No external identity, rig or design is implied.
         Capsule(SpecimenRoot, cloth, new Vector3(0f, 0.99f, 0f), 0.25f, 0.92f);
-        Sphere(SpecimenRoot, skin, new Vector3(0f, 1.63f, 0f), new Vector3(0.20f, 0.24f, 0.19f));
-        Sphere(SpecimenRoot, hair, new Vector3(0f, 1.78f, -0.03f), new Vector3(0.22f, 0.14f, 0.20f));
-        Sphere(SpecimenRoot, skin, new Vector3(0f, 1.62f, 0.19f), new Vector3(0.023f, 0.033f, 0.034f));
+        Capsule(SpecimenRoot, skin, new Vector3(0f, 1.405f, 0f), 0.080f, 0.22f);
+        AddCalibration(AnimeCalibrationGeometry.Head(), skin);
+        AddCalibration(AnimeCalibrationGeometry.Hair(), hair);
+        var eyeMaps = AnimeCalibrationTextures.Eye();
+        PortraitEyeProfile = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Eye, eye.IrisColor);
+        PortraitEyeProfile.AlbedoTexture = eyeMaps.Color;
+        PortraitEyeProfile.TintMaskTexture = _eyeTint = eyeMaps.Tint;
+        PortraitEyeProfile.Rim = 0f;
+        var lines = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Cloth, new Color(0.06f, 0.037f, 0.044f));
+        lines.Rim = 0f; lines.Specular = 0f;
+        AddCalibration(AnimeCalibrationGeometry.FacialLines(), lines);
+        var mouth = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Cloth, new Color(0.43f, 0.20f, 0.19f));
+        mouth.Rim = 0f;
+        AddCalibration(AnimeCalibrationGeometry.Mouth(), mouth);
         foreach (var sign in new[] { -1f, 1f })
         {
             Capsule(SpecimenRoot, cloth, new Vector3(sign * 0.14f, 0.38f, 0f), 0.11f, 0.65f);
             Capsule(SpecimenRoot, cloth, new Vector3(sign * 0.32f, 1.12f, 0f), 0.095f, 0.55f);
             Sphere(SpecimenRoot, skin, new Vector3(sign * 0.32f, 0.83f, 0f), new Vector3(0.074f, 0.095f, 0.074f));
-            Sphere(SpecimenRoot, eye, new Vector3(sign * 0.072f, 1.665f, 0.174f), new Vector3(0.045f, 0.030f, 0.027f));
-            Sphere(SpecimenRoot, hair, new Vector3(sign * 0.19f, 1.62f, -0.04f), new Vector3(0.055f, 0.19f, 0.12f));
+            AddCalibration(AnimeCalibrationGeometry.Eye(sign), PortraitEyeProfile);
         }
+        _swatches = new Node3D { Name = "MaterialSwatches" };
+        _world.AddChild(_swatches);
         var samples = new[]
         {
             (skin, new Vector3(-1.15f, 1.30f, 0f), "SKIN"),
@@ -152,8 +176,8 @@ public partial class AnimeLookDev : Control
         };
         foreach (var (profile, position, label) in samples)
         {
-            Sphere(_world, profile, position, Vector3.One * 0.31f);
-            _world.AddChild(new Label3D
+            Sphere(_swatches, profile, position, Vector3.One * 0.31f);
+            _swatches.AddChild(new Label3D
             {
                 Text = label, Position = position + new Vector3(0f, -0.40f, 0f),
                 FontSize = 28, PixelSize = 0.003f, Billboard = BaseMaterial3D.BillboardModeEnum.Enabled
@@ -164,8 +188,15 @@ public partial class AnimeLookDev : Control
         {
             Mesh = new BoxMesh { Size = new Vector3(0.8f, 0.10f, 0.6f) }, Position = new Vector3(0f, 0.05f, 0.55f)
         };
-        _world.AddChild(panel);
+        _swatches.AddChild(panel);
         _samples.Add((panel, cloth));
+    }
+
+    private void AddCalibration(ArrayMesh geometry, AnimeSurfaceProfile profile)
+    {
+        var mesh = new MeshInstance3D { Mesh = geometry, Position = AnimeCalibrationGeometry.HeadOrigin };
+        SpecimenRoot.AddChild(mesh);
+        _samples.Add((mesh, profile));
     }
 
     private void Sphere(Node3D parent, AnimeSurfaceProfile profile, Vector3 position, Vector3 scale)
@@ -217,16 +248,23 @@ public partial class AnimeLookDev : Control
             if (!shared.TryGetValue(profile, out var material))
             {
                 material = MatteComparison
-                    ? new StandardMaterial3D
-                    {
-                        AlbedoColor = profile.Kind == AnimeSurfaceKind.Eye && profile.ProceduralIris ? profile.IrisColor : profile.BaseColor,
-                        AlbedoTexture = profile.AlbedoTexture, Roughness = 1f, MetallicSpecular = 0f
-                    }
+                    ? MatteMaterial(profile)
                     : AnimeMaterialFactory.Create(profile, QualityName);
                 shared.Add(profile, material);
             }
             mesh.MaterialOverride = material;
         }
+    }
+
+    private static ShaderMaterial MatteMaterial(AnimeSurfaceProfile source)
+    {
+        // Keep authored maps, UVs and masked palette identical; remove the material response only.
+        var copy = (AnimeSurfaceProfile)source.Duplicate();
+        copy.Roughness = 1f; copy.Specular = 0f; copy.Rim = 0f;
+        copy.Scattering = 0f; copy.Anisotropy = 0f; copy.SurfaceMask = null;
+        var result = AnimeMaterialFactory.Create(copy, "Low");
+        if (source.Kind == AnimeSurfaceKind.Eye) result.SetShaderParameter("clearcoat_strength", 0f);
+        return result;
     }
 
     public void SetLighting(int index)
@@ -245,7 +283,12 @@ public partial class AnimeLookDev : Control
         UpdateStatus();
     }
 
-    public void SetPortrait(bool enabled) { Portrait = enabled; ApplyCamera(); UpdateStatus(); }
+    public void SetPortrait(bool enabled)
+    {
+        Portrait = enabled;
+        _swatches.Visible = !enabled; // Keep peripheral giant swatches out of close-up comparisons.
+        ApplyCamera(); UpdateStatus();
+    }
     public void SetDepthOfField(bool enabled) { DepthOfField = enabled; ApplyCamera(); UpdateStatus(); }
 
     private void ApplyCamera()
