@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 using OpenMakaiRanch.App;
 
 namespace OpenMakaiRanch.World;
@@ -193,15 +194,15 @@ public partial class WorldInteractionAssistController : Node
             || presentation.Distance > presentation.InteractionRange * Mathf.Max(1f, NearbyPromptMultiplier))
         {
             _label.Text = BuildGeneralControlHint();
-            _label.TooltipText = "Controls use your current keyboard/controller bindings.";
+            _label.TooltipText = T("world.interact.controls_tip", "Controls use your current keyboard/controller bindings.");
             _actionButton.Visible = false;
             return;
         }
 
         if (!presentation.InRange)
         {
-            _label.Text = $"{presentation.Label}  •  {presentation.Distance:0.0} m  •  move closer";
-            _label.TooltipText = $"Move within {presentation.InteractionRange:0.0} m to interact.";
+            _label.Text = T("world.interact.closer", "{0} • {1:0.0} m • move closer", presentation.Label, presentation.Distance);
+            _label.TooltipText = T("world.interact.range", "Move within {0:0.0} m to interact.", presentation.InteractionRange);
             _actionButton.Visible = false;
             return;
         }
@@ -209,7 +210,7 @@ public partial class WorldInteractionAssistController : Node
         if (!presentation.Available)
         {
             _label.Text = string.IsNullOrWhiteSpace(presentation.UnavailableReason)
-                ? $"{presentation.Label} is currently unavailable."
+                ? T("world.interact.unavailable", "{0} is currently unavailable.", presentation.Label)
                 : $"{presentation.Label}  •  {presentation.UnavailableReason}";
             _label.TooltipText = presentation.UnavailableReason;
             _actionButton.Visible = false;
@@ -219,9 +220,9 @@ public partial class WorldInteractionAssistController : Node
         var inspectOnly = presentation.TargetNode is WorldStation { IsAvailable: false };
         _label.Text = inspectOnly && !string.IsNullOrWhiteSpace(presentation.UnavailableReason)
             ? $"{presentation.Label}  •  {presentation.UnavailableReason}" : presentation.Label;
-        _label.TooltipText = inspectOnly ? presentation.UnavailableReason : $"Use {presentation.Label}.";
-        _actionButton.Text = $"[{interactBinding}]  {(inspectOnly ? "Inspect" : "Interact")}";
-        _actionButton.TooltipText = $"Interact using {interactBinding}, or click/tap this button.";
+        _label.TooltipText = inspectOnly ? presentation.UnavailableReason : T("world.interact.use", "Use {0}.", presentation.Label);
+        _actionButton.Text = inspectOnly ? T("world.interact.inspect", "[{0}] Inspect", interactBinding) : T("world.interact.activate", "[{0}] Interact", interactBinding);
+        _actionButton.TooltipText = T("world.interact.tip", "Interact using {0}, or click/tap this button.", interactBinding);
         _actionButton.Visible = true;
     }
 
@@ -231,8 +232,8 @@ public partial class WorldInteractionAssistController : Node
         var management = InputBindingService.GetCombinedLabel("toggle_management");
         var pause = InputBindingService.GetCombinedLabel("pause_menu");
         var help = InputBindingService.GetCombinedLabel("open_help");
-        if (GetViewport().GetVisibleRect().Size.X < 900) return $"Interact {interact}   •   Help {help}";
-        return $"Interact {interact}   •   Management {management}   •   Pause {pause}   •   Help {help}";
+        if (GetViewport().GetVisibleRect().Size.X < 900) return T("world.interact.hint_short", "Interact {0} • Help {1}", interact, help);
+        return T("world.interact.hint", "Interact {0} • Places {1} • Pause {2} • Help {3}", interact, management, pause, help);
     }
 
     private void RefreshHighlight(WorldInteractionPresentation presentation, double delta)

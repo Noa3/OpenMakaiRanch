@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Godot;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Gameplay;
@@ -47,14 +48,14 @@ public partial class WorldStationPanel : Control
         });
         AddChild(_panel);
         var layout = new VBoxContainer(); layout.AddThemeConstantOverride("separation", 12); _panel.AddChild(layout);
-        _title = Text(""); _title.AddThemeFontSizeOverride("font_size", 25); layout.AddChild(_title);
+        _title = Text(""); _title.Name = "StationTitle"; _title.AddThemeFontSizeOverride("font_size", 25); layout.AddChild(_title);
         _scroll = new ScrollContainer { Name = "StationScroll", SizeFlagsVertical = SizeFlags.ExpandFill,
             HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, FollowFocus = true };
         layout.AddChild(_scroll);
         _content = new VBoxContainer { Name = "StationContent", SizeFlagsHorizontal = SizeFlags.ExpandFill };
         _content.AddThemeConstantOverride("separation", 10); _scroll.AddChild(_content);
         _status = Text(""); _status.MaxLinesVisible = 2; layout.AddChild(_status);
-        _close = new Button { Name = "StationClose", Text = "Back to the world", CustomMinimumSize = new Vector2(0, 40) };
+        _close = new Button { Name = "StationClose", Text = T("world.back", "Back to the world"), CustomMinimumSize = new Vector2(0, 40) };
         _close.Pressed += Close; layout.AddChild(_close);
         Visible = false;
     }
@@ -118,62 +119,90 @@ public partial class WorldStationPanel : Control
         _refreshPending = true;
     }
 
+    private string _renderedLocale = "";
+
     private void Render()
     {
-        _revision++;
+        var oldFocus = GetViewport().GuiGetFocusOwner();
+        var focusName = oldFocus is not null && _content.IsAncestorOf(oldFocus) ? oldFocus.Name.ToString() : null;
+        var scroll = _scroll.ScrollVertical;
+        var revision = ++_revision;
+        if (_renderedLocale != CurrentLocale) { _status.Text = ""; _status.TooltipText = ""; _renderedLocale = CurrentLocale; }
+        _close.Text = T("world.back", "Back to the world");
         foreach (var node in _content.GetChildren()) { _content.RemoveChild(node); node.QueueFree(); }
+        BuildContent();
+        var tree = GetTree();
+        void Restore()
+        {
+            tree.ProcessFrame -= Restore;
+            if (!GodotObject.IsInstanceValid(this) || !IsInsideTree() || !Visible
+                || _revision != revision || !ContextMatches()) return;
+            if (focusName is not null)
+            {
+                var target = _content.GetChildren().OfType<Button>().FirstOrDefault(b => b.Name == focusName && !b.Disabled);
+                (target ?? _close).GrabFocus();
+                _scroll.ScrollVertical = scroll;
+                if (target is not null) _scroll.EnsureControlVisible(target);
+            }
+            else _scroll.ScrollVertical = scroll;
+        }
+        tree.ProcessFrame += Restore;
+    }
+
+    private void BuildContent()
+    {
         if (_kind == "guide") { RenderGuide(); return; }
         if (_kind == "resident") { RenderResident(); return; }
         var station = _world.ResolveStation(_id);
         if (station is null) { Close(); return; }
-        _title.Text = station.Label;
+        _title.Text = WorldName(station.TargetId, station.Label);
         if (_id == "ranch_house") { RenderHouse(); return; }
         if (_id == "pet_care")
         {
-            _content.AddChild(Text("Check the needs of your adopted pets here."));
-            Service("pets", "Care for pets"); return;
+            _content.AddChild(Text(T("world.pets.help", "Check the needs of your adopted pets here.")));
+            Service("pets", T("world.pets.open", "Care for pets")); return;
         }
         var alerts = WorldAlertEvaluator.Evaluate(_game).Where(a => WorldDestinationCatalog.ForAlert(a).TargetId == _id).ToArray();
-        foreach (var alert in alerts) _content.AddChild(Text($"{(alert.Severity == WorldAlertSeverity.Info ? "Info" : "Attention")}: {alert.Detail}"));
+        foreach (var alert in alerts) _content.AddChild(Text(T("world.alert.detail", "{0}: {1}", alert.Severity == WorldAlertSeverity.Info ? T("world.info", "Info") : T("world.attention", "Attention"), alert.Detail)));
         if (_game.Data.Jobs.TryGetValue(station.CommandTargetId, out var job))
         {
-            _content.AddChild(Text($"{job.DisplayName} • output is settled at the end of the day, not on assignment."));
-            _content.AddChild(Text($"Base output: {job.GoldIncome} G / {job.ResourceAmount} {job.ResourceId}. Fatigue change: {job.FatigueDelta:+0;-0;0}. Facility and resident modifiers still apply."));
+            _content.AddChild(Text(T("world.work.settlement", "{0} • output is settled at the end of the day, not on assignment.", JobName(job.Id, job.DisplayName))));
+            _content.AddChild(Text(T("world.work.output", "Base output: {0} G / {1} {2}. Fatigue change: {3:+0;-0;0}. Facility and resident modifiers still apply.", job.GoldIncome, job.ResourceAmount, ResourceName(job.ResourceId), job.FatigueDelta)));
             var available = station.IsAvailable && _game.Schedule.AssignableJobs.Any(j => j.Id == job.Id);
-            if (!available) _content.AddChild(Text(station.UnavailableReason ?? "This job is not available yet."));
+            if (!available) _content.AddChild(Text(station.UnavailableReason ?? T("world.work.locked", "This job is not available yet.")));
             foreach (var character in _game.Roster.Characters)
             {
                 var id = character.Id;
                 var name = string.IsNullOrWhiteSpace(character.DisplayNameOverride) ? _game.Roster.DefinitionFor(character).DisplayName : character.DisplayNameOverride;
                 var currentJob = _game.Schedule.GetAssignment(id);
-                var currentName = _game.Data.Jobs.TryGetValue(currentJob, out var current) ? current.DisplayName : currentJob;
-                _content.AddChild(Text($"{name} • {currentName} • Energy {character.Energy} • Fatigue {character.Fatigue}"));
-                Action($"Assign_{id}", currentJob == job.Id ? $"{name} works here" : $"Assign {name} here", () =>
+                var currentName = _game.Data.Jobs.TryGetValue(currentJob, out var current) ? JobName(currentJob, current.DisplayName) : currentJob;
+                _content.AddChild(Text(T("world.work.resident", "{0} • {1} • Energy {2} • Fatigue {3}", name, currentName, character.Energy, character.Fatigue)));
+                Action($"Assign_{id}", currentJob == job.Id ? T("world.work.assigned", "{0} works here", name) : T("world.work.assign", "Assign {0} here", name), () =>
                 {
                     var live = _world.ResolveStation(_id);
-                    if (live?.IsAvailable != true || !_game.Schedule.AssignableJobs.Any(j => j.Id == job.Id)) return "This station is unavailable.";
+                    if (live?.IsAvailable != true || !_game.Schedule.AssignableJobs.Any(j => j.Id == job.Id)) return T("world.work.unavailable", "This station is unavailable.");
                     var ok = live.Activate(new WorldInteractionContext(id, _generation));
                     if (ok)
                     {
                         if (_world.IsGuidedOpening) Close();
                         _world.Ranch?.NotifyStationAssignment(id, job.Id);
                     }
-                    return ok ? $"{name} assigned. Production remains part of the daily settlement." : "Assignment unchanged.";
+                    return ok ? T("world.work.success", "{0} assigned. Production remains part of the daily settlement.", name) : T("world.work.unchanged", "Assignment unchanged.");
                 }, !available || currentJob == job.Id);
                 if (currentJob == job.Id)
-                    Action($"Rest_{id}", $"Send {name} to rest", () => _game.TryAssignJob(id, "rest", _generation) ? "Rest assigned." : "Assignment unchanged.");
+                    Action($"Rest_{id}", T("world.work.rest", "Send {0} to rest", name), () => _game.TryAssignJob(id, "rest", _generation) ? T("world.work.rest_success", "Rest assigned.") : T("world.work.unchanged", "Assignment unchanged."));
             }
         }
         AddFacility(station.RequiredFacilityId);
         if (_id == "office")
         {
-            Service("inventory", "Storage");
-            Service("milestones", "Ranch records");
-            Service("milk", "Shipments");
-            Service("report", "Last daily report");
+            Service("inventory", T("world.service.storage", "Storage"));
+            Service("milestones", T("world.service.records", "Ranch records"));
+            Service("milk", T("world.service.shipments", "Shipments"));
+            Service("report", T("world.service.report", "Last daily report"));
         }
-        if (_id == "workshop") Service("research", "Workshop research");
-        if (_id == "pharmacy_lab") Service("pharmacy_list", "Pharmacy recipes");
+        if (_id == "workshop") Service("research", T("world.service.research", "Workshop research"));
+        if (_id == "pharmacy_lab") Service("pharmacy_list", T("world.service.recipes", "Pharmacy recipes"));
     }
 
     private void AddFacility(string id)
@@ -181,11 +210,11 @@ public partial class WorldStationPanel : Control
         if (!_game.Data.Facilities.TryGetValue(id, out var facility) || facility.BuildCost <= 0) return;
         var level = _game.Ranch.Facilities.TryGetValue(id, out var value) ? value : 0;
         var cost = _game.Ranch.FacilityUpgradeCost(facility, level);
-        _content.AddChild(Text($"Facility level {level} • upkeep {facility.UpkeepGold} G/day. Wallet: {_game.Economy.Gold} G."));
-        Action("FacilityUpgrade", $"{(level == 0 ? "Build" : "Upgrade")} this facility — {cost} G", () =>
+        _content.AddChild(Text(T("world.facility.summary", "Facility level {0} • upkeep {1} G/day. Wallet: {2} G.", level, facility.UpkeepGold, _game.Economy.Gold)));
+        Action("FacilityUpgrade", level == 0 ? T("world.facility.build", "Build this facility — {0} G", cost) : T("world.facility.upgrade", "Upgrade this facility — {0} G", cost), () =>
         {
-            if (!_game.Ranch.UpgradeFacility(id, _game.Economy)) return "The upgrade requirements are not met.";
-            _game.NotifyStateChanged(); return "Facility upgraded.";
+            if (!_game.Ranch.UpgradeFacility(id, _game.Economy)) return T("world.facility.requirements", "The upgrade requirements are not met.");
+            _game.NotifyStateChanged(); return T("world.facility.success", "Facility upgraded.");
         }, _game.Economy.Gold < cost);
     }
 
@@ -195,69 +224,69 @@ public partial class WorldStationPanel : Control
         if (character is null) { Close(); return; }
         var name = string.IsNullOrWhiteSpace(character.DisplayNameOverride) ? _game.Roster.DefinitionFor(character).DisplayName : character.DisplayNameOverride;
         _title.Text = name;
-        _content.AddChild(Text($"Energy {character.Energy} • Fatigue {character.Fatigue} • Morale {character.Morale} • Bond {character.Bond}"));
-        _content.AddChild(Text("A conversation here stays with this resident. Work is assigned at the relevant station."));
+        _content.AddChild(Text(T("world.resident.stats", "Energy {0} • Fatigue {1} • Morale {2} • Bond {3}", character.Energy, character.Fatigue, character.Morale, character.Bond)));
+        _content.AddChild(Text(T("world.resident.help", "A conversation here stays with this resident. Work is assigned at the relevant station.")));
         var care = _game.PlayerStaminaCost(PlayerActivityKind.VisitCare);
         var feed = _game.PlayerStaminaCost(PlayerActivityKind.VisitFeed);
-        Action("ResidentTalk", $"Talk — {care} stamina", () => _game.TryVisitCare(_id, "talk"), !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare));
-        Action("ResidentFeed", $"Offer a meal box — {feed} stamina", () => _game.TryVisitCare(_id, "feed"),
+        Action("ResidentTalk", T("world.resident.talk", "Talk — {0} stamina", care), () => _game.TryVisitCare(_id, "talk"), !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitCare));
+        Action("ResidentFeed", T("world.resident.feed", "Offer a meal box — {0} stamina", feed), () => _game.TryVisitCare(_id, "feed"),
             !_game.CanSpendPlayerStamina(PlayerActivityKind.VisitFeed) || !_game.State.Inventory.Items.TryGetValue("meal_box", out var meals) || meals < 1);
-        Action("ResidentRest", "Give the day off", () => _game.TryAssignJob(_id, "rest", _generation) ? "Rest assigned. No production was paid early." : "Already resting.",
+        Action("ResidentRest", T("world.resident.day_off", "Give the day off"), () => _game.TryAssignJob(_id, "rest", _generation) ? T("world.resident.rest_success", "Rest assigned. No production was paid early.") : T("world.resident.already_resting", "Already resting."),
             _game.Schedule.GetAssignment(_id) == "rest");
     }
 
     private void RenderHouse()
     {
-        _content.AddChild(Text($"Day {_day} • {_phase} • Stamina {_game.State.Player.Stamina}/{_game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus}"));
-        _content.AddChild(Text("Night choices are revisable until you sleep. A prepared hot bath grants its extra energy tomorrow, separately from tonight's plan."));
+        _content.AddChild(Text(T("world.house.summary", "Day {0} • {1} • Stamina {2}/{3}", _day, EnumDisplayName(_phase), _game.State.Player.Stamina, _game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus)));
+        _content.AddChild(Text(T("world.house.help", "Night choices are revisable until you sleep. A prepared hot bath grants its extra energy tomorrow, separately from tonight's plan.")));
         if (_phase is DayPhase.Evening or DayPhase.Night)
-            Action("HouseBath", _game.State.Ranch.BathtubClean ? $"Hot bath — tomorrow +{PlayerStaminaService.HotBathNextDayBonus} stamina" : "Quick shower — no next-day bonus",
+            Action("HouseBath", _game.State.Ranch.BathtubClean ? T("world.house.bath", "Hot bath — tomorrow +{0} stamina", PlayerStaminaService.HotBathNextDayBonus) : T("world.house.shower", "Quick shower — no next-day bonus"),
                 () => _game.UsePlayerBath().Message, _game.State.Player.BathedToday);
         if (_phase == DayPhase.Night)
         {
-            foreach (var (id, text) in new[] { ("rest", "Rest — recover resident energy"), ("train", "Training — one extra growth pass"), ("admin", "Admin — reduce workload") })
-                Action("HousePlan_" + id, text, () => _game.TrySelectNightAction(id, _generation, _day) ? "Night plan selected." : "Plan unchanged.", _game.State.Calendar.NightAction == id);
-            Action("HouseSleep", "Sleep and settle the day", () =>
+            foreach (var (id, text) in new[] { ("rest", T("world.house.plan.rest", "Rest — recover resident energy")), ("train", T("world.house.plan.train", "Training — one extra growth pass")), ("admin", T("world.house.plan.admin", "Admin — reduce workload")) })
+                Action("HousePlan_" + id, text, () => _game.TrySelectNightAction(id, _generation, _day) ? T("world.house.selected", "Night plan selected.") : T("world.house.unchanged", "Plan unchanged."), _game.State.Calendar.NightAction == id);
+            Action("HouseSleep", T("world.house.sleep", "Sleep and settle the day"), () =>
             {
                 var generation = _generation;
-                if (!_game.TryAdvanceTime(generation, _day, _phase)) return "Select a night plan first.";
+                if (!_game.TryAdvanceTime(generation, _day, _phase)) return T("world.house.select_first", "Select a night plan first.");
                 // The state notification closes this stale-day panel. Open only the matching report.
                 if (_game.StateGeneration == generation) _world.OpenDedicatedService("report");
-                return "A new day begins.";
+                return T("world.house.new_day", "A new day begins.");
             }, !_game.HasNightPlan);
         }
-        else _content.AddChild(Text("Return at night to choose Rest, Training or Admin and settle the day."));
-        Service("clothing_list", "Wardrobe");
-        Service("room_assign", "Assign rooms");
-        Service("training", "Personal training");
+        else _content.AddChild(Text(T("world.house.return", "Return at night to choose Rest, Training or Admin and settle the day.")));
+        Service("clothing_list", T("world.service.wardrobe", "Wardrobe"));
+        Service("room_assign", T("world.service.rooms", "Assign rooms"));
+        Service("training", T("world.service.training", "Personal training"));
         foreach (var character in _game.Roster.Characters.Where(c => _game.Schedule.GetAssignment(c.Id) != "rest"))
         {
             var id = character.Id;
-            Action("HouseRest_" + id, $"Give {_game.Roster.DefinitionFor(character).DisplayName} the day off",
-                () => _game.TryAssignJob(id, "rest", _generation) ? "Rest assigned." : "Assignment unchanged.");
+            Action("HouseRest_" + id, T("world.house.day_off", "Give {0} the day off", _game.Roster.DefinitionFor(character).DisplayName),
+                () => _game.TryAssignJob(id, "rest", _generation) ? T("world.work.rest_success", "Rest assigned.") : T("world.work.unchanged", "Assignment unchanged."));
         }
     }
 
     private void RenderGuide()
     {
-        _title.Text = "Places";
-        _content.AddChild(Text("Choose one destination to mark. Follow its arrow, then interact there. This guide never assigns work, spends resources or teleports you."));
-        foreach (var station in _world.Ranch!.Stations.Where(s => s.RequiresWorker))
+        _title.Text = T("world.guide.title", "Places");
+        _content.AddChild(Text(T("world.guide.help", "Choose one destination to mark. Follow its arrow, then interact there. This guide never assigns work, spends resources or teleports you.")));
+        foreach (var station in _world.Ranch!.Stations.Where(s => s.RequiresWorker || s.TargetId is "ranch_house" or "pet_care"))
             Destination(new WorldDestination("ranch", station.TargetId, station.Label));
         foreach (var service in _world.Town!.Services)
             Destination(new WorldDestination("town", service.ServiceId, service.Label));
         Destination(new WorldDestination("ranch", RanchLeisureController.BoardId, "Community Board"));
         Destination(new WorldDestination("ranch", RanchLeisureController.CornerId, "Quiet corner"));
-        Action("ClearDestination", "Clear the destination", () => { _world.NavigationGuide?.ClearTarget(); return "Destination cleared."; });
+        Action("ClearDestination", T("world.guide.clear", "Clear the destination"), () => { _world.NavigationGuide?.ClearTarget(); return T("world.guide.cleared", "Destination cleared."); });
     }
 
     private void Destination(WorldDestination destination) => Action("Place_" + destination.TargetId,
-        $"{destination.Label} • {(destination.AreaId == "town" ? "Town" : "Ranch")}", () =>
+        T("world.guide.place", "{0} • {1}", WorldName(destination.TargetId, destination.Label), WorldName(destination.AreaId, destination.AreaId == "town" ? "Town" : "Ranch")), () =>
         { _world.NavigationGuide?.Track(destination); Close(); return ""; });
 
     private void Service(string screen, string label) => Action("Service_" + screen, label, () =>
     {
-        Close(); return _world.OpenDedicatedService(screen) ? "" : "Service unavailable.";
+        Close(); return _world.OpenDedicatedService(screen) ? "" : T("world.service.unavailable", "Service unavailable.");
     });
 
     private void Action(string name, string text, Func<string> command, bool disabled = false)

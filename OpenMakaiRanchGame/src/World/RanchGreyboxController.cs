@@ -1,4 +1,5 @@
 using System;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 using System.Collections.Generic;
 using Godot;
 using OpenMakaiRanch.App;
@@ -547,7 +548,7 @@ public partial class RanchGreyboxController : Node3D
         var displayName = game.Data.Facilities.TryGetValue(station.RequiredFacilityId, out var definition)
             ? definition.DisplayName
             : station.Label;
-        return (false, $"{displayName} is not built yet");
+        return (false, T("world.station.not_built", "{0} is not built yet", WorldName(station.TargetId, displayName)));
     }
 
     private ulong ResolveGeneration()

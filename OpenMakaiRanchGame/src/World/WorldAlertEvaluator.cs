@@ -1,4 +1,5 @@
 using System;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 using System.Collections.Generic;
 using System.Linq;
 using OpenMakaiRanch.App;
@@ -51,8 +52,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "night_plan_missing",
                 WorldAlertSeverity.Warning,
-                "Night plan missing",
-                "Choose Rest, Train or Admin before ending the day.",
+                T("world.alert.night_plan_missing.title", "Night plan missing"),
+                T("world.alert.night_plan_missing.detail", "Choose Rest, Train or Admin before ending the day."),
                 "ranch"));
         }
 
@@ -75,8 +76,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "season_transition_tomorrow",
                 WorldAlertSeverity.Info,
-                "Season changes tomorrow",
-                $"Today is {calendar.Season} {calendar.DayOfSeason}. Tomorrow begins {nextSeason}, Year {nextYear}. The world dressing and seasonal weather table will change with it.",
+                T("world.alert.season_transition_tomorrow.title", "Season changes tomorrow"),
+                T("world.alert.season_transition_tomorrow.detail", "Today is {0} {1}. Tomorrow begins {2}, Year {3}. The world dressing and seasonal weather table will change with it.", EnumDisplayName(calendar.Season), calendar.DayOfSeason, EnumDisplayName(nextSeason), nextYear),
                 "ranch"));
         }
         else if (calendar.DayOfSeason >= CalendarState.DaysPerSeason - 2)
@@ -84,8 +85,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "season_transition_soon",
                 WorldAlertSeverity.Info,
-                "Season change approaching",
-                $"{CalendarState.DaysPerSeason - calendar.DayOfSeason} day(s) remain in {calendar.Season}.",
+                T("world.alert.season_transition_soon.title", "Season change approaching"),
+                T("world.alert.season_transition_soon.detail", "{0} day(s) remain in {1}.", CalendarState.DaysPerSeason - calendar.DayOfSeason, EnumDisplayName(calendar.Season)),
                 "ranch"));
         }
 
@@ -95,8 +96,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "forecast_blizzard",
                 WorldAlertSeverity.Warning,
-                "Blizzard forecast tomorrow",
-                "Expect heavy snow, strong wind and reduced visibility. Finish important outdoor planning before the day ends.",
+                T("world.alert.forecast_blizzard.title", "Blizzard forecast tomorrow"),
+                T("world.alert.forecast_blizzard.detail", "Expect heavy snow, strong wind and reduced visibility. Finish important outdoor planning before the day ends."),
                 "schedule"));
         }
         else if (tomorrow is Weather.TorrentialRain or Weather.Storm)
@@ -104,8 +105,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "forecast_storm",
                 WorldAlertSeverity.Warning,
-                "Severe rain forecast tomorrow",
-                "Tomorrow's forecast calls for severe rain. Review staffing and supplies before settling the day.",
+                T("world.alert.forecast_storm.title", "Severe rain forecast tomorrow"),
+                T("world.alert.forecast_storm.detail", "Tomorrow's forecast calls for severe rain. Review staffing and supplies before settling the day."),
                 "schedule"));
         }
         else if (tomorrow is Weather.HeavySnow or Weather.HeavyRain or Weather.StrongWind)
@@ -113,8 +114,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "forecast_rough_weather",
                 WorldAlertSeverity.Info,
-                "Rough weather tomorrow",
-                $"Forecast: {tomorrow}. The world presentation will become more severe next morning.",
+                T("world.alert.forecast_rough_weather.title", "Rough weather tomorrow"),
+                T("world.alert.forecast_rough_weather.detail", "Forecast: {0}. The world presentation will become more severe next morning.", EnumDisplayName(tomorrow)),
                 "ranch"));
         }
         else if (OriginalCalendarRules.IsSnow(tomorrow) && calendar.Season == Season.Winter)
@@ -122,8 +123,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "forecast_snow",
                 WorldAlertSeverity.Info,
-                "Snow forecast tomorrow",
-                $"Forecast: {tomorrow}. Winter ground and particle presentation will react after rollover.",
+                T("world.alert.forecast_snow.title", "Snow forecast tomorrow"),
+                T("world.alert.forecast_snow.detail", "Forecast: {0}. Winter ground and particle presentation will react after rollover.", EnumDisplayName(tomorrow)),
                 "ranch"));
         }
     }
@@ -139,8 +140,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "cattle_health_critical",
                 WorldAlertSeverity.Critical,
-                "Cattle health critical",
-                $"Cattle health is {health}/100. Assign ranch care and review supplies before advancing the day.",
+                T("world.alert.cattle_health_critical.title", "Cattle health critical"),
+                T("world.alert.cattle_health_critical.detail", "Cattle health is {0}/100. Assign ranch care and review supplies before advancing the day.", health),
                 "schedule"));
         }
         else if (health <= 50)
@@ -148,8 +149,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "cattle_health_low",
                 WorldAlertSeverity.Warning,
-                "Cattle health is low",
-                $"Cattle health is {health}/100. Check ranch staffing and resources.",
+                T("world.alert.cattle_health_low.title", "Cattle health is low"),
+                T("world.alert.cattle_health_low.detail", "Cattle health is {0}/100. Check ranch staffing and resources.", health),
                 "schedule"));
         }
 
@@ -158,8 +159,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "dairy_unstaffed",
                 health <= 50 ? WorldAlertSeverity.Critical : WorldAlertSeverity.Warning,
-                "No one assigned to Dairy Work",
-                "Daily settlement applies +15g maintenance and a morale penalty when Dairy Work has no assigned resident.",
+                T("world.alert.dairy_unstaffed.title", "No one assigned to Dairy Work"),
+                T("world.alert.dairy_unstaffed.detail", "Daily settlement applies +15g maintenance and a morale penalty when Dairy Work has no assigned resident."),
                 "schedule"));
         }
 
@@ -168,8 +169,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "pasture_unstaffed",
                 WorldAlertSeverity.Info,
-                "Pasture is unstaffed",
-                "Nobody is assigned to Pasture Work. This mainly means no pasture output for the day.",
+                T("world.alert.pasture_unstaffed.title", "Pasture is unstaffed"),
+                T("world.alert.pasture_unstaffed.detail", "Nobody is assigned to Pasture Work. This mainly means no pasture output for the day."),
                 "schedule"));
         }
     }
@@ -186,8 +187,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "meals_empty",
                 WorldAlertSeverity.Info,
-                "No meal output stockpiled",
-                "The meals production stockpile is empty. This is not automatic starvation, but Kitchen/Cooking will produce more.",
+                T("world.alert.meals_empty.title", "No meal output stockpiled"),
+                T("world.alert.meals_empty.detail", "The meals production stockpile is empty. This is not automatic starvation, but Kitchen/Cooking will produce more."),
                 "schedule"));
         }
 
@@ -196,8 +197,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "meal_box_missing",
                 WorldAlertSeverity.Warning,
-                "No meal boxes for tired residents",
-                "Care feeding uses meal_box items, but none are in inventory while residents need recovery.",
+                T("world.alert.meal_box_missing.title", "No meal boxes for tired residents"),
+                T("world.alert.meal_box_missing.detail", "Care feeding uses meal_box items, but none are in inventory while residents need recovery."),
                 "shop"));
         }
 
@@ -206,8 +207,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "supplies_empty",
                 WorldAlertSeverity.Warning,
-                "Supplies depleted",
-                "Ranch supplies are at zero. Visit the General Store or assign a supply-producing job.",
+                T("world.alert.supplies_empty.title", "Supplies depleted"),
+                T("world.alert.supplies_empty.detail", "Ranch supplies are at zero. Visit the General Store or assign a supply-producing job."),
                 "shop"));
         }
         else if (supplies == 1)
@@ -215,8 +216,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "supplies_low",
                 WorldAlertSeverity.Info,
-                "Supplies are low",
-                "Only one supply unit remains.",
+                T("world.alert.supplies_low.title", "Supplies are low"),
+                T("world.alert.supplies_low.detail", "Only one supply unit remains."),
                 "shop"));
         }
     }
@@ -256,8 +257,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "roster_hp_critical",
                 WorldAlertSeverity.Critical,
-                "Injured ranch residents",
-                $"{criticalHp} resident(s) are at or below 25% HP.",
+                T("world.alert.roster_hp_critical.title", "Injured ranch residents"),
+                T("world.alert.roster_hp_critical.detail", "{0} resident(s) are at or below 25% HP.", criticalHp),
                 "roster"));
         }
 
@@ -266,8 +267,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "roster_exhausted",
                 criticalEnergy > 0 ? WorldAlertSeverity.Critical : WorldAlertSeverity.Warning,
-                "Residents need rest",
-                $"{criticalEnergy} have critically low energy; {criticalFatigue} have very high fatigue.",
+                T("world.alert.roster_exhausted.title", "Residents need rest"),
+                T("world.alert.roster_exhausted.detail", "{0} have critically low energy; {1} have very high fatigue.", criticalEnergy, criticalFatigue),
                 "schedule"));
         }
 
@@ -276,8 +277,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "roster_morale_low",
                 WorldAlertSeverity.Warning,
-                "Morale problems",
-                $"{lowMorale} resident(s) have morale at or below 20.",
+                T("world.alert.roster_morale_low.title", "Morale problems"),
+                T("world.alert.roster_morale_low.detail", "{0} resident(s) have morale at or below 20.", lowMorale),
                 "bond"));
         }
     }
@@ -292,8 +293,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "pets_hungry",
                 WorldAlertSeverity.Critical,
-                "Pet needs food",
-                $"{hungry} adopted pet(s) have hunger at or below 20.",
+                T("world.alert.pets_hungry.title", "Pet needs food"),
+                T("world.alert.pets_hungry.detail", "{0} adopted pet(s) have hunger at or below 20.", hungry),
                 "pets"));
         }
         else if (gettingHungry > 0)
@@ -301,8 +302,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "pets_getting_hungry",
                 WorldAlertSeverity.Warning,
-                "Pet getting hungry",
-                $"{gettingHungry} adopted pet(s) are getting hungry.",
+                T("world.alert.pets_getting_hungry.title", "Pet getting hungry"),
+                T("world.alert.pets_getting_hungry.detail", "{0} adopted pet(s) are getting hungry.", gettingHungry),
                 "pets"));
         }
     }
@@ -314,8 +315,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "workload_high",
                 WorldAlertSeverity.Warning,
-                "Ranch workload is very high",
-                $"Workload is {game.State.Ranch.Workload}/100. Night Admin can reduce it.",
+                T("world.alert.workload_high.title", "Ranch workload is very high"),
+                T("world.alert.workload_high.detail", "Workload is {0}/100. Night Admin can reduce it.", game.State.Ranch.Workload),
                 "ranch"));
         }
 
@@ -324,8 +325,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "bath_dirty",
                 WorldAlertSeverity.Info,
-                "Bath needs cleaning",
-                "The ranch bath is currently marked dirty.",
+                T("world.alert.bath_dirty.title", "Bath needs cleaning"),
+                T("world.alert.bath_dirty.detail", "The ranch bath is currently marked dirty."),
                 "ranch"));
         }
     }
@@ -339,8 +340,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "upkeep_risk",
                 WorldAlertSeverity.Critical,
-                "Cannot cover facility upkeep",
-                $"Current gold: {gold}g; facility upkeep: {upkeep}g.",
+                T("world.alert.upkeep_risk.title", "Cannot cover facility upkeep"),
+                T("world.alert.upkeep_risk.detail", "Current gold: {0}g; facility upkeep: {1}g.", gold, upkeep),
                 "ranch"));
         }
         else if (upkeep > 0 && gold < upkeep * 2)
@@ -348,8 +349,8 @@ public static class WorldAlertEvaluator
             alerts.Add(new WorldAlert(
                 "upkeep_low_buffer",
                 WorldAlertSeverity.Warning,
-                "Low gold buffer",
-                $"Only {gold}g available against {upkeep}g facility upkeep.",
+                T("world.alert.upkeep_low_buffer.title", "Low gold buffer"),
+                T("world.alert.upkeep_low_buffer.detail", "Only {0}g available against {1}g facility upkeep.", gold, upkeep),
                 "ranch"));
         }
     }

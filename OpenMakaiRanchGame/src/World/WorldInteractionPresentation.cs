@@ -1,4 +1,5 @@
 using System;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 using Godot;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Character;
@@ -56,7 +57,7 @@ public partial class RanchGreyboxController
         {
             return new WorldInteractionPresentation(
                 npc,
-                $"Talk to {ResolveCharacterName(_nearbyCharacterId)}",
+                T("world.interact.talk", "Talk to {0}", ResolveCharacterName(_nearbyCharacterId)),
                 _nearbyCharacterDistance,
                 InteractionRange,
                 true,
@@ -67,7 +68,7 @@ public partial class RanchGreyboxController
         {
             return new WorldInteractionPresentation(
                 _nearbyStation,
-                _nearbyStation!.Label,
+                WorldName(_nearbyStation!.TargetId, _nearbyStation.Label),
                 _nearbyDistance,
                 InteractionRange,
                 (HasStationPresentation && _nearbyStation.RequiresWorker) || _nearbyStation.IsAvailable,
@@ -105,7 +106,7 @@ public partial class TownWorldController
                     : GameRoot.Instance!.Roster.DefinitionFor(character).DisplayName);
             return new WorldInteractionPresentation(
                 companion,
-                $"Talk to {name}",
+                T("world.interact.talk", "Talk to {0}", name),
                 _nearbyCompanionDistance,
                 InteractionRange,
                 true,
@@ -127,7 +128,7 @@ public partial class TownWorldController
         {
             return new WorldInteractionPresentation(
                 _nearbyService,
-                _nearbyService!.Label,
+                WorldName(_nearbyService!.ServiceId, _nearbyService.Label),
                 _nearbyServiceDistance,
                 InteractionRange,
                 _nearbyService.IsAvailable,

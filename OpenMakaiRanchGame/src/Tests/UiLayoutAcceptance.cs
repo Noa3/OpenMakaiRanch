@@ -71,6 +71,7 @@ public partial class UiLayoutAcceptance : Node
         var newGame = menu.GetNode<Button>(menu.NewGameButtonPath);
         Check(GetViewport().GuiGetFocusOwner() == newGame, "fresh main menu focuses New Game without a mouse");
         await CheckStartupLayouts(menu);
+        await CheckLocalizedTitle(menu);
         await Click(newGame);
         await Frames(15);
         var world = (WorldGameController)GetTree().CurrentScene;

@@ -4,6 +4,7 @@ using Godot;
 using OpenMakaiRanch.App;
 using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Gameplay;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 
 namespace OpenMakaiRanch.Ui;
 
@@ -169,8 +170,8 @@ public partial class RanchCornerPanel : PanelContainer
         _share = Action(content, "Share", () => Execute("share"));
         _shareHint = Text(string.Empty); content.AddChild(_shareHint);
         content.AddChild(Text("Solo recovery and companionship are separate choices. Walking is free. The prepared hot bath still gives its normal bonus on the next day. Skipping this corner has no penalty."));
-        Action(content, "PlanSupplies", () => Plan("schedule")).Text = "Plan ranch work / supplies";
-        Action(content, "Residents", () => Plan("ranch")).Text = "Return to ranch management";
+        Action(content, "PlanSupplies", () => Plan("schedule")).Text = T("world.corner.find_supplies", "Find supply production");
+        Action(content, "Residents", () => Plan("ranch")).Text = T("world.corner.find_places", "Find a place on the ranch");
         _back = Action(layout, "Back", () => { if (IsVisibleInTree()) BackRequested?.Invoke(); });
         _back.Text = "Back to the world";
     }

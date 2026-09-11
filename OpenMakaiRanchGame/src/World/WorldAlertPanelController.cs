@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 using OpenMakaiRanch.App;
 
 namespace OpenMakaiRanch.World;
@@ -71,8 +72,8 @@ public partial class WorldAlertPanelController : PanelContainer
         _buttons.Clear();
         if (_header is not null)
         {
-            _header.Text = $"{(HighestSeverity == WorldAlertSeverity.Critical ? "ATTENTION" : "RANCH CHECK")} • {alerts.Count}";
-            _header.TooltipText = "Click an issue to mark its station. Places [M] lists all destinations. Arrows indicate direction, not an obstacle-free route.";
+            _header.Text = HighestSeverity == WorldAlertSeverity.Critical ? T("world.alert.header.critical", "ATTENTION • {0}", alerts.Count) : T("world.alert.header", "RANCH CHECK • {0}", alerts.Count);
+            _header.TooltipText = T("world.alert.help", "Select an issue to mark its station. Places [{0}] lists destinations. Arrows show direction, not an obstacle-free route.", InputBindingService.GetKeyboardLabel("toggle_management"));
             _header.AddThemeColorOverride("font_color", HighestSeverity switch
             { WorldAlertSeverity.Critical => new Color("ff8a8a"), WorldAlertSeverity.Warning => new Color("ffd27a"), _ => new Color("b9d8ff") });
         }
@@ -84,7 +85,7 @@ public partial class WorldAlertPanelController : PanelContainer
                 Alignment = HorizontalAlignment.Left, ClipText = true,
                 TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
                 CustomMinimumSize = new Vector2(0, 32),
-                TooltipText = $"{alert.Title}\n{alert.Detail}\nMark: {destination.Label} ({destination.AreaId}). This does not perform an action remotely." };
+                TooltipText = T("world.alert.tip", "{0}\n{1}\nMark: {2} ({3}). This does not perform an action remotely.", alert.Title, alert.Detail, destination.DisplayName, WorldName(destination.AreaId, destination.AreaId)) };
             _rows.AddChild(button); _buttons.Add((button, alert));
             button.Pressed += () =>
             {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 using OpenMakaiRanch.App;
 
 namespace OpenMakaiRanch.World;
@@ -62,7 +63,7 @@ public partial class WorldNavigationController : Node
         var camera = GetViewport().GetCamera3D();
         var arrow = camera is null ? "" : WorldDestinationCatalog.DirectionArrow(player.GlobalPosition, point.GlobalPosition, camera.GlobalBasis);
         var distance = new Vector2(point.GlobalPosition.X - player.GlobalPosition.X, point.GlobalPosition.Z - player.GlobalPosition.Z).Length();
-        return $"{arrow} {distance:0}m{(viaGate ? " · gate" : "")}";
+        return viaGate ? T("world.direction.gate", "{0} {1:0} m · gate", arrow, distance) : T("world.direction.distance", "{0} {1:0} m", arrow, distance);
     }
 
     public void Refresh()
@@ -123,7 +124,7 @@ public partial class WorldNavigationController : Node
         _waypoint.Position = new Vector2(Mathf.Clamp(projected.X, 16, Mathf.Max(16, viewport.X - width - 16)),
             Mathf.Clamp(projected.Y, 156, Mathf.Max(156, viewport.Y - 138)));
         _waypoint.Size = new Vector2(width, 52);
-        _waypoint.Text = $"{Direction(Target)} · {Target.Label}" + (viaGate ? "\nFollow the gate to the other area" : "");
+        _waypoint.Text = viaGate ? T("world.direction.other_area", "{0} · {1}\nFollow the gate to the other area", Direction(Target), Target.DisplayName) : T("world.direction.target", "{0} · {1}", Direction(Target), Target.DisplayName);
         _waypoint.Visible = true;
     }
 }

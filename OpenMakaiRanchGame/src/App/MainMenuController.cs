@@ -60,6 +60,7 @@ public partial class MainMenuController : Control
 		}
 
 		ApplyTheme();
+		SetupTitleVista();
 		SetupLangPicker();
 		RefreshState();
 	}
@@ -172,6 +173,7 @@ public partial class MainMenuController : Control
 		_quitButton.Text = T("mainmenu.quit", "Quit");
 		_quitButton.TooltipText = T("mainmenu.quit_tip", "Close Open Makai Ranch.");
 		_langPicker.TooltipText = T("mainmenu.language_tip", "Change the interface language.");
+		RefreshTitleVista();
 	}
 
 	private void HandleStart(bool loadExisting, bool newGamePlus = false)

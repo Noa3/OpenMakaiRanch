@@ -1,10 +1,14 @@
 using System;
 using Godot;
+using static OpenMakaiRanch.Locale.LocaleCatalog;
 
 namespace OpenMakaiRanch.World;
 
 /// <summary>Stable presentation destinations. These are directions, never remote gameplay commands.</summary>
-public sealed record WorldDestination(string AreaId, string TargetId, string Label);
+public sealed record WorldDestination(string AreaId, string TargetId, string Label)
+{
+    public string DisplayName => WorldName(TargetId, Label);
+}
 
 public static class WorldDestinationCatalog
 {

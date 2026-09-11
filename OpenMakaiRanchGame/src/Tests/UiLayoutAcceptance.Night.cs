@@ -106,6 +106,7 @@ public partial class UiLayoutAcceptance
         await CheckAdventureJourney(world);
         await CheckManagementJourney(world);
         await CheckStationJourney(world);
+        await CheckLocalizationJourney(world);
     }
 
     private async Task FocusClick(Button button)

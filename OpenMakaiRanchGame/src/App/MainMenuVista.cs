@@ -63,7 +63,7 @@ public partial class MainMenuVista : SubViewportContainer
         {
             _lastSize = Size;
             // Capped rendering resolution; the presentation is not a second full game world.
-            StretchShrink = Mathf.Max(1, Mathf.CeilToInt(Size.X / 960f));
+            StretchShrink = Mathf.Max(1, Mathf.CeilToInt(Mathf.Max(Size.X / 960f, Size.Y / 540f)));
         }
         if (GameRoot.Instance?.State.Settings.ReducedMotion != true)
         {

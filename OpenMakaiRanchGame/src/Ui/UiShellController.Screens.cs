@@ -2259,6 +2259,7 @@ public partial class UiShellController
         ui.AddChild(localeRow);
         localeRow.AddChild(AddStyledLine(T("screen.settings.language", "Language"), true));
         var localePicker = StyledPicker(180);
+        localePicker.Name = "LanguagePicker";
         var selectedLocaleIndex = 0;
         for (var localeIdx = 0; localeIdx < AvailableLocales.Length; localeIdx++)
         {
@@ -2274,6 +2275,7 @@ public partial class UiShellController
             ExecuteUiAction(() => _game.SetLocale(selectedLocale), false);
         };
         localeRow.AddChild(localePicker);
+        ui.AddChild(MutedLabel(T("world.language.coverage", "New world interfaces are available in English and German. Text not yet translated uses English.")));
 
         var controlsCard = CardContainer();
         _content.AddChild(controlsCard);
