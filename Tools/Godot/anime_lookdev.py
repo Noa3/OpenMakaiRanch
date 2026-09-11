@@ -23,6 +23,8 @@ EXPECTED_CAPTURES = {
     "neutral-high.png", "neutral-matte.png", "daylight-high.png", "interior-high.png",
     "sunset-high.png", "night-high.png", "neutral-low.png", "neutral-medium.png",
     "neutral-ultra.png", "portrait-high.png", "portrait-rotated-high.png",
+    "portrait-blue-iris-high.png", "portrait-unmasked-high.png", "portrait-uv-shift-high.png",
+    "portrait-profile-high.png", "portrait-night-high.png",
 }
 PROJECT = '''config_version=5
 [application]

@@ -32,9 +32,13 @@ public static class AnimeAvatarMaterials
             if (kind is null) continue;
             var profile = AnimeSurfaceProfile.Create(kind.Value, source.AlbedoColor);
             profile.AlbedoTexture = source.AlbedoTexture;
+            profile.UvScale = new Vector2(source.Uv1Scale.X, source.Uv1Scale.Y);
+            profile.UvOffset = new Vector2(source.Uv1Offset.X, source.Uv1Offset.Y);
             if (source.NormalEnabled) { profile.NormalTexture = source.NormalTexture; profile.NormalStrength = source.NormalScale; }
-            if (kind == AnimeSurfaceKind.Eye)
+            if (kind == AnimeSurfaceKind.Eye && source.AlbedoTexture is null)
             {
+                // Only the existing untextured spherical stand-in gets a procedural iris.
+                // Authored eye art must not be painted over or lose its selected tint/UVs.
                 profile.ProceduralIris = true;
                 profile.IrisColor = source.AlbedoColor;
                 profile.BaseColor = new Color(0.9f, 0.92f, 0.88f);

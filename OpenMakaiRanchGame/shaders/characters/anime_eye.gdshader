@@ -1,6 +1,7 @@
 shader_type spatial;
 render_mode cull_back, diffuse_burley, specular_schlick_ggx;
 #include "anime_common.gdshaderinc"
+uniform float clearcoat_strength : hint_range(0.0, 1.0) = 0.35;
 uniform bool procedural_iris = false;
 uniform vec4 iris_color : source_color = vec4(0.3, 0.55, 0.25, 1.0);
 uniform float iris_radius : hint_range(0.15, 0.8) = 0.52;
@@ -14,8 +15,9 @@ void vertex() {
 // Opaque eye surface: stable depth/SSAO/SSR behavior; no screen-space refraction or fake emission.
 // Procedural iris is a test-geometry convenience, NOT a replacement for an authored eye asset.
 void fragment() {
-    vec4 mask = read_mask(UV);
-    ALBEDO = read_albedo(UV);
+    vec2 surface_uv = material_uv(UV);
+    vec4 mask = read_mask(surface_uv);
+    ALBEDO = read_albedo(surface_uv);
     METALLIC = 0.0;
     ROUGHNESS = clamp(roughness * mask.g, 0.18, 1.0);
     SPECULAR = specular_strength * mask.b;
@@ -23,7 +25,7 @@ void fragment() {
     AO_LIGHT_AFFECT = 0.0;
     RIM = rim_strength;
     RIM_TINT = 0.45;
-    NORMAL_MAP = use_normal ? texture(normal_texture, UV).rgb : vec3(0.5, 0.5, 1.0);
+    NORMAL_MAP = use_normal ? texture(normal_texture, surface_uv).rgb : vec3(0.5, 0.5, 1.0);
     NORMAL_MAP_DEPTH = normal_strength;
     if (procedural_iris) {
         vec3 direction = normalize(local_direction + vec3(0.0, 0.0, 0.00001));
@@ -39,6 +41,6 @@ void fragment() {
         pigment = mix(pigment, vec3(0.008), pupil);
         ALBEDO = mix(ALBEDO, pigment, iris);
     }
-    CLEARCOAT = 0.35;
+    CLEARCOAT = clearcoat_strength;
     CLEARCOAT_ROUGHNESS = 0.18;
 }
