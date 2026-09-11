@@ -17,13 +17,15 @@ public partial class UiShellController
     {
         var banner = CardContainer();
         banner.Name = "NightPlanningCard";
-        banner.AddThemeConstantOverride("separation", 6);
         _content.AddChild(banner);
-        banner.AddChild(AddStyledLine(T("screen.night.title", "Night Phase — Choose Tonight's Work"), true));
+        var inner = CardContent();
+        inner.Name = "NightPlanningContent";
+        banner.AddChild(inner);
+        inner.AddChild(AddStyledLine(T("screen.night.title", "Night Phase — Choose Tonight's Work"), true));
         var selected = _game.State.Calendar.NightAction;
         if (_game.HasNightPlan)
-            banner.AddChild(MutedLabel($"{T("screen.night.selected", "Selected")}: {NightActionLabel(selected)}"));
-        banner.AddChild(MutedLabel("You can change this choice until End Day. Choosing an option does not advance time or spend stamina. A prepared bath's next-morning bonus is kept."));
+            inner.AddChild(MutedLabel($"{T("screen.night.selected", "Selected")}: {NightActionLabel(selected)}"));
+        inner.AddChild(MutedLabel("You can change this choice until End Day. Choosing an option does not advance time or spend stamina. A prepared bath's next-morning bonus is kept."));
         var generation = _game.StateGeneration;
         var day = _game.State.Calendar.Day;
         var revision = _viewRevision;
@@ -42,8 +44,8 @@ public partial class UiShellController
                 if (!IsLiveDayControl(button, revision, generation, day, DayPhase.Night)) return;
                 if (_game.TrySelectNightAction(action, generation, day)) _game.Feedback.PlayConfirm();
             };
-            banner.AddChild(button);
-            banner.AddChild(MutedLabel(detail));
+            inner.AddChild(button);
+            inner.AddChild(MutedLabel(detail));
         }
     }
 

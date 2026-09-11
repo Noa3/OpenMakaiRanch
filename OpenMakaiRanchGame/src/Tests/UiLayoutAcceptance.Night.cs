@@ -37,6 +37,11 @@ public partial class UiLayoutAcceptance
         var status = shell.GetNode<Label>(shell.StatusLabelPath);
         Check(!string.IsNullOrEmpty(status.Text) && status.TooltipText == status.Text,
             "bounded header retains the complete status message in its tooltip");
+        var initialChoices = Descendants(shell).OfType<Button>()
+            .Where(b => b.Name.ToString().StartsWith("NightChoice_")).ToArray();
+        Check(initialChoices.Length == 3 && initialChoices[0].GetGlobalRect().End.Y <= initialChoices[1].GlobalPosition.Y
+            && initialChoices[1].GetGlobalRect().End.Y <= initialChoices[2].GlobalPosition.Y,
+            "nightly choices have separate non-overlapping hit targets, not stacked panel children");
         foreach (var choice in new[] { "rest", "train", "admin", "rest" })
         {
             var button = Descendants(shell).OfType<Button>().Single(b => b.Name == "NightChoice_" + choice);
@@ -64,8 +69,11 @@ public partial class UiLayoutAcceptance
         world.OpenManagementScreen("ranch");
         await Frames(6);
         await FocusClick(Descendants(shell).OfType<Button>().Single(b => b.Name == "NightChoice_train"));
-        var bath = game.UsePlayerBath();
-        Check(bath.Used && bath.UsedCleanBath && game.State.Calendar.NightAction == "train",
+        var bathButton = Descendants(shell).OfType<Button>().Single(b => b.Name == "PlayerBathAction");
+        await FocusClick(bathButton);
+        Check(game.State.Player.BathedToday
+            && game.State.Player.NextDayStaminaBonus == PlayerStaminaService.HotBathNextDayBonus
+            && game.State.Calendar.NightAction == "train",
             "a prepared bath schedules tomorrow's bonus without overwriting the chosen Training plan");
         await Frames(6);
         var ending = Descendants(shell).OfType<Button>().Single(b => b.Name == "OverviewAdvanceTime");

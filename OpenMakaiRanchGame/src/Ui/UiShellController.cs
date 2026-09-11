@@ -352,19 +352,22 @@ public partial class UiShellController : Control
 		if (_game.State.Calendar.Phase is DayPhase.Evening or DayPhase.Night && !nowFullScreen && screenId is not ("report" or "combat"))
 		{
 			var recovery = CardContainer();
-			recovery.AddThemeConstantOverride("separation", 6);
+			recovery.Name = "PlayerRecoveryCard";
 			_content.AddChild(recovery);
+			var recoveryInner = CardContent();
+			recovery.AddChild(recoveryInner);
 			var staminaCapacity = _game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus;
 			var restedText = _game.State.Player.DailyStaminaBonus > 0
 				? $"  ·  Well Rested +{_game.State.Player.DailyStaminaBonus}"
 				: string.Empty;
-			recovery.AddChild(AddStyledLine($"Player Stamina: {_game.State.Player.Stamina}/{staminaCapacity}{restedText}", true));
+			recoveryInner.AddChild(AddStyledLine($"Player Stamina: {_game.State.Player.Stamina}/{staminaCapacity}{restedText}", true));
 			var cleanBath = _game.State.Ranch.BathtubClean;
 			var bathLabel = cleanBath
 				? $"Take a hot bath (tomorrow +{PlayerStaminaService.HotBathNextDayBonus} STA)"
 				: "Take a quick shower (no Well Rested bonus)";
 			var bath = SecondaryButton(bathLabel,
 				"A prepared Evening/Night hot bath schedules extra stamina for tomorrow. A shower handles hygiene but gives no next-day stamina bonus.");
+			bath.Name = "PlayerBathAction";
 			bath.Disabled = _game.State.Player.BathedToday;
 			var bathGeneration = _game.StateGeneration;
 			var bathDay = _game.State.Calendar.Day;
@@ -373,10 +376,10 @@ public partial class UiShellController : Control
 			{
 				if (!IsLiveDayControl(bath, revision, bathGeneration, bathDay, bathPhase)) return;
 				var result = _game.UsePlayerBath();
-				SetStatus(result.Message, result.Used);
+				SetStatus(result.Message, !result.Used);
 				ShowScreen(_currentScreen);
 			};
-			recovery.AddChild(bath);
+			recoveryInner.AddChild(bath);
 		}
 
 		if (_game.State.Calendar.Phase == DayPhase.Night && !nowFullScreen && screenId is not ("ranch" or "report" or "combat"))
