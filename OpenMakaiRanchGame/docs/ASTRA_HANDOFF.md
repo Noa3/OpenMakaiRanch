@@ -40,8 +40,8 @@ All three workflows succeeded on **`2a958b1c4425e31acd48cf5f604cdda378fc4846`**:
 
 | Workflow | Run | Result |
 | --- | --- | --- |
-| Godot Mono CI #591 | `34587496873` | success |
-| Build and Smoke Test #599 | `34587496889` | success |
+| Godot 4.7 Mono CI #591 | `34587496873` | success |
+| Build Smoke Check #599 | `34587496874` | success |
 | Rendered UI acceptance #34 | `34587496917` | success |
 
 C# 12/preview denial, compilation, 48 Python tests, verified engine import and isolated smoke pass. Downloaded logs contain **1,731 OK / zero failed smoke assertions / one SMOKE PASS**. The rendered JSON has **316 passing checks / zero failures / 43 PNGs**. This adds three headless assertions and 76 rendered assertions/nine PNGs to the prior 1,728/240/34 checkpoint; previous assertions remain.

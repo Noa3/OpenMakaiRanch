@@ -4,7 +4,7 @@ Updated **2026-09-11**, **PR #13**, verified code head **`2a958b1c4425e31acd48cf
 
 ## Current verified status and diagnostics
 
-Godot **#591 / `34587496873`**, Build **#599 / `34587496889`**, and Rendered UI **#34 / `34587496917`** succeeded. **1,731 smoke assertions**, **316 rendered assertions**, **48 Python tests**, **43 viewport PNGs**. The build reports zero warnings/errors. Downloaded archives were hash-checked; guild, combat, store, schedule and save/load screenshots were opened and inspected. New mission/management coverage follows the retained 240 UI checks; the previous day-contract and nightly-plan guards remain.
+Godot **#591 / `34587496873`**, Build **#599 / `34587496874`**, and Rendered UI **#34 / `34587496917`** succeeded. **1,731 smoke assertions**, **316 rendered assertions**, **48 Python tests**, **43 viewport PNGs**. The build reports zero warnings/errors. Downloaded archives were hash-checked; guild, combat, store, schedule and save/load screenshots were opened and inspected. New mission/management coverage follows the retained 240 UI checks; the previous day-contract and nightly-plan guards remain.
 
 Smoke retains five intentional invalid-save rejection diagnostics. The UI-only scenario submits no deliberately bad saves and rejects logged ERROR/SCRIPT ERROR even if Godot swallows a callback exception; the inspected final rendered console has none.
 

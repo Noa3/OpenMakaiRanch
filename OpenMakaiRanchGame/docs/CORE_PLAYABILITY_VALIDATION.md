@@ -29,8 +29,8 @@ All three existing workflows completed successfully on `2a958b1c4425e31acd48cf5f
 
 | Workflow | Run | Result |
 | --- | --- | --- |
-| Godot Mono CI #591 | `34587496873` | success |
-| Build and Smoke Test #599 | `34587496889` | success |
+| Godot 4.7 Mono CI #591 | `34587496873` | success |
+| Build Smoke Check #599 | `34587496874` | success |
 | Rendered UI acceptance #34 | `34587496917` | success |
 
 The Godot Mono job records **48 Python tests passing**, **build success with zero warnings and zero errors**, and **1,731 SMOKE OK / zero SMOKE FAIL / one SMOKE PASS**. The rendered result records **316/316 checks passing, 43 PNG captures and zero runtime ERROR/SCRIPT ERROR**. C# 12, SDK 10.0.401, net8.0, Godot 4.7.2 Mono, save schema 16, original read-only reference data and existing CI workflows remain unchanged.
