@@ -180,8 +180,12 @@ public partial class AnimeLookDevChecks : Node
 
     private async Task<Image> Capture(string name)
     {
-        await Frames(3);
-        var image = _study!.StudyViewport.GetTexture().GetImage();
+        var expectedTaa = RenderingServer.GetCurrentRenderingMethod().ToString() == "forward_plus"
+            && (_study!.QualityName is "High" or "Ultra");
+        Check(name + " temporal AA follows capability and quality", _study!.StudyViewport.UseTaa == expectedTaa);
+        var warmupFrames = _study.StudyViewport.UseTaa ? 12 : 3;
+        await Frames(warmupFrames);
+        var image = _study.StudyViewport.GetTexture().GetImage();
         if (image.IsEmpty()) throw new InvalidOperationException("Empty rendered viewport.");
         var file = name + ".png";
         if (image.SavePng(Path.Combine(_output, file)) != Error.Ok) throw new IOException("Could not write " + file);
@@ -194,7 +198,7 @@ public partial class AnimeLookDevChecks : Node
             min = Math.Min(min, luminance); max = Math.Max(max, luminance);
         }
         Check(name + " has rendered tonal variation", max - min > 0.08f);
-        _captures.Add(new { file, width = image.GetWidth(), height = image.GetHeight(), luminance_min = min, luminance_max = max });
+        _captures.Add(new { file, width = image.GetWidth(), height = image.GetHeight(), luminance_min = min, luminance_max = max, taa = _study.StudyViewport.UseTaa, warmup_frames = warmupFrames });
         return image;
     }
 

@@ -148,6 +148,13 @@ def validate_evidence(output: Path, renderer: str, run_id: str, commit: str) -> 
     return result
 
 
+def runtime_arguments(engine: str, project: Path, renderer: str) -> list[str]:
+    # This is a silent rendering lab, not an audio test. CI has no physical sound device.
+    # Select Dummy explicitly instead of tolerating an ALSA initialization ERROR in the log.
+    return [engine, "--path", str(project), "--rendering-method", renderer,
+            "--audio-driver", "Dummy", "--disable-vsync"]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", default=os.environ.get("GODOT_BIN"))
@@ -178,7 +185,7 @@ def main(argv: list[str] | None = None) -> int:
     run_command(["dotnet", "build", "AnimeLookDevValidation.csproj"], project, env, output / "build.log", args.timeout)
     run_command([engine, "--headless", "--editor", "--path", str(project), "--import"], project, env,
                 output / "import.log", args.timeout, importing=True)
-    run_command([engine, "--path", str(project), "--rendering-method", args.renderer, "--disable-vsync"],
+    run_command(runtime_arguments(engine, project, args.renderer),
                 project, env, output / "runtime.log", args.timeout)
     if not args.interactive:
         result = validate_evidence(output, args.renderer, run_id, commit)

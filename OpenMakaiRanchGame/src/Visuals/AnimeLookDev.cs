@@ -193,6 +193,9 @@ public partial class AnimeLookDev : Control
         // Native-size comparison on every tier: resolution is held constant to judge materials.
         StudyViewport.Scaling3DScale = 1f;
         StudyViewport.Msaa3D = QualityName == "Low" ? Viewport.Msaa.Msaa2X : Viewport.Msaa.Msaa4X;
+        // Local temporal accumulation reduces fine highlight/soft-shadow shimmer in the static study.
+        // Do not apply this globally: animated production characters need separate ghosting review.
+        StudyViewport.UseTaa = ForwardPlus && (QualityName is "High" or "Ultra");
         StudyEnvironment.SsaoEnabled = ForwardPlus && policy.Ssao;
         StudyEnvironment.GlowEnabled = ForwardPlus && policy.Glow;
         // SSR/SSIL/GI/fog are not stacked blindly on a material test. World ownership stays elsewhere.

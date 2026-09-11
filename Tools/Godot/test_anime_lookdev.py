@@ -88,6 +88,12 @@ class LookDevRunnerTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             lab.isolated_environment(self.root, "forward_plus", "other", "abc")
 
+    def test_runtime_uses_real_renderer_and_explicit_dummy_audio(self):
+        args = lab.runtime_arguments("godot", self.root, "forward_plus")
+        self.assertNotIn("--headless", args)
+        self.assertEqual(args[args.index("--audio-driver") + 1], "Dummy")
+        self.assertEqual(args[args.index("--rendering-method") + 1], "forward_plus")
+
     def test_runtime_error_is_never_allowed(self):
         message = 'ERROR: EditorSettings not instantiated yet when getting setting "export/android/shutdown_adb_on_exit"'
         self.assertTrue(lab.errors_in_log(message))
