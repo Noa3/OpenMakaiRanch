@@ -31,22 +31,19 @@ public sealed class EquipmentService
 		var slot = SlotForCategory(item.Slot);
 		if (slot is null) return false;
 
-		character.EquippedItems ??= new Dictionary<string, string>();
-
-		// Unequip current item back to inventory
-		if (character.EquippedItems.TryGetValue(slot, out var currentItemId))
-		{
-			_state.Inventory.Items[currentItemId] = _state.Inventory.Items.GetValueOrDefault(currentItemId) + 1;
-		}
-
-		// Remove from inventory
-		if (!_state.Inventory.Items.TryGetValue(itemId, out var count) || count <= 0)
+		// Validate both sides of the swap before returning or consuming anything. Repeatedly
+		// requesting an unavailable item must not duplicate the currently equipped item.
+		if (!_state.Inventory.Items.TryGetValue(itemId, out var count) || count <= 0) return false;
+		var currentItemId = character.EquippedItems?.GetValueOrDefault(slot);
+		if (currentItemId == itemId) return true; // Already equipped: an inert, successful no-op.
+		if (currentItemId is not null && _state.Inventory.Items.GetValueOrDefault(currentItemId) == int.MaxValue)
 			return false;
-		if (count <= 1)
-			_state.Inventory.Items.Remove(itemId);
-		else
-			_state.Inventory.Items[itemId] = count - 1;
 
+		character.EquippedItems ??= new Dictionary<string, string>();
+		if (count <= 1) _state.Inventory.Items.Remove(itemId);
+		else _state.Inventory.Items[itemId] = count - 1;
+		if (currentItemId is not null)
+			_state.Inventory.Items[currentItemId] = _state.Inventory.Items.GetValueOrDefault(currentItemId) + 1;
 		character.EquippedItems[slot] = itemId;
 		return true;
 	}
@@ -106,8 +103,7 @@ public sealed class EquipmentService
 	private int SumBonuses(string characterId, System.Func<ItemDefinition, int> selector)
 	{
 		var character = _state.Roster.Characters.FirstOrDefault(c => c.Id == characterId);
-		if (character is null) return 0;
-		character.EquippedItems ??= new Dictionary<string, string>();
+		if (character?.EquippedItems is null) return 0;
 
 		int total = 0;
 		foreach (var kvp in character.EquippedItems)

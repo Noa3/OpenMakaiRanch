@@ -215,7 +215,7 @@
   "project.corner.produce": "Assign Office Work, then settle the day",
   "project.corner.restore": "Visit the quiet corner",
   "project.kitchen.title": "A better kitchen",
-  "project.kitchen.detail": "Upgrade the kitchen to level two. Its existing production bonus grows; work still needs an assignment and daily settlement.",
+  "project.kitchen.detail": "Upgrade the kitchen to level two. Review the price and daily upkeep first; job output still depends on workers, condition and research.",
   "project.kitchen.work": "Assign Kitchen Chores, then settle the day",
   "project.kitchen.build": "Upgrade the kitchen at its station",
   "project.supplier.title": "A dependable neighbour",
@@ -338,5 +338,9 @@
   "world.station.changed": "The plan or price changed. Review this station again; nothing was charged.",
   "world.station.upgrade.done": "Level {0} completed for {1} gold. Daily facility upkeep is now {2} gold; no work output was paid.",
   "world.station.assignment.done": "Work plan updated. Production and earnings are applied only at day end.",
-  "world.station.nearby": "Open this station nearby before changing its team or equipment."
+  "world.station.nearby": "Open this station nearby before changing its team or equipment.",
+  "world.station.forecast.help": "Gross work at current condition, not your final daily balance. Night plans and later care can change output; upkeep and events are separate.",
+  "world.station.forecast.worker": "Work preview: {0} {1} • {2} G gross",
+  "world.station.forecast.breakdown": "Base {0}; skill contribution {1}; planning {2}; talent factor {3:P0}; fatigue factor {4:P0}; specialist research adds {5} units. Evaluated in settlement order with the same rounding.",
+  "world.station.forecast.auto_rest": "At this fatigue, the daily check will assign Rest before production. Recover before sleeping to keep a work assignment."
 }

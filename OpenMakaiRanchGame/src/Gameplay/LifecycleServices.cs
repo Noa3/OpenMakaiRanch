@@ -239,51 +239,36 @@ public sealed class ResourceConsumptionService
     }
 }
 
+public sealed record RanchCompletionProgress(int Missions, int MissionTarget, int Bonds, int BondTarget,
+    int Facilities, int FacilityTarget, int Research, int ResearchTarget)
+{
+    public bool Complete => Missions >= MissionTarget && Bonds >= BondTarget
+        && Facilities >= FacilityTarget && Research >= ResearchTarget;
+}
+
 public sealed class WinConditionService
 {
     private readonly SaveState _state;
     private readonly DataRegistry _data;
+    public WinConditionService(SaveState state, DataRegistry data) { _state = state; _data = data; }
 
-    public WinConditionService(SaveState state, DataRegistry data)
+    public RanchCompletionProgress InspectProgress()
     {
-        _state = state;
-        _data = data;
+        var bondTarget = Math.Min(_data.BondEvents.Values.Select(e => e.CharacterId).Distinct().Count(),
+            _state.Roster.Characters.Count);
+        // Unknown/duplicate imported IDs are not substitutes for actual catalog objectives.
+        return new(
+            _data.Missions.Keys.Count(id => _state.Adventure.DiscoveredMissionIds.Contains(id)), _data.Missions.Count,
+            Math.Min(bondTarget, _state.Roster.Characters.Count(c => c.Bond >= 40)), bondTarget,
+            _data.Facilities.Keys.Count(id => _state.Ranch.Facilities.TryGetValue(id, out var level) && level >= 5), _data.Facilities.Count,
+            _data.Skills.Keys.Count(id => _state.Research.UnlockedSkillIds.Contains(id)), _data.Skills.Count);
     }
 
-    public bool IsGameComplete()
-    {
-        int totalMissions = _data.Missions.Count;
-        int discovered = _state.Adventure.DiscoveredMissionIds.Count;
-
-        int totalBonds = _data.BondEvents.Values
-            .Select(e => e.CharacterId)
-            .Distinct()
-            .Count();
-        int maxBonds = _state.Roster.Characters.Count(c => c.Bond >= 40);
-
-        int facilitiesMaxed = _state.Ranch.Facilities.Count(f => f.Value >= 5);
-        int totalFacilities = _data.Facilities.Count;
-
-        int researches = _state.Research.UnlockedSkillIds.Count;
-        int totalResearch = _data.Skills.Count;
-
-        return discovered >= totalMissions
-            && maxBonds >= Math.Min(totalBonds, _state.Roster.Characters.Count)
-            && facilitiesMaxed >= totalFacilities
-            && researches >= totalResearch;
-    }
-
+    // No minimum calendar day, invisible pace adjustment or automatic New Game+.
+    public bool IsGameComplete() => InspectProgress().Complete;
     public string ProgressSummary()
     {
-        int missions = _state.Adventure.DiscoveredMissionIds.Count;
-        int totalMissions = _data.Missions.Count;
-        int bonds = _state.Roster.Characters.Count(c => c.Bond >= 40);
-        int totalChars = _state.Roster.Characters.Count;
-        int facMaxed = _state.Ranch.Facilities.Count(f => f.Value >= 5);
-        int totalFac = _data.Facilities.Count;
-        int research = _state.Research.UnlockedSkillIds.Count;
-        int totalRes = _data.Skills.Count;
-
-        return $"Missions: {missions}/{totalMissions} | Max Bonds: {bonds}/{totalChars} | Facilities: {facMaxed}/{totalFac} | Research: {research}/{totalRes}";
+        var progress = InspectProgress();
+        return $"Missions: {progress.Missions}/{progress.MissionTarget} | Bonds: {progress.Bonds}/{progress.BondTarget} | Facilities: {progress.Facilities}/{progress.FacilityTarget} | Research: {progress.Research}/{progress.ResearchTarget}";
     }
 }

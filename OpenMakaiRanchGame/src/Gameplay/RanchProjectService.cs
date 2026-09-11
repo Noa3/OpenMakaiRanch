@@ -28,7 +28,7 @@ public static class RanchProjectService
                 corner ? 1 : 0, 1, "ranch", supplies < RanchLeisureService.RestoreSupplyCost && !corner ? "office" : "POINT_QUIET_CORNER",
                 supplies < RanchLeisureService.RestoreSupplyCost && !corner ? T("project.corner.produce", "Assign Office Work, then settle the day") : T("project.corner.restore", "Visit the quiet corner"), corner),
             new RanchProjectStep("first_kitchen", T("project.kitchen.title", "A better kitchen"),
-                T("project.kitchen.detail", "Upgrade the kitchen to level two. Its existing production bonus grows; work still needs an assignment and daily settlement."),
+                T("project.kitchen.detail", "Upgrade the kitchen to level two. Review the price and daily upkeep first; job output still depends on workers, condition and research."),
                 kitchen ? 1 : 0, 1, "ranch", "kitchen", kitchen ? T("project.kitchen.work", "Assign Kitchen Chores, then settle the day") : T("project.kitchen.build", "Upgrade the kitchen at its station"), kitchen),
             new RanchProjectStep("town_supplier", T("project.supplier.title", "A dependable neighbour"),
                 T("project.supplier.detail", "Complete three community deliveries at your own pace. Existing delivery rewards apply; there is no extra completion payment or deadline."),

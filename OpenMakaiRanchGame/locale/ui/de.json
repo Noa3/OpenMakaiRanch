@@ -204,7 +204,7 @@
   "project.corner.produce": "Büroarbeit zuweisen und den Tag abschließen",
   "project.corner.restore": "Die Ruhe-Ecke besuchen",
   "project.kitchen.title": "Eine bessere Küche",
-  "project.kitchen.detail": "Baue die Küche auf Stufe zwei aus. Ihr bestehender Produktionsbonus steigt; Arbeit braucht weiterhin eine Zuweisung und den Tagesabschluss.",
+  "project.kitchen.detail": "Verbessere die Küche auf Stufe zwei. Prüfe vorher Kaufpreis und tägliche Kosten; der Arbeitsertrag hängt weiterhin von Personal, Verfassung und Forschung ab.",
   "project.kitchen.work": "Küchendienst zuweisen und den Tag abschließen",
   "project.kitchen.build": "Die Küche an ihrer Station ausbauen",
   "project.supplier.title": "Eine verlässliche Nachbarschaft",
@@ -338,5 +338,9 @@
   "world.station.changed": "Plan oder Preis haben sich geändert. Prüfe die Station erneut; es wurde nichts berechnet.",
   "world.station.upgrade.done": "Stufe {0} für {1} Gold abgeschlossen. Der tägliche Gebäudeunterhalt beträgt jetzt {2} Gold; Arbeitserträge wurden nicht vorzeitig ausgezahlt.",
   "world.station.assignment.done": "Arbeitsplan geändert. Produktion und Einnahmen werden erst am Tagesende verbucht.",
-  "world.station.nearby": "Öffne diese Station in ihrer Nähe, bevor du Team oder Ausstattung änderst."
+  "world.station.nearby": "Öffne diese Station in ihrer Nähe, bevor du Team oder Ausstattung änderst.",
+  "world.station.forecast.help": "Bruttoertrag bei aktueller Verfassung, keine endgültige Tagesbilanz. Nachtplan und spätere Fürsorge können den Ertrag ändern; Unterhalt und Ereignisse sind separat.",
+  "world.station.forecast.worker": "Arbeitsvorschau: {0} {1} • {2} G brutto",
+  "world.station.forecast.breakdown": "Basis {0}; Fähigkeitsanteil {1}; Planung {2}; Talentfaktor {3:P0}; Erschöpfungsfaktor {4:P0}; Spezialforschung liefert {5} zusätzliche Einheiten. Reihenfolge und Rundung entsprechen der Abrechnung.",
+  "world.station.forecast.auto_rest": "Bei dieser Erschöpfung weist die Tagesprüfung vor der Produktion Ruhe zu. Erhole den Bewohner vor dem Schlafengehen, damit der Arbeitsplan bestehen bleibt."
 }

@@ -103,6 +103,16 @@ public partial class UiLayoutAcceptance
             var job = world.ResolveStation("kitchen")!.CommandTargetId;
             var worker = game.Roster.Characters.First(c => game.Schedule.GetAssignment(c.Id) != job);
             var workerId = worker.Id;
+            var expectedOutput = game.Ranch.PreviewJobOutput(worker, game.Data.Jobs[job]);
+            var forecast = Descendants(panel).OfType<Label>().Single(l => l.Name == "StationForecast_" + workerId);
+            var display = OpenMakaiRanch.Locale.LocaleCatalog.T("world.station.forecast.worker", "", expectedOutput.Amount,
+                OpenMakaiRanch.Locale.LocaleCatalog.ResourceName(game.Data.Jobs[job].ResourceId), expectedOutput.Gold);
+            Check(forecast.Text == display && forecast.TooltipText.Contains("%", StringComparison.Ordinal),
+                "work planning: the German team shows the canonical current-condition output with its calculation details");
+            CheckLocalizedPanelGeometry(panel, "team forecasts German 640x480");
+            var outputScroll = Descendants(panel).OfType<ScrollContainer>().Single(c => c.Name == "StationScroll");
+            outputScroll.EnsureControlVisible(forecast); await Frames(4);
+            await Capture("team-forecast-german-640x480");
             gold = game.Economy.Gold;
             await ClickStationButton(ButtonNamed("Assign_" + workerId));
             Check(game.Schedule.GetAssignment(workerId) == job && game.Economy.Gold == gold
@@ -115,6 +125,7 @@ public partial class UiLayoutAcceptance
                 && game.State.Ranch.Facilities["kitchen"] == quote.NextLevel && game.Ranch.FacilityUpkeep() == quote.RanchUpkeepAfter,
                 "work planning: current-schema save/load restores the purchased level, staff and matching facility upkeep together");
             world.Transition?.CompleteImmediately(); world.CloseManagement(); await Frames(8);
+            await Resize(new Vector2I(640, 480));
             // Follow the real world phase buttons; no direct phase injection for this day completion.
             Check(game.State.Calendar.Phase == DayPhase.Morning, "work planning: the inherited resident journey left a real next Morning");
             var advance = world.Ranch!.GetNode<Button>("WorldHud/AdvanceTimeButton");
@@ -144,6 +155,7 @@ public partial class UiLayoutAcceptance
             Check(game.SaveSlot(99) && game.LoadSlot(99) && game.State.Calendar.Day == day + 1
                 && game.State.Ranch.Facilities["kitchen"] == quote.NextLevel,
                 "work planning: the completed next morning and purchased equipment survive another load");
+            await Resize(new Vector2I(640, 480));
         }
         finally
         {

@@ -56,94 +56,21 @@ public sealed partial class RanchService
             return 0;
         }
 
-        var fatiguePenalty = character.Fatigue switch
-        {
-            >= 80 => 0.5f,
-            >= 60 => 0.75f,
-            >= 40 => 0.9f,
-            _ => 1.0f
-        };
-
-        var equipRanch = _equipment.BonusRanchSkill(character.Id);
-        var equipCombat = _equipment.BonusCombatSkill(character.Id);
-        var talentRanch = _talents.BonusRanchSkill(character.Id);
-        var talentCombat = _talents.BonusCombatSkill(character.Id);
-        var effectiveRanch = character.RanchSkill + equipRanch + talentRanch;
-        var effectiveCombat = character.CombatSkill + equipCombat + talentCombat;
-        var skillBonus = job.Category == JobCategory.Adventure ? effectiveCombat : effectiveRanch;
-        var researchBonus = _state.Research.UnlockedSkillIds.Contains("ranch_planning") && job.Category != JobCategory.Rest ? 2 : 0;
-        var amount = Math.Max(0, job.ResourceAmount + skillBonus / 2) + researchBonus;
-        var gold = job.GoldIncome + amount * 3;
-
-        var talentMult = _talents.JobOutputMultiplier(character.Id);
-        if (talentMult < 1f)
-        {
-            int penalty = amount - (int)(amount * talentMult);
-            if (penalty > 0)
-            {
-                amount -= penalty;
-                gold = job.GoldIncome + amount * 3;
-            }
-        }
-        else if (talentMult > 1f)
-        {
-            int bonus = (int)(amount * (talentMult - 1f));
-            if (bonus > 0)
-            {
-                amount += bonus;
-                gold += bonus * 3;
-            }
-        }
-
-        if (fatiguePenalty < 1f)
-        {
-            int lost = amount - (int)(amount * fatiguePenalty);
-            if (lost > 0)
-            {
-                amount -= lost;
-                gold = job.GoldIncome + amount * 3;
-                report.Lines.Add($"{character.DisplayNameOverride}'s fatigue reduced output by {lost} {job.ResourceId}.");
-            }
-        }
-
+        var forecast = PreviewJobOutput(character, job);
+        var amount = forecast.Amount;
+        var gold = forecast.Gold;
+        if (forecast.FatigueLost > 0)
+            report.Lines.Add($"{character.DisplayNameOverride}'s fatigue reduced output by {forecast.FatigueLost} {job.ResourceId}.");
         if (_state.Research.UnlockedSkillIds.Contains("dairy_science") && job.Category == JobCategory.Dairy)
-        {
-            int bonus = amount / 2;
-            amount += bonus;
-            gold += bonus * 4;
-            report.Lines.Add($"Dairy Science: +{bonus} bonus farm goods from improved techniques.");
-        }
-
+            report.Lines.Add($"Dairy Science: +{forecast.DairyBonus} bonus farm goods from improved techniques.");
         if (_state.Research.UnlockedSkillIds.Contains("culinary_arts") && job.Category == JobCategory.Cooking)
-        {
-            int bonus = amount / 3 + 1;
-            amount += bonus;
-            report.Lines.Add($"Culinary Arts: produced {bonus} extra meals from expert cooking.");
-        }
-
+            report.Lines.Add($"Culinary Arts: produced {forecast.CulinaryBonus} extra meals from expert cooking.");
         if (_state.Research.UnlockedSkillIds.Contains("herbalism") && job.Category == JobCategory.Pharmacy)
-        {
-            int bonus = amount / 3 + 1;
-            amount += bonus;
-            gold += bonus * 5;
-            report.Lines.Add($"Herbalism: +{bonus} bonus supplies from herbal remedies.");
-        }
-
+            report.Lines.Add($"Herbalism: +{forecast.HerbalBonus} bonus supplies from herbal remedies.");
         if (_state.Research.UnlockedSkillIds.Contains("hospitality") && job.Category == JobCategory.CustomerService)
-        {
-            int bonus = amount / 2 + 1;
-            amount += bonus;
-            gold += 15;
-            report.Lines.Add($"Hospitality: superior service earned extra comfort ({bonus}) and tips (+15g).");
-        }
-
+            report.Lines.Add($"Hospitality: superior service earned extra comfort ({forecast.HospitalityBonus}) and tips (+15g).");
         if (_state.Research.UnlockedSkillIds.Contains("craftsmanship") && job.Category == JobCategory.Chore)
-        {
-            int bonus = amount / 3 + 1;
-            amount += bonus;
-            gold += bonus * 3;
-            report.Lines.Add($"Craftsmanship: +{bonus} bonus output from skilled workshop work.");
-        }
+            report.Lines.Add($"Craftsmanship: +{forecast.CraftBonus} bonus output from skilled workshop work.");
 
         if (string.Equals(job.Id, "cleaning", StringComparison.OrdinalIgnoreCase) && !_state.Ranch.BathtubClean)
         {

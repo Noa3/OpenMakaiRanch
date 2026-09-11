@@ -104,6 +104,7 @@ public partial class WorldStationPanel
     private void RenderStationTeam(WorldStation station, JobDefinition job)
     {
         _content.AddChild(Text(T("world.station.team.help", "Choose a resident or send a current worker to rest. Changing plans costs no stamina and pays no production.")));
+        _content.AddChild(Text(T("world.station.forecast.help", "Gross work at current condition, not your final daily balance. Night plans and later care can change output; upkeep and events are separate.")));
         var available = station.IsAvailable && job.Assignable;
         if (!available) _content.AddChild(Text(station.UnavailableReason ?? T("world.work.locked", "This job is not available yet.")));
         var residents = _game.Roster.Characters.OrderByDescending(c => _game.Schedule.GetAssignment(c.Id) == job.Id).ToArray();
@@ -115,8 +116,17 @@ public partial class WorldStationPanel
             var previousJob = _game.Schedule.GetAssignment(residentId);
             var previousName = _game.Data.Jobs.TryGetValue(previousJob, out var current) ? JobName(previousJob, current.DisplayName) : previousJob;
             _content.AddChild(Text(T("world.work.resident", "{0} • {1} • Energy {2} • Fatigue {3}", name, previousName, character.Energy, character.Fatigue)));
+            var forecast = _game.Ranch.PreviewJobOutput(character, job);
+            var estimate = Text(T("world.station.forecast.worker", "Work preview: {0} {1} • {2} G gross", forecast.Amount, ResourceName(job.ResourceId), forecast.Gold));
+            estimate.Name = "StationForecast_" + residentId;
+            estimate.MouseFilter = MouseFilterEnum.Pass; // Permit the optional breakdown tooltip without consuming scroll input.
+            estimate.TooltipText = T("world.station.forecast.breakdown", "Base {0}; skill contribution {1}; planning {2}; talent factor {3:P0}; fatigue factor {4:P0}; specialist research adds {5} units. Evaluated in settlement order with the same rounding.",
+                job.ResourceAmount, forecast.SkillContribution, forecast.PlanningBonus, forecast.TalentMultiplier, forecast.FatigueMultiplier, forecast.SpecialistBonus);
+            _content.AddChild(estimate);
             if (character.Mature.FallState == FallState.Collapse)
                 _content.AddChild(Text(T("world.station.team.collapsed", "This resident is collapsed and cannot produce work. Consider rest and care.")));
+            else if (character.Fatigue >= 70)
+                _content.AddChild(Text(T("world.station.forecast.auto_rest", "At this fatigue, the daily check will assign Rest before production. Recover before sleeping to keep a work assignment.")));
             else if (character.Fatigue >= 60)
                 _content.AddChild(Text(T("world.station.team.tired", "High fatigue reduces work output. Rest is an alternative.")));
             var stationId = station.TargetId; var generation = _generation; var day = _day; var phase = _phase;
