@@ -26,6 +26,9 @@ public partial class UiLayoutAcceptance
             await Resize(size);
             await Frames(6);
             CheckAdventureCardGeometry(shell, $"guild {size.X}x{size.Y}");
+            var readiness = shell.GetNode<Control>(shell.ContentPath).GetNode<Control>("AdventureReadinessCard");
+            Check(readiness.Size.Y <= 160 && readiness.TooltipText.Contains("Tactical Battle", StringComparison.Ordinal),
+                $"guild {size.X}x{size.Y}: concise readiness guidance leaves room for the mission list and keeps detailed help");
             await Capture($"adventure-guild-{size.X}x{size.Y}");
         }
 

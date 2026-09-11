@@ -33,10 +33,10 @@ public partial class UiShellController
         var partyCount = _game.Roster.Characters.Count(character => automatic
             || _game.State.Adventure.SelectedPartyIds.Contains(character.Id));
         content.AddChild(MutedLabel(automatic
-            ? $"Party: all {partyCount} residents (automatic when nobody is explicitly selected)."
-            : $"Party: {partyCount} selected residents. Add the ranch owner to use Tactical Battle."));
-        content.AddChild(MutedLabel($"An ordinary mission costs {cost} daily Stamina once when combat starts. Preparing a mission is free; individual turns use combat HP, SP and MP instead."));
-        content.AddChild(MutedLabel("Choose Fight below, then Tactical Battle for direct commands or Auto Battle. Use Back from the result to resume world time."));
+            ? $"Party: all {partyCount} residents automatically. Mission entry: {cost} Stamina."
+            : $"Party: {partyCount} selected residents. Mission entry: {cost} Stamina."));
+        content.AddChild(MutedLabel("Choose Fight below to prepare a mission. Preparation is free."));
+        card.TooltipText = "An ordinary mission commits daily Stamina once at entry. Tactical Battle requires the ranch owner in the party; its turns use combat HP, SP and MP. Auto Battle resolves the encounter automatically. Back from results resumes world time.";
         if (player.Stamina < cost)
             content.AddChild(RequirementLabel("Not enough daily Stamina for an ordinary mission. Rest or finish the day before starting another expedition."));
     }

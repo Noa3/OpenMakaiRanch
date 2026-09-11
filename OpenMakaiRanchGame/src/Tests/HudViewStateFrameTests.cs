@@ -57,7 +57,7 @@ public static class HudViewStateFrameTests
         Check(result, restored?.Name == "Keyboard_interact" && scroll.ScrollVertical > 0
             && restored.GetGlobalRect().Position.Y >= scroll.GetGlobalRect().Position.Y - 1
             && restored.GetGlobalRect().End.Y <= scroll.GetGlobalRect().End.Y + 1,
-            "a removed command's replacement focus is scrolled into view after layout");
+            $"a removed command's replacement focus is scrolled into view after layout (key={restored?.Name}, scroll={scroll.ScrollVertical}, target={restored?.GetGlobalRect()}, viewport={scroll.GetGlobalRect()})");
 
         // Queue a restore and leave before it runs. It must not scroll/focus the destination.
         game.NotifyStateChanged();
