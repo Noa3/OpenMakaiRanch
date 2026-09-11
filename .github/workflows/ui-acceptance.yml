@@ -8,6 +8,7 @@ on:
       - 'OpenMakaiRanchGame/scenes/**'
       - 'OpenMakaiRanchGame/locale/**'
       - 'OpenMakaiRanchGame/project.godot'
+      - 'OpenMakaiRanchGame/export_presets.cfg'
       - 'Tools/Godot/**'
       - '.github/workflows/ui-acceptance.yml'
   workflow_dispatch:
@@ -37,6 +38,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Validate translation inputs and launcher tests
+        run: |
+          python Tools/Godot/validate_locales.py
+          python -m unittest discover -s Tools/Godot -p 'test_*.py'
       - name: Install software-rendering dependencies
         run: |
           sudo apt-get update -qq
@@ -66,7 +71,7 @@ jobs:
           mkdir -p .artifacts/ui-source
           git rev-parse HEAD > .artifacts/ui-source/commit.txt
           # Tracked review inputs only, never profiles, compiled output, original-game content or assets.
-          git archive -o .artifacts/ui-source/review-source.zip HEAD OpenMakaiRanchGame/src OpenMakaiRanchGame/locale OpenMakaiRanchGame/data OpenMakaiRanchGame/docs OpenMakaiRanchGame/scenes OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/OpenMakaiRanchGame.csproj Tools/Godot AGENTS.md Directory.Build.props Directory.Build.targets global.json
+          git archive -o .artifacts/ui-source/review-source.zip HEAD OpenMakaiRanchGame/src OpenMakaiRanchGame/locale OpenMakaiRanchGame/data OpenMakaiRanchGame/docs OpenMakaiRanchGame/scenes OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/export_presets.cfg OpenMakaiRanchGame/OpenMakaiRanchGame.csproj Tools/Godot AGENTS.md Directory.Build.props Directory.Build.targets global.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
