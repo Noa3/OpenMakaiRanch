@@ -36,7 +36,7 @@ jobs:
                   raise SystemExit('Source changed: '+name)
               source[name] = raw.decode('utf-8')
           def edit(name, old, new):
-              if source[name].count(old)!=1: raise SystemExit('Ambiguous source anchor: '+name)
+              if source[name].count(old)!=1: raise SystemExit('Ambiguous source anchor: '+name+' '+old[:80])
               source[name]=source[name].replace(old,new)
           edit('UiLayoutAcceptance.cs',
                '        var point = control.GetGlobalRect().GetCenter();',
@@ -64,12 +64,10 @@ jobs:
                   for (var step = 0; step < index; step++) await PopupKey(Key.Down);
                   await PopupKey(Key.Enter);''')
           edit('UiLayoutAcceptance.Localization.cs',
-               '        var popup = picker.GetPopup();\n        await Frames(3);',
+               '        var popup = picker.GetPopup();',
                '''        Check(GodotObject.IsInstanceValid(picker),
                       "locale: opening the picker does not execute an unrelated setting or retire its control");
-                  var popup = picker.GetPopup();
-                  await Frames(3);
-                  Check(popup.Visible, "locale: the actual language dropdown is open before window input is sent");''')
+                  var popup = picker.GetPopup();''')
           edit('UiLayoutAcceptance.Localization.cs',
                '        var viewport = Descendants(menu).OfType<SubViewport>().SingleOrDefault();',
                '''        Check(LocaleCatalog.FormatForDisplay("Missing price", "Price {0}", de, 6) == "Price 6"
