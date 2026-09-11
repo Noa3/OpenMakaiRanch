@@ -170,6 +170,9 @@ public static class RanchLeisureFrameTests
         await KeyStroke(game, Key.F);
         Check(result, world.IsStationPanelOpen && world.StationPanel!.ContextId == "office",
             "F at the physical Office opens its own local assignment surface");
+        PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(button => button.Name == "StationTab_team")
+            .EmitSignal(BaseButton.SignalName.Pressed);
+        await Frames(game, 3);
         var officeLabel = game.Data.Jobs["office"].DisplayName;
         var worker = game.Roster.Characters.First(character => game.Schedule.GetAssignment(character.Id) != "dairy");
         var officeButton = PlayabilityRegressionTests.Buttons(world.StationPanel!)

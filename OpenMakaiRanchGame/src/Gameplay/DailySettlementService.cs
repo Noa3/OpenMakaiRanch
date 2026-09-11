@@ -63,14 +63,14 @@ public sealed class DailySettlementService
             character.Bond = Math.Clamp(character.Bond + job.BondDelta, 0, 100);
         }
 
-        var expenses = _ranch.FacilityUpkeep() + PetCareCost();
+        var expenses = (int)Math.Min(int.MaxValue, (long)_ranch.FacilityUpkeep() + PetCareCost());
 
         // Original-game rule: at least one slave must be assigned to Dairy
         // to keep the farm maintained. Without it the herd degrades and upkeep costs more.
         var hasDairyWorker = _state.Roster.Characters.Any(character => _schedule.GetAssignment(character.Id) == "dairy");
         if (!hasDairyWorker)
         {
-            expenses += 15;
+            expenses = (int)Math.Min(int.MaxValue, (long)expenses + 15);
             report.Lines.Add("No one was assigned to Dairy work. Farm maintenance suffers (+15g upkeep).");
             foreach (var character in _state.Roster.Characters)
             {
@@ -192,6 +192,7 @@ public sealed class DailySettlementService
 
     private int PetCareCost()
     {
-        return _state.Pets.AdoptedPetIds.Sum(petId => _data.Pets.TryGetValue(petId, out var pet) ? pet.CareCost : 0);
+        return (int)Math.Min(int.MaxValue, _state.Pets.AdoptedPetIds.Sum(petId =>
+            _data.Pets.TryGetValue(petId, out var pet) ? Math.Max(0L, pet.CareCost) : 0L));
     }
 }

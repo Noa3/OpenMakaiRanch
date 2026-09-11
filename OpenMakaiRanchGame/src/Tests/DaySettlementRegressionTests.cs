@@ -15,6 +15,7 @@ public static class DaySettlementRegressionTests
     {
         RanchDesignRegressionTests.Run(result);
         ResidentInteractionRegressionTests.Run(result);
+        StationPlanningRegressionTests.Run(result);
         var data = DataRegistry.CreateSeeded();
         foreach (var count in new[] { 1, 4, 8 })
         {

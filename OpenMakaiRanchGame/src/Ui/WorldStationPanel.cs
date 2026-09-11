@@ -92,6 +92,7 @@ public partial class WorldStationPanel : Control
     private void Open(string kind, string id)
     {
         _residentPage = "overview"; _residentFeedback = "";
+        _stationPage = "overview"; _stationFeedback = "";
         _world.SetResidentConversationFocus(kind == "resident" ? id : "");
         _kind = kind; _id = id; _generation = _game.StateGeneration;
         _day = _game.State.Calendar.Day; _phase = _game.State.Calendar.Phase;
@@ -132,7 +133,7 @@ public partial class WorldStationPanel : Control
         var focusName = oldFocus is not null && _content.IsAncestorOf(oldFocus) ? oldFocus.Name.ToString() : null;
         var scroll = _scroll.ScrollVertical;
         var revision = ++_revision;
-        if (_renderedLocale != CurrentLocale) { _status.Text = ""; _status.TooltipText = ""; _residentFeedback = ""; _renderedLocale = CurrentLocale; }
+        if (_renderedLocale != CurrentLocale) { _status.Text = ""; _status.TooltipText = ""; _residentFeedback = ""; _stationFeedback = ""; _renderedLocale = CurrentLocale; }
         _close.Text = T("world.back", "Back to the world");
         foreach (var node in _content.GetChildren()) { _content.RemoveChild(node); node.QueueFree(); }
         BuildContent();
@@ -144,7 +145,7 @@ public partial class WorldStationPanel : Control
                 || _revision != revision || !ContextMatches()) return;
             if (focusName is not null)
             {
-                var target = _content.GetChildren().OfType<Button>().FirstOrDefault(b => b.Name == focusName && !b.Disabled);
+                var target = ContentButtons(_content).FirstOrDefault(b => b.Name == focusName && !b.Disabled);
                 (target ?? _close).GrabFocus();
                 _scroll.ScrollVertical = scroll;
                 if (target is not null) _scroll.EnsureControlVisible(target);
@@ -167,61 +168,7 @@ public partial class WorldStationPanel : Control
             _content.AddChild(Text(T("world.pets.help", "Check the needs of your adopted pets here.")));
             Service("pets", T("world.pets.open", "Care for pets")); return;
         }
-        var alerts = WorldAlertEvaluator.Evaluate(_game).Where(a => WorldDestinationCatalog.ForAlert(a).TargetId == _id).ToArray();
-        foreach (var alert in alerts) _content.AddChild(Text(T("world.alert.detail", "{0}: {1}", alert.Severity == WorldAlertSeverity.Info ? T("world.info", "Info") : T("world.attention", "Attention"), alert.Detail)));
-        if (_game.Data.Jobs.TryGetValue(station.CommandTargetId, out var job))
-        {
-            _content.AddChild(Text(T("world.work.settlement", "{0} • output is settled at the end of the day, not on assignment.", JobName(job.Id, job.DisplayName))));
-            _content.AddChild(Text(T("world.work.output", "Base output: {0} G / {1} {2}. Fatigue change: {3:+0;-0;0}. Facility and resident modifiers still apply.", job.GoldIncome, job.ResourceAmount, ResourceName(job.ResourceId), job.FatigueDelta)));
-            var available = station.IsAvailable && _game.Schedule.AssignableJobs.Any(j => j.Id == job.Id);
-            if (!available) _content.AddChild(Text(station.UnavailableReason ?? T("world.work.locked", "This job is not available yet.")));
-            foreach (var character in _game.Roster.Characters)
-            {
-                var id = character.Id;
-                var name = string.IsNullOrWhiteSpace(character.DisplayNameOverride) ? _game.Roster.DefinitionFor(character).DisplayName : character.DisplayNameOverride;
-                var currentJob = _game.Schedule.GetAssignment(id);
-                var currentName = _game.Data.Jobs.TryGetValue(currentJob, out var current) ? JobName(currentJob, current.DisplayName) : currentJob;
-                _content.AddChild(Text(T("world.work.resident", "{0} • {1} • Energy {2} • Fatigue {3}", name, currentName, character.Energy, character.Fatigue)));
-                Action($"Assign_{id}", currentJob == job.Id ? T("world.work.assigned", "{0} works here", name) : T("world.work.assign", "Assign {0} here", name), () =>
-                {
-                    var live = _world.ResolveStation(_id);
-                    if (live?.IsAvailable != true || !_game.Schedule.AssignableJobs.Any(j => j.Id == job.Id)) return T("world.work.unavailable", "This station is unavailable.");
-                    var ok = live.Activate(new WorldInteractionContext(id, _generation));
-                    if (ok)
-                    {
-                        if (_world.IsGuidedOpening) Close();
-                        _world.Ranch?.NotifyStationAssignment(id, job.Id);
-                    }
-                    return ok ? T("world.work.success", "{0} assigned. Production remains part of the daily settlement.", name) : T("world.work.unchanged", "Assignment unchanged.");
-                }, !available || currentJob == job.Id);
-                if (currentJob == job.Id)
-                    Action($"Rest_{id}", T("world.work.rest", "Send {0} to rest", name), () => _game.TryAssignJob(id, "rest", _generation) ? T("world.work.rest_success", "Rest assigned.") : T("world.work.unchanged", "Assignment unchanged."));
-            }
-        }
-        AddFacility(station.RequiredFacilityId);
-        if (_id == "office")
-        {
-            Service("inventory", T("world.service.storage", "Storage"));
-            Service("milestones", T("world.service.records", "Ranch records"));
-            Service("milk", T("world.service.shipments", "Shipments"));
-            Service("report", T("world.service.report", "Last daily report"));
-        }
-        if (_id == "workshop") Service("research", T("world.service.research", "Workshop research"));
-        if (_id == "pharmacy_lab") Service("pharmacy_list", T("world.service.recipes", "Pharmacy recipes"));
-    }
-
-    private void AddFacility(string id)
-    {
-        if (!_game.Data.Facilities.TryGetValue(id, out var facility) || facility.BuildCost <= 0) return;
-        var level = _game.Ranch.Facilities.TryGetValue(id, out var value) ? value : 0;
-        var cost = _game.Ranch.FacilityUpgradeCost(facility, level);
-        _content.AddChild(Text(T("world.facility.envelope", "Equipment upgrades use the reserved footprint. Higher levels do not enlarge the building or block its entrance.")));
-        _content.AddChild(Text(T("world.facility.summary", "Facility level {0} • upkeep {1} G/day. Wallet: {2} G.", level, facility.UpkeepGold, _game.Economy.Gold)));
-        Action("FacilityUpgrade", level == 0 ? T("world.facility.build", "Build this facility — {0} G", cost) : T("world.facility.upgrade", "Upgrade this facility — {0} G", cost), () =>
-        {
-            if (!_game.Ranch.UpgradeFacility(id, _game.Economy)) return T("world.facility.requirements", "The upgrade requirements are not met.");
-            _game.NotifyStateChanged(); return T("world.facility.success", "Facility upgraded.");
-        }, _game.Economy.Gold < cost);
+        RenderWorkStation(station);
     }
 
     private void RenderHouse()
@@ -285,7 +232,7 @@ public partial class WorldStationPanel : Control
         Close(); return _world.OpenDedicatedService(screen) ? "" : T("world.service.unavailable", "Service unavailable.");
     });
 
-    private void Action(string name, string text, Func<string> command, bool disabled = false)
+    private Button Action(string name, string text, Func<string> command, bool disabled = false)
     {
         var revision = _revision;
         var button = new Button { Name = name, Text = text, Disabled = disabled, CustomMinimumSize = new Vector2(0, 40),
@@ -303,6 +250,16 @@ public partial class WorldStationPanel : Control
             }
             finally { _busy = false; }
         };
+        return button;
+    }
+
+    private static System.Collections.Generic.IEnumerable<Button> ContentButtons(Node root)
+    {
+        foreach (var child in root.GetChildren())
+        {
+            if (child is Button button) yield return button;
+            foreach (var nested in ContentButtons(child)) yield return nested;
+        }
     }
 
     private static Label Text(string text) => new() { Text = text, AutowrapMode = TextServer.AutowrapMode.WordSmart,

@@ -96,10 +96,12 @@ public partial class UiLayoutAcceptance
             "station: dedicated work and stable Back fit the small viewport");
         Check(!Descendants(panel).OfType<Button>().Any(b => b.Name.ToString().Contains("Shop") || b.Text == "Auto Battle"),
             "station: Dairy Barn does not expose unrelated town or combat management");
+        await ClickStationButton(Descendants(panel).OfType<Button>().Single(b => b.Name == "StationTab_team"));
         if (!station.IsAvailable)
         {
             Check(Descendants(panel).OfType<Button>().Where(b => b.Name.ToString().StartsWith("Assign_", StringComparison.Ordinal)).All(b => b.Disabled),
                 "station: inspection of the unfinished barn cannot assign dairy production");
+            await ClickStationButton(Descendants(panel).OfType<Button>().Single(b => b.Name == "StationTab_upgrade"));
             var build = Descendants(panel).OfType<Button>().Single(b => b.Name == "FacilityUpgrade");
             var facility = game.Data.Facilities[station.RequiredFacilityId];
             var cost = game.Ranch.FacilityUpgradeCost(facility, 0);
@@ -107,6 +109,7 @@ public partial class UiLayoutAcceptance
             Check(station.IsAvailable && game.Economy.Gold == gold - cost,
                 "station: the actual Build button spends the canonical facility price and unlocks work once");
             gold = game.Economy.Gold;
+            await ClickStationButton(Descendants(panel).OfType<Button>().Single(b => b.Name == "StationTab_team"));
         }
         var assign = Descendants(panel).OfType<Button>().FirstOrDefault(b => b.Name.ToString().StartsWith("Assign_", StringComparison.Ordinal) && !b.Disabled);
         if (assign is null) throw new InvalidOperationException("The continuing station fixture needs one resident not already assigned to Dairy.");

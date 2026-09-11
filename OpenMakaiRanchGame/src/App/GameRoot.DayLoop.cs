@@ -21,7 +21,7 @@ public partial class GameRoot
 
     public bool TrySelectNightAction(string action, ulong expectedGeneration, int expectedDay)
     {
-        if (_settlingDay || _combatWorldTimeLocked || expectedGeneration != StateGeneration
+        if (_settlingDay || _stationCommandBusy || _residentCommandBusy || _combatWorldTimeLocked || expectedGeneration != StateGeneration
             || expectedDay != State.Calendar.Day || State.Calendar.Phase != DayPhase.Night
             || action is not ("rest" or "train" or "admin") || State.Calendar.NightAction == action) return false;
         State.Calendar.NightAction = action;

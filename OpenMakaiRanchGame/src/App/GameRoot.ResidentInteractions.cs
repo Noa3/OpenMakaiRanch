@@ -13,7 +13,7 @@ public partial class GameRoot
     public ResidentActionResult TryResidentAction(string? id, ResidentAction action, ulong generation,
         int day, DayPhase phase, string? itemId = null)
     {
-        if (_residentCommandBusy || _settlingDay || _combatWorldTimeLocked || generation != StateGeneration
+        if (_residentCommandBusy || _stationCommandBusy || _settlingDay || _combatWorldTimeLocked || generation != StateGeneration
             || day != State.Calendar.Day || phase != State.Calendar.Phase || GetTree()?.Paused == true)
             return new(false, false, T("world.resident.reason.changed", "The situation changed. Review this resident's options again."));
         _residentCommandBusy = true;

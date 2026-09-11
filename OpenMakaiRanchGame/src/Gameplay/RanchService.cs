@@ -7,7 +7,7 @@ using OpenMakaiRanch.Data;
 
 namespace OpenMakaiRanch.Gameplay;
 
-public sealed class RanchService
+public sealed partial class RanchService
 {
     private readonly SaveState _state;
     private readonly DataRegistry _data;
@@ -24,53 +24,6 @@ public sealed class RanchService
 
     public IReadOnlyDictionary<string, int> Stockpile => _state.Ranch.Stockpile;
     public IReadOnlyDictionary<string, int> Facilities => _state.Ranch.Facilities;
-
-    public bool UpgradeFacility(string facilityId, EconomyService economy)
-    {
-        if (!_data.Facilities.TryGetValue(facilityId, out var definition))
-        {
-            return false;
-        }
-
-        _state.Ranch.Facilities.TryGetValue(facilityId, out var currentLevel);
-        if (currentLevel < 0 || currentLevel == int.MaxValue
-            || (long)definition.BuildCost + (long)currentLevel * 75 > int.MaxValue || definition.BuildCost < 0) return false;
-        var nextLevel = currentLevel + 1;
-        var cost = FacilityUpgradeCost(definition, currentLevel);
-        if (!economy.Spend(cost))
-        {
-            return false;
-        }
-
-        _state.Ranch.Facilities[facilityId] = nextLevel;
-        return true;
-    }
-
-    public int FacilityUpgradeCost(FacilityDefinition definition, int currentLevel)
-    {
-        return (int)Math.Clamp((long)definition.BuildCost + Math.Max(0L, currentLevel) * 75, 0L, int.MaxValue);
-    }
-
-    public int FacilityUpkeep()
-    {
-        var upkeep = 0;
-        var logistics = _state.Research.UnlockedSkillIds.Contains("logistics");
-        foreach (var facility in _state.Ranch.Facilities)
-        {
-            if (_data.Facilities.TryGetValue(facility.Key, out var definition))
-            {
-                upkeep += definition.UpkeepGold * Math.Max(1, facility.Value);
-            }
-        }
-
-        if (logistics && upkeep > 0)
-        {
-            int saved = Math.Max(1, upkeep / 4);
-            upkeep -= saved;
-        }
-
-        return upkeep;
-    }
 
     public void ApplyAutomation(DailyReport report)
     {

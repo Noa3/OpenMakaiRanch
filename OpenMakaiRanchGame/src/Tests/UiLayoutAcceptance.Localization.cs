@@ -148,6 +148,7 @@ public partial class UiLayoutAcceptance
             CheckLocalizedPanelGeometry(work, "German dairy 640x480");
             Check(Descendants(work).OfType<Label>().Single(label => label.Name == "StationTitle").Text == "Milchstall",
                 "locale: the dairy station title is translated independently of its canonical ID");
+            await ClickStationButton(Descendants(work).OfType<Button>().Single(button => button.Name == "StationTab_team"));
             var focused = Descendants(work).OfType<Button>().First(button => !button.Disabled
                 && button.Name.ToString().StartsWith("Rest_", StringComparison.Ordinal));
             focused.GrabFocus(); await Frames(6);

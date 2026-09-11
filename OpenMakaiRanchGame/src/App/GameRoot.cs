@@ -388,16 +388,22 @@ public partial class GameRoot : Node
 
 	public bool TryAssignJob(string? characterId, string? jobId, ulong expectedGeneration)
 	{
-		if (expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(jobId)
+		if (_stationCommandBusy || _residentCommandBusy || _settlingDay || _combatWorldTimeLocked || GetTree()?.Paused == true
+			|| expectedGeneration != StateGeneration || string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(jobId)
 			|| Roster.Find(characterId) is null || !Data.Jobs.ContainsKey(jobId)
 			|| Schedule.GetAssignment(characterId) == jobId)
 		{
 			return false;
 		}
 
-		Schedule.AssignJob(characterId, jobId);
-		StateChanged?.Invoke();
-		return true;
+		_stationCommandBusy = true;
+		try
+		{
+			Schedule.AssignJob(characterId, jobId);
+			StateChanged?.Invoke();
+			return true;
+		}
+		finally { _stationCommandBusy = false; }
 	}
 
 	public bool TryConductMentorship(string? characterId, ulong expectedGeneration)
@@ -912,7 +918,7 @@ public partial class GameRoot : Node
 
 	public bool AdvanceTime()
 	{
-		if (_settlingDay || _combatWorldTimeLocked
+		if (_settlingDay || _combatWorldTimeLocked || _stationCommandBusy || _residentCommandBusy
 			|| (State.Calendar.Phase == DayPhase.Night && !HasNightPlan))
 		{
 			return false;
