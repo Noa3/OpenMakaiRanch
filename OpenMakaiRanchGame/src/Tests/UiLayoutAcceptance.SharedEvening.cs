@@ -46,7 +46,10 @@ public partial class UiLayoutAcceptance
             game.State.Dating.ActiveApproach = DateInviteApproach.Respectful;
             game.State.Dating.Partners[partnerId] = new DatingPartnerState { PositiveMoments = 4, DatesStarted = 4 };
             game.State.Calendar.Phase = DayPhase.Night; game.State.Calendar.NightAction = "rest";
-            game.State.Settings.ReducedMotion = false;
+            // LoadSlot restores profile settings, not the serialized save's settings object.
+            // Persist the fixture preference through its ordinary API so the real load below
+            // cannot silently restore Reduced Motion and complete the reveal before observation.
+            game.SetReducedMotion(false);
             game.NotifyStateChanged(); await Frames(6);
             var house = world.ResolveStation("ranch_house")!;
             world.ActivePlayer!.GlobalPosition = house.GlobalPosition + new Vector3(0, 0.3f, 0);
@@ -66,7 +69,10 @@ public partial class UiLayoutAcceptance
             await Capture("shared-evening-planning-640x480");
             Check(game.SaveSlot(99) && game.LoadSlot(99) && game.GetSharedEveningStatus().Planned,
                 "evening: a pending invitation survives the actual current-schema save/load boundary");
+            Check(!game.State.Settings.ReducedMotion,
+                "evening: the explicitly persisted animation preference survives LoadSlot's profile-settings replacement");
             world.Transition?.CompleteImmediately(); await Frames(8);
+            await Resize(new Vector2I(640, 480));
             house = world.ResolveStation("ranch_house")!;
             world.ActivePlayer!.GlobalPosition = house.GlobalPosition + new Vector3(0, 0.3f, 0);
             world.ActivePlayer.Velocity = Vector3.Zero; await Frames(6);
@@ -78,7 +84,7 @@ public partial class UiLayoutAcceptance
             await Click(sleep);
             Check(game.State.Calendar.Day == day + 1 && game.HadSharedEvening(day)
                 && world.Transition!.IsTransitioning && !world.Ranch!.InputGate.WorldInputEnabled,
-                "evening: the actual Sleep click settles once, records the night and runs a non-explicit input-locked reveal");
+                $"evening: the actual Sleep click settles once, records the night and runs a non-explicit input-locked reveal (day={game.State.Calendar.Day}, expected={day + 1}, receipt={game.HadSharedEvening(day)}, transition={world.Transition!.IsTransitioning}, input={world.Ranch!.InputGate.WorldInputEnabled}, reduced={game.State.Settings.ReducedMotion})");
             await Capture("shared-evening-reveal-640x480");
             var bond = game.Roster.Find(partnerId)!.Bond;
             var reportCount = game.State.Reports.Count;
@@ -104,7 +110,7 @@ public partial class UiLayoutAcceptance
                 game.Data.Characters.Remove(definitions[i]);
             }
             game.State.Dating.ActivePartnerId = string.Empty;
-            game.State.Settings.ReducedMotion = savedReduced;
+            game.SetReducedMotion(savedReduced);
             world.Transition?.CompleteImmediately(); world.CloseManagement();
         }
     }
