@@ -23,9 +23,9 @@ public partial class UiLayoutAcceptance
             var locked = ranch.Stations.First(point => point.TargetId == "dairy_barn");
             ranch.Player!.GlobalPosition = locked.GlobalPosition + new Vector3(0, 0, 1.1f);
             await Frames(8);
-            Check(!locked.IsAvailable && !interact.Visible
+            Check(!locked.IsAvailable && VisibleTarget(interact)
                 && assist.GetNode<Label>("Row/PromptLabel").Text.Contains("not built"),
-                $"{size}: the unbuilt dairy station retains its lock and explains the unavailable action");
+                $"{size}: the unbuilt dairy station retains its production lock while allowing inspection");
             // Staged proximity exercises a built facility's presentation, not a walking route.
             var station = ranch.Stations.First(point => point.TargetId == "pasture");
             Check(station.IsAvailable, $"{size}: the existing Pasture supplies the positive interaction fixture");

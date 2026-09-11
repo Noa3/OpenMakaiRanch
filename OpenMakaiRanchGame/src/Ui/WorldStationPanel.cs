@@ -167,7 +167,8 @@ public partial class WorldStationPanel : Control
         AddFacility(station.RequiredFacilityId);
         if (_id == "office")
         {
-            Service("inventory", "Storage and equipment");
+            Service("inventory", "Storage");
+            Service("milestones", "Ranch records");
             Service("milk", "Shipments");
             Service("report", "Last daily report");
         }
@@ -226,6 +227,9 @@ public partial class WorldStationPanel : Control
             }, !_game.HasNightPlan);
         }
         else _content.AddChild(Text("Return at night to choose Rest, Training or Admin and settle the day."));
+        Service("clothing_list", "Wardrobe");
+        Service("room_assign", "Assign rooms");
+        Service("training", "Personal training");
         foreach (var character in _game.Roster.Characters.Where(c => _game.Schedule.GetAssignment(c.Id) != "rest"))
         {
             var id = character.Id;

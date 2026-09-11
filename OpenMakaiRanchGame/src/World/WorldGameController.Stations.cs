@@ -110,7 +110,7 @@ public partial class WorldGameController
     // may still open legacy screens directly, but no player-facing global navigation leads there.
     public bool OpenDedicatedService(string screen)
     {
-        if (_shell is null) return false;
+        if (_shell is null || !UiShellController.IsKnownService(screen)) return false;
         if (IsStationPanelOpen) _stationPanel!.Close();
         _shell.SetServiceContext(screen);
         if (OpenManagementScreen(screen)) return true;

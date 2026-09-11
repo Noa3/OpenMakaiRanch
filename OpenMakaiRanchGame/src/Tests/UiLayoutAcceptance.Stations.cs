@@ -65,14 +65,16 @@ public partial class UiLayoutAcceptance
             "interior: the adjacent side wall physically blocks a ray");
         try
         {
-            Input.ActionPress("move_forward");
+            Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = Key.W, Keycode = Key.W, Pressed = true });
+            Check(player.InputGate.WorldInputEnabled && player.ReadMovementInput().Y > 0,
+                $"interior: actual W reaches movement (gate={player.InputGate.WorldInputEnabled}, focus={player.InputGate.WindowFocused}, input={player.ReadMovementInput()}, camera={GetViewport().GetCamera3D()?.GetPath()}, process={player.CanProcess()})");
             for (var i = 0; i < 27; i++) await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
         }
-        finally { Input.ActionRelease("move_forward"); }
+        finally { Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = Key.W, Keycode = Key.W, Pressed = false }); }
         await Frames(8);
         Check(building.ContainsWorldPoint(player.GlobalPosition) && building.IsCutaway,
-            "interior: actual movement walks through the door and reveals the roof cutaway without changing scenes");
-        Check(player.GlobalBasis.Z.Dot(-front) > 0.94f, "movement: the character's visible +Z face follows travel, not backwards");
+            $"interior: actual movement walks through the door and reveals the roof cutaway without changing scenes (start={start}, end={player.GlobalPosition}, local={building.ToLocal(player.GlobalPosition)}, gate={player.InputGate.WorldInputEnabled})");
+        Check(player.GlobalBasis.Z.Dot(-front) > 0.94f, $"movement: the character's visible +Z face follows travel, not backwards (dot={player.GlobalBasis.Z.Dot(-front)})");
         Check(game.Economy.Gold == gold && game.State.Player.Stamina == stamina && game.State.Calendar.Day == day,
             "interior: walking and cutaway do not tax stamina, pay income or settle the day");
         await Capture("walk-in-dairy-960x540");
@@ -88,6 +90,18 @@ public partial class UiLayoutAcceptance
             "station: dedicated work and stable Back fit the small viewport");
         Check(!Descendants(panel).OfType<Button>().Any(b => b.Name.ToString().Contains("Shop") || b.Text == "Auto Battle"),
             "station: Dairy Barn does not expose unrelated town or combat management");
+        if (!station.IsAvailable)
+        {
+            Check(Descendants(panel).OfType<Button>().Where(b => b.Name.ToString().StartsWith("Assign_", StringComparison.Ordinal)).All(b => b.Disabled),
+                "station: inspection of the unfinished barn cannot assign dairy production");
+            var build = Descendants(panel).OfType<Button>().Single(b => b.Name == "FacilityUpgrade");
+            var facility = game.Data.Facilities[station.RequiredFacilityId];
+            var cost = game.Ranch.FacilityUpgradeCost(facility, 0);
+            await ClickStationButton(build);
+            Check(station.IsAvailable && game.Economy.Gold == gold - cost,
+                "station: the actual Build button spends the canonical facility price and unlocks work once");
+            gold = game.Economy.Gold;
+        }
         var assign = Descendants(panel).OfType<Button>().FirstOrDefault(b => b.Name.ToString().StartsWith("Assign_", StringComparison.Ordinal) && !b.Disabled);
         if (assign is null) throw new InvalidOperationException("The continuing station fixture needs one resident not already assigned to Dairy.");
         var id = assign.Name.ToString()["Assign_".Length..];
@@ -112,6 +126,8 @@ public partial class UiLayoutAcceptance
             "service: Options hides global navigation and daily settlement controls");
         shell.ShowScreen("shop");
         Check(shell.CurrentScreen == "options", "service: a dedicated options route cannot expose the store");
+        Check(!world.OpenDedicatedService("unknown_service") && shell.CurrentScreen == "options",
+            "service: an unknown service cannot fall through to the old global hub");
         world.CloseManagement();
         Check(game.State.Calendar.Day == day && game.State.Calendar.Phase == phase,
             "station: the complete guidance/work/options journey keeps the same day and phase");

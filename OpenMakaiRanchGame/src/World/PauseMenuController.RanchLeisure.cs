@@ -14,6 +14,7 @@ public partial class PauseMenuController
     {
         if (Visible || _communityBoard is null || _menuCenter is null) return false;
         Open(areaId);
+        _physicalBoardOrigin = true;
         OpenCommunityBoard();
         return IsCommunityBoardOpen;
     }

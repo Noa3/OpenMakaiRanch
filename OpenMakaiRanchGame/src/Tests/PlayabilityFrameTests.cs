@@ -76,19 +76,23 @@ public static class PlayabilityFrameTests
             ranch.Player!.GlobalPosition = pasture.GlobalPosition;
             await Frames(game, 2);
             await KeyStroke(game, Key.F);
+            await Until(game, () => world.IsStationPanelOpen, "pasture workstation surface");
+            PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(b => b.Name == "Assign_" + pastureWorker).EmitSignal(BaseButton.SignalName.Pressed);
             await Until(game, () => flow.CurrentStage == FirstDayFlowController.StageManagementDairy, "pasture tutorial assignment");
             Check(result, game.Schedule.GetAssignment(pastureWorker) == "pasture",
                 "physical workstation input assigns work in the shared schedule");
-            PlayabilityRegressionTests.Press(flow, "Open Schedule");
+            PlayabilityRegressionTests.Press(flow, "Find the Dairy Barn");
+            await Frames(game, 3);
+            var dairy = ranch.Stations.First(station => station.CommandTargetId == "dairy");
+            ranch.Player.GlobalPosition = dairy.GlobalPosition;
             await Frames(game, 2);
-            var dairyLabel = game.Data.Jobs["dairy"].DisplayName;
-            var dairyButtons = PlayabilityRegressionTests.Buttons(world.Shell!).Where(button => button.Text == dairyLabel).ToArray();
-            var dairyIndex = game.Roster.Characters.ToList().FindIndex(character => character.Id != pastureWorker);
-            if (dairyIndex < 0 || dairyIndex >= dairyButtons.Length || dairyButtons[dairyIndex].Disabled)
-                throw new InvalidOperationException("Second worker's dairy assignment button unavailable");
-            dairyButtons[dairyIndex].EmitSignal(BaseButton.SignalName.Pressed);
+            await KeyStroke(game, Key.F);
+            await Until(game, () => world.IsStationPanelOpen, "dairy workstation surface");
+            var dairyWorker = game.Roster.Characters.First(character => character.Id != pastureWorker).Id;
+            var dairyButton = PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(button => button.Name == "Assign_" + dairyWorker);
+            if (dairyButton.Disabled) throw new InvalidOperationException("The tutorial's second worker cannot be assigned at the dairy station.");
+            dairyButton.EmitSignal(BaseButton.SignalName.Pressed);
             await Frames(game, 2);
-            ReturnToWorld(world);
             await Until(game, () => flow.CurrentStage == FirstDayFlowController.StageInvestigateIntruder && flow.BlocksWorldInput,
                 "evening ranch-tour completion");
             Check(result, game.State.Calendar.Phase == DayPhase.Evening && game.State.Story.RanchTourCompleted,
@@ -127,7 +131,13 @@ public static class PlayabilityFrameTests
             await KeyStroke(game, Key.Escape);
             Check(result, world.PauseMenu!.IsOpen && tree.Paused,
                 $"real Escape input opens pause (before: {pauseEntry}; after open={world.PauseMenu.IsOpen}, paused={tree.Paused})");
-            PlayabilityRegressionTests.Press(world.PauseMenu, "Community Board");
+            Check(result, !PlayabilityRegressionTests.Buttons(world.PauseMenu).Any(b => b.Name == "CommunityBoardButton" && b.Visible),
+                "ordinary pause contains no remote community delivery shortcut");
+            await KeyStroke(game, Key.Escape);
+            ranch.Player.GlobalPosition = ranch.Stations.Single(point => point.TargetId == RanchLeisureController.BoardId).GlobalPosition;
+            await Frames(game, 3);
+            await KeyStroke(game, Key.F);
+            Check(result, world.PauseMenu.IsCommunityBoardOpen, "the physical community board opens its dedicated delivery surface");
             var offer = game.GetCommunityRequests().First(value => value.Id == "market_basket");
             var gold = game.Economy.Gold;
             var stock = game.State.Ranch.Stockpile.GetValueOrDefault(offer.ResourceId);
@@ -139,11 +149,9 @@ public static class PlayabilityFrameTests
                 && game.State.Ranch.Stockpile[offer.ResourceId] == stock - offer.RequiredAmount,
                 "the board consumes the displayed stock and pays the displayed gold exactly once");
             await KeyStroke(game, Key.Escape);
-            Check(result, world.PauseMenu.IsOpen && !world.PauseMenu.IsCommunityBoardOpen,
-                "first real Back closes only the nested courier board");
-            await KeyStroke(game, Key.Escape);
-            Check(result, !world.PauseMenu.IsOpen && !tree.Paused && ranch.InputGate.WorldInputEnabled,
-                "second real Back resumes the world without reopening pause in the same frame");
+            Check(result, !world.PauseMenu.IsCommunityBoardOpen && !world.PauseMenu.IsOpen
+                && !tree.Paused && ranch.InputGate.WorldInputEnabled,
+                "one real Back from the physical board resumes the world without opening a remote menu");
 
             Check(result, game.SaveSlot(99), "completed first-day session writes the isolated smoke slot");
             var savedGold = game.Economy.Gold;

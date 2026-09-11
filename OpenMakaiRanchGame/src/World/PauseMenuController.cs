@@ -22,6 +22,8 @@ public partial class PauseMenuController : Control
     private Control? _menuCenter;
     private CommunityBoardPanel? _communityBoard;
     private bool _worldShortcutsAllowed = true;
+    private bool _physicalBoardOrigin;
+    public bool WorldOnlyServices { get; set; }
 
     public bool IsOpen => Visible;
     public bool IsCommunityBoardOpen => Visible && _communityBoard?.Visible == true;
@@ -78,7 +80,7 @@ public partial class PauseMenuController : Control
     public void Open(string areaId, bool restrictWorldShortcuts = false)
     {
         if (Visible) return;
-        _worldShortcutsAllowed = !restrictWorldShortcuts && areaId != "intro";
+        _worldShortcutsAllowed = !restrictWorldShortcuts && areaId != "intro" && !WorldOnlyServices;
         if (_communityButton is not null)
         {
             _communityButton.Visible = _worldShortcutsAllowed;
@@ -104,6 +106,7 @@ public partial class PauseMenuController : Control
 
     public void Close()
     {
+        _physicalBoardOrigin = false;
         _ranchCorner?.Close();
         _communityBoard?.Close();
         if (_menuCenter is not null) _menuCenter.Visible = true;
@@ -140,7 +143,7 @@ public partial class PauseMenuController : Control
 
     private void OpenCommunityBoard()
     {
-        if (!Visible || !_worldShortcutsAllowed || _communityBoard is null || _menuCenter is null
+        if (!Visible || (!_worldShortcutsAllowed && !_physicalBoardOrigin) || _communityBoard is null || _menuCenter is null
             || GameRoot.Instance is not { } game || !GodotObject.IsInstanceValid(game)) return;
         _menuCenter.Visible = false;
         _communityBoard.Open(game);
@@ -148,6 +151,7 @@ public partial class PauseMenuController : Control
 
     private void CloseCommunityBoard()
     {
+        if (_physicalBoardOrigin) { Close(); return; }
         _communityBoard?.Close();
         if (_menuCenter is not null) _menuCenter.Visible = true;
         if (Visible) _communityButton?.GrabFocus();

@@ -2325,8 +2325,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                     controller.Ranch.Player.GlobalPosition = nearbyAvatar.GlobalPosition + new Vector3(0.45f, 0f, 0f);
                     Assert(result, controller.Ranch.TryInteractWithNearestWorldTarget(),
                         "world player can interact with a nearby roster resident");
-                    Assert(result, controller.IsManagementVisible && controller.Shell?.CurrentScreen == "character_detail",
-                        "nearby resident interaction routes into the existing character detail UI");
+                    Assert(result, controller.IsStationPanelOpen && controller.StationPanel?.ContextKind == "resident" && !controller.Shell!.IsVisibleInTree(),
+                        "nearby resident interaction opens only a dedicated resident surface");
                     Assert(result, controller.CloseManagement(),
                         "character detail opened from the world can return to the 3D ranch");
                     Assert(result, controller.Ranch.InputGate.WorldInputEnabled,
@@ -2390,8 +2390,8 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                     controller.Town._Process(0.016);
                     Assert(result, controller.Town.TryInteract(),
                         "town dating: F-style world interaction can target the nearby companion");
-                    Assert(result, controller.IsManagementVisible && controller.Shell?.CurrentScreen == "character_detail",
-                        "town dating: companion interaction routes to the existing character detail UI");
+                    Assert(result, controller.IsStationPanelOpen && controller.StationPanel?.ContextKind == "resident" && !controller.Shell!.IsVisibleInTree(),
+                        "town dating: companion interaction opens only its dedicated resident surface");
                     Assert(result, controller.CloseManagement(),
                         "town dating: companion details can return cleanly to the 3D outing");
                 }
@@ -2518,11 +2518,11 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
                 controller.AdvanceWorldTime(); // no night plan -> management request, no settlement
                 Assert(result, game.State.Calendar.Phase == DayPhase.Night,
                     "world refuses to settle Night before a night plan exists");
-                Assert(result, controller.IsManagementVisible && controller.Shell.CurrentScreen == "ranch",
-                    "missing night plan opens the existing ranch management screen");
+                Assert(result, !controller.IsManagementVisible && controller.NavigationGuide?.Target?.TargetId == "ranch_house",
+                    "missing night plan marks the physical ranch house without exposing remote management");
 
-                Assert(result, controller.CloseManagement(),
-                    "night planning management can return to the world");
+                Assert(result, controller.Ranch!.InputGate.WorldInputEnabled,
+                    "night planning guidance leaves exploration in control");
                 game.SetNightAction("rest");
                 var dayBeforeWorldSettlement = game.State.Calendar.Day;
                 controller.AdvanceWorldTime();

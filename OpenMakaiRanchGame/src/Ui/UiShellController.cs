@@ -265,6 +265,7 @@ public partial class UiShellController : Control
 		{
 			_game.Feedback.PlayError();
 			SetStatus(blockedReason, true);
+			if (IsDedicatedService) return;
 			screenId = "ranch";
 		}
 
@@ -320,6 +321,7 @@ public partial class UiShellController : Control
 			case "schedule": RenderSchedule(); break;
 			case "town": RenderTown(); break;
 			case "shop": RenderShop(); break;
+			case "inventory": RenderStationStorage(); break;
 			case "adventure": RenderAdventure(); break;
 			case "combat": RenderCombat(); break;
 			case "milestones": RenderMilestones(); break;

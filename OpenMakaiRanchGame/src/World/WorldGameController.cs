@@ -65,6 +65,7 @@ public partial class WorldGameController : Node
         _returnToWorldButton = GetNodeOrNull<Button>(ReturnToWorldButtonPath);
         _transition = GetNodeOrNull<WorldTransitionController>(TransitionPath);
         _pauseMenu = GetNodeOrNull<PauseMenuController>(PauseMenuPath);
+        if (_pauseMenu is not null) _pauseMenu.WorldOnlyServices = true;
         _mobileControls = GetNodeOrNull<MobileWorldControls>(MobileControlsPath);
         _firstDayFlow = GetNodeOrNull<FirstDayFlowController>(FirstDayFlowPath);
 

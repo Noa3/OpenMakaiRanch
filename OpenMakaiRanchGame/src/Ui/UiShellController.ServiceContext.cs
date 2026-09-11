@@ -24,7 +24,9 @@ public partial class UiShellController
     {
         // A load/new game is a new navigation context, not a child page of the old service.
         if (_serviceRoot is not null && _serviceGeneration != _game.StateGeneration) ClearServiceContext();
-        if (_serviceRoot is null || screen == _serviceRoot || screen == _currentScreen) return true;
+        if (_serviceRoot is null) return true;
+        if (!IsKnownService(screen)) return false;
+        if (screen == _serviceRoot || screen == _currentScreen) return true;
         if (screen == "ranch")
         {
             // Legacy Back buttons used to return to the global hub. In a physical service
@@ -36,13 +38,31 @@ public partial class UiShellController
         {
             "adventure" => screen == "combat",
             "shop" => screen == "inventory",
-            "inventory" => screen is "equipment" or "clothing_list" or "clothing_change",
-            "clothing_list" => screen == "clothing_change",
-            "magic" => screen is "mana_conversion" or "incubation" or "production",
+            "inventory" => false,
+            "clothing_list" => screen is "clothing_change" or "clothing_strip",
+            "magic_basic" => screen is "magic_forbidden" or "magic_tentacle",
             "pharmacy_list" => screen == "pharmacy_craft",
-            "roster" => screen is "character_detail" or "equipment",
+            "roster" => screen is "character_detail" or "ability" or "room_assign",
             _ => false
         };
+    }
+
+    internal static bool IsKnownService(string screen) => screen is "ranch" or "report" or "roster"
+        or "shop" or "inventory" or "adventure" or "combat" or "milestones" or "research"
+        or "bond" or "pets" or "saveload" or "options" or "settings" or "training" or "visit"
+        or "milk" or "mental" or "character_detail" or "clothing_list" or "clothing_change"
+        or "clothing_strip" or "room_assign" or "ability" or "pharmacy_list" or "pharmacy_craft"
+        or "magic_basic" or "magic_forbidden" or "magic_tentacle";
+
+    private void RenderStationStorage()
+    {
+        AddTitle("Ranch storage");
+        _content.AddChild(MutedLabel("Stored items and production share the same ranch inventory. Trade at the General Store; offer meals by speaking to a resident."));
+        foreach (var item in _game.Inventory.Items)
+            _content.AddChild(MutedLabel($"{_game.Data.Item(item.Key).DisplayName}: {item.Value}"));
+        _content.AddChild(SubtitleLabel("Production stockpile"));
+        foreach (var item in _game.State.Ranch.Stockpile)
+            _content.AddChild(MutedLabel($"{item.Key}: {item.Value}"));
     }
 
     private void ApplyDedicatedServiceLayout()
