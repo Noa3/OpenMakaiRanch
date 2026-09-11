@@ -194,30 +194,64 @@ public partial class UiLayoutAcceptance
     {
         picker.GrabFocus(); await Frames(6);
         Check(VisibleTarget(picker), "locale: the language picker is a visible physical hit target");
-        await Click(picker);
+        // Use the engine's input entry point, including global button state and WindowId.
+        // Viewport.PushInput alone skips the mouse mask used to suppress the opening release
+        // in PopupMenu; emitting WindowInput alone skips Window's native virtual handler.
+        var owner = picker.GetWindow();
+        var point = owner.GetFinalTransform() * (picker.GetGlobalTransformWithCanvas() * (picker.Size / 2f));
+        var ownerId = owner.GetWindowId();
+        Input.ParseInputEvent(new InputEventMouseMotion { WindowId = ownerId,
+            Position = point, GlobalPosition = point });
+        Input.ParseInputEvent(new InputEventMouseButton { WindowId = ownerId,
+            Position = point, GlobalPosition = point, ButtonIndex = MouseButton.Left, Pressed = true });
+        Input.FlushBufferedEvents();
+        await Frames(1);
+        Input.ParseInputEvent(new InputEventMouseButton { WindowId = ownerId,
+            Position = point, GlobalPosition = point, ButtonIndex = MouseButton.Left, Pressed = false });
+        Input.FlushBufferedEvents();
+        await Frames(4);
         Check(GodotObject.IsInstanceValid(picker),
-            "locale: opening the picker does not execute an unrelated setting or retire its control");
+            "locale: the opening click cannot choose a language or retire its own picker");
+        if (!GodotObject.IsInstanceValid(picker))
+            throw new InvalidOperationException("Opening the language popup retired its picker before a choice.");
         var popup = picker.GetPopup();
         Check(popup.Visible, "locale: clicking the language picker opens its actual popup");
+        if (!popup.Visible) throw new InvalidOperationException("The language popup did not open.");
         var index = Array.IndexOf(LocaleCatalog.AvailableLocales, locale);
         if (index < 0) throw new InvalidOperationException("The requested test language is not offered.");
-        // Opening above is a viewport click. Choice keys explicitly exercise the
-        // popup's WindowInput boundary, not ItemSelected or SetLocale directly.
+        var inputWindow = popup.IsEmbedded() ? ownerId : popup.GetWindowId();
         async Task PopupKey(Key key)
         {
-            popup.EmitSignal(Window.SignalName.WindowInput,
-                new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = true });
+            Input.ParseInputEvent(new InputEventKey { WindowId = inputWindow,
+                Keycode = key, PhysicalKeycode = key, Pressed = true });
+            Input.FlushBufferedEvents();
             await Frames(1);
-            if (GodotObject.IsInstanceValid(popup))
-                popup.EmitSignal(Window.SignalName.WindowInput,
-                    new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = false });
-            await Frames(2);
+            Input.ParseInputEvent(new InputEventKey { WindowId = inputWindow,
+                Keycode = key, PhysicalKeycode = key, Pressed = false });
+            Input.FlushBufferedEvents();
+            await Frames(3);
         }
-        await PopupKey(Key.Home);
-        for (var step = 0; step < index; step++) await PopupKey(Key.Down);
-        await PopupKey(Key.Enter);
-        await Frames(10);
-        Check(LocaleCatalog.CurrentLocale == locale && GameRoot.Instance.State.Settings.Locale == locale,
-            $"locale: popup keyboard navigation selects {locale} through the real picker callback (catalog={LocaleCatalog.CurrentLocale}, saved={GameRoot.Instance.State.Settings.Locale})");
+        try
+        {
+            // Home is not a PopupMenu command. Walk the actual focused item using Down,
+            // with a bounded loop; never set Selected, ItemSelected or the language directly.
+            for (var step = 0; step <= popup.ItemCount && popup.GetFocusedItem() != index; step++)
+                await PopupKey(Key.Down);
+            var focused = popup.GetFocusedItem();
+            Check(focused == index,
+                $"locale: engine-routed keys focus the requested popup item (target={index}, actual={focused}, embedded={popup.IsEmbedded()})");
+            if (focused != index) throw new InvalidOperationException("The actual popup did not accept navigation keys.");
+            await PopupKey(Key.Enter);
+            await Frames(10);
+            Check(LocaleCatalog.CurrentLocale == locale && GameRoot.Instance.State.Settings.Locale == locale,
+                $"locale: the actual popup selection updates catalog and saved language to {locale}");
+            if (LocaleCatalog.CurrentLocale != locale)
+                throw new InvalidOperationException("The actual language choice did not update the catalog.");
+        }
+        finally
+        {
+            if (GodotObject.IsInstanceValid(popup) && popup.Visible) popup.Hide();
+            Input.ReleasePressedEvents();
+        }
     }
 }
