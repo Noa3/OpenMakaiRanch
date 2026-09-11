@@ -46,6 +46,8 @@ public partial class GameRoot
                 new DayCycleService(state), Milestones, Inventory, Talents);
             var report = settlement.SettleDay();
             evening.CompleteAfterSettlement(sharedNight, report);
+            if (settlement.LastWorkFacts is { } facts)
+                new RanchProgressionService(state, Flags).ObserveSettlement(facts, report);
             _settlingReport = report;
             LastDailyReport = report;
             state.Reports.RemoveAll(entry => entry.Day == report.Day);

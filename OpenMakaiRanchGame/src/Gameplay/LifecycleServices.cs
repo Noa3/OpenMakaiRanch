@@ -185,31 +185,11 @@ public sealed class ResourceConsumptionService
         _data = data;
     }
 
+    public LunchPlan LastLunch { get; private set; } = new(0, 0, 0, 0);
+
     public void ConsumeResources(DailyReport report)
     {
-        // Each non-resting character consumes 1 meal if available -> morale bonus
-        int mealsConsumed = 0;
-        foreach (var character in _state.Roster.Characters)
-        {
-            var jobId = _state.Schedule.AssignedJobs.GetValueOrDefault(character.Id) ?? "rest";
-            if (jobId == "rest") continue;
-
-            int maxEnergy = character.MaxEnergyOverride ?? (_data.Characters.TryGetValue(character.DefinitionId ?? character.Id, out var def) ? def.MaxEnergy : 100);
-
-            if (_state.Inventory.Items.TryGetValue("meal_box", out var meals) && meals > 0)
-            {
-                _state.Inventory.Items["meal_box"] = meals - 1;
-                mealsConsumed++;
-                character.Morale = Math.Clamp(character.Morale + 3, 0, 100);
-                character.Energy = Math.Min(character.Energy + 15, maxEnergy);
-            }
-            else
-            {
-                character.Morale = Math.Clamp(character.Morale - 2, 0, 100);
-            }
-        }
-        if (mealsConsumed > 0)
-            report.Lines.Add($"Consumed {mealsConsumed} meal box(es) for lunch. Morale and energy improved.");
+        LastLunch = new RanchProvisioningService(_state, _data).ConsumeLunch(report);
 
         // Supplies consumed by facilities
         int suppliesConsumed = 0;

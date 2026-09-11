@@ -1,0 +1,18 @@
+{
+  "_comment": "German gameplay messages. Other UI entries are in locale/ui/de.json.",
+  "lang.name": "Deutsch",
+  "lang.id": "de",
+  "gameplay.food.lunch": "Mittagessen: {0} Ranchmahlzeiten, {1} Essensboxen; {2} Arbeitende ohne Mahlzeit.",
+  "gameplay.tier.output": "Verbesserte Ausstattung: {0} zusätzliche Einheiten {1}; die normalen Einnahmen bleiben unverändert.",
+  "gameplay.achievement.recorded": "An Tag {0} geschafft. Deine Ranch läuft weiter; dieser freiwillige Erfolg fügt weder Pflichten noch Werteboni hinzu.",
+  "gameplay.achievement.restored_home.title": "Ein Zuhause zum Zurückkehren",
+  "gameplay.achievement.restored_home.requirement": "Schließe die vier ersten Ranchprojekte in deinem Tempo ab.",
+  "gameplay.achievement.home_cooking.title": "Aus eigener Küche",
+  "gameplay.achievement.home_cooking.requirement": "Versorge mindestens zwei Arbeitende vollständig mit Ranchmahlzeiten und koche genug für ihre nächste Versorgung.",
+  "gameplay.achievement.balanced_shift.title": "Ein ausgewogener Arbeitstag",
+  "gameplay.achievement.balanced_shift.requirement": "Produziere Mahlzeiten, Vorräte und Ranchwaren an einem rentablen Arbeitstag mit vollständiger Verpflegung und einem erholten Team.",
+  "gameplay.achievement.small_crew.title": "Kleines Team, solide Ranch",
+  "gameplay.achievement.small_crew.requirement": "Decke mit höchstens drei Bewohnern die Betriebskosten allein durch Arbeit. Alle Arbeitenden sind verpflegt und dem Team geht es gut.",
+  "gameplay.achievement.time_to_breathe.title": "Platz für einen freien Tag",
+  "gameplay.achievement.time_to_breathe.requirement": "Gib mindestens einem Bewohner frei, während das verpflegte und erholte Team die Betriebskosten allein durch Arbeit deckt."
+}

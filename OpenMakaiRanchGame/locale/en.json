@@ -1,5 +1,18 @@
 {
   "_comment": "English locale. Empty because T() defaults to English text inline.",
   "lang.name": "English",
-  "lang.id": "en"
+  "lang.id": "en",
+  "gameplay.food.lunch": "Lunch: {0} ranch meals, {1} meal boxes; {2} workers without a meal.",
+  "gameplay.tier.output": "Improved equipment: {0} additional {1}; ordinary wages are unchanged.",
+  "gameplay.achievement.recorded": "Achieved on day {0}. Your ranch continues; this optional record adds no chores or stat bonuses.",
+  "gameplay.achievement.restored_home.title": "A home worth returning to",
+  "gameplay.achievement.restored_home.requirement": "Finish the four starting ranch projects at your own pace.",
+  "gameplay.achievement.home_cooking.title": "From our own kitchen",
+  "gameplay.achievement.home_cooking.requirement": "Feed at least two workers entirely from ranch meals and cook enough to cover them again.",
+  "gameplay.achievement.balanced_shift.title": "A balanced shift",
+  "gameplay.achievement.balanced_shift.requirement": "Produce meals, supplies and farm goods in one profitable, fully fed shift with a well-rested team.",
+  "gameplay.achievement.small_crew.title": "Small crew, steady ranch",
+  "gameplay.achievement.small_crew.requirement": "With at most three residents, cover operating costs from work alone while everybody working is fed and the team is well.",
+  "gameplay.achievement.time_to_breathe.title": "Room for a day off",
+  "gameplay.achievement.time_to_breathe.requirement": "Give at least one resident a day off while a fed, well team covers operating costs from work alone."
 }
