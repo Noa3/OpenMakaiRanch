@@ -15,7 +15,7 @@ jobs:
         with:
           ref: feature/world-stations-and-interiors-20260911
           fetch-depth: 0
-      - name: Apply exact reviewed source, preserve concurrent station fixes, remove helpers and fast-forward only the work branch
+      - name: Apply exact reviewed source, preserve concurrent fixes and fast-forward only the work branch
         shell: bash
         run: |
           set -euo pipefail
@@ -37,13 +37,14 @@ jobs:
           if len(raw) > 400000:
               raise SystemExit('Patch exceeds reviewed size bound')
           payload = json.loads(raw)
-          # These station continuity changes landed independently at 61f748d. Keep them,
-          # their direct place-guide path and their test-only teardown, without duplicating either.
+          # Preserve the independently reviewed station routes and test-only teardown.
+          # Existing CI workflows are deliberately excluded from this source-only token.
           omitted = {
               'OpenMakaiRanchGame/src/App/GameRoot.cs',
               'OpenMakaiRanchGame/src/App/GameRoot.SmokeTeardown.cs',
               'OpenMakaiRanchGame/src/Tests/RanchLeisureFrameTests.cs',
               'OpenMakaiRanchGame/src/World/WorldGameController.cs',
+              '.github/workflows/ui-acceptance.yml',
           }
           guards = {name: sha for name, sha in payload['guards'].items() if name not in omitted}
           guards['OpenMakaiRanchGame/src/World/WorldInteractionPresentation.cs'] = 'aa5f5c391a0376b986cb139326258900b6c94fa5'
@@ -66,22 +67,12 @@ jobs:
               if name not in guards: raise SystemExit(f'Unreviewed patch path: {name}')
               selected.append(section)
           patch = ''.join(selected).encode('utf-8')
-          # Three-way application retains the independently identical warning-reason fix.
-          # Any conflicting hunk fails closed and never reaches the commit/push below.
+          # An overlapping independently identical warning fix merges cleanly; conflicts stop here.
           subprocess.run(['git', 'apply', '--3way', '--index', '-'], input=patch, check=True)
           export = Path('OpenMakaiRanchGame/export_presets.cfg')
           text = export.read_text(encoding='utf-8')
           if text.count('include_filter=""') != 5: raise SystemExit('Export presets changed')
           export.write_text(text.replace('include_filter=""', 'include_filter="data/*.json,locale/*.json,locale/ui/*.json"'), encoding='utf-8')
-          workflow = Path('.github/workflows/ui-acceptance.yml')
-          text = workflow.read_text(encoding='utf-8')
-          old = "      - 'OpenMakaiRanchGame/project.godot'\n"
-          if text.count(old) != 1: raise SystemExit('CI trigger anchor changed')
-          text = text.replace(old, old + "      - 'OpenMakaiRanchGame/export_presets.cfg'\n")
-          old = 'OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/OpenMakaiRanchGame.csproj'
-          if text.count(old) != 1: raise SystemExit('CI archive anchor changed')
-          text = text.replace(old, 'OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/export_presets.cfg OpenMakaiRanchGame/OpenMakaiRanchGame.csproj')
-          workflow.write_text(text, encoding='utf-8')
           subprocess.run(['python', 'Tools/Godot/validate_locales.py'], check=True)
           helper = Path('.github/workflows/apply-localized-stations.yml')
           for path in [*parts, helper]: path.unlink()
