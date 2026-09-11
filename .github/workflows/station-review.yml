@@ -1,0 +1,22 @@
+name: Apply reviewed station continuity repair
+on:
+  push:
+    branches: [feature/world-stations-and-interiors-20260911]
+    paths: [Tools/Godot/station-reviewed.zpatch, Tools/Godot/apply_station_review.py, .github/workflows/station-review.yml]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/feature/world-stations-and-interiors-20260911'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/world-stations-and-interiors-20260911
+          fetch-depth: 2
+      - name: Apply exact reviewed diff, remove helpers, and fast-forward only the work branch
+        run: |
+          git config user.name 'OpenMakaiRanch maintenance'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python Tools/Godot/apply_station_review.py
