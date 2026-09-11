@@ -1,0 +1,21 @@
+name: Apply reviewed world continuation
+on:
+  push:
+    branches: [feature/world-stations-and-interiors-20260911]
+    paths: [Tools/Godot/world_continuation_patch.py, .github/workflows/world-continuation.yml]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/feature/world-stations-and-interiors-20260911'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/world-stations-and-interiors-20260911
+      - name: Apply reviewed patch and remove one-use helpers
+        run: |
+          git config user.name 'OpenMakaiRanch maintenance'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python Tools/Godot/world_continuation_patch.py
