@@ -1,0 +1,66 @@
+name: Apply reviewed night-header correction
+on:
+  push:
+    branches: ['fix/daily-gameplay-loop-20260911']
+    paths: ['.github/workflows/apply-night-header-patch.yml']
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/fix/daily-gameplay-loop-20260911'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Patch only unchanged sources and retain every original assertion
+        shell: python
+        run: |
+          import hashlib, pathlib, subprocess
+          changed = []
+          def patch(name, expected, edits):
+              p = pathlib.Path(name)
+              raw = p.read_bytes()
+              blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+              if blob != expected: raise RuntimeError('Concurrent source change: ' + name)
+              text = raw.decode('utf-8')
+              for old, new in edits:
+                  if text.count(old) != 1: raise RuntimeError('Expected one source anchor: ' + name + ' ' + repr(old[:80]))
+                  text = text.replace(old, new, 1)
+              p.write_bytes(text.encode('utf-8'))
+              changed.append(name)
+          patch('OpenMakaiRanchGame/src/Ui/UiShellController.cs', 'e9be107ad4fc5d84e80fdb27e78666d2706761d1', [
+              ('\t\t_screenLabel.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;',
+               '\t\tBoundHeaderText(compact, metrics.ContentWidth);'),
+              ('\t\t_screenLabel.Text = ScreenTitle(_currentScreen);\n\t\t_endDayButton.Disabled',
+               '\t\t_screenLabel.Text = ScreenTitle(_currentScreen);\n\t\t_screenLabel.TooltipText = _screenLabel.Text;\n\t\t_statusLabel.TooltipText = _statusLabel.Text;\n\t\t_endDayButton.Disabled')])
+          patch('OpenMakaiRanchGame/src/Tests/SmokeTestRunner.cs', '2aed2ebd85b67cb34c2384e338ba0b3cabd51edf', [
+              ('            root.AdvanceTime(); // Night + settle -> new day, Morning',
+               '            Assert(result, root.TrySelectNightAction("rest", root.StateGeneration, root.State.Calendar.Day),\n'
+               '                "save round-trip: explicitly choose the night action before settling");\n'
+               '            root.AdvanceTime(); // Planned Night + settle -> new day, Morning')])
+          patch('OpenMakaiRanchGame/src/Tests/UiLayoutAcceptance.Night.cs', '5d4a8ef96e8b4eac67157ec50aa958e0da015f9a', [
+              ('        foreach (var choice in new[] { "rest", "train", "admin", "rest" })',
+               '        Check(shell.GetNode<ScrollContainer>(shell.ScrollPath).Size.Y >= 96,\n'
+               '            "long planning status leaves a usable content viewport instead of expanding the whole header");\n'
+               '        var status = shell.GetNode<Label>(shell.StatusLabelPath);\n'
+               '        Check(!string.IsNullOrEmpty(status.Text) && status.TooltipText == status.Text,\n'
+               '            "bounded header retains the complete status message in its tooltip");\n'
+               '        foreach (var choice in new[] { "rest", "train", "admin", "rest" })'),
+              ('        var report = game.LastDailyReport!;', '        var report = game.LastDailyReport;'),
+              ('            && shell.CurrentScreen == "report", "the actual End Day button reaches one next-morning settlement report");',
+               '            && shell.CurrentScreen == "report" && report is not null, "the actual End Day button reaches one next-morning settlement report");\n'
+               '        if (report is null) throw new System.InvalidOperationException("The actual End Day click produced no daily report.");')])
+          helper = pathlib.Path('.github/workflows/apply-night-header-patch.yml')
+          helper.unlink()
+          changed.append(str(helper))
+          subprocess.run(['git','diff','--check'],check=True)
+          subprocess.run(['git','add','--',*changed],check=True)
+      - name: Commit reviewed paths without force and remove the helper
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(ui): bound long header status and retain reachable nightly actions'
+          git push origin HEAD:refs/heads/fix/daily-gameplay-loop-20260911
