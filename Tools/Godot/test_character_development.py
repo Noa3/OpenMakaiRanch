@@ -1,6 +1,7 @@
 """Localization and pinned original-source receipts; mechanics execute in Godot smoke."""
 import hashlib
 import re
+import subprocess
 import unittest
 from pathlib import Path
 from validate_locales import GAME, read_catalog, validate_pair
@@ -27,7 +28,14 @@ class CharacterDevelopmentCatalogTests(unittest.TestCase):
 @unittest.skipUnless(ORIGINAL.is_dir(), "Review-source artifact does not include the read-only original")
 class OriginalCharacterSourceReceipts(unittest.TestCase):
     def check_blob(self, path, expected):
-        raw = (ORIGINAL / path).read_bytes()
+        # Git object bytes, not a Windows CRLF-converted checkout. Never alter the source.
+        process = subprocess.run(
+            ["git", "-C", str(GAME.parent), "show", "HEAD:eraMakaiRanch-game-eng-translation/" + path],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, timeout=20,
+        )
+        raw = process.stdout
+        self.assertEqual((ORIGINAL / path).read_text(encoding="utf-8-sig"),
+                         raw.decode("utf-8-sig").replace("\r\n", "\n"))
         digest = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
         self.assertEqual(digest, expected, "Original reference changed: review the audit, do not rewrite the source")
         return raw.decode("utf-8-sig")
