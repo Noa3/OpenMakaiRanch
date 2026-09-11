@@ -108,6 +108,14 @@ public partial class GameRoot : Node
 
 	private async void RunSmokeTestsAndExit()
 	{
+		var retainedScenes = new[]
+		{
+			GD.Load<PackedScene>("res://scenes/MainMenu.tscn"),
+			GD.Load<PackedScene>("res://scenes/Game.tscn"),
+			GD.Load<PackedScene>("res://scenes/CharacterCreationScreen.tscn"),
+			GD.Load<PackedScene>("res://scenes/dev/RanchGreybox.tscn"),
+			GD.Load<PackedScene>("res://scenes/WorldGame.tscn")
+		};
 		var result = SmokeTestRunner.Run();
 		// Keep every assertion and failure; emit one terminal result after both suites.
 		result.Lines.RemoveAll(line => line is "SMOKE PASS" or "SMOKE FAIL");
@@ -131,6 +139,7 @@ public partial class GameRoot : Node
 		// Finalize managed engine wrappers while the C# bridge is still alive, even on failure.
 		if (GetTree().CurrentScene is { } scene && scene != this) scene.QueueFree();
 		for (var i = 0; i < 4; i++) await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+		Array.Clear(retainedScenes);
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
 		for (var i = 0; i < 3; i++) await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
@@ -884,7 +893,8 @@ public partial class GameRoot : Node
 
 		State.Settings.Locale = normalizedLocale;
 		ApplyLocale();
-		PersistAndSyncFeedbackSettings();
+		// A language change must not reapply window mode, resolution, audio or input settings.
+		SettingsStorage.Save(State.Settings);
 		StateChanged?.Invoke();
 		return true;
 	}

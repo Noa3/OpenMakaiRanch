@@ -41,12 +41,16 @@ public partial class UiLayoutAcceptance
             await Frames(12);
             Check(camera.Transform.IsEqualApprox(still), "title: Reduced Motion stops the background camera");
             var culture = CultureInfo.CurrentCulture;
+            var windowSize = GetWindow().Size;
+            var windowMode = GetWindow().Mode;
             await ChooseLanguage(menu.GetNode<OptionButton>(menu.LangPickerPath), "de");
             Check(menu.GetNode<Button>(menu.NewGameButtonPath).Text == "Neues Spiel"
                 && LocaleCatalog.T("world.direction.distance", "{0} {1:0.0} m", "→", 12.3) == "→ 12 m"
                 && LocaleCatalog.FormatForDisplay("{0:0.0}", "{0:0.0}", CultureInfo.GetCultureInfo("de"), 6.5) == "6,5"
                 && Equals(CultureInfo.CurrentCulture, culture),
                 "locale: translated title and display-only number culture leave global parsing culture unchanged");
+            Check(GetWindow().Size == windowSize && GetWindow().Mode == windowMode,
+                "locale: selecting a language leaves the actual window size and display mode unchanged");
             Check(LocaleCatalog.T("world.test.missing", "English fallback") == "English fallback",
                 "locale: missing translation keys keep readable English instead of exposing IDs");
             foreach (var size in new[] { new Vector2I(640, 480), new Vector2I(480, 800) })
@@ -188,16 +192,13 @@ public partial class UiLayoutAcceptance
         Check(popup.Visible, "locale: clicking the language picker opens its actual popup");
         var index = Array.IndexOf(LocaleCatalog.AvailableLocales, locale);
         if (index < 0) throw new InvalidOperationException("The requested test language is not offered.");
-        void KeyInPopup(Key key)
-        {
-            popup.PushInput(new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = true }, true);
-            popup.PushInput(new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = false }, true);
-        }
-        KeyInPopup(Key.Home);
-        for (var step = 0; step < index; step++) KeyInPopup(Key.Down);
-        KeyInPopup(Key.Enter);
+        // Send input through the owning window so its embedded-popup routing runs.
+        // Calling Viewport.PushInput on PopupMenu directly bypasses WindowInput.
+        await Stroke(Key.Home);
+        for (var step = 0; step < index; step++) await Stroke(Key.Down);
+        await Stroke(Key.Enter);
         await Frames(10);
         Check(LocaleCatalog.CurrentLocale == locale && GameRoot.Instance.State.Settings.Locale == locale,
-            $"locale: popup keyboard navigation selects {locale} through the real picker callback");
+            $"locale: popup keyboard navigation selects {locale} through the real picker callback (catalog={LocaleCatalog.CurrentLocale}, saved={GameRoot.Instance.State.Settings.Locale})");
     }
 }

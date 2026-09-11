@@ -183,7 +183,12 @@ public partial class PauseMenuController : Control
 
     private void OpenManagement(string screenId)
     {
-        if (!Visible || (!_worldShortcutsAllowed && screenId is not ("options" or "settings" or "saveload"))) return;
+        var utility = screenId is "options" or "settings" or "saveload";
+        // A physical board/corner may request the read-only place guide without
+        // re-enabling global management shortcuts or callbacks from hidden panels.
+        var physicalPlanning = screenId == "schedule"
+            && (IsRanchCornerOpen || (_physicalBoardOrigin && IsCommunityBoardOpen));
+        if (!Visible || (!_worldShortcutsAllowed && !utility && !physicalPlanning)) return;
         Close();
         ManagementScreenRequested?.Invoke(screenId);
     }
