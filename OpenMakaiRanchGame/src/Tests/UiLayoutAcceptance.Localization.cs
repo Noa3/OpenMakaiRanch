@@ -251,7 +251,6 @@ public partial class UiLayoutAcceptance
         finally
         {
             if (GodotObject.IsInstanceValid(popup) && popup.Visible) popup.Hide();
-            Input.ReleasePressedEvents();
         }
     }
 }
