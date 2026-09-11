@@ -116,6 +116,7 @@ public partial class AnimeLookDev : Control
         SetQuality("High");
         SetLighting(0);
         SetPortrait(false);
+        BuildPresenceControls(column);
     }
 
     private DirectionalLight3D Light(Vector3 rotation, bool shadows)
@@ -145,8 +146,8 @@ public partial class AnimeLookDev : Control
         // Fully clothed and deliberately geometric. No external identity, rig or design is implied.
         Capsule(SpecimenRoot, cloth, new Vector3(0f, 0.99f, 0f), 0.25f, 0.92f);
         Capsule(SpecimenRoot, skin, new Vector3(0f, 1.405f, 0f), 0.080f, 0.22f);
-        AddCalibration(AnimeCalibrationGeometry.Head(), skin);
-        AddCalibration(AnimeCalibrationGeometry.Hair(), hair);
+        AddCalibration(AnimeCalibrationGeometry.Head(), skin, "CalibrationHead");
+        AddCalibration(AnimeCalibrationGeometry.Hair(), hair, "CalibrationHair");
         var eyeMaps = AnimeCalibrationTextures.Eye();
         PortraitEyeProfile = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Eye, eye.IrisColor);
         PortraitEyeProfile.AlbedoTexture = eyeMaps.Color;
@@ -154,16 +155,16 @@ public partial class AnimeLookDev : Control
         PortraitEyeProfile.Rim = 0f;
         var lines = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Cloth, new Color(0.06f, 0.037f, 0.044f));
         lines.Rim = 0f; lines.Specular = 0f;
-        AddCalibration(AnimeCalibrationGeometry.FacialLines(), lines);
+        AddCalibration(AnimeCalibrationGeometry.FacialLines(), lines, "CalibrationLines");
         var mouth = AnimeSurfaceProfile.Create(AnimeSurfaceKind.Cloth, new Color(0.43f, 0.20f, 0.19f));
         mouth.Rim = 0f;
-        AddCalibration(AnimeCalibrationGeometry.Mouth(), mouth);
+        AddCalibration(AnimeCalibrationGeometry.Mouth(), mouth, "CalibrationMouth");
         foreach (var sign in new[] { -1f, 1f })
         {
             Capsule(SpecimenRoot, cloth, new Vector3(sign * 0.14f, 0.38f, 0f), 0.11f, 0.65f);
             Capsule(SpecimenRoot, cloth, new Vector3(sign * 0.32f, 1.12f, 0f), 0.095f, 0.55f);
             Sphere(SpecimenRoot, skin, new Vector3(sign * 0.32f, 0.83f, 0f), new Vector3(0.074f, 0.095f, 0.074f));
-            AddCalibration(AnimeCalibrationGeometry.Eye(sign), PortraitEyeProfile);
+            AddCalibration(AnimeCalibrationGeometry.Eye(sign), PortraitEyeProfile, sign < 0 ? "CalibrationEyeLeft" : "CalibrationEyeRight");
         }
         _swatches = new Node3D { Name = "MaterialSwatches" };
         _world.AddChild(_swatches);
@@ -192,9 +193,9 @@ public partial class AnimeLookDev : Control
         _samples.Add((panel, cloth));
     }
 
-    private void AddCalibration(ArrayMesh geometry, AnimeSurfaceProfile profile)
+    private void AddCalibration(ArrayMesh geometry, AnimeSurfaceProfile profile, string name)
     {
-        var mesh = new MeshInstance3D { Mesh = geometry, Position = AnimeCalibrationGeometry.HeadOrigin };
+        var mesh = new MeshInstance3D { Name = name, Mesh = geometry, Position = AnimeCalibrationGeometry.HeadOrigin };
         SpecimenRoot.AddChild(mesh);
         _samples.Add((mesh, profile));
     }

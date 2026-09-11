@@ -25,6 +25,8 @@ EXPECTED_CAPTURES = {
     "neutral-ultra.png", "portrait-high.png", "portrait-rotated-high.png",
     "portrait-blue-iris-high.png", "portrait-unmasked-high.png", "portrait-uv-shift-high.png",
     "portrait-profile-high.png", "portrait-night-high.png",
+    "presence-neutral.png", "presence-blink.png", "presence-warm.png",
+    "makai-off.png", "makai-night.png",
 }
 PROJECT = '''config_version=5
 [application]

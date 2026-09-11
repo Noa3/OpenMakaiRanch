@@ -100,6 +100,7 @@ public partial class AnimeLookDevChecks : Node
             Check("full framing restores material swatches", _study.SwatchesVisible);
             Check("quality and lighting changes do not add samples", _study.SampleCount == count);
             Check("sample viewport stays at native render scale", Mathf.IsEqualApprox(_study.StudyViewport.Scaling3DScale, 1f));
+            await CheckPresenceAndMakai();
         }
         catch (Exception exception)
         {
