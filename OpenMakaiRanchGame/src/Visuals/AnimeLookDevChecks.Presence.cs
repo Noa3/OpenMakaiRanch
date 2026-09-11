@@ -101,6 +101,24 @@ public partial class AnimeLookDevChecks
         var sourceMesh = study.PresenceEye.Mesh;
         var blinkIndex = study.PresenceEye.FindBlendShapeByName("blink");
         Check("presence calibration has actual named shape targets", blinkIndex >= 0);
+        var mouth = study.PresenceHead.GetChildren().OfType<MeshInstance3D>().Single(m => m.Name == "CalibrationMouth");
+        var mouthMesh = (ArrayMesh)mouth.Mesh;
+        var original = mouthMesh.SurfaceGetArrays(0);
+        var vertices = original[(int)Mesh.ArrayType.Vertex].AsVector3Array();
+        var indices = original[(int)Mesh.ArrayType.Index].AsInt32Array();
+        var orientationOk = true;
+        foreach (var target in mouthMesh.SurfaceGetBlendShapeArrays(0))
+        {
+            var changed = target[(int)Mesh.ArrayType.Vertex].AsVector3Array();
+            for (var i = 0; i < indices.Length; i += 3)
+            {
+                var a = indices[i]; var b = indices[i + 1]; var c = indices[i + 2];
+                var before = (vertices[b] - vertices[a]).Cross(vertices[c] - vertices[a]);
+                var after = (changed[b] - changed[a]).Cross(changed[c] - changed[a]);
+                if (before.LengthSquared() > 1e-18f && before.Dot(after) <= 0) orientationOk = false;
+            }
+        }
+        Check("presence mouth targets never invert front-face winding", orientationOk);
         Check("presence missing shapes fail without taking ownership", !study.PresenceRig.Bind(study.PresenceHead, study.PresenceBody,
             new PresenceMorphSlot(study.PresenceEye, "not-authored", PresenceChannel.Blink)) && !study.PresenceRig.Bound);
         Check("presence invalid mapping preserves local transforms", study.PresenceHead.Transform == headBase && study.PresenceBody.Transform == bodyBase);
@@ -118,6 +136,12 @@ public partial class AnimeLookDevChecks
         study.ApplyPresencePose(new PresencePose(0, .7f, .5f, 0, .4f, new Vector3(2, 4, 1), new Vector3(.002f, .002f, 0)));
         var expressive = await Capture("presence-warm");
         Check("presence expression and posture visibly differ", Difference(open, expressive) > .0001);
+        var mouthPoint = new Vector3(0, -.0926f, AnimeCalibrationGeometry.Front(0, -.0926f) + .002f);
+        var cheekPoint = new Vector3(.05f, -.0926f, AnimeCalibrationGeometry.Front(.05f, -.0926f) + .002f);
+        var mouthColor = Sample(expressive, study.StudyCamera.UnprojectPosition(mouth.GlobalTransform * mouthPoint));
+        var cheekColor = Sample(expressive, study.StudyCamera.UnprojectPosition(mouth.GlobalTransform * cheekPoint));
+        Check("presence open mouth remains visible on the face", (cheekColor.R + cheekColor.G + cheekColor.B)
+            - (mouthColor.R + mouthColor.G + mouthColor.B) > .05f);
         study.ResetPresence();
         Check("presence release restores original weights and pivots", study.PresenceHead.Transform == headBase
             && study.PresenceBody.Transform == bodyBase && study.PresenceEye.GetBlendShapeValue(blinkIndex) == 0);

@@ -35,7 +35,8 @@ public static class PresenceCalibrationShapes
                 if (name == "brow_raise" && p.Y > .08f) p.Y += .017f;
                 if (name == "brow_pinch" && p.Y > .08f) p.Y -= .013f * Math.Clamp(1 - Math.Abs(p.X) / .15f, 0, 1);
                 if (name == "smile") p.Y += .014f * Mathf.Pow(Math.Abs(p.X) / .03f, 2f);
-                if (name == "jaw_open") p.Y -= .025f * uv[i].Y * Mathf.Sin(uv[i].X * Mathf.Pi);
+                // Expand both edges; dragging the top below the bottom inverts winding and hides the mouth.
+                if (name == "jaw_open") p.Y += ((uv[i].Y - .5f) * .024f - .004f) * Mathf.Sin(uv[i].X * Mathf.Pi);
                 // Keep the altered graphic accent in front of the curved face rather than inside it.
                 p.Z += AnimeCalibrationGeometry.Front(p.X, p.Y) - AnimeCalibrationGeometry.Front(p.X, oldY);
                 target[i] = p;

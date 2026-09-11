@@ -18,6 +18,9 @@ public readonly record struct PresenceTemperament(
     public static PresenceTemperament Blend(PresenceTemperament a, PresenceTemperament b, float weight)
     {
         a = a.Validated(); b = b.Validated(); weight = Unit(weight);
+        // Preserve exact authored endpoints instead of accumulating interpolation roundoff.
+        if (weight <= 0f) return a;
+        if (weight >= 1f) return b;
         float Mix(float x, float y) => x + (y - x) * weight;
         return new(Mix(a.Sociability, b.Sociability), Mix(a.Expressiveness, b.Expressiveness),
             Mix(a.Composure, b.Composure), Mix(a.Confidence, b.Confidence), Mix(a.Playfulness, b.Playfulness),
