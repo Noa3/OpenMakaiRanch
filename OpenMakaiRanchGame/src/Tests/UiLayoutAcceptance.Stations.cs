@@ -66,6 +66,12 @@ public partial class UiLayoutAcceptance
         try
         {
             Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = Key.W, Keycode = Key.W, Pressed = true });
+            Input.FlushBufferedEvents();
+            var keyEvent = InputMap.ActionGetEvents("move_forward").OfType<InputEventKey>().First();
+            for (var i = 0; i < 10; i++) InputBindingService.GetCombinedLabel("interact");
+            Check(ReferenceEquals(keyEvent, InputMap.ActionGetEvents("move_forward").OfType<InputEventKey>().First())
+                && Input.IsActionPressed("move_forward"),
+                "input: reading live HUD bindings leaves the held movement event and pressed state intact");
             Check(player.InputGate.WorldInputEnabled && player.ReadMovementInput().Y > 0,
                 $"interior: actual W reaches movement (gate={player.InputGate.WorldInputEnabled}, focus={player.InputGate.WindowFocused}, input={player.ReadMovementInput()}, camera={GetViewport().GetCamera3D()?.GetPath()}, process={player.CanProcess()})");
             for (var i = 0; i < 27; i++) await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);

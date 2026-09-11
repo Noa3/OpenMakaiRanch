@@ -81,11 +81,11 @@ public static class InputBindingService
 
     public static void EnsureApplied(bool forceReload = false)
     {
-        if (!_loaded || forceReload)
-        {
-            _preferences = Load();
-            _loaded = true;
-        }
+        // Prompt reads must not erase held InputMap events every frame.
+        // Explicit binding edits below already apply their changed action.
+        if (_loaded && !forceReload) return;
+        _preferences = Load();
+        _loaded = true;
 
         foreach (var descriptor in ConfigurableActions)
         {

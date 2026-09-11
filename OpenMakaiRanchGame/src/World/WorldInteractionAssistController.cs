@@ -216,9 +216,11 @@ public partial class WorldInteractionAssistController : Node
             return;
         }
 
-        _label.Text = presentation.Label;
-        _label.TooltipText = $"Use {presentation.Label}.";
-        _actionButton.Text = $"[{interactBinding}]  Interact";
+        var inspectOnly = presentation.TargetNode is WorldStation { IsAvailable: false };
+        _label.Text = inspectOnly && !string.IsNullOrWhiteSpace(presentation.UnavailableReason)
+            ? $"{presentation.Label}  •  {presentation.UnavailableReason}" : presentation.Label;
+        _label.TooltipText = inspectOnly ? presentation.UnavailableReason : $"Use {presentation.Label}.";
+        _actionButton.Text = $"[{interactBinding}]  {(inspectOnly ? "Inspect" : "Interact")}";
         _actionButton.TooltipText = $"Interact using {interactBinding}, or click/tap this button.";
         _actionButton.Visible = true;
     }

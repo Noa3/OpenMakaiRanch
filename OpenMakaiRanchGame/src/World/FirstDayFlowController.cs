@@ -293,12 +293,12 @@ public partial class FirstDayFlowController : Control
             case StageManagementDairy:
                 ShowDialogue(
                     GuideName(),
-                    "Good. Next visit the Dairy Barn workstation. Leaving Dairy Work completely unstaffed adds maintenance cost and hurts morale. Assign a resident there; merely opening the station never pays production.",
+                    "Next visit the Dairy Barn workstation. If the barn is unfinished, use Build there first; its price is shown before you pay. Then assign a different resident, leaving Pasture Work staffed. The building stays available on later days. Opening a workstation or assigning someone does not pay production early.",
                     ("Find the Dairy Barn", () =>
                     {
                         HideDialogue();
                         _host?.NavigationGuide?.Track(new WorldDestination("ranch", "dairy_barn", "Dairy Barn"));
-                        SetObjective("Follow the Dairy Barn marker. Interact with its station and assign at least one resident.");
+                        SetObjective("Follow the Dairy Barn marker. Open its workstation, build the barn if needed, then assign a different resident.");
                     }));
                 break;
 

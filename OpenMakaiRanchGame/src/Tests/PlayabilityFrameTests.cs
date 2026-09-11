@@ -88,6 +88,19 @@ public static class PlayabilityFrameTests
             await Frames(game, 2);
             await KeyStroke(game, Key.F);
             await Until(game, () => world.IsStationPanelOpen, "dairy workstation surface");
+            // Follow the actual construction step with starting funds, not a fixture unlock.
+            if (!dairy.IsAvailable)
+            {
+                var beforeBuild = game.Economy.Gold;
+                var definition = game.Data.Facilities[dairy.RequiredFacilityId];
+                var buildCost = game.Ranch.FacilityUpgradeCost(definition, 0);
+                var build = PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(button => button.Name == "FacilityUpgrade");
+                if (build.Disabled) throw new InvalidOperationException("Starting funds cannot afford the guided barn construction.");
+                build.EmitSignal(BaseButton.SignalName.Pressed);
+                await Frames(game, 3);
+                Check(result, dairy.IsAvailable && game.Economy.Gold == beforeBuild - buildCost,
+                    "the first-day barn is built once at its listed price with real starting funds");
+            }
             var dairyWorker = game.Roster.Characters.First(character => character.Id != pastureWorker).Id;
             var dairyButton = PlayabilityRegressionTests.Buttons(world.StationPanel!).Single(button => button.Name == "Assign_" + dairyWorker);
             if (dairyButton.Disabled) throw new InvalidOperationException("The tutorial's second worker cannot be assigned at the dairy station.");
