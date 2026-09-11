@@ -19,6 +19,7 @@ public static class CharacterDevelopmentRegressionTests
     {
         CheckSourceRules(result);
         CheckObservations(result);
+        CheckDefinitions(result);
         CheckPractice(result);
         CheckRoot(result);
     }
@@ -49,6 +50,9 @@ public static class CharacterDevelopmentRegressionTests
         Check(result, CharacterProtectionService.Inspect(c).WardReserveReady, "large EP uses division, without doubled-resource overflow");
         c.Talents.Clear(); c.Talents.Add("talent_2");
         Check(result, CharacterProtectionService.Inspect(c).HasOriginalWardTrait, "the exact older numeric talent alias is recognized");
+        c.Talents.Clear(); c.Talents.Add("virginity_barrier");
+        Check(result, CharacterProtectionService.Inspect(c).HasOriginalWardTrait,
+            "the existing remake's exact semantic ward ID is recognized without label matching");
         c.Talents.Clear(); c.Talents.Add("talent_20"); c.Race = "Elf";
         Check(result, !CharacterProtectionService.Inspect(c).HasOriginalWardTrait,
             "neighbouring IDs, race and appearance do not invent protection traits");
@@ -161,6 +165,32 @@ public static class CharacterDevelopmentRegressionTests
         Check(result, c.MaxHpOverride == capacity, "incapacity cannot be used to earn a new conditioning benefit");
     }
 
+    private static void CheckDefinitions(SmokeTestResult result)
+    {
+        var (state, c, flags, data) = Fixture();
+        var service = new CharacterDevelopmentService(state, data, flags);
+        var roster = new RosterService(state, data);
+        c.MaxHpOverride = null; c.MaxEnergyOverride = null; c.Hp = 300; c.Energy = 250;
+        var before = Snapshot(state, flags);
+        var view = service.Inspect(c.Id)!;
+        Check(result, view.Values.Single(v => v.Field == DevelopmentField.MaxHp).Current == roster.DefinitionFor(c).MaxHp
+            && view.Values.Single(v => v.Field == DevelopmentField.MaxEnergy).Current == roster.DefinitionFor(c).MaxEnergy
+            && view.Morph.BodyTypeId == roster.DefinitionFor(c).BodyType && before == Snapshot(state, flags),
+            "an uncatalogued resident shares the roster's real capacity and body fallback, without a save rewrite");
+        var token = service.Capture(c.Id, DevelopmentCause.Practice); c.CombatSkill += 2; service.Complete(token);
+        Check(result, c.MaxHpOverride == 305 && c.Hp == 300 && c.Energy == 250,
+            "conditioning cannot replace an uncatalogued resident's larger capacity with an invented default");
+        c.DefinitionId = "rancher"; c.MaxHpOverride = null; c.MaxEnergyOverride = null;
+        before = Snapshot(state, flags); view = service.Inspect(c.Id)!;
+        Check(result, view.Values.Single(v => v.Field == DevelopmentField.MaxHp).Current == data.Characters["rancher"].MaxHp
+            && view.Morph.BodyTypeId == data.Characters["rancher"].BodyType && before == Snapshot(state, flags),
+            "catalog capacities and authored body identity use the same fallback as the existing roster");
+        c.BodyTypeOverride = "AuthoredForm"; c.MaxHpOverride = int.MaxValue;
+        token = service.Capture(c.Id, DevelopmentCause.Practice); c.CombatSkill += 2; service.Complete(token);
+        Check(result, c.MaxHpOverride == int.MaxValue && service.Inspect(c.Id)!.Morph.BodyTypeId == "AuthoredForm",
+            "capacity saturates safely while an explicitly authored body identity stays authoritative");
+    }
+
     private static void CheckPractice(SmokeTestResult result)
     {
         var (state, c, flags, data) = Fixture();
@@ -206,7 +236,13 @@ public static class CharacterDevelopmentRegressionTests
                 && report.Lines.Any(x => x.Contains("→")), "the ordinary root day records an actual existing work level-up in its report");
             wrote = game.SaveSlot(99);
             Check(result, wrote && game.LoadSlot(99), "the ordinary root saves and reloads development through its canonical FlagService");
-            Check(result, JsonSerializer.Serialize(game.GetCharacterDevelopment(c.Id)) == JsonSerializer.Serialize(snapshot),
+            var reloaded = game.GetCharacterDevelopment(c.Id);
+            if (JsonSerializer.Serialize(reloaded) != JsonSerializer.Serialize(snapshot))
+            {
+                result.Lines.Add("DEVELOPMENT before save: " + JsonSerializer.Serialize(snapshot));
+                result.Lines.Add("DEVELOPMENT after load: " + JsonSerializer.Serialize(reloaded));
+            }
+            Check(result, JsonSerializer.Serialize(reloaded) == JsonSerializer.Serialize(snapshot),
                 "root reload does not reconstruct a new baseline or replay a reward");
             game.StartNewGamePlus();
             Check(result, game.State.Roster.Characters.All(x => game.GetCharacterDevelopment(x.Id)!.FirstObservedDay is null),

@@ -25,14 +25,15 @@ public static class CharacterProtectionService
     {
         ArgumentNullException.ThrowIfNull(character);
         // Exact catalog IDs only. Do not infer a ward from race, body, age or a display name.
-        var ward = character.Talents.Contains("2") || character.Talents.Contains("talent_2");
+        var ward = character.Talents.Contains("2") || character.Talents.Contains("talent_2")
+            || character.Talents.Contains("virginity_barrier");
         var reserve = character.MaxSpirit <= 0 || character.Spirit < 0
             ? SpiritReserveState.Unknown : character.Spirit == 0 ? SpiritReserveState.Depleted
             : character.Spirit <= character.MaxSpirit / 2 ? SpiritReserveState.Low : SpiritReserveState.Stable;
-        var explanation = !ward ? T("character.protection.absent", "No original ward trait is recorded. This grants no permission for interactions.")
-            : reserve == SpiritReserveState.Unknown ? T("character.protection.unknown", "Ward trait recorded; its spirit reserve is unknown. No bypass is granted.")
-            : reserve == SpiritReserveState.Stable ? T("character.protection.ready", "Ward trait recorded; spirit energy is above half capacity. Mana is a separate resource.")
-            : T("character.protection.low", "Ward trait recorded; spirit energy is at or below half capacity. The trait is retained; depletion grants no bypass.");
+        var explanation = !ward ? T("character.protection.absent", "No resource-backed ward trait is recorded.")
+            : reserve == SpiritReserveState.Unknown ? T("character.protection.unknown", "Ward trait recorded; its spirit capacity is unavailable.")
+            : reserve == SpiritReserveState.Stable ? T("character.protection.ready", "Ward reserve: spirit energy is above half capacity. Mana is a separate resource.")
+            : T("character.protection.low", "Ward reserve: spirit energy is at or below half capacity. Mana does not sustain this ward.");
         return new(ward, reserve, character.Spirit, character.MaxSpirit, character.Mana, character.MaxMana,
             NeedsRecovery(character), explanation);
     }

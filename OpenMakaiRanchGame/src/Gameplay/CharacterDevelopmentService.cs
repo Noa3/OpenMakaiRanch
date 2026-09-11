@@ -24,6 +24,7 @@ public sealed record CharacterDevelopmentSnapshot(string CharacterId, int Revisi
 /// </summary>
 public sealed class CharacterDevelopmentService(SaveState state, DataRegistry data, FlagService flags)
 {
+    private readonly RosterService _roster = new(state, data);
     public const int FlagStart = 1_231_000;
     public const int JournalCapacity = 12;
     private const int BaselineDay = FlagStart, Revision = FlagStart + 1;
@@ -67,7 +68,7 @@ public sealed class CharacterDevelopmentService(SaveState state, DataRegistry da
                 changes.Add(new(Get(c, slot), cause, field, Get(c, slot + 3), Get(c, slot + 4)));
         }
         return new(c.Id, Get(c, Revision), baselineDay > 0 ? baselineDay : null,
-            new(current[9] / 6.0, current[10] / 12.0, c.Height, c.BodyTypeOverride),
+            new(current[9] / 6.0, current[10] / 12.0, c.Height, _roster.DefinitionFor(c).BodyType),
             Array.AsReadOnly(values), changes.AsReadOnly(), CharacterProtectionService.Inspect(c));
     }
 
@@ -172,9 +173,10 @@ public sealed class CharacterDevelopmentService(SaveState state, DataRegistry da
     }
     private int[] Values(CharacterState c)
     {
-        data.Characters.TryGetValue(c.DefinitionId ?? c.Id, out var definition);
+        // Share the effective definition with the roster, including uncatalogued residents.
+        var definition = _roster.DefinitionFor(c);
         return new[] { c.RanchSkill, c.CraftSkill, c.CombatSkill, c.MagicPower,
-            c.MaxHpOverride ?? definition?.MaxHp ?? 100, c.MaxEnergyOverride ?? definition?.MaxEnergy ?? 150,
+            definition.MaxHp, definition.MaxEnergy,
             c.MaxSpirit, c.MaxMana, c.Height,
             Math.Clamp(Get(c, ConditioningPoints), 0, 6), Math.Clamp(Get(c, AttunementPoints), 0, 12) };
     }
