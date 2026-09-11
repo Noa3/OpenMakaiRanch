@@ -2,7 +2,7 @@ name: Anime lookdev rendered acceptance
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/anime-lookdev-pipeline-20260911]
     paths:
       - 'OpenMakaiRanchGame/src/Visuals/**'
       - 'OpenMakaiRanchGame/src/App/GraphicsQualityProfile.cs'
@@ -20,6 +20,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  review-source:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Archive the exact code and documentation used for review
+        run: |
+          git rev-parse HEAD > "$RUNNER_TEMP/review-source-commit.txt"
+          git archive --format=zip --output="$RUNNER_TEMP/anime-review-source.zip" HEAD \
+            AGENTS.md Directory.Build.props Directory.Build.targets global.json \
+            OpenMakaiRanchGame/OpenMakaiRanchGame.csproj \
+            OpenMakaiRanchGame/project.godot OpenMakaiRanchGame/src \
+            OpenMakaiRanchGame/shaders OpenMakaiRanchGame/scenes \
+            OpenMakaiRanchGame/docs Tools/Godot .github/workflows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: anime-review-source
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/anime-review-source.zip
+            ${{ runner.temp }}/review-source-commit.txt
+
   material-study:
     runs-on: ubuntu-22.04
     timeout-minutes: 20
