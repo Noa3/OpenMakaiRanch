@@ -30,7 +30,7 @@ public static class GameplayPanelRegressionTests
             {
                 game.InspectPurchase("meal_box", 1);
                 foreach (var id in game.Data.Skills.Keys) game.InspectResearch(id);
-                foreach (var job in game.Data.Jobs.Values) game.Ranch.InspectWorkBenefitAtLevel(job, 5);
+                foreach (var definition in game.Data.Jobs.Values) game.Ranch.InspectWorkBenefitAtLevel(definition, 5);
             }
             Check(before == Snapshot(), "repeated food, purchase, research and tier previews are read-only");
             Check(game.InspectPurchase(null, 1) is null && game.InspectPurchase("meal_box", 0) is null
