@@ -90,7 +90,8 @@ introduced by this continuation. Original ERA files and parallel visual PR #18 r
 ## Verification
 
 Verified code head: **`1dcd5a71a2ab17feb20f1b18b03f1d840952e58c`**. The downloaded
-rendered review artifact records tested PR merge **`ba792833e4614ed5b37fdccb0ae6c3531a929c7bc`**.
+rendered review artifact records tested PR merge **`3c5834c596a14a37c1edae869bff482dc99d1006`**.
+GitHub compare confirms this merge has the same tree as the code head.
 The merge receipt is not the branch head. Subsequent documentation-only commits do not change
 these code results. The initial implementation's 2,047-check evidence remains historical.
 
@@ -133,11 +134,13 @@ and software VSync warning also remain. No workflow, test or error filter was we
 
 Smoke artifact `10286674399` from run `34661101932` was downloaded as
 `character-continuation-smoke-1dcd5a7.zip` (78,071 bytes), SHA-256:
-`8d8f9c7b9756f3d3c878c4b9b494ab997f64b3c659f0623d8e9bff96d0cbcd8e2d`.
+`b52efe2be4579aadc8521bb162619d54c220d4fb6d2704cd3528f8af5c678004`.
 Rendered/review artifact `10286994155` from run `34661101831` was downloaded as
-`character-continuation-ui-1dcd5a7.zip` (76,158,903 bytes), SHA-256:
-`703951dade173e196a37663c6a9e80c58227b7d3bb75ab5b34492b13a6aeca4f24`.
+`character-continuation-ui-1dcd5a7.zip` (5,857,577 bytes), SHA-256:
+`433de1a4da4d12e6cf8451c3c793afcd4144751ae82807d921f323d1102c9183`.
 These are hashes of the actual downloaded ZIP bytes, not service-side upload digest claims.
+The final packaging check corrected earlier transcribed archive digests, UI archive size and
+merge receipt; the retained console/result counts are unchanged.
 The evidence package contains selected logs, receipts, result files, these documents and a
 manifest. It is not an exported playable build or a full repository checkout.
 
