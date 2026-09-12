@@ -1,0 +1,27 @@
+{
+  "provider": "local ComfyUI",
+  "model": "qwen_image_edit_2511_fp8mixed.safetensors",
+  "lora": null,
+  "template_path": "D:\\ComfyUI\\python_embeded\\Lib\\site-packages\\comfyui_workflow_templates_json\\templates\\image_qwen_image_edit_2511.json",
+  "template_sha256": "849259b22e928b52e604d00f0618209a06b3fa09807f8d1bfbb1571819672a66",
+  "adaptations": [
+    "Single explicit sampler mode instead of lazy switches",
+    "1536x864 exact 16:9 ImageScale instead of FluxKontextImageScale",
+    "Official Comfy-Org repack: no optional third-party latent method override"
+  ],
+  "inputs": [
+    {
+      "path": "E:\\OpenMakaiRanch\\.dream-loop\\capture-0ghaskkk\\evidence\\W01-current.png",
+      "sha256": "4e4630af747e0b5b3752aae20628371ae4293c5636d10b421e11b65e3ea1d925"
+    }
+  ],
+  "seed": 26091201,
+  "status": "candidate_not_approved",
+  "output_sha256": "3b2649b65135ec8345809a497bf73e3608d6f2fb040b2bd9ed5e9290f831cc33",
+  "dimensions": [
+    1536,
+    864
+  ],
+  "prompt_id": "2d20efe8-03e5-43bb-9a1e-1e1a42cd229d",
+  "workflow_sha256": "ce95c6c0c82254ed9ab8541f727c8a18bc4788a50f31130858220e0b5cf353ed"
+}

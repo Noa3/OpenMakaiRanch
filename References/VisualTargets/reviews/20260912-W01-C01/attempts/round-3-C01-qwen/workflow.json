@@ -1,0 +1,172 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2511_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "OMR-1fff4dfbe4f0b2d24565.png"
+    }
+  },
+  "5": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "4",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1536,
+      "height": 864,
+      "crop": "disabled"
+    }
+  },
+  "6": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 3.1
+    }
+  },
+  "7": {
+    "class_type": "CFGNorm",
+    "inputs": {
+      "model": [
+        "6",
+        0
+      ],
+      "strength": 1.0
+    }
+  },
+  "8": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "lora_name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+      "strength_model": 1.0
+    }
+  },
+  "9": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "5",
+        0
+      ],
+      "prompt": "Edit this four-character reference lineup into ONE coherent high-quality soft anime 3D game character style. Preserve four separate columns and full head-to-toe figures, their clothing layers and roles. Show a neutral frontal studio view with even soft lighting and a pale neutral background. Remove all existing headings, footers, labels and text. Give every person mature adult proportions and a distinct original face. This is a real-time 3D character preview screenshot, not a photograph or drawing.\n\nFirst figure: adult researcher woman in her thirties with ash-grey hair visibly tied in a low ponytail, refined mature anime face, practical olive-brown waistcoat, fully buttoned ivory high-neck blouse, brown trousers and boots. Second: sturdy adult ranch worker woman in her thirties, warm tan skin and freckles, copper braid, rolled-sleeve fully buttoned ivory shirt under muted green work overalls, boots. Third: composed middle-aged adult male clerk in his forties, brown skin, short dark hair, ordinary long charcoal coat over teal waistcoat, trousers and shoes. Make HIS face share the soft anime rendering of the women: sculpted mature planes, stylized expressive eyes, restrained shading, no photorealistic facial texture. Fourth: visibly mature caretaker woman in her fifties, dark brown skin, short cropped silver hair above the shoulders, subtle smile lines and age around eyes, warmer fuller sturdy body, knitted muted sage cardigan over buttoned ivory blouse, rust-brown long skirt and practical boots. She must look distinctly older than the first two women, not merely a young woman with grey hair.\n\nAll fully clothed in modest practical everyday clothes, no revealing costumes. Arms rest slightly away from bodies, two relaxed hands clearly visible per figure with readable separate fingers and no props. Feet wholly visible. Clean shaped hair clumps, expressive but not giant eyes, matte woven and knitted fabrics, subtle believable seams and folds, soft controlled highlights, shared light direction and contact shadows. No toy/chibi proportions, no photographic pores, no copied celebrities or franchise identities. Keep designs distinguishable without changing their adult ages into children."
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "5",
+        0
+      ],
+      "prompt": ""
+    }
+  },
+  "11": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "latent_image": [
+        "11",
+        0
+      ],
+      "seed": 26091202,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "13": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "13",
+        0
+      ],
+      "filename_prefix": "OMR_VisualTargets/generation-C01-qwen-d9537cd1b869/candidate"
+    }
+  }
+}

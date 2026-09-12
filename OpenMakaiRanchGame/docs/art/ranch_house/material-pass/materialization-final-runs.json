@@ -1,0 +1,110 @@
+[
+  {
+    "family": "ranch_house",
+    "asset": "main_house",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\main_house-final.log"
+  },
+  {
+    "family": "ranch_house",
+    "asset": "residential_wing",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\residential_wing-final.log"
+  },
+  {
+    "family": "ranch_house",
+    "asset": "north_connector_cap",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\north_connector_cap-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "table",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\table-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "chair",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\chair-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "bench",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\bench-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "desk",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\desk-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "wardrobe",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\wardrobe-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "pantry",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\pantry-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "kitchen_counter",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\kitchen_counter-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "feed_trough",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\feed_trough-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "fence_straight_2m",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\fence_straight_2m-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "fence_corner_2m",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\fence_corner_2m-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "fence_gate_2m",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\fence_gate_2m-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "bed_standard",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\bed_standard-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "bed_large",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\bed_large-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "chair_large",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\chair_large-final.log"
+  },
+  {
+    "family": "ranch_furniture",
+    "asset": "fence_post",
+    "exit_code": 0,
+    "log": ".dream-loop\\material-review\\fence_post-final.log"
+  }
+]

@@ -21,6 +21,20 @@ public static class RanchDesignRegressionTests
         var errors = RanchBuildingPlots.Validate(plots);
         Check(errors.Count == 0, "reserved roofs/footprints/entrances fit without overlap: " + string.Join("; ", errors));
         Check(plots.Count == 8 && plots.Select(plot => plot.Id).Distinct().Count() == 8, "eight unique authored ranch plots");
+        var townPlots = OrganicWorldLayout.TownPlots;
+        Check(townPlots.Count == 7 && townPlots.Select(p => p.Id).Distinct().Count() == 7,
+            "organic town layout preserves all seven service identities");
+        Check(plots.Count(p => Mathf.Abs(Mathf.AngleDifference(p.Yaw, Mathf.Atan2(-p.Center.X, -p.Center.Y))) > 0.2f) >= 3,
+            "authored farm buildings no longer all face one radial hub");
+        var layoutJson = Godot.FileAccess.GetFileAsString(OrganicWorldLayout.SourcePath);
+        var rejected = false;
+        try { OrganicWorldLayout.ParsePlots(layoutJson.Replace("dairy_barn", "pasture"), "ranch"); }
+        catch (InvalidOperationException) { rejected = true; }
+        Check(rejected, "duplicate spatial IDs cannot silently replace a service");
+        rejected = false;
+        try { OrganicWorldLayout.ParsePlots(layoutJson.Replace("\"version\": 1", "\"version\": 99"), "town"); }
+        catch (InvalidOperationException) { rejected = true; }
+        Check(rejected, "unsupported spatial layout version fails explicitly");
         var bad = plots.ToArray();
         bad[1] = bad[1] with { Center = bad[0].Center };
         Check(RanchBuildingPlots.Validate(bad).Count > 0, "overlapping authoring is rejected");

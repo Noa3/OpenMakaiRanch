@@ -1,0 +1,133 @@
+{
+  "verified_map_count": 12,
+  "krita_paint_layer_count": 3,
+  "verified_asset_count": 18,
+  "checks": [
+    {
+      "family": "ranch_house",
+      "asset": "main_house",
+      "mesh_nodes": 309,
+      "normal_mapped_surfaces_with_unit_tangents": 163,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_house",
+      "asset": "residential_wing",
+      "mesh_nodes": 245,
+      "normal_mapped_surfaces_with_unit_tangents": 123,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_house",
+      "asset": "north_connector_cap",
+      "mesh_nodes": 1,
+      "normal_mapped_surfaces_with_unit_tangents": 1,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "table",
+      "mesh_nodes": 13,
+      "normal_mapped_surfaces_with_unit_tangents": 13,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "chair",
+      "mesh_nodes": 12,
+      "normal_mapped_surfaces_with_unit_tangents": 12,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "bench",
+      "mesh_nodes": 8,
+      "normal_mapped_surfaces_with_unit_tangents": 8,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "desk",
+      "mesh_nodes": 13,
+      "normal_mapped_surfaces_with_unit_tangents": 11,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "wardrobe",
+      "mesh_nodes": 17,
+      "normal_mapped_surfaces_with_unit_tangents": 9,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "pantry",
+      "mesh_nodes": 21,
+      "normal_mapped_surfaces_with_unit_tangents": 17,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "kitchen_counter",
+      "mesh_nodes": 23,
+      "normal_mapped_surfaces_with_unit_tangents": 5,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "feed_trough",
+      "mesh_nodes": 11,
+      "normal_mapped_surfaces_with_unit_tangents": 7,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "fence_straight_2m",
+      "mesh_nodes": 6,
+      "normal_mapped_surfaces_with_unit_tangents": 6,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "fence_corner_2m",
+      "mesh_nodes": 10,
+      "normal_mapped_surfaces_with_unit_tangents": 10,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "fence_gate_2m",
+      "mesh_nodes": 16,
+      "normal_mapped_surfaces_with_unit_tangents": 13,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "bed_standard",
+      "mesh_nodes": 34,
+      "normal_mapped_surfaces_with_unit_tangents": 33,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "bed_large",
+      "mesh_nodes": 34,
+      "normal_mapped_surfaces_with_unit_tangents": 33,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "chair_large",
+      "mesh_nodes": 12,
+      "normal_mapped_surfaces_with_unit_tangents": 12,
+      "world_vertices_unchanged_20_micrometres": true
+    },
+    {
+      "family": "ranch_furniture",
+      "asset": "fence_post",
+      "mesh_nodes": 2,
+      "normal_mapped_surfaces_with_unit_tangents": 2,
+      "world_vertices_unchanged_20_micrometres": true
+    }
+  ]
+}

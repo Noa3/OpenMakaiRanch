@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/Dev/VisualTargetCapture.cs" id="1_capture"]
+[ext_resource type="PackedScene" path="res://scenes/WorldGame.tscn" id="2_world"]
+[ext_resource type="PackedScene" path="res://scenes/dev/RanchScaleYard.tscn" id="3_scale"]
+
+[node name="VisualTargetCapture" type="Node"]
+script = ExtResource("1_capture")
+
+[node name="WorldGame" parent="." instance=ExtResource("2_world")]
+
+[node name="ScaleYard" parent="." instance=ExtResource("3_scale")]
+position = Vector3(0, 0, 100)
+visible = false

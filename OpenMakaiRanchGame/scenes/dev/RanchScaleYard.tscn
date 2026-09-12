@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/3d/scale_yard/ranch_scale_yard.glb" id="1_geometry"]
+
+[node name="RanchScaleYard" type="Node3D"]
+
+[node name="CalibrationGeometry" parent="." instance=ExtResource("1_geometry")]

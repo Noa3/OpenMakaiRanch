@@ -1,0 +1,2194 @@
+{
+  "passed": false,
+  "rendered": true,
+  "engine": "4.7.2-stable (official)",
+  "checks": [
+    {
+      "Passed": true,
+      "Message": "real main-menu scene opens"
+    },
+    {
+      "Passed": true,
+      "Message": "fresh main menu focuses New Game without a mouse"
+    },
+    {
+      "Passed": true,
+      "Message": "small canvas retains 1:1 base UI pixels rather than shrinking desktop controls"
+    },
+    {
+      "Passed": true,
+      "Message": "4K retains proportional scaling from the existing desktop baseline"
+    },
+    {
+      "Passed": true,
+      "Message": "ultrawide canvas retains expanded world space"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (480, 800) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): main menu fits the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): New Game is a usable physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (1280, 720) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "(1280, 720): main menu fits the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "(1280, 720): New Game is a usable physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: supported regional language codes normalize; unknown codes use English"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: malformed or out-of-range translation placeholders fall back without interrupting UI callbacks"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: dropped or extra slots retain the English price and identity"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: reordering remains supported while excessive alignment falls back"
+    },
+    {
+      "Passed": true,
+      "Message": "title: the rendered diorama owns a separate world and camera instead of loading a player save"
+    },
+    {
+      "Passed": true,
+      "Message": "title: Reduced Motion stops the background camera"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the language picker is a visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the opening click cannot choose a language or retire its own picker"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: clicking the language picker opens its actual popup"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: engine-routed keys focus the requested popup item (target=1, actual=1, embedded=True)"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the actual popup selection updates catalog and saved language to de"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: translated title and display-only number culture leave global parsing culture unchanged"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: selecting a language leaves the actual window size and display mode unchanged"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: missing translation keys keep readable English instead of exposing IDs"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: German title, main action and native-language picker fit 640x480"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (480, 800) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: German title, main action and native-language picker fit 480x800"
+    },
+    {
+      "Passed": true,
+      "Message": "title: diorama, resizing and actual language selection do not create a session, advance time or spend money"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (1280, 720) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "engine-routed New Game click opens real character creation"
+    },
+    {
+      "Passed": true,
+      "Message": "typing changes the canonical player name without losing the character-creation input"
+    },
+    {
+      "Passed": true,
+      "Message": "Tab moves focus within creation instead of toggling management"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): character creation reflows without horizontal clipping"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): section headings retain a readable line height"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): name entry can be reached by focus scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): Start Game remains reachable below the creation form"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (480, 800) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): character creation reflows without horizontal clipping"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): section headings retain a readable line height"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): name entry can be reached by focus scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): Start Game remains reachable below the creation form"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (1280, 720) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "(1280, 720): character creation reflows without horizontal clipping"
+    },
+    {
+      "Passed": true,
+      "Message": "(1280, 720): section headings retain a readable line height"
+    },
+    {
+      "Passed": true,
+      "Message": "(1280, 720): name entry can be reached by focus scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "(1280, 720): Start Game remains reachable below the creation form"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: finishing a label initialized through Text retains its complete line instead of erasing it"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: an empty line is already complete and never consumes an extra Continue"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: the actual character-creation Start enters the prologue"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: the prologue contains authored narrative lines"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: the first Continue never turns the narrative into an empty page"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: skipping the text prologue still starts the playable morning in the bedroom"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: the actual Wake up choice reaches the bedroom exit objective"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: utility options remain available during the guided morning"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: utility options can close during the guided morning"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: closing utility options returns to the same bedroom and position, not the stored ordinary ranch area"
+    },
+    {
+      "Passed": true,
+      "Message": "opening: utility navigation preserves the same session, objective, day and wallet"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (1280, 720) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "1280x720: options opens in the live world"
+    },
+    {
+      "Passed": true,
+      "Message": "1280x720: management panel stays within the logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "1280x720: options do not require horizontal content scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "1280x720: Return to World is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "1280x720: time button is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "1280x720: keyboard focus scrolls the interaction binding fully into view"
+    },
+    {
+      "Passed": true,
+      "Message": "1280x720: Escape cancels input capture without closing the menu or changing the binding"
+    },
+    {
+      "Passed": true,
+      "Message": "1280x720: actual Return-to-World hit target releases management input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (960, 540) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "960x540: options opens in the live world"
+    },
+    {
+      "Passed": true,
+      "Message": "960x540: management panel stays within the logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "960x540: options do not require horizontal content scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "960x540: Return to World is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "960x540: time button is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "960x540: keyboard focus scrolls the interaction binding fully into view"
+    },
+    {
+      "Passed": true,
+      "Message": "960x540: Escape cancels input capture without closing the menu or changing the binding"
+    },
+    {
+      "Passed": true,
+      "Message": "960x540: actual Return-to-World hit target releases management input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "640x480: options opens in the live world"
+    },
+    {
+      "Passed": true,
+      "Message": "640x480: management panel stays within the logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "640x480: options do not require horizontal content scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "640x480: Return to World is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "640x480: time button is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "640x480: keyboard focus scrolls the interaction binding fully into view"
+    },
+    {
+      "Passed": true,
+      "Message": "640x480: Escape cancels input capture without closing the menu or changing the binding"
+    },
+    {
+      "Passed": true,
+      "Message": "640x480: actual Return-to-World hit target releases management input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (480, 800) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "480x800: options opens in the live world"
+    },
+    {
+      "Passed": true,
+      "Message": "480x800: management panel stays within the logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "480x800: options do not require horizontal content scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "480x800: Return to World is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "480x800: time button is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "480x800: keyboard focus scrolls the interaction binding fully into view"
+    },
+    {
+      "Passed": true,
+      "Message": "480x800: Escape cancels input capture without closing the menu or changing the binding"
+    },
+    {
+      "Passed": true,
+      "Message": "480x800: actual Return-to-World hit target releases management input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (1920, 720) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "1920x720: options opens in the live world"
+    },
+    {
+      "Passed": true,
+      "Message": "1920x720: management panel stays within the logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "1920x720: options do not require horizontal content scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "1920x720: Return to World is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "1920x720: time button is visible, unclipped and at least 24 physical pixels high"
+    },
+    {
+      "Passed": true,
+      "Message": "1920x720: keyboard focus scrolls the interaction binding fully into view"
+    },
+    {
+      "Passed": true,
+      "Message": "1920x720: Escape cancels input capture without closing the menu or changing the binding"
+    },
+    {
+      "Passed": true,
+      "Message": "1920x720: actual Return-to-World hit target releases management input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "mapped controller Management opens the overlay"
+    },
+    {
+      "Passed": true,
+      "Message": "compact navigation scrolls its focused route into view"
+    },
+    {
+      "Passed": true,
+      "Message": "D-pad moves focus between compact navigation controls"
+    },
+    {
+      "Passed": true,
+      "Message": "controller Accept activates the focused Schedule route"
+    },
+    {
+      "Passed": true,
+      "Message": "controller Back returns to the world without opening pause above it"
+    },
+    {
+      "Passed": true,
+      "Message": "keyboard Escape cancels controller capture as well as keyboard capture"
+    },
+    {
+      "Passed": true,
+      "Message": "controller Back cancels capture without rebinding or closing management"
+    },
+    {
+      "Passed": true,
+      "Message": "controller Start opens the real pause menu"
+    },
+    {
+      "Passed": true,
+      "Message": "controller Back resumes from pause exactly once"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (960, 540) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "UI scale 0,8: saved preference remains applied"
+    },
+    {
+      "Passed": true,
+      "Message": "UI scale 0,8: management still fits after user scaling"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (960, 540) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "UI scale 1,5: saved preference remains applied"
+    },
+    {
+      "Passed": true,
+      "Message": "UI scale 1,5: management still fits after user scaling"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch mounts the pastoral sky and exactly two lanterns"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch sky uses a camera-local copy, not the global canonical environment"
+    },
+    {
+      "Passed": true,
+      "Message": "disabling the pastoral layer restores the camera fallback"
+    },
+    {
+      "Passed": true,
+      "Message": "pastoral presentation can be explicitly re-enabled"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): the unbuilt dairy station retains its production lock while allowing inspection"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): the existing Pasture supplies the positive interaction fixture"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): ranch world action buttons retain usable hit targets"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): worker and attention panels do not overlap"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): interaction panel remains inside the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): staged nearby station exposes an unclipped interaction button"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): the legacy prompt does not duplicate the interaction overlay"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-640x480: Help has a visible hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-640x480: a real Help click takes input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-640x480: expanded help fits the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-640x480: expanded help retains full resource context"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-640x480: expanded help retains every compacted alert detail"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-640x480: focus scrolling reaches the Help close button"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-640x480: closing Help restores world input"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): layout fixture can use the existing town travel boundary"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): town return remains a usable hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "town-640x480: Help has a visible hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "town-640x480: a real Help click takes input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "town-640x480: expanded help fits the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "town-640x480: expanded help retains full resource context"
+    },
+    {
+      "Passed": true,
+      "Message": "town-640x480: expanded help retains every compacted alert detail"
+    },
+    {
+      "Passed": true,
+      "Message": "town-640x480: focus scrolling reaches the Help close button"
+    },
+    {
+      "Passed": true,
+      "Message": "town-640x480: closing Help restores world input"
+    },
+    {
+      "Passed": true,
+      "Message": "(640, 480): return remains available after closing town help"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (480, 800) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): the unbuilt dairy station retains its production lock while allowing inspection"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): the existing Pasture supplies the positive interaction fixture"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): ranch world action buttons retain usable hit targets"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): worker and attention panels do not overlap"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): interaction panel remains inside the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): staged nearby station exposes an unclipped interaction button"
+    },
+    {
+      "Passed": true,
+      "Message": "(480, 800): the legacy prompt does not duplicate the interaction overlay"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-480x800: Help has a visible hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-480x800: a real Help click takes input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-480x800: expanded help fits the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-480x800: expanded help retains full resource context"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-480x800: expanded help retains every compacted alert detail"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-480x800: focus scrolling reaches the Help close button"
+    },
+    {
+      "Passed": false,
+      "Message": "ranch-480x800: closing Help restores world input"
+    },
+    {
+      "Passed": false,
+      "Message": "(480, 800): layout fixture can use the existing town travel boundary"
+    },
+    {
+      "Passed": false,
+      "Message": "(480, 800): town return remains a usable hit target"
+    },
+    {
+      "Passed": false,
+      "Message": "town-480x800: Help has a visible hit target"
+    },
+    {
+      "Passed": false,
+      "Message": "town-480x800: a real Help click takes input ownership"
+    },
+    {
+      "Passed": false,
+      "Message": "town-480x800: expanded help fits the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "town-480x800: expanded help retains full resource context"
+    },
+    {
+      "Passed": true,
+      "Message": "town-480x800: expanded help retains every compacted alert detail"
+    },
+    {
+      "Passed": false,
+      "Message": "town-480x800: focus scrolling reaches the Help close button"
+    },
+    {
+      "Passed": false,
+      "Message": "town-480x800: closing Help restores world input"
+    },
+    {
+      "Passed": false,
+      "Message": "(480, 800): return remains available after closing town help"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (960, 540) was actually applied"
+    },
+    {
+      "Passed": false,
+      "Message": "(960, 540): the unbuilt dairy station retains its production lock while allowing inspection"
+    },
+    {
+      "Passed": true,
+      "Message": "(960, 540): the existing Pasture supplies the positive interaction fixture"
+    },
+    {
+      "Passed": true,
+      "Message": "(960, 540): ranch world action buttons retain usable hit targets"
+    },
+    {
+      "Passed": true,
+      "Message": "(960, 540): worker and attention panels do not overlap"
+    },
+    {
+      "Passed": false,
+      "Message": "(960, 540): interaction panel remains inside the viewport"
+    },
+    {
+      "Passed": false,
+      "Message": "(960, 540): staged nearby station exposes an unclipped interaction button"
+    },
+    {
+      "Passed": true,
+      "Message": "(960, 540): the legacy prompt does not duplicate the interaction overlay"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-960x540: Help has a visible hit target"
+    },
+    {
+      "Passed": false,
+      "Message": "ranch-960x540: a real Help click takes input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-960x540: expanded help fits the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-960x540: expanded help retains full resource context"
+    },
+    {
+      "Passed": true,
+      "Message": "ranch-960x540: expanded help retains every compacted alert detail"
+    },
+    {
+      "Passed": false,
+      "Message": "ranch-960x540: focus scrolling reaches the Help close button"
+    },
+    {
+      "Passed": false,
+      "Message": "ranch-960x540: closing Help restores world input"
+    },
+    {
+      "Passed": false,
+      "Message": "(960, 540): layout fixture can use the existing town travel boundary"
+    },
+    {
+      "Passed": false,
+      "Message": "(960, 540): town return remains a usable hit target"
+    },
+    {
+      "Passed": false,
+      "Message": "town-960x540: Help has a visible hit target"
+    },
+    {
+      "Passed": false,
+      "Message": "town-960x540: a real Help click takes input ownership"
+    },
+    {
+      "Passed": true,
+      "Message": "town-960x540: expanded help fits the viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "town-960x540: expanded help retains full resource context"
+    },
+    {
+      "Passed": true,
+      "Message": "town-960x540: expanded help retains every compacted alert detail"
+    },
+    {
+      "Passed": false,
+      "Message": "town-960x540: focus scrolling reaches the Help close button"
+    },
+    {
+      "Passed": false,
+      "Message": "town-960x540: closing Help restores world input"
+    },
+    {
+      "Passed": false,
+      "Message": "(960, 540): return remains available after closing town help"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (960, 540) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 1: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 1: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 1: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 2: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 2: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 2: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 3: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 3: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 3: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 4: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 4: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 4: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 5: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 5: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 5: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 6: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 6: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up click 6: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Up: displayed percentage matches the saved preference"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 1: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 1: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 1: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 2: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 2: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 2: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 3: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 3: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 3: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 4: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 4: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 4: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 5: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 5: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 5: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 6: the real button is fully visible before activation"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 6: canonical scale applies once, including its existing limit"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down click 6: management stays within the resized logical viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "Scale Down: displayed percentage matches the saved preference"
+    },
+    {
+      "Passed": true,
+      "Message": "scale button sequence retains a usable Return to World target"
+    },
+    {
+      "Passed": true,
+      "Message": "return after actual scale-button clicks restores world input"
+    },
+    {
+      "Passed": true,
+      "Message": "layout/input inspection does not pay rewards, spend daily stamina or settle the day"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "overview time action explicitly requests an unplanned night"
+    },
+    {
+      "Passed": true,
+      "Message": "night flow: OverviewAdvanceTime is an enabled visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "clicking Plan Night opens planning without settling or paying"
+    },
+    {
+      "Passed": true,
+      "Message": "long planning status leaves a usable content viewport instead of expanding the whole header"
+    },
+    {
+      "Passed": true,
+      "Message": "bounded header retains the complete status message in its tooltip"
+    },
+    {
+      "Passed": true,
+      "Message": "nightly choices have separate non-overlapping hit targets, not stacked panel children"
+    },
+    {
+      "Passed": true,
+      "Message": "night flow: NightChoice_rest is an enabled visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "actual night choice click selects rest, including revising a previous selection"
+    },
+    {
+      "Passed": true,
+      "Message": "rest: alternatives remain available and only the currently selected option is disabled"
+    },
+    {
+      "Passed": true,
+      "Message": "night flow: NightChoice_train is an enabled visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "actual night choice click selects train, including revising a previous selection"
+    },
+    {
+      "Passed": true,
+      "Message": "train: alternatives remain available and only the currently selected option is disabled"
+    },
+    {
+      "Passed": true,
+      "Message": "night flow: NightChoice_admin is an enabled visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "actual night choice click selects admin, including revising a previous selection"
+    },
+    {
+      "Passed": true,
+      "Message": "admin: alternatives remain available and only the currently selected option is disabled"
+    },
+    {
+      "Passed": true,
+      "Message": "night flow: NightChoice_rest is an enabled visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "actual night choice click selects rest, including revising a previous selection"
+    },
+    {
+      "Passed": true,
+      "Message": "rest: alternatives remain available and only the currently selected option is disabled"
+    },
+    {
+      "Passed": true,
+      "Message": "revising the plan does not immediately recover, train, charge stamina or consume the bath bonus"
+    },
+    {
+      "Passed": true,
+      "Message": "a retired night\u0027s button cannot change the plan or reopen its old menu"
+    },
+    {
+      "Passed": true,
+      "Message": "night flow: NightChoice_train is an enabled visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "night flow: PlayerBathAction is an enabled visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "a prepared bath schedules tomorrow\u0027s bonus without overwriting the chosen Training plan"
+    },
+    {
+      "Passed": true,
+      "Message": "a valid choice changes the overview action to End Day"
+    },
+    {
+      "Passed": true,
+      "Message": "night flow: OverviewAdvanceTime is an enabled visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "the actual End Day button reaches one next-morning settlement report"
+    },
+    {
+      "Passed": true,
+      "Message": "rendered report totals reconcile with the real wallet and overview, including events and rewards"
+    },
+    {
+      "Passed": true,
+      "Message": "the separately prepared bath still supplies tomorrow\u0027s stamina bonus"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (960, 540) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "completed night/report writes the verified disposable save slot"
+    },
+    {
+      "Passed": true,
+      "Message": "saved completed night loads through the real root boundary"
+    },
+    {
+      "Passed": true,
+      "Message": "day, wallet and complete report totals survive current-schema saving together"
+    },
+    {
+      "Passed": true,
+      "Message": "card composition: sequential content retains its original nodes and order in one VBox"
+    },
+    {
+      "Passed": true,
+      "Message": "card composition: repeated finalization leaves an already composed card unchanged"
+    },
+    {
+      "Passed": true,
+      "Message": "card composition: reparenting preserves each original button subscription exactly once"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: the guild is reachable after the completed night was loaded"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "guild 640x480: every panel has one layout owner rather than overlapping direct children"
+    },
+    {
+      "Passed": true,
+      "Message": "guild 640x480: labels, nested cards and command rows have non-overlapping vertical rectangles"
+    },
+    {
+      "Passed": true,
+      "Message": "guild 640x480: the content remains usable without horizontal scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "guild 640x480: concise readiness guidance leaves room for the mission list and keeps detailed help"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (960, 540) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "guild 960x540: every panel has one layout owner rather than overlapping direct children"
+    },
+    {
+      "Passed": true,
+      "Message": "guild 960x540: labels, nested cards and command rows have non-overlapping vertical rectangles"
+    },
+    {
+      "Passed": true,
+      "Message": "guild 960x540: the content remains usable without horizontal scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "guild 960x540: concise readiness guidance leaves room for the mission list and keeps detailed help"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: select the discovered Road Patrol mission is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: the actual mission button enters its own combat preparation and locks world time"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: inspecting a mission costs neither gold nor stamina"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "combat preparation 640x480: every panel has one layout owner rather than overlapping direct children"
+    },
+    {
+      "Passed": true,
+      "Message": "combat preparation 640x480: labels, nested cards and command rows have non-overlapping vertical rectangles"
+    },
+    {
+      "Passed": true,
+      "Message": "combat preparation 640x480: the content remains usable without horizontal scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: start Tactical Battle is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: an unboosted party reaches an actual player turn through Tactical Battle"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: mission entry commits its daily stamina exactly once"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: both the visible time control and shared clock remain blocked during battle"
+    },
+    {
+      "Passed": true,
+      "Message": "player turn 640x480: every panel has one layout owner rather than overlapping direct children"
+    },
+    {
+      "Passed": true,
+      "Message": "player turn 640x480: labels, nested cards and command rows have non-overlapping vertical rectangles"
+    },
+    {
+      "Passed": true,
+      "Message": "player turn 640x480: the content remains usable without horizontal scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: Defend in the actual player turn is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: the real Defend hit target adds a defensive action to the combat log"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: Attack a living enemy is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: the real Attack hit target resolves an attack through the shared combat service"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: finish the remaining turns is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: player commands and Auto Finish reach a concrete mission result"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: turns/results do not charge entry stamina again or silently advance the day"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: replacing battle commands with the results Back button restores a visible focus target"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: redrawing results cannot repeat mission rewards or costs"
+    },
+    {
+      "Passed": true,
+      "Message": "combat results 640x480: every panel has one layout owner rather than overlapping direct children"
+    },
+    {
+      "Passed": true,
+      "Message": "combat results 640x480: labels, nested cards and command rows have non-overlapping vertical rectangles"
+    },
+    {
+      "Passed": true,
+      "Message": "combat results 640x480: the content remains usable without horizontal scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: return from results to the guild is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: the actual results Back button releases the encounter and world-time lock"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: return from the guild to the ranch world is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: Return to World restores movement after the mission"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: the completed mission saves through the root in disposable slot 99"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: the mission save loads through the root"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure: mission identity, gold, stamina and battle wear persist without restoring a phantom encounter"
+    },
+    {
+      "Passed": true,
+      "Message": "management: the store is reachable after returning from combat"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "store 640x480: every panel has one layout owner rather than overlapping direct children"
+    },
+    {
+      "Passed": true,
+      "Message": "store 640x480: labels, nested cards and command rows have non-overlapping vertical rectangles"
+    },
+    {
+      "Passed": true,
+      "Message": "store 640x480: the content remains usable without horizontal scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "management: previously earned funds afford two ordinary meals without injected gold"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: buy one meal from its own store row is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "management: one actual Buy click charges the listed price once and adds exactly one meal"
+    },
+    {
+      "Passed": true,
+      "Message": "management: the working schedule opens after shopping"
+    },
+    {
+      "Passed": true,
+      "Message": "schedule 640x480: every panel has one layout owner rather than overlapping direct children"
+    },
+    {
+      "Passed": true,
+      "Message": "schedule 640x480: labels, nested cards and command rows have non-overlapping vertical rectangles"
+    },
+    {
+      "Passed": true,
+      "Message": "schedule 640x480: the content remains usable without horizontal scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: assign a different available job to the selected worker is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "management: a real job button changes the canonical schedule without paying work output early"
+    },
+    {
+      "Passed": true,
+      "Message": "management: milestone progress is reachable"
+    },
+    {
+      "Passed": true,
+      "Message": "milestones 640x480: every panel has one layout owner rather than overlapping direct children"
+    },
+    {
+      "Passed": true,
+      "Message": "milestones 640x480: labels, nested cards and command rows have non-overlapping vertical rectangles"
+    },
+    {
+      "Passed": true,
+      "Message": "milestones 640x480: the content remains usable without horizontal scrolling"
+    },
+    {
+      "Passed": true,
+      "Message": "management: shopping, planning and reading milestones do not consume adventure stamina or advance the day"
+    },
+    {
+      "Passed": true,
+      "Message": "management: the real save/load menu opens"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: save through the visible Slot 3 button is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "management: the actual Save hit target writes its selected slot"
+    },
+    {
+      "Passed": true,
+      "Message": "management: the saved session remains playable"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: make one unsaved purchase is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "management: an unsaved purchase creates a real state difference for the load check"
+    },
+    {
+      "Passed": true,
+      "Message": "management: return to the save/load menu"
+    },
+    {
+      "Passed": true,
+      "Message": "adventure click: load through the visible Slot 3 button is enabled and physically visible"
+    },
+    {
+      "Passed": true,
+      "Message": "management: the actual Load click rebinds the session and restores wallet, inventory and chosen job together"
+    },
+    {
+      "Passed": true,
+      "Message": "management: a UI save/load roundtrip retains day/resources without a phantom combat lock"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (960, 540) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "wayfinding: all four camera-relative cardinal directions are correct"
+    },
+    {
+      "Passed": true,
+      "Message": "wayfinding: directions rotate with the camera, not fixed world axes"
+    },
+    {
+      "Passed": true,
+      "Message": "wayfinding: actual warnings produce a bounded set of station markers"
+    },
+    {
+      "Passed": true,
+      "Message": "world-first: the old Management shortcut opens a read-only places guide, not the global service hub"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: Place_dairy_barn is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "wayfinding: choosing a destination marks the barn without a purchase, assignment or teleport"
+    },
+    {
+      "Passed": true,
+      "Message": "interior: the barn has human-scale clearance and real segmented walls, not a solid visual box"
+    },
+    {
+      "Passed": true,
+      "Message": "interior: the ranch navigation mesh is baked from real collision instead of one open rectangle"
+    },
+    {
+      "Passed": true,
+      "Message": "interior: a physical ray through the doorway is unobstructed"
+    },
+    {
+      "Passed": true,
+      "Message": "interior: the adjacent side wall physically blocks a ray"
+    },
+    {
+      "Passed": true,
+      "Message": "input: reading live HUD bindings leaves the held movement event and pressed state intact"
+    },
+    {
+      "Passed": true,
+      "Message": "interior: actual W reaches movement (gate=True, focus=True, input=(0, 1), camera=/root/WorldGame/RanchWorld/CameraRig/Camera, process=True)"
+    },
+    {
+      "Passed": true,
+      "Message": "interior: actual movement walks through the door and reveals the roof cutaway without changing scenes (start=(10.848988, 0.8, -10.07406), end=(12.99162, 0.8, -12.063646), local=(9.536743E-07, 0.8, 1.3760757), gate=True)"
+    },
+    {
+      "Passed": true,
+      "Message": "movement: the character\u0027s visible \u002BZ face follows travel, not backwards (dot=0,9998573)"
+    },
+    {
+      "Passed": true,
+      "Message": "interior: walking and cutaway do not tax stamina, pay income or settle the day"
+    },
+    {
+      "Passed": true,
+      "Message": "station: the physical barn opens its dedicated work surface in range"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "station: dedicated work and stable Back fit the small viewport"
+    },
+    {
+      "Passed": true,
+      "Message": "station: Dairy Barn does not expose unrelated town or combat management"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationTab_team is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station: inspection of the unfinished barn cannot assign dairy production"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationTab_upgrade is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: FacilityUpgrade is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station: the actual Build button spends the canonical facility price and unlocks work once"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationTab_team is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: Assign_anon is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station: an actual Assign click changes the shared schedule with no early output or extra stamina fee"
+    },
+    {
+      "Passed": true,
+      "Message": "wayfinding: staffing resolves the authoritative dairy warning"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationClose is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station: closing restores world input and a retired callback cannot alter work"
+    },
+    {
+      "Passed": true,
+      "Message": "station: a remote station cannot be opened from across the ranch"
+    },
+    {
+      "Passed": true,
+      "Message": "service: one dedicated utility options page remains available"
+    },
+    {
+      "Passed": true,
+      "Message": "service: Options hides global navigation and daily settlement controls"
+    },
+    {
+      "Passed": true,
+      "Message": "service: a dedicated options route cannot expose the store"
+    },
+    {
+      "Passed": true,
+      "Message": "service: an unknown service cannot fall through to the old global hub"
+    },
+    {
+      "Passed": true,
+      "Message": "station: the complete guidance/work/options journey keeps the same day and phase"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: OpenProjects is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "projects: a real Places button opens optional project guidance without the old global hub"
+    },
+    {
+      "Passed": true,
+      "Message": "project journal 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: Project_breathing_room is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "projects: choosing a next step marks one physical destination and returns to the world"
+    },
+    {
+      "Passed": true,
+      "Message": "projects: reading and tracking objectives does not mutate gameplay, awards or save progress"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: physical-world utilities open the dedicated Options page"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the language picker is a visible physical hit target"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the opening click cannot choose a language or retire its own picker"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: clicking the language picker opens its actual popup"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: engine-routed keys focus the requested popup item (target=1, actual=1, embedded=True)"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the actual popup selection updates catalog and saved language to de"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the actual options picker updates the existing language setting and retains its dedicated route"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ReturnToWorldButton is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: leaving translated Options retains the same world position and selected destination ID"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the read-only places guide uses German at 640x480"
+    },
+    {
+      "Passed": true,
+      "Message": "German places 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: Place_dairy_barn is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: a translated destination button retains the stable station ID and only marks the route"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (480, 800) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the read-only places guide uses German at 480x800"
+    },
+    {
+      "Passed": true,
+      "Message": "German places 480x800: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: Place_dairy_barn is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: a translated destination button retains the stable station ID and only marks the route"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the nearby barn opens its dedicated translated station"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "German dairy 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: the dairy station title is translated independently of its canonical ID"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationTab_team is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: rebuilding a station preserves the logical work-button focus and keeps it reachable"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: switching languages refreshes an open station without changing context or its focused action"
+    },
+    {
+      "Passed": true,
+      "Message": "locale: all language, guide and station inspections leave session, calendar, wallet, inventory, stock and jobs unchanged"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: the nearby ranch house offers its nightly planning surface"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "shared evening planning 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: PlanSharedEvening is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: the real invitation click plans without immediate relationship, gold or stamina rewards"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: CancelSharedEvening is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: the real cancellation click has no relationship penalty"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: PlanSharedEvening is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: a pending invitation survives the actual current-schema save/load boundary"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: the explicitly persisted animation preference survives LoadSlot\u0027s profile-settings replacement"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: loading the invitation returns to the same available physical house"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: the real Sleep button remains visible below the optional plan"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: the actual Sleep click settles once, records the night and runs a non-explicit input-locked reveal (day=4, expected=4, receipt=True, transition=True, input=False, reduced=False)"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: redraws cannot replay the completed invitation or settlement"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: finishing the reveal and closing the report restores world input"
+    },
+    {
+      "Passed": true,
+      "Message": "evening: the completed receipt loads without resurrecting the invitation"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: a nearby resident opens their own interaction surface"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: the addressed NPC waits during the conversation instead of walking out of range"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: practice and gift controls are not dumped into the initial conversation view"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentTalk is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: an actual free conversation shows readable feedback without changing gameplay state"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentPracticePage is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "resident practice 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentPractice_craft is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: the real practice button changes the shared skill/energy/slot once without early work output"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: another focus cannot buy a second lesson for the same resident today"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: finishing a lesson reveals its full outcome instead of stranding it above the scroll position"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: the shared daily lesson limit is explained once while every affected control keeps its reason"
+    },
+    {
+      "Passed": true,
+      "Message": "resident practice German 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: language refresh keeps the practice page, target and work assignment"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (480, 800) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "resident practice German 480x800: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentSectionBack is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentCarePage is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentEncourage is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: a synchronous state observer cannot purchase a different interaction reentrantly"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: meal fixture purchases one item through the canonical shop transaction"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentFeed is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: the actual meal consumes exactly one box and disables its daily repeat"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: gift fixture buys an ordinary journal with actual funds"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentGifts is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: ResidentGift_gift_journal is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: the actual selected gift consumes its own item, not a quest keepsake"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: giving a gift also reveals its complete outcome without repeating a warning beneath every item"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: a hidden callback cannot reopen the panel; closing releases NPC and player input"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: remote/closed interactions cannot spend resources or change the resident"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: completed care and practice save/load through the actual root"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: daily receipts survive load and the old session cannot execute a command"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: the physical house remains available after interactions and load"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: HousePlan_rest is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: HouseSleep is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: actual Sleep settles once, refills the daily budget and unlocks tomorrow\u0027s lesson"
+    },
+    {
+      "Passed": true,
+      "Message": "resident: next-morning availability persists without a second reset or phantom interaction"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the nearby kitchen opens its own interface"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: initial overview does not dump purchase and roster controls together"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "kitchen overview German 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: actual German station sections appear at 640x480"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (480, 800) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "kitchen overview German 480x800: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: actual German station sections appear at 480x800"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationTab_upgrade is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: equipment review is separate from changing staff"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationCancelUpgrade is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: translated review and Back without buying preserve the complete gameplay state"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationTab_upgrade is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: inherited fixture funds can afford the displayed kitchen upgrade without a grant"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: changing language retains the reviewed equipment page"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "kitchen equipment German 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the reviewed price and confirmation are reachable without scrolling past long explanatory text"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: remote/closed rejection starts with an affordable, enabled purchase"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: a remote call cannot buy while an otherwise actionable panel is still visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: an enabled purchase control cannot charge after its panel was closed"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the nearby kitchen opens its own interface"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationTab_upgrade is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: FacilityUpgrade is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: actual Confirm spends exactly the quoted price and produces the quoted daily facility bill"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: equipment purchase does not produce stock, spend stamina or settle time"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: purchase outcome and charged amount are visible after the old button is replaced"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: a completed upgrade returns to a visible team-planning next step, not another purchase button"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: an old successful price quote cannot buy another level"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the nearby kitchen opens its own interface"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: StationTab_team is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the German team shows the canonical current-condition output with its calculation details"
+    },
+    {
+      "Passed": true,
+      "Message": "team forecasts German 640x480: translated controls do not overlap, require no horizontal scroll, and keep Back visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: Assign_anon is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: actual Team assignment changes the job but does not pay output early"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: Rest_anon is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: a current kitchen worker can be sent to rest from that same team page"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: Assign_anon is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: current-schema save/load restores the purchased level, staff and matching facility upkeep together"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the inherited resident journey left a real next Morning"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the physical phase button is usable"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the physical phase button is usable"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the physical phase button is usable"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: world time reaches Night without silently settling work"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the physical house handles day completion"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: HousePlan_rest is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "station click: HouseSleep is enabled and visible"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: actual Sleep produces one reconciled next-morning report after the equipment and staffing decisions"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the upgraded recurring bill reaches real settlement, with the chosen work plan retained"
+    },
+    {
+      "Passed": true,
+      "Message": "work planning: the completed next morning and purchased equipment survive another load"
+    },
+    {
+      "Passed": true,
+      "Message": "requested physical window (640, 480) was actually applied"
+    }
+  ],
+  "captures": [
+    "main-menu-480x800.png",
+    "main-menu-1280x720.png",
+    "title-german-640x480.png",
+    "title-german-480x800.png",
+    "creation-name-640x480.png",
+    "creation-name-480x800.png",
+    "creation-name-1280x720.png",
+    "opening-prologue.png",
+    "opening-bedroom-return.png",
+    "options-top-1280x720.png",
+    "options-controls-1280x720.png",
+    "options-top-960x540.png",
+    "options-controls-960x540.png",
+    "options-top-640x480.png",
+    "options-controls-640x480.png",
+    "options-top-480x800.png",
+    "options-controls-480x800.png",
+    "options-top-1920x720.png",
+    "options-controls-1920x720.png",
+    "options-scale-0,8.png",
+    "options-scale-1,5.png",
+    "ranch-world-640x480.png",
+    "help-top-ranch-640x480.png",
+    "town-world-640x480.png",
+    "help-top-town-640x480.png",
+    "ranch-world-480x800.png",
+    "help-top-ranch-480x800.png",
+    "town-world-480x800.png",
+    "help-top-town-480x800.png",
+    "ranch-world-960x540.png",
+    "help-top-ranch-960x540.png",
+    "town-world-960x540.png",
+    "help-top-town-960x540.png",
+    "options-button-scale-upper.png",
+    "options-button-scale-lower.png",
+    "night-planning-640x480.png",
+    "day-report-640x480.png",
+    "day-report-960x540.png",
+    "adventure-guild-640x480.png",
+    "adventure-guild-960x540.png",
+    "combat-preparation-640x480.png",
+    "combat-player-turn-640x480.png",
+    "combat-results-640x480.png",
+    "store-640x480.png",
+    "schedule-640x480.png",
+    "milestones-640x480.png",
+    "save-load-640x480.png",
+    "walk-in-dairy-960x540.png",
+    "dairy-station-640x480.png",
+    "ranch-projects-640x480.png",
+    "options-language-german-640x480.png",
+    "places-german-640x480.png",
+    "places-german-480x800.png",
+    "dairy-german-640x480.png",
+    "shared-evening-planning-640x480.png",
+    "shared-evening-reveal-640x480.png",
+    "resident-practice-german-640x480.png",
+    "resident-practice-german-480x800.png",
+    "resident-gifts-480x800.png",
+    "kitchen-overview-german-640x480.png",
+    "kitchen-overview-german-480x800.png",
+    "kitchen-equipment-german-640x480.png",
+    "kitchen-purchased-german-640x480.png",
+    "team-forecast-german-640x480.png"
+  ],
+  "limits": "Synthetic engine events and Day-2 state; not physical-device, Forward\u002B performance or complete playthrough acceptance."
+}

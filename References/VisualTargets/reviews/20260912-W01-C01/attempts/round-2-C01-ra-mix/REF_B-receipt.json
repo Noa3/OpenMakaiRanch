@@ -1,0 +1,17 @@
+{
+  "provider": "local ComfyUI",
+  "model": "raMix_v20.safetensors",
+  "prompt_id": "834243a1-4459-4049-b27e-3385741b3780",
+  "source": "E:\\OpenMakaiRanch\\.dream-loop\\generation-C01-c7c8157aa937\\C01-initialization.png",
+  "source_sha256": "752dceb1157bab38aa15c27845389ec8fc57c55e5fd52ecb33a7a4362c3e22dd",
+  "output": "REF_B.png",
+  "output_sha256": "ab8040927af6c391fe408f94bb4e17e2842c5b82150bbe9b77872c6ae5c0b8f6",
+  "positive": "High quality stylized soft-anime 3D game character, full body from head to boots, front-facing orthographic studio reference, standing upright, realistic adult eight-head body proportions, small head, long adult legs, original character, completely clothed modest everyday rural clothing. one adult woman in her thirties, visibly mature strong soft anime face, warm tan skin and freckles, copper red braided hair, lively ranch worker, green work overalls over fully buttoned cream rolled-sleeve shirt, heavy brown work boots, muscular sturdy adult build, friendly slight smile, hands relaxed and visible. Clean sculpted face and expressive eyes, precise shaped hair, matte woven fabric with seams and subtle folds, controlled highlights, soft neutral daylight, grounded contact shadow, muted pale grey studio background, no props, no text, not a drawing, not a photograph, polished real-time 3D render.",
+  "negative": "text, watermark, logo, blurry, depth of field, photograph, oversaturated, oversharpened, plastic, primitive shapes, toy, chibi, child, teenager, nude, underwear, lingerie, cleavage, fetish, deformed, extra limbs, malformed hands, hands in pockets, hidden hands, floating islands, purple sky, volcano, gothic roofs",
+  "width": 640,
+  "height": 1152,
+  "denoise": 0.95,
+  "seed": 371601,
+  "workflow_sha256": "0d0abd5430ed9a6434680b5e8980de1ed53fbdd98777b873844ff643d0ceb7eb",
+  "status": "candidate_not_approved"
+}

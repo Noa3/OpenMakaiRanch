@@ -1,0 +1,100 @@
+{
+  "source": "shared regional plan, not a gameplay run",
+  "errors": [],
+  "seam_gap_m": 0.0,
+  "connection_control_length_m": 180.1950421185424,
+  "connection_smoothed_length_m": 180.29475991834798,
+  "stream_monotonic": true,
+  "max_connection_grade": 0.05081644584675126,
+  "paths": [
+    {
+      "area": "ranch",
+      "id": "farm_lane",
+      "sampled_length_m": 43.01667466272317,
+      "width_m": 2.7,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "ranch",
+      "id": "home_lane",
+      "sampled_length_m": 10.235944437790394,
+      "width_m": 2.0,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "ranch",
+      "id": "kitchen_lane",
+      "sampled_length_m": 10.445755210348043,
+      "width_m": 1.8,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "ranch",
+      "id": "quiet_garden",
+      "sampled_length_m": 4.929178750896357,
+      "width_m": 1.4,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "ranch",
+      "id": "community",
+      "sampled_length_m": 5.8835802701053455,
+      "width_m": 1.4,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "town",
+      "id": "market_lane",
+      "sampled_length_m": 27.297266243099184,
+      "width_m": 3.3,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "town",
+      "id": "guild_lane",
+      "sampled_length_m": 7.589466384404109,
+      "width_m": 2.6,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "town",
+      "id": "garden_lane",
+      "sampled_length_m": 5.613326193379801,
+      "width_m": 1.8,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "town",
+      "id": "scholars_lane",
+      "sampled_length_m": 8.068418113425682,
+      "width_m": 2.0,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "ranch",
+      "id": "VALLEY_LANE",
+      "sampled_length_m": 180.10554315028304,
+      "width_m": 3.2,
+      "outside": null,
+      "blocked_envelopes": []
+    },
+    {
+      "area": "town",
+      "id": "SHORE_LANE",
+      "sampled_length_m": 85.30749679269174,
+      "width_m": 2.4,
+      "outside": null,
+      "blocked_envelopes": []
+    }
+  ],
+  "source_sha256": "df2a7fc867768b91cc5a82747f8f098fdaa7b7de3ada07b01b7face69fa00ccf"
+}

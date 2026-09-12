@@ -1,0 +1,2 @@
+# Keep successful and rejected capture/export logs with their evidence.
+!*.log

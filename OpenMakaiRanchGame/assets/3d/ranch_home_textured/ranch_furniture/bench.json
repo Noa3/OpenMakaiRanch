@@ -1,0 +1,29 @@
+{
+  "family": "ranch_furniture",
+  "asset": "bench",
+  "source_blend": "OpenMakaiRanchGame\\assets\\3d\\ranch_furniture\\ranch_furniture.blend",
+  "source_blend_sha256": "d1cfcd375af09f78acbbf08f700a7616abe6ecb802f93ec71beb15f51d303f6c",
+  "source_glb_sha256": "b69512bf8cdacd1d575ea982490fefaeadedcea5acd3c3a04a13cc2a8b182bec",
+  "glb_sha256": "f34ab4e5806abcf7781781d3b6baaaa425ab6ddab66806626ef60b6e40203c98",
+  "blend_sha256": "4710361dfeab18d212a0310c8263abfa57b3f4a50355618e87679579c7bc7089",
+  "triangles": 2304,
+  "collision_mesh_names": [],
+  "texture_source_hashes": {
+    "painted_warm_oak_albedo.png": "0462a813f60c7bb6eabdc6a2d1144848d157e8e81bcee3de51cf6c2b60b362ad",
+    "painted_warm_oak_normal.png": "818d5132fced166fd5c9bfdd122a38a09e679a2b8b4fa5d49a52fc894b0a47b8",
+    "painted_warm_oak_roughness.png": "a7b03e57dcd5a7627532568329258d4e41194ee3f5ed3e13251bd3f4b6d3bfa9"
+  },
+  "metre_uv_materials": {
+    "Oak_Honey": {
+      "stem": "painted_warm_oak",
+      "tile_metres": 1.0
+    },
+    "Oak_Endgrain": {
+      "stem": "painted_warm_oak",
+      "tile_metres": 1.0
+    }
+  },
+  "embedded_image_count": 3,
+  "textured_material_count": 2,
+  "scope": "Material-only derivative, geometry and collision-name counts preserved. Original sources untouched."
+}

@@ -562,12 +562,12 @@ public partial class WorldGameController : Node
             }
             else if (ranchActive && _ranch.Player is not null)
             {
-                _ranch.Player.GlobalPosition = new Vector3(0f, 0.8f, 10.5f);
+                _ranch.Player.GlobalPosition = CoastalRegion?.GetSpawnWorld("ranch") ?? new Vector3(0f, 0.8f, 10.5f);
                 _ranch.Hud?.SetStatus("Entered the ranch grounds.");
             }
             else if (townActive && _town.Player is not null)
             {
-                _town.Player.GlobalPosition = new Vector3(0f, 0.8f, 10.2f);
+                _town.Player.GlobalPosition = CoastalRegion?.GetSpawnWorld("town") ?? new Vector3(0f, 0.8f, 10.2f);
                 var game = GameRoot.Instance;
                 if (game is not null && !game.HasSeenTutorial("town_arrival"))
                 {

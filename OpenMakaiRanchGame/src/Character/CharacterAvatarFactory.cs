@@ -95,7 +95,7 @@ public static class CharacterAvatarFactory
 
             if (int.TryParse(digits, out var centimeters) && centimeters is >= 100 and <= 250)
             {
-                return Mathf.Clamp(centimeters / 100f, 1.45f, 2.25f);
+                return centimeters / 100f;
             }
 
             if (height.Contains("short", StringComparison.OrdinalIgnoreCase))

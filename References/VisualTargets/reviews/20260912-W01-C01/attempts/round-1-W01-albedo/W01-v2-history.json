@@ -1,0 +1,173 @@
+{
+  "prompt": [
+    5,
+    "8fbbfb3c-af02-47a9-8932-6ef3d57ad8d5",
+    {
+      "1": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "albedobaseXL_V31Large.safetensors"
+        }
+      },
+      "2": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "W01-v2-4e4630af747e.png"
+        }
+      },
+      "3": {
+        "class_type": "ImageScale",
+        "inputs": {
+          "image": [
+            "2",
+            0
+          ],
+          "upscale_method": "lanczos",
+          "width": 1536,
+          "height": 864,
+          "crop": "disabled"
+        }
+      },
+      "4": {
+        "class_type": "VAEEncode",
+        "inputs": {
+          "pixels": [
+            "3",
+            0
+          ],
+          "vae": [
+            "1",
+            2
+          ]
+        }
+      },
+      "5": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "1",
+            1
+          ],
+          "text": "Polished real-time 3D farming RPG screenshot, elevated three-quarter view of the same small starter ranch, preserve the paths and positions from the image. An ordinary lush green meadow in gentle countryside, blue sky, familiar broadleaf trees with richly shaped canopies, fine grass tufts along winding ochre gravel paths, natural wood fencing, subtle warm stone lanterns. Humble rural house, practical kitchen and pasture shelter, timber framing and creamy lime plaster, weathered terracotta tiled gabled roofs, believable rough stone bases. Other plots are inactive surveyed plots with wooden stakes and modest derelict shells, not equipped production buildings. Naturally flowing small stream outside the ranch boundary, no new bridge or plot. Detailed authored foliage and subtle surface texture, soft anime game aesthetic, clear readable geometry, restrained morning sun, soft ambient occlusion, deep focus, fully rendered high quality game assets."
+        }
+      },
+      "6": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "1",
+            1
+          ],
+          "text": "text, watermark, logo, blurry, depth of field, photograph, oversaturated, oversharpened, plastic, primitive shapes, toy, chibi, child, teenager, nude, underwear, lingerie, cleavage, fetish, deformed, extra limbs, malformed hands, floating islands, purple sky, volcano, gothic roofs"
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "6",
+            0
+          ],
+          "latent_image": [
+            "4",
+            0
+          ],
+          "seed": 726154,
+          "steps": 32,
+          "cfg": 6.0,
+          "sampler_name": "dpmpp_2m",
+          "scheduler": "karras",
+          "denoise": 0.82
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "1",
+            2
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "OMR_VisualTargets/generation-W01-b3951a1daef0/W01-v2"
+        }
+      }
+    },
+    {
+      "client_id": "generation-W01-b3951a1daef0",
+      "create_time": 1789176269961
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "W01-v2_00001_.png",
+          "subfolder": "OMR_VisualTargets\\generation-W01-b3951a1daef0",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "8fbbfb3c-af02-47a9-8932-6ef3d57ad8d5",
+          "timestamp": 1789176273980
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "6"
+          ],
+          "prompt_id": "8fbbfb3c-af02-47a9-8932-6ef3d57ad8d5",
+          "timestamp": 1789176273986
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "8fbbfb3c-af02-47a9-8932-6ef3d57ad8d5",
+          "timestamp": 1789176279168
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

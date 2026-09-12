@@ -2,9 +2,9 @@
 
 ## Status, not a promise of finished screenshots
 
-**49 image briefs, 25 UI layout families, 35 existing legacy routes covered. Zero generated or approved target screenshots.** Image generation is unavailable in the authoring session; no paid provider was called. The SVGs are editable layout studies and the included historical captures are baselines, neither is AI-generated final-game artwork. The generator/provider must be connected before target generation. Do not ask a build agent to match the primitive study models as final character/landscape quality.
+**49 image briefs, 25 UI layout families, 35 existing legacy routes covered. Two generated candidates (W01/C01), zero approved targets; 47 briefs still await generation.** Local ComfyUI produced the candidates on `astar`; no paid provider or external reference-image upload was used. See [candidate review and remaining blockers](reviews/20260912-W01-C01/README.md). Both candidates require correction before becoming binding construction targets. The SVGs remain layout studies and historical captures remain baselines; neither is generated final-game artwork. Do not ask a build agent to match primitive study models as final character/landscape quality.
 
-Own branch: `feature/visual-target-atlas-20260912`, from graphics branch `feature/makai-presence-and-worldstyle-20260911` at `71fb3a170b6f4baaf1cc8a1a45cdbd1dceab935f`. No other agent's logic/world branches, runtime source, existing CI, engine, save schema or source game are changed. This folder sits **outside `OpenMakaiRanchGame/`**, as requested. Canonical implementation docs still live in the game's docs folder; this is the art-reference pack, not a second gameplay roadmap.
+Original atlas branch: `feature/visual-target-atlas-20260912`, from graphics branch `feature/makai-presence-and-worldstyle-20260911` at `71fb3a170b6f4baaf1cc8a1a45cdbd1dceab935f`. Candidate follow-up uses the user-assigned `astar` branch, which already contains that history. No other agent's logic/world branches, runtime source, existing CI, engine, save schema or source game are changed. This folder sits **outside `OpenMakaiRanchGame/`**, as requested. Canonical implementation docs still live in the game's docs folder; this is the art-reference pack, not a second gameplay roadmap.
 
 ## Start here
 
@@ -24,7 +24,7 @@ python Tools/VisualTargets/atlas.py prompt W01
 python Tools/VisualTargets/draw_drafts.py --write
 ```
 
-A future image provider creates a real PNG from the exported prompt and attached references. Import that actual file as **candidate**, not approved art:
+An authorized image provider creates a real PNG from the exported prompt and attached references. Import that actual file as **candidate**, not approved art:
 
 ```bash
 python Tools/VisualTargets/atlas.py import-target W01 /actual/output.png --provider ACTUAL_PROVIDER --model ACTUAL_MODEL --provenance "Actual generation receipt and input-image hashes"
@@ -47,4 +47,4 @@ Artifacts: lookdev run `34658962938` / artifact `10287195826`; UI run `346589629
 
 ## Completion boundary
 
-This pass builds the brief/registry/layout/review tooling. It does **not** deliver generated world/character art, a working in-game menu redesign, animated character performance, authored buildings or AAA-quality playable terrain. The reference review must precede 3D construction. Existing screenshots are evidence of their old code only. New runtime changes require separate builds, screenshots, route checks and representative hardware profiling.
+The original atlas pass built brief/registry/layout/review tooling. The follow-up now supplies generated W01/C01 candidates, provenance and a verified isolated source-capture harness, but **not approved targets**, a playable ranch upgrade, menu redesign or animated production characters. See the [technical handoff](../../OpenMakaiRanchGame/docs/VISUAL_TARGET_PREPARATION_20260912.md). Human reference review must precede 3D construction. Historical screenshots remain evidence of their old code only. Runtime changes require separate builds, screenshots, route checks and representative hardware profiling.

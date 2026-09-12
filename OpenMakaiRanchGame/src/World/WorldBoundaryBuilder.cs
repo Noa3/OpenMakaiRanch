@@ -18,13 +18,16 @@ public partial class WorldBoundaryBuilder : Node3D
     [Export] public float SouthGateHalfWidth { get; set; } = 3.0f;
     [Export] public string AreaStyle { get; set; } = "ranch";
 
+    public Vector2[]? RegionalBoundary { get; set; }
+    public Vector2 RegionalHeightRange { get; set; }
+
     private Node3D? _collisionRoot;
     private Node3D? _dressingRoot;
     private Season _lastSeason = (Season)(-1);
     private float _lastDensity = -1f;
 
     public int DressingNodeCount => _dressingRoot?.GetChildCount() ?? 0;
-    public bool HasCollisionBoundary => _collisionRoot?.GetChildCount() == 4;
+    public bool HasCollisionBoundary => _collisionRoot?.GetChildCount() == (RegionalBoundary?.Length ?? 4);
 
     public override void _Ready()
     {
@@ -71,6 +74,22 @@ public partial class WorldBoundaryBuilder : Node3D
         _collisionRoot = new Node3D { Name = "BoundaryCollision" };
         AddChild(_collisionRoot);
 
+        if (RegionalBoundary is { Length: >= 3 } polygon)
+        {
+            // Data-driven collision follows the explicit corridor, not the obsolete compact rectangle.
+            var bottom = RegionalHeightRange.X - 2f;
+            var top = RegionalHeightRange.Y + 2f;
+            for (var i = 0; i < polygon.Length; i++)
+            {
+                var a = polygon[i]; var b = polygon[(i + 1) % polygon.Length];
+                var center = (a + b) / 2;
+                AddWall($"RegionalBoundary_{i}", new Vector3(center.X, (bottom + top) / 2, center.Y),
+                    new Vector3(a.DistanceTo(b), top - bottom, 0.4f));
+                ((Node3D)_collisionRoot.GetChild(i)).Rotation = new Vector3(0, -Mathf.Atan2(b.Y - a.Y, b.X - a.X), 0);
+            }
+            return;
+        }
+
         // All four gameplay boundaries are continuous. The SOUTH VISUAL DRESSING leaves a gate
         // opening, but collision stays closed behind the travel Area3D. The player can walk up to
         // the gate and interact, never walk past it and fall off the authored ground.
@@ -89,7 +108,9 @@ public partial class WorldBoundaryBuilder : Node3D
     }
 
     private void RebuildDressing()
-    {
+        {
+            // Regional landscape dressing is authored separately. Never regenerate old small-map edges.
+            if (RegionalBoundary is not null) return;
         if (_dressingRoot is not null)
         {
             RemoveChild(_dressingRoot);

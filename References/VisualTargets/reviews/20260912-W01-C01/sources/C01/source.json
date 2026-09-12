@@ -1,0 +1,7 @@
+{
+  "source_commit": "e9aac5c01e6244c91cf30d2ca86fba15e73c9708",
+  "engine": "4.7.2.stable.mono.official.ed1daf0bf",
+  "run_id": "fd78a6cbb80840b6aa27e17c84ff5e8a",
+  "renderer": "forward_plus",
+  "host": "autoload-free whitelist"
+}

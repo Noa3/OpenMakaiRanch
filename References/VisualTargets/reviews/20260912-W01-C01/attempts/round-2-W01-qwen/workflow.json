@@ -1,0 +1,186 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2511_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "OMR-4e4630af747e0b5b3752.png"
+    }
+  },
+  "5": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "4",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1536,
+      "height": 864,
+      "crop": "disabled"
+    }
+  },
+  "6": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 3.1
+    }
+  },
+  "7": {
+    "class_type": "CFGNorm",
+    "inputs": {
+      "model": [
+        "6",
+        0
+      ],
+      "strength": 1.0
+    }
+  },
+  "8": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "lora_name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+      "strength_model": 1.0
+    }
+  },
+  "9": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "5",
+        0
+      ],
+      "prompt": "Edit image 1 into a polished, playable real-time soft anime 3D ranch game screenshot. Image 2 is the SAME camera view with annotated eight plot footprints; use it ONLY to identify layout, and do NOT render its text or yellow lines. Maintain image 1's exact camera, perspective, ground plane, horizon, property boundary, eight separate plot positions, footprint scales, orientations, door faces and intersecting paths. The scene is the same place, not a redesigned farm.\n\nReplace placeholder shapes and flat surfaces with carefully authored, richly detailed 3D game assets. Preserve the humble single ranch house near the front-left, kitchen on the left and pasture shelter at the rear-left. They have cream lime plaster, warm brown structural timber, modest terracotta tiled gable roofs, stone foundations, practical wooden doors and small windows. Retain ALL five inactive plot locations: pet care at the far middle, office in the center, dairy barn at rear right, pharmacy lab at middle right and workshop at front right. These five are disused structural shells, low stone foundations, mossy remains and wooden survey stakes, NOT five operating fully equipped buildings. Keep them legible and distinct, not merged into two buildings. Do not add extensions or bridges. Keep the door access lanes unobstructed.\n\nLush ordinary green grass, fine clover patches and grouped grass blades along paths, familiar broadleaf trees with branching trunks and irregular softly layered leafy crowns at the same perimeter tree locations. Replace the tall opaque perimeter block wall with a modest rural wooden boundary fence following the same boundary. Surround the ranch with softly rolling green countryside. A narrow natural river flows downstream OUTSIDE the right ranch boundary with grassy natural banks, without changing any plot or path. Ordinary blue morning sky with restrained soft white clouds. Warm sunlight from the left, coherent soft shadows, pleasing natural green and earth palette, subtle ambient occlusion. Tiny warm opaque mana-stone lamps only as restrained rural fantasy details. Crisp clear gameplay visibility, gentle authored material detail, matte grass and cloth-like foliage response, no excessive bloom, no depth-of-field blur, no HUD or text. Not a painting, not a photo, not a miniature diorama; this is the exact elevated gameplay screenshot of the improved existing ranch. No people are needed for this environment view.",
+      "image2": [
+        "15",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "5",
+        0
+      ],
+      "prompt": "",
+      "image2": [
+        "15",
+        0
+      ]
+    }
+  },
+  "11": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "latent_image": [
+        "11",
+        0
+      ],
+      "seed": 26091201,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "13": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "13",
+        0
+      ],
+      "filename_prefix": "OMR_VisualTargets/generation-W01-qwen-512a13d9898f/candidate"
+    }
+  },
+  "15": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "OMR-906337463c6b99eb33ce.png"
+    }
+  }
+}

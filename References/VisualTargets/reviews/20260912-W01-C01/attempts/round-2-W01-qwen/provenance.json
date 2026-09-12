@@ -1,0 +1,24 @@
+{
+  "provider": "local ComfyUI",
+  "model": "qwen_image_edit_2511_fp8mixed.safetensors",
+  "lora": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+  "template_path": "D:\\ComfyUI\\python_embeded\\Lib\\site-packages\\comfyui_workflow_templates_json\\templates\\image_qwen_image_edit_2511.json",
+  "template_sha256": "849259b22e928b52e604d00f0618209a06b3fa09807f8d1bfbb1571819672a66",
+  "adaptations": [
+    "Single explicit sampler mode instead of lazy switches",
+    "1536x864 exact 16:9 ImageScale instead of FluxKontextImageScale",
+    "Official Comfy-Org repack: no optional third-party latent method override"
+  ],
+  "inputs": [
+    {
+      "path": "E:\\OpenMakaiRanch\\.dream-loop\\capture-0ghaskkk\\evidence\\W01-current.png",
+      "sha256": "4e4630af747e0b5b3752aae20628371ae4293c5636d10b421e11b65e3ea1d925"
+    },
+    {
+      "path": "E:\\OpenMakaiRanch\\.dream-loop\\W01-geometry-guide.png",
+      "sha256": "906337463c6b99eb33cea3da8836ec4389471228cf46b216230d25331885d40f"
+    }
+  ],
+  "seed": 26091201,
+  "status": "candidate_not_approved"
+}

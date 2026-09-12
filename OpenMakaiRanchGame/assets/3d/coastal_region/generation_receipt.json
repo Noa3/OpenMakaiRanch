@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "stage": "rejected_blockout_candidate",
+  "accepted": false,
+  "geometry_tests": {"passed": 6, "failed": 1, "log": "geometry_tests.log"},
+  "blocking_issue": "VALLEY_LANE crosses stream at regional X65.151408 Z174.225352, lane Y4.215493, water Y3.176056. Full-width ground route is carved away and blocked by banks. Plan needs reroute or explicit second crossing. Current generator rejects this source before writing exports.",
+  "source_sha256": "df2a7fc867768b91cc5a82747f8f098fdaa7b7de3ada07b01b7face69fa00ccf",
+  "checks": {
+    "finite_grids": true,
+    "plot_envelopes": true,
+    "downhill_water": true,
+    "seam_world": [
+      70.0,
+      4.8,
+      185.0
+    ]
+  },
+  "modules": [
+    {
+      "module": "ranch_terrain.glb",
+      "sha256": "923b8d02398a03aa1e5a4ee12b0efa5c32dbca6352d6ed2ac1be5668388081d3",
+      "bytes": 2389436,
+      "meshes": 70,
+      "vertices": 39250,
+      "triangles": 72000
+    },
+    {
+      "module": "ranch_paths.glb",
+      "sha256": "fc9d6ec55150cecf12e0beecd42bf0e8864e5e2c15bfb281b31dfa4edf4fce49",
+      "bytes": 252760,
+      "meshes": 15,
+      "vertices": 9036,
+      "triangles": 3590
+    },
+    {
+      "module": "ranch_safety.glb",
+      "sha256": "1dc7b3ab59b30c22c81bf0652409f57c650d0036e818aafedf5a5150fcd1c542",
+      "bytes": 1358880,
+      "meshes": 1828,
+      "vertices": 7312,
+      "triangles": 3656
+    },
+    {
+      "module": "ranch_water.glb",
+      "sha256": "c95aec65a97afcff20ffb6ba0014a9411fa83c20c4e10554eb9b54dfb5a9a990",
+      "bytes": 61656,
+      "meshes": 1,
+      "vertices": 2232,
+      "triangles": 1116
+    },
+    {
+      "module": "town_terrain.glb",
+      "sha256": "ec457800a54b6fa7bada87aa9aa7fb55a8ec0f91dd09cf6bb8c6c89ed3afc8fe",
+      "bytes": 1248360,
+      "meshes": 48,
+      "vertices": 25568,
+      "triangles": 46800
+    },
+    {
+      "module": "town_paths.glb",
+      "sha256": "1115a407ab88895007ed446e54f7620d08dbc59a63613039b95d611a94ab805a",
+      "bytes": 145324,
+      "meshes": 13,
+      "vertices": 5083,
+      "triangles": 2067
+    },
+    {
+      "module": "town_safety.glb",
+      "sha256": "786675c133509f297795fcf37964a488e38ce801eaea2b0a1dc0953edc82c644",
+      "bytes": 851152,
+      "meshes": 1174,
+      "vertices": 4696,
+      "triangles": 2348
+    },
+    {
+      "module": "town_water.glb",
+      "sha256": "4ddbbacddd14f0ffb2ffae18bcd4dcb4fe84864f3be4a62f49e997b559ef828c",
+      "bytes": 26332,
+      "meshes": 2,
+      "vertices": 908,
+      "triangles": 454
+    },
+    {
+      "module": "ranch_bridge.glb",
+      "sha256": "082e8117e6707c604b3f19080c2a849ea0d454940032e6020885efd5ed0cd009",
+      "bytes": 4108,
+      "meshes": 3,
+      "vertices": 24,
+      "triangles": 36
+    },
+    {
+      "module": "town_pier.glb",
+      "sha256": "84766c619d82d9fbf432d9ef83a59d09b7f2d9a8bc83252b65c001f997f947d0",
+      "bytes": 13664,
+      "meshes": 11,
+      "vertices": 88,
+      "triangles": 132
+    }
+  ],
+  "coordinate_mapping": "Godot XYZ -> Blender X,-Z,Y; GLB Y-up",
+  "path_surface_offset": 0.018,
+  "limitations": [
+    "No player traversal or Godot import verified by generator",
+    "No art preview: parent live Godot capture required",
+    "Terrain grid extends beyond exact polygon; collision-only polygon walls constrain play",
+    "Blockout straight-segment paths, not final curved landscaping"
+  ]
+}

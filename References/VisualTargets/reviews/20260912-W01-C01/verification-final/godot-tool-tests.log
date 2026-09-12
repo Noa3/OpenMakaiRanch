@@ -1,0 +1,7 @@
+..........s....................................Command: C:\Users\noa3\AppData\Local\hermes\hermes-agent\venv\Scripts\python.exe -c "print('expected failure'); raise SystemExit(7)"
+expected failure
+.................................
+----------------------------------------------------------------------
+Ran 80 tests in 4.073s
+
+OK (skipped=1)

@@ -32,6 +32,26 @@ public partial class RosterRig : Node3D
     private readonly Dictionary<string, Label3D> _thoughtBubbles = new();
     private readonly Dictionary<string, NavigationAgent3D> _agents = new();
     private readonly Dictionary<string, Vector3> _targets = new();
+    private CoastalRegionController? _coastalRegion;
+    private string _coastalAreaId = "";
+    public void BindCoastalSurface(CoastalRegionController region, string areaId)
+    {
+        _coastalRegion = region;
+        _coastalAreaId = areaId;
+    }
+    private Vector3 CoastalGround(Vector3 position)
+        {
+            if (_coastalRegion is null) return position;
+            var root = _coastalRegion.GetAreaRoot(_coastalAreaId);
+            var area = _coastalRegion.Terrain!.Areas[_coastalAreaId];
+            var local = root.ToLocal(position);
+            // A side-offset follow target can extend beyond the finite raster while its player stays inside.
+            // Clamp the requested target, never the actor. The navigation path still decides reachability.
+            local.X = Mathf.Clamp(local.X, area.Bounds.Position.X + 0.5f, area.Bounds.End.X - 0.5f);
+            local.Z = Mathf.Clamp(local.Z, area.Bounds.Position.Y + 0.5f, area.Bounds.End.Y - 0.5f);
+            return _coastalRegion.GroundWorldPosition(_coastalAreaId, root.ToGlobal(local));
+        }
+
     private Node3D? _followTarget;
     private GameRoot? _game;
     private string _activeCompanionId = string.Empty;
@@ -141,18 +161,32 @@ public partial class RosterRig : Node3D
                 { avatar.PlayLocomotion(0, false); continue; }
                 if (agent.TargetPosition.DistanceSquaredTo(target) > 0.0025f) agent.TargetPosition = target;
                 var nextPath = agent.GetNextPathPosition();
-                if (agent.IsNavigationFinished() || nextPath.DistanceTo(current) > 8f)
-                { avatar.PlayLocomotion(0, false); continue; }
-                travelTarget = new Vector3(nextPath.X, current.Y, nextPath.Z);
+                if (agent.IsNavigationFinished())
+                                {
+                                    // Only the final, sub-step arrival may finish directly; never bypass an unreachable path.
+                                    var planarRemaining = new Vector2(target.X - current.X, target.Z - current.Z).Length();
+                                    if (_coastalRegion is null || !agent.IsTargetReachable() || planarRemaining > 0.4f)
+                                    { avatar.PlayLocomotion(0, false); continue; }
+                                    travelTarget = target;
+                                }
+                                else
+                                {
+                                    if (_coastalRegion is null && nextPath.DistanceTo(current) > 8f)
+                                    { avatar.PlayLocomotion(0, false); continue; }
+                                    travelTarget = _coastalRegion is null ? new Vector3(nextPath.X, current.Y, nextPath.Z) : CoastalGround(nextPath);
+                                }
             }
 
             var next = current.MoveToward(travelTarget, step);
+            if (_coastalRegion is not null) next = CoastalGround(next);
             var travel = travelTarget - current;
             travel.Y = 0f;
             if (travel.LengthSquared() > 0.0001f)
             {
                 var yaw = Mathf.Atan2(-travel.X, -travel.Z);
-                avatar.Rotation = new Vector3(avatar.Rotation.X, yaw, avatar.Rotation.Z);
+                if (_coastalRegion is not null && avatar.IsInsideTree())
+                    avatar.GlobalRotation = new Vector3(avatar.GlobalRotation.X, yaw, avatar.GlobalRotation.Z);
+                else avatar.Rotation = new Vector3(avatar.Rotation.X, yaw, avatar.Rotation.Z);
             }
 
             SetPosition(avatar, next);
@@ -174,7 +208,7 @@ public partial class RosterRig : Node3D
         var data = game.Data;
 
         var seenPerAnchor = new Dictionary<string, int>();
-        var desired = new Dictionary<string, (RosterPlacement placement, CharacterDefinition definition)>();
+        var desired = new Dictionary<string, (RosterPlacement placement, CharacterDefinition definition, float height)>();
 
         foreach (var character in roster.Characters)
         {
@@ -195,14 +229,17 @@ public partial class RosterRig : Node3D
             seenPerAnchor[anchorId] = ordinal + 1;
 
             var placement = RosterPlacementMath.Place(character.Id, category, ordinal);
+            if (_coastalRegion is not null)
+                placement = placement with { Position = CoastalGround(ToGlobal(placement.Position)) };
             if (GetParent() is RanchGreyboxController ranch && assignment != "rest"
                 && ranch.Stations.FirstOrDefault(station => station.CommandTargetId == assignment && station.RequiresWorker) is { } station)
             {
                 var target = station.GlobalPosition + new Vector3(Mathf.Clamp((ordinal % 3 - 1) * 0.75f, -0.75f, 0.75f), 0, -(ordinal / 3) * 0.55f);
-                target.Y = 0;
+                if (_coastalRegion is null) target.Y = 0;
+                else target = CoastalGround(target);
                 placement = placement with { Position = target };
             }
-            desired[character.Id] = (placement, roster.DefinitionFor(character));
+            desired[character.Id] = (placement, roster.DefinitionFor(character), character.Height / 1000f);
         }
 
         foreach (var stale in _avatars.Keys.Where(id => !desired.ContainsKey(id)).ToList())
@@ -210,7 +247,7 @@ public partial class RosterRig : Node3D
             RemoveAvatar(stale);
         }
 
-        foreach (var (id, (placement, definition)) in desired)
+        foreach (var (id, (placement, definition, height)) in desired)
         {
             var targetPosition = string.Equals(id, _activeCompanionId, StringComparison.Ordinal)
                 && _followTarget is not null
@@ -220,6 +257,12 @@ public partial class RosterRig : Node3D
 
             if (_avatars.TryGetValue(id, out var existing))
             {
+                if (existing.Profile is { } existingProfile && height > 0
+                    && !Mathf.IsEqualApprox(existingProfile.Height, height))
+                {
+                    existingProfile.Height = height;
+                    existing.Rebuild();
+                }
                 _targets[id] = targetPosition;
                 if (!AnimateTravel && id != ConversationFocusId)
                 {
@@ -229,7 +272,7 @@ public partial class RosterRig : Node3D
                 continue;
             }
 
-            var avatar = CreateAvatar(id, definition);
+            var avatar = CreateAvatar(id, definition, height);
             SetPosition(avatar, targetPosition);
             _avatars[id] = avatar;
             _targets[id] = targetPosition;
@@ -239,9 +282,12 @@ public partial class RosterRig : Node3D
         return _avatars.Count;
     }
 
-    private CharacterAvatar3D CreateAvatar(string characterId, CharacterDefinition definition)
+    private CharacterAvatar3D CreateAvatar(string characterId, CharacterDefinition definition, float height)
     {
         var profile = CharacterAvatarFactory.CreateProfile(definition);
+        // DefinitionFor omits presentation metadata. The persisted instance's millimetres
+        // remain authoritative, including generated heights which are not whole centimetres.
+        if (height > 0) profile.Height = height;
         var avatar = CharacterAvatarFactory.BuildAvatar(profile);
         avatar.Name = $"Avatar_{characterId}";
 
@@ -297,7 +343,8 @@ public partial class RosterRig : Node3D
         }
 
         var globalBasis = target.GlobalTransform.Basis;
-        return target.GlobalPosition - FlatForward(globalBasis) * CompanionBackOffset + FlatRight(globalBasis) * CompanionSideOffset;
+        var follow = target.GlobalPosition - FlatForward(globalBasis) * CompanionBackOffset + FlatRight(globalBasis) * CompanionSideOffset;
+        return CoastalGround(follow);
     }
 
     private static Vector3 FlatRight(Basis basis)

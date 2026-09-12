@@ -1,0 +1,42 @@
+test_approval_requires_actual_reviewer_record (test_atlas.RegistryTests.test_approval_requires_actual_reviewer_record) ... ok
+test_approved_targets_are_immutable (test_atlas.RegistryTests.test_approved_targets_are_immutable) ... ok
+test_baseline_path_cannot_escape_pack (test_atlas.RegistryTests.test_baseline_path_cannot_escape_pack) ... ok
+test_camera_drift_rejected (test_atlas.RegistryTests.test_camera_drift_rejected) ... ok
+test_changed_baseline_never_overwritten (test_atlas.RegistryTests.test_changed_baseline_never_overwritten) ... ok
+test_changed_target_invalidates_approval (test_atlas.RegistryTests.test_changed_target_invalidates_approval) ... ok
+test_complete_context_can_differ_in_commit_only (test_atlas.RegistryTests.test_complete_context_can_differ_in_commit_only) ... ok
+test_detected_symlink_rejected_without_os_privilege (test_atlas.RegistryTests.test_detected_symlink_rejected_without_os_privilege) ... ok
+test_duplicate_id_is_reported (test_atlas.RegistryTests.test_duplicate_id_is_reported) ... ok
+test_duplicate_route_is_reported (test_atlas.RegistryTests.test_duplicate_route_is_reported) ... ok
+test_import_is_candidate_only (test_atlas.RegistryTests.test_import_is_candidate_only) ... ok
+test_import_requires_provenance (test_atlas.RegistryTests.test_import_requires_provenance) ... ok
+test_missing_context_rejected (test_atlas.RegistryTests.test_missing_context_rejected) ... ok
+test_missing_image_cannot_be_approved (test_atlas.RegistryTests.test_missing_image_cannot_be_approved) ... ok
+test_path_traversal_rejected (test_atlas.RegistryTests.test_path_traversal_rejected) ... ok
+test_pending_manifest_is_valid (test_atlas.RegistryTests.test_pending_manifest_is_valid) ... ok
+test_pinned_baseline_import_is_idempotent (test_atlas.RegistryTests.test_pinned_baseline_import_is_idempotent) ... ok
+test_png_corruption_rejected (test_atlas.RegistryTests.test_png_corruption_rejected) ... ok
+test_png_header_and_checksum (test_atlas.RegistryTests.test_png_header_and_checksum) ... ok
+test_real_atlas_has_complete_route_coverage (test_atlas.RegistryTests.test_real_atlas_has_complete_route_coverage) ... ok
+test_registry_counts_cover_every_shot (test_atlas.RegistryTests.test_registry_counts_cover_every_shot) ... ok
+test_renamed_text_rejected (test_atlas.RegistryTests.test_renamed_text_rejected) ... ok
+test_route_loss_is_reported (test_atlas.RegistryTests.test_route_loss_is_reported) ... ok
+test_small_image_rejected (test_atlas.RegistryTests.test_small_image_rejected) ... ok
+test_source_commit_required (test_atlas.RegistryTests.test_source_commit_required) ... ok
+test_symlink_rejected (test_atlas.RegistryTests.test_symlink_rejected) ... skipped 'Windows symlink privilege unavailable; real-link integration not exercised'
+test_truncated_png_rejected (test_atlas.RegistryTests.test_truncated_png_rejected) ... ok
+test_unknown_shot_rejected (test_atlas.RegistryTests.test_unknown_shot_rejected) ... ok
+test_unrecognized_baseline_archive_is_refused (test_atlas.RegistryTests.test_unrecognized_baseline_archive_is_refused) ... ok
+test_failed_isolation_never_starts_render_or_writes_marker (test_capture.CaptureWrapperTests.test_failed_isolation_never_starts_render_or_writes_marker) ... ok
+test_missing_duplicate_or_nonzero_completion_is_rejected (test_capture.CaptureWrapperTests.test_missing_duplicate_or_nonzero_completion_is_rejected) ... ok
+test_missing_isolation_receipt_is_rejected_even_with_zero_exit (test_capture.CaptureWrapperTests.test_missing_isolation_receipt_is_rejected_even_with_zero_exit) ... ok
+test_render_errors_cannot_be_hidden_by_success_line (test_capture.CaptureWrapperTests.test_render_errors_cannot_be_hidden_by_success_line) ... ok
+test_stale_commit_or_wrong_renderer_is_rejected (test_capture.CaptureWrapperTests.test_stale_commit_or_wrong_renderer_is_rejected) ... ok
+test_success_stays_inside_disposable_profile (test_capture.CaptureWrapperTests.test_success_stays_inside_disposable_profile) ... ok
+test_wrong_dimensions_are_rejected (test_capture.CaptureWrapperTests.test_wrong_dimensions_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 0.186s
+
+OK (skipped=1)
+CAPTURE VERIFIED: C:\Users\noa3\AppData\Local\Temp\tmprxcjel5q\.dream-loop\capture-test\evidence\W01-current.png; Godot 4.7.2

@@ -1,0 +1,27 @@
+{
+  "family": "ranch_house",
+  "asset": "north_connector_cap",
+  "source_blend": "OpenMakaiRanchGame\\assets\\3d\\ranch_house\\ranch_house_editable.blend",
+  "source_blend_sha256": "d34fc589c7e4aba93dda80c64eca5f692c78f3a9d4bd704d841eab1831758315",
+  "source_glb_sha256": "89a244e0a7845b61e6339d194e8f70d58dc8508ba9341b32ac8263a471a53507",
+  "glb_sha256": "3a9816bd10d6dcda7240ac1b955590501968af46b748ee2e3f54d0fa6807749b",
+  "blend_sha256": "2570139fd58031c276f679a7031dd49d3a2895a45df827e7098d99c97268df29",
+  "triangles": 108,
+  "collision_mesh_names": [
+    "RemovableNorthConnectorCap_001-col"
+  ],
+  "texture_source_hashes": {
+    "warm_lime_plaster_albedo.png": "5c33067e52113b11ad6638fe7d5492d6d68dd226c89f13f3eaea998559e04e3b",
+    "warm_lime_plaster_normal.png": "ec8196844f826e7a146ce8b70b1577bd8fd4d3f05607d6273a965c02a6bf1904",
+    "warm_lime_plaster_roughness.png": "b0aef830db77f20ff36d9a1b1eb56175b85e3861f497ff914a5e57879de97f64"
+  },
+  "metre_uv_materials": {
+    "Plaster": {
+      "stem": "warm_lime_plaster",
+      "tile_metres": 2.0
+    }
+  },
+  "embedded_image_count": 3,
+  "textured_material_count": 1,
+  "scope": "Material-only derivative, geometry and collision-name counts preserved. Original sources untouched."
+}

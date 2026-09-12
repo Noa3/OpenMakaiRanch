@@ -1,0 +1,198 @@
+Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 5090
+
+LOOKDEV OK: requested renderer is actually active
+LOOKDEV OK: player preview off preserves all originals
+LOOKDEV OK: player preview only binds recognized opaque generated parts
+LOOKDEV OK: player preview preserves skin tint
+LOOKDEV OK: player preview preserves selected iris color
+LOOKDEV OK: player preview leaves shared source materials unchanged
+LOOKDEV OK: player preview does not alter accessories
+LOOKDEV OK: player preview does not traverse nested/imported models
+LOOKDEV OK: player preview preserves transparency
+LOOKDEV OK: player preview is idempotent for an existing generation
+LOOKDEV OK: textured generated eye is eligible for explicit preview
+LOOKDEV OK: textured eye is never painted over with procedural iris
+LOOKDEV OK: textured eye retains source albedo and tint
+LOOKDEV OK: generated preview retains UV scale and offset
+LOOKDEV OK: eye art does not enable the spherical procedural iris
+LOOKDEV OK: selective tint preserves the authored mask reference
+LOOKDEV OK: selective tint is enabled explicitly
+LOOKDEV OK: authored UV scale transfers
+LOOKDEV OK: authored UV offset transfers
+LOOKDEV OK: eye whites are excluded from tint
+LOOKDEV OK: eye pupil is excluded from tint
+LOOKDEV OK: iris remains tintable
+LOOKDEV OK: small original eye maps have mipmaps
+LOOKDEV OK: invalid UV scales have finite defaults
+LOOKDEV OK: invalid UV offsets are bounded
+LOOKDEV OK: UV validation does not mutate caller resources
+LOOKDEV OK: missing tint mask keeps full palette behavior
+LOOKDEV OK: Head geometry is bounded
+LOOKDEV OK: Head geometry has finite normals UVs tangents and indices
+LOOKDEV OK: Hair geometry is bounded
+LOOKDEV OK: Hair geometry has finite normals UVs tangents and indices
+LOOKDEV OK: Eye geometry is bounded
+LOOKDEV OK: Eye geometry has finite normals UVs tangents and indices
+LOOKDEV OK: Lines geometry is bounded
+LOOKDEV OK: Lines geometry has finite normals UVs tangents and indices
+LOOKDEV OK: Mouth geometry is bounded
+LOOKDEV OK: Mouth geometry has finite normals UVs tangents and indices
+LOOKDEV OK: Skin shader exists
+LOOKDEV OK: Skin stays opaque
+LOOKDEV OK: Hair shader exists
+LOOKDEV OK: Hair stays opaque
+LOOKDEV OK: Eye shader exists
+LOOKDEV OK: Eye stays opaque
+LOOKDEV OK: Cloth shader exists
+LOOKDEV OK: Cloth stays opaque
+LOOKDEV OK: High Forward+ skin uses SSS
+LOOKDEV OK: Low skin has no SSS path
+LOOKDEV OK: Medium skin has no SSS path
+LOOKDEV OK: Custom skin has no SSS path
+LOOKDEV OK: unexpected skin has no SSS path
+LOOKDEV OK: mobile skin falls back
+LOOKDEV OK: gl_compatibility skin falls back
+LOOKDEV OK: unknown skin falls back
+LOOKDEV OK: Low hair has no anisotropy path
+LOOKDEV OK: NaN roughness has finite default
+LOOKDEV OK: specular is bounded
+LOOKDEV OK: negative rim is bounded
+LOOKDEV OK: factory does not mutate caller profile
+LOOKDEV OK: materials have independent instances
+LOOKDEV OK: shader resources are reused
+LOOKDEV OK: tint cannot leak between instances
+LOOKDEV OK: missing albedo texture is explicitly disabled
+LOOKDEV OK: authored texture reference is preserved
+LOOKDEV OK: authored texture is enabled
+LOOKDEV OK: out-of-range surface is refused
+LOOKDEV OK: whole-mesh override is preserved
+LOOKDEV OK: transparent source is not made opaque
+LOOKDEV OK: unknown source shader is not replaced
+LOOKDEV OK: explicit surface binding applies
+LOOKDEV OK: imported mesh material is unchanged
+LOOKDEV OK: rebinding succeeds without stacking
+LOOKDEV OK: restore returns original null override
+LOOKDEV OK: restore cannot undo another system's edit
+LOOKDEV OK: study owns its 3D world
+LOOKDEV OK: sample budget is bounded
+LOOKDEV OK: automatic exposure remains disabled
+LOOKDEV OK: neutral-high temporal AA follows capability and quality
+LOOKDEV OK: neutral-high has rendered tonal variation
+LOOKDEV OK: neutral-matte temporal AA follows capability and quality
+LOOKDEV OK: neutral-matte has rendered tonal variation
+LOOKDEV OK: A/B retains the camera
+LOOKDEV OK: A/B retains world, geometry and environment instances
+LOOKDEV OK: A/B changes rendered pixels
+LOOKDEV OK: daylight-high temporal AA follows capability and quality
+LOOKDEV OK: daylight-high has rendered tonal variation
+LOOKDEV OK: interior-high temporal AA follows capability and quality
+LOOKDEV OK: interior-high has rendered tonal variation
+LOOKDEV OK: sunset-high temporal AA follows capability and quality
+LOOKDEV OK: sunset-high has rendered tonal variation
+LOOKDEV OK: night-high temporal AA follows capability and quality
+LOOKDEV OK: night-high has rendered tonal variation
+LOOKDEV OK: neutral-low temporal AA follows capability and quality
+LOOKDEV OK: neutral-low has rendered tonal variation
+LOOKDEV OK: neutral-medium temporal AA follows capability and quality
+LOOKDEV OK: neutral-medium has rendered tonal variation
+LOOKDEV OK: neutral-ultra temporal AA follows capability and quality
+LOOKDEV OK: neutral-ultra has rendered tonal variation
+LOOKDEV OK: gameplay framing never enables DOF
+LOOKDEV OK: portrait DOF follows renderer capability
+LOOKDEV OK: portrait hides peripheral swatches
+LOOKDEV OK: portrait-high temporal AA follows capability and quality
+LOOKDEV OK: portrait-high has rendered tonal variation
+LOOKDEV OK: portrait-blue-iris-high temporal AA follows capability and quality
+LOOKDEV OK: portrait-blue-iris-high has rendered tonal variation
+LOOKDEV OK: rendered iris palette visibly changes
+LOOKDEV OK: masked palette preserves rendered eye whites
+LOOKDEV OK: portrait-unmasked-high temporal AA follows capability and quality
+LOOKDEV OK: portrait-unmasked-high has rendered tonal variation
+LOOKDEV OK: removing tint mask changes rendered eye whites
+LOOKDEV OK: portrait-uv-shift-high temporal AA follows capability and quality
+LOOKDEV OK: portrait-uv-shift-high has rendered tonal variation
+LOOKDEV OK: UV transform changes rendered eye artwork
+LOOKDEV OK: portrait-rotated-high temporal AA follows capability and quality
+LOOKDEV OK: portrait-rotated-high has rendered tonal variation
+LOOKDEV OK: portrait-profile-high temporal AA follows capability and quality
+LOOKDEV OK: portrait-profile-high has rendered tonal variation
+LOOKDEV OK: portrait-night-high temporal AA follows capability and quality
+LOOKDEV OK: portrait-night-high has rendered tonal variation
+LOOKDEV OK: full framing restores material swatches
+LOOKDEV OK: quality and lighting changes do not add samples
+LOOKDEV OK: sample viewport stays at native render scale
+LOOKDEV OK: presence parameterless preferences are neutral
+LOOKDEV OK: presence catalogue has twelve editable starting points
+LOOKDEV OK: presence unknown archetype has neutral fallback
+LOOKDEV OK: presence blend endpoints preserve authored profiles
+LOOKDEV OK: presence mixtures are not locked to an archetype
+LOOKDEV OK: presence input validation is finite and nonmutating
+LOOKDEV OK: presence unknown availability defaults closed
+LOOKDEV OK: presence missing identity refuses advice
+LOOKDEV OK: presence urgent fatigue requests available rest
+LOOKDEV OK: presence urgent unavailable rest does not invent a facility
+LOOKDEV OK: presence hunger only suggests a known meal opportunity
+LOOKDEV OK: presence bad weather outranks duty and companions
+LOOKDEV OK: presence unavailable shelter is reported rather than teleported
+LOOKDEV OK: presence active conversation owns ordinary attention
+LOOKDEV OK: presence accepted outing can recommend following
+LOOKDEV OK: presence trust alone never authorizes following
+LOOKDEV OK: presence scheduled duty is preserved
+LOOKDEV OK: presence night influences available rest without advancing a clock
+LOOKDEV OK: presence social and reserved styles choose differently in free time
+LOOKDEV OK: presence curiosity requires a visible accessible phenomenon
+LOOKDEV OK: presence retention never resurrects unavailable targets
+LOOKDEV OK: presence hysteresis is bounded in duration
+LOOKDEV OK: presence proposals carry session actor and revision
+LOOKDEV OK: presence pause refuses new intents
+LOOKDEV OK: presence nonfinite unknown needs stay harmless
+LOOKDEV OK: presence motion is reproducible without global random
+LOOKDEV OK: presence stable identifiers desynchronize residents
+LOOKDEV OK: presence reduced motion removes head and body drift
+LOOKDEV OK: presence expressive channels remain bounded
+LOOKDEV OK: presence timeline actually contains a closing blink
+LOOKDEV OK: presence acknowledgement changes head response
+LOOKDEV OK: presence pause freezes timeline and pose
+LOOKDEV OK: presence hidden actors do not advance cosmetic time
+LOOKDEV OK: presence invalid delta does not advance time
+LOOKDEV OK: presence resume catchup is bounded
+LOOKDEV OK: presence stale updates cannot replace a session
+LOOKDEV OK: presence cinematic ownership suppresses pose
+LOOKDEV OK: presence explicit reset clears timing and pose
+LOOKDEV OK: presence calibration has actual named shape targets
+LOOKDEV OK: presence mouth targets never invert front-face winding
+LOOKDEV OK: presence missing shapes fail without taking ownership
+LOOKDEV OK: presence invalid mapping preserves local transforms
+LOOKDEV OK: presence explicit binding succeeds
+LOOKDEV OK: presence competing bind is refused
+LOOKDEV OK: presence-neutral temporal AA follows capability and quality
+LOOKDEV OK: presence-neutral has rendered tonal variation
+LOOKDEV OK: presence-blink temporal AA follows capability and quality
+LOOKDEV OK: presence-blink has rendered tonal variation
+LOOKDEV OK: presence blink changes actual rendered pixels
+LOOKDEV OK: presence closed lids retain a visible dark crease
+LOOKDEV OK: presence blink writes instance weight not shared source
+LOOKDEV OK: presence-warm temporal AA follows capability and quality
+LOOKDEV OK: presence-warm has rendered tonal variation
+LOOKDEV OK: presence expression and posture visibly differ
+LOOKDEV OK: presence open mouth remains visible on the face
+LOOKDEV OK: presence release restores original weights and pivots
+LOOKDEV OK: presence competing morph writer revokes binding
+LOOKDEV OK: presence reimport invalidates binding safely
+LOOKDEV OK: presence external pivot movement is never undone
+LOOKDEV OK: makai instancing has a hard upper bound
+LOOKDEV OK: makai high tier has bounded detail
+LOOKDEV OK: makai pause freezes shader and particle timeline
+LOOKDEV OK: makai reduced motion retains a static veil without motes
+LOOKDEV OK: makai low tier preserves static style without animated detail
+LOOKDEV OK: makai interior shelter suppresses exterior effects
+LOOKDEV OK: makai effect respects caller supplied daytime
+LOOKDEV OK: makai-off temporal AA follows capability and quality
+LOOKDEV OK: makai-off has rendered tonal variation
+LOOKDEV OK: makai-night temporal AA follows capability and quality
+LOOKDEV OK: makai-night has rendered tonal variation
+LOOKDEV OK: makai prototype changes actual rendered sky area
+LOOKDEV OK: makai keeps existing environment and camera ownership
+LOOKDEV OK: makai disable clears visibility and visible particles
+ANIME LOOKDEV PASS

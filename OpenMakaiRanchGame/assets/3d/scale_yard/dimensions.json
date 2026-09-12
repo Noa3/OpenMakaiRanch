@@ -1,0 +1,17 @@
+{
+  "purpose": "temporary calibration, not finished modelling",
+  "metres_per_blender_unit": 1,
+  "door_clear_width": 1.2,
+  "door_clear_height": 2.7,
+  "wall_clear_height": 2.95,
+  "chair_seat_height": 0.46,
+  "table_top_height": 0.75,
+  "mattress_size": [
+    1.05,
+    2.2
+  ],
+  "mattress_top": 0.48,
+  "fence_height": 1.3,
+  "mesh_objects": 187,
+  "non_unit_object_scales": []
+}

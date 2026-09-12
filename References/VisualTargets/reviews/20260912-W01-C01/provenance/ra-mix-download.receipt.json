@@ -1,0 +1,19 @@
+{
+  "provider": "Civitai",
+  "model_id": 2658582,
+  "model_version_id": 3266045,
+  "model": "RA-Mix",
+  "base_model": "Illustrious",
+  "name": "raMix_v20.safetensors",
+  "source_url": "https://civitai.com/api/download/models/3266045?fileId=3149714",
+  "sha256": "ab90e003b81d0ad7634d3941ccc12ba960774f31be2949b817bea99d8d024053",
+  "bytes": 7105351192,
+  "local_path": "D:\\ComfyUI\\ComfyUI\\models\\checkpoints\\raMix_v20.safetensors",
+  "allowCommercialUse": [
+    "Image",
+    "RentCivit",
+    "Rent",
+    "Sell"
+  ],
+  "verified": true
+}

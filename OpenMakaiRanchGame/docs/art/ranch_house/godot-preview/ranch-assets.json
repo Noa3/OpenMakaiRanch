@@ -1,0 +1,1174 @@
+{
+  "scene": "res://scenes/dev/RanchHomePrototype.tscn",
+  "renderer": "forward_plus",
+  "verified_unique_asset_count": 18,
+  "sources": [
+    "res://assets/3d/ranch_furniture/bed_large.glb",
+    "res://assets/3d/ranch_furniture/bed_standard.glb",
+    "res://assets/3d/ranch_furniture/bench.glb",
+    "res://assets/3d/ranch_furniture/chair_large.glb",
+    "res://assets/3d/ranch_furniture/chair.glb",
+    "res://assets/3d/ranch_furniture/desk.glb",
+    "res://assets/3d/ranch_furniture/feed_trough.glb",
+    "res://assets/3d/ranch_furniture/fence_corner_2m.glb",
+    "res://assets/3d/ranch_furniture/fence_gate_2m.glb",
+    "res://assets/3d/ranch_furniture/fence_post.glb",
+    "res://assets/3d/ranch_furniture/fence_straight_2m.glb",
+    "res://assets/3d/ranch_furniture/kitchen_counter.glb",
+    "res://assets/3d/ranch_furniture/pantry.glb",
+    "res://assets/3d/ranch_furniture/table.glb",
+    "res://assets/3d/ranch_furniture/wardrobe.glb",
+    "res://assets/3d/ranch_house/main_house.glb",
+    "res://assets/3d/ranch_house/north_connector_cap.glb",
+    "res://assets/3d/ranch_house/residential_wing.glb"
+  ],
+  "instances": [
+    {
+      "name": "MainHouse",
+      "source": "res://assets/3d/ranch_house/main_house.glb",
+      "mesh_count": 309,
+      "static_body_count": 106,
+      "collision_shape_count": 106,
+      "local_position": [
+        0,
+        0,
+        0
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -10.264954,
+        -0.24,
+        -8.372498
+      ],
+      "bounds_size": [
+        20.529907,
+        5.5099998,
+        16.64502
+      ]
+    },
+    {
+      "name": "ResidentialWing",
+      "source": "res://assets/3d/ranch_house/residential_wing.glb",
+      "mesh_count": 245,
+      "static_body_count": 82,
+      "collision_shape_count": 82,
+      "local_position": [
+        0,
+        0,
+        -14
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -6.272522,
+        -0.24,
+        -20.272522
+      ],
+      "bounds_size": [
+        12.545044,
+        5.21,
+        12.545044
+      ]
+    },
+    {
+      "name": "WingEndCap",
+      "source": "res://assets/3d/ranch_house/north_connector_cap.glb",
+      "mesh_count": 1,
+      "static_body_count": 1,
+      "collision_shape_count": 1,
+      "local_position": [
+        0,
+        0,
+        -12
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -0.625,
+        0,
+        -19.990051
+      ],
+      "bounds_size": [
+        1.25,
+        2.7,
+        0.18005371
+      ]
+    },
+    {
+      "name": "OfficeDesk",
+      "source": "res://assets/3d/ranch_furniture/desk.glb",
+      "mesh_count": 13,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -6.5,
+        0,
+        5.4
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -7.200012,
+        0,
+        5.0290527
+      ],
+      "bounds_size": [
+        1.4000244,
+        0.75,
+        0.74194336
+      ]
+    },
+    {
+      "name": "OfficeChair",
+      "source": "res://assets/3d/ranch_furniture/chair.glb",
+      "mesh_count": 12,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -6.72,
+        0,
+        6.24
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -6.9746094,
+        0,
+        5.9853516
+      ],
+      "bounds_size": [
+        0.50927734,
+        1,
+        0.5411377
+      ]
+    },
+    {
+      "name": "OfficeStorage",
+      "source": "res://assets/3d/ranch_furniture/wardrobe.glb",
+      "mesh_count": 17,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -8.8,
+        0,
+        7.2
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -9.325012,
+        0,
+        6.807007
+      ],
+      "bounds_size": [
+        1.0500488,
+        1.9599999,
+        0.6935425
+      ]
+    },
+    {
+      "name": "KitchenSink",
+      "source": "res://assets/3d/ranch_furniture/kitchen_counter.glb",
+      "mesh_count": 23,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        9.1,
+        0,
+        5.5
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        8.722473,
+        0,
+        4.76001
+      ],
+      "bounds_size": [
+        0.7374878,
+        1.164,
+        1.4799805
+      ]
+    },
+    {
+      "name": "KitchenPantry",
+      "source": "res://assets/3d/ranch_furniture/pantry.glb",
+      "mesh_count": 21,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        4.4,
+        0,
+        7.2
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        3.9000244,
+        0,
+        6.9074707
+      ],
+      "bounds_size": [
+        1,
+        1.8,
+        0.5025635
+      ]
+    },
+    {
+      "name": "KitchenTable",
+      "source": "res://assets/3d/ranch_furniture/table.glb",
+      "mesh_count": 13,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        6.1,
+        0,
+        5.2
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        5.199951,
+        0,
+        4.7039795
+      ],
+      "bounds_size": [
+        1.8000488,
+        0.75000006,
+        0.9920654
+      ]
+    },
+    {
+      "name": "KitchenChair",
+      "source": "res://assets/3d/ranch_furniture/chair.glb",
+      "mesh_count": 12,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        6.1,
+        0,
+        6.06
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        5.845337,
+        0,
+        5.805359
+      ],
+      "bounds_size": [
+        0.50927734,
+        1,
+        0.5411377
+      ]
+    },
+    {
+      "name": "DiningTable",
+      "source": "res://assets/3d/ranch_furniture/table.glb",
+      "mesh_count": 13,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -4.5,
+        0,
+        0
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -5.4000244,
+        0,
+        -0.4960327
+      ],
+      "bounds_size": [
+        1.8000488,
+        0.75000006,
+        0.9920654
+      ]
+    },
+    {
+      "name": "DiningChairSouthWest",
+      "source": "res://assets/3d/ranch_furniture/chair.glb",
+      "mesh_count": 12,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -5,
+        0,
+        0.86
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -5.2546387,
+        0,
+        0.6053467
+      ],
+      "bounds_size": [
+        0.50927734,
+        1,
+        0.5411377
+      ]
+    },
+    {
+      "name": "DiningChairSouthEast",
+      "source": "res://assets/3d/ranch_furniture/chair.glb",
+      "mesh_count": 12,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -4,
+        0,
+        0.86
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -4.2546387,
+        0,
+        0.6053467
+      ],
+      "bounds_size": [
+        0.50927734,
+        1,
+        0.5411377
+      ]
+    },
+    {
+      "name": "DiningChairNorthWest",
+      "source": "res://assets/3d/ranch_furniture/chair.glb",
+      "mesh_count": 12,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -5,
+        0,
+        -0.86
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -5.2546387,
+        0,
+        -1.1464844
+      ],
+      "bounds_size": [
+        0.50927734,
+        1,
+        0.5411377
+      ]
+    },
+    {
+      "name": "DiningChairNorthEast",
+      "source": "res://assets/3d/ranch_furniture/chair.glb",
+      "mesh_count": 12,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -4,
+        0,
+        -0.86
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -4.2546387,
+        0,
+        -1.1464844
+      ],
+      "bounds_size": [
+        0.50927734,
+        1,
+        0.5411377
+      ]
+    },
+    {
+      "name": "CommonBench",
+      "source": "res://assets/3d/ranch_furniture/bench.glb",
+      "mesh_count": 8,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        5,
+        0,
+        1.8
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        4.200012,
+        0,
+        1.5640259
+      ],
+      "bounds_size": [
+        1.5999756,
+        0.46,
+        0.47192383
+      ]
+    },
+    {
+      "name": "CommonLargeChair",
+      "source": "res://assets/3d/ranch_furniture/chair_large.glb",
+      "mesh_count": 12,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        7,
+        0,
+        1.8
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        6.6707153,
+        0,
+        1.4953613
+      ],
+      "bounds_size": [
+        0.65856934,
+        1.1956521,
+        0.64837646
+      ]
+    },
+    {
+      "name": "PlayerBedExample",
+      "source": "res://assets/3d/ranch_furniture/bed_large.glb",
+      "mesh_count": 34,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -8.3,
+        0,
+        -6.1
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -9.049683,
+        0,
+        -7.494995
+      ],
+      "bounds_size": [
+        1.4993896,
+        1.16,
+        2.790039
+      ]
+    },
+    {
+      "name": "PlayerWardrobe",
+      "source": "res://assets/3d/ranch_furniture/wardrobe.glb",
+      "mesh_count": 17,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -5,
+        0,
+        -7.1
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -5.5250244,
+        0,
+        -7.4005127
+      ],
+      "bounds_size": [
+        1.0500488,
+        1.9599999,
+        0.6935425
+      ]
+    },
+    {
+      "name": "ResidentABedExample",
+      "source": "res://assets/3d/ranch_furniture/bed_standard.glb",
+      "mesh_count": 34,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        2.2,
+        0,
+        -6.1
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        1.5750122,
+        0,
+        -7.2699585
+      ],
+      "bounds_size": [
+        1.25,
+        1.16,
+        2.3399658
+      ]
+    },
+    {
+      "name": "ResidentAWardrobe",
+      "source": "res://assets/3d/ranch_furniture/wardrobe.glb",
+      "mesh_count": 17,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        4.4,
+        0,
+        -7.1
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        3.875,
+        0,
+        -7.4005127
+      ],
+      "bounds_size": [
+        1.0500488,
+        1.9599999,
+        0.6935425
+      ]
+    },
+    {
+      "name": "ResidentBBedExample",
+      "source": "res://assets/3d/ranch_furniture/bed_standard.glb",
+      "mesh_count": 34,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        6.7,
+        0,
+        -6.1
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        6.075012,
+        0,
+        -7.2699585
+      ],
+      "bounds_size": [
+        1.25,
+        1.16,
+        2.3399658
+      ]
+    },
+    {
+      "name": "ResidentBWardrobe",
+      "source": "res://assets/3d/ranch_furniture/wardrobe.glb",
+      "mesh_count": 17,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        8.8,
+        0,
+        -7.1
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        8.274963,
+        0,
+        -7.4005127
+      ],
+      "bounds_size": [
+        1.0500488,
+        1.9599999,
+        0.6935425
+      ]
+    },
+    {
+      "name": "WingSouthWestBedExample",
+      "source": "res://assets/3d/ranch_furniture/bed_standard.glb",
+      "mesh_count": 34,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -4.5,
+        0,
+        -11
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -5.125,
+        0,
+        -12.169983
+      ],
+      "bounds_size": [
+        1.25,
+        1.16,
+        2.3399658
+      ]
+    },
+    {
+      "name": "WingSouthWestWardrobe",
+      "source": "res://assets/3d/ranch_furniture/wardrobe.glb",
+      "mesh_count": 17,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -2.2,
+        0,
+        -12.8
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -2.7250366,
+        0,
+        -13.100525
+      ],
+      "bounds_size": [
+        1.0500488,
+        1.9599999,
+        0.6935425
+      ]
+    },
+    {
+      "name": "WingSouthEastBedExample",
+      "source": "res://assets/3d/ranch_furniture/bed_large.glb",
+      "mesh_count": 34,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        2.3,
+        0,
+        -11
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        1.550293,
+        0,
+        -12.39502
+      ],
+      "bounds_size": [
+        1.4993896,
+        1.16,
+        2.790039
+      ]
+    },
+    {
+      "name": "WingSouthEastWardrobe",
+      "source": "res://assets/3d/ranch_furniture/wardrobe.glb",
+      "mesh_count": 17,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        4.8,
+        0,
+        -12.8
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        4.2749634,
+        0,
+        -13.100525
+      ],
+      "bounds_size": [
+        1.0500488,
+        1.9599999,
+        0.6935425
+      ]
+    },
+    {
+      "name": "WingNorthWestBedExample",
+      "source": "res://assets/3d/ranch_furniture/bed_standard.glb",
+      "mesh_count": 34,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -4.5,
+        0,
+        -17
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -5.125,
+        0,
+        -18.169983
+      ],
+      "bounds_size": [
+        1.25,
+        1.16,
+        2.3399658
+      ]
+    },
+    {
+      "name": "WingNorthWestWardrobe",
+      "source": "res://assets/3d/ranch_furniture/wardrobe.glb",
+      "mesh_count": 17,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        -2.2,
+        0,
+        -18.8
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        -2.7250366,
+        0,
+        -19.100525
+      ],
+      "bounds_size": [
+        1.0500488,
+        1.9599999,
+        0.6935425
+      ]
+    },
+    {
+      "name": "WingNorthEastBedExample",
+      "source": "res://assets/3d/ranch_furniture/bed_standard.glb",
+      "mesh_count": 34,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        2.3,
+        0,
+        -17
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        1.6749878,
+        0,
+        -18.169983
+      ],
+      "bounds_size": [
+        1.25,
+        1.16,
+        2.3399658
+      ]
+    },
+    {
+      "name": "WingNorthEastWardrobe",
+      "source": "res://assets/3d/ranch_furniture/wardrobe.glb",
+      "mesh_count": 17,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        4.8,
+        0,
+        -18.8
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        4.2749634,
+        0,
+        -19.100525
+      ],
+      "bounds_size": [
+        1.0500488,
+        1.9599999,
+        0.6935425
+      ]
+    },
+    {
+      "name": "YardTrough",
+      "source": "res://assets/3d/ranch_furniture/feed_trough.glb",
+      "mesh_count": 11,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        14,
+        0,
+        3
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        13.099976,
+        0,
+        2.6350098
+      ],
+      "bounds_size": [
+        1.8000488,
+        0.67,
+        0.72998047
+      ]
+    },
+    {
+      "name": "YardStraightFence",
+      "source": "res://assets/3d/ranch_furniture/fence_straight_2m.glb",
+      "mesh_count": 6,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        14,
+        0,
+        6
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        12.905029,
+        0,
+        5.9050293
+      ],
+      "bounds_size": [
+        2.1899414,
+        1.2,
+        0.1899414
+      ]
+    },
+    {
+      "name": "YardCornerFence",
+      "source": "res://assets/3d/ranch_furniture/fence_corner_2m.glb",
+      "mesh_count": 10,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        18,
+        0,
+        3
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        16.90503,
+        0,
+        1.9050293
+      ],
+      "bounds_size": [
+        2.1899414,
+        1.2,
+        2.1899414
+      ]
+    },
+    {
+      "name": "YardGate",
+      "source": "res://assets/3d/ranch_furniture/fence_gate_2m.glb",
+      "mesh_count": 16,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        18,
+        0,
+        7
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        17.025024,
+        0,
+        6.9050293
+      ],
+      "bounds_size": [
+        1.9499512,
+        1.2,
+        0.21252441
+      ]
+    },
+    {
+      "name": "YardTerminalPost",
+      "source": "res://assets/3d/ranch_furniture/fence_post.glb",
+      "mesh_count": 2,
+      "static_body_count": 0,
+      "collision_shape_count": 0,
+      "local_position": [
+        13,
+        0,
+        6
+      ],
+      "world_scale": [
+        1,
+        1,
+        1
+      ],
+      "bounds_min_relative_to_kit": [
+        12.905029,
+        0,
+        5.9050293
+      ],
+      "bounds_size": [
+        0.1899414,
+        1.2,
+        0.1899414
+      ]
+    }
+  ],
+  "scale_mannequin": {
+    "id": "noir",
+    "target_body_height": 1.62,
+    "body_height": 1.62,
+    "body_width": 0.8343506,
+    "body_depth": 0.50476074,
+    "bodily_bottom_relative_to_origin": 0,
+    "bodily_crown_relative_to_origin": 1.62,
+    "complete_visual_height": 1.62,
+    "accessory_above_crown": 0,
+    "debug_marker_above_crown": 0.15467322,
+    "root_local_scale": [
+      1,
+      1,
+      1
+    ],
+    "root_world_scale": [
+      1,
+      1,
+      1
+    ],
+    "skeleton_count": 0,
+    "animation_players": [],
+    "meshes": [
+      {
+        "name": "Body",
+        "scale": [
+          0.81407034,
+          0.81407034,
+          0.81407034
+        ]
+      },
+      {
+        "name": "Head",
+        "scale": [
+          0.81407034,
+          0.81407034,
+          0.81407034
+        ]
+      },
+      {
+        "name": "LegLeft",
+        "scale": [
+          0.81407034,
+          0.81407034,
+          0.81407034
+        ]
+      },
+      {
+        "name": "LegRight",
+        "scale": [
+          0.81407034,
+          0.81407034,
+          0.81407034
+        ]
+      },
+      {
+        "name": "ArmLeft",
+        "scale": [
+          0.81407034,
+          0.81407034,
+          0.81407034
+        ]
+      },
+      {
+        "name": "ArmRight",
+        "scale": [
+          0.81407034,
+          0.81407034,
+          0.81407034
+        ]
+      },
+      {
+        "name": "DebugMarker",
+        "scale": [
+          0.81407034,
+          0.81407034,
+          0.81407034
+        ]
+      }
+    ]
+  },
+  "shots": [
+    {
+      "name": "home-exterior",
+      "camera_local_position": [
+        31,
+        22,
+        31
+      ],
+      "target": [
+        0,
+        1,
+        -5
+      ],
+      "cutaway": false,
+      "Fov": 55
+    },
+    {
+      "name": "home-furnished-cutaway",
+      "camera_local_position": [
+        25,
+        29,
+        25
+      ],
+      "target": [
+        0,
+        0,
+        -5
+      ],
+      "cutaway": true,
+      "Fov": 55
+    },
+    {
+      "name": "home-office",
+      "camera_local_position": [
+        -8.8,
+        2.1,
+        3.4
+      ],
+      "target": [
+        -6.4,
+        0.85,
+        5.5
+      ],
+      "cutaway": false,
+      "Fov": 55
+    },
+    {
+      "name": "home-kitchen",
+      "camera_local_position": [
+        3.5,
+        2,
+        3.5
+      ],
+      "target": [
+        7.7,
+        0.85,
+        5.8
+      ],
+      "cutaway": false,
+      "Fov": 55
+    },
+    {
+      "name": "home-resident-room",
+      "camera_local_position": [
+        4.95,
+        2,
+        -3.6
+      ],
+      "target": [
+        2.8,
+        0.75,
+        -6
+      ],
+      "cutaway": false,
+      "Fov": 55
+    },
+    {
+      "name": "home-common-scale",
+      "camera_local_position": [
+        5,
+        1.7,
+        2.3
+      ],
+      "target": [
+        -2,
+        1,
+        0
+      ],
+      "cutaway": false,
+      "Fov": 55
+    }
+  ],
+  "limits": "Authored furnished prototype only; not the production ranch or upgrade system. Imported house collider nodes checked, not physical walking or doorway passage. Furniture has no collision or use controller. Sockets are support targets, not validated pelvis/IK poses. Example beds are not resident allocations or maximum capacity. Bath remains unfurnished. Roof junction and production materials need another art pass. No navigation, sitting, lying, save/load or performance acceptance claimed."
+}

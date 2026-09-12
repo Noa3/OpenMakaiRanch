@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace OpenMakaiRanch.World;
@@ -11,7 +12,7 @@ namespace OpenMakaiRanch.World;
 public partial class TownPresentationBuilder : Node3D
 {
     private Node3D? _generated;
-    private readonly Dictionary<string, MeshInstance3D> _serviceBuildings = new();
+    private readonly Dictionary<string, WalkInBuilding> _serviceBuildings = new();
     private readonly Dictionary<string, Label3D> _serviceSigns = new();
     private readonly Dictionary<string, Node3D> _externalServiceModels = new();
 
@@ -55,7 +56,7 @@ public partial class TownPresentationBuilder : Node3D
             var available = service.IsAvailable;
             if (_serviceBuildings.TryGetValue(service.ServiceId, out var building) && GodotObject.IsInstanceValid(building))
             {
-                building.MaterialOverride = Material(available ? WallA : new Color("777983"));
+                building.SetBuiltColor(available);
             }
 
             if (_serviceSigns.TryGetValue(service.ServiceId, out var sign) && GodotObject.IsInstanceValid(sign))
@@ -76,11 +77,10 @@ public partial class TownPresentationBuilder : Node3D
         _generated = new Node3D { Name = "GeneratedTownPlaceholders" };
         AddChild(_generated);
 
-        AddBox("MainRoad", new Vector3(0, 0.02f, 1), new Vector3(4.2f, 0.05f, 27f), Road);
-        AddBox("CrossRoad", new Vector3(0, 0.025f, -2), new Vector3(29f, 0.05f, 4.2f), Road);
-        AddCylinder("CentralPlaza", new Vector3(0, 0.035f, -2), 4.0f, 0.06f, Plaza);
-        AddCylinder("FountainBase", new Vector3(0, 0.35f, -2), 1.15f, 0.55f, WallB);
-        AddCylinder("FountainWater", new Vector3(0, 0.66f, -2), 0.88f, 0.05f, new Color("65a8c5"));
+        // Market lanes and their approaches come from the same JSON as these service anchors.
+        // Offset the fountain from the main walking line rather than using a radial crossroad hub.
+        AddCylinder("FountainBase", new Vector3(-1, 0.35f, -0.8f), 0.8f, 0.55f, WallB);
+        AddCylinder("FountainWater", new Vector3(-1, 0.66f, -0.8f), 0.65f, 0.05f, new Color("65a8c5"));
 
         var services = new List<TownServicePoint>();
         CollectServices(GetParent(), services);
@@ -90,21 +90,10 @@ public partial class TownPresentationBuilder : Node3D
             BuildServiceBuilding(service, index++);
         }
 
-        var treePositions = new[]
-        {
-            new Vector3(-15f,0,-11f), new Vector3(-10f,0,-11.5f), new Vector3(10f,0,-11.5f),
-            new Vector3(15f,0,-11f), new Vector3(-15f,0,9f), new Vector3(15f,0,9f),
-            new Vector3(-8f,0,10.5f), new Vector3(8f,0,10.5f)
-        };
-        for (var i=0; i<treePositions.Length; i++)
-        {
-            AddTree($"TownTree_{i}", treePositions[i], 0.9f + (i%2)*0.1f);
-        }
-
         foreach (var pos in new[]
         {
-            new Vector3(-4.5f,0,-6f), new Vector3(4.5f,0,-6f),
-            new Vector3(-4.5f,0,2f), new Vector3(4.5f,0,2f)
+            new Vector3(-3.3f,0,-1.6f), new Vector3(4.4f,0,-0.7f),
+            new Vector3(-2.4f,0,8.7f), new Vector3(5.4f,0,5.9f)
         })
         {
             AddLamp(pos);
@@ -115,57 +104,35 @@ public partial class TownPresentationBuilder : Node3D
 
     private void BuildServiceBuilding(TownServicePoint service, int index)
     {
-        var position = service.Position;
-        var radial = new Vector3(position.X, 0, position.Z + 2f);
-        if (radial.LengthSquared() < 0.1f)
+        var plot = OrganicWorldLayout.TownPlots.Single(p => p.Id == service.ServiceId);
+        var center = new Vector3(plot.Center.X, 0, plot.Center.Y);
+        // Keep the authored service node/ScreenId. Proximity lives outside its actual doorway.
+        service.Position = OrganicWorldLayout.Entrance(plot);
+        if (service.ServiceId == "planning_board")
         {
-            radial = Vector3.Right;
+            AddBox("PlanningPost", center + Vector3.Up * 0.8f, new Vector3(0.14f, 1.6f, 0.14f), Wood);
+            AddBox("PlanningBoard", center + Vector3.Up * 1.5f, new Vector3(2, 1.1f, 0.15f), WallA, plot.Yaw);
         }
-        radial = radial.Normalized();
-
-        var center = position + radial * 2.2f;
-        center.Y = 1.25f;
-
-        var wall = index % 2 == 0 ? WallA : WallB;
-        var roof = index % 2 == 0 ? RoofA : RoofB;
-
-        Node3D? externalModel = null;
-        var externalLoaded = ServiceModels.TryGetValue(service.ServiceId, out var externalPath)
-            && TryAddExternalScene(
-                $"External_{service.ServiceId}",
-                externalPath,
-                new Vector3(center.X, 0.03f, center.Z),
-                Vector3.One * 2.0f,
-                0f,
-                out externalModel);
-
-        if (externalLoaded && externalModel is not null)
+        else
         {
-            _externalServiceModels[service.ServiceId] = externalModel;
+            var building = new WalkInBuilding
+            {
+                Name = "Building_" + service.ServiceId, BuildingId = "town_" + service.ServiceId,
+                Position = center, Rotation = new Vector3(0, plot.Yaw, 0), Footprint = plot.Footprint,
+                WallColor = index % 2 == 0 ? WallA : WallB,
+                RoofColor = index % 3 == 0 ? new Color("a7624d") : new Color("566e76"),
+                Player = GetParent().GetNodeOrNull<ThirdPersonPlayerController>("Player")
+            };
+            _generated!.AddChild(building);
+            building.SetFacilityLevel(1);
+            _serviceBuildings[service.ServiceId] = building;
         }
-
-        var building = AddBox($"Building_{service.ServiceId}", center, new Vector3(4.2f, 2.5f, 3.4f), wall);
-        building.Visible = !externalLoaded;
-        _serviceBuildings[service.ServiceId] = building;
-        var roofProxy = AddBox($"Roof_{service.ServiceId}", center + new Vector3(0,1.55f,0), new Vector3(4.6f,0.55f,3.8f), roof);
-        roofProxy.Visible = !externalLoaded;
-
-        _generated!.AddChild(new WorldShelterVolume
-        {
-            Name = $"Shelter_{service.ServiceId}",
-            Position = center + new Vector3(0f, 0.65f, 0f),
-            HalfExtents = new Vector3(2.25f, 1.75f, 1.95f)
-        });
-
-        var towardPlaza = -radial;
-        var door = center + towardPlaza * 1.78f + new Vector3(0,-0.35f,0);
-        AddBox($"Door_{service.ServiceId}", door, new Vector3(1.0f,1.65f,0.18f), Wood, Mathf.Atan2(towardPlaza.X,towardPlaza.Z));
 
         var label = new Label3D
         {
             Name = $"Sign_{service.ServiceId}",
             Text = service.Label,
-            Position = center + new Vector3(0, 1.95f, 0),
+            Position = OrganicWorldLayout.Entrance(plot, 2.5f),
             FontSize = 30,
             OutlineSize = 6
         };

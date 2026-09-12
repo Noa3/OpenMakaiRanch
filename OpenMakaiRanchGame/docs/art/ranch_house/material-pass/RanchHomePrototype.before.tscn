@@ -1,0 +1,153 @@
+[gd_scene load_steps=21 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_house/main_house.glb" id="1_house"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_house/residential_wing.glb" id="2_wing"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_house/north_connector_cap.glb" id="3_cap"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/bed_standard.glb" id="4_bed"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/bed_large.glb" id="5_large_bed"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/chair.glb" id="6_chair"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/chair_large.glb" id="7_large_chair"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/bench.glb" id="8_bench"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/table.glb" id="9_table"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/desk.glb" id="10_desk"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/wardrobe.glb" id="11_wardrobe"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/kitchen_counter.glb" id="12_counter"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/pantry.glb" id="13_pantry"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/feed_trough.glb" id="14_trough"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/fence_straight_2m.glb" id="15_fence"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/fence_corner_2m.glb" id="16_corner"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/fence_gate_2m.glb" id="17_gate"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_furniture/fence_post.glb" id="18_post"]
+
+[sub_resource type="StandardMaterial3D" id="GroundMaterial"]
+albedo_color = Color(0.29, 0.36, 0.24, 1)
+roughness = 1.0
+
+[sub_resource type="PlaneMesh" id="GroundMesh"]
+material = SubResource("GroundMaterial")
+size = Vector2(70, 70)
+
+[node name="RanchHomePrototype" type="Node3D"]
+metadata/scope = "Furnished authoring prototype, not the production ranch. Beds are example placements, not resident allocations or a capacity guarantee. No interaction or furniture collision supplied."
+
+[node name="GroundPreviewOnly" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.245, -5)
+mesh = SubResource("GroundMesh")
+
+[node name="Assets" type="Node3D" parent="."]
+
+[node name="MainHouse" parent="Assets" instance=ExtResource("1_house")]
+
+[node name="ResidentialWing" parent="Assets" instance=ExtResource("2_wing")]
+position = Vector3(0, 0, -14)
+
+[node name="WingEndCap" parent="Assets" instance=ExtResource("3_cap")]
+position = Vector3(0, 0, -12)
+
+[node name="OfficeDesk" parent="Assets" instance=ExtResource("10_desk")]
+position = Vector3(-6.5, 0, 5.4)
+
+[node name="OfficeChair" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-6.72, 0, 6.24)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="OfficeStorage" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(-8.8, 0, 7.2)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="KitchenSink" parent="Assets" instance=ExtResource("12_counter")]
+position = Vector3(9.1, 0, 5.5)
+rotation = Vector3(0, -1.5707963, 0)
+
+[node name="KitchenPantry" parent="Assets" instance=ExtResource("13_pantry")]
+position = Vector3(4.4, 0, 7.2)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="KitchenTable" parent="Assets" instance=ExtResource("9_table")]
+position = Vector3(6.1, 0, 5.2)
+
+[node name="KitchenChair" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(6.1, 0, 6.06)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="DiningTable" parent="Assets" instance=ExtResource("9_table")]
+position = Vector3(-4.5, 0, 0)
+
+[node name="DiningChairSouthWest" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-5, 0, 0.86)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="DiningChairSouthEast" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-4, 0, 0.86)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="DiningChairNorthWest" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-5, 0, -0.86)
+
+[node name="DiningChairNorthEast" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-4, 0, -0.86)
+
+[node name="CommonBench" parent="Assets" instance=ExtResource("8_bench")]
+position = Vector3(5, 0, 1.8)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="CommonLargeChair" parent="Assets" instance=ExtResource("7_large_chair")]
+position = Vector3(7, 0, 1.8)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="PlayerBedExample" parent="Assets" instance=ExtResource("5_large_bed")]
+position = Vector3(-8.3, 0, -6.1)
+
+[node name="PlayerWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(-5, 0, -7.1)
+
+[node name="ResidentABedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(2.2, 0, -6.1)
+
+[node name="ResidentAWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(4.4, 0, -7.1)
+
+[node name="ResidentBBedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(6.7, 0, -6.1)
+
+[node name="ResidentBWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(8.8, 0, -7.1)
+
+[node name="WingSouthWestBedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(-4.5, 0, -11)
+
+[node name="WingSouthWestWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(-2.2, 0, -12.8)
+
+[node name="WingSouthEastBedExample" parent="Assets" instance=ExtResource("5_large_bed")]
+position = Vector3(2.3, 0, -11)
+
+[node name="WingSouthEastWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(4.8, 0, -12.8)
+
+[node name="WingNorthWestBedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(-4.5, 0, -17)
+
+[node name="WingNorthWestWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(-2.2, 0, -18.8)
+
+[node name="WingNorthEastBedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(2.3, 0, -17)
+
+[node name="WingNorthEastWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(4.8, 0, -18.8)
+
+[node name="YardTrough" parent="Assets" instance=ExtResource("14_trough")]
+position = Vector3(14, 0, 3)
+
+[node name="YardStraightFence" parent="Assets" instance=ExtResource("15_fence")]
+position = Vector3(14, 0, 6)
+
+[node name="YardCornerFence" parent="Assets" instance=ExtResource("16_corner")]
+position = Vector3(18, 0, 3)
+
+[node name="YardGate" parent="Assets" instance=ExtResource("17_gate")]
+position = Vector3(18, 0, 7)
+
+[node name="YardTerminalPost" parent="Assets" instance=ExtResource("18_post")]
+position = Vector3(13, 0, 6)

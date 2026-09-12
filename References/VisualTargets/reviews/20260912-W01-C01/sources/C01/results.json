@@ -1,0 +1,980 @@
+{
+  "schema": 1,
+  "source_commit": "e9aac5c01e6244c91cf30d2ca86fba15e73c9708",
+  "run_id": "fd78a6cbb80840b6aa27e17c84ff5e8a",
+  "engine": "4.7.2-stable (official)",
+  "renderer": "forward_plus",
+  "adapter": "NVIDIA GeForce RTX 5090",
+  "scope": "Original material/viewport contract study; not production character art or target-hardware performance certification.",
+  "passed": true,
+  "failures": 0,
+  "checks": [
+    {
+      "name": "requested renderer is actually active",
+      "passed": true
+    },
+    {
+      "name": "player preview off preserves all originals",
+      "passed": true
+    },
+    {
+      "name": "player preview only binds recognized opaque generated parts",
+      "passed": true
+    },
+    {
+      "name": "player preview preserves skin tint",
+      "passed": true
+    },
+    {
+      "name": "player preview preserves selected iris color",
+      "passed": true
+    },
+    {
+      "name": "player preview leaves shared source materials unchanged",
+      "passed": true
+    },
+    {
+      "name": "player preview does not alter accessories",
+      "passed": true
+    },
+    {
+      "name": "player preview does not traverse nested/imported models",
+      "passed": true
+    },
+    {
+      "name": "player preview preserves transparency",
+      "passed": true
+    },
+    {
+      "name": "player preview is idempotent for an existing generation",
+      "passed": true
+    },
+    {
+      "name": "textured generated eye is eligible for explicit preview",
+      "passed": true
+    },
+    {
+      "name": "textured eye is never painted over with procedural iris",
+      "passed": true
+    },
+    {
+      "name": "textured eye retains source albedo and tint",
+      "passed": true
+    },
+    {
+      "name": "generated preview retains UV scale and offset",
+      "passed": true
+    },
+    {
+      "name": "eye art does not enable the spherical procedural iris",
+      "passed": true
+    },
+    {
+      "name": "selective tint preserves the authored mask reference",
+      "passed": true
+    },
+    {
+      "name": "selective tint is enabled explicitly",
+      "passed": true
+    },
+    {
+      "name": "authored UV scale transfers",
+      "passed": true
+    },
+    {
+      "name": "authored UV offset transfers",
+      "passed": true
+    },
+    {
+      "name": "eye whites are excluded from tint",
+      "passed": true
+    },
+    {
+      "name": "eye pupil is excluded from tint",
+      "passed": true
+    },
+    {
+      "name": "iris remains tintable",
+      "passed": true
+    },
+    {
+      "name": "small original eye maps have mipmaps",
+      "passed": true
+    },
+    {
+      "name": "invalid UV scales have finite defaults",
+      "passed": true
+    },
+    {
+      "name": "invalid UV offsets are bounded",
+      "passed": true
+    },
+    {
+      "name": "UV validation does not mutate caller resources",
+      "passed": true
+    },
+    {
+      "name": "missing tint mask keeps full palette behavior",
+      "passed": true
+    },
+    {
+      "name": "Head geometry is bounded",
+      "passed": true
+    },
+    {
+      "name": "Head geometry has finite normals UVs tangents and indices",
+      "passed": true
+    },
+    {
+      "name": "Hair geometry is bounded",
+      "passed": true
+    },
+    {
+      "name": "Hair geometry has finite normals UVs tangents and indices",
+      "passed": true
+    },
+    {
+      "name": "Eye geometry is bounded",
+      "passed": true
+    },
+    {
+      "name": "Eye geometry has finite normals UVs tangents and indices",
+      "passed": true
+    },
+    {
+      "name": "Lines geometry is bounded",
+      "passed": true
+    },
+    {
+      "name": "Lines geometry has finite normals UVs tangents and indices",
+      "passed": true
+    },
+    {
+      "name": "Mouth geometry is bounded",
+      "passed": true
+    },
+    {
+      "name": "Mouth geometry has finite normals UVs tangents and indices",
+      "passed": true
+    },
+    {
+      "name": "Skin shader exists",
+      "passed": true
+    },
+    {
+      "name": "Skin stays opaque",
+      "passed": true
+    },
+    {
+      "name": "Hair shader exists",
+      "passed": true
+    },
+    {
+      "name": "Hair stays opaque",
+      "passed": true
+    },
+    {
+      "name": "Eye shader exists",
+      "passed": true
+    },
+    {
+      "name": "Eye stays opaque",
+      "passed": true
+    },
+    {
+      "name": "Cloth shader exists",
+      "passed": true
+    },
+    {
+      "name": "Cloth stays opaque",
+      "passed": true
+    },
+    {
+      "name": "High Forward\u002B skin uses SSS",
+      "passed": true
+    },
+    {
+      "name": "Low skin has no SSS path",
+      "passed": true
+    },
+    {
+      "name": "Medium skin has no SSS path",
+      "passed": true
+    },
+    {
+      "name": "Custom skin has no SSS path",
+      "passed": true
+    },
+    {
+      "name": "unexpected skin has no SSS path",
+      "passed": true
+    },
+    {
+      "name": "mobile skin falls back",
+      "passed": true
+    },
+    {
+      "name": "gl_compatibility skin falls back",
+      "passed": true
+    },
+    {
+      "name": "unknown skin falls back",
+      "passed": true
+    },
+    {
+      "name": "Low hair has no anisotropy path",
+      "passed": true
+    },
+    {
+      "name": "NaN roughness has finite default",
+      "passed": true
+    },
+    {
+      "name": "specular is bounded",
+      "passed": true
+    },
+    {
+      "name": "negative rim is bounded",
+      "passed": true
+    },
+    {
+      "name": "factory does not mutate caller profile",
+      "passed": true
+    },
+    {
+      "name": "materials have independent instances",
+      "passed": true
+    },
+    {
+      "name": "shader resources are reused",
+      "passed": true
+    },
+    {
+      "name": "tint cannot leak between instances",
+      "passed": true
+    },
+    {
+      "name": "missing albedo texture is explicitly disabled",
+      "passed": true
+    },
+    {
+      "name": "authored texture reference is preserved",
+      "passed": true
+    },
+    {
+      "name": "authored texture is enabled",
+      "passed": true
+    },
+    {
+      "name": "out-of-range surface is refused",
+      "passed": true
+    },
+    {
+      "name": "whole-mesh override is preserved",
+      "passed": true
+    },
+    {
+      "name": "transparent source is not made opaque",
+      "passed": true
+    },
+    {
+      "name": "unknown source shader is not replaced",
+      "passed": true
+    },
+    {
+      "name": "explicit surface binding applies",
+      "passed": true
+    },
+    {
+      "name": "imported mesh material is unchanged",
+      "passed": true
+    },
+    {
+      "name": "rebinding succeeds without stacking",
+      "passed": true
+    },
+    {
+      "name": "restore returns original null override",
+      "passed": true
+    },
+    {
+      "name": "restore cannot undo another system\u0027s edit",
+      "passed": true
+    },
+    {
+      "name": "study owns its 3D world",
+      "passed": true
+    },
+    {
+      "name": "sample budget is bounded",
+      "passed": true
+    },
+    {
+      "name": "automatic exposure remains disabled",
+      "passed": true
+    },
+    {
+      "name": "neutral-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "neutral-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "neutral-matte temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "neutral-matte has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "A/B retains the camera",
+      "passed": true
+    },
+    {
+      "name": "A/B retains world, geometry and environment instances",
+      "passed": true
+    },
+    {
+      "name": "A/B changes rendered pixels",
+      "passed": true
+    },
+    {
+      "name": "daylight-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "daylight-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "interior-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "interior-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "sunset-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "sunset-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "night-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "night-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "neutral-low temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "neutral-low has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "neutral-medium temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "neutral-medium has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "neutral-ultra temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "neutral-ultra has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "gameplay framing never enables DOF",
+      "passed": true
+    },
+    {
+      "name": "portrait DOF follows renderer capability",
+      "passed": true
+    },
+    {
+      "name": "portrait hides peripheral swatches",
+      "passed": true
+    },
+    {
+      "name": "portrait-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "portrait-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "portrait-blue-iris-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "portrait-blue-iris-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "rendered iris palette visibly changes",
+      "passed": true
+    },
+    {
+      "name": "masked palette preserves rendered eye whites",
+      "passed": true
+    },
+    {
+      "name": "portrait-unmasked-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "portrait-unmasked-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "removing tint mask changes rendered eye whites",
+      "passed": true
+    },
+    {
+      "name": "portrait-uv-shift-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "portrait-uv-shift-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "UV transform changes rendered eye artwork",
+      "passed": true
+    },
+    {
+      "name": "portrait-rotated-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "portrait-rotated-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "portrait-profile-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "portrait-profile-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "portrait-night-high temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "portrait-night-high has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "full framing restores material swatches",
+      "passed": true
+    },
+    {
+      "name": "quality and lighting changes do not add samples",
+      "passed": true
+    },
+    {
+      "name": "sample viewport stays at native render scale",
+      "passed": true
+    },
+    {
+      "name": "presence parameterless preferences are neutral",
+      "passed": true
+    },
+    {
+      "name": "presence catalogue has twelve editable starting points",
+      "passed": true
+    },
+    {
+      "name": "presence unknown archetype has neutral fallback",
+      "passed": true
+    },
+    {
+      "name": "presence blend endpoints preserve authored profiles",
+      "passed": true
+    },
+    {
+      "name": "presence mixtures are not locked to an archetype",
+      "passed": true
+    },
+    {
+      "name": "presence input validation is finite and nonmutating",
+      "passed": true
+    },
+    {
+      "name": "presence unknown availability defaults closed",
+      "passed": true
+    },
+    {
+      "name": "presence missing identity refuses advice",
+      "passed": true
+    },
+    {
+      "name": "presence urgent fatigue requests available rest",
+      "passed": true
+    },
+    {
+      "name": "presence urgent unavailable rest does not invent a facility",
+      "passed": true
+    },
+    {
+      "name": "presence hunger only suggests a known meal opportunity",
+      "passed": true
+    },
+    {
+      "name": "presence bad weather outranks duty and companions",
+      "passed": true
+    },
+    {
+      "name": "presence unavailable shelter is reported rather than teleported",
+      "passed": true
+    },
+    {
+      "name": "presence active conversation owns ordinary attention",
+      "passed": true
+    },
+    {
+      "name": "presence accepted outing can recommend following",
+      "passed": true
+    },
+    {
+      "name": "presence trust alone never authorizes following",
+      "passed": true
+    },
+    {
+      "name": "presence scheduled duty is preserved",
+      "passed": true
+    },
+    {
+      "name": "presence night influences available rest without advancing a clock",
+      "passed": true
+    },
+    {
+      "name": "presence social and reserved styles choose differently in free time",
+      "passed": true
+    },
+    {
+      "name": "presence curiosity requires a visible accessible phenomenon",
+      "passed": true
+    },
+    {
+      "name": "presence retention never resurrects unavailable targets",
+      "passed": true
+    },
+    {
+      "name": "presence hysteresis is bounded in duration",
+      "passed": true
+    },
+    {
+      "name": "presence proposals carry session actor and revision",
+      "passed": true
+    },
+    {
+      "name": "presence pause refuses new intents",
+      "passed": true
+    },
+    {
+      "name": "presence nonfinite unknown needs stay harmless",
+      "passed": true
+    },
+    {
+      "name": "presence motion is reproducible without global random",
+      "passed": true
+    },
+    {
+      "name": "presence stable identifiers desynchronize residents",
+      "passed": true
+    },
+    {
+      "name": "presence reduced motion removes head and body drift",
+      "passed": true
+    },
+    {
+      "name": "presence expressive channels remain bounded",
+      "passed": true
+    },
+    {
+      "name": "presence timeline actually contains a closing blink",
+      "passed": true
+    },
+    {
+      "name": "presence acknowledgement changes head response",
+      "passed": true
+    },
+    {
+      "name": "presence pause freezes timeline and pose",
+      "passed": true
+    },
+    {
+      "name": "presence hidden actors do not advance cosmetic time",
+      "passed": true
+    },
+    {
+      "name": "presence invalid delta does not advance time",
+      "passed": true
+    },
+    {
+      "name": "presence resume catchup is bounded",
+      "passed": true
+    },
+    {
+      "name": "presence stale updates cannot replace a session",
+      "passed": true
+    },
+    {
+      "name": "presence cinematic ownership suppresses pose",
+      "passed": true
+    },
+    {
+      "name": "presence explicit reset clears timing and pose",
+      "passed": true
+    },
+    {
+      "name": "presence calibration has actual named shape targets",
+      "passed": true
+    },
+    {
+      "name": "presence mouth targets never invert front-face winding",
+      "passed": true
+    },
+    {
+      "name": "presence missing shapes fail without taking ownership",
+      "passed": true
+    },
+    {
+      "name": "presence invalid mapping preserves local transforms",
+      "passed": true
+    },
+    {
+      "name": "presence explicit binding succeeds",
+      "passed": true
+    },
+    {
+      "name": "presence competing bind is refused",
+      "passed": true
+    },
+    {
+      "name": "presence-neutral temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "presence-neutral has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "presence-blink temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "presence-blink has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "presence blink changes actual rendered pixels",
+      "passed": true
+    },
+    {
+      "name": "presence closed lids retain a visible dark crease",
+      "passed": true
+    },
+    {
+      "name": "presence blink writes instance weight not shared source",
+      "passed": true
+    },
+    {
+      "name": "presence-warm temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "presence-warm has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "presence expression and posture visibly differ",
+      "passed": true
+    },
+    {
+      "name": "presence open mouth remains visible on the face",
+      "passed": true
+    },
+    {
+      "name": "presence release restores original weights and pivots",
+      "passed": true
+    },
+    {
+      "name": "presence competing morph writer revokes binding",
+      "passed": true
+    },
+    {
+      "name": "presence reimport invalidates binding safely",
+      "passed": true
+    },
+    {
+      "name": "presence external pivot movement is never undone",
+      "passed": true
+    },
+    {
+      "name": "makai instancing has a hard upper bound",
+      "passed": true
+    },
+    {
+      "name": "makai high tier has bounded detail",
+      "passed": true
+    },
+    {
+      "name": "makai pause freezes shader and particle timeline",
+      "passed": true
+    },
+    {
+      "name": "makai reduced motion retains a static veil without motes",
+      "passed": true
+    },
+    {
+      "name": "makai low tier preserves static style without animated detail",
+      "passed": true
+    },
+    {
+      "name": "makai interior shelter suppresses exterior effects",
+      "passed": true
+    },
+    {
+      "name": "makai effect respects caller supplied daytime",
+      "passed": true
+    },
+    {
+      "name": "makai-off temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "makai-off has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "makai-night temporal AA follows capability and quality",
+      "passed": true
+    },
+    {
+      "name": "makai-night has rendered tonal variation",
+      "passed": true
+    },
+    {
+      "name": "makai prototype changes actual rendered sky area",
+      "passed": true
+    },
+    {
+      "name": "makai keeps existing environment and camera ownership",
+      "passed": true
+    },
+    {
+      "name": "makai disable clears visibility and visible particles",
+      "passed": true
+    }
+  ],
+  "captures": [
+    {
+      "file": "neutral-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.054634508,
+      "luminance_max": 0.7932942,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "neutral-matte.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.06247765,
+      "luminance_max": 0.7932942,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "daylight-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.06611608,
+      "luminance_max": 0.80726117,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "interior-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.04673961,
+      "luminance_max": 0.7248722,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "sunset-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.04278196,
+      "luminance_max": 0.7609639,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "night-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.019072942,
+      "luminance_max": 0.7137255,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "neutral-low.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0,
+      "luminance_max": 0.79048944,
+      "taa": false,
+      "warmup_frames": 3
+    },
+    {
+      "file": "neutral-medium.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0,
+      "luminance_max": 0.7932942,
+      "taa": false,
+      "warmup_frames": 3
+    },
+    {
+      "file": "neutral-ultra.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.027734118,
+      "luminance_max": 0.7932942,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "portrait-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.08573961,
+      "luminance_max": 0.790222,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "portrait-blue-iris-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.08518902,
+      "luminance_max": 0.790222,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "portrait-unmasked-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.07762902,
+      "luminance_max": 0.6956298,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "portrait-uv-shift-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.09358274,
+      "luminance_max": 0.77790666,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "portrait-rotated-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.08780314,
+      "luminance_max": 0.75437725,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "portrait-profile-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.09509569,
+      "luminance_max": 0.6577984,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "portrait-night-high.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.042602353,
+      "luminance_max": 0.5395067,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "presence-neutral.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.07452549,
+      "luminance_max": 0.77790666,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "presence-blink.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.13207765,
+      "luminance_max": 0.6956298,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "presence-warm.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.15469177,
+      "luminance_max": 0.7666925,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "makai-off.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.019072942,
+      "luminance_max": 0.6716557,
+      "taa": true,
+      "warmup_frames": 12
+    },
+    {
+      "file": "makai-night.png",
+      "width": 1280,
+      "height": 534,
+      "luminance_min": 0.019072942,
+      "luminance_max": 0.6823529,
+      "taa": true,
+      "warmup_frames": 12
+    }
+  ]
+}

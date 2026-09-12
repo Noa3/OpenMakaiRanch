@@ -1,0 +1,44 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/WorldGame.tscn" id="1_world"]
+[ext_resource type="Script" path="res://src/World/CoastalRegionController.cs" id="2_region"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_terrain.glb" id="ranch_terrain"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_paths.glb" id="ranch_paths"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_water.glb" id="ranch_water"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_safety.glb" id="ranch_safety"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_bridge.glb" id="ranch_bridge"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/town_terrain.glb" id="town_terrain"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/town_paths.glb" id="town_paths"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/town_water.glb" id="town_water"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/town_safety.glb" id="town_safety"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/town_pier.glb" id="town_pier"]
+
+[node name="CoastalRegionBlockout" instance=ExtResource("1_world")]
+script = ExtResource("2_region")
+
+[node name="CoastalModules" type="Node3D" parent="RanchWorld"]
+
+[node name="ranch_terrain" parent="RanchWorld/CoastalModules" instance=ExtResource("ranch_terrain")]
+
+[node name="ranch_paths" parent="RanchWorld/CoastalModules" instance=ExtResource("ranch_paths")]
+
+[node name="ranch_water" parent="RanchWorld/CoastalModules" instance=ExtResource("ranch_water")]
+
+[node name="ranch_safety" parent="RanchWorld/CoastalModules" instance=ExtResource("ranch_safety")]
+
+[node name="ranch_bridge" parent="RanchWorld/CoastalModules" instance=ExtResource("ranch_bridge")]
+
+[node name="CoastalModules" type="Node3D" parent="TownWorld"]
+
+[node name="town_terrain" parent="TownWorld/CoastalModules" instance=ExtResource("town_terrain")]
+
+[node name="town_paths" parent="TownWorld/CoastalModules" instance=ExtResource("town_paths")]
+
+[node name="town_water" parent="TownWorld/CoastalModules" instance=ExtResource("town_water")]
+
+[node name="town_safety" parent="TownWorld/CoastalModules" instance=ExtResource("town_safety")]
+
+[node name="town_pier" parent="TownWorld/CoastalModules" instance=ExtResource("town_pier")]
+
+[editable path="RanchWorld"]
+[editable path="TownWorld"]

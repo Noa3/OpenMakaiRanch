@@ -1,0 +1,81 @@
+{
+  "blend_reopened": true,
+  "asset_count": 15,
+  "checks": [
+    {
+      "asset": "table",
+      "saved_mesh_count": 13,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "chair",
+      "saved_mesh_count": 12,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "bench",
+      "saved_mesh_count": 8,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "desk",
+      "saved_mesh_count": 13,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "wardrobe",
+      "saved_mesh_count": 17,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "pantry",
+      "saved_mesh_count": 21,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "kitchen_counter",
+      "saved_mesh_count": 23,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "feed_trough",
+      "saved_mesh_count": 11,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "fence_straight_2m",
+      "saved_mesh_count": 6,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "fence_corner_2m",
+      "saved_mesh_count": 10,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "fence_gate_2m",
+      "saved_mesh_count": 16,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "bed_standard",
+      "saved_mesh_count": 34,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "bed_large",
+      "saved_mesh_count": 34,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "chair_large",
+      "saved_mesh_count": 12,
+      "editable_bevels_and_uv0": true
+    },
+    {
+      "asset": "fence_post",
+      "saved_mesh_count": 2,
+      "editable_bevels_and_uv0": true
+    }
+  ]
+}

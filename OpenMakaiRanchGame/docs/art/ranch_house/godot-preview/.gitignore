@@ -1,0 +1,2 @@
+# Keep the exact verification logs with the captured evidence.
+!*.log

@@ -116,9 +116,14 @@ public partial class CharacterAvatar3D : Node3D
             return false;
 
         instance.Name = "ExternalPlaceholder";
-        var sourceHeight = 1.8f;
-        var scale = Mathf.Clamp(Profile.Height / sourceHeight, 0.78f, 1.25f);
+        // This authored stand-in's bodily bounds are 0.02..2.01m; its debug
+        // marker is not part of physical height. Other imports keep their legacy contract.
+        var calibrated = Profile.PlaceholderModelPath == "res://scenes/dev/GenericCharacterPlaceholder.tscn";
+        var sourceHeight = calibrated ? 1.99f : 1.8f;
+        var scale = calibrated ? Profile.Height / sourceHeight
+            : Mathf.Clamp(Profile.Height / sourceHeight, 0.78f, 1.25f);
         instance.Scale = Vector3.One * scale;
+        if (calibrated) instance.Position = new Vector3(0, -0.02f * scale, 0);
         _ownedVisualRoot!.AddChild(instance);
         PlaceholderModel = instance;
         return true;
@@ -136,21 +141,23 @@ public partial class CharacterAvatar3D : Node3D
             ? SoftMaterialFactory.Create(Profile.HeadColor, SoftParams)
             : new StandardMaterial3D { AlbedoColor = Profile.HeadColor };
 
+        // Explicit head diameter makes fallback bounds 0.20..2.07m before calibration.
+        var fallbackScale = Profile.Height / 1.87f;
         Body = new MeshInstance3D
         {
             Name = "FallbackBody",
-            Mesh = new CapsuleMesh { Radius = 0.3f, Height = 1.4f },
+            Mesh = new CapsuleMesh { Radius = 0.3f * fallbackScale, Height = 1.4f * fallbackScale },
             MaterialOverride = bodyMaterial,
-            Position = new Vector3(0f, 0.9f, 0f),
+            Position = new Vector3(0f, 0.7f * fallbackScale, 0f),
             Visible = visible
         };
 
         Head = new MeshInstance3D
         {
             Name = "FallbackHead",
-            Mesh = new SphereMesh { Radius = 0.22f },
+            Mesh = new SphereMesh { Radius = 0.22f * fallbackScale, Height = 0.44f * fallbackScale },
             MaterialOverride = headMaterial,
-            Position = new Vector3(0f, 1.85f, 0f),
+            Position = new Vector3(0f, 1.65f * fallbackScale, 0f),
             Visible = visible
         };
 

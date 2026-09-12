@@ -25,6 +25,7 @@ public partial class PlayerAvatar3D : Node3D
 
     private Node3D? _generated;
     private double _walkClock;
+    private float _sourceFootOffset;
 
     public override void _Ready()
     {
@@ -58,13 +59,13 @@ public partial class PlayerAvatar3D : Node3D
             if (planar > 0.15f)
             {
                 _walkClock += delta * Math.Clamp(planar, 1.0f, 8.0f);
-                _generated.Position = new Vector3(0f, Mathf.Sin((float)_walkClock * 7f) * 0.025f, 0f);
+                _generated.Position = new Vector3(0f, -_sourceFootOffset + Mathf.Sin((float)_walkClock * 7f) * 0.025f, 0f);
                 return;
             }
         }
 
         _walkClock = 0.0;
-        _generated.Position = Vector3.Zero;
+        _generated.Position = new Vector3(0, -_sourceFootOffset, 0);
     }
 
     public void RefreshFrom(PlayerState player)
@@ -85,7 +86,11 @@ public partial class PlayerAvatar3D : Node3D
         Head = null;
 
         var heightMeters = Mathf.Clamp(player.Height / 1000f, 1.45f, 2.25f);
-        var scale = (heightMeters / 1.80f) * Mathf.Max(0.25f, VisualScale);
+        // Capsule lower bound 0.15m, bodily crown 1.83m: preserve proportions,
+        // normalize at the source and put the visible foot proxy on the actor's ground origin.
+        var scale = (heightMeters / 1.68f) * Mathf.Max(0.25f, VisualScale);
+        _sourceFootOffset = 0.15f * scale;
+        root.Position = new Vector3(0, -_sourceFootOffset, 0);
 
         var clothing = new StandardMaterial3D
         {
@@ -166,6 +171,19 @@ public partial class PlayerAvatar3D : Node3D
         OpenMakaiRanch.Visuals.AnimeAvatarMaterials.ApplyPlayer(root,
             GameRoot.Instance?.State.Settings.GraphicsQuality ?? "Medium",
             OpenMakaiRanch.Visuals.AnimeAvatarMaterials.PreviewRequested);
+        if (GetParent() is OpenMakaiRanch.World.ThirdPersonPlayerController controller
+            && controller.GetNodeOrNull<CollisionShape3D>("Collision") is { Shape: BoxShape3D oldBox } collision)
+        {
+            var size = new Vector3(0.62f * scale, 1.68f * scale, 0.62f * scale);
+            if (!oldBox.Size.IsEqualApprox(size))
+            {
+                var shape = (BoxShape3D)oldBox.Duplicate();
+                shape.Size = size;
+                collision.SetDeferred(CollisionShape3D.PropertyName.Shape, shape);
+            }
+            collision.SetDeferred(Node3D.PropertyName.Position, new Vector3(0, Position.Y + size.Y * 0.5f, 0));
+            controller.HeadHeight = Position.Y + 1.47f * scale;
+        }
         RebuildCount += 1;
     }
 

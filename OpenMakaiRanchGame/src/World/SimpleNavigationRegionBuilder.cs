@@ -8,6 +8,7 @@ public partial class SimpleNavigationRegionBuilder : NavigationRegion3D
     [Export] public Vector2 Size { get; set; } = new(36f, 26f);
     [Export] public float Y { get; set; } = 0.02f;
     public bool CollisionBakeComplete { get; private set; }
+    public Aabb? RegionalBakeBounds { get; set; }
 
     public override void _Ready()
     {
@@ -25,7 +26,7 @@ public partial class SimpleNavigationRegionBuilder : NavigationRegion3D
             AgentRadius = 0.4f, AgentHeight = 2.25f, AgentMaxClimb = 0.25f,
             CellSize = 0.25f, CellHeight = 0.25f, RegionMinSize = 0.5f,
             FilterWalkableLowHeightSpans = true, FilterLedgeSpans = true,
-            FilterBakingAabb = new Aabb(new Vector3(-Size.X / 2, -0.3f, -Size.Y / 2), new Vector3(Size.X, 3.2f, Size.Y))
+            FilterBakingAabb = RegionalBakeBounds ?? new Aabb(new Vector3(-Size.X / 2, -0.3f, -Size.Y / 2), new Vector3(Size.X, 3.2f, Size.Y))
         };
         using var geometry = new NavigationMeshSourceGeometryData3D();
         NavigationServer3D.ParseSourceGeometryData(mesh, geometry, GetParent());

@@ -5,6 +5,7 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
+from unittest import mock
 import zlib
 import zipfile
 import hashlib
@@ -33,8 +34,17 @@ class RegistryTests(unittest.TestCase):
         for p in ['../escape','/etc/passwd','a/../../b','a\\b']:
             with self.assertRaises(ValueError):a.within(self.p,p)
     def test_symlink_rejected(self):
-        png(self.p/'input.png');(self.p/'linked.png').symlink_to(self.p/'input.png')
+        png(self.p/'input.png')
+        try:
+            (self.p/'linked.png').symlink_to(self.p/'input.png')
+        except OSError as error:
+            if getattr(error,'winerror',None)!=1314:raise
+            self.skipTest('Windows symlink privilege unavailable; real-link integration not exercised')
         with self.assertRaises(ValueError):a.within(self.p,'linked.png')
+    def test_detected_symlink_rejected_without_os_privilege(self):
+        with mock.patch.object(Path,'is_symlink',return_value=True):
+            with self.assertRaisesRegex(ValueError,'Symlinks'):
+                a.within(self.p,'linked.png')
     def test_png_header_and_checksum(self):self.assertEqual(a.png_size(png(self.p/'i.png')),(320,240))
     def test_png_corruption_rejected(self):
         p=png(self.p/'i.png');b=bytearray(p.read_bytes());b[50]^=1;p.write_bytes(b)

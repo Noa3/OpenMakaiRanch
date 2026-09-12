@@ -13,6 +13,7 @@ public partial class WalkInBuilding : Node3D
     [Export] public float DoorHeight { get; set; } = 2.55f;
     public string BuildingId { get; set; } = string.Empty;
     public Color WallColor { get; set; } = new("b7ad8c");
+    public Color RoofColor { get; set; } = new("9c6753");
     public Node3D? Player { get; set; }
     public bool IsCutaway { get; private set; }
     public int CollisionBodyCount { get; private set; }
@@ -67,14 +68,32 @@ public partial class WalkInBuilding : Node3D
         for (var i = 0; i <= 8; i++)
             Mesh(this, "FloorJoint", new(-x + Footprint.X * i / 8, 0.007f, 0), new(0.018f, 0.01f, Footprint.Y - 0.3f), wood.Darkened(0.1f));
         _roof = new Node3D { Name = "CutawayRoof" }; AddChild(_roof);
-        var angle = Mathf.DegToRad(20);
+        var angle = Mathf.DegToRad(32);
+        var rise = (x + 0.3f) * Mathf.Tan(angle);
         for (var sign = -1; sign <= 1; sign += 2)
         {
-            var slope = Mesh(_roof, "RoofSlope", new(sign * x / 2, WallHeight + 0.55f, 0),
-                new((x + 0.48f) / Mathf.Cos(angle), 0.18f, Footprint.Y + 0.7f), new Color("755a63"));
+            var slope = Mesh(_roof, "RoofSlope", new(sign * (x + 0.3f) / 2, WallHeight + rise / 2, 0),
+                new((x + 0.3f) / Mathf.Cos(angle), 0.14f, Footprint.Y + 0.7f), RoofColor);
             slope.Rotation = new Vector3(0, 0, -sign * angle);
+            for (var row = 1; row < 6; row++)
+                Mesh(slope, "TileCourse" + row, new((row / 6f - 0.5f) * (x + 0.3f) / Mathf.Cos(angle), 0.078f, 0),
+                    new(0.035f, 0.022f, Footprint.Y + 0.68f), RoofColor.Darkened(0.10f));
         }
-        Mesh(_roof, "Ridge", new(0, WallHeight + 1.1f, 0), new(0.22f, 0.18f, Footprint.Y + 0.75f), wood);
+        Mesh(_roof, "Ridge", new(0, WallHeight + rise, 0), new(0.23f, 0.18f, Footprint.Y + 0.75f), RoofColor.Darkened(0.15f));
+        foreach (var sign in new[] { -1, 1 })
+        {
+            var arrays = new Godot.Collections.Array(); arrays.Resize((int)Godot.Mesh.ArrayType.Max);
+            arrays[(int)Godot.Mesh.ArrayType.Vertex] = new Vector3[]
+            {
+                new(-x, WallHeight, sign * z), new(x, WallHeight, sign * z),
+                new(0, WallHeight + x * Mathf.Tan(angle), sign * z)
+            };
+            arrays[(int)Godot.Mesh.ArrayType.Normal] = new Vector3[] { Vector3.Back * sign, Vector3.Back * sign, Vector3.Back * sign };
+            var mesh = new ArrayMesh(); mesh.AddSurfaceFromArrays(Godot.Mesh.PrimitiveType.Triangles, arrays);
+            var gable = new MeshInstance3D { Name = "Gable" + sign, Mesh = mesh,
+                MaterialOverride = new StandardMaterial3D { AlbedoColor = WallColor, Roughness = 0.9f, CullMode = BaseMaterial3D.CullModeEnum.Disabled } };
+            _roof.AddChild(gable);
+        }
         AddChild(new WorldShelterVolume { Name = "InteriorShelter", Position = new(0, 1.6f, 0), HalfExtents = new(x - 0.12f, 1.65f, z - 0.12f) });
         var lamp = new OmniLight3D { Name = "InteriorLamp", Position = new(0, 2.6f, 0), LightColor = new Color("ffe5ba"),
             LightEnergy = 0.7f, OmniRange = Mathf.Max(Footprint.X, Footprint.Y), ShadowEnabled = false };
@@ -131,6 +150,30 @@ public partial class WalkInBuilding : Node3D
         var body = Solid(name, position, size, WallColor);
         var visual = body.GetNode<MeshInstance3D>("Visual");
         _plaster.Add(visual); _wallVisuals.Add((visual, normal));
+        // Details inherit the wall's cutaway visibility; they never become floating trim indoors.
+        var sideWall = Mathf.Abs(normal.X) > 0.5f;
+        var length = sideWall ? size.Z : size.X;
+        var wood = new Color("705541");
+        if (length > 1.4f && size.Y > 2.5f)
+        {
+            var offset = normal * 0.14f;
+            var trimSize = sideWall ? new Vector3(0.13f, 0.16f, length) : new Vector3(length, 0.16f, 0.13f);
+            Mesh(visual, "FoundationTrim", offset + Vector3.Down * (WallHeight / 2 - 0.2f), trimSize, wood);
+            Mesh(visual, "EavesTrim", offset + Vector3.Up * (WallHeight / 2 - 0.12f), trimSize, wood);
+            foreach (var sign in new[] { -1, 1 })
+            {
+                var along = (sideWall ? Vector3.Back : Vector3.Right) * (sign * (length / 2 - 0.09f));
+                Mesh(visual, "TimberUpright", offset + along, new Vector3(0.15f, WallHeight, 0.15f), wood);
+            }
+            if (length > 3.5f)
+            {
+                var windowSize = sideWall ? new Vector3(0.08f, 1.05f, 1.0f) : new Vector3(1.0f, 1.05f, 0.08f);
+                Mesh(visual, "WindowRecess", offset, windowSize + new Vector3(0.12f, 0.12f, 0.12f), wood);
+                Mesh(visual, "WindowGlass", offset + normal * 0.085f, windowSize, new Color("789a9b"));
+                Mesh(visual, "WindowMullion", offset + normal * 0.14f,
+                    sideWall ? new Vector3(0.08f, 1.04f, 0.06f) : new Vector3(0.06f, 1.04f, 0.08f), wood);
+            }
+        }
     }
 
     private StaticBody3D Solid(string name, Vector3 position, Vector3 size, Color color)

@@ -120,17 +120,11 @@ public partial class RanchPresentationBuilder : Node3D
         _generated = new Node3D { Name = "GeneratedStylizedPlaceholders" };
         AddChild(_generated);
 
-        // Main readable loop: entry -> hub, then hub branches to the authored work stations.
-        AddPath("EntryPath", new Vector3(0f, 0.03f, 10f), new Vector3(0f, 0.03f, 1.5f), 2.4f);
-        AddPath("PasturePath", new Vector3(0f, 0.03f, 1.5f), new Vector3(-12f, 0.03f, -8f), 1.8f);
-        AddPath("KitchenPath", new Vector3(0f, 0.03f, 1.5f), new Vector3(-12f, 0.03f, 6f), 1.8f);
-        AddPath("WorkshopPath", new Vector3(0f, 0.03f, 1.5f), new Vector3(12f, 0.03f, 6f), 1.8f);
-        AddPath("PharmacyPath", new Vector3(0f, 0.03f, 1.5f), new Vector3(12f, 0.03f, -1f), 1.8f);
-        AddPath("DairyPath", new Vector3(0f, 0.03f, 1.5f), new Vector3(10f, 0.03f, -8f), 1.8f);
+        // Curved paths and landscape are authored offline from OrganicWorldLayout.SourcePath.
+        // Do not overlay obsolete hub spokes or connect entrances to old greybox station positions.
 
         BuildEntryArch();
         BuildCentralLandmark();
-        BuildBoundaryNature();
         BuildFacilityLandmarks();
 
         // Small admitted CC0 prop accents. They remain decorative; collision and gameplay IDs stay authored.
@@ -210,7 +204,6 @@ public partial class RanchPresentationBuilder : Node3D
         foreach (var station in stations)
         {
             if (!station.RequiresWorker) continue;
-            var original = station.Position;
             var plot = RanchBuildingPlots.Find(station.TargetId);
             if (plot is null) continue; // New building types require an authored, validated plot.
             var building = new WalkInBuilding { Name = "Building_" + station.TargetId,
@@ -224,8 +217,7 @@ public partial class RanchPresentationBuilder : Node3D
             // Keep the stable station node and identifier, now just inside its actual doorway.
             station.Position = building.Position + new Basis(Vector3.Up, building.Rotation.Y) * building.WorkLocal;
             if (station.GetNodeOrNull<MeshInstance3D>("Mesh") is { } oldBlock) oldBlock.Visible = false;
-            AddPath("Approach_" + station.TargetId, new Vector3(original.X, 0.03f, original.Z),
-                new Vector3(station.Position.X, 0.03f, station.Position.Z), 1.8f);
+
         }
     }
 

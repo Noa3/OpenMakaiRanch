@@ -1,0 +1,17 @@
+{
+  "provider": "local ComfyUI",
+  "model": "albedobaseXL_V31Large.safetensors",
+  "prompt_id": "8fbbfb3c-af02-47a9-8932-6ef3d57ad8d5",
+  "source": ".dream-loop\\capture-0ghaskkk\\evidence\\W01-current.png",
+  "source_sha256": "4e4630af747e0b5b3752aae20628371ae4293c5636d10b421e11b65e3ea1d925",
+  "output": "W01-v2.png",
+  "output_sha256": "96c45850e22d5cf80d0896869b9415661167c1fa17b8be989e57f872a6a44fc7",
+  "positive": "Polished real-time 3D farming RPG screenshot, elevated three-quarter view of the same small starter ranch, preserve the paths and positions from the image. An ordinary lush green meadow in gentle countryside, blue sky, familiar broadleaf trees with richly shaped canopies, fine grass tufts along winding ochre gravel paths, natural wood fencing, subtle warm stone lanterns. Humble rural house, practical kitchen and pasture shelter, timber framing and creamy lime plaster, weathered terracotta tiled gabled roofs, believable rough stone bases. Other plots are inactive surveyed plots with wooden stakes and modest derelict shells, not equipped production buildings. Naturally flowing small stream outside the ranch boundary, no new bridge or plot. Detailed authored foliage and subtle surface texture, soft anime game aesthetic, clear readable geometry, restrained morning sun, soft ambient occlusion, deep focus, fully rendered high quality game assets.",
+  "negative": "text, watermark, logo, blurry, depth of field, photograph, oversaturated, oversharpened, plastic, primitive shapes, toy, chibi, child, teenager, nude, underwear, lingerie, cleavage, fetish, deformed, extra limbs, malformed hands, floating islands, purple sky, volcano, gothic roofs",
+  "width": 1536,
+  "height": 864,
+  "denoise": 0.82,
+  "seed": 726154,
+  "workflow_sha256": "93aa7735a2ddc694f665e58bba34787ff093cd3fa1bde380066dbd88f74331e8",
+  "status": "candidate_not_approved"
+}

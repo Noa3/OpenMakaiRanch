@@ -1,0 +1,57 @@
+{
+  "verified": [
+    {
+      "provider": "Hugging Face",
+      "repo_id": "Comfy-Org/Qwen-Image-Edit_ComfyUI",
+      "revision": "7d41107b653d3039be20972fb82398b01b3213eb",
+      "filename": "split_files/diffusion_models/qwen_image_edit_2511_fp8mixed.safetensors",
+      "local_path": "D:\\ComfyUI\\ComfyUI\\models\\diffusion_models\\qwen_image_edit_2511_fp8mixed.safetensors",
+      "bytes": 20533762817,
+      "sha256": "c9fdc158e46d3b61ef75f21ae866ca2fe808bf4a53643120d1c1e87c19280a4e",
+      "license": "apache-2.0",
+      "verified": true
+    },
+    {
+      "provider": "Hugging Face",
+      "repo_id": "Comfy-Org/Qwen-Image_ComfyUI",
+      "revision": "7beb7b647f04469fbe64ba8adc2bb0d7e5e9f73f",
+      "filename": "split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "local_path": "D:\\ComfyUI\\ComfyUI\\models\\text_encoders\\qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "bytes": 9384670680,
+      "sha256": "cb5636d852a0ea6a9075ab1bef496c0db7aef13c02350571e388aea959c5c0b4",
+      "license": "apache-2.0",
+      "verified": true
+    },
+    {
+      "provider": "Hugging Face",
+      "repo_id": "Comfy-Org/Qwen-Image_ComfyUI",
+      "revision": "7beb7b647f04469fbe64ba8adc2bb0d7e5e9f73f",
+      "filename": "split_files/vae/qwen_image_vae.safetensors",
+      "local_path": "D:\\ComfyUI\\ComfyUI\\models\\vae\\qwen_image_vae.safetensors",
+      "bytes": 253806246,
+      "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f",
+      "license": "apache-2.0",
+      "verified": true
+    },
+    {
+      "provider": "Civitai",
+      "model_id": 2658582,
+      "model_version_id": 3266045,
+      "model": "RA-Mix",
+      "base_model": "Illustrious",
+      "name": "raMix_v20.safetensors",
+      "source_url": "https://civitai.com/api/download/models/3266045?fileId=3149714",
+      "sha256": "ab90e003b81d0ad7634d3941ccc12ba960774f31be2949b817bea99d8d024053",
+      "bytes": 7105351192,
+      "local_path": "D:\\ComfyUI\\ComfyUI\\models\\checkpoints\\raMix_v20.safetensors",
+      "allowCommercialUse": [
+        "Image",
+        "RentCivit",
+        "Rent",
+        "Sell"
+      ],
+      "verified": true
+    }
+  ],
+  "failed": []
+}

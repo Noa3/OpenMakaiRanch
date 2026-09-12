@@ -1,0 +1,173 @@
+{
+  "prompt": [
+    2,
+    "dd39eb29-462b-487c-9af3-5d863b3e2225",
+    {
+      "1": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "albedobaseXL_V31Large.safetensors"
+        }
+      },
+      "2": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "REF_C-752dceb1157b.png"
+        }
+      },
+      "3": {
+        "class_type": "ImageScale",
+        "inputs": {
+          "image": [
+            "2",
+            0
+          ],
+          "upscale_method": "lanczos",
+          "width": 640,
+          "height": 1152,
+          "crop": "disabled"
+        }
+      },
+      "4": {
+        "class_type": "VAEEncode",
+        "inputs": {
+          "pixels": [
+            "3",
+            0
+          ],
+          "vae": [
+            "1",
+            2
+          ]
+        }
+      },
+      "5": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "1",
+            1
+          ],
+          "text": "High quality stylized soft-anime 3D game character, full body from head to boots, front-facing orthographic studio reference, standing upright, realistic adult eight-head body proportions, small head, long adult legs, original character, completely clothed modest everyday rural clothing. one adult man in his forties, composed mature soft anime face, warm brown skin, neat dark brown short hair, dark eyebrows, ordinary charcoal long coat over high-collared teal waistcoat and ivory shirt, dark tailored trousers, leather shoes, tall lean adult build, neutral thoughtful expression, hands relaxed and visible. Clean sculpted face and expressive eyes, precise shaped hair, matte woven fabric with seams and subtle folds, controlled highlights, soft neutral daylight, grounded contact shadow, muted pale grey studio background, no props, no text, not a drawing, not a photograph, polished real-time 3D render."
+        }
+      },
+      "6": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "1",
+            1
+          ],
+          "text": "text, watermark, logo, blurry, depth of field, photograph, oversaturated, oversharpened, plastic, primitive shapes, toy, chibi, child, teenager, nude, underwear, lingerie, cleavage, fetish, deformed, extra limbs, malformed hands, floating islands, purple sky, volcano, gothic roofs"
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "6",
+            0
+          ],
+          "latent_image": [
+            "4",
+            0
+          ],
+          "seed": 371602,
+          "steps": 32,
+          "cfg": 6.0,
+          "sampler_name": "dpmpp_2m",
+          "scheduler": "karras",
+          "denoise": 0.95
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "1",
+            2
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "OMR_VisualTargets/generation-C01-b9768b269398/REF_C"
+        }
+      }
+    },
+    {
+      "client_id": "generation-C01-b9768b269398",
+      "create_time": 1789176258710
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "REF_C_00001_.png",
+          "subfolder": "OMR_VisualTargets\\generation-C01-b9768b269398",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "dd39eb29-462b-487c-9af3-5d863b3e2225",
+          "timestamp": 1789176258711
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "6"
+          ],
+          "prompt_id": "dd39eb29-462b-487c-9af3-5d863b3e2225",
+          "timestamp": 1789176258716
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "dd39eb29-462b-487c-9af3-5d863b3e2225",
+          "timestamp": 1789176263468
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

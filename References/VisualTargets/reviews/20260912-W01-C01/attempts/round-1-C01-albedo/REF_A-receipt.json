@@ -1,0 +1,17 @@
+{
+  "provider": "local ComfyUI",
+  "model": "albedobaseXL_V31Large.safetensors",
+  "prompt_id": "7ef985b7-477b-49c6-9646-4712853d2d01",
+  "source": "E:\\OpenMakaiRanch\\.dream-loop\\generation-C01-b9768b269398\\C01-initialization.png",
+  "source_sha256": "752dceb1157bab38aa15c27845389ec8fc57c55e5fd52ecb33a7a4362c3e22dd",
+  "output": "REF_A.png",
+  "output_sha256": "c79ab9799ecd023e500bb4fa1a59326ad1deac7c21656fec6428a46edac048e4",
+  "positive": "High quality stylized soft-anime 3D game character, full body from head to boots, front-facing orthographic studio reference, standing upright, realistic adult eight-head body proportions, small head, long adult legs, original character, completely clothed modest everyday rural clothing. one adult woman in her thirties, mature angular soft anime face, almond grey eyes, ash grey hair tied into a low ponytail with shaped hair clumps, reserved researcher, practical olive canvas waistcoat over ivory high-collar long-sleeve blouse, tailored dark brown trousers, brown leather ankle boots, slim adult build, neutral attentive expression, hands relaxed and visible. Clean sculpted face and expressive eyes, precise shaped hair, matte woven fabric with seams and subtle folds, controlled highlights, soft neutral daylight, grounded contact shadow, muted pale grey studio background, no props, no text, not a drawing, not a photograph, polished real-time 3D render.",
+  "negative": "text, watermark, logo, blurry, depth of field, photograph, oversaturated, oversharpened, plastic, primitive shapes, toy, chibi, child, teenager, nude, underwear, lingerie, cleavage, fetish, deformed, extra limbs, malformed hands, floating islands, purple sky, volcano, gothic roofs",
+  "width": 640,
+  "height": 1152,
+  "denoise": 0.95,
+  "seed": 371600,
+  "workflow_sha256": "ab83a45203ea9b52286141214e5921fc586710615458d46ecceef9370e71d28d",
+  "status": "candidate_not_approved"
+}

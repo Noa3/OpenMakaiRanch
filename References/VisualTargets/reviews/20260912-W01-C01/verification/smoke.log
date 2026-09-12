@@ -1,0 +1,2320 @@
+Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org
+
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+OpenMakaiRanch ready: 10 characters, 12 jobs, 98 items.
+[GodotUniversalMCP Runtime] Listening on 127.0.0.1:9501
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+ERROR: Save slot 99 could not be parsed: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+   at: OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (res://src/Gameplay/SaveService.cs:118)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Gameplay\SaveService.cs:118)
+       [2] bool OpenMakaiRanch.App.GameRoot.LoadSlot(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:518)
+       [3] void OpenMakaiRanch.Tests.SaveRegressionTests.TestRejectedLoadsPreserveLiveState(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:141)
+       [4] void OpenMakaiRanch.Tests.SaveRegressionTests.Run(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:17)
+       [5] OpenMakaiRanch.Tests.SmokeTestResult OpenMakaiRanch.Tests.SmokeTestRunner.Run() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SmokeTestRunner.cs:63)
+       [6] void OpenMakaiRanch.App.GameRoot+<RunSmokeTestsAndExit>d__205.MoveNext() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:119)
+       [7] void System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start<TStateMachine>(TStateMachine&)
+       [8] void OpenMakaiRanch.App.GameRoot.RunSmokeTestsAndExit()
+       [9] bool OpenMakaiRanch.App.GameRoot.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.App.GameRoot_ScriptMethods.generated.cs:546)
+       [10] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+ERROR: Save slot 99 was empty or invalid.
+   at: OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (res://src/Gameplay/SaveService.cs:121)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Gameplay\SaveService.cs:121)
+       [2] bool OpenMakaiRanch.App.GameRoot.LoadSlot(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:518)
+       [3] void OpenMakaiRanch.Tests.SaveRegressionTests.TestRejectedLoadsPreserveLiveState(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:141)
+       [4] void OpenMakaiRanch.Tests.SaveRegressionTests.Run(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:17)
+       [5] OpenMakaiRanch.Tests.SmokeTestResult OpenMakaiRanch.Tests.SmokeTestRunner.Run() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SmokeTestRunner.cs:63)
+       [6] void OpenMakaiRanch.App.GameRoot+<RunSmokeTestsAndExit>d__205.MoveNext() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:119)
+       [7] void System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start<TStateMachine>(TStateMachine&)
+       [8] void OpenMakaiRanch.App.GameRoot.RunSmokeTestsAndExit()
+       [9] bool OpenMakaiRanch.App.GameRoot.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.App.GameRoot_ScriptMethods.generated.cs:546)
+       [10] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+ERROR: Save slot 99 could not be parsed: Save schema 17 is newer than supported schema 16.
+   at: OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (res://src/Gameplay/SaveService.cs:125)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Gameplay\SaveService.cs:125)
+       [2] bool OpenMakaiRanch.App.GameRoot.LoadSlot(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:518)
+       [3] void OpenMakaiRanch.Tests.SaveRegressionTests.TestRejectedLoadsPreserveLiveState(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:141)
+       [4] void OpenMakaiRanch.Tests.SaveRegressionTests.Run(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:17)
+       [5] OpenMakaiRanch.Tests.SmokeTestResult OpenMakaiRanch.Tests.SmokeTestRunner.Run() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SmokeTestRunner.cs:63)
+       [6] void OpenMakaiRanch.App.GameRoot+<RunSmokeTestsAndExit>d__205.MoveNext() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:119)
+       [7] void System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start<TStateMachine>(TStateMachine&)
+       [8] void OpenMakaiRanch.App.GameRoot.RunSmokeTestsAndExit()
+       [9] bool OpenMakaiRanch.App.GameRoot.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.App.GameRoot_ScriptMethods.generated.cs:546)
+       [10] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+ERROR: Save slot 99 could not be parsed: Save roster contains a null character.
+   at: OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (res://src/Gameplay/SaveService.cs:125)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Gameplay\SaveService.cs:125)
+       [2] bool OpenMakaiRanch.App.GameRoot.LoadSlot(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:518)
+       [3] void OpenMakaiRanch.Tests.SaveRegressionTests.TestRejectedLoadsPreserveLiveState(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:141)
+       [4] void OpenMakaiRanch.Tests.SaveRegressionTests.Run(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:17)
+       [5] OpenMakaiRanch.Tests.SmokeTestResult OpenMakaiRanch.Tests.SmokeTestRunner.Run() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SmokeTestRunner.cs:63)
+       [6] void OpenMakaiRanch.App.GameRoot+<RunSmokeTestsAndExit>d__205.MoveNext() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:119)
+       [7] void System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start<TStateMachine>(TStateMachine&)
+       [8] void OpenMakaiRanch.App.GameRoot.RunSmokeTestsAndExit()
+       [9] bool OpenMakaiRanch.App.GameRoot.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.App.GameRoot_ScriptMethods.generated.cs:546)
+       [10] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+ERROR: Save slot 99 could not be parsed: The JSON value could not be converted to System.Boolean. Path: $.Flags.GlobalBoolFlags.1 | LineNumber: 0 | BytePositionInLine: 34.
+   at: OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (res://src/Gameplay/SaveService.cs:118)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] OpenMakaiRanch.Core.Models.SaveState OpenMakaiRanch.Gameplay.SaveService.Load(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Gameplay\SaveService.cs:118)
+       [2] bool OpenMakaiRanch.App.GameRoot.LoadSlot(int) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:518)
+       [3] void OpenMakaiRanch.Tests.SaveRegressionTests.TestRejectedLoadsPreserveLiveState(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:141)
+       [4] void OpenMakaiRanch.Tests.SaveRegressionTests.Run(OpenMakaiRanch.Tests.SmokeTestResult) (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SaveRegressionTests.cs:17)
+       [5] OpenMakaiRanch.Tests.SmokeTestResult OpenMakaiRanch.Tests.SmokeTestRunner.Run() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\Tests\SmokeTestRunner.cs:63)
+       [6] void OpenMakaiRanch.App.GameRoot+<RunSmokeTestsAndExit>d__205.MoveNext() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\App\GameRoot.cs:119)
+       [7] void System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start<TStateMachine>(TStateMachine&)
+       [8] void OpenMakaiRanch.App.GameRoot.RunSmokeTestsAndExit()
+       [9] bool OpenMakaiRanch.App.GameRoot.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.App.GameRoot_ScriptMethods.generated.cs:546)
+       [10] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+WARNING: Property agent_radius is ceiled to cell_size voxel units and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:373)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:32)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property region_min_size is converted to int and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:379)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:32)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property agent_radius is ceiled to cell_size voxel units and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:373)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:32)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property region_min_size is converted to int and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:379)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:32)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property agent_radius is ceiled to cell_size voxel units and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:373)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:32)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property region_min_size is converted to int and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:379)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:32)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property agent_radius is ceiled to cell_size voxel units and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:373)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:32)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property region_min_size is converted to int and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:379)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:32)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+SMOKE OK economy rejects overspend
+SMOKE OK economy allows no-op zero spend
+SMOKE OK settlement advances to day 2
+SMOKE OK settlement creates farm goods
+SMOKE OK settlement changes gold
+SMOKE OK settlement emits report lines
+SMOKE OK day milestone unlocks
+SMOKE OK adventure resolves an outcome
+SMOKE OK adventure stores last mission
+SMOKE OK mission milestone unlocks
+SMOKE OK capture battle flags capture attempt
+SMOKE OK capture battle emits turn log
+SMOKE OK capture summary stored in adventure state
+SMOKE OK non-capture mission preserves last capture summary
+SMOKE OK mission catalog has entries
+SMOKE OK mission ids are unique
+SMOKE OK mission id is not empty
+SMOKE OK mission 'abyssal_cavern' reward item exists
+SMOKE OK mission 'abyssal_cavern' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'bandit_supply' reward item exists
+SMOKE OK mission 'bandit_supply' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'beast_hunt' reward item exists
+SMOKE OK mission 'beast_hunt' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'demon_tower' reward item exists
+SMOKE OK mission 'demon_tower' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'dragon_outcrop' reward item exists
+SMOKE OK mission 'dragon_outcrop' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'field_clear' reward item exists
+SMOKE OK mission 'field_clear' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'forest_survey' reward item exists
+SMOKE OK mission 'forest_survey' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'moonlight_grove' reward item exists
+SMOKE OK mission 'moonlight_grove' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'mountain_pass' reward item exists
+SMOKE OK mission 'mountain_pass' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'road_patrol' reward item exists
+SMOKE OK mission 'road_patrol' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'ruin_delve' reward item exists
+SMOKE OK mission 'ruin_delve' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'trade_escort' reward item exists
+SMOKE OK mission 'trade_escort' enemy group exists
+SMOKE OK mission id is not empty
+SMOKE OK mission 'tutorial_ranch_intruder' reward item exists
+SMOKE OK mission 'tutorial_ranch_intruder' enemy group exists
+SMOKE OK mission catalog includes Local tier
+SMOKE OK mission catalog includes Regional tier
+SMOKE OK mission catalog includes Dangerous tier
+SMOKE OK resolve mission returns success for prepared party path
+SMOKE OK successful resolve mission grants gold
+SMOKE OK successful resolve mission grants reward item
+SMOKE OK facility upgrade succeeds when affordable
+SMOKE OK facility upgrade records level
+SMOKE OK facility upgrade spends gold
+SMOKE OK research spends stockpile and unlocks skill
+SMOKE OK research state stores unlock
+SMOKE OK research milestone unlocks
+SMOKE OK pet adoption succeeds when affordable
+SMOKE OK pet state stores adoption
+SMOKE OK inventory consumes item
+SMOKE OK recruitment board has a generated offer
+SMOKE OK recruitment board can reroll offer
+SMOKE OK reroll replaces offer candidate
+SMOKE OK reroll spends reroll fee
+SMOKE OK recruitment board can hire offer
+SMOKE OK recruitment adds one character
+SMOKE OK recruitment spends recruit and reroll fees
+SMOKE OK hired recruit is not tagged as a starting recruit
+SMOKE OK recruited character gets default schedule
+SMOKE OK hiring refreshes the next offer
+SMOKE OK title reroll keeps hired recruits
+SMOKE OK reroll fails without enough gold
+SMOKE OK failed reroll keeps current offer
+SMOKE OK hire fails without enough gold
+SMOKE OK failed hire does not mutate roster
+SMOKE OK bond events are available at starting bond
+SMOKE OK bond event completes
+SMOKE OK bond event stored in save state
+SMOKE OK bond event increases bond
+SMOKE OK ranch planning increases job output value
+SMOKE OK save migrator upgrades schema v1
+SMOKE OK save migrator initializes bond state
+SMOKE OK save migrator initializes adventure party list
+SMOKE OK recruitment service can initialize offer on migrated save
+SMOKE OK new game starts with no extra generated recruits
+SMOKE OK new game starts with no starting recruits
+SMOKE OK reroll creates two generated recruits
+SMOKE OK generated recruits receive display names
+SMOKE OK generated recruits receive unique ids
+SMOKE OK generated recruits have positive hp and energy
+SMOKE OK generated recruits receive portrait overrides
+SMOKE OK generated recruits receive body image overrides
+SMOKE OK generated recruits receive body type overrides
+SMOKE OK generated recruits receive body layer indices
+SMOKE OK generated recruits receive skin color indices
+SMOKE OK generated recruits receive breast size indices
+SMOKE OK generated recruits receive race layer indices
+SMOKE OK generated recruits receive hair layer indices
+SMOKE OK generated recruits receive cloth layer indices
+SMOKE OK generated recruits receive race
+SMOKE OK generated recruits receive bust size
+SMOKE OK generated recruits receive talents
+SMOKE OK generated recruits receive job class
+SMOKE OK generated recruits vary in layered visual profile
+SMOKE OK roster resolves generated recruit name overrides
+SMOKE OK roster resolves generated recruit max hp overrides
+SMOKE OK roster resolves generated recruit body type override
+SMOKE OK reroll keeps two generated recruits
+SMOKE OK reroll replaces generated recruit ids
+SMOKE OK reroll recruits does not reset economy state
+SMOKE OK portrait background layer exists
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_01.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_01.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_01.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_02.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_02.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_02.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_03.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_03.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_03.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_04.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_04.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_04.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_05.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_05.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_05.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_06.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_06.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_06.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_07.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_07.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_07.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_08.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_08.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_08.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_09.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_09.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_09.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_10.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_10.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_10.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_11.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_11.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_11.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_20.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_20.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_20.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/race_21.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/race_21.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/race_21.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_01.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_01.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_01.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_02.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_02.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_02.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_03.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_03.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_03.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_04.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_04.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_04.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_05.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_05.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_05.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_06.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_06.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_06.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_07.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_07.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_07.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_08.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_08.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_08.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_09.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_09.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_09.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_10.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_10.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_10.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/hair_11.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/hair_11.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/hair_11.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_320_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_320_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_320_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_321.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_321.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_321.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_322_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_322_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_322_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_324_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_324_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_324_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_329_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_329_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_329_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_364_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_364_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_364_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/accessory_01.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/accessory_01.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/accessory_01.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/accessory_02.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/accessory_02.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/accessory_02.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/accessory_02_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/accessory_02_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/accessory_02_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/accessory_03.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/accessory_03.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/accessory_03.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_1462.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_1462.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_1462.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_1462_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_1462_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_1462_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_302.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_302.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_302.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_302_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_302_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_302_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_320.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_320.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_320.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_322.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_322.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_322.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_324.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_324.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_324.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_329.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_329.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_329.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_363.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_363.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_363.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_364.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_364.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_364.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_380.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_380.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_380.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_381.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_381.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_381.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_382.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_382.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_382.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_383.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_383.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_383.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_401.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_401.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_401.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_401_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_401_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_401_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_402.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_402.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_402.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_402_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_402_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_402_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_403.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_403.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_403.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_403_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_403_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_403_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_404.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_404.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_404.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_405.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_405.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_405.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_406.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_406.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_406.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_407.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_407.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_407.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_407_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_407_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_407_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_408.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_408.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_408.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_408_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_408_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_408_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_409.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_409.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_409.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_409_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_409_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_409_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_410.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_410.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_410.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_410_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_410_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_410_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_411.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_411.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_411.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_411_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_411_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_411_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_412.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_412.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_412.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_412_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_412_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_412_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_413.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_413.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_413.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_413_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_413_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_413_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_414.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_414.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_414.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_414_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_414_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_414_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_415.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_415.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_415.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_415_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_415_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_415_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_437.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_437.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_437.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_437_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_437_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_437_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_439.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_439.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_439.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_439_00.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_439_00.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_439_00.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/cloth/cloth_460.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/cloth/cloth_460.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/cloth/cloth_460.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_big_fair.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_big_fair.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_big_fair.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_big_light.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_big_light.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_big_light.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_big_pale.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_big_pale.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_big_pale.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_big_deepbrown.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_big_deepbrown.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_big_deepbrown.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_big_rosylight.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_big_rosylight.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_big_rosylight.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_big_tan.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_big_tan.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_big_tan.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_small_fair.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_small_fair.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_small_fair.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_small_light.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_small_light.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_small_light.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_small_pale.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_small_pale.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_small_pale.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_small_deepbrown.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_small_deepbrown.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_small_deepbrown.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_small_rosylight.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_small_rosylight.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_small_rosylight.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/body_small_tan.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/body_small_tan.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/body_small_tan.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_fair_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_fair_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_fair_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_light_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_light_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_light_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_pale_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_pale_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_pale_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_deepbrown_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_deepbrown_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_deepbrown_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_rosylight_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_rosylight_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_rosylight_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_tan_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_tan_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_tan_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_fair_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_fair_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_fair_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_light_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_light_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_light_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_pale_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_pale_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_pale_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_deepbrown_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_deepbrown_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_deepbrown_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_rosylight_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_rosylight_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_rosylight_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_tan_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_tan_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_tan_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_fair_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_fair_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_fair_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_light_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_light_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_light_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_pale_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_pale_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_pale_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_deepbrown_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_deepbrown_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_deepbrown_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_rosylight_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_rosylight_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_rosylight_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_tan_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_tan_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_tan_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_fair_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_fair_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_fair_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_light_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_light_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_light_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_pale_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_pale_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_pale_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_deepbrown_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_deepbrown_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_deepbrown_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_rosylight_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_rosylight_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_rosylight_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_tan_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_tan_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_tan_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_fair_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_fair_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_fair_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_light_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_light_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_light_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_pale_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_pale_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_pale_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_deepbrown_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_deepbrown_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_deepbrown_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_rosylight_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_rosylight_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_rosylight_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_tan_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_tan_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_tan_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_fair_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_fair_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_fair_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_light_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_light_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_light_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_pale_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_pale_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_pale_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_deepbrown_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_deepbrown_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_deepbrown_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_rosylight_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_rosylight_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_rosylight_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_tan_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_tan_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_tan_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_fair_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_fair_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_fair_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_light_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_light_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_light_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_pale_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_pale_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_pale_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_deepbrown_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_deepbrown_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_deepbrown_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_rosylight_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_rosylight_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_rosylight_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_big_tan_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_big_tan_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_big_tan_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_fair_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_fair_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_fair_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_light_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_light_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_light_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_pale_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_pale_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_pale_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_deepbrown_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_deepbrown_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_deepbrown_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_rosylight_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_rosylight_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_rosylight_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_tan_1.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_tan_1.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_tan_1.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_fair_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_fair_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_fair_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_light_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_light_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_light_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_pale_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_pale_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_pale_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_deepbrown_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_deepbrown_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_deepbrown_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_rosylight_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_rosylight_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_rosylight_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_tan_2.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_tan_2.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_tan_2.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_fair_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_fair_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_fair_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_light_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_light_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_light_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_pale_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_pale_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_pale_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_deepbrown_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_deepbrown_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_deepbrown_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_rosylight_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_rosylight_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_rosylight_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_tan_3.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_tan_3.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_tan_3.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_fair_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_fair_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_fair_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_light_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_light_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_light_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_pale_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_pale_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_pale_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_deepbrown_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_deepbrown_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_deepbrown_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_rosylight_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_rosylight_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_rosylight_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_tan_4.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_tan_4.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_tan_4.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_fair_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_fair_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_fair_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_light_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_light_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_light_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_pale_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_pale_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_pale_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_deepbrown_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_deepbrown_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_deepbrown_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_rosylight_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_rosylight_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_rosylight_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_tan_5.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_tan_5.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_tan_5.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_fair_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_fair_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_fair_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_light_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_light_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_light_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_pale_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_pale_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_pale_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_deepbrown_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_deepbrown_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_deepbrown_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_rosylight_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_rosylight_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_rosylight_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_tan_6.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_tan_6.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_tan_6.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_fair_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_fair_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_fair_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_light_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_light_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_light_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_pale_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_pale_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_pale_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_deepbrown_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_deepbrown_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_deepbrown_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_rosylight_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_rosylight_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_rosylight_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/breast_small_tan_7.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/breast_small_tan_7.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/breast_small_tan_7.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/face.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/face.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/face.png
+SMOKE OK portrait layer asset exists: res://assets/portrait_layers/face.png
+SMOKE OK portrait layer texture loads: res://assets/portrait_layers/face.png
+SMOKE OK portrait layer frame fits sheet: res://assets/portrait_layers/face.png
+SMOKE OK save writes slot 99
+SMOKE OK save loads slot 99
+SMOKE OK save schema is current
+SMOKE OK enum round-trip uses stable values
+SMOKE OK gold round-trips
+SMOKE OK audio setting round-trips
+SMOKE OK haptics setting round-trips
+SMOKE OK generated recruit metadata round-trips
+SMOKE OK generated recruit body metadata round-trips
+SMOKE OK recruitment offer round-trips
+SMOKE OK save round-trip preserves scheduled next-day Well Rested bonus
+SMOKE OK save round-trip preserves active companion and relationship history
+SMOKE OK main menu scene loads
+SMOKE OK main menu has continue button node
+SMOKE OK main menu has new game button node
+SMOKE OK main menu has new game plus button node
+SMOKE OK main menu has quit button node
+SMOKE OK game scene loads
+SMOKE OK game shell has end day button node
+SMOKE OK game shell has return-to-world button node
+SMOKE OK game shell has day label node
+SMOKE OK game shell has phase label node
+SMOKE OK game shell has gold label node
+SMOKE OK game shell has weather label node
+SMOKE OK game shell has player name label node
+SMOKE OK game shell has hp label node
+SMOKE OK game shell has spirit label node
+SMOKE OK game shell has mana label node
+SMOKE OK game shell has health label node
+SMOKE OK game shell has workload label node
+SMOKE OK game shell has bathtub label node
+SMOKE OK game shell has dynamic content root node
+SMOKE OK game shell top bar only contains scripted rows
+SMOKE OK game shell has navigation node
+SMOKE OK game shell has expected navigation button set (missing: ; unexpected: )
+SMOKE OK game shell has bond section
+SMOKE OK game shell has pets section
+SMOKE OK game shell has compact navigation node
+SMOKE OK game shell has expected compact management shortcuts
+SMOKE OK character creation scene loads
+SMOKE OK character creation root has its mixed 2D/3D controller
+SMOKE OK character creation has a 3D SubViewport
+SMOKE OK character creation has a player avatar preview
+SMOKE OK character creation retains 2D settings beside the preview
+SMOKE OK character creation 3D preview binds after entering the scene tree
+SMOKE OK character creation builds visible neutral player geometry
+SMOKE OK all 21 service constructors succeed without exception
+SMOKE OK new game schema is current
+SMOKE OK new game starts on day 1
+SMOKE OK new game starts in morning
+SMOKE OK new game starts with 500 gold
+SMOKE OK new game starts with 0 last income
+SMOKE OK new game starts with 0 last expenses
+SMOKE OK new game has starting characters
+SMOKE OK new game has at least 2 facilities
+SMOKE OK new game starts with 3 supplies
+SMOKE OK new game starts with 2 meal boxes
+SMOKE OK new game discovers 3 local missions
+SMOKE OK new game selects all starting party members
+SMOKE OK new game has no completed milestones
+SMOKE OK new game has no unlocked research
+SMOKE OK new game has no completed bond events
+SMOKE OK new game starts with the starting pet
+SMOKE OK new game is not NG+
+SMOKE OK new game has no victory day
+SMOKE OK new game has a recruitment offer
+SMOKE OK new game player name is Anon
+SMOKE OK new game ranch name is Okachi Ranch
+SMOKE OK new game starts in the ranch world area
+SMOKE OK new game starts before the guided first-day wake-up
+SMOKE OK new game first-day story is initially incomplete
+SMOKE OK tutorial hints default to enabled
+SMOKE OK new settings start with no tutorial acknowledgements
+SMOKE OK settings clone owns an independent tutorial acknowledgement set
+SMOKE OK every character has a schedule assignment
+SMOKE OK character 'anon' has schedule entry
+SMOKE OK character 'anon' defaults to rest
+SMOKE OK character 'rancher' has schedule entry
+SMOKE OK character 'rancher' defaults to rest
+SMOKE OK schedule has at least 10 assignable jobs
+SMOKE OK schedule returns rest for 'anon'
+SMOKE OK schedule returns rest for 'rancher'
+SMOKE OK schedule assignment takes effect
+SMOKE OK schedule rejects unknown job id
+SMOKE OK kitchen upgrade succeeds
+SMOKE OK kitchen upgraded to level 2
+SMOKE OK dairy science research unlocks
+SMOKE OK research state has dairy science
+SMOKE OK recruitment offer exists after service wiring
+SMOKE OK 5 days of settlement advances calendar
+SMOKE OK 5 days of settlement completes at least 2 milestones
+SMOKE OK NG+ state is flagged
+SMOKE OK NG+ carries min 5000 gold
+SMOKE OK NG+ carries research
+SMOKE OK NG+ carries facility level
+SMOKE OK NG+ carries milestones
+SMOKE OK NG+ resets victory day
+SMOKE OK NG+ resets to day 1
+SMOKE OK character growth produces entries
+SMOKE OK characters gain skill levels from growth
+SMOKE OK consuming nonexistent item returns false
+SMOKE OK consuming more than available returns false
+SMOKE OK consuming available item succeeds
+SMOKE OK item count decreased after consume
+SMOKE OK test preconditions: meal_box count >= 2
+SMOKE OK consuming all remaining succeeds
+SMOKE OK item removed or zeroed when fully consumed
+SMOKE OK schema v0 migrates to current
+SMOKE OK migrated v0 has calendar
+SMOKE OK migrated v0 has economy
+SMOKE OK migrated v0 has ranch
+SMOKE OK migrated v0 has roster
+SMOKE OK migrated v0 has inventory
+SMOKE OK migrated v0 has settings
+SMOKE OK migrated v0 has empty roster
+SMOKE OK schema v10 migrates to current
+SMOKE OK migrated v10 player defaults to Anon
+SMOKE OK roster service exposes all characters
+SMOKE OK roster resolves definition id
+SMOKE OK roster resolves positive max hp
+SMOKE OK roster resolves ranch skill
+SMOKE OK roster resolves display name
+SMOKE OK roster find returns correct character
+SMOKE OK roster find returns null for unknown id
+SMOKE OK roster uses display name override for generated characters
+SMOKE OK defined character MagicPower matches definition (100 == 100)
+SMOKE OK generated recruit MagicPower >= definition base (6 >= 5)
+SMOKE OK generated recruit MagicPower <= definition base + 3 (6 <= 8)
+SMOKE OK magic training succeeds with enough energy
+SMOKE OK magic training increases MagicPower by at least 2 (102 >= 102)
+SMOKE OK magic training consumes 10 energy
+SMOKE OK magic training adds fatigue
+SMOKE OK magic training adds morale
+SMOKE OK magic training fails without enough energy
+SMOKE OK migrated character has MagicPower = 0 by default
+SMOKE OK training handles zero MagicPower (migrated save)
+SMOKE OK first training initializes to 1 then adds 2 (3 == 3)
+SMOKE OK rest fatigue delta is negative (-24 < 0)
+SMOKE OK character with 0 fatigue produces output
+SMOKE OK high fatigue (80+) reduces job output
+SMOKE OK training fails at fatigue >= 80
+SMOKE OK training fails for collapsed character
+SMOKE OK collapsed character produces no job output
+SMOKE OK ui shell controller node present
+SMOKE OK all ui screens render without exceptions (failed: )
+SMOKE OK layered portraits render for all starting characters
+SMOKE OK all portrait layer assets exist
+SMOKE OK mana shackles item seeded
+SMOKE OK lactation drug item seeded
+SMOKE OK mana infusion drug item seeded
+SMOKE OK combat capture blocked without a hired mercenary
+SMOKE OK combat capture blocked when shackles absent
+SMOKE OK capture fails without a hired mercenary
+SMOKE OK capture without mercenary does not add recruits
+SMOKE OK mercenary alone is not enough; mana shackle still required
+SMOKE OK capture without shackles does not add recruits
+SMOKE OK failed capture keeps roster unchanged
+SMOKE OK production contract: unreviewed fixture stays denied despite constitution
+SMOKE OK milk production requires a milk constitution or talent
+SMOKE OK constitution enables milk production
+SMOKE OK mana infusion drug usable on character
+SMOKE OK mana infusion grants magic constitution
+SMOKE OK mana infusion raises milk quality
+SMOKE OK capture prefs set race
+SMOKE OK capture prefs set job
+SMOKE OK capture prefs set bust size
+SMOKE OK capture prefs set mana to amount * 2
+SMOKE OK first training slot succeeds
+SMOKE OK second training slot succeeds
+SMOKE OK third training slot blocked by two-per-day rule
+SMOKE OK two training slots tracked per day
+SMOKE OK training action catalog has actions
+SMOKE OK enhanced training blocked after two-per-day cap
+SMOKE OK enhanced training reports the two-per-day rule
+SMOKE OK night action consumed after settlement
+SMOKE OK rest night action reduces fatigue
+SMOKE OK training slots reset at day start
+SMOKE OK data has at least one armor item
+SMOKE OK data has at least one additional equipment slot item
+SMOKE OK clothing service equips armor item
+SMOKE OK equipped armor stored as slot -> item id
+SMOKE OK equipment state armor id synced
+SMOKE OK equipping consumes inventory item
+SMOKE OK clothing service equips item for second slot
+SMOKE OK second slot populated with expected item
+SMOKE OK legacy item->slot map normalized to slot->item
+SMOKE OK legacy secondary slot normalized
+SMOKE OK clothing service unequips item from explicit slot
+SMOKE OK slot removed after unequip
+SMOKE OK unequip returns item to inventory
+SMOKE OK unknown training action id is rejected
+SMOKE OK whip training action exists in catalog
+SMOKE OK tool action blocked without tool in inventory
+SMOKE OK tool action reports missing tool
+SMOKE OK tool action succeeds with tool present
+SMOKE OK consent action exists in catalog
+SMOKE OK consent action blocked without consent
+SMOKE OK consent block reports consent
+SMOKE OK consent action succeeds with high obedience
+SMOKE OK bathe returns feedback
+SMOKE OK bathing reduces fatigue
+SMOKE OK bathing raises morale
+SMOKE OK feed returns feedback
+SMOKE OK feeding boosts energy
+SMOKE OK feeding consumes exactly one meal_box
+SMOKE OK talk returns feedback
+SMOKE OK talking affects bond or morale
+SMOKE OK gift returns feedback
+SMOKE OK gift raises favorability
+SMOKE OK gift consumes the keepsake item
+SMOKE OK rest returns feedback
+SMOKE OK rest restores energy
+SMOKE OK groom returns feedback
+SMOKE OK grooming raises bond
+SMOKE OK all catalog tools exist as items (missing: none)
+SMOKE OK gate classifies minor apparent age as Minor
+SMOKE OK gate denies adult presentation for a minor
+SMOKE OK gate denies adult presentation for a minor (definition)
+SMOKE OK gate classifies school-age context as Ambiguous
+SMOKE OK gate denies adult presentation for ambiguous context
+SMOKE OK gate defaults clean-context age 18+ to Unknown (no implicit approval)
+SMOKE OK gate denies adult presentation for unreviewed Unknown
+SMOKE OK gate grants adult presentation for ConfirmedAdult
+SMOKE OK gate classifies minor character state
+SMOKE OK gate denies adult presentation for minor state
+SMOKE OK gate denies adult action for minor state
+SMOKE OK minor denial reason carries the apparent age
+SMOKE OK ambiguous denial reason carries the context note
+SMOKE OK unknown denial reason names the state
+SMOKE OK win goal has facilities
+SMOKE OK win goal has research
+SMOKE OK win goal has missions
+SMOKE OK win condition reachable in normal play
+SMOKE OK all missions discovered before win
+SMOKE OK all research unlocked before win
+SMOKE OK all facilities maxed before win
+SMOKE OK all characters bonded before win
+SMOKE OK new game starts with empty report history
+SMOKE OK report history accumulates daily reports
+SMOKE OK report history keeps most recent first
+SMOKE OK settled day records a log
+SMOKE OK root flag save succeeds
+SMOKE OK root flag load succeeds
+SMOKE OK root flag service rebuilt on load
+SMOKE OK root global bool flag round-trips
+SMOKE OK root global int flag round-trips
+SMOKE OK root temporary bool flag round-trips
+SMOKE OK root temporary int flag round-trips
+SMOKE OK root character bool flag round-trips
+SMOKE OK root character int flag round-trips
+SMOKE OK root null fixture v13/0 loads
+SMOKE OK root null fixture v13/0 source file unchanged
+SMOKE OK root null fixture v13/0 migrates without losing valid values
+SMOKE OK root null fixture v13/0 collections normalized
+SMOKE OK root null fixture v13/0 remains saveable and loadable
+SMOKE OK root null fixture v13/1 loads
+SMOKE OK root null fixture v13/1 source file unchanged
+SMOKE OK root null fixture v13/1 migrates without losing valid values
+SMOKE OK root null fixture v13/1 collections normalized
+SMOKE OK root null fixture v13/1 remains saveable and loadable
+SMOKE OK root null fixture v13/2 loads
+SMOKE OK root null fixture v13/2 source file unchanged
+SMOKE OK root null fixture v13/2 migrates without losing valid values
+SMOKE OK root null fixture v13/2 collections normalized
+SMOKE OK root null fixture v13/2 remains saveable and loadable
+SMOKE OK root null fixture v13/3 loads
+SMOKE OK root null fixture v13/3 source file unchanged
+SMOKE OK root null fixture v13/3 migrates without losing valid values
+SMOKE OK root null fixture v13/3 collections normalized
+SMOKE OK root null fixture v13/3 remains saveable and loadable
+SMOKE OK root null fixture v13/4 loads
+SMOKE OK root null fixture v13/4 source file unchanged
+SMOKE OK root null fixture v13/4 migrates without losing valid values
+SMOKE OK root null fixture v13/4 collections normalized
+SMOKE OK root null fixture v13/4 valid neighboring flags preserved
+SMOKE OK root null fixture v13/4 remains saveable and loadable
+SMOKE OK root null fixture v13/5 loads
+SMOKE OK root null fixture v13/5 source file unchanged
+SMOKE OK root null fixture v13/5 migrates without losing valid values
+SMOKE OK root null fixture v13/5 collections normalized
+SMOKE OK root null fixture v13/5 remains saveable and loadable
+SMOKE OK root null fixture v16/0 loads
+SMOKE OK root null fixture v16/0 source file unchanged
+SMOKE OK root null fixture v16/0 migrates without losing valid values
+SMOKE OK root null fixture v16/0 collections normalized
+SMOKE OK root null fixture v16/0 remains saveable and loadable
+SMOKE OK root null fixture v16/1 loads
+SMOKE OK root null fixture v16/1 source file unchanged
+SMOKE OK root null fixture v16/1 migrates without losing valid values
+SMOKE OK root null fixture v16/1 collections normalized
+SMOKE OK root null fixture v16/1 remains saveable and loadable
+SMOKE OK root null fixture v16/2 loads
+SMOKE OK root null fixture v16/2 source file unchanged
+SMOKE OK root null fixture v16/2 migrates without losing valid values
+SMOKE OK root null fixture v16/2 collections normalized
+SMOKE OK root null fixture v16/2 remains saveable and loadable
+SMOKE OK root null fixture v16/3 loads
+SMOKE OK root null fixture v16/3 source file unchanged
+SMOKE OK root null fixture v16/3 migrates without losing valid values
+SMOKE OK root null fixture v16/3 collections normalized
+SMOKE OK root null fixture v16/3 remains saveable and loadable
+SMOKE OK root null fixture v16/4 loads
+SMOKE OK root null fixture v16/4 source file unchanged
+SMOKE OK root null fixture v16/4 migrates without losing valid values
+SMOKE OK root null fixture v16/4 collections normalized
+SMOKE OK root null fixture v16/4 valid neighboring flags preserved
+SMOKE OK root null fixture v16/4 remains saveable and loadable
+SMOKE OK root null fixture v16/5 loads
+SMOKE OK root null fixture v16/5 source file unchanged
+SMOKE OK root null fixture v16/5 migrates without losing valid values
+SMOKE OK root null fixture v16/5 collections normalized
+SMOKE OK root null fixture v16/5 remains saveable and loadable
+SMOKE OK root rejects invalid save
+SMOKE OK root rejected load preserves state and service references
+SMOKE OK root rejected load leaves live flags and notifications unchanged
+SMOKE OK root rejected load preserves source bytes
+SMOKE OK root rejects invalid save
+SMOKE OK root rejected load preserves state and service references
+SMOKE OK root rejected load leaves live flags and notifications unchanged
+SMOKE OK root rejected load preserves source bytes
+SMOKE OK root rejects invalid save
+SMOKE OK root rejected load preserves state and service references
+SMOKE OK root rejected load leaves live flags and notifications unchanged
+SMOKE OK root rejected load preserves source bytes
+SMOKE OK root rejects invalid save
+SMOKE OK root rejected load preserves state and service references
+SMOKE OK root rejected load leaves live flags and notifications unchanged
+SMOKE OK root rejected load preserves source bytes
+SMOKE OK root rejects invalid save
+SMOKE OK root rejected load preserves state and service references
+SMOKE OK root rejected load leaves live flags and notifications unchanged
+SMOKE OK root rejected load preserves source bytes
+SMOKE OK community: Day 1 previews orders without allowing delivery
+SMOKE OK community: Day 1 command cannot bypass the opening day
+SMOKE OK community: three distinct production choices are available
+SMOKE OK community: reading or reopening the board cannot reroll offers
+SMOKE OK community: quantities and rewards are positive and bounded
+SMOKE OK community: reading the board has no gameplay side effects
+SMOKE OK community: unknown requests cannot pay rewards
+SMOKE OK community: a stale day is rejected before consuming goods
+SMOKE OK community: rejected requests leave the ledger unchanged
+SMOKE OK community: a stocked order produces a delivery receipt
+SMOKE OK community: delivery consumes exactly the stated goods and pays exactly the stated reward
+SMOKE OK community: unrelated stock is preserved
+SMOKE OK community: delivery does not advance time, drain exploration resources or replay settlement income
+SMOKE OK community: the bounded receipt records the paid day and amount
+SMOKE OK community: double-clicking and switching orders cannot pay a second time
+SMOKE OK community: all rows show the shared daily delivery limit
+SMOKE OK community: a serialized receipt prevents same-day replay after service reconstruction
+SMOKE OK community: the next in-game day unlocks one new delivery
+SMOKE OK community: receipt storage stays at four fields rather than growing per day
+SMOKE OK community: skipping days causes no penalty and does not build a daily backlog
+SMOKE OK community: missing stock is rejected without creating inventory entries
+SMOKE OK community: negative stock cannot fund an order or be mutated by a preview
+SMOKE OK community: wallet overflow rejects delivery without consuming goods or its daily slot
+SMOKE OK community: an exact-fit wallet receives the entire reward
+SMOKE OK community: extreme day values keep quantities bounded
+SMOKE OK community: lifetime receipt count saturates instead of wrapping negative
+SMOKE OK community: a future-dated receipt fails closed
+SMOKE OK community: the actual first-day pasture settlement supplies the Day 2 market order
+SMOKE OK community: ordinary production can complete a courier order without a second reward calculator
+SMOKE OK community: every order has an existing playable production source
+SMOKE OK community: root rejects a stale generation without notifying observers
+SMOKE OK community: root delivery command succeeds
+SMOKE OK community: receipt is complete before the single notification; reentrant delivery cannot duplicate rewards
+SMOKE OK community: root courier state saves and loads through the real save boundary
+SMOKE OK community: gold, stock and receipt round-trip together
+SMOKE OK community: current-generation commands cannot replay a saved delivery
+SMOKE OK community: a pre-load callback cannot target the rebuilt session
+SMOKE OK community: new-day delivery remains playable after loading
+SMOKE OK community: pause menu opens a usable board without resuming the world
+SMOKE OK community: Day 1 delivery button mirrors the service lock
+SMOKE OK community: scrolling follows controller and keyboard focus
+SMOKE OK community: Back closes only the board and retains pause ownership
+SMOKE OK community: a second Back resumes the game
+SMOKE OK community: Plan ranch work routes to the existing schedule screen and releases pause ownership
+SMOKE OK community: browsing and planning do not create deliveries or advance the day
+SMOKE OK community: future schemas are rejected before normalization mutates the supplied object
+SMOKE OK community: null roster entries are rejected before any version migration
+SMOKE OK community: mana supply still requires its device
+SMOKE OK community: 45 stored MP restores 22 personal MP at the existing 2:1 cost
+SMOKE OK community: subsequent personal MP spending leaves the ranch reserve separate
+SMOKE OK pause input: world input source is available for the ownership guard
+SMOKE OK pause input: source guard: world updates do not poll Back after the event owner has handled it
+SMOKE OK pause input: pause_menu: board is open before host routing
+SMOKE OK pause input: pause_menu: host Back closes only the board and keeps the world paused
+SMOKE OK pause input: pause_menu: the next Back closes pause
+SMOKE OK pause input: ui_cancel: board is open before host routing
+SMOKE OK pause input: ui_cancel: host Back closes only the board and keeps the world paused
+SMOKE OK pause input: ui_cancel: the next Back closes pause
+SMOKE OK command UI job assignment reaches simulation
+SMOKE OK command UI job notifies both observers exactly once
+SMOKE OK command UI assignment neither pays work nor advances time
+SMOKE OK command UI mentorship keeps existing service effects
+SMOKE OK command UI mentorship spends player daily stamina exactly once
+SMOKE OK command UI mentorship notifies both observers exactly once
+SMOKE OK command UI completes existing bond event
+SMOKE OK command UI bond event spends player daily stamina exactly once
+SMOKE OK command UI bond event notifies both observers exactly once
+SMOKE OK command replacement fixture saved
+SMOKE OK command stale UI rejected after new game
+SMOKE OK command stale UI does not mutate detached state
+SMOKE OK command rebound UI mutates current state exactly once
+SMOKE OK command replacement fixture saved
+SMOKE OK command replacement fixture loaded
+SMOKE OK command stale UI rejected after load
+SMOKE OK command stale UI does not mutate detached state
+SMOKE OK command rebound UI mutates current state exactly once
+SMOKE OK command rejects invalid identifiers
+SMOKE OK command rejects invalid identifiers
+SMOKE OK command rejects invalid identifiers
+SMOKE OK command invalid and no-op requests emit no change
+SMOKE OK command locked event emits no change
+SMOKE OK command valid event emits one change
+SMOKE OK command valid event spends stamina at the same successful boundary
+SMOKE OK command duplicate event neither notifies nor rewards twice
+SMOKE OK command lifecycle fixture saved
+SMOKE OK command new exposes rebound services and generation once
+SMOKE OK command new rejects all stale command types
+SMOKE OK command new accepts current generation
+SMOKE OK command lifecycle fixture loads
+SMOKE OK command load exposes rebound services and generation once
+SMOKE OK command load rejects all stale command types
+SMOKE OK command load accepts current generation
+SMOKE OK command ngplus exposes rebound services and generation once
+SMOKE OK command ngplus resets transient combat story world and calendar state
+SMOKE OK command ngplus rejects all stale command types
+SMOKE OK command ngplus accepts current generation
+SMOKE OK command failed load keeps generation and observers unchanged
+SMOKE OK world diagonal movement is not faster than straight-line
+SMOKE OK world forward input maps to camera-forward XZ plane
+SMOKE OK world input dead zone produces zero direction
+SMOKE OK world gravity only changes vertical velocity
+SMOKE OK world camera zoom clamps to max distance
+SMOKE OK world camera zoom clamps to min distance
+SMOKE OK world camera clamps in front of geometry
+SMOKE OK world camera pitch clamps below floor
+SMOKE OK world input enabled by default
+SMOKE OK world input stops while management UI owns input
+SMOKE OK world input resumes when UI releases
+SMOKE OK world input stops when window loses focus
+SMOKE OK world input gate reset restores world ownership
+SMOKE OK world guard allows interaction when idle
+SMOKE OK world guard begins a command once
+SMOKE OK world guard blocks re-entrancy during a command
+SMOKE OK world guard rejects a second concurrent command
+SMOKE OK world guard allows interaction again after command ends
+SMOKE OK world guard rejects interaction when target is despawned
+SMOKE OK world guard re-allows interaction when target is present
+SMOKE OK world station is unavailable with no dispatcher bound
+SMOKE OK world station reports unavailable with no dispatcher
+SMOKE OK world station becomes available with a dispatcher
+SMOKE OK world station has no unavailable reason when ready
+SMOKE OK world station dispatches a command on activate
+SMOKE OK world station dispatches the configured command kind
+SMOKE OK world station dispatches the configured target
+SMOKE OK world station allows sequential activations
+SMOKE OK world station respects injected progression availability
+SMOKE OK world station exposes progression lock reason
+SMOKE OK world station cannot bypass a progression lock
+SMOKE OK ranch greybox scene loads
+SMOKE OK greybox registers world input bootstrap
+SMOKE OK greybox has a third-person player
+SMOKE OK greybox has a follow camera
+SMOKE OK greybox has an interactable station
+SMOKE OK greybox has multiple authored job stations
+SMOKE OK greybox has a world HUD day label
+SMOKE OK greybox HUD has selected-worker context
+SMOKE OK greybox HUD has an interaction prompt
+SMOKE OK greybox retains the legacy interaction prompt node
+SMOKE OK greybox retains the management UI composition anchor
+SMOKE OK greybox root is the controller
+SMOKE OK greybox controller wires player + stations
+SMOKE OK greybox controller resolves the player
+SMOKE OK greybox player uses the shared created-player 3D stand-in
+SMOKE OK greybox player sprint speed is greater than walk speed
+SMOKE OK greybox controller resolves the primary station
+SMOKE OK greybox controller discovers all authored job stations
+SMOKE OK greybox primary station has a production dispatcher bound
+SMOKE OK greybox controller binds every authored station to the production dispatcher
+SMOKE OK greybox controller binds the follow camera to the player head target
+SMOKE OK greybox controller resolves the world HUD
+SMOKE OK world station available with production dispatcher
+SMOKE OK world station dispatches an assignment through GameRoot
+SMOKE OK world interaction mutates the same Schedule state the management UI reads
+SMOKE OK world interaction neither pays work nor advances time (no second reward)
+SMOKE OK world interaction with a stale generation is rejected
+SMOKE OK stale world interaction leaves the generation intact
+SMOKE OK alerts: missing Dairy assignment is surfaced because settlement penalizes it
+SMOKE OK alerts: unstaffed Pasture is surfaced as production guidance
+SMOKE OK alerts: test can assign Dairy through shared GameRoot
+SMOKE OK alerts: Dairy warning clears immediately after shared schedule assignment
+SMOKE OK alerts: exhausted resident becomes critical
+SMOKE OK alerts: starving pet becomes critical
+SMOKE OK first day: tutorial intruder mission is registered in shared mission data
+SMOKE OK first day: tutorial intruder enemy is registered in shared enemy data
+SMOKE OK first day: tutorial fight cannot create ordinary mission rewards
+SMOKE OK first day: intruder tutorial resolves through the normal CombatService
+SMOKE OK first day: intruder tutorial produces ordinary round records
+SMOKE OK first day: clean ranch bath can be used during Night
+SMOKE OK first day: bathing consumes bath cleanliness and routes into the existing rest night action
+SMOKE OK first day: Cleaning job prepares a dirty bath for a later night
+SMOKE OK first day: bath cleaning is visible in the ordinary daily report
+SMOKE OK calendar: day 1 is Year 1 Spring day 1
+SMOKE OK calendar: original day 1 starts on Monday
+SMOKE OK calendar: day 28 is the end of Spring
+SMOKE OK calendar: season-end forecast is forced Cloudy like the original
+SMOKE OK calendar: day 29 starts Summer
+SMOKE OK calendar: day 112 is Year 1 Winter day 28
+SMOKE OK calendar: day 113 starts Year 2 Spring
+SMOKE OK calendar: winter weather replaces rain-family results with snow/overcast/clear
+SMOKE OK calendar: winter distribution can generate snow
+SMOKE OK calendar: rollover crosses Spring -> Summer at day 29
+SMOKE OK calendar: saved tomorrow forecast becomes today's weather at rollover
+SMOKE OK surface weather: snow produces bounded character tracks
+SMOKE OK surface weather: rain produces wet-step feedback
+SMOKE OK surface weather: calm autumn produces leaf-rustle feedback
+SMOKE OK surface weather: calm summer does not allocate unnecessary surface marks
+SMOKE OK surface weather: shelter containment is deterministic without physics queries
+SMOKE OK graphics quality: Low removes expensive Forward+ features and reduces reactive-world budget
+SMOKE OK graphics quality: Medium keeps affordable SSAO but defers heavier Forward+ effects
+SMOKE OK graphics quality: High enables the complete situation-aware Forward+ feature set
+SMOKE OK graphics quality: Ultra increases expensive effect quality and bounded world-reaction budgets
+SMOKE OK graphics quality: preset application derives from the central profile instead of duplicate switches
+SMOKE OK combat: entering a round-based session locks world time
+SMOKE OK combat: AdvanceTime is rejected while combat owns time
+SMOKE OK combat: blocked time advance leaves day and phase unchanged
+SMOKE OK combat: leaving session unlocks world time
+SMOKE OK combat: world phase can advance again after combat
+SMOKE OK combat: post-combat advance changes the shared phase
+SMOKE OK stamina: new game starts with a full independent daily player budget
+SMOKE OK stamina: player daily stamina is not the first roster character's Energy
+SMOKE OK stamina: ordinary world phase progression does not consume the exploration budget
+SMOKE OK stamina: an evening prepared bath schedules tomorrow's Well Rested bonus without refilling today
+SMOKE OK stamina: evening bath does not silently choose or end the Night action
+SMOKE OK stamina: bath/shower routine cannot be farmed repeatedly on the same day
+SMOKE OK stamina: prepared evening bath creates extra starting stamina and capacity on the next day
+SMOKE OK stamina: Well Rested bonus expires after one day unless another prepared bath schedules it again
+SMOKE OK stamina: dirty bath falls back to hygiene-only shower without immediate or next-day stamina
+SMOKE OK stamina: shower-only night starts the next day at the ordinary stamina cap
+SMOKE OK stamina: insufficient budget blocks repeatable progression without granting rewards
+SMOKE OK stamina: successful progression spends its declared cost exactly once
+SMOKE OK stamina: ordinary adventures respect the budget while the mandatory Day-1 tutorial remains free
+SMOKE OK dating: eligible ranch resident can voluntarily accompany the player
+SMOKE OK dating: untouched voluntary resident is not treated as maximally hostile by the historical generic mental default
+SMOKE OK dating: shared work follows source rule by reducing existing aversion before granting favorability
+SMOKE OK dating: meaningful shared activity spends its declared daily stamina exactly once
+SMOKE OK dating: a second meaningful activity in the same phase is blocked against spam farming
+SMOKE OK dating: shared meal can happen in a later phase and consumes one meal_box
+SMOKE OK dating: sustained voluntary positive time can reach the Romantic relationship stage
+SMOKE OK dating: day rollover ends active following but preserves relationship history
+SMOKE OK dating: forcing companionship erodes dignity but damages trust/mood and raises negative mental values
+SMOKE OK dating: forced companion expresses discomfort through contextual thought text
+SMOKE OK dating: repeated force prevents high positive relationship stages even when raw favorability is high
+SMOKE OK dating/parity: mental Collapse destroys only source-traced matching traits and preserves unrelated traits
+SMOKE OK dating/parity: irreversible collapse trait changes leave an auditable character marker
+SMOKE OK dating/parity: recovery from collapse clears the derived IsCollapsed flag while lost traits remain lost
+SMOKE OK dating: adult relationship system fails closed for ineligible minors
+SMOKE OK mana: new game matches original Chara0 personal MP and 10% recovery defaults
+SMOKE OK mana: new-day recovery restores the configured percentage of personal Max MP
+SMOKE OK mana: stored mana cannot refill the player before the Magic Supply Device exists
+SMOKE OK mana: Magic Supply Device refills personal MP from stored mana without increasing Max MP
+SMOKE OK mana: rest stores one fifth of sufficiently large recovery overflow in an installed reservoir
+SMOKE OK mana: home reservoir exposes the original 10,000 MP storage capacity
+SMOKE OK mana: a spell can spend personal MP when enough is available
+SMOKE OK mana: spell spending affects personal MP and applies its gameplay effect
+SMOKE OK combat: player AI uses personal MP for a magical support action when an ally is wounded
+SMOKE OK combat: magic support heals without accidentally damaging its ally and records MP cost
+SMOKE OK combat: report and persistent player MP agree on mana consumed
+SMOKE OK combat: a companion-only party cannot spend the PlayerState personal MP pool
+SMOKE OK combat: non-trivial battle damage carries into persistent character HP instead of disappearing after results
+SMOKE OK combat: non-magic support skill is available when combat SP is sufficient
+SMOKE OK combat: support skills heal without friendly-fire damage and consume finite SP
+SMOKE OK combat: spent skill SP remains visible in the final combat snapshot
+SMOKE OK combat interactive: tactical session pauses only on the original player combatant
+SMOKE OK combat interactive: first player turn exposes live round and enemy snapshots
+SMOKE OK combat interactive: explicit player Attack command is accepted
+SMOKE OK combat interactive: player command resolves into the shared battle log instead of an AI placeholder
+SMOKE OK combat interactive: Auto Finish completes the same tactical session and produces a normal outcome
+SMOKE OK combat interactive: final tactical report exposes both sides for results UI
+SMOKE OK combat interactive: GameRoot can start a tactical mission through the shared combat lifecycle
+SMOKE OK combat interactive: tactical battle keeps world time locked
+SMOKE OK combat interactive: entering a real tactical battle commits daily stamina exactly once
+SMOKE OK combat interactive: resolving remaining turns does not charge daily stamina again
+SMOKE OK combat interactive: completed tactical session transitions into the existing results phase
+SMOKE OK combat interactive: leaving results releases world-time ownership and transient session state
+SMOKE OK combat interactive: companion-only parties cannot impersonate the player tactical turn
+SMOKE OK camera: nearby geometry may pull camera closer than normal user zoom minimum
+SMOKE OK camera: geometry clamp remains in front of the target instead of crossing through it
+SMOKE OK camera: first-person view direction matches the orbit orientation
+SMOKE OK world boundary: four continuous collision sides are authored
+SMOKE OK world boundary: quality-scaled visual dressing is generated
+SMOKE OK gate: Unknown denies real avatar
+SMOKE OK gate: Minor denies real avatar
+SMOKE OK gate: Ambiguous denies real avatar
+SMOKE OK gate: ConfirmedAdult permits real avatar
+SMOKE OK gate: null definition denies real avatar
+SMOKE OK profile: stable DefinitionId binding
+SMOKE OK profile: display name carried
+SMOKE OK profile: CHAR-001 ships honest stand-in, not real model
+SMOKE OK profile: fail-closed eligibility carried forward
+SMOKE OK profile: project debug placeholder scene path resolves
+SMOKE OK profile: no gameplay numbers on presentation type (separate from simulation state)
+SMOKE OK avatar: built with bound profile
+SMOKE OK avatar: rebuild preserves navigation/nameplate-style external children
+SMOKE OK avatar: project debug placeholder scene is instantiated when available
+SMOKE OK avatar: body capsule generated
+SMOKE OK avatar: head sphere generated
+SMOKE OK avatar: body is capsule stand-in
+SMOKE OK avatar: head is sphere stand-in
+SMOKE OK avatar: body tint matches profile skin mapping
+SMOKE OK avatar: head tint matches profile hair mapping
+SMOKE OK avatar: rebuild after profile swap regenerates geometry
+SMOKE OK avatar: rebuild reflects new profile colors
+SMOKE OK staging: mentorship framing is valid (speaker + text on every line)
+SMOKE OK staging: bound to the framed character id
+SMOKE OK staging: camera target = anchor + head offset
+SMOKE OK staging: look-at equals camera target (conversational framing)
+SMOKE OK staging: mentorship has at least a greeting and a reply
+SMOKE OK staging: framing is a pure function of the anchor (deterministic)
+SMOKE OK staging: bond-event framing is valid
+SMOKE OK staging: bond event name is presentation metadata, not a reward
+SMOKE OK staging: type has no bond/morale/stockpile/completed fields (cannot duplicate event state)
+SMOKE OK panel: world input enabled before any panel is open
+SMOKE OK panel: no panel open initially
+SMOKE OK panel: known management panel opens
+SMOKE OK panel: schedule is the active panel
+SMOKE OK panel: world input suspended while a panel is open
+SMOKE OK panel: switching to another known panel
+SMOKE OK panel: roster is now active (previous closed)
+SMOKE OK panel: input still UI-owned across a panel switch
+SMOKE OK panel: close returns true when a panel was open
+SMOKE OK panel: no panel active after close
+SMOKE OK panel: world input resumed safely after close
+SMOKE OK panel: closing with nothing open returns false
+SMOKE OK panel: repeated close keeps world input safely enabled
+SMOKE OK panel: unknown panel id is rejected
+SMOKE OK panel: state unchanged after a rejected open
+SMOKE OK panel: world input still enabled after a rejected open
+SMOKE OK save round-trip: world assignment succeeds
+SMOKE OK save round-trip: world assignment mutates the shared schedule
+SMOKE OK save round-trip: world mentorship succeeds
+SMOKE OK save round-trip: mentorship raises the character's bond
+SMOKE OK save round-trip: mentorship raises the character's morale
+SMOKE OK save round-trip: explicitly choose the night action before settling
+SMOKE OK save round-trip: a full day transition advances to the next day
+SMOKE OK save round-trip: the new day starts in the morning
+SMOKE OK save round-trip: world area can switch to town
+SMOKE OK save round-trip: the session persists to the slot
+SMOKE OK save round-trip: a fresh game does not carry the old bond
+SMOKE OK save round-trip: the saved session still exists on disk
+SMOKE OK save round-trip: the session loads back
+SMOKE OK save round-trip: the world assignment survives save/load
+SMOKE OK save round-trip: the mentorship bond survives save/load
+SMOKE OK save round-trip: the mentorship morale survives save/load
+SMOKE OK save round-trip: the day counter survives save/load
+SMOKE OK save round-trip: the phase survives save/load
+SMOKE OK save round-trip: the current 3D world area survives save/load
+SMOKE OK save round-trip: a stale (pre-load) generation is rejected
+SMOKE OK greybox scene loads
+SMOKE OK greybox scene root is the controller
+SMOKE OK greybox controller is wired after entering the tree
+SMOKE OK greybox scene exposes a bound daylight rig
+SMOKE OK greybox daylight rig is wired to sun + environment
+SMOKE OK greybox scene lighting matches the shared phase (single source of truth)
+SMOKE OK greybox scene exposes a bound roster rig
+SMOKE OK greybox scene places one avatar per roster character
+SMOKE OK greybox has a NavigationRegion3D
+SMOKE OK roster stand-ins carry NavigationAgent3D path followers
+SMOKE OK greybox scene avatars are in the greybox bounds
+SMOKE OK greybox scene has a player
+SMOKE OK greybox scene has a primary work station
+SMOKE OK greybox scene exposes multiple spatial job stations
+SMOKE OK greybox locks unbuilt workshop station through shared ranch progression
+SMOKE OK greybox keeps built pasture station available
+SMOKE OK workshop starts locked in the world
+SMOKE OK building workshop through shared ranch service succeeds
+SMOKE OK shared management facility upgrade immediately unlocks the world station
+SMOKE OK placeholder landmark label refreshes when a facility becomes built
+SMOKE OK greybox live camera follows the player target
+SMOKE OK greybox live scene exposes the world HUD
+SMOKE OK greybox live scene exposes the stylized placeholder presentation layer
+SMOKE OK placeholder presentation builds paths, landmarks and boundary nature
+SMOKE OK greybox selects a real roster worker for spatial job interactions
+SMOKE OK world HUD reflects the shared calendar day
+SMOKE OK greybox has a station with a different job for controller interaction test
+SMOKE OK greybox controller interaction dispatches through the shared command boundary
+SMOKE OK greybox controller assigns the selected roster worker, not the station id
+SMOKE OK greybox scene re-derives lighting from the shared state after a phase change
+SMOKE OK greybox scene refresh runs against a changed shared state
+SMOKE OK world boot composition scene loads
+SMOKE OK world boot root is WorldGameController
+SMOKE OK world boot contains the first-day ranch-house bedroom
+SMOKE OK world boot contains the resumable first-day story flow
+SMOKE OK ranch contains the hidden first-day intruder staging actor
+SMOKE OK ranch contains weather/season particle presentation
+SMOKE OK town contains weather/season particle presentation
+SMOKE OK ranch contains bounded weather surface reactions
+SMOKE OK town contains bounded weather surface reactions
+SMOKE OK town contains companion-only date presentation rig
+SMOKE OK ranch contains finite-world collision/dressing
+SMOKE OK town contains finite-world collision/dressing
+SMOKE OK world boot contains the 3D ranch
+SMOKE OK world boot contains persistent Okachi Town
+SMOKE OK town has a General Store service point
+SMOKE OK town has an Adventure Guild service point
+SMOKE OK town has a Research Office service point
+SMOKE OK town has a ranch return gate
+SMOKE OK town exposes F1 help
+SMOKE OK world boot contains the existing management shell as overlay
+SMOKE OK world boot management overlay has an explicit return-to-world control
+SMOKE OK world boot HUD exposes shared phase progression
+SMOKE OK world boot HUD contains contextual onboarding
+SMOKE OK world boot HUD exposes persistent F1 help
+SMOKE OK world boot contains the stylized placeholder presentation layer
+SMOKE OK ranch HUD contains the shared attention warning panel
+SMOKE OK town HUD contains the shared attention warning panel
+SMOKE OK world boot contains the location reveal overlay
+SMOKE OK world boot contains the ESC pause menu
+SMOKE OK world boot binds ranch controller
+SMOKE OK world boot binds existing UiShellController
+SMOKE OK ordinary ranch boot starts with the 3D world visible
+SMOKE OK ordinary ranch boot gives input to the 3D world
+SMOKE OK world boot registers the F1 help action
+SMOKE OK world player can interact with a nearby roster resident
+SMOKE OK nearby resident interaction opens only a dedicated resident surface
+SMOKE OK character detail opened from the world can return to the 3D ranch
+SMOKE OK resident detail return restores world input
+SMOKE OK world tutorial controller binds in composed gameplay
+SMOKE OK F1 help surface can open from the world
+SMOKE OK open help temporarily owns input instead of moving the player behind it
+SMOKE OK closing help safely restores world input
+SMOKE OK world boot binds town controller
+SMOKE OK town exposes all authored service points
+SMOKE OK town daylight uses the shared day-phase rig
+SMOKE OK town builds readable roads, landmarks and service-building placeholders
+SMOKE OK world boot starts in persisted ranch area
+SMOKE OK ranch can travel to Okachi Town
+SMOKE OK travel switches active world area and persists town location
+SMOKE OK town travel disables ranch presentation and reveals town
+SMOKE OK town receives world input after travel
+SMOKE OK town dating: only the active date partner is carried into Okachi Town
+SMOKE OK town dating: active companion exposes a contextual world thought bubble
+SMOKE OK town dating: F-style world interaction can target the nearby companion
+SMOKE OK town dating: companion interaction opens only its dedicated resident surface
+SMOKE OK town dating: companion details can return cleanly to the 3D outing
+SMOKE OK town Research Office preserves the existing Workshop progression requirement
+SMOKE OK player can enter a nearby town service
+SMOKE OK General Store world service routes to the existing shop screen
+SMOKE OK shop overlay can return to the 3D town
+SMOKE OK closing town service restores town movement
+SMOKE OK town tutorial controller binds
+SMOKE OK town F1 help owns input while visible
+SMOKE OK closing town help restores movement
+SMOKE OK town south gate can return to the ranch
+SMOKE OK physical return gate restores ranch area and persisted location
+SMOKE OK world can revisit town for UI-travel test
+SMOKE OK town hub management opens while in town
+SMOKE OK Town Hub Return to Ranch requests physical world travel when hosted
+SMOKE OK Town Hub travel request closes management and returns to the ranch
+SMOKE OK world boot binds ESC pause menu
+SMOKE OK ESC pause menu pauses the scene tree
+SMOKE OK resume closes pause menu and unpauses the tree
+SMOKE OK world boot opens existing management overlay
+SMOKE OK management overlay becomes visible
+SMOKE OK management overlay suspends world input
+SMOKE OK world boot closes ordinary management overlay
+SMOKE OK management overlay hides on close
+SMOKE OK closing management safely restores 3D world input
+SMOKE OK character creation forces the management layer visible
+SMOKE OK mandatory character-creation flow cannot be hidden behind the world
+SMOKE OK prologue keeps the mandatory overlay visible
+SMOKE OK finishing the mandatory new-game UI flow reveals the 3D story world
+SMOKE OK fresh day-one flow resumes in the ranch-house bedroom instead of skipping the guided opening
+SMOKE OK day-one bedroom transition returns input to the active story world
+SMOKE OK ordinary clock fixture starts outside mandatory tutorial ownership
+SMOKE OK world time control reaches the shared Night phase
+SMOKE OK ordinary phase advancement keeps the player in the 3D world
+SMOKE OK world refuses to settle Night before a night plan exists
+SMOKE OK missing night plan marks the physical ranch house without exposing remote management
+SMOKE OK night planning guidance leaves exploration in control
+SMOKE OK world End Day uses the shared settlement and advances to next Morning
+SMOKE OK world settlement opens the existing Daily Report
+SMOKE OK daylight: day phases carry direct sunlight
+SMOKE OK daylight: night has no direct sun
+SMOKE OK daylight: night is flagged as night
+SMOKE OK daylight: day phases are not night
+SMOKE OK daylight: sun elevation orders afternoon > morning > evening (hand-tuned table)
+SMOKE OK daylight: mapping is deterministic (pure function of the shared phase)
+SMOKE OK daylight rig binds sun + environment
+SMOKE OK daylight rig applies the resolved evening state
+SMOKE OK daylight rig writes the sun energy to the node
+SMOKE OK daylight rig writes the ambient energy to the environment
+SMOKE OK daylight rig writes the tonemap exposure to the environment
+SMOKE OK atmosphere: daylight rig records the shared weather presentation
+SMOKE OK atmosphere: storm enables renderer-compatible fog on High quality
+SMOKE OK atmosphere: situation-aware color adjustment is enabled on High quality
+SMOKE OK atmosphere: Low quality disables optional post-processing while keeping daylight
+SMOKE OK daylight rig reads the shared phase (single source of truth, no second clock)
+SMOKE OK placement: category Rest resolves an in-bounds anchor (REST_AREA)
+SMOKE OK placement: category RanchWork resolves an in-bounds anchor (PASTURE)
+SMOKE OK placement: category Chore resolves an in-bounds anchor (WORKSHOP)
+SMOKE OK placement: category Mentorship resolves an in-bounds anchor (MENTOR_CIRCLE)
+SMOKE OK placement: category Adventure resolves an in-bounds anchor (PATROL_PATH)
+SMOKE OK placement: category Dairy resolves an in-bounds anchor (DAIRY)
+SMOKE OK placement: category Office resolves an in-bounds anchor (OFFICE)
+SMOKE OK placement: category Cleaning resolves an in-bounds anchor (KITCHEN)
+SMOKE OK placement: category Cooking resolves an in-bounds anchor (KITCHEN)
+SMOKE OK placement: category Pharmacy resolves an in-bounds anchor (PHARMACY)
+SMOKE OK placement: category CustomerService resolves an in-bounds anchor (CUSTOMER)
+SMOKE OK placement: dairy maps to the milk-station anchor
+SMOKE OK placement: rest maps to the rest area
+SMOKE OK placement: unknown category falls back to the rest area (always a logical place)
+SMOKE OK placement: first mate stands at the anchor
+SMOKE OK placement: later mates stand side by side (no overlap)
+SMOKE OK placement: the spread stays in bounds
+SMOKE OK roster rig places one avatar per roster character
+SMOKE OK roster rig places at least one avatar
+SMOKE OK roster rig refresh is idempotent (no duplicate avatars)
+SMOKE OK roster rig keeps every avatar in the greybox bounds
+SMOKE OK roster rig uses CHAR-001 stand-in avatars (presentation only)
+SMOKE OK roster rig moves presentation only — the shared schedule is untouched
+SMOKE OK shared schedule accepts a new pasture assignment for roster travel test
+SMOKE OK roster rig derives a target from the shared assignment
+SMOKE OK changed assignment creates visible travel instead of teleporting immediately
+SMOKE OK roster stand-in walks toward its assigned logical anchor
+SMOKE OK roster travel does not replace the shared assignment authority
+SMOKE OK roster dating: companion-only rig contains exactly the active partner
+SMOKE OK roster dating: active partner receives a player-relative follow target
+SMOKE OK roster dating: active partner target tracks player movement instead of the normal work anchor
+SMOKE OK roster dating: active partner presents non-empty contextual thought text
+SMOKE OK playability: gate reset publishes restored input once
+SMOKE OK playability: unchanged gate reset does not send redundant notifications
+SMOKE OK playability: movement uses the main viewport camera, not a preview SubViewport
+SMOKE OK playability: camera changes refresh movement orientation without a stale cache
+SMOKE OK playability: partial mapped action strength gives slower movement
+SMOKE OK playability: full keyboard input retains the normal walk speed
+SMOKE OK playability: keyboard diagonal movement cannot exceed straight-line speed
+SMOKE OK playability: quarter-strength touch input remains quarter-speed after direction normalization
+SMOKE OK playability: opening UI immediately clears horizontal drift and held touch input, preserving gravity
+SMOKE OK playability: UI blocks mapped and touch movement
+SMOKE OK playability: an area gate reset cannot reenable movement while application focus is still lost
+SMOKE OK playability: focus return restores mapped movement
+SMOKE OK playability: a retained gate can change after its player was freed without a disposed-node callback
+SMOKE OK playability: active first-person camera claims mouse ownership
+SMOKE OK playability: pause releases camera ownership before processing stops
+SMOKE OK playability: resume reacquires first-person ownership without a stale captured latch
+SMOKE OK playability: management releases the cursor synchronously through the shared input gate
+SMOKE OK playability: closing management restores active camera ownership
+SMOKE OK playability: gate reset cannot capture the mouse in an unfocused application
+SMOKE OK playability: focus return permits active first-person capture again
+SMOKE OK playability: detached targets cannot write local coordinates into a live world camera
+SMOKE OK playability: camera can recover after a detached or freed target is replaced
+SMOKE OK playability: non-inverted mouse-up looks up with the orbit coordinate convention
+SMOKE OK playability: Invert Y reverses mouse look explicitly
+SMOKE OK playability: analog camera turn rate scales continuously with stick strength
+SMOKE OK playability: the shared positive-Z model faces its movement direction (0, 0, -1), not the camera
+SMOKE OK playability: the shared positive-Z model faces its movement direction (0, 0, 1), not the camera
+SMOKE OK playability: the shared positive-Z model faces its movement direction (-1, 0, 0), not the camera
+SMOKE OK playability: the shared positive-Z model faces its movement direction (1, 0, 0), not the camera
+SMOKE OK playability: the shared positive-Z model faces its movement direction (0.70710677, 0, -0.70710677), not the camera
+SMOKE OK playability: one recenter request completes behind the player's facing direction
+SMOKE OK playability: recenter restores pitch but preserves player-selected zoom
+SMOKE OK playability: manual look cancels an in-progress recenter
+SMOKE OK playability: reduced motion recenters immediately rather than animating the camera
+SMOKE OK playability: camera lifecycle fixture can travel to town
+SMOKE OK playability: inactive ranch camera cannot recapture or release the town camera's mouse
+SMOKE OK playability: disabling a camera releases its mouse without waiting for another frame
+SMOKE OK playability: reenabled active camera can reacquire ownership
+SMOKE OK playability: camera gate callbacks are detached when the world is freed
+SMOKE OK playability: skip reaches the first Night without settling or incrementing the day
+SMOKE OK playability: skipping the tutorial grants no gold and does not drain daily stamina
+SMOKE OK playability: finishing the area fade must not unlock movement behind the night-choice dialogue
+SMOKE OK playability: skip, bath and End Day reach the normal Day 2 report through existing services
+SMOKE OK playability: the first-night bath supplies the next-day bonus rather than an immediate refill
+SMOKE OK ranch design: reserved roofs/footprints/entrances fit without overlap: 
+SMOKE OK ranch design: eight unique authored ranch plots
+SMOKE OK ranch design: overlapping authoring is rejected
+SMOKE OK ranch design: town gate approach is reserved
+SMOKE OK ranch design: nonfinite authoring is rejected
+SMOKE OK ranch design: dairy_barn: visual upgrades/downgrades preserve footprint, collision count and entrance dimensions
+SMOKE OK ranch design: pasture: visual upgrades/downgrades preserve footprint, collision count and entrance dimensions
+SMOKE OK ranch design: kitchen: visual upgrades/downgrades preserve footprint, collision count and entrance dimensions
+SMOKE OK ranch design: workshop: visual upgrades/downgrades preserve footprint, collision count and entrance dimensions
+SMOKE OK ranch design: pharmacy_lab: visual upgrades/downgrades preserve footprint, collision count and entrance dimensions
+SMOKE OK ranch design: office: visual upgrades/downgrades preserve footprint, collision count and entrance dimensions
+SMOKE OK ranch design: ranch_house: visual upgrades/downgrades preserve footprint, collision count and entrance dimensions
+SMOKE OK ranch design: pet_care: visual upgrades/downgrades preserve footprint, collision count and entrance dimensions
+SMOKE OK ranch design: small decorative footprint fits an unreserved plaza location
+SMOKE OK ranch design: dressing rejects the gate and malformed mesh dimensions
+SMOKE OK ranch design: trees cannot occupy any reserved roof or entrance
+SMOKE OK ranch design: mesh clearance composes local transforms safely before tree entry
+SMOKE OK ranch design: moving a mesh into a plot rejects it before instantiation into the world
+SMOKE OK ranch design: overflowing facility level cannot wrap or charge gold
+SMOKE OK ranch design: extreme upgrade price saturates instead of going negative
+SMOKE OK ranch design: project inspection does not assign jobs, allocate history, advance time or pay gold
+SMOKE OK ranch design: four optional projects use stable unique IDs
+SMOKE OK ranch design: missing repair supplies directs to production, not an impossible purchase
+SMOKE OK ranch design: existing accomplishments resolve all projects without new reward paths
+SMOKE OK ranch design: eligible voluntary overnight preview is read-only
+SMOKE OK ranch design: planning is free and duplicate invitation is denied
+SMOKE OK ranch design: cancelling does not punish either participant
+SMOKE OK ranch design: unreviewed/ambiguous/minor state denies overnight: Unknown
+SMOKE OK ranch design: unreviewed/ambiguous/minor state denies overnight: Ambiguous
+SMOKE OK ranch design: unreviewed/ambiguous/minor state denies overnight: Minor
+SMOKE OK ranch design: runtime label alone cannot bypass definition review
+SMOKE OK ranch design: pressure is not romantic consent: Pressured
+SMOKE OK ranch design: pressure is not romantic consent: Forced
+SMOKE OK ranch design: exhausted companion can decline without cost
+SMOKE OK ranch design: night training cannot also receive shared-rest benefits
+SMOKE OK ranch design: successful settlement records one modest bond acknowledgement, not another rest or bath reward
+SMOKE OK ranch design: replayed completed night cannot repeat its effects
+SMOKE OK ranch design: current-schema JSON preserves receipt without a phantom invitation
+SMOKE OK resident interactions: repeated previews do not change state or allocate saved daily receipts
+SMOKE OK resident interactions: ordinary conversation remains usable at zero stamina without farmable relationship rewards
+SMOKE OK resident interactions: insufficient stamina rejects encouragement before effects
+SMOKE OK resident interactions: unknown commands reject without a cost or receipt
+SMOKE OK resident interactions: invalid/self target rejects atomically: 
+SMOKE OK resident interactions: invalid/self target rejects atomically: 
+SMOKE OK resident interactions: invalid/self target rejects atomically: missing
+SMOKE OK resident interactions: invalid/self target rejects atomically: anon
+SMOKE OK resident interactions: ambiguous duplicate resident IDs are not valid targets
+SMOKE OK resident interactions: missing meal does not consume player energy
+SMOKE OK resident interactions: one meal consumes one item and its declared stamina once
+SMOKE OK resident interactions: duplicate meal reward cannot be farmed on the same day
+SMOKE OK resident interactions: special keepsakes are not silently consumed as ordinary gifts
+SMOKE OK resident interactions: ordinary gift uses the existing care effect with exact inventory cost
+SMOKE OK resident interactions: switching gift types cannot bypass the shared daily gift receipt
+SMOKE OK resident interactions: encouragement is separate from free conversation and pays once
+SMOKE OK resident interactions: encouragement has a durable daily limit
+SMOKE OK resident interactions: recovery never reduces an existing energy boost above the ordinary cap
+SMOKE OK resident interactions: invalid training focus does not spend resident energy, fatigue or a training slot
+SMOKE OK resident interactions: capped training rejects before paying costs
+SMOKE OK resident interactions: magic training rejects integer overflow without spending resources
+SMOKE OK resident interactions: incapacitated residents cannot train through either boundary
+SMOKE OK resident interactions: low morale blocks a new lesson without a penalty
+SMOKE OK resident interactions: high fatigue blocks lessons without a cost
+SMOKE OK resident interactions: night lessons cannot silently double the chosen nightly growth plan
+SMOKE OK resident interactions: new interactions cannot bypass the guided first day
+SMOKE OK resident interactions: practice uses the shared training slot/effects, charges player stamina once and preserves the work plan
+SMOKE OK resident interactions: changing practice focus does not bypass this resident's daily lesson
+SMOKE OK resident interactions: another resident can use the second ranch-wide session
+SMOKE OK resident interactions: a third resident cannot exceed the existing two-session daily budget
+SMOKE OK resident interactions: current-schema saving retains daily care and practice receipts
+SMOKE OK resident interactions: the canonical next-day reset makes actions available without growing a per-day history
+SMOKE OK resident interactions: the original daily-care receipt count remains bounded independently of development history
+SMOKE OK station planning: an explicitly unbuilt level-zero entry charges no facility upkeep
+SMOKE OK station planning: invalid non-positive level never becomes a phantom maintained building
+SMOKE OK station planning: upkeep uses the actual positive building level
+SMOKE OK station planning: logistics discount is rounded once on the entire facility bill
+SMOKE OK station planning: repeated price and upkeep previews are read-only
+SMOKE OK station planning: quote exposes exact level, one-time cost and local before/after upkeep
+SMOKE OK station planning: successful upgrade matches the previewed discounted ranch bill and listed payment
+SMOKE OK station planning: unaffordable upgrade cannot make a partial payment or level change
+SMOKE OK station planning: unknown upgrade targets return an unavailable offer
+SMOKE OK station planning: extreme level is disabled even with a full wallet
+SMOKE OK station planning: extreme multiplied upkeep saturates rather than wrapping negative
+SMOKE OK station planning: multiple extreme buildings cannot wrap the total after logistics
+SMOKE OK station planning: adding the missing-dairy penalty to saturated upkeep cannot turn the entire day free
+SMOKE OK station planning: stale generation, day and phase cannot purchase an upgrade
+SMOKE OK station planning: an assignment preview cannot overwrite a job changed since it was shown
+SMOKE OK station planning: unbuilt work cannot be assigned through the root planning boundary
+SMOKE OK station planning: current displayed upgrade succeeds through the root boundary
+SMOKE OK station planning: upgrade observers cannot immediately buy another level, change a job or advance time
+SMOKE OK station planning: replaying the successful quote cannot purchase the next, more expensive level
+SMOKE OK station planning: a research change invalidates the previously displayed running-cost projection
+SMOKE OK station planning: work planning changes only the canonical job, not output or stamina
+SMOKE OK station planning: a station cannot release a worker assigned somewhere else
+SMOKE OK station planning: a current worker can be sent to rest without extra payment
+SMOKE OK optimization: RanchWork: read-only estimate preserves the hand-calculated original output and gross pay
+SMOKE OK optimization: RanchWork: committed work agrees with the unchanged rule
+SMOKE OK optimization: Dairy: read-only estimate preserves the hand-calculated original output and gross pay
+SMOKE OK optimization: Dairy: committed work agrees with the unchanged rule
+SMOKE OK optimization: Cooking: read-only estimate preserves the hand-calculated original output and gross pay
+SMOKE OK optimization: Cooking: committed work agrees with the unchanged rule
+SMOKE OK optimization: Pharmacy: read-only estimate preserves the hand-calculated original output and gross pay
+SMOKE OK optimization: Pharmacy: committed work agrees with the unchanged rule
+SMOKE OK optimization: CustomerService: read-only estimate preserves the hand-calculated original output and gross pay
+SMOKE OK optimization: CustomerService: committed work agrees with the unchanged rule
+SMOKE OK optimization: Chore: read-only estimate preserves the hand-calculated original output and gross pay
+SMOKE OK optimization: Chore: committed work agrees with the unchanged rule
+SMOKE OK optimization: Adventure: read-only estimate preserves the hand-calculated original output and gross pay
+SMOKE OK optimization: Adventure: committed work agrees with the unchanged rule
+SMOKE OK optimization: fatigue 0: the existing rounding/condition threshold remains transparent
+SMOKE OK optimization: fatigue 39: the existing rounding/condition threshold remains transparent
+SMOKE OK optimization: fatigue 40: the existing rounding/condition threshold remains transparent
+SMOKE OK optimization: fatigue 59: the existing rounding/condition threshold remains transparent
+SMOKE OK optimization: fatigue 60: the existing rounding/condition threshold remains transparent
+SMOKE OK optimization: fatigue 79: the existing rounding/condition threshold remains transparent
+SMOKE OK optimization: fatigue 80: the existing rounding/condition threshold remains transparent
+SMOKE OK optimization: fatigue 100: the existing rounding/condition threshold remains transparent
+SMOKE OK optimization: better practical skill really improves output, without pace-based penalties
+SMOKE OK optimization: the same plan has the same return early or late in the calendar
+SMOKE OK optimization: collapsed-worker inspection does not pay or heal
+SMOKE OK optimization: rest is not an invented income source
+SMOKE OK optimization: previewing a missing equipment map never repairs or mutates a save
+SMOKE OK optimization: twenty unavailable replacement requests are all rejected
+SMOKE OK optimization: failed equipment swaps cannot duplicate the equipped tool
+SMOKE OK optimization: a real owned replacement swaps once and returns exactly one old tool
+SMOKE OK optimization: a swap that cannot return its old item is rejected before consumption
+SMOKE OK optimization: starting funds build the ordinary dairy before the economic baseline
+SMOKE OK optimization: baseline day1: one settlement reconciles wallet (income=193, expenses=72, wallet=371)
+SMOKE OK optimization: the baseline pays the canonical meal price, without a grant
+SMOKE OK optimization: baseline day2: one settlement reconciles wallet (income=124, expenses=72, wallet=363)
+SMOKE OK optimization: the baseline pays the canonical meal price, without a grant
+SMOKE OK optimization: baseline day3: one settlement reconciles wallet (income=124, expenses=72, wallet=355)
+SMOKE OK optimization: the baseline pays the canonical meal price, without a grant
+SMOKE OK optimization: baseline day4: one settlement reconciles wallet (income=199, expenses=72, wallet=422)
+SMOKE OK optimization: the baseline pays the canonical meal price, without a grant
+SMOKE OK optimization: baseline day5: one settlement reconciles wallet (income=124, expenses=72, wallet=414)
+SMOKE OK optimization: the baseline pays the canonical meal price, without a grant
+SMOKE OK optimization: baseline day6: one settlement reconciles wallet (income=124, expenses=72, wallet=406)
+SMOKE OK optimization: the baseline pays the canonical meal price, without a grant
+SMOKE OK optimization: baseline day7: one settlement reconciles wallet (income=124, expenses=72, wallet=398)
+SMOKE OK optimization: the seven-day dairy/office baseline stays solvent without exhausting the completion goals
+SMOKE OK optimization: completion inspection is read-only
+SMOKE OK optimization: meeting existing goals on day2 is accepted without adding a time gate
+SMOKE OK optimization: an unknown mission ID cannot substitute for actual discovery
+SMOKE OK optimization: successful early completion records the new morning without restarting the run
+SMOKE OK optimization: ordinary phase/night commands remain usable after completion
+SMOKE OK optimization: ordinary phase/night commands remain usable after completion
+SMOKE OK optimization: ordinary phase/night commands remain usable after completion
+SMOKE OK optimization: later days neither reset the completion record nor repeatedly announce victory or force New Game+
+SMOKE OK optimization: the existing save fields retain completion and the continued run together
+SMOKE OK progression: lunch previews are read-only and allocate pantry meals before portable boxes
+SMOKE OK progression: three lunches conserve exactly two ranch meals and one box
+SMOKE OK progression: lunch recovers normal energy without erasing an existing above-cap bonus
+SMOKE OK progression: using food cannot leave phantom servings
+SMOKE OK progression: malformed negative food is not edible and inspection does not rewrite saves
+SMOKE OK progression: large stock cannot overflow and resting keeps the old zero-cost rule
+SMOKE OK progression: portable items remain available for gifts, recovery and outings when pantry food covers lunch
+SMOKE OK progression: today's cooking does not retroactively feed yesterday's shift
+SMOKE OK progression: the next ordinary settlement uses the previous day's actual kitchen production
+SMOKE OK progression: kitchen: level one preserves the previous output and pay
+SMOKE OK progression: kitchen: useful local equipment produces stock, not duplicate wages
+SMOKE OK progression: kitchen: actual production uses the same tier contribution as its public preview
+SMOKE OK progression: kitchen: higher numerical levels cannot create unbounded tier bonuses
+SMOKE OK progression: cooking: level one preserves the previous output and pay
+SMOKE OK progression: cooking: useful local equipment produces stock, not duplicate wages
+SMOKE OK progression: cooking: actual production uses the same tier contribution as its public preview
+SMOKE OK progression: cooking: higher numerical levels cannot create unbounded tier bonuses
+SMOKE OK progression: dairy: level one preserves the previous output and pay
+SMOKE OK progression: dairy: useful local equipment produces stock, not duplicate wages
+SMOKE OK progression: dairy: actual production uses the same tier contribution as its public preview
+SMOKE OK progression: dairy: higher numerical levels cannot create unbounded tier bonuses
+SMOKE OK progression: pasture: level one preserves the previous output and pay
+SMOKE OK progression: pasture: useful local equipment produces stock, not duplicate wages
+SMOKE OK progression: pasture: actual production uses the same tier contribution as its public preview
+SMOKE OK progression: pasture: higher numerical levels cannot create unbounded tier bonuses
+SMOKE OK progression: workshop: level one preserves the previous output and pay
+SMOKE OK progression: workshop: useful local equipment produces stock, not duplicate wages
+SMOKE OK progression: workshop: actual production uses the same tier contribution as its public preview
+SMOKE OK progression: workshop: higher numerical levels cannot create unbounded tier bonuses
+SMOKE OK progression: pharmacy: level one preserves the previous output and pay
+SMOKE OK progression: pharmacy: useful local equipment produces stock, not duplicate wages
+SMOKE OK progression: pharmacy: actual production uses the same tier contribution as its public preview
+SMOKE OK progression: pharmacy: higher numerical levels cannot create unbounded tier bonuses
+SMOKE OK progression: cleaning: level one preserves the previous output and pay
+SMOKE OK progression: cleaning: useful local equipment produces stock, not duplicate wages
+SMOKE OK progression: cleaning: actual production uses the same tier contribution as its public preview
+SMOKE OK progression: cleaning: higher numerical levels cannot create unbounded tier bonuses
+SMOKE OK progression: customer_service: level one preserves the previous output and pay
+SMOKE OK progression: customer_service: useful local equipment produces stock, not duplicate wages
+SMOKE OK progression: customer_service: actual production uses the same tier contribution as its public preview
+SMOKE OK progression: customer_service: higher numerical levels cannot create unbounded tier bonuses
+SMOKE OK progression: kitchen equipment does not grant an unrelated office production bonus
+SMOKE OK progression: existing fatigue also reduces the new equipment stock bonus
+SMOKE OK progression: equipment is not unstaffed automation and does not make collapsed residents work
+SMOKE OK progression: extra output at inventory capacity never wraps stock negative
+SMOKE OK progression: optional goals have stable IDs and read-only untranslated-state inspection
+SMOKE OK progression: earned goals may complete on day one and grant recognition, not economic snowball bonuses
+SMOKE OK progression: replaying the same boundary cannot repeat an optional event or extend receipt storage
+SMOKE OK progression: the restoration chapter can complete after victory without moving the existing finish line
+SMOKE OK progression: an unrelated day boundary cannot submit a stale completion
+SMOKE OK progression: current-schema JSON preserves every first achievement day
+SMOKE OK progression: small-crew success requires real work, wellbeing, lunch and replacement-food cost coverage
+SMOKE OK progression: small-crew success requires real work, wellbeing, lunch and replacement-food cost coverage
+SMOKE OK progression: small-crew success requires real work, wellbeing, lunch and replacement-food cost coverage
+SMOKE OK progression: small-crew success requires real work, wellbeing, lunch and replacement-food cost coverage
+SMOKE OK progression: small-crew success requires real work, wellbeing, lunch and replacement-food cost coverage
+SMOKE OK progression: the real root settlement records self-supply without replacing the session or completing the main campaign
+SMOKE OK progression: the completed optional goal saves and loads through the ordinary root
+SMOKE OK progression: continuing after load retains the first day and does not replay success or force a new run
+SMOKE OK progression: only explicit New Game+ starts new run-local achievement records
+SMOKE OK progression: purchased_food: ordinary starting money pays for the barn
+SMOKE OK progression: purchased_food: day 1 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=1 wallet=371 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=121
+SMOKE OK progression: purchased_food: day 2 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=2 wallet=363 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: purchased_food: day 3 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=3 wallet=355 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: purchased_food: day 4 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=4 wallet=422 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=127
+SMOKE OK progression: purchased_food: day 5 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=5 wallet=414 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: purchased_food: day 6 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=6 wallet=406 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: purchased_food: day 7 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=7 wallet=398 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: purchased_food: day 8 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=8 wallet=390 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: purchased_food: day 9 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=9 wallet=482 pantry=0 home=0 boxed=2 missing=0 work=124 upkeep=72 full_net=152
+SMOKE OK progression: purchased_food: day 10 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=10 wallet=477 pantry=0 home=0 boxed=2 missing=0 work=127 upkeep=72 full_net=55
+SMOKE OK progression: purchased_food: day 11 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=11 wallet=472 pantry=0 home=0 boxed=2 missing=0 work=127 upkeep=72 full_net=55
+SMOKE OK progression: purchased_food: day 12 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=12 wallet=467 pantry=0 home=0 boxed=2 missing=0 work=127 upkeep=72 full_net=55
+SMOKE OK progression: purchased_food: day 13 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=13 wallet=462 pantry=0 home=0 boxed=2 missing=0 work=127 upkeep=72 full_net=55
+SMOKE OK progression: purchased_food: day 14 conserves stock and reconciles the actual wallet
+BALANCE purchased_food day=14 wallet=457 pantry=0 home=0 boxed=2 missing=0 work=127 upkeep=72 full_net=55
+SMOKE OK progression: purchased_food: all fourteen days include construction, purchased lunches and actual event/milestone payments
+BALANCE TOTAL purchased_food wallet=457 meal_spend=780 upgrade_spend=250 home_meals=0
+SMOKE OK progression: adaptive_kitchen: ordinary starting money pays for the barn
+SMOKE OK progression: adaptive_kitchen: day 1 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=1 wallet=358 pantry=6 home=0 boxed=2 missing=0 work=111 upkeep=72 full_net=108
+SMOKE OK progression: adaptive_kitchen: day 2 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=2 wallet=410 pantry=4 home=2 boxed=0 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: adaptive_kitchen: day 3 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=3 wallet=462 pantry=2 home=2 boxed=0 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: adaptive_kitchen: day 4 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=4 wallet=656 pantry=6 home=2 boxed=0 missing=0 work=111 upkeep=72 full_net=194
+SMOKE OK progression: adaptive_kitchen: day 5 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=5 wallet=708 pantry=4 home=2 boxed=0 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: adaptive_kitchen: day 6 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=6 wallet=860 pantry=2 home=2 boxed=0 missing=0 work=124 upkeep=72 full_net=152
+SMOKE OK progression: adaptive_kitchen: day 7 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=7 wallet=899 pantry=6 home=2 boxed=0 missing=0 work=111 upkeep=72 full_net=39
+SMOKE OK progression: adaptive_kitchen: day 8 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=8 wallet=951 pantry=4 home=2 boxed=0 missing=0 work=124 upkeep=72 full_net=52
+SMOKE OK progression: adaptive_kitchen: day 9 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=9 wallet=1103 pantry=2 home=2 boxed=0 missing=0 work=124 upkeep=72 full_net=152
+SMOKE OK progression: adaptive_kitchen: day 10 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=10 wallet=1145 pantry=7 home=2 boxed=0 missing=0 work=114 upkeep=72 full_net=42
+SMOKE OK progression: adaptive_kitchen: day 11 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=11 wallet=1200 pantry=5 home=2 boxed=0 missing=0 work=127 upkeep=72 full_net=55
+SMOKE OK progression: adaptive_kitchen: day 12 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=12 wallet=1255 pantry=3 home=2 boxed=0 missing=0 work=127 upkeep=72 full_net=55
+SMOKE OK progression: adaptive_kitchen: day 13 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=13 wallet=1297 pantry=8 home=2 boxed=0 missing=0 work=114 upkeep=72 full_net=42
+SMOKE OK progression: adaptive_kitchen: day 14 conserves stock and reconciles the actual wallet
+BALANCE adaptive_kitchen day=14 wallet=1352 pantry=6 home=2 boxed=0 missing=0 work=127 upkeep=72 full_net=55
+SMOKE OK progression: adaptive_kitchen: all fourteen days include construction, purchased lunches and actual event/milestone payments
+BALANCE TOTAL adaptive_kitchen wallet=1352 meal_spend=0 upgrade_spend=250 home_meals=26
+SMOKE OK progression: upgraded_kitchen: ordinary starting money pays for the barn
+SMOKE OK progression: upgraded_kitchen: kitchen level two is a real paid investment
+SMOKE OK progression: upgraded_kitchen: day 1 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=1 wallet=131 pantry=7 home=0 boxed=2 missing=0 work=111 upkeep=84 full_net=96
+SMOKE OK progression: upgraded_kitchen: day 2 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=2 wallet=171 pantry=5 home=2 boxed=0 missing=0 work=124 upkeep=84 full_net=40
+SMOKE OK progression: upgraded_kitchen: day 3 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=3 wallet=211 pantry=3 home=2 boxed=0 missing=0 work=124 upkeep=84 full_net=40
+SMOKE OK progression: upgraded_kitchen: day 4 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=4 wallet=313 pantry=8 home=2 boxed=0 missing=0 work=111 upkeep=84 full_net=102
+SMOKE OK progression: upgraded_kitchen: day 5 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=5 wallet=353 pantry=6 home=2 boxed=0 missing=0 work=124 upkeep=84 full_net=40
+SMOKE OK progression: upgraded_kitchen: day 6 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=6 wallet=393 pantry=4 home=2 boxed=0 missing=0 work=124 upkeep=84 full_net=40
+SMOKE OK progression: upgraded_kitchen: day 7 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=7 wallet=433 pantry=2 home=2 boxed=0 missing=0 work=124 upkeep=84 full_net=40
+SMOKE OK progression: upgraded_kitchen: day 8 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=8 wallet=460 pantry=7 home=2 boxed=0 missing=0 work=111 upkeep=84 full_net=27
+SMOKE OK progression: upgraded_kitchen: day 9 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=9 wallet=680 pantry=5 home=2 boxed=0 missing=0 work=124 upkeep=84 full_net=220
+SMOKE OK progression: upgraded_kitchen: day 10 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=10 wallet=723 pantry=3 home=2 boxed=0 missing=0 work=127 upkeep=84 full_net=43
+SMOKE OK progression: upgraded_kitchen: day 11 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=11 wallet=853 pantry=9 home=2 boxed=0 missing=0 work=114 upkeep=84 full_net=130
+SMOKE OK progression: upgraded_kitchen: day 12 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=12 wallet=896 pantry=7 home=2 boxed=0 missing=0 work=127 upkeep=84 full_net=43
+SMOKE OK progression: upgraded_kitchen: day 13 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=13 wallet=939 pantry=5 home=2 boxed=0 missing=0 work=127 upkeep=84 full_net=43
+SMOKE OK progression: upgraded_kitchen: day 14 conserves stock and reconciles the actual wallet
+BALANCE upgraded_kitchen day=14 wallet=982 pantry=3 home=2 boxed=0 missing=0 work=127 upkeep=84 full_net=43
+SMOKE OK progression: upgraded_kitchen: all fourteen days include construction, purchased lunches and actual event/milestone payments
+BALANCE TOTAL upgraded_kitchen wallet=982 meal_spend=0 upgrade_spend=465 home_meals=26
+SMOKE OK progression: ordinary food production reduces purchases and improves the tested policy's final balance
+SMOKE OK progression: the upgrade policy actually paid for equipment and used its food, without assuming it is optimal
+SMOKE OK character development: exact original talent ID reads EP above half without modifying the resident
+SMOKE OK character development: zero MP does not exhaust a ward's EP reserve
+SMOKE OK character development: EP at floor(maximum / 2) is low even with abundant mana
+SMOKE OK character development: depletion neither deletes the protection trait nor grants a bypass
+SMOKE OK character development: missing or malformed EP capacity is unknown, not permission
+SMOKE OK character development: missing or malformed EP capacity is unknown, not permission
+SMOKE OK character development: large EP uses division, without doubled-resource overflow
+SMOKE OK character development: the exact older numeric talent alias is recognized
+SMOKE OK character development: the existing remake's exact semantic ward ID is recognized without label matching
+SMOKE OK character development: neighbouring IDs, race and appearance do not invent protection traits
+SMOKE OK character development: incapacity remains a recovery condition, not an unlock
+SMOKE OK character development: source power discounts mana at equality below level 30 and preserves both integer roundings
+SMOKE OK character development: source level 30 uses full mana, without guessing an aptitude from CombatSkill
+SMOKE OK character development: just below the ten-to-one ratio no mana discount applies
+SMOKE OK character development: reference calculation rejects an unsupported aptitude percentage
+SMOKE OK character development: reference calculation rejects an unsupported aptitude percentage
+SMOKE OK character development: zero health capacity cannot divide by zero
+SMOKE OK character development: wide source arithmetic remains exact and never rewrites the tactical character
+SMOKE OK character development: previews and captures allocate no saved baseline, journal or rewards
+SMOKE OK character development: unknown residents have no invented development
+SMOKE OK character development: genuine skill gains grow bounded capacity without a free HP/MP/EP/SP/STA refill
+SMOKE OK character development: one observation records actual stats, capacity and continuous non-graphic development channels
+SMOKE OK character development: the same capture cannot award a rank twice
+SMOKE OK character development: another flag owner cannot accept a capture
+SMOKE OK character development: a rejected foreign submission does not consume the real owner's capture
+SMOKE OK character development: revision receipts reject two overlapping observations
+SMOKE OK character development: returning to a previous skill high does not award another permanent benefit
+SMOKE OK character development: repeated training saturates its benefit and keeps exactly bounded journal storage
+SMOKE OK character development: non-explicit conditioning does not overwrite identity, age eligibility or anatomical content
+SMOKE OK character development: reading a populated journal does not change its cursor or baseline
+SMOKE OK character development: current-schema JSON retains baseline, capped channels, ordered history and source protection
+SMOKE OK character development: a stale daytime observation cannot commit in another day
+SMOKE OK character development: ambiguous resident identity rejects completion
+SMOKE OK character development: incapacity cannot be used to earn a new conditioning benefit
+SMOKE OK character development: an uncatalogued resident shares the roster's real capacity and body fallback, without a save rewrite
+SMOKE OK character development: conditioning cannot replace an uncatalogued resident's larger capacity with an invented default
+SMOKE OK character development: catalog capacities and authored body identity use the same fallback as the existing roster
+SMOKE OK character development: capacity saturates safely while an explicitly authored body identity stays authoritative
+SMOKE OK character development: real resident practice applies the old lesson effects and costs exactly once
+SMOKE OK character development: ordinary resident actions feed the development journal without a debug command
+SMOKE OK character development: repeated practice cannot farm history, capacity or another lesson
+SMOKE OK character development: a second real combat lesson crosses the conditioning stage, without healing the resident
+SMOKE OK character development: the shared recovery guard rejects an incapacitated resident before costs or development flags
+SMOKE OK character development: the ordinary root day records an actual existing work level-up in its report
+SMOKE OK character development: the ordinary root saves and reloads development through its canonical FlagService
+SMOKE OK character development: root reload does not reconstruct a new baseline or replay a reward
+SMOKE OK character development: only an explicit new run starts fresh character development records
+SMOKE OK development continuation: opening forecasts never creates a baseline, stage or journal entry
+SMOKE OK development continuation: initial conditioning forecasts the actual two-point threshold, without retrospective rewards
+SMOKE OK development continuation: only the two authored capacity tracks have forecasts; unsupported or missing targets do not
+SMOKE OK development continuation: one genuine point reduces the distance to the next stage
+SMOKE OK development continuation: a setback forecasts catch-up to the old high as well as new progress
+SMOKE OK development continuation: recovering a lost skill does not receive another conditioning point
+SMOKE OK development continuation: reaching the forecast threshold adds the predicted capacity, not healing
+SMOKE OK development continuation: completed tracks stop promising a fourth capacity reward
+SMOKE OK development continuation: an imported nine-point skill does not promise a stage beyond the ten-point lesson limit
+SMOKE OK development continuation: preview and committed capacity both saturate at the same remaining two points
+SMOKE OK development continuation: a full integer capacity explains why another bonus cannot fit
+SMOKE OK development continuation: the last reachable odd magic threshold remains available
+SMOKE OK development continuation: a one-point gap cannot promise an overflowing two-point magic lesson
+SMOKE OK development continuation: invalid capacity is not described as a training opportunity
+SMOKE OK development continuation: duplicate identities cannot produce a forecast
+SMOKE OK development continuation: a resident without recorded changes gets no invented development story
+SMOKE OK development continuation: the existing available-action tooltip includes the real next conditioning target
+SMOKE OK development continuation: the actual lesson result explains remaining progress rather than granting a bonus early
+SMOKE OK development continuation: free conversation reflects a real recorded improvement without costs, rewards or memory writes
+SMOKE OK development continuation: immediate fatigue takes precedence over a development reflection
+SMOKE OK development continuation: low morale is not hidden behind celebratory progress dialogue
+SMOKE OK development continuation: a recorded loss is acknowledged rather than described as an improvement
+SMOKE OK development continuation: an untracked edit does not leave a misleading obsolete reflection
+SMOKE OK development continuation: German feedback formats at read time without gameplay mutation
+SMOKE OK development continuation: an unmapped legacy focus rejects without mutation: 
+SMOKE OK development continuation: an unmapped legacy focus rejects without mutation: 
+SMOKE OK development continuation: an unmapped legacy focus rejects without mutation: unknown
+SMOKE OK development continuation: an unmapped legacy focus rejects without mutation: Combat
+SMOKE OK development continuation: the stamped training entry rejects stale session, day and phase
+SMOKE OK development continuation: legacy training cannot skip the guided introduction
+SMOKE OK development continuation: legacy training cannot double the night plan
+SMOKE OK development continuation: legacy training is blocked while paused
+SMOKE OK development continuation: legacy training cannot run during combat preparation
+SMOKE OK development continuation: legacy training cannot bypass player stamina
+SMOKE OK development continuation: the legacy root entry now pays the same single lesson and stamina costs
+SMOKE OK development continuation: one notification stays command-locked against reentrant practice and time advance
+SMOKE OK development continuation: legacy root training now records actual development exactly once
+SMOKE OK development continuation: switching old/new entry points or focus cannot evade the same resident's daily receipt
+SMOKE OK development continuation: another resident can use the second shared ranch lesson
+SMOKE OK development continuation: the legacy entry cannot create a third ranch-wide lesson
+SMOKE OK development continuation: ordinary root save/load retains the forecast and underlying high-water progress
+SMOKE OK development continuation: loading cannot erase a legacy-entry daily lesson receipt
+SMOKE OK development continuation: day settlement rejects nested practice and resets the canonical lesson budget once
+SMOKE OK development continuation: a real next-day legacy lesson reaches the forecast capacity stage without a refill
+SMOKE OK day contract: 1 workers: training grants one extra growth pass per worker, not one pass per resident
+SMOKE OK day contract: 1 workers: the chosen night is consumed and reaches Morning
+SMOKE OK day contract: 1 workers: settlement advances exactly one day
+SMOKE OK day contract: 4 workers: training grants one extra growth pass per worker, not one pass per resident
+SMOKE OK day contract: 4 workers: the chosen night is consumed and reaches Morning
+SMOKE OK day contract: 4 workers: settlement advances exactly one day
+SMOKE OK day contract: 8 workers: training grants one extra growth pass per worker, not one pass per resident
+SMOKE OK day contract: 8 workers: the chosen night is consumed and reaches Morning
+SMOKE OK day contract: 8 workers: settlement advances exactly one day
+SMOKE OK day contract: a training level-up remains marked after the ordinary daily growth pass
+SMOKE OK day contract: 96 seeded days actually exercise positive and paid negative gold events
+SMOKE OK day contract: daily net includes actual event payments: 
+SMOKE OK day contract: daily report and overview share the same complete income and expense totals
+SMOKE OK day contract: a capped event reports credited gold, not an amount the wallet did not receive
+SMOKE OK day contract: an unaffordable event does not report a payment or deduct gold
+SMOKE OK day contract: the root time command cannot bypass an unplanned night
+SMOKE OK day contract: night selection cannot be preloaded during Morning
+SMOKE OK day contract: day-settled observers cannot recursively settle tomorrow
+SMOKE OK day contract: reentrant completion returns the current report and cannot advance the new Morning
+SMOKE OK day contract: a current nightly plan can be revised through all three choices before settlement
+SMOKE OK day contract: planning notifies once per change without applying recovery, training, costs or workload twice
+SMOKE OK day contract: identical, unknown, stale-day and stale-session choices do not mutate or notify
+SMOKE OK day contract: combat keeps night choices and time blocked
+SMOKE OK day contract: a prepared night bath preserves the selected Admin plan and its separate next-morning bonus
+SMOKE OK day contract: time commands reject the wrong day, phase or session
+SMOKE OK day contract: replaying the accepted night command cannot advance tomorrow or pay again
+SMOKE OK day contract: a new session on the same displayed day still rejects the old command
+SMOKE OK day contract: a completion observer replacing the session cannot attach the old report to the new game
+SMOKE OK day contract: the settlement guard releases after an observer replaces the session
+SMOKE OK day contract: a new day clears yesterday's growth mark even without work
+SMOKE OK day contract: night training retains ordinary rest-job exclusion rather than granting every resident XP
+SMOKE OK day contract: ledger at opening 100 reports applied bounded payments without changing the wallet
+SMOKE OK day contract: ledger at opening 2147483647 reports applied bounded payments without changing the wallet
+SMOKE OK day contract: ledger at opening -2147483648 reports applied bounded payments without changing the wallet
+SMOKE OK day contract: capped milestone receipts contain only credited gold, not phantom income
+SMOKE OK day contract: milestone messages agree with the actual credit at the wallet limit
+SMOKE OK ranch leisure: unrestored corner offers construction but no recovery
+SMOKE OK ranch leisure: inspecting the corner is deterministic and changes no state or flags
+SMOKE OK ranch leisure: first-day actions are rejected
+SMOKE OK ranch leisure: unfinished introduction cannot be bypassed by a day value
+SMOKE OK ranch leisure: corner cannot be restored from another area
+SMOKE OK ranch leisure: stale day rejects construction
+SMOKE OK ranch leisure: supply shortage does not deduct gold or partial stock
+SMOKE OK ranch leisure: gold shortage preserves supplies and construction state
+SMOKE OK ranch leisure: restoration returns a receipt
+SMOKE OK ranch leisure: construction charges exactly 40 G and three supplies once
+SMOKE OK ranch leisure: restoration does not charge stamina, advance time or alter settlement income
+SMOKE OK ranch leisure: repeat restoration cannot charge a second time
+SMOKE OK ranch leisure: full stamina does not consume the daily break
+SMOKE OK ranch leisure: a break restores ten stamina
+SMOKE OK ranch leisure: a second break cannot refill again
+SMOKE OK ranch leisure: advancing a phase does not reset daily recovery
+SMOKE OK ranch leisure: serialized flags retain improvement and daily receipt
+SMOKE OK ranch leisure: storage uses exactly two bounded flags
+SMOKE OK ranch leisure: partial refill stops at the current capacity
+SMOKE OK ranch leisure: a partial refill still uses one daily break
+SMOKE OK ranch leisure: recovery respects the existing Well Rested capacity
+SMOKE OK ranch leisure: corner recovery neither grants nor consumes the separate bath bonus
+SMOKE OK ranch leisure: skipped days accumulate no recovery backlog
+SMOKE OK ranch leisure: later days add neither upkeep nor growing history
+SMOKE OK ranch leisure: a future receipt fails closed instead of paying again
+SMOKE OK ranch leisure: invalid overflowing stamina capacity rejects without normalization
+SMOKE OK ranch leisure: root rejects stale generation
+SMOKE OK ranch leisure: root rejects a stale phase
+SMOKE OK ranch leisure: root rejects a stale day
+SMOKE OK ranch leisure: root rejects construction during combat
+SMOKE OK ranch leisure: rejected root commands leave all costs and completion untouched
+SMOKE OK ranch leisure: root construction succeeds
+SMOKE OK ranch leisure: completion is recorded before notification, preventing reentrant construction
+SMOKE OK ranch leisure: root recovery succeeds
+SMOKE OK ranch leisure: recovery receipt prevents a reentrant second refill
+SMOKE OK ranch leisure: solo corner is usable without enabling unavailable companionship
+SMOKE OK ranch leisure: synthetic willing companion can start the existing outing
+SMOKE OK ranch leisure: stale companion cannot spend stamina or modify a different relationship
+SMOKE OK ranch leisure: quiet-corner interaction requires a voluntary outing
+SMOKE OK ranch leisure: shared moment delegates to the existing activity cost and positive outcome
+SMOKE OK ranch leisure: world and management share the same one-activity-per-phase limit
+SMOKE OK ranch leisure: existing eligibility denial remains effective at the new entry point
+SMOKE OK ranch leisure: real root save writes restoration and daily receipt
+SMOKE OK ranch leisure: fresh session does not inherit the prior improvement
+SMOKE OK ranch leisure: current-version root load restores the complete transaction
+SMOKE OK ranch leisure: loading a completed daily recovery cannot grant another
+SMOKE OK ranch leisure: pre-load callbacks cannot affect the loaded session
+SMOKE OK frame playthrough: fresh world entry starts the guided first day
+SMOKE OK frame playthrough: a real W InputMap event moves the CharacterBody across physics frames
+SMOKE OK frame playthrough: ordinary exploration remains free of daily stamina charges
+SMOKE OK frame playthrough: real door interaction enters the ranch instead of leaving the introduction stuck
+SMOKE OK frame playthrough: physical workstation input assigns work in the shared schedule
+SMOKE OK frame playthrough: the first-day barn is built once at its listed price with real starting funds
+SMOKE OK frame playthrough: pasture plus a separate dairy assignment complete the tour through its real UI
+SMOKE OK frame playthrough: the fresh starting party can finish the mandatory tutorial fight without stat cheats
+SMOKE OK frame playthrough: tutorial results release the combat clock before the normal night routine
+SMOKE OK frame playthrough: the complete first-day story reaches one ordinary settlement and its report
+SMOKE OK frame playthrough: the prepared evening bath supplies extra starting stamina on Day 2
+SMOKE OK frame playthrough: real Escape input opens pause (before: handler=True, process=True, management=False, flow=False, story=False, transition=False, focus=, scene=res://scenes/MainMenu.tscn; after open=True, paused=True)
+SMOKE OK frame playthrough: ordinary pause contains no remote community delivery shortcut
+SMOKE OK frame playthrough: the physical community board opens its dedicated delivery surface
+SMOKE OK frame playthrough: actual tutorial pasture production supplies the Day 2 market basket
+SMOKE OK frame playthrough: the board consumes the displayed stock and pays the displayed gold exactly once
+SMOKE OK frame playthrough: one real Back from the physical board resumes the world without opening a remote menu
+SMOKE OK frame playthrough: completed first-day session writes the isolated smoke slot
+SMOKE OK frame playthrough: the completed session loads through the real root save boundary
+SMOKE OK frame playthrough: story, day, stock, gold and one-per-day receipt survive load together
+SMOKE OK leisure frames: authored live world registers both personal points in the existing interaction list
+SMOKE OK leisure frames: after real facility upkeep the corner explains the missing supplies instead of taking partial payment
+SMOKE OK leisure frames: the shortage's planning route opens the place guide without a leftover pause
+SMOKE OK leisure frames: the actual Office destination marks a place without teleporting, spending or paying production
+SMOKE OK leisure frames: F at the physical Office opens its own local assignment surface
+SMOKE OK leisure frames: a local Office assignment changes the shared schedule without paying production before settlement
+SMOKE OK leisure frames: Plan Night marks the house and requires an explicit local workload choice before settlement
+SMOKE OK leisure frames: the house opens through the same physical interaction used by the player
+SMOKE OK leisure frames: the local night-choice button selects ordinary rest
+SMOKE OK leisure frames: normal phase advancement reaches the Day 3 settlement report once
+SMOKE OK leisure frames: the actual Office Work report accounts for the supplies used by restoration
+SMOKE OK leisure frames: F at the physical noticeboard opens the existing paused courier board
+SMOKE OK leisure frames: opening the physical board does not deliver or pay automatically
+SMOKE OK leisure frames: physical board returns directly to the world with no remote pause hub
+SMOKE OK leisure frames: quiet corner is selected by the existing nearest-target resolver
+SMOKE OK leisure frames: F opens the quiet-corner surface with one pause owner
+SMOKE OK leisure frames: ordinary supply production and earned gold cover optional restoration
+SMOKE OK leisure frames: restoration changes the visible greybox bench immediately through shared-state notification
+SMOKE OK leisure frames: live restoration consumes exactly the displayed resources without test stock injection
+SMOKE OK leisure frames: restored/full-stamina/no-companion conditions disable unavailable actions
+SMOKE OK leisure frames: personal point changes no assignments, time or stamina during inspection/construction
+SMOKE OK leisure frames: repeated visual refreshes do not accumulate props or labels
+SMOKE OK leisure frames: Back closes the corner directly to the world without leaving a hidden pause owner
+SMOKE OK leisure frames: hidden panel callbacks cannot repeat construction
+SMOKE OK leisure frames: an ordinary existing mentorship spends progression stamina before the break
+SMOKE OK leisure frames: reopening exposes recovery after actual progression spending
+SMOKE OK leisure frames: live break restores ten stamina and immediately disables repeat recovery
+SMOKE OK leisure frames: repeated button signal cannot bypass the daily receipt
+SMOKE OK leisure frames: finding supplies opens the place guide without a remote work or pause surface
+SMOKE OK leisure frames: returning from planning restores world controls
+SMOKE OK leisure frames: personal station opens even with no available roster worker
+SMOKE OK leisure frames: completed corner transaction writes the isolated current-version save
+SMOKE OK leisure frames: corner can reopen after roster presentation is restored
+SMOKE OK leisure frames: replacing the session closes stale UI and removes the prior improvement's presentation
+SMOKE OK leisure frames: old UI cannot build in the new session
+SMOKE OK leisure frames: loading restores the existing visual rather than spawning duplicate improvement nodes
+SMOKE OK leisure frames: gold, supplies, recovery receipt and stamina survive the same root save boundary
+SMOKE OK HUD/menu: only ranch HUD is visible in ranch
+SMOKE OK HUD/menu: management hides both area HUD layers
+SMOKE OK HUD/menu: a hidden world advance callback cannot advance behind management
+SMOKE OK HUD/menu: closing management restores only active HUD
+SMOKE OK HUD/menu: ordinary ranch-to-town travel remains available
+SMOKE OK HUD/menu: only town HUD is visible after travel
+SMOKE OK HUD/menu: inactive ranch HUD cannot advance the town session
+SMOKE OK HUD/menu: inactive ranch HUD cannot open town management
+SMOKE OK HUD/menu: town help owns input
+SMOKE OK HUD/menu: Back closes help instead of opening pause above it
+SMOKE OK HUD/menu: opening management closes help while retaining the management input lock
+SMOKE OK HUD/menu: help cannot open behind management
+SMOKE OK HUD/menu: hidden town-return button cannot travel behind management
+SMOKE OK HUD/menu: return from town remains available after help and management
+SMOKE OK HUD/menu: world command rejects phase advance while paused
+SMOKE OK HUD/menu: travel is rejected while pause owns the interface
+SMOKE OK HUD/menu: ordinary ranch screen has live content
+SMOKE OK HUD/menu: ordinary report screen has live content
+SMOKE OK HUD/menu: ordinary roster screen has live content
+SMOKE OK HUD/menu: ordinary schedule screen has live content
+SMOKE OK HUD/menu: ordinary town screen has live content
+SMOKE OK HUD/menu: ordinary shop screen has live content
+SMOKE OK HUD/menu: ordinary adventure screen has live content
+SMOKE OK HUD/menu: ordinary milestones screen has live content
+SMOKE OK HUD/menu: ordinary bond screen has live content
+SMOKE OK HUD/menu: ordinary pets screen has live content
+SMOKE OK HUD/menu: ordinary saveload screen has live content
+SMOKE OK HUD/menu: ordinary settings screen has live content
+SMOKE OK HUD/menu: ordinary options screen has live content
+SMOKE OK HUD/menu: ordinary room_assign screen has live content
+SMOKE OK HUD/menu: ordinary ability screen has live content
+SMOKE OK HUD/menu: browsing ordinary menus does not pay, consume stamina or settle days
+SMOKE OK HUD/menu: research access still requires the existing workshop
+SMOKE OK HUD/menu: empty roster shows canonical player HP immediately without indexing a resident
+SMOKE OK HUD/menu: player HP is correct before the next process frame
+SMOKE OK HUD/menu: same-screen state refresh preserves a scrolled options view
+SMOKE OK HUD/menu: management scrolling follows keyboard and controller focus
+SMOKE OK HUD view state: a burst of same-view notifications retains the exact requested scroll position
+SMOKE OK HUD view state: a rebuilt options view restores the logical binding control, not a retired node
+SMOKE OK HUD view state: focus restoration does not overwrite the previously visible options position
+SMOKE OK HUD view state: normal focus-following remains enabled after restoration
+SMOKE OK HUD view state: an unchanged focus key preserves deliberate manual scrolling away from the control
+SMOKE OK HUD view state: replacement-focus fixture starts with a genuinely clipped command
+SMOKE OK HUD view state: a removed command's replacement focus is scrolled into view after layout (key=Keyboard_pause_menu, scroll=2270, target=(446, 1008), (180, 36), viewport=(238, 171), (1640, 873))
+SMOKE OK HUD view state: a pending options restore cannot scroll a newly selected screen
+SMOKE OK HUD view state: a pending options restore cannot focus a retired binding after routing
+SMOKE OK HUD view state: hiding a pending view leaves the world in control
+SMOKE OK HUD view state: a hidden view cannot reclaim GUI focus on the following frame
+SMOKE OK HUD view state: reopening management does not inherit the discarded options restore
+SMOKE OK HUD/menu: compact menu obtains an enabled visible keyboard focus target
+SMOKE OK HUD/menu: retired or hidden options controls cannot capture the next gameplay key
+SMOKE OK HUD/menu: management exposes Plan Night until a night action is chosen
+SMOKE OK HUD/menu: management cannot silently settle a night with no selected action
+SMOKE OK HUD/menu: rejected combat navigation creates no clock lock
+SMOKE OK HUD/menu: Fight opens a prepared mission with a stable clock owner
+SMOKE OK HUD/menu: Tactical Battle stays in the live combat menu after state notification
+SMOKE OK HUD/menu: live tactical entry charges the displayed stamina once
+SMOKE OK HUD/menu: phase advance is visibly disabled during combat
+SMOKE OK HUD/menu: Return to World cannot abandon an unresolved tactical session
+SMOKE OK HUD/menu: another menu cannot discard an unresolved battle
+SMOKE OK HUD/menu: repeated combat-start commands do not reset the current encounter
+SMOKE OK HUD/menu: finished tactical combat reaches the actual results menu
+SMOKE OK HUD/menu: leaving results releases both management and the combat clock
+SMOKE OK HUD/menu: world time advances again after results close
+SMOKE PASS

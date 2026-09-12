@@ -1,0 +1,242 @@
+{
+  "prompt": [
+    11,
+    "2d20efe8-03e5-43bb-9a1e-1e1a42cd229d",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_edit_2511_fp8mixed.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_vae.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "OMR-4e4630af747e0b5b3752.png"
+        }
+      },
+      "5": {
+        "class_type": "ImageScale",
+        "inputs": {
+          "image": [
+            "4",
+            0
+          ],
+          "upscale_method": "lanczos",
+          "width": 1536,
+          "height": 864,
+          "crop": "disabled"
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "CFGNorm",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "strength": 1.0
+        }
+      },
+      "8": {
+        "class_type": "LoraLoaderModelOnly",
+        "inputs": {
+          "model": [
+            "7",
+            0
+          ],
+          "lora_name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+          "strength_model": 1.0
+        }
+      },
+      "9": {
+        "class_type": "TextEncodeQwenImageEditPlus",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "image1": [
+            "5",
+            0
+          ],
+          "prompt": "Refine the 3D game screenshot in image 1. Keep the EXACT original elevated wide camera and framing: do not zoom in, do not move the camera, do not enlarge or move any building. Keep the entire property inside the frame with the original surrounding space. Preserve all eight plot positions, building sizes, door positions, intersecting pathways and tree positions. Do not add or duplicate buildings. Change appearance quality only.\n\nReplace the flat green ground by lush ordinary green meadow grass and subtle clover. Refine existing path surfaces into small natural gravel. Replace each placeholder spherical tree crown at its original location with irregular layered broadleaf foliage and branching trunks. Refine the three already-roofed starter structures into modest rural timber-and-plaster house, kitchen and pasture shelter with detailed terracotta roof tiles and stone bases. Keep the FIVE currently inactive other plots visibly inactive, unroofed, with weathered foundations and survey stakes, not completed buildings. Replace the opaque rectangular boundary wall by low rustic wooden fencing on the same boundary. Retain clear entrances. Add gentle green countryside in the empty surrounding ground and a narrow natural stream strictly outside the right fence; no bridges, no plot changes. Ordinary blue sky, clear warm morning daylight, soft shadows, subtle opaque warm mana-stone lamps. Natural colors, restrained highlights, believable material roughness, carefully authored high quality soft anime 3D game assets. No toy spheres, no plastic grass, no excessive bloom, no blur, no people, no labels or HUD. Preserve the source perspective, structure count and all plot centers rather than inventing a different farm."
+        }
+      },
+      "10": {
+        "class_type": "TextEncodeQwenImageEditPlus",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "image1": [
+            "5",
+            0
+          ],
+          "prompt": ""
+        }
+      },
+      "11": {
+        "class_type": "VAEEncode",
+        "inputs": {
+          "pixels": [
+            "5",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "12": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "7",
+            0
+          ],
+          "positive": [
+            "9",
+            0
+          ],
+          "negative": [
+            "10",
+            0
+          ],
+          "latent_image": [
+            "11",
+            0
+          ],
+          "seed": 26091201,
+          "steps": 40,
+          "cfg": 4.0,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1.0
+        }
+      },
+      "13": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "12",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "14": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "13",
+            0
+          ],
+          "filename_prefix": "OMR_VisualTargets/generation-W01-qwen-full-c8b78469a2df/candidate"
+        }
+      }
+    },
+    {
+      "client_id": "generation-W01-qwen-full-c8b78469a2df",
+      "create_time": 1789177436493
+    },
+    [
+      "14"
+    ]
+  ],
+  "outputs": {
+    "14": {
+      "images": [
+        {
+          "filename": "candidate_00001_.png",
+          "subfolder": "OMR_VisualTargets\\generation-W01-qwen-full-c8b78469a2df",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "2d20efe8-03e5-43bb-9a1e-1e1a42cd229d",
+          "timestamp": 1789177436494
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "11"
+          ],
+          "prompt_id": "2d20efe8-03e5-43bb-9a1e-1e1a42cd229d",
+          "timestamp": 1789177436496
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "2d20efe8-03e5-43bb-9a1e-1e1a42cd229d",
+          "timestamp": 1789177541586
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "14": {
+      "node_id": "14",
+      "display_node": "14",
+      "parent_node": null,
+      "real_node_id": "14"
+    }
+  }
+}

@@ -1904,10 +1904,23 @@ private static void TestNewGamePlusCarryover(SmokeTestResult result)
             "avatar: rebuild preserves navigation/nameplate-style external children");
         Assert(result, avatar.UsesExternalPlaceholder,
             "avatar: project debug placeholder scene is instantiated when available");
+        var sourceHead = avatar.PlaceholderModel!.GetNode<MeshInstance3D>("Head");
+        var sourceLeg = avatar.PlaceholderModel.GetNode<MeshInstance3D>("LegLeft");
+        var sourceScale = avatar.PlaceholderModel.Scale.Y;
+        var sourceOffset = avatar.PlaceholderModel.Position.Y;
+        Assert(result, Mathf.IsEqualApprox((sourceHead.Position.Y + ((SphereMesh)sourceHead.Mesh).Height / 2) * sourceScale + sourceOffset, profile.Height),
+            "scale: authored mannequin bodily crown matches profile metres, excluding marker");
+        Assert(result, Mathf.IsZeroApprox((sourceLeg.Position.Y - ((BoxMesh)sourceLeg.Mesh).Size.Y / 2) * sourceScale + sourceOffset),
+            "scale: authored mannequin foot plane is zero");
+        Assert(result, Mathf.IsEqualApprox(CharacterAvatarFactory.CreateProfile(new CharacterDefinition { Height = "144 cm" }).Height, 1.44f),
+            "scale: valid short catalogue height is not silently enlarged");
         Assert(result, avatar.Body is not null, "avatar: body capsule generated");
         Assert(result, avatar.Head is not null, "avatar: head sphere generated");
         Assert(result, avatar.Body!.Mesh is CapsuleMesh, "avatar: body is capsule stand-in");
         Assert(result, avatar.Head!.Mesh is SphereMesh, "avatar: head is sphere stand-in");
+        Assert(result, Mathf.IsEqualApprox(avatar.Head.Position.Y + ((SphereMesh)avatar.Head.Mesh).Height / 2, profile.Height)
+            && Mathf.IsZeroApprox(avatar.Body.Position.Y - ((CapsuleMesh)avatar.Body.Mesh).Height / 2),
+            "scale: primitive fallback also uses the profile height and zero foot plane");
         var bodyMat = avatar.Body!.MaterialOverride as StandardMaterial3D;
         Assert(result, bodyMat is not null && bodyMat.AlbedoColor.IsEqualApprox(profile.BodyColor), "avatar: body tint matches profile skin mapping");
         var headMat = avatar.Head!.MaterialOverride as StandardMaterial3D;

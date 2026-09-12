@@ -1,0 +1,69 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "dotnet",
+      "build",
+      "OpenMakaiRanchGame/OpenMakaiRanchGame.csproj"
+    ],
+    "exit_code": 0,
+    "log": "build.log"
+  },
+  {
+    "name": "visual-target-tests",
+    "command": [
+      "C:\\Users\\noa3\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\python.exe",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "Tools/VisualTargets",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "log": "visual-target-tests.log"
+  },
+  {
+    "name": "visual-target-tests-optimized",
+    "command": [
+      "C:\\Users\\noa3\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\python.exe",
+      "-O",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "Tools/VisualTargets",
+      "-p",
+      "test_*.py"
+    ],
+    "exit_code": 0,
+    "log": "visual-target-tests-optimized.log"
+  },
+  {
+    "name": "godot-tool-tests",
+    "command": [
+      "C:\\Users\\noa3\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\python.exe",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "Tools/Godot",
+      "-p",
+      "test_*.py"
+    ],
+    "exit_code": 0,
+    "log": "godot-tool-tests.log"
+  },
+  {
+    "name": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "log": "diff-check.log"
+  }
+]

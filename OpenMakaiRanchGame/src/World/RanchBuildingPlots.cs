@@ -36,20 +36,7 @@ public static class RanchBuildingPlots
 {
     public static readonly Rect2 WorldBounds = new(-24.5f, -19.5f, 49, 39);
     public static readonly Rect2 GateApproach = new(-1.6f, 7, 3.2f, 12.4f);
-    public static IReadOnlyList<RanchBuildingPlot> All { get; } = Array.AsReadOnly(new[]
-    {
-        FacingHub("dairy_barn", new(14, -13), new(7.6f, 6.6f)),
-        FacingHub("pasture", new(-17, -12), new(6.2f, 5.6f)),
-        FacingHub("kitchen", new(-17, 8), new(6.2f, 5.6f)),
-        FacingHub("workshop", new(17, 9), new(6.2f, 5.6f)),
-        FacingHub("pharmacy_lab", new(18, -1), new(6.2f, 5.6f)),
-        new RanchBuildingPlot("office", new(0, -4), new(6.2f, 5.6f), 0),
-        new RanchBuildingPlot("ranch_house", new(6, 14), new(7.2f, 6.4f), Mathf.Pi),
-        new RanchBuildingPlot("pet_care", new(-6, -14), new(4.6f, 4.4f), 0)
-    });
-
-    private static RanchBuildingPlot FacingHub(string id, Vector2 center, Vector2 size) =>
-        new(id, center, size, Mathf.Atan2(-center.X, -center.Y));
+    public static IReadOnlyList<RanchBuildingPlot> All { get; } = OrganicWorldLayout.LoadRanchPlots();
     public static RanchBuildingPlot? Find(string id) => All.FirstOrDefault(plot => plot.Id == id);
     public static int VisualGrade(int simulationLevel) => Math.Clamp(simulationLevel, 0, 3);
 

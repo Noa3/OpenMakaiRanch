@@ -1,0 +1,81 @@
+00:00.782  blend            | Read blend: "E:\OpenMakaiRanch\OpenMakaiRanchGame\assets\3d\ranch_furniture\ranch_furniture.blend"
+E:\OpenMakaiRanch\Tools\Blender\materialize_ranch_asset.py:107: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  material.use_nodes = True
+Info: Saved as "bed_standard.blend"
+INFO Draco is available, use library at D:\SteamLibrary\steamapps\common\Blender\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at D:\SteamLibrary\steamapps\common\Blender\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+06:14:45 | INFO: Starting glTF 2.0 export
+06:14:45 | INFO: Extracting primitive: duvet_sculpted_folds
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.176
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.177
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.190
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.191
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.192
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.193
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.194
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.195
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.196
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.197
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.198
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: mattress
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: mattress_lower_piping
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: mattress_upper_piping
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.174
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.175
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: pillow
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.178
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.179
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.180
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.181
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.182
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.183
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.184
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.185
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.186
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.187
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.188
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: Cube.189
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: turned_bed_foot
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: turned_bed_foot.001
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: turned_bed_foot.002
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Extracting primitive: turned_bed_foot.003
+06:14:45 | INFO: Primitives created: 1
+06:14:45 | INFO: Finished glTF 2.0 export in 0.14310193061828613 s
+
+TEXTURED_ASSET_PASS ranch_furniture bed_standard 17381 3
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

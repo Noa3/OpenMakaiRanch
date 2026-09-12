@@ -1,0 +1,247 @@
+{
+  "resolution": [
+    512,
+    512
+  ],
+  "channels": {
+    "albedo": "sRGB RGB",
+    "normal": "linear tangent-space OpenGL +Y, +Z",
+    "roughness": "linear grayscale; exact ORM G",
+    "orm": "linear R=AO (255), G=roughness, B=metallic (0)"
+  },
+  "materials": {
+    "warm_lime_plaster": {
+      "tile_metres": [
+        2.0,
+        2.0
+      ],
+      "texels_per_metre": 256.0,
+      "uv_rule": "UV = surface metres / 2.0; oak grain runs along V",
+      "maps": {
+        "albedo": {
+          "file": "warm_lime_plaster_albedo.png",
+          "sha256": "5c33067e52113b11ad6638fe7d5492d6d68dd226c89f13f3eaea998559e04e3b",
+          "range": [
+            [
+              187,
+              212
+            ],
+            [
+              175,
+              200
+            ],
+            [
+              144,
+              171
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 0.004557291666666667
+        },
+        "normal": {
+          "file": "warm_lime_plaster_normal.png",
+          "sha256": "ec8196844f826e7a146ce8b70b1577bd8fd4d3f05607d6273a965c02a6bf1904",
+          "range": [
+            [
+              119,
+              133
+            ],
+            [
+              120,
+              132
+            ],
+            [
+              254,
+              254
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 0.005208333333333333
+        },
+        "roughness": {
+          "file": "warm_lime_plaster_roughness.png",
+          "sha256": "b0aef830db77f20ff36d9a1b1eb56175b85e3861f497ff914a5e57879de97f64",
+          "range": [
+            215,
+            231
+          ],
+          "opposite_edge_mean_abs_delta_255": 0.005859375
+        },
+        "orm": {
+          "file": "warm_lime_plaster_orm.png",
+          "sha256": "cd3bbcb6fddf4eabb12c9e1200734ddd6704204ae64f3eda9a8cf05244df325f",
+          "range": [
+            [
+              255,
+              255
+            ],
+            [
+              215,
+              231
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 0.001953125
+        }
+      }
+    },
+    "painted_warm_oak": {
+      "tile_metres": [
+        1.0,
+        1.0
+      ],
+      "texels_per_metre": 512.0,
+      "uv_rule": "UV = surface metres / 1.0; oak grain runs along V",
+      "maps": {
+        "albedo": {
+          "file": "painted_warm_oak_albedo.png",
+          "sha256": "0462a813f60c7bb6eabdc6a2d1144848d157e8e81bcee3de51cf6c2b60b362ad",
+          "range": [
+            [
+              145,
+              173
+            ],
+            [
+              112,
+              142
+            ],
+            [
+              73,
+              99
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 0.0390625
+        },
+        "normal": {
+          "file": "painted_warm_oak_normal.png",
+          "sha256": "818d5132fced166fd5c9bfdd122a38a09e679a2b8b4fa5d49a52fc894b0a47b8",
+          "range": [
+            [
+              88,
+              158
+            ],
+            [
+              123,
+              129
+            ],
+            [
+              248,
+              254
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 2.6438802083333335
+        },
+        "roughness": {
+          "file": "painted_warm_oak_roughness.png",
+          "sha256": "a7b03e57dcd5a7627532568329258d4e41194ee3f5ed3e13251bd3f4b6d3bfa9",
+          "range": [
+            165,
+            191
+          ],
+          "opposite_edge_mean_abs_delta_255": 0.052734375
+        },
+        "orm": {
+          "file": "painted_warm_oak_orm.png",
+          "sha256": "33b89f31366e823a0479cf3dfa21d7b9709e88ba819ea919c906efb43fdff224",
+          "range": [
+            [
+              255,
+              255
+            ],
+            [
+              165,
+              191
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 0.017578125
+        }
+      }
+    },
+    "natural_linen": {
+      "tile_metres": [
+        0.25,
+        0.25
+      ],
+      "texels_per_metre": 2048.0,
+      "uv_rule": "UV = surface metres / 0.25; oak grain runs along V",
+      "maps": {
+        "albedo": {
+          "file": "natural_linen_albedo.png",
+          "sha256": "e4f11a49bbbf624a4aa5b74a60c5ec2cefe70b50f3cad8e8c256774fdab3725e",
+          "range": [
+            [
+              175,
+              194
+            ],
+            [
+              159,
+              179
+            ],
+            [
+              129,
+              148
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 7.454427083333333
+        },
+        "normal": {
+          "file": "natural_linen_normal.png",
+          "sha256": "c744209939fae36f07946844e5cd85e5954b6591628de9f042f9db567ff64b73",
+          "range": [
+            [
+              67,
+              186
+            ],
+            [
+              66,
+              186
+            ],
+            [
+              239,
+              254
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 12.612630208333334
+        },
+        "roughness": {
+          "file": "natural_linen_roughness.png",
+          "sha256": "3c48acfe4b275f644b9bca42958e0a3ed884bf4dc5c8aeea8b8084621754a512",
+          "range": [
+            235,
+            244
+          ],
+          "opposite_edge_mean_abs_delta_255": 3.99609375
+        },
+        "orm": {
+          "file": "natural_linen_orm.png",
+          "sha256": "3edad89d798a61ac9863b6ae14260eecd63073841dd777bb432a67172225af44",
+          "range": [
+            [
+              255,
+              255
+            ],
+            [
+              235,
+              244
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "opposite_edge_mean_abs_delta_255": 1.33203125
+        }
+      }
+    }
+  },
+  "krita": {
+    "native": "house_accent_palette.kra",
+    "paint_layers": 3,
+    "roundtrip_png": "(768, 256)"
+  }
+}

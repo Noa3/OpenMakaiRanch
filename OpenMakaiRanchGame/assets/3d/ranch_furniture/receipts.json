@@ -1,0 +1,2133 @@
+{
+  "units": "metres",
+  "blender_to_godot": "(x,y,z) -> (x,z,-y), standard glTF Y-up export",
+  "material_policy": "Portable Principled base-color/roughness/metallic, no external textures; editable UV0 on every mesh",
+  "scope": "Neutral props only. No character assets, occupancy mechanics, collision or game scene wiring.",
+  "assets": [
+    {
+      "name": "table",
+      "purpose": "Four-place dining table; top surface 0.76 m",
+      "glb": "table.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.8999999761581421,
+          -0.4959999918937683,
+          0.0
+        ],
+        "max": [
+          0.8999999761581421,
+          0.4959999918937683,
+          0.7500000596046448
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.8,
+        0.992,
+        0.75
+      ],
+      "source_mesh_objects": 13,
+      "glb_meshes": 13,
+      "glb_triangles": 2620,
+      "uv0_verified": true,
+      "material_slots": [
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.001",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "surface": {
+          "node_name": "anchor_surface",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.75,
+            -0.0
+          ],
+          "purpose": "Tabletop surface"
+        },
+        "Work_Approach": {
+          "node_name": "table_Work_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -1.100000023841858,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            1.100000023841858
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Work_Pose": {
+          "node_name": "table_Work_Pose",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.75,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Work_Exit": {
+          "node_name": "table_Work_Exit",
+          "blender_xyz_m": [
+            0.8999999761581421,
+            -1.100000023841858,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.8999999761581421,
+            0.0,
+            1.100000023841858
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining1_Approach": {
+          "node_name": "table_Dining1_Approach",
+          "blender_xyz_m": [
+            -0.5,
+            -1.5099999904632568,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -0.5,
+            0.0,
+            1.5099999904632568
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining1_Pose": {
+          "node_name": "table_Dining1_Pose",
+          "blender_xyz_m": [
+            -0.5,
+            -0.8600000143051147,
+            0.46000000834465027
+          ],
+          "godot_xyz_m": [
+            -0.5,
+            0.46000000834465027,
+            0.8600000143051147
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining1_Exit": {
+          "node_name": "table_Dining1_Exit",
+          "blender_xyz_m": [
+            -0.8500000238418579,
+            -1.5099999904632568,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -0.8500000238418579,
+            0.0,
+            1.5099999904632568
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining2_Approach": {
+          "node_name": "table_Dining2_Approach",
+          "blender_xyz_m": [
+            0.5,
+            -1.5099999904632568,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.5,
+            0.0,
+            1.5099999904632568
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining2_Pose": {
+          "node_name": "table_Dining2_Pose",
+          "blender_xyz_m": [
+            0.5,
+            -0.8600000143051147,
+            0.46000000834465027
+          ],
+          "godot_xyz_m": [
+            0.5,
+            0.46000000834465027,
+            0.8600000143051147
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining2_Exit": {
+          "node_name": "table_Dining2_Exit",
+          "blender_xyz_m": [
+            0.15000000596046448,
+            -1.5099999904632568,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.15000000596046448,
+            0.0,
+            1.5099999904632568
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining3_Approach": {
+          "node_name": "table_Dining3_Approach",
+          "blender_xyz_m": [
+            -0.5,
+            1.5099999904632568,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -0.5,
+            0.0,
+            -1.5099999904632568
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining3_Pose": {
+          "node_name": "table_Dining3_Pose",
+          "blender_xyz_m": [
+            -0.5,
+            0.8600000143051147,
+            0.46000000834465027
+          ],
+          "godot_xyz_m": [
+            -0.5,
+            0.46000000834465027,
+            -0.8600000143051147
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining3_Exit": {
+          "node_name": "table_Dining3_Exit",
+          "blender_xyz_m": [
+            -0.15000000596046448,
+            1.5099999904632568,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -0.15000000596046448,
+            0.0,
+            -1.5099999904632568
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining4_Approach": {
+          "node_name": "table_Dining4_Approach",
+          "blender_xyz_m": [
+            0.5,
+            1.5099999904632568,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.5,
+            0.0,
+            -1.5099999904632568
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining4_Pose": {
+          "node_name": "table_Dining4_Pose",
+          "blender_xyz_m": [
+            0.5,
+            0.8600000143051147,
+            0.46000000834465027
+          ],
+          "godot_xyz_m": [
+            0.5,
+            0.46000000834465027,
+            -0.8600000143051147
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Dining4_Exit": {
+          "node_name": "table_Dining4_Exit",
+          "blender_xyz_m": [
+            0.8500000238418579,
+            1.5099999904632568,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.8500000238418579,
+            0.0,
+            -1.5099999904632568
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Work",
+          "nodes": [
+            "table_Work_Approach",
+            "table_Work_Pose",
+            "table_Work_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.8,
+            -1.55,
+            1.6,
+            0.9
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        },
+        {
+          "id": "Dining1",
+          "nodes": [
+            "table_Dining1_Approach",
+            "table_Dining1_Pose",
+            "table_Dining1_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.9,
+            -1.6600000000000001,
+            0.8,
+            0.8
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        },
+        {
+          "id": "Dining2",
+          "nodes": [
+            "table_Dining2_Approach",
+            "table_Dining2_Pose",
+            "table_Dining2_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            0.09999999999999998,
+            -1.6600000000000001,
+            0.8,
+            0.8
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        },
+        {
+          "id": "Dining3",
+          "nodes": [
+            "table_Dining3_Approach",
+            "table_Dining3_Pose",
+            "table_Dining3_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.9,
+            0.86,
+            0.8,
+            0.8
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        },
+        {
+          "id": "Dining4",
+          "nodes": [
+            "table_Dining4_Approach",
+            "table_Dining4_Pose",
+            "table_Dining4_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            1
+          ],
+          "clear_space_blender_xywh_m": [
+            0.09999999999999998,
+            0.86,
+            0.8,
+            0.8
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {
+        "worktop_m": 0.75
+      },
+      "normals_exported_verified": true,
+      "sha256": "da9164d7574fd598c8289a7403fdd56b5a11a194dcb1713939b1dbc693fb0064"
+    },
+    {
+      "name": "chair",
+      "purpose": "Dining chair; seat surface 0.46 m; open leg and back geometry",
+      "glb": "chair.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.2546613812446594,
+          -0.25466135144233704,
+          0.0
+        ],
+        "max": [
+          0.2546613812446594,
+          0.2864795923233032,
+          1.0
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        0.5093,
+        0.5411,
+        1.0
+      ],
+      "source_mesh_objects": 12,
+      "glb_meshes": 12,
+      "glb_triangles": 5668,
+      "uv0_verified": true,
+      "material_slots": [
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.002",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "Seat_Approach": {
+          "node_name": "chair_Seat_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -0.8999999761581421,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            0.8999999761581421
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat_Pose": {
+          "node_name": "chair_Seat_Pose",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.46000000834465027
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.46000000834465027,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat_Exit": {
+          "node_name": "chair_Seat_Exit",
+          "blender_xyz_m": [
+            0.6499999761581421,
+            -0.75,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.6499999761581421,
+            0.0,
+            0.75
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Seat",
+          "nodes": [
+            "chair_Seat_Approach",
+            "chair_Seat_Pose",
+            "chair_Seat_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.5,
+            -1.25,
+            1,
+            1
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {
+        "seat_width_m": 0.5,
+        "seat_centre_top_m": 0.46,
+        "armrests": false
+      },
+      "normals_exported_verified": true,
+      "sha256": "ff138bea576f787c6e3e07e5833beef288a1d57a5a22cb3bb60e1c843dc3d9c6"
+    },
+    {
+      "name": "bench",
+      "purpose": "Two-place bench; seat surface 0.46 m",
+      "glb": "bench.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.800000011920929,
+          -0.23600000143051147,
+          0.0
+        ],
+        "max": [
+          0.800000011920929,
+          0.23600000143051147,
+          0.46000000834465027
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.6,
+        0.472,
+        0.46
+      ],
+      "source_mesh_objects": 8,
+      "glb_meshes": 8,
+      "glb_triangles": 2304,
+      "uv0_verified": true,
+      "material_slots": [
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.003",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "Seat1_Approach": {
+          "node_name": "bench_Seat1_Approach",
+          "blender_xyz_m": [
+            -0.41999998688697815,
+            -0.8500000238418579,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -0.41999998688697815,
+            0.0,
+            0.8500000238418579
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat1_Pose": {
+          "node_name": "bench_Seat1_Pose",
+          "blender_xyz_m": [
+            -0.41999998688697815,
+            0.0,
+            0.46000000834465027
+          ],
+          "godot_xyz_m": [
+            -0.41999998688697815,
+            0.46000000834465027,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat1_Exit": {
+          "node_name": "bench_Seat1_Exit",
+          "blender_xyz_m": [
+            -0.6700000166893005,
+            -0.8500000238418579,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -0.6700000166893005,
+            0.0,
+            0.8500000238418579
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat2_Approach": {
+          "node_name": "bench_Seat2_Approach",
+          "blender_xyz_m": [
+            0.41999998688697815,
+            -0.8500000238418579,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.41999998688697815,
+            0.0,
+            0.8500000238418579
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat2_Pose": {
+          "node_name": "bench_Seat2_Pose",
+          "blender_xyz_m": [
+            0.41999998688697815,
+            0.0,
+            0.46000000834465027
+          ],
+          "godot_xyz_m": [
+            0.41999998688697815,
+            0.46000000834465027,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat2_Exit": {
+          "node_name": "bench_Seat2_Exit",
+          "blender_xyz_m": [
+            0.6700000166893005,
+            -0.8500000238418579,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.6700000166893005,
+            0.0,
+            0.8500000238418579
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Seat1",
+          "nodes": [
+            "bench_Seat1_Approach",
+            "bench_Seat1_Pose",
+            "bench_Seat1_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.81,
+            -1.2,
+            0.78,
+            0.9
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        },
+        {
+          "id": "Seat2",
+          "nodes": [
+            "bench_Seat2_Approach",
+            "bench_Seat2_Pose",
+            "bench_Seat2_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            1
+          ],
+          "clear_space_blender_xywh_m": [
+            0.02999999999999997,
+            -1.2,
+            0.78,
+            0.9
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {},
+      "normals_exported_verified": true,
+      "sha256": "b69512bf8cdacd1d575ea982490fefaeadedcea5acd3c3a04a13cc2a8b182bec"
+    },
+    {
+      "name": "desk",
+      "purpose": "Desk with knee clearance and separate drawer meshes",
+      "glb": "desk.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.699999988079071,
+          -0.3710000216960907,
+          0.0
+        ],
+        "max": [
+          0.699999988079071,
+          0.3710000216960907,
+          0.75
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.4,
+        0.742,
+        0.75
+      ],
+      "source_mesh_objects": 13,
+      "glb_meshes": 13,
+      "glb_triangles": 2620,
+      "uv0_verified": true,
+      "material_slots": [
+        "Iron_Black",
+        "Oak_Endgrain",
+        "Oak_Honey",
+        "Paint_Sage"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.004",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "work_surface": {
+          "node_name": "anchor_work_surface",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.75,
+            -0.0
+          ],
+          "purpose": "Desktop surface"
+        },
+        "Work_Approach": {
+          "node_name": "desk_Work_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -1.100000023841858,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            1.100000023841858
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Work_Pose": {
+          "node_name": "desk_Work_Pose",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.75,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Work_Exit": {
+          "node_name": "desk_Work_Exit",
+          "blender_xyz_m": [
+            0.8999999761581421,
+            -1.100000023841858,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.8999999761581421,
+            0.0,
+            1.100000023841858
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Work",
+          "nodes": [
+            "desk_Work_Approach",
+            "desk_Work_Pose",
+            "desk_Work_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.8,
+            -1.55,
+            1.6,
+            0.9
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {
+        "worktop_m": 0.75
+      },
+      "normals_exported_verified": true,
+      "sha256": "1be4fb1841cbba7d721170b66b2ba7a3683b7e06d2efbed4cb8b6554d4b0e3bf"
+    },
+    {
+      "name": "wardrobe",
+      "purpose": "Two-door wardrobe; separately editable panels, hinges, handles",
+      "glb": "wardrobe.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.5250000357627869,
+          -0.3930000066757202,
+          0.0
+        ],
+        "max": [
+          0.5250000357627869,
+          0.3005000054836273,
+          1.959999918937683
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.05,
+        0.6935,
+        1.96
+      ],
+      "source_mesh_objects": 17,
+      "glb_meshes": 17,
+      "glb_triangles": 1836,
+      "uv0_verified": true,
+      "material_slots": [
+        "Iron_Black",
+        "Oak_Endgrain",
+        "Oak_Honey",
+        "Paint_Sage"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.005",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "hinge_left": {
+          "node_name": "anchor_hinge_left",
+          "blender_xyz_m": [
+            -0.49000000953674316,
+            -0.3050000071525574,
+            0.18000000715255737
+          ],
+          "godot_xyz_m": [
+            -0.49000000953674316,
+            0.18000000715255737,
+            0.3050000071525574
+          ],
+          "purpose": "Vertical door rotation axis; doors unrigged"
+        },
+        "hinge_right": {
+          "node_name": "anchor_hinge_right",
+          "blender_xyz_m": [
+            0.49000000953674316,
+            -0.3050000071525574,
+            0.18000000715255737
+          ],
+          "godot_xyz_m": [
+            0.49000000953674316,
+            0.18000000715255737,
+            0.3050000071525574
+          ],
+          "purpose": "Vertical door rotation axis; doors unrigged"
+        },
+        "Use_Approach": {
+          "node_name": "wardrobe_Use_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -1.149999976158142,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            1.149999976158142
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Use_Pose": {
+          "node_name": "wardrobe_Use_Pose",
+          "blender_xyz_m": [
+            0.0,
+            -0.6000000238418579,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            0.6000000238418579
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Use_Exit": {
+          "node_name": "wardrobe_Use_Exit",
+          "blender_xyz_m": [
+            0.800000011920929,
+            -1.149999976158142,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.800000011920929,
+            0.0,
+            1.149999976158142
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Use",
+          "nodes": [
+            "wardrobe_Use_Approach",
+            "wardrobe_Use_Pose",
+            "wardrobe_Use_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.8,
+            -1.6,
+            1.6,
+            1.0
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {},
+      "normals_exported_verified": true,
+      "sha256": "3cab8d081e812b9163e99709b28d6c38021c6e8e4af94617d798c899019c5324"
+    },
+    {
+      "name": "pantry",
+      "purpose": "Four-tier freestanding storage shelf",
+      "glb": "pantry.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.5,
+          -0.29250001907348633,
+          0.0
+        ],
+        "max": [
+          0.5,
+          0.21000000834465027,
+          1.7999999523162842
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.0,
+        0.5025,
+        1.8
+      ],
+      "source_mesh_objects": 21,
+      "glb_meshes": 21,
+      "glb_triangles": 2268,
+      "uv0_verified": true,
+      "material_slots": [
+        "Iron_Black",
+        "Oak_Endgrain",
+        "Oak_Honey",
+        "Paint_Sage"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.006",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "storage_0": {
+          "node_name": "anchor_storage_0",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.14499999582767487
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.14499999582767487,
+            -0.0
+          ],
+          "purpose": "Shelf storage surface"
+        },
+        "storage_1": {
+          "node_name": "anchor_storage_1",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.6449999809265137
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.6449999809265137,
+            -0.0
+          ],
+          "purpose": "Shelf storage surface"
+        },
+        "storage_2": {
+          "node_name": "anchor_storage_2",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            1.1449999809265137
+          ],
+          "godot_xyz_m": [
+            0.0,
+            1.1449999809265137,
+            -0.0
+          ],
+          "purpose": "Shelf storage surface"
+        },
+        "storage_3": {
+          "node_name": "anchor_storage_3",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            1.6449999809265137
+          ],
+          "godot_xyz_m": [
+            0.0,
+            1.6449999809265137,
+            -0.0
+          ],
+          "purpose": "Shelf storage surface"
+        },
+        "Use_Approach": {
+          "node_name": "pantry_Use_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -1.149999976158142,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            1.149999976158142
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Use_Pose": {
+          "node_name": "pantry_Use_Pose",
+          "blender_xyz_m": [
+            0.0,
+            -0.6000000238418579,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            0.6000000238418579
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Use_Exit": {
+          "node_name": "pantry_Use_Exit",
+          "blender_xyz_m": [
+            0.800000011920929,
+            -1.149999976158142,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.800000011920929,
+            0.0,
+            1.149999976158142
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Use",
+          "nodes": [
+            "pantry_Use_Approach",
+            "pantry_Use_Pose",
+            "pantry_Use_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.8,
+            -1.6,
+            1.6,
+            1.0
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {},
+      "normals_exported_verified": true,
+      "sha256": "afd406fbf52613c657d4fa0d3366cdced4e52ff60b345f9d6e7fc5ef042da168"
+    },
+    {
+      "name": "kitchen_counter",
+      "purpose": "Counter with inset basin cavity, no opaque block in basin",
+      "glb": "kitchen_counter.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.7400000095367432,
+          -0.3775000274181366,
+          0.0
+        ],
+        "max": [
+          0.7400000095367432,
+          0.36000001430511475,
+          1.1640000343322754
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.48,
+        0.7375,
+        1.164
+      ],
+      "source_mesh_objects": 23,
+      "glb_meshes": 23,
+      "glb_triangles": 2484,
+      "uv0_verified": true,
+      "material_slots": [
+        "Ceramic_Stone",
+        "Iron_Black",
+        "Oak_Endgrain",
+        "Paint_Sage"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.007",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "work_surface": {
+          "node_name": "anchor_work_surface.001",
+          "blender_xyz_m": [
+            -0.41999998688697815,
+            0.0,
+            0.9300000071525574
+          ],
+          "godot_xyz_m": [
+            -0.41999998688697815,
+            0.9300000071525574,
+            -0.0
+          ],
+          "purpose": "Counter work surface"
+        },
+        "Use_Approach": {
+          "node_name": "kitchen_counter_Use_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -1.149999976158142,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            1.149999976158142
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Use_Pose": {
+          "node_name": "kitchen_counter_Use_Pose",
+          "blender_xyz_m": [
+            0.0,
+            -0.6000000238418579,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            0.6000000238418579
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Use_Exit": {
+          "node_name": "kitchen_counter_Use_Exit",
+          "blender_xyz_m": [
+            0.800000011920929,
+            -1.149999976158142,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.800000011920929,
+            0.0,
+            1.149999976158142
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Use",
+          "nodes": [
+            "kitchen_counter_Use_Approach",
+            "kitchen_counter_Use_Pose",
+            "kitchen_counter_Use_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.8,
+            -1.6,
+            1.6,
+            1.0
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {},
+      "normals_exported_verified": true,
+      "sha256": "dc3d3bbd1cd2a2da7feb6791234cfe23b083c9a57607c59373e4127a2a20ba7e"
+    },
+    {
+      "name": "feed_trough",
+      "purpose": "Open livestock trough; interior clear 1.66 x 0.42 m",
+      "glb": "feed_trough.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.9000000357627869,
+          -0.36500000953674316,
+          0.0
+        ],
+        "max": [
+          0.9000000357627869,
+          0.36500000953674316,
+          0.6700000166893005
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.8,
+        0.73,
+        0.67
+      ],
+      "source_mesh_objects": 11,
+      "glb_meshes": 11,
+      "glb_triangles": 1188,
+      "uv0_verified": true,
+      "material_slots": [
+        "Iron_Black",
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.008",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "fill": {
+          "node_name": "anchor_fill",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.5600000023841858
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.5600000023841858,
+            -0.0
+          ],
+          "purpose": "Interior fill presentation centre"
+        },
+        "Use_Approach": {
+          "node_name": "feed_trough_Use_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -1.149999976158142,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            1.149999976158142
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Use_Pose": {
+          "node_name": "feed_trough_Use_Pose",
+          "blender_xyz_m": [
+            0.0,
+            -0.6000000238418579,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            0.6000000238418579
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Use_Exit": {
+          "node_name": "feed_trough_Use_Exit",
+          "blender_xyz_m": [
+            0.800000011920929,
+            -1.149999976158142,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.800000011920929,
+            0.0,
+            1.149999976158142
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Use",
+          "nodes": [
+            "feed_trough_Use_Approach",
+            "feed_trough_Use_Pose",
+            "feed_trough_Use_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.8,
+            -1.6,
+            1.6,
+            1.0
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {},
+      "normals_exported_verified": true,
+      "sha256": "7124616996f7286f358acd06e943585e4ee0d8f73bbb0ca7d55d3b7275d51199"
+    },
+    {
+      "name": "fence_straight_2m",
+      "purpose": "2 m post-centre modular fence; shared terminal posts may overlap",
+      "glb": "fence_straight_2m.glb",
+      "bounds_blender_m": {
+        "min": [
+          -1.0950000286102295,
+          -0.0949999988079071,
+          0.0
+        ],
+        "max": [
+          1.0950000286102295,
+          0.0949999988079071,
+          1.2000000476837158
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        2.19,
+        0.19,
+        1.2
+      ],
+      "source_mesh_objects": 6,
+      "glb_meshes": 6,
+      "glb_triangles": 648,
+      "uv0_verified": true,
+      "material_slots": [
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.009",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "snap_left": {
+          "node_name": "anchor_snap_left",
+          "blender_xyz_m": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -1.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Connect module post centre"
+        },
+        "snap_right": {
+          "node_name": "anchor_snap_right",
+          "blender_xyz_m": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            1.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Connect module post centre"
+        }
+      },
+      "use_slots": [],
+      "dimensions_contract": {
+        "height_m": 1.2
+      },
+      "normals_exported_verified": true,
+      "sha256": "a0fa09df73719e352e23ef6a1498dacb56b427738c015c5a2abd0c1d29536172"
+    },
+    {
+      "name": "fence_corner_2m",
+      "purpose": "L corner; each arm 2 m post-centre",
+      "glb": "fence_corner_2m.glb",
+      "bounds_blender_m": {
+        "min": [
+          -1.0950000286102295,
+          -1.0950000286102295,
+          0.0
+        ],
+        "max": [
+          1.0950000286102295,
+          1.0950000286102295,
+          1.2000000476837158
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        2.19,
+        2.19,
+        1.2
+      ],
+      "source_mesh_objects": 10,
+      "glb_meshes": 10,
+      "glb_triangles": 1080,
+      "uv0_verified": true,
+      "material_slots": [
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.010",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "snap_x": {
+          "node_name": "anchor_snap_x",
+          "blender_xyz_m": [
+            1.0,
+            -1.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            1.0,
+            0.0,
+            1.0
+          ],
+          "purpose": "X-arm terminal post centre"
+        },
+        "snap_y": {
+          "node_name": "anchor_snap_y",
+          "blender_xyz_m": [
+            -1.0,
+            1.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -1.0,
+            0.0,
+            -1.0
+          ],
+          "purpose": "Y-arm terminal post centre"
+        },
+        "corner": {
+          "node_name": "anchor_corner",
+          "blender_xyz_m": [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -1.0,
+            0.0,
+            1.0
+          ],
+          "purpose": "Corner post placement pivot"
+        }
+      },
+      "use_slots": [],
+      "dimensions_contract": {
+        "height_m": 1.2
+      },
+      "normals_exported_verified": true,
+      "sha256": "5d988965c3280544696a129690c4a3c2bc01fa953fb73c660aa64f8d2964e049"
+    },
+    {
+      "name": "fence_gate_2m",
+      "purpose": "Gate: 1.60 m post-face walk opening, 1.76 m post-centre span; articulated leaf, no animation",
+      "glb": "fence_gate_2m.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.9750000238418579,
+          -0.11750000715255737,
+          0.0
+        ],
+        "max": [
+          0.9750000238418579,
+          0.0949999988079071,
+          1.2000000476837158
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.95,
+        0.2125,
+        1.2
+      ],
+      "source_mesh_objects": 16,
+      "glb_meshes": 16,
+      "glb_triangles": 1728,
+      "uv0_verified": true,
+      "material_slots": [
+        "Iron_Black",
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.011",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "hinge": {
+          "node_name": "anchor_hinge",
+          "blender_xyz_m": [
+            -0.774399995803833,
+            0.0,
+            0.10746268182992935
+          ],
+          "godot_xyz_m": [
+            -0.774399995803833,
+            0.10746268182992935,
+            -0.0
+          ],
+          "purpose": "Rotate this empty about Blender Z / Godot Y to swing leaf"
+        },
+        "snap_left": {
+          "node_name": "anchor_snap_left.001",
+          "blender_xyz_m": [
+            -0.8799999952316284,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            -0.8799999952316284,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Left post centre"
+        },
+        "snap_right": {
+          "node_name": "anchor_snap_right.001",
+          "blender_xyz_m": [
+            0.8799999952316284,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.8799999952316284,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Right post centre"
+        },
+        "passage": {
+          "node_name": "anchor_passage",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "1.60 m clear between posts with gate leaf open"
+        },
+        "Passage_Approach": {
+          "node_name": "fence_gate_2m_Passage_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -1.100000023841858,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            1.100000023841858
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Passage_Pose": {
+          "node_name": "fence_gate_2m_Passage_Pose",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Passage_Exit": {
+          "node_name": "fence_gate_2m_Passage_Exit",
+          "blender_xyz_m": [
+            0.0,
+            1.100000023841858,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -1.100000023841858
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Passage",
+          "nodes": [
+            "fence_gate_2m_Passage_Approach",
+            "fence_gate_2m_Passage_Pose",
+            "fence_gate_2m_Passage_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.8,
+            -1.6,
+            1.6,
+            3.2
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {
+        "height_m": 1.2,
+        "clear_opening_m": 1.6
+      },
+      "normals_exported_verified": true,
+      "sha256": "4c385a646137fdaf0f58c53c88e482a8e325a3825b50ec4bcc456e9e5244b383"
+    },
+    {
+      "name": "bed_standard",
+      "purpose": "Bed with rounded mattress, piped seams, slatted support and modeled folded duvet",
+      "glb": "bed_standard.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.625,
+          -1.1699999570846558,
+          0.0
+        ],
+        "max": [
+          0.625,
+          1.1699999570846558,
+          1.159999966621399
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.25,
+        2.34,
+        1.16
+      ],
+      "source_mesh_objects": 34,
+      "glb_meshes": 34,
+      "glb_triangles": 17381,
+      "uv0_verified": true,
+      "material_slots": [
+        "Blanket_Indigo",
+        "Linen_Cream",
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "Sleep_Approach": {
+          "node_name": "bed_standard_Sleep_Approach",
+          "blender_xyz_m": [
+            1.024999976158142,
+            -0.30000001192092896,
+            0.0
+          ],
+          "godot_xyz_m": [
+            1.024999976158142,
+            0.0,
+            0.30000001192092896
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Sleep_Pose": {
+          "node_name": "bed_standard_Sleep_Pose",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.47999998927116394
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.47999998927116394,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Sleep_Exit": {
+          "node_name": "bed_standard_Sleep_Exit",
+          "blender_xyz_m": [
+            1.024999976158142,
+            0.44999998807907104,
+            0.0
+          ],
+          "godot_xyz_m": [
+            1.024999976158142,
+            0.0,
+            -0.44999998807907104
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Sleep",
+          "nodes": [
+            "bed_standard_Sleep_Approach",
+            "bed_standard_Sleep_Pose",
+            "bed_standard_Sleep_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            0.645,
+            -1.1,
+            0.85,
+            2.2
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {
+        "mattress_width_m": 1.05,
+        "mattress_length_m": 2.2,
+        "mattress_top_m": 0.48
+      },
+      "normals_exported_verified": true,
+      "sha256": "cdff793e6ac895ac154b5218ad3f71e1471c2a5f4505b7c83464806af103e0fc"
+    },
+    {
+      "name": "bed_large",
+      "purpose": "Bed with rounded mattress, piped seams, slatted support and modeled folded duvet",
+      "glb": "bed_large.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.7496967315673828,
+          -1.3949999809265137,
+          0.0
+        ],
+        "max": [
+          0.7496967315673828,
+          1.3949999809265137,
+          1.159999966621399
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        1.4994,
+        2.79,
+        1.16
+      ],
+      "source_mesh_objects": 34,
+      "glb_meshes": 34,
+      "glb_triangles": 17536,
+      "uv0_verified": true,
+      "material_slots": [
+        "Blanket_Indigo",
+        "Linen_Cream",
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.012",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "Sleep_Approach": {
+          "node_name": "bed_large_Sleep_Approach",
+          "blender_xyz_m": [
+            1.149999976158142,
+            -0.30000001192092896,
+            0.0
+          ],
+          "godot_xyz_m": [
+            1.149999976158142,
+            0.0,
+            0.30000001192092896
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Sleep_Pose": {
+          "node_name": "bed_large_Sleep_Pose",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.550000011920929
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.550000011920929,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Sleep_Exit": {
+          "node_name": "bed_large_Sleep_Exit",
+          "blender_xyz_m": [
+            1.149999976158142,
+            0.44999998807907104,
+            0.0
+          ],
+          "godot_xyz_m": [
+            1.149999976158142,
+            0.0,
+            -0.44999998807907104
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Sleep",
+          "nodes": [
+            "bed_large_Sleep_Approach",
+            "bed_large_Sleep_Pose",
+            "bed_large_Sleep_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            -1
+          ],
+          "clear_space_blender_xywh_m": [
+            0.77,
+            -1.325,
+            0.85,
+            2.65
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {
+        "mattress_width_m": 1.3,
+        "mattress_length_m": 2.65,
+        "mattress_top_m": 0.55
+      },
+      "normals_exported_verified": true,
+      "sha256": "61c7432222f92baff0b22caf196a12fdf85191d9fceba0fbc8e1739253606201"
+    },
+    {
+      "name": "chair_large",
+      "purpose": "Wide armless chair for intended tall-body range; 0.65 m seat width, 0.55 m seat centre",
+      "glb": "chair_large.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.3292917013168335,
+          -0.30464470386505127,
+          0.0
+        ],
+        "max": [
+          0.3292917013168335,
+          0.34377554059028625,
+          1.1956521272659302
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        0.6586,
+        0.6484,
+        1.1957
+      ],
+      "source_mesh_objects": 12,
+      "glb_meshes": 12,
+      "glb_triangles": 6308,
+      "uv0_verified": true,
+      "material_slots": [
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.013",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        },
+        "Seat_Approach": {
+          "node_name": "chair_large_Seat_Approach",
+          "blender_xyz_m": [
+            0.0,
+            -0.8999999761581421,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            0.8999999761581421
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat_Pose": {
+          "node_name": "chair_large_Seat_Pose",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.550000011920929
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.550000011920929,
+            -0.0
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        },
+        "Seat_Exit": {
+          "node_name": "chair_large_Seat_Exit",
+          "blender_xyz_m": [
+            0.6499999761581421,
+            -0.75,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.6499999761581421,
+            0.0,
+            0.75
+          ],
+          "purpose": "Authoring socket only; no allocation, rig or animation guarantee"
+        }
+      },
+      "use_slots": [
+        {
+          "id": "Seat",
+          "nodes": [
+            "chair_large_Seat_Approach",
+            "chair_large_Seat_Pose",
+            "chair_large_Seat_Exit"
+          ],
+          "facing_godot_xyz": [
+            0,
+            0,
+            1
+          ],
+          "clear_space_blender_xywh_m": [
+            -0.5,
+            -1.25,
+            1,
+            1
+          ],
+          "pose_semantics": "Contact/support target, not calibrated skeletal pelvis"
+        }
+      ],
+      "dimensions_contract": {
+        "seat_width_m": 0.65,
+        "seat_centre_top_m": 0.55,
+        "armrests": false
+      },
+      "normals_exported_verified": true,
+      "sha256": "fb7a8cd6aebc201e6e8d018a529726aad592b74f105d5e33e5a74c24b5556888"
+    },
+    {
+      "name": "fence_post",
+      "purpose": "Standalone terminal post, 1.20 m height",
+      "glb": "fence_post.glb",
+      "bounds_blender_m": {
+        "min": [
+          -0.0949999988079071,
+          -0.0949999988079071,
+          0.0
+        ],
+        "max": [
+          0.0949999988079071,
+          0.0949999988079071,
+          1.2000000476837158
+        ]
+      },
+      "dimensions_blender_xyz_m": [
+        0.19,
+        0.19,
+        1.2
+      ],
+      "source_mesh_objects": 2,
+      "glb_meshes": 2,
+      "glb_triangles": 216,
+      "uv0_verified": true,
+      "material_slots": [
+        "Oak_Endgrain",
+        "Oak_Honey"
+      ],
+      "anchors": {
+        "origin": {
+          "node_name": "anchor_origin.014",
+          "blender_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "godot_xyz_m": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "purpose": "Floor-centred placement pivot"
+        }
+      },
+      "use_slots": [],
+      "dimensions_contract": {
+        "height_m": 1.2
+      },
+      "normals_exported_verified": true,
+      "sha256": "66faf57a4651c234ac6b6f14b052eee1c1a5e3e2432873206c687a45672ab2ff"
+    }
+  ]
+}

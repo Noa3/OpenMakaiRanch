@@ -1,0 +1,11 @@
+{
+  "provider": "Hugging Face",
+  "repo_id": "lightx2v/Qwen-Image-Edit-2511-Lightning",
+  "revision": "d74eba145674fd7e31b949324e148e21e7118abd",
+  "filename": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+  "local_path": "D:\\ComfyUI\\ComfyUI\\models\\loras\\Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+  "bytes": 849608296,
+  "sha256": "22226e8d05d354bb356627d428809f5afd7819399b077238a2b70a82883a904f",
+  "license": "apache-2.0",
+  "verified": true
+}

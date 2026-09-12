@@ -1,0 +1,37 @@
+00:00.782  blend            | Read blend: "E:\OpenMakaiRanch\OpenMakaiRanchGame\assets\3d\ranch_furniture\ranch_furniture.blend"
+E:\OpenMakaiRanch\Tools\Blender\materialize_ranch_asset.py:107: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  material.use_nodes = True
+Info: Saved as "chair.blend"
+INFO Draco is available, use library at D:\SteamLibrary\steamapps\common\Blender\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at D:\SteamLibrary\steamapps\common\Blender\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+06:14:30 | INFO: Starting glTF 2.0 export
+06:14:30 | INFO: Extracting primitive: Cube.046
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: Cube.047
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: Cube.048
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: Cube.049
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: Cube.050
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: curved_seat
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: Cube.051
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: Cube.052
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: turned_leg.004
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: turned_leg.005
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: turned_leg.006
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Extracting primitive: turned_leg.007
+06:14:30 | INFO: Primitives created: 1
+06:14:30 | INFO: Finished glTF 2.0 export in 0.08767080307006836 s
+
+TEXTURED_ASSET_PASS ranch_furniture chair 5668 2
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit
