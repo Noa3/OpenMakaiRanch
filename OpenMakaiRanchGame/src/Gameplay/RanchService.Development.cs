@@ -25,6 +25,18 @@ public sealed partial class RanchService
             _ => ""
         };
         _state.Ranch.Facilities.TryGetValue(id, out var level);
+        return InspectWorkBenefitAtLevel(job, level);
+    }
+
+    public FacilityWorkBenefit InspectWorkBenefitAtLevel(JobDefinition job, int level)
+    {
+        ArgumentNullException.ThrowIfNull(job);
+        var id = job.Id switch
+        {
+            "dairy" => "dairy_barn", "pasture" => "pasture", "kitchen" or "cooking" => "kitchen",
+            "workshop" => "workshop", "pharmacy" => "pharmacy_lab", "customer_service" => "guest_room",
+            "cleaning" => "bathhouse", _ => ""
+        };
         level = Math.Max(0, level);
         var useful = Math.Min(MaximumProductiveFacilityLevel, level);
         var amount = 0;
