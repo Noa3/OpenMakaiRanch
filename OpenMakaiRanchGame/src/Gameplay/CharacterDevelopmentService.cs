@@ -22,9 +22,13 @@ public sealed record CharacterDevelopmentSnapshot(string CharacterId, int Revisi
 /// Observe existing, successful non-explicit growth; never run a second XP/work/clock system.
 /// Persistent fixed-size flags hold a first-observed baseline, high-water marks and a short journal.
 /// </summary>
-public sealed class CharacterDevelopmentService(SaveState state, DataRegistry data, FlagService flags)
+public sealed partial class CharacterDevelopmentService(SaveState state, DataRegistry data, FlagService flags)
 {
     private readonly RosterService _roster = new(state, data);
+    public const int MaximumStages = 3, CapacityPerStage = 5;
+    public const int ConditioningStep = 2, AttunementStep = 4;
+    public const int ConditioningLimit = MaximumStages * ConditioningStep;
+    public const int AttunementLimit = MaximumStages * AttunementStep;
     public const int FlagStart = 1_231_000;
     public const int JournalCapacity = 12;
     private const int BaselineDay = FlagStart, Revision = FlagStart + 1;
@@ -68,7 +72,7 @@ public sealed class CharacterDevelopmentService(SaveState state, DataRegistry da
                 changes.Add(new(Get(c, slot), cause, field, Get(c, slot + 3), Get(c, slot + 4)));
         }
         return new(c.Id, Get(c, Revision), baselineDay > 0 ? baselineDay : null,
-            new(current[9] / 6.0, current[10] / 12.0, c.Height, _roster.DefinitionFor(c).BodyType),
+            new(current[9] / (double)ConditioningLimit, current[10] / (double)AttunementLimit, c.Height, _roster.DefinitionFor(c).BodyType),
             Array.AsReadOnly(values), changes.AsReadOnly(), CharacterProtectionService.Inspect(c));
     }
 
@@ -120,10 +124,10 @@ public sealed class CharacterDevelopmentService(SaveState state, DataRegistry da
         // Exhaustion, source-ward depletion and mental state changes are never an alternate route.
         if (observation.Eligible && !CharacterProtectionService.NeedsRecovery(c))
         {
-            var conditioning = (int)Math.Min(6, (long)before[9] + combatGain);
-            var attunement = (int)Math.Min(12, (long)before[10] + magicGain);
-            var hpGain = (conditioning / 2 - before[9] / 2) * 5;
-            var manaGain = (attunement / 4 - before[10] / 4) * 5;
+            var conditioning = (int)Math.Min(ConditioningLimit, (long)before[9] + combatGain);
+            var attunement = (int)Math.Min(AttunementLimit, (long)before[10] + magicGain);
+            var hpGain = (conditioning / ConditioningStep - before[9] / ConditioningStep) * CapacityPerStage;
+            var manaGain = (attunement / AttunementStep - before[10] / AttunementStep) * CapacityPerStage;
             if (hpGain > 0 && after[4] > 0)
                 c.MaxHpOverride = (int)Math.Min(int.MaxValue, (long)after[4] + hpGain);
             if (manaGain > 0 && c.MaxMana >= 0)
@@ -178,7 +182,7 @@ public sealed class CharacterDevelopmentService(SaveState state, DataRegistry da
         return new[] { c.RanchSkill, c.CraftSkill, c.CombatSkill, c.MagicPower,
             definition.MaxHp, definition.MaxEnergy,
             c.MaxSpirit, c.MaxMana, c.Height,
-            Math.Clamp(Get(c, ConditioningPoints), 0, 6), Math.Clamp(Get(c, AttunementPoints), 0, 12) };
+            Math.Clamp(Get(c, ConditioningPoints), 0, ConditioningLimit), Math.Clamp(Get(c, AttunementPoints), 0, AttunementLimit) };
     }
     private long PositiveNewHigh(CharacterState c, int skill, int before, int after) =>
         before < 0 || after < 0 ? 0 : Math.Max(0L, (long)after - Math.Max(before, Get(c, HighWaterStart + skill)));

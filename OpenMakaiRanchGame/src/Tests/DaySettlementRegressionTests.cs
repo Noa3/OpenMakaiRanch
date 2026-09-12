@@ -19,6 +19,7 @@ public static class DaySettlementRegressionTests
         OptimizationRegressionTests.Run(result);
         GameplayProgressionTests.Run(result);
         CharacterDevelopmentRegressionTests.Run(result);
+        CharacterDevelopmentContinuationTests.Run(result);
         var data = DataRegistry.CreateSeeded();
         foreach (var count in new[] { 1, 4, 8 })
         {

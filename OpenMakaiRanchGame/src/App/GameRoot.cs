@@ -905,16 +905,9 @@ public partial class GameRoot : Node
 		return true;
 	}
 
-	public bool TrainCharacter(string characterId, string focus)
-	{
-		if (!Training.Train(characterId, focus))
-		{
-			return false;
-		}
-
-		StateChanged?.Invoke();
-		return true;
-	}
+	// Synchronous compatibility entry. Queued UI commands should use the stamped overload.
+	public bool TrainCharacter(string characterId, string focus) =>
+		TryTrainCharacter(characterId, focus, StateGeneration, State.Calendar.Day, State.Calendar.Phase).Success;
 
 	public bool AdvanceTime()
 	{
