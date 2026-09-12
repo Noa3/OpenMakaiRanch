@@ -87,11 +87,31 @@ entries: six metadata/channel values, eleven baseline values, four high-water ma
 12*5 history fields. No per-day keys or global character-history table is allocated. The
 canonical root FlagService saves them; do not write a second unsynchronized FlagStorage.
 
+## Playable feedback and shared practice commands
+
+`GameRoot.GetCharacterDevelopmentTrack(id, focus)` returns a read-only long-term forecast for
+combat conditioning or magical development. It exposes stage, current skill, recorded high,
+next target and actual capacity available, with explicit completed, skill-limit, capacity-limit
+and invalid states. It does not authorize a lesson; `Residents.Inspect` remains the source of
+current availability. Shared constants keep forecasting and awarding on the same tuning.
+
+Existing available practice buttons show this guidance in their tooltips, and lesson results
+explain the next threshold. No new panel or rendering code is needed. Free resident conversation
+can now acknowledge a real recorded skill change; immediate fatigue or low morale takes
+priority. Reading or talking does not write a receipt, award a reward or invent a character
+history. These are contextual reactions, not completed resident story arcs.
+
+See CHARACTER_DEVELOPMENT_CONTINUATION.md for the command contract, concrete examples,
+verification and remaining limits. The original implementation's test counts remain historical
+in CHARACTER_DEVELOPMENT_VALIDATION.md.
+
 ## Deliberate boundaries and next implementation work
 
-Only the existing ResidentInteractionService practical lessons and GameRoot EndDay are wired.
-Legacy raw TrainingService calls and arbitrary direct state edits do not gain a new journal
-hook here. They must be migrated to the same boundary before claiming universal tracking.
+ResidentInteractionService practical lessons and GameRoot EndDay are wired. The legacy root
+`TrainCharacter` entry now delegates to the same stamped resident command via
+`TryTrainCharacter`, so it cannot evade player costs, daily receipts or development recording.
+Low-level `TrainingService.Train` simulation calls and arbitrary direct state edits still do
+not gain a journal hook. Do not claim universal tracking of every stat mutation.
 Other original transformations, detailed trait/race/body recipes, recovery choices, character
 arcs, equipment-fit effects and dynamic model application remain separate authored work.
 There is no completed transformation menu, full resistance matrix or original-level formula.
@@ -100,4 +120,6 @@ Prioritize those shared command boundaries and coherent resident-change stories 
 ranch checklists. Keep authored identity/age eligibility and all existing assets unchanged.
 Test actual causes, failure/permission paths, current-save continuation and tactical economics
 before adding a new branch of development. Historical reports in GAMEPLAY_PROGRESSION_VALIDATION
-remain valid only for their own commit. New evidence belongs to CHARACTER_DEVELOPMENT_VALIDATION.
+remain valid only for their own commit. The initial character evidence is in
+CHARACTER_DEVELOPMENT_VALIDATION.md; the shared-command and feedback continuation is documented
+with its own exact-head results in CHARACTER_DEVELOPMENT_CONTINUATION.md.
