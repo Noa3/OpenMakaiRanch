@@ -11,14 +11,38 @@ namespace OpenMakaiRanch.World;
 public sealed class CoastalRegionTerrain
 {
     public const string HeightfieldPath = "res://data/world/coastal_heightfields.json";
+    public sealed record Deck(string Id, Vector3 Start, Vector3 End, float Width)
+    {
+        public bool Contains(Vector2 point)
+        {
+            var axis = new Vector2(End.X - Start.X, End.Z - Start.Z);
+            var length = axis.Length();
+            var direction = axis / length;
+            var offset = point - new Vector2(Start.X, Start.Z);
+            var along = offset.Dot(direction);
+            const float precision = 0.0001f;
+            return point.IsFinite() && along >= -precision && along <= length + precision
+                && Mathf.Abs(offset.Cross(direction)) <= Width / 2 + precision;
+        }
+    }
     public sealed record Area(string Id, Vector3 Origin, float Yaw, Rect2 Bounds, Vector2 HeightRange,
         Vector2[] Boundary, Vector3 Spawn, Vector3 QuickPortal, Vector3 Seam, Vector3 Departure,
         float Step, int Columns, int Rows, float[] Heights, string[] Modules)
     {
+        public IReadOnlyList<Deck> Decks { get; init; } = Array.Empty<Deck>();
         public Transform3D Transform => new(new Basis(Vector3.Up, Yaw), Origin);
         public Aabb NavigationBounds => new(new Vector3(Bounds.Position.X, HeightRange.X, Bounds.Position.Y),
             new Vector3(Bounds.Size.X, HeightRange.Y - HeightRange.X, Bounds.Size.Y));
 
+        public bool TryWalkingHeight(Vector2 point, out float height)
+        {
+            if (!TryHeight(point, out height)) return false;
+            foreach (var deck in Decks)
+                if (deck.Contains(point)) height = Mathf.Max(height, deck.Start.Y);
+            return true;
+        }
+
+        // Keep raw terrain queries available: a bridge must not fill the carved stream bed.
         public bool TryHeight(Vector2 point, out float height)
         {
             height = 0;
@@ -71,20 +95,64 @@ public sealed class CoastalRegionTerrain
                 || heights.Any(h => !float.IsFinite(h) || h < range.X || h > range.Y) || range.Y <= range.X)
                 throw new InvalidOperationException(id + ": invalid heightfield grid or navigation range");
             var modules = field.GetProperty("modules").EnumerateArray().Select(e => e.GetString() ?? "").ToArray();
-            var required = new[] { "terrain", "paths", "water", "safety", id == "ranch" ? "bridge" : "pier" }
+            var kinds = id == "ranch"
+                ? new[] { "terrain", "paths", "water", "safety", "bridge", "valley_bridge" }
+                : new[] { "terrain", "paths", "water", "safety", "pier" };
+            var required = kinds
                 .Select(kind => $"res://assets/3d/coastal_region/{id}_{kind}.glb").ToArray();
             if (!modules.Order().SequenceEqual(required.Order())) throw new InvalidOperationException(id + ": invalid module manifest");
             var yaw = def.GetProperty("yaw").GetSingle();
             if (!float.IsFinite(yaw)) throw new InvalidOperationException(id + ": invalid yaw");
             var boundary = def.GetProperty("walkable_boundary").EnumerateArray().Select(V2).ToArray();
             if (boundary.Length < 3) throw new InvalidOperationException(id + ": missing walkable boundary");
-            areas.Add(id, new Area(id, V3(def.GetProperty("origin")), yaw, bounds, range, boundary,
+            var area = new Area(id, V3(def.GetProperty("origin")), yaw, bounds, range, boundary,
                 V3(def.GetProperty("spawn")), V3(def.GetProperty("quick_portal")), V3(def.GetProperty("seam")),
-                V3(def.GetProperty("seam_departure_direction")).Normalized(), step, columns, rows, heights, modules));
+                V3(def.GetProperty("seam_departure_direction")).Normalized(), step, columns, rows, heights, modules);
+            var region = layout.RootElement.GetProperty("region");
+            if (id == "ranch")
+            {
+                var bridge = region.GetProperty("connection").GetProperty("bridge");
+                if (bridge.GetProperty("module").GetString() != "ranch_valley_bridge.glb")
+                    throw new InvalidOperationException("Unknown valley bridge module");
+                var inverse = area.Transform.AffineInverse();
+                var meadow = region.GetProperty("ranch_side_route").GetProperty("bridge");
+                area = area with { Decks = new[]
+                {
+                    ReadDeck("valley", inverse * V3(bridge.GetProperty("start")),
+                        inverse * V3(bridge.GetProperty("end")), bridge.GetProperty("clear_width").GetSingle()),
+                    RectangleDeck("meadow", ReadBounds(meadow.GetProperty("deck_bounds")),
+                        meadow.GetProperty("deck_elevation").GetSingle() - area.Origin.Y)
+                } };
+            }
+            else
+            {
+                var pier = region.GetProperty("coast").GetProperty("pier");
+                var rectangle = ReadBounds(pier.GetProperty("deck_bounds"));
+                area = area with { Decks = new[]
+                {
+                    RectangleDeck("pier", rectangle, pier.GetProperty("deck_elevation").GetSingle()),
+                    ReadDeck("pier_landing", V3(pier.GetProperty("shore_ramp_start")),
+                        V3(pier.GetProperty("seaward_stop")), rectangle.Size.Y)
+                } };
+            }
+            areas.Add(id, area);
         }
         if ((areas["ranch"].Transform * areas["ranch"].Seam).DistanceTo(areas["town"].Transform * areas["town"].Seam) > 0.01f)
             throw new InvalidOperationException("Coastal walking seam anchors are not coincident.");
         return new CoastalRegionTerrain(areas, hash);
+    }
+
+    private static Deck RectangleDeck(string id, Rect2 rectangle, float height) => ReadDeck(id,
+        new Vector3(rectangle.Position.X, height, rectangle.GetCenter().Y),
+        new Vector3(rectangle.End.X, height, rectangle.GetCenter().Y), rectangle.Size.Y);
+
+    private static Deck ReadDeck(string id, Vector3 start, Vector3 end, float width)
+    {
+        if (!start.IsFinite() || !end.IsFinite() || !float.IsFinite(width) || width <= 0
+            || new Vector2(end.X - start.X, end.Z - start.Z).Length() <= 0.01f
+            || Mathf.Abs(end.Y - start.Y) > 0.001f)
+            throw new InvalidOperationException("Invalid level coastal deck: " + id);
+        return new Deck(id, start, end, width);
     }
 
     private static Rect2 ReadBounds(JsonElement e)

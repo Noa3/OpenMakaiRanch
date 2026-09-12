@@ -133,5 +133,110 @@ class CaptureWrapperTests(unittest.TestCase):
             capture.main()
 
 
+    def okachi_fixture(self):
+        # Synthetic wrapper data only; real engine evidence is produced by capture.py.
+        review = {'passed': True, 'renderer': 'forward_plus', 'unique_architecture': ['base', 'annex', 'cap'],
+                  'variants': [{'state': state, 'front_clear_ray': True, 'four_room_clear_rays': True,
+                                'rear_blocked_ray': state == 'base'} for state in ('base', 'expanded')],
+                  'shots': [{'name': f'okachi-{state}-{view}'} for state in ('base', 'expanded')
+                            for view in ('exterior', 'cutaway', 'reception')]}
+        return review, self.run / 'evidence/okachi-assets.json'
+
+    @mock.patch.dict(capture.os.environ, {'OMR_OKACHI_ASSET_REVIEW': '1'})
+    def test_okachi_complete_review_records_image_provenance(self):
+        review, path = self.okachi_fixture()
+        path.write_text(json.dumps(review), encoding='utf-8')
+        self.succeeds()
+        self.assertEqual(capture.main(), 0)
+        saved = json.loads(self.context_file.read_text(encoding='utf-8'))
+        self.assertEqual(len(saved['okachi_asset_review']['images']), 6)
+
+    @mock.patch.dict(capture.os.environ, {'OMR_OKACHI_ASSET_REVIEW': '1'})
+    def test_okachi_retained_invisible_cap_is_rejected(self):
+        review, path = self.okachi_fixture()
+        review['variants'][1]['rear_blocked_ray'] = True
+        path.write_text(json.dumps(review), encoding='utf-8')
+        self.succeeds()
+        with self.assertRaisesRegex(RuntimeError, 'Okachi asset review'):
+            capture.main()
+
+    @mock.patch.dict(capture.os.environ, {'OMR_OKACHI_ASSET_REVIEW': '1'})
+    def test_okachi_missing_variant_image_is_rejected(self):
+        review, path = self.okachi_fixture()
+        review['shots'].pop()
+        path.write_text(json.dumps(review), encoding='utf-8')
+        self.succeeds()
+        with self.assertRaisesRegex(RuntimeError, 'Okachi asset review'):
+            capture.main()
+
+
+    def market_fixture(self):
+        # Synthetic wrapper contract only; no imported geometry or real screenshots.
+        return {'passed': True, 'renderer': 'forward_plus',
+                'unique_assets': ['canopy.glb', 'counter.glb', 'scaffold_bay.glb', 'material_stack.glb', 'barrier.glb'],
+                'variants': [{'state': s, 'bypass_clear_volume': True, 'central_clear_volume': True,
+                              'front_work_barrier_ray': s == 'work', 'visible_roof_meshes': 17 if s == 'finished' else 0}
+                             for s in ('base', 'work', 'finished')],
+                'shots': [{'name': f'market-{s}-{v}'} for s in ('base', 'work', 'finished') for v in ('overview', 'eye')]}
+
+    @mock.patch.dict(capture.os.environ, {'OMR_MARKET_ASSET_REVIEW': '1'})
+    def test_market_complete_evidence(self):
+        (self.run / 'evidence/market-assets.json').write_text(json.dumps(self.market_fixture()))
+        self.succeeds()
+        self.assertEqual(capture.main(), 0)
+        saved = json.loads(self.context_file.read_text())
+        self.assertEqual(len(saved['market_asset_review']['images']), 6)
+
+    @mock.patch.dict(capture.os.environ, {'OMR_MARKET_ASSET_REVIEW': '1'})
+    def test_market_blocked_bypass_fails(self):
+        payload = self.market_fixture()
+        payload['variants'][1]['bypass_clear_volume'] = False
+        (self.run / 'evidence/market-assets.json').write_text(json.dumps(payload))
+        self.succeeds()
+        with self.assertRaisesRegex(RuntimeError, 'collision/roof-state'):
+            capture.main()
+
+    @mock.patch.dict(capture.os.environ, {'OMR_MARKET_ASSET_REVIEW': '1'})
+    def test_market_premature_roof_fails(self):
+        payload = self.market_fixture()
+        payload['variants'][1]['visible_roof_meshes'] = 17
+        (self.run / 'evidence/market-assets.json').write_text(json.dumps(payload))
+        self.succeeds()
+        with self.assertRaisesRegex(RuntimeError, 'collision/roof-state'):
+            capture.main()
+
+
+    def town_walk_fixture(self):
+        # Synthetic validator input only; actual movement is verified in Godot.
+        return {'passed': True, 'error': None,
+                'checks': [{'ok': True, 'label': k} for k in capture.TOWN_WALK_REQUIRED],
+                'trace': [{'frame': i+1, 'player': [i*.1, 0, 0], 'escort': [i*.1, 0, 1]} for i in range(2)],
+                'shots': [{'name': f'town-core-{s}'} for s in ('overview', 'reception', 'market', 'milestones', 'shop')]}
+
+    @mock.patch.dict(capture.os.environ, {'OMR_TOWN_CORE_REVIEW': '1'})
+    def test_town_walk_complete_evidence(self):
+        (self.run/'evidence/town-core-walk.json').write_text(json.dumps(self.town_walk_fixture()))
+        self.succeeds()
+        self.assertEqual(capture.main(), 0)
+
+    @mock.patch.dict(capture.os.environ, {'OMR_TOWN_CORE_REVIEW': '1'})
+    def test_town_walk_missing_escort_arrival_is_rejected(self):
+        data = self.town_walk_fixture()
+        data['checks'] = [c for c in data['checks'] if c['label'] != 'escort reached market bypass exit on foot']
+        (self.run/'evidence/town-core-walk.json').write_text(json.dumps(data))
+        self.succeeds()
+        with self.assertRaisesRegex(RuntimeError, 'Town walk checks'):
+            capture.main()
+
+    @mock.patch.dict(capture.os.environ, {'OMR_TOWN_CORE_REVIEW': '1'})
+    def test_town_walk_teleport_is_rejected(self):
+        data = self.town_walk_fixture()
+        data['trace'][1]['escort'] = [20, 0, 1]
+        (self.run/'evidence/town-core-walk.json').write_text(json.dumps(data))
+        self.succeeds()
+        with self.assertRaisesRegex(RuntimeError, 'trajectory contains a jump'):
+            capture.main()
+
+
 if __name__ == '__main__':
     unittest.main()

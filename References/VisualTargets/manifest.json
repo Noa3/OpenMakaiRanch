@@ -425,20 +425,24 @@
       "id": "C01",
       "category": "character",
       "title": "Original adult character lineup",
-      "status": "candidate",
+      "status": "approved",
       "target": {
-        "path": "targets/C01-770989db797f.png",
-        "sha256": "770989db797f70f00387e7b4d76e803215525517340ac204e9b35272b333e4ac",
+        "path": "targets/C01-2695f79e79c0.png",
+        "sha256": "2695f79e79c0ed9546f7b0ad63273942ef5ddc50a27b5508b60fe3892fe0fa65",
         "dimensions": [
           1536,
           864
         ],
-        "provider": "Local ComfyUI 0.27.0",
-        "model": "Qwen-Image-Edit-2511 fp8mixed + Lightning 4-step; RA-Mix v2.0 source lineup",
-        "provenance": "reviews/20260912-W01-C01/README.md; attempts/round-3-C01-qwen/receipt.json and round-2-C01-ra-mix receipts preserve source chain. Self-reviewed clothed adult reference candidate; age/hair/style corrections remain. No production identity approval.",
+        "provider": "local ComfyUI",
+        "model": "qwen_image_edit_2511_fp8mixed.safetensors + Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+        "provenance": "References/VisualTargets/reviews/C01-anime-design-selected/evidence/index.json; actual conditioning/workflow hashes in attempt receipts, not the atlas prompt template",
         "prompt_sha256": "24d88b308fb58f4f2a8ad73e45ee225668243eac86cec34d11db5a18d5e29a0b"
       },
-      "approval": null,
+      "approval": {
+        "reviewer": "Noa3 (user)",
+        "decision_reference": "OpenMakaiRanchGame/docs/art/C01_ANIME_DESIGN_SELECTION.md",
+        "target_sha256": "2695f79e79c0ed9546f7b0ad63273942ef5ddc50a27b5508b60fe3892fe0fa65"
+      },
       "baseline_key": "presence-neutral",
       "camera_contract": "orthographic",
       "state_contract": "reference_identity_only",

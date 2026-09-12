@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "E:\OpenMakaiRanch\Tools\Blender\build_coastal_blockout.py", line 12, in <module>
+    grids=build_grids(data,sha); checks=validate(data,grids)
+                                        ~~~~~~~~^^^^^^^^^^^^
+  File "E:\OpenMakaiRanch\Tools\WorldDesign\coastal_geometry.py", line 169, in validate
+    assert abs(sample(g,x,z))<.015,(area,p['id'],'nonflat envelope',sample(g,x,z))
+           ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('ranch', 'ranch_house', 'nonflat envelope', 0.069003)
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

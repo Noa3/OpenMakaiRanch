@@ -1,0 +1,96 @@
+{
+  "source_sha256": "fb3df879f337bb0defae9ce408531f5e659b78f5d1c3faff77cc9f2962e5ad78",
+  "source_unchanged": true,
+  "verified": [
+    {
+      "file": "canopy.glb",
+      "sha256": "f69e1d8e26637dedba3b65e6f7c31cae0ed49afaa221a5970d3718cbd4080ab3",
+      "bounds": {
+        "min": [
+          -3.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          3.0,
+          4.510000228881836,
+          2.0
+        ]
+      },
+      "triangles": 648,
+      "collision_meshes": 37
+    },
+    {
+      "file": "counter.glb",
+      "sha256": "89c462d4c53cdc552b0a6025e30c07973217c7c7d73f7c46577e7793aa67a972",
+      "bounds": {
+        "min": [
+          -0.8999999761581421,
+          0.0,
+          -0.39800000190734863
+        ],
+        "max": [
+          0.8999999761581421,
+          1.0,
+          0.39800000190734863
+        ]
+      },
+      "triangles": 168,
+      "collision_meshes": 14
+    },
+    {
+      "file": "scaffold_bay.glb",
+      "sha256": "b681604f98bed4d6423d118e7fd97b5672100b88b468f0ab47b75fb3ab8352eb",
+      "bounds": {
+        "min": [
+          -1.2799999713897705,
+          0.0,
+          -0.6599999666213989
+        ],
+        "max": [
+          1.2799999713897705,
+          2.8899998664855957,
+          0.6599999666213989
+        ]
+      },
+      "triangles": 348,
+      "collision_meshes": 29
+    },
+    {
+      "file": "material_stack.glb",
+      "sha256": "baaab4475ada7b71bc0c6c8799d2aa0a6adc79b560dbdff78b84d1c6263ccc6f",
+      "bounds": {
+        "min": [
+          -1.024999976158142,
+          0.0,
+          -0.4300000071525574
+        ],
+        "max": [
+          1.024999976158142,
+          0.7549999952316284,
+          0.4300000071525574
+        ]
+      },
+      "triangles": 240,
+      "collision_meshes": 18
+    },
+    {
+      "file": "barrier.glb",
+      "sha256": "42e2425cb5ec2fcfb2c77d60108930b4b2a2cd3780d1e92d8e712ecb385251ab",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.38999998569488525
+        ],
+        "max": [
+          1.0,
+          1.1200000047683716,
+          0.38999998569488525
+        ]
+      },
+      "triangles": 108,
+      "collision_meshes": 6
+    }
+  ]
+}

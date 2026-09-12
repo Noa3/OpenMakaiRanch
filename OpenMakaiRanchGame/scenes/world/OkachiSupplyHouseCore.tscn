@@ -1,0 +1,80 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_supply_house/base_shell.glb" id="1_shell"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/desk.glb" id="2_desk"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/chair.glb" id="3_chair"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/table.glb" id="4_table"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/wardrobe.glb" id="5_wardrobe"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/pantry.glb" id="6_pantry"]
+
+[node name="OkachiSupplyHouseCore" type="Node3D"]
+metadata/scope = "Reusable authored geometry/dressing; no production-town placement, service binding or furniture occupancy controller. Furniture collision/use remains unimplemented."
+
+[node name="Architecture" parent="." instance=ExtResource("1_shell")]
+
+[node name="Furniture" type="Node3D" parent="."]
+
+[node name="ReceptionDesk" parent="Furniture" instance=ExtResource("2_desk")]
+position = Vector3(-3.25, 0, 1.65)
+
+[node name="ReceptionChair" parent="Furniture" instance=ExtResource("3_chair")]
+position = Vector3(-3.25, 0, 0.55)
+
+[node name="MeetingTable" parent="Furniture" instance=ExtResource("4_table")]
+position = Vector3(3.25, 0, 2.15)
+
+[node name="MeetingSouthChair" parent="Furniture" instance=ExtResource("3_chair")]
+position = Vector3(3.25, 0, 3.35)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="MeetingNorthChair" parent="Furniture" instance=ExtResource("3_chair")]
+position = Vector3(3.25, 0, 0.95)
+
+[node name="ArchiveWardrobe" parent="Furniture" instance=ExtResource("5_wardrobe")]
+position = Vector3(-4.5, 0, -3.7)
+
+[node name="ArchiveShelves" parent="Furniture" instance=ExtResource("6_pantry")]
+position = Vector3(-2.3, 0, -3.9)
+
+[node name="SupplyDesk" parent="Furniture" instance=ExtResource("2_desk")]
+position = Vector3(3.35, 0, -3.5)
+
+[node name="SupplyChair" parent="Furniture" instance=ExtResource("3_chair")]
+position = Vector3(3.35, 0, -4.15)
+
+[node name="RoomLights" type="Node3D" parent="."]
+
+[node name="Reception" type="OmniLight3D" parent="RoomLights"]
+position = Vector3(-3.3, 2.75, 2)
+light_color = Color(1, 0.91, 0.77, 1)
+light_energy = 0.5
+omni_range = 5.0
+shadow_enabled = true
+
+[node name="Meeting" type="OmniLight3D" parent="RoomLights"]
+position = Vector3(3.3, 2.75, 2)
+light_color = Color(1, 0.91, 0.77, 1)
+light_energy = 0.5
+omni_range = 5.0
+shadow_enabled = true
+
+[node name="Archive" type="OmniLight3D" parent="RoomLights"]
+position = Vector3(-3.3, 2.75, -2.5)
+light_color = Color(1, 0.91, 0.77, 1)
+light_energy = 0.5
+omni_range = 5.0
+shadow_enabled = true
+
+[node name="SupplyOffice" type="OmniLight3D" parent="RoomLights"]
+position = Vector3(3.3, 2.75, -2.5)
+light_color = Color(1, 0.91, 0.77, 1)
+light_energy = 0.5
+omni_range = 5.0
+shadow_enabled = true
+
+[node name="Hall" type="OmniLight3D" parent="RoomLights"]
+position = Vector3(0, 2.75, 0)
+light_color = Color(1, 0.91, 0.77, 1)
+light_energy = 0.4
+omni_range = 5.0
+shadow_enabled = true

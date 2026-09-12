@@ -1,0 +1,2 @@
+# Preserve successful and rejected geometry/import evidence.
+!*.log

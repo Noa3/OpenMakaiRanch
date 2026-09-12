@@ -1,0 +1,256 @@
+{
+  "prompt": [
+    13,
+    "8cc4ae76-1ad2-4210-853e-8ee47560005f",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_edit_2511_fp8mixed.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_vae.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "OMR-1fff4dfbe4f0b2d24565.png"
+        }
+      },
+      "5": {
+        "class_type": "ImageScale",
+        "inputs": {
+          "image": [
+            "4",
+            0
+          ],
+          "upscale_method": "lanczos",
+          "width": 1536,
+          "height": 864,
+          "crop": "disabled"
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "CFGNorm",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "strength": 1.0
+        }
+      },
+      "8": {
+        "class_type": "LoraLoaderModelOnly",
+        "inputs": {
+          "model": [
+            "7",
+            0
+          ],
+          "lora_name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+          "strength_model": 1.0
+        }
+      },
+      "9": {
+        "class_type": "TextEncodeQwenImageEditPlus",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "image1": [
+            "5",
+            0
+          ],
+          "prompt": "Create a completely revised C01 character proposal: exactly TWO original clearly adult human women in their thirties, professional ranch worker and field researcher, side by side on a neutral warm gray studio background. Full body head to boot soles, large readable faces, both hands visible, relaxed neutral frontal / slight three-quarter standing stance. Remove all source lettering and other characters. Image 1 provides ONLY practical clothed profession and full body staging cues, NOT its photorealistic rendering. Image 2 provides ONLY face and hair rendering STYLE, never character identity, costume, anatomy or pose. Strong clean almond-shaped anime eyes with crisp upper eyelid contours and luminous irises, fine dark facial contours, restrained mature expressions. Large sculpted hair locks with sharp graphic shine bands, simplified noses and lips, soft two/three-tone cel-shaded 3D anime game-model aesthetic. No photographic skin, pores or realism. Adult proportions, no chibi, no childlike faces. LEFT: adult ranch worker with copper hair in one long braid over shoulder, amber eyes, practical fully buttoned cream long-sleeve shirt down to wrists, loose olive work vest and olive full-length utility trousers, sturdy brown lace-up work boots. RIGHT: adult researcher with tied-back ash-gray hair in low ponytail, cool blue eyes, practical navy knee-length field coat with cream collar and cream fully closed shirt, navy full-length trousers, sturdy dark work boots, both hands resting naturally at sides. Fully clothed modest loose opaque workwear, natural non-exaggerated anatomy, ordinary upright professional poses. No bare midriff, no exposed chest, no short skirts, no heels, no lingerie, no animal ears or horns, no character cloning. Both figures occupy most of image height with ample clear margins above hair and below soles. Cohesive stylized 3D volume but unmistakably clean anime facial rendering; keep clothing simple and functional. One original two-character design sheet, no extra portraits, no labels, no collage.",
+          "image2": [
+            "15",
+            0
+          ]
+        }
+      },
+      "10": {
+        "class_type": "TextEncodeQwenImageEditPlus",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "image1": [
+            "5",
+            0
+          ],
+          "prompt": "",
+          "image2": [
+            "15",
+            0
+          ]
+        }
+      },
+      "11": {
+        "class_type": "VAEEncode",
+        "inputs": {
+          "pixels": [
+            "5",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "12": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "8",
+            0
+          ],
+          "positive": [
+            "9",
+            0
+          ],
+          "negative": [
+            "10",
+            0
+          ],
+          "latent_image": [
+            "11",
+            0
+          ],
+          "seed": 26091241,
+          "steps": 4,
+          "cfg": 1.0,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1.0
+        }
+      },
+      "13": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "12",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "14": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "13",
+            0
+          ],
+          "filename_prefix": "OMR_VisualTargets/generation-C01-anime-style-revision-64f425fb2144/candidate"
+        }
+      },
+      "15": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "OMR-e14a9901ec6e58c85369.png"
+        }
+      }
+    },
+    {
+      "client_id": "generation-C01-anime-style-revision-64f425fb2144",
+      "create_time": 1789179971943
+    },
+    [
+      "14"
+    ]
+  ],
+  "outputs": {
+    "14": {
+      "images": [
+        {
+          "filename": "candidate_00001_.png",
+          "subfolder": "OMR_VisualTargets\\generation-C01-anime-style-revision-64f425fb2144",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "8cc4ae76-1ad2-4210-853e-8ee47560005f",
+          "timestamp": 1789179971944
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "11"
+          ],
+          "prompt_id": "8cc4ae76-1ad2-4210-853e-8ee47560005f",
+          "timestamp": 1789179971955
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "8cc4ae76-1ad2-4210-853e-8ee47560005f",
+          "timestamp": 1789179983373
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "14": {
+      "node_id": "14",
+      "display_node": "14",
+      "parent_node": null,
+      "real_node_id": "14"
+    }
+  }
+}

@@ -15,18 +15,64 @@ public static class RanchDesignRegressionTests
 {
     public static void Run(SmokeTestResult result)
     {
+        CoastalRegionRegressionTests.Run(result);
         void Check(bool pass, string message)
         { result.Passed &= pass; result.Lines.Add($"SMOKE {(pass ? "OK" : "FAIL")} ranch design: {message}"); }
+        var bankActor = new Vector3(69.32553f, 4.22099f, 166.97568f);
+        var bankWaypoint = new Vector3(69.32553f, 4.445827f, 166.97568f);
+        const float oldOffset = -0.11043739f;
+        Check(Mathf.IsEqualApprox(RosterRig.AlignReachedWaypointHeight(bankActor, bankWaypoint, oldOffset, 0.05f),
+            oldOffset + bankWaypoint.Y - bankActor.Y), "arrived bank waypoint reconciles its own height, not a neighbouring polygon");
+        Check(RosterRig.AlignReachedWaypointHeight(bankActor, bankWaypoint + Vector3.Right, oldOffset, 0.05f) == oldOffset,
+            "height alignment cannot skip a horizontal waypoint corner");
+        Check(RosterRig.AlignReachedWaypointHeight(bankActor, bankActor + Vector3.Up, oldOffset, 0.05f) == oldOffset,
+            "height alignment cannot transfer an actor onto another floor");
+        Check(RosterRig.AlignReachedWaypointHeight(bankActor, new Vector3(float.NaN, 0, 0), oldOffset, 0.05f) == oldOffset,
+            "nonfinite waypoint data cannot alter height alignment");
         var plots = RanchBuildingPlots.All;
         var errors = RanchBuildingPlots.Validate(plots);
         Check(errors.Count == 0, "reserved roofs/footprints/entrances fit without overlap: " + string.Join("; ", errors));
-        Check(plots.Count == 8 && plots.Select(plot => plot.Id).Distinct().Count() == 8, "eight unique authored ranch plots");
+        Check(plots.Count == 6 && plots.Select(plot => plot.Id).Distinct().Count() == 6, "six physical plots; kitchen and office remain indoor services");
+        var homePlot = plots.Single(p => p.Id == "ranch_house");
+        Check(homePlot.Center == new Vector2(-10, -11) && homePlot.Footprint == new Vector2(20, 28),
+            "authored home reserves main shell and north wing together");
+        Check(!plots.Any(p => p.Id is "kitchen" or "office"), "indoor services do not spawn duplicate physical shells");
+        var home = GD.Load<PackedScene>("res://scenes/world/RanchHome.tscn").Instantiate<RanchHome>();
+        Check(home.GetNode<Node3D>("Assets").Position == new Vector3(0, 0, 6)
+            && home.GetNodeOrNull<CollisionShape3D>("Assets/KitchenSink/FurnitureBody/Collision") is not null,
+            "production home authors shell offset and physical furniture");
+        var authoredChildren = home.GetChildCount();
+        home.Build(); home.SetFacilityLevel(0); home.SetFacilityLevel(3);
+        Check(home.GetChildCount() == authoredChildren, "home compatibility API never generates an extra box shell or grants furniture upgrades");
+        home.Free();
         var townPlots = OrganicWorldLayout.TownPlots;
-        Check(townPlots.Count == 7 && townPlots.Select(p => p.Id).Distinct().Count() == 7,
-            "organic town layout preserves all seven service identities");
+        Check(townPlots.Count == 6 && townPlots.Select(p => p.Id).Distinct().Count() == 6,
+            "organic town layout consolidates the planning office into the civic parcel");
+        var townScene = GD.Load<PackedScene>("res://scenes/dev/TownGreybox.tscn").Instantiate<TownWorldController>();
+        try
+        {
+            var services = townScene.GetNode<Node3D>("Services").GetChildren().OfType<TownServicePoint>()
+                .Select(s => s.ServiceId).ToArray();
+            Check(services.Length == 7 && services.Order().SequenceEqual(townPlots.Select(p => p.Id).Append("planning_board").Order()),
+                "actual town scene retains all seven service identities despite shared rooms");
+        }
+        finally { townScene.Free(); }
         Check(plots.Count(p => Mathf.Abs(Mathf.AngleDifference(p.Yaw, Mathf.Atan2(-p.Center.X, -p.Center.Y))) > 0.2f) >= 3,
             "authored farm buildings no longer all face one radial hub");
         var layoutJson = Godot.FileAccess.GetFileAsString(OrganicWorldLayout.SourcePath);
+        using (var layout = JsonDocument.Parse(layoutJson))
+        {
+            var clearPoints = layout.RootElement.GetProperty("ranch").GetProperty("clear_points");
+            Vector3 Origin(int index) => new(clearPoints[index][0].GetSingle(), 0, clearPoints[index][1].GetSingle());
+            Check(RanchLeisureController.CornerOrigin == Origin(0)
+                && RanchLeisureController.BoardOrigin == Origin(1),
+                "leisure props and approaches share the current spatial clearings, not the house interior");
+            var ranchScene = GD.Load<PackedScene>("res://scenes/dev/RanchGreybox.tscn").Instantiate<RanchGreyboxController>();
+            var intruder = ranchScene.GetNode<Node3D>("FirstDayIntruder").Position;
+            Check(intruder == Origin(2) && !homePlot.ReservedBounds.HasPoint(new Vector2(intruder.X, intruder.Z)),
+                "tutorial intruder matches its outdoor clearing and does not spawn inside the authored home");
+            ranchScene.Free();
+        }
         var rejected = false;
         try { OrganicWorldLayout.ParsePlots(layoutJson.Replace("dairy_barn", "pasture"), "ranch"); }
         catch (InvalidOperationException) { rejected = true; }
@@ -52,12 +98,12 @@ public static class RanchDesignRegressionTests
             building.Free();
         }
 
-        Check(RanchDressingClearance.Allows(new Rect2(-0.2f, 1.8f, 0.4f, 0.4f)), "small decorative footprint fits an unreserved plaza location");
+        Check(RanchDressingClearance.Allows(new Rect2(5.8f, 1.8f, 0.4f, 0.4f)), "small decorative footprint fits an unreserved plaza location");
         Check(!RanchDressingClearance.Allows(RanchBuildingPlots.GateApproach)
             && !RanchDressingClearance.Allows(new Rect2(0, 0, float.NaN, 1)), "dressing rejects the gate and malformed mesh dimensions");
         Check(plots.All(plot => !RanchDressingClearance.Allows(plot.ReservedBounds)
             && !RanchDressingClearance.Allows(plot.EntranceBounds)), "trees cannot occupy any reserved roof or entrance");
-        var decoration = new Node3D { Position = new Vector3(0, 0, 2) };
+        var decoration = new Node3D { Position = new Vector3(6, 0, 2) };
         decoration.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = Vector3.One * 0.2f } });
         Check(RanchDressingClearance.AllowsMeshes(decoration), "mesh clearance composes local transforms safely before tree entry");
         decoration.Position = new Vector3(plots[0].Center.X, 0, plots[0].Center.Y);

@@ -100,18 +100,76 @@ def authored_height(area,x,z,data,cached_routes=None):
         else: h=bank+(h-bank)*smooth((d-half-1)/1.5)
     return h
 
+def bridge_frame(data):
+    bridge=data['region']['connection']['bridge'];a=bridge['start'];b=bridge['end']
+    length=math.hypot(b[0]-a[0],b[2]-a[2]);ux=(b[0]-a[0])/length;uz=(b[2]-a[2])/length
+    return bridge,a,b,length,ux,uz
+
+def bridge_coordinates(x,z,data):
+    bridge,a,b,length,ux,uz=bridge_frame(data)
+    return (x-a[0])*ux+(z-a[2])*uz, -(x-a[0])*uz+(z-a[2])*ux
+
+def on_valley_bridge(x,z,data,margin=0.):
+    bridge,a,b,length,ux,uz=bridge_frame(data);along,side=bridge_coordinates(x,z,data)
+    return -margin-1e-7<=along<=length+margin+1e-7 and abs(side)<=bridge['deck_width']/2+margin+1e-7
+
+def walking_height(area,x,z,data,grid):
+    wx,_,wz=world(area,[x,0,z],data)
+    if area=='ranch' and on_valley_bridge(wx,wz,data):
+        return data['region']['connection']['bridge']['start'][1]-data['region']['areas'][area]['origin'][1]
+    return sample(grid,x,z)
+
 def validate_export_routes(data):
-    """Reject uncrossed wet routes before exporting; do not hide plan conflicts."""
-    r=data['region'];stream=r['stream']['points'];widths=r['stream']['widths']
-    lane=r['connection'];clearance=lane['width']/2
+    """Sample full lane width; only the explicit deck may cover carved banks."""
+    r=data['region'];stream=r['stream']['points'];widths=r['stream']['widths'];lane=r['connection']
+    bridge,a,b,length,ux,uz=bridge_frame(data)
+    assert lane['points'][bridge['segment_index']]==a and lane['points'][bridge['segment_index']+1]==b
+    assert bridge['clear_width']>=lane['width'] and a[1]==b[1]
+    validate_bridge_rail_clearance(data)
     for a,b in zip(lane['points'],lane['points'][1:]):
-        n=math.ceil(math.hypot(b[0]-a[0],b[2]-a[2])*2)
+        dx,dz=b[0]-a[0],b[2]-a[2];length=math.hypot(dx,dz);n=math.ceil(length*4)
         for k in range(n+1):
-            t=k/n;x=a[0]+t*(b[0]-a[0]);z=a[2]+t*(b[2]-a[2])
-            d,y,i,u=nearest(x,z,stream)
-            half=(widths[i]*(1-u)+widths[i+1]*u)/2
-            if d<half+clearance+1:
-                raise ValueError(f'VALLEY_LANE full width intersects stream/bank near regional ({x:.3f},{z:.3f}); add an explicitly planned crossing or reroute before export')
+            t=k/n
+            for side in [-lane['width']/2,0,lane['width']/2]:
+                x=a[0]+t*dx-dz/length*side;z=a[2]+t*dz+dx/length*side
+                if on_valley_bridge(x,z,data):continue
+                d,y,i,u=nearest(x,z,stream);half=(widths[i]*(1-u)+widths[i+1]*u)/2
+                if d<half+1:
+                    raise ValueError(f'VALLEY_LANE unbridged stream/bank at ({x:.3f},{z:.3f})')
+
+def segment_rect_distance(a,b,rect):
+    """Exact 2D distance from a closed segment to an axis-aligned filled rectangle."""
+    x0,x1,y0,y1=rect
+    lo,hi=0.,1.
+    for origin,delta,lower,upper in [(a[0],b[0]-a[0],x0,x1),(a[1],b[1]-a[1],y0,y1)]:
+        if abs(delta)<1e-12:
+            if not lower<=origin<=upper:break
+        else:
+            enter,leave=sorted(((lower-origin)/delta,(upper-origin)/delta))
+            lo,hi=max(lo,enter),min(hi,leave)
+            if lo>hi:break
+    else:return 0.
+    def endpoint(p):return math.hypot(max(x0-p[0],0,p[0]-x1),max(y0-p[1],0,p[1]-y1))
+    def corner(p):
+        dx,dy=b[0]-a[0],b[1]-a[1];s=dx*dx+dy*dy
+        t=max(0.,min(1.,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/s)) if s else 0.
+        return math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy)
+    return min(endpoint(a),endpoint(b),*(corner((x,y)) for x in [x0,x1] for y in [y0,y1]))
+
+def validate_bridge_rail_clearance(data):
+    """Keep the entire lane radius clear of rails, including turns at both ends."""
+    bridge,a,b,length,ux,uz=bridge_frame(data);lane=data['region']['connection']
+    points=[bridge_coordinates(p[0],p[2],data) for p in lane['points']]
+    distances=[]
+    for side in [-1,1]:
+        inner=side*bridge['clear_width']/2;outer=side*bridge['deck_width']/2
+        rect=(0.,length,min(inner,outer),max(inner,outer))
+        for index,(p,q) in enumerate(zip(points,points[1:])):
+            clearance=segment_rect_distance(p,q,rect)
+            distances.append(clearance)
+            if clearance+1e-6<lane['width']/2:
+                raise ValueError(f'VALLEY_LANE rail clearance at segment {index}, rail {side}: {clearance:.6f} < {lane["width"]/2:.6f}')
+    return min(distances)
 
 def build_grids(data,sha):
     out={'version':1,'source_sha256':sha,'areas':{}}
@@ -120,6 +178,7 @@ def build_grids(data,sha):
         heights=[round(authored_height(area,x+i,z+j,data,rr),6) for j in range(rows) for i in range(cols)]
         modules=[f'res://assets/3d/coastal_region/{area}_{k}.glb' for k in ['terrain','paths','water','safety']]
         modules.append(f'res://assets/3d/coastal_region/{area}_{"bridge" if area=="ranch" else "pier"}.glb')
+        if area=='ranch': modules.append('res://assets/3d/coastal_region/'+data['region']['connection']['bridge']['module'])
         out['areas'][area]={'bounds':[x,z,w,d],'step':1.0,'columns':cols,'rows':rows,'heights':heights,'modules':modules}
     return out
 

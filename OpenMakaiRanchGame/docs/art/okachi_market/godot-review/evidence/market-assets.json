@@ -1,0 +1,773 @@
+{
+  "passed": true,
+  "renderer": "forward_plus",
+  "unique_assets": [
+    "barrier.glb",
+    "canopy.glb",
+    "counter.glb",
+    "material_stack.glb",
+    "scaffold_bay.glb"
+  ],
+  "variants": [
+    {
+      "state": "base",
+      "imports": [
+        {
+          "name": "counter.glb",
+          "source": "res://assets/3d/okachi_market/counter.glb",
+          "collision_shapes": 14,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -2.9000244,
+            0,
+            -0.39801025
+          ],
+          "bounds_size": [
+            1.8000488,
+            1,
+            0.7960205
+          ]
+        },
+        {
+          "name": "counter.glb",
+          "source": "res://assets/3d/okachi_market/counter.glb",
+          "collision_shapes": 14,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            1.0999756,
+            0,
+            -0.39801025
+          ],
+          "bounds_size": [
+            1.8000488,
+            1,
+            0.7960205
+          ]
+        }
+      ],
+      "visible_roof_meshes": 0,
+      "bypass_clear_volume": true,
+      "central_clear_volume": true,
+      "front_work_barrier_ray": false,
+      "actor": {
+        "id": "noir",
+        "target_body_height": 1.62,
+        "body_height": 1.62,
+        "body_width": 0.8343506,
+        "body_depth": 0.50476074,
+        "bodily_bottom_relative_to_origin": 0,
+        "bodily_crown_relative_to_origin": 1.62,
+        "complete_visual_height": 1.62,
+        "accessory_above_crown": 0,
+        "debug_marker_above_crown": 0.15467322,
+        "root_local_scale": [
+          1,
+          1,
+          1
+        ],
+        "root_world_scale": [
+          1,
+          1,
+          1
+        ],
+        "skeleton_count": 0,
+        "animation_players": [],
+        "meshes": [
+          {
+            "name": "Body",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "Head",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "DebugMarker",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "state": "work",
+      "imports": [
+        {
+          "name": "counter.glb",
+          "source": "res://assets/3d/okachi_market/counter.glb",
+          "collision_shapes": 14,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -2.9000244,
+            0,
+            4.2019653
+          ],
+          "bounds_size": [
+            1.8000488,
+            1,
+            0.7960205
+          ]
+        },
+        {
+          "name": "counter.glb",
+          "source": "res://assets/3d/okachi_market/counter.glb",
+          "collision_shapes": 14,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            1.0999756,
+            0,
+            4.2019653
+          ],
+          "bounds_size": [
+            1.8000488,
+            1,
+            0.7960205
+          ]
+        },
+        {
+          "name": "canopy.glb",
+          "source": "res://assets/3d/okachi_market/canopy.glb",
+          "collision_shapes": 37,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -2.9099731,
+            0,
+            -1.9249878
+          ],
+          "bounds_size": [
+            5.8199463,
+            4.3480244,
+            3.8499756
+          ]
+        },
+        {
+          "name": "scaffold_bay.glb",
+          "source": "res://assets/3d/okachi_market/scaffold_bay.glb",
+          "collision_shapes": 29,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            3.919983,
+            0,
+            -1.1599731
+          ],
+          "bounds_size": [
+            2.5600586,
+            2.8899999,
+            1.3199463
+          ]
+        },
+        {
+          "name": "material_stack.glb",
+          "source": "res://assets/3d/okachi_market/material_stack.glb",
+          "collision_shapes": 18,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            3.6749878,
+            0,
+            3.5700073
+          ],
+          "bounds_size": [
+            2.0500488,
+            0.755,
+            0.85998535
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -3,
+            0,
+            2.209961
+          ],
+          "bounds_size": [
+            2,
+            1.12,
+            0.7800293
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -1,
+            0,
+            2.209961
+          ],
+          "bounds_size": [
+            2,
+            1.12,
+            0.7800293
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            1,
+            0,
+            2.209961
+          ],
+          "bounds_size": [
+            2,
+            1.12,
+            0.7800293
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -3,
+            0,
+            -2.9899902
+          ],
+          "bounds_size": [
+            2,
+            1.12,
+            0.7800293
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -1,
+            0,
+            -2.9899902
+          ],
+          "bounds_size": [
+            2,
+            1.12,
+            0.7800293
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            1,
+            0,
+            -2.9899902
+          ],
+          "bounds_size": [
+            2,
+            1.12,
+            0.7800293
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -3.790039,
+            0,
+            -2.0999756
+          ],
+          "bounds_size": [
+            0.7800293,
+            1.12,
+            2
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -3.790039,
+            0,
+            0.099975586
+          ],
+          "bounds_size": [
+            0.7800293,
+            1.12,
+            2
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            3.0100098,
+            0,
+            -2.0999756
+          ],
+          "bounds_size": [
+            0.7800293,
+            1.12,
+            2
+          ]
+        },
+        {
+          "name": "barrier.glb",
+          "source": "res://assets/3d/okachi_market/barrier.glb",
+          "collision_shapes": 6,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            3.0100098,
+            0,
+            0.099975586
+          ],
+          "bounds_size": [
+            0.7800293,
+            1.12,
+            2
+          ]
+        }
+      ],
+      "visible_roof_meshes": 0,
+      "bypass_clear_volume": true,
+      "central_clear_volume": true,
+      "front_work_barrier_ray": true,
+      "actor": {
+        "id": "noir",
+        "target_body_height": 1.62,
+        "body_height": 1.62,
+        "body_width": 0.8343506,
+        "body_depth": 0.50476074,
+        "bodily_bottom_relative_to_origin": 0,
+        "bodily_crown_relative_to_origin": 1.62,
+        "complete_visual_height": 1.62,
+        "accessory_above_crown": 0,
+        "debug_marker_above_crown": 0.15467322,
+        "root_local_scale": [
+          1,
+          1,
+          1
+        ],
+        "root_world_scale": [
+          1,
+          1,
+          1
+        ],
+        "skeleton_count": 0,
+        "animation_players": [],
+        "meshes": [
+          {
+            "name": "Body",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "Head",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "DebugMarker",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "state": "finished",
+      "imports": [
+        {
+          "name": "counter.glb",
+          "source": "res://assets/3d/okachi_market/counter.glb",
+          "collision_shapes": 14,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -2.9000244,
+            0,
+            -0.39801025
+          ],
+          "bounds_size": [
+            1.8000488,
+            1,
+            0.7960205
+          ]
+        },
+        {
+          "name": "counter.glb",
+          "source": "res://assets/3d/okachi_market/counter.glb",
+          "collision_shapes": 14,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            1.0999756,
+            0,
+            -0.39801025
+          ],
+          "bounds_size": [
+            1.8000488,
+            1,
+            0.7960205
+          ]
+        },
+        {
+          "name": "canopy.glb",
+          "source": "res://assets/3d/okachi_market/canopy.glb",
+          "collision_shapes": 37,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -3,
+            0,
+            -2
+          ],
+          "bounds_size": [
+            6,
+            4.51,
+            4
+          ]
+        }
+      ],
+      "visible_roof_meshes": 17,
+      "bypass_clear_volume": true,
+      "central_clear_volume": true,
+      "front_work_barrier_ray": false,
+      "actor": {
+        "id": "noir",
+        "target_body_height": 1.62,
+        "body_height": 1.62,
+        "body_width": 0.8343506,
+        "body_depth": 0.50476074,
+        "bodily_bottom_relative_to_origin": 0,
+        "bodily_crown_relative_to_origin": 1.62,
+        "complete_visual_height": 1.62,
+        "accessory_above_crown": 0,
+        "debug_marker_above_crown": 0.15467322,
+        "root_local_scale": [
+          1,
+          1,
+          1
+        ],
+        "root_world_scale": [
+          1,
+          1,
+          1
+        ],
+        "skeleton_count": 0,
+        "animation_players": [],
+        "meshes": [
+          {
+            "name": "Body",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "Head",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "DebugMarker",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "shots": [
+    {
+      "name": "market-base-overview",
+      "camera_position": [
+        12,
+        12,
+        15
+      ],
+      "camera_target": [
+        0,
+        0.6,
+        0
+      ],
+      "Fov": 45
+    },
+    {
+      "name": "market-base-eye",
+      "camera_position": [
+        0,
+        1.75,
+        5.7
+      ],
+      "camera_target": [
+        0,
+        1,
+        -1
+      ],
+      "Fov": 60
+    },
+    {
+      "name": "market-work-overview",
+      "camera_position": [
+        12,
+        12,
+        15
+      ],
+      "camera_target": [
+        0,
+        0.6,
+        0
+      ],
+      "Fov": 45
+    },
+    {
+      "name": "market-work-eye",
+      "camera_position": [
+        0,
+        1.75,
+        5.7
+      ],
+      "camera_target": [
+        0,
+        1,
+        -1
+      ],
+      "Fov": 60
+    },
+    {
+      "name": "market-finished-overview",
+      "camera_position": [
+        12,
+        12,
+        15
+      ],
+      "camera_target": [
+        0,
+        0.6,
+        0
+      ],
+      "Fov": 45
+    },
+    {
+      "name": "market-finished-eye",
+      "camera_position": [
+        0,
+        1.75,
+        5.7
+      ],
+      "camera_target": [
+        0,
+        1,
+        -1
+      ],
+      "Fov": 60
+    }
+  ],
+  "limits": "Authored asset variants only; separate fixture instances, not a live/persisted upgrade. Stationary clear-volume queries and barrier rays are not player/companion walks or navigation. No service binding, transactions, construction animation/audio or weather shelter behavior tested. Standing mannequin is a scale reference, not a clerk."
+}

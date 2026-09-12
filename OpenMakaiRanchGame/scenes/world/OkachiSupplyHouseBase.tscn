@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/OkachiSupplyHouseCore.tscn" id="1_core"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_supply_house/rear_connection_cap.glb" id="2_cap"]
+
+[node name="OkachiSupplyHouseBase" type="Node3D"]
+metadata/scope = "Authored base variant only, no gameplay stage or finance binding. Rear connection physically capped; annex is absent."
+
+[node name="Core" parent="." instance=ExtResource("1_core")]
+
+[node name="RearCap" parent="." instance=ExtResource("2_cap")]

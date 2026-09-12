@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "development": {
+    "status": "shared spatial target; triggers require verified existing gameplay authority",
+    "population_intent": "A small coastal town suggesting roughly 300 inhabitants, NOT 300 persistent simulated NPC records",
+    "stage_images": ["SUPPLY_SETTLEMENT", "MARKET_TOWN", "COASTAL_SETTLEMENT", "SMALL_COASTAL_TOWN"],
+    "first_slice": ["RANCH_HOME", "VALLEY_LANE", "ADMINISTRATION_SUPPLY", "MARKET_COURT"],
+    "ranch_home": {"space":"ranch local metres", "main_origin":[-10,0,-5], "envelope_center":[-10,-11], "envelope_size":[20,28], "yaw":0, "rooms":"entry office, kitchen/pantry/dining, private beds/bath; existing service IDs remain separate actions"},
+    "town_groups": [
+      {"id":"ADMINISTRATION_SUPPLY", "space":"town local metres", "main_origin":[12,0,-2], "envelope_center":[12,-5], "envelope_size":[12,16], "yaw":0, "stage":"SUPPLY_SETTLEMENT", "expansion":"6m rear annex inside reserved envelope; entrance remains at main local Z+5"},
+      {"id":"SUPPLY_YARD", "space":"town local metres", "center":[23,4], "size":[10,10], "stage":"SUPPLY_SETTLEMENT", "expansion":"covered delivery storage, paving and accessible shared work/shelter area, no duplicate stockpile"},
+      {"id":"MARKET_COURT", "space":"town local metres", "center":[-1,8], "size":[14,12], "stage":"SUPPLY_SETTLEMENT", "expansion":"same accessible court gains authored canopy/stands/seating; clear central circulation retained"},
+      {"id":"INLAND_RESIDENTIAL_COURT", "space":"town local metres", "center":[48,-17], "size":[28,24], "stage":"MARKET_TOWN", "status":"reserved, not modeled or unlocked"},
+      {"id":"QUIET_RESIDENTIAL_GARDENS", "space":"town local metres", "center":[-22,-37], "size":[28,26], "stage":"COASTAL_SETTLEMENT", "status":"reserved, not modeled or unlocked"},
+      {"id":"WORKSHOP_DELIVERY_COURT", "space":"town local metres", "center":[33,-43], "size":[26,18], "stage":"COASTAL_SETTLEMENT", "status":"reserved, not modeled or unlocked"}
+    ],
+    "permanent_open_space": [
+      {"id":"RANCH_MEADOWS", "space":"ranch local metres", "rule":"retain western bridge meadow, orchards and north/east pasture margins; do not fill every reserved hectare"},
+      {"id":"TOWN_GATE_GREEN", "space":"town local metres", "bounds":[-10,19,24,14], "rule":"keep gate-to-market approach open across all stages"},
+      {"id":"COAST_GREEN_BUFFER", "space":"town local metres", "rule":"shoreward of local X -42 stays predominantly public green/shore access; no new housing in stream/bank/shore masks"},
+      {"id":"MARKET_CIRCULATION", "space":"town local metres", "bounds":[-2.5,2,5,32], "rule":"no stall, construction barrier or seated crowd blocks this main route"}
+    ],
+    "rules": "A-D are design images, not invented unlock levels. Existing services remain usable at their current unlocks in shared/smaller premises. Structural completion uses a safe unoccupied transition. No new money/mana/contribution pool; no extra charge for already paid resources. Real ranch sleepers need unique assignments; anonymous town ambience is not a saved census."
+  },
+  "export_policy": {"legacy_small_landscape_paused": true, "stage": "coastal_region_blockout", "final_art_approved": false},
+  "region": {
+    "id": "OKACHI_COASTAL_VALLEY",
+    "units": "metres",
+    "sea_level": 0.0,
+    "north": "negative regional Z",
+    "coast_side": "regional east; town local west",
+    "orientation_reason": "Preserve both existing local South Gate connections; town local frame rotates 180 degrees in the common region.",
+    "areas": {
+      "ranch": {
+        "origin": [0,12,0], "yaw": 0,
+        "core_bounds": [-60,-50,120,100],
+        "terrain_bounds": [-60,-50,150,240],
+        "walkable_boundary": [[-60,-50],[60,-50],[60,42],[30,50],[31,88],[52,127],[69,162],[78,188],[62,190],[52,169],[34,134],[14,94],[4,52],[-60,50]],
+        "spawn": [0,0.8,10.5],
+        "quick_portal": [0,0.7,13],
+        "seam": [70,-7.2,185],
+        "seam_departure_direction": [0.4,0,1],
+        "navigation_height_range": [-13,25]
+      },
+      "town": {
+        "origin": [70,4,220], "yaw": 3.141592653589793,
+        "core_bounds": [-90,-65,180,130],
+        "terrain_bounds": [-90,-65,180,130],
+        "walkable_boundary": [[-75,-60],[85,-60],[85,60],[-75,60],[-67,40],[-55,20],[-51,0],[-54,-20],[-72,-22],[-72,-26],[-58,-28],[-67,-40]],
+        "spawn": [0,0.8,10.2],
+        "quick_portal": [0,0.7,12],
+        "seam": [0,0.8,35],
+        "seam_departure_direction": [0,0,1],
+        "navigation_height_range": [-6,18]
+      }
+    },
+    "stream": {
+      "space": "regional XYZ; water surface falls strictly along this sequence",
+      "points": [[-34,31,-110],[-27,15,-55],[-26,10,0],[-11,7,65],[37,4,155],[78,2.8,183],[104,1.4,210],[124,0,221]],
+      "widths": [1.5,2.0,2.6,3.0,3.5,4.0,4.5,5.0],
+      "bank_height": 0.75,
+      "bed_depth": 0.55,
+      "walkable": false
+    },
+    "connection": {
+      "id": "VALLEY_LANE", "owner": "ranch", "space": "regional XYZ",
+      "width": 3.2,
+      "points": [[0,12,20],[12,10.5,50],[22,8.6,90],[43,6.4,130],[61,4.4,165],[68.53517832764942,4.22,169.27054622143487],[61.76763857375903,4.22,179.18015800391726],[70,4,185]],
+      "bridge": {
+        "id": "VALLEY_FOOTBRIDGE", "module": "ranch_valley_bridge.glb",
+        "space": "regional XYZ", "segment_index": 5,
+        "start": [68.53517832764942,4.22,169.27054622143487],
+        "end": [61.76763857375903,4.22,179.18015800391726],
+        "deck_width": 3.8, "clear_width": 3.4, "deck_thickness": 0.3,
+        "rail_thickness": 0.2, "rail_height": 1.3,
+        "bank_gap_margin": 0.35
+      },
+      "reason": "Bent dry approaches connect the existing terrace controls to one 12m level footbridge perpendicular to the unchanged stream; preserve carved water beneath its separate deck.",
+      "optional_for_daily_services": true
+    },
+    "ranch_side_route": {
+      "space": "regional XYZ", "width": 2.4,
+      "points": [[-8,12,23],[-17,12,24],[-27,12,24],[-42,13,20]],
+      "bridge": {"deck_bounds": [-28,22.2,14,3.6], "deck_elevation": 12},
+      "reason": "A short fixed footbridge reaches the western meadow without fording the descending stream; no new gameplay system."
+    },
+    "coast": {
+      "space": "town local XYZ; town datum is four metres above sea level",
+      "shoreline": [[-78,-4,-60],[-70,-4,-40],[-58,-4,-20],[-54,-4,0],[-58,-4,20],[-70,-4,40],[-78,-4,60]],
+      "beach_bounds": [-61,-35,12,25],
+      "beach_min_height_above_sea": 0.75,
+      "pier": {"deck_bounds": [-72,-26,18,4], "deck_elevation": -2.6, "shore_ramp_start": [-50,-2.6,-24], "seaward_stop": [-70,-2.6,-24]},
+      "headland": {"center": [-69,4,-43], "radius": 12, "role": "southern bay shoulder; coherent cliff, not scattered rocks"},
+      "ocean_bounds": [-500,-350,448,700],
+      "swimming": false,
+      "shore_route": [[0,6],[-3,15],[-17,18],[-27,9],[-35,-8],[-43,-24],[-53,-24]],
+      "shore_route_width": 2.4,
+      "reason": "Descend south of the stream mouth, around the bathhouse garden, to the sheltered beach and pier. Keep market buildings on the four-metre terrace."
+    },
+    "landforms": [
+      {"id":"BACKCOUNTRY_RIDGE","regional_center":[-32,35,-100],"radii":[65,60],"role":"wooded source hills"},
+      {"id":"WEST_VALLEY_SHOULDER","regional_center":[-57,20,20],"radii":[30,100],"role":"continuous western valley side"},
+      {"id":"RANCH_TERRACE","regional_center":[0,12,0],"radii":[30,27],"role":"near-flat compact working core"},
+      {"id":"TOWN_TERRACE","regional_center":[70,4,220],"radii":[29,26],"role":"market and services above wave zone"}
+    ],
+    "surface_rule": "Bake modular heightfield tiles and a shared sampled height grid from these authored landforms. Flatten complete building and door envelopes at the area datum. Embed full-width path ribbons in the terrain. Carve the continuous stream below adjacent terraces; no independent random hills.",
+    "water_rule": "No swimming or tides. Explicit bank/shore boundaries prevent water entry; accessible beach and guarded pier remain dry walkable geometry.",
+    "transition_rule": "The optional foot connection changes scenes only at coincident regional seam anchors. Preserve XYZ/yaw and companion continuity. Existing quick travel remains free and is not evidence of walking."
+  },
+  "ranch": {
+    "half_extents": [60, 50],
+    "plots": [
+      {"id":"dairy_barn","center":[11,-12],"footprint":[7.6,6.6],"yaw":-0.22},
+      {"id":"pasture","center":[-2,-34],"footprint":[6.2,5.6],"yaw":0},
+
+      {"id":"workshop","center":[13,11.5],"footprint":[6.2,5.6],"yaw":-1.75},
+      {"id":"pharmacy_lab","center":[17,0],"footprint":[6.2,5.6],"yaw":-1.10},
+
+      {"id":"ranch_house","center":[-10,-11],"footprint":[20,28],"yaw":0},
+      {"id":"pet_care","center":[-13,-34],"footprint":[4.6,4.4],"yaw":0}
+    ],
+    "paths": [
+      {"id":"farm_lane","width":2.7,"points":[[0,20],[0,13],[1,9],[5,5],[5,0],[4,-5],[4,-25],[-2,-29],[-13,-29]]},
+      {"id":"home_lane","width":2.0,"points":[[1,9],[-2,6],[-10,6]]},
+
+      {"id":"quiet_garden","width":1.4,"points":[[1,9],[-2,11],[-4.5,15],[-6.5,15]]},
+      {"id":"community","width":1.4,"points":[[5,5],[3.5,7.5],[2.5,7.5]]}
+    ],
+    "approaches": {
+      "dairy_barn":[[4,-5],[7,-6]], "pasture":[[4,-25],[-2,-29]],
+      "workshop":[[1,9],[4,10]],
+      "pharmacy_lab":[[5,0],[8,2]],
+      "ranch_house":[[-10,6],[-10,4]], "pet_care":[[-2,-29],[-13,-29]]
+    },
+    "groves":[[-21,-16],[-11,-18],[22,-14],[22,9],[-22,14],[7,17]],
+    "clear_points":[[-6.5,14,2.2],[2.5,6.2,2.0],[2,1.5,1.5],[3,3.8,1.5]]
+  },
+  "town": {
+    "half_extents":[90,65],
+    "plots":[
+      {"id":"general_store","center":[-10,-7],"footprint":[5.5,4.8],"yaw":0.30},
+      {"id":"adventure_guild","center":[10,-8.5],"footprint":[6.0,5.2],"yaw":-0.16},
+      {"id":"research_office","center":[-14,0.3],"footprint":[4.8,4.4],"yaw":1.30},
+      {"id":"tavern","center":[12,3.1],"footprint":[6.0,5.2],"yaw":-1.05},
+      {"id":"bathhouse","center":[-10,9.7],"footprint":[5.2,4.6],"yaw":1.30},
+      {"id":"town_hall","center":[1.5,-9.5],"footprint":[5.6,5.0],"yaw":-0.18},
+      {"id":"planning_board","center":[-4.7,3.5],"footprint":[2.0,1.0],"yaw":0.5}
+    ],
+    "paths":[
+      {"id":"market_lane","width":3.3,"points":[[0,15],[0,12],[-0.8,9],[0,6],[2,2],[2,-1],[0,-3.5],[-4,-4],[-7,-3]]},
+      {"id":"guild_lane","width":2.6,"points":[[2,-1],[5,-2],[8,-3],[9.2,-3.4]]},
+      {"id":"garden_lane","width":1.8,"points":[[-0.8,9],[-3,11],[-5.5,11.8]]},
+      {"id":"scholars_lane","width":2.0,"points":[[-4,-4],[-7,-1],[-8.5,2.5]]}
+    ],
+    "approaches": {
+      "general_store":[[-7,-3]], "adventure_guild":[[9.2,-3.4]],
+      "research_office":[[-8.5,2.5]], "tavern":[[2,2],[6,4]],
+      "bathhouse":[[-5.5,11.8]], "town_hall":[[0,-3.5]],
+      "planning_board":[[0,6],[-2.5,6]]
+    },
+    "groves":[[-17,-11],[17,-12],[17,11],[-16,11],[7,11]],
+    "clear_points":[[0,12,3.2],[-1,-0.8,2.5]]
+  }
+}

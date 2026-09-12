@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="PlaneMesh" id="CourtMesh"]
+size = Vector2(14, 12)
+[sub_resource type="StandardMaterial3D" id="CourtMaterial"]
+albedo_color = Color(0.40, 0.39, 0.32, 1)
+roughness = 0.95
+[sub_resource type="BoxShape3D" id="CourtShape"]
+size = Vector3(14, 0.16, 12)
+[sub_resource type="PlaneMesh" id="BypassMesh"]
+size = Vector2(2, 12)
+[sub_resource type="StandardMaterial3D" id="BypassMaterial"]
+albedo_color = Color(0.58, 0.52, 0.40, 1)
+roughness = 0.95
+
+
+[node name="OkachiMarketCourt" type="Node3D"]
+metadata/authoring_units = "metres; shared 14x12 floor; no economics or town placement"
+[node name="Paving" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.006, 0)
+mesh = SubResource("CourtMesh")
+material_override = SubResource("CourtMaterial")
+[node name="Ground" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 1
+[node name="Shape" type="CollisionShape3D" parent="Ground"]
+position = Vector3(0, -0.08, 0)
+shape = SubResource("CourtShape")
+[node name="PermanentBypass" type="MeshInstance3D" parent="."]
+position = Vector3(-5, 0.012, 0)
+mesh = SubResource("BypassMesh")
+material_override = SubResource("BypassMaterial")

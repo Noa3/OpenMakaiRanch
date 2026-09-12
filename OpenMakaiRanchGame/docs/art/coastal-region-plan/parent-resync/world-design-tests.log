@@ -1,0 +1,24 @@
+test_all_lane_lateral_grades (test_coastal_geometry.CoastalGeometryTests.test_all_lane_lateral_grades) ... ok
+test_beach_dry (test_coastal_geometry.CoastalGeometryTests.test_beach_dry) ... ok
+test_bridge_gap_and_guards (test_coastal_geometry.CoastalGeometryTests.test_bridge_gap_and_guards) ... ok
+test_connection_width_polygon_and_grade (test_coastal_geometry.CoastalGeometryTests.test_connection_width_polygon_and_grade) ... ok
+test_contract_modules_receipts (test_coastal_geometry.CoastalGeometryTests.test_contract_modules_receipts) ... ok
+test_exported_full_width_path_contact (test_coastal_geometry.CoastalGeometryTests.test_exported_full_width_path_contact) ... ok
+test_provenance_finite_envelopes_seam (test_coastal_geometry.CoastalGeometryTests.test_provenance_finite_envelopes_seam) ... ok
+test_stream_monotonic_and_bed (test_coastal_geometry.CoastalGeometryTests.test_stream_monotonic_and_bed) ... ok
+test_valley_real_deck_coverage_guards_and_clearance (test_coastal_geometry.CoastalGeometryTests.test_valley_real_deck_coverage_guards_and_clearance) ... ok
+test_conflicting_area_dimensions_rejected (test_coastal_plan.CoastalPlanTests.test_conflicting_area_dimensions_rejected) ... ok
+test_full_width_not_only_centerline (test_coastal_plan.CoastalPlanTests.test_full_width_not_only_centerline) ... ok
+test_path_caps_are_included (test_coastal_plan.CoastalPlanTests.test_path_caps_are_included) ... ok
+test_polygon_boundary_is_inside_and_outside_rejected (test_coastal_plan.CoastalPlanTests.test_polygon_boundary_is_inside_and_outside_rejected) ... ok
+test_rotated_envelope_is_not_its_bounding_box (test_coastal_plan.CoastalPlanTests.test_rotated_envelope_is_not_its_bounding_box) ... ok
+test_scene_rotation_preserves_matching_regional_anchors (test_coastal_plan.CoastalPlanTests.test_scene_rotation_preserves_matching_regional_anchors) ... ok
+test_seam_mismatch_is_rejected (test_coastal_plan.CoastalPlanTests.test_seam_mismatch_is_rejected) ... ok
+test_smoothed_height_has_no_overshoot (test_coastal_plan.CoastalPlanTests.test_smoothed_height_has_no_overshoot) ... ok
+test_source_plan_swept_paths_and_heights (test_coastal_plan.CoastalPlanTests.test_source_plan_swept_paths_and_heights) ... ok
+test_stream_uphill_is_rejected (test_coastal_plan.CoastalPlanTests.test_stream_uphill_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.244s
+
+OK

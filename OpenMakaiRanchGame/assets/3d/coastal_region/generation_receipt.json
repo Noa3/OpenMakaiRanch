@@ -1,10 +1,7 @@
 {
   "version": 1,
-  "stage": "rejected_blockout_candidate",
-  "accepted": false,
-  "geometry_tests": {"passed": 6, "failed": 1, "log": "geometry_tests.log"},
-  "blocking_issue": "VALLEY_LANE crosses stream at regional X65.151408 Z174.225352, lane Y4.215493, water Y3.176056. Full-width ground route is carved away and blocked by banks. Plan needs reroute or explicit second crossing. Current generator rejects this source before writing exports.",
-  "source_sha256": "df2a7fc867768b91cc5a82747f8f098fdaa7b7de3ada07b01b7face69fa00ccf",
+  "stage": "blockout",
+  "source_sha256": "7eb780b2358657c41fa80be2412b0dbb97817cf4c83af5b0a05e5d1a190ce468",
   "checks": {
     "finite_grids": true,
     "plot_envelopes": true,
@@ -18,31 +15,31 @@
   "modules": [
     {
       "module": "ranch_terrain.glb",
-      "sha256": "923b8d02398a03aa1e5a4ee12b0efa5c32dbca6352d6ed2ac1be5668388081d3",
-      "bytes": 2389436,
+      "sha256": "688b33f90cfd5b74708961438dee7293f4930148a1f7189d919ddf26443e73ef",
+      "bytes": 2425316,
       "meshes": 70,
       "vertices": 39250,
       "triangles": 72000
     },
     {
       "module": "ranch_paths.glb",
-      "sha256": "fc9d6ec55150cecf12e0beecd42bf0e8864e5e2c15bfb281b31dfa4edf4fce49",
-      "bytes": 252760,
-      "meshes": 15,
-      "vertices": 9036,
-      "triangles": 3590
+      "sha256": "744b4c70c5b27235d83d0aa9da8f447eaa95138302426c705148d3b27c176a72",
+      "bytes": 264940,
+      "meshes": 12,
+      "vertices": 9604,
+      "triangles": 3794
     },
     {
       "module": "ranch_safety.glb",
-      "sha256": "1dc7b3ab59b30c22c81bf0652409f57c650d0036e818aafedf5a5150fcd1c542",
-      "bytes": 1358880,
-      "meshes": 1828,
-      "vertices": 7312,
-      "triangles": 3656
+      "sha256": "bc4ad2e9bd6b749f20583e9a348fb11f75709dbf3c488b4aff5675d44c62e7c0",
+      "bytes": 1347612,
+      "meshes": 1812,
+      "vertices": 7248,
+      "triangles": 3624
     },
     {
       "module": "ranch_water.glb",
-      "sha256": "c95aec65a97afcff20ffb6ba0014a9411fa83c20c4e10554eb9b54dfb5a9a990",
+      "sha256": "525e617540cbf0cfe291e29dd9b5dcf03a026149162933b617a0dab9c37a5c07",
       "bytes": 61656,
       "meshes": 1,
       "vertices": 2232,
@@ -50,23 +47,23 @@
     },
     {
       "module": "town_terrain.glb",
-      "sha256": "ec457800a54b6fa7bada87aa9aa7fb55a8ec0f91dd09cf6bb8c6c89ed3afc8fe",
-      "bytes": 1248360,
+      "sha256": "23b6cb6213c0613f179d52459021f5d687345a262e80f1d4f3b4911995ec02c8",
+      "bytes": 1275456,
       "meshes": 48,
       "vertices": 25568,
       "triangles": 46800
     },
     {
       "module": "town_paths.glb",
-      "sha256": "1115a407ab88895007ed446e54f7620d08dbc59a63613039b95d611a94ab805a",
-      "bytes": 145324,
-      "meshes": 13,
-      "vertices": 5083,
-      "triangles": 2067
+      "sha256": "cb730286bd2aae56edb6a957c13c197dcc41fb59aaf9adf7e451e91f0b9e29e1",
+      "bytes": 175512,
+      "meshes": 14,
+      "vertices": 6239,
+      "triangles": 2447
     },
     {
       "module": "town_safety.glb",
-      "sha256": "786675c133509f297795fcf37964a488e38ce801eaea2b0a1dc0953edc82c644",
+      "sha256": "8544b03fd4f731f9fd4d9794c1c91b60af0baed1333a808efe8c972d2856eeb9",
       "bytes": 851152,
       "meshes": 1174,
       "vertices": 4696,
@@ -74,15 +71,23 @@
     },
     {
       "module": "town_water.glb",
-      "sha256": "4ddbbacddd14f0ffb2ffae18bcd4dcb4fe84864f3be4a62f49e997b559ef828c",
+      "sha256": "f280084440c2d85268fae04b448a68e177f1188c28bf741e923a68eca708f97f",
       "bytes": 26332,
       "meshes": 2,
       "vertices": 908,
       "triangles": 454
     },
     {
+      "module": "ranch_valley_bridge.glb",
+      "sha256": "3a32dc329626081508950b6947daf8ad40a0c62cac5dfbec4235cb99874efbfd",
+      "bytes": 9172,
+      "meshes": 7,
+      "vertices": 56,
+      "triangles": 84
+    },
+    {
       "module": "ranch_bridge.glb",
-      "sha256": "082e8117e6707c604b3f19080c2a849ea0d454940032e6020885efd5ed0cd009",
+      "sha256": "9ae6293796d7e6a5bc4f7ffcbc8e5bfba870d8f8571bc7981d041447cd788b48",
       "bytes": 4108,
       "meshes": 3,
       "vertices": 24,
@@ -90,7 +95,7 @@
     },
     {
       "module": "town_pier.glb",
-      "sha256": "84766c619d82d9fbf432d9ef83a59d09b7f2d9a8bc83252b65c001f997f947d0",
+      "sha256": "149d53e0ebcad5b5f4b5fccdc401b8379859585c39e0a103ed1e64e3e1016055",
       "bytes": 13664,
       "meshes": 11,
       "vertices": 88,

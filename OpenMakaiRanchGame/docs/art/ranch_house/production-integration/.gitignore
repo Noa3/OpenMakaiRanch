@@ -1,0 +1,2 @@
+# Preserve real verification logs, including the rejected initial placement.
+!*.log

@@ -79,8 +79,8 @@ public partial class TownPresentationBuilder : Node3D
 
         // Market lanes and their approaches come from the same JSON as these service anchors.
         // Offset the fountain from the main walking line rather than using a radial crossroad hub.
-        AddCylinder("FountainBase", new Vector3(-1, 0.35f, -0.8f), 0.8f, 0.55f, WallB);
-        AddCylinder("FountainWater", new Vector3(-1, 0.66f, -0.8f), 0.65f, 0.05f, new Color("65a8c5"));
+        AddCylinder("FountainBase", new Vector3(-4, 0.35f, -5), 0.8f, 0.55f, WallB);
+        AddCylinder("FountainWater", new Vector3(-4, 0.66f, -5), 0.65f, 0.05f, new Color("65a8c5"));
 
         var services = new List<TownServicePoint>();
         CollectServices(GetParent(), services);
@@ -92,8 +92,8 @@ public partial class TownPresentationBuilder : Node3D
 
         foreach (var pos in new[]
         {
-            new Vector3(-3.3f,0,-1.6f), new Vector3(4.4f,0,-0.7f),
-            new Vector3(-2.4f,0,8.7f), new Vector3(5.4f,0,5.9f)
+            new Vector3(-4,0,-4), new Vector3(4,0,2),
+            new Vector3(4,0,10), new Vector3(-18,0,15)
         })
         {
             AddLamp(pos);
@@ -104,6 +104,28 @@ public partial class TownPresentationBuilder : Node3D
 
     private void BuildServiceBuilding(TownServicePoint service, int index)
     {
+        // These physical services are authored once; never generate another shell or board.
+        var markerPath = service.ServiceId switch
+        {
+            "town_hall" => "CivicHouse/ReceptionApproach",
+            "planning_board" => "CivicHouse/PlanningApproach",
+            "general_store" => "Market/ShopApproach",
+            _ => null
+        };
+        if (markerPath is not null)
+        {
+            var marker = GetParent().GetNode<Node3D>(markerPath);
+            service.Position = ((Node3D)service.GetParent()).ToLocal(marker.GlobalPosition);
+            var sign = new Label3D
+            {
+                Name = $"Sign_{service.ServiceId}", Text = service.Label,
+                Position = ToLocal(marker.GlobalPosition) + Vector3.Up * 1.3f,
+                FontSize = 24, OutlineSize = 6
+            };
+            _generated!.AddChild(sign);
+            _serviceSigns[service.ServiceId] = sign;
+            return;
+        }
         var plot = OrganicWorldLayout.TownPlots.Single(p => p.Id == service.ServiceId);
         var center = new Vector3(plot.Center.X, 0, plot.Center.Y);
         // Keep the authored service node/ScreenId. Proximity lives outside its actual doorway.

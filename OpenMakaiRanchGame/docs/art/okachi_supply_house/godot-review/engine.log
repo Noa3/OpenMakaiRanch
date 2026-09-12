@@ -1,0 +1,40 @@
+Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 5090
+
+DataRegistry loaded 380 entries from res://data/ JSON files (10 characters, 12 jobs, 98 items)
+OpenMakaiRanch ready: 10 characters, 12 jobs, 98 items.
+[GodotUniversalMCP Runtime] Listening on 127.0.0.1:9501
+WARNING: Property agent_radius is ceiled to cell_size voxel units and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:373)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:33)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property region_min_size is converted to int and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:379)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:33)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property agent_radius is ceiled to cell_size voxel units and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:373)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:33)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+WARNING: Property region_min_size is converted to int and loses precision.
+   at: generator_bake_from_source_geometry_data (modules/navigation_3d/3d/nav_mesh_generator_3d.cpp:379)
+   C# backtrace (most recent call first):
+       [0] void Godot.NativeCalls.godot_icall_3_867(nint, nint, nint, nint, Godot.Callable&) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/NativeCalls.cs:7672)
+       [1] void Godot.NavigationServer3D.BakeFromSourceGeometryData(Godot.NavigationMesh, Godot.NavigationMeshSourceGeometryData3D, Godot.Callable) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Generated/GodotObjects/NavigationServer3D.cs:1683)
+       [2] void OpenMakaiRanch.World.SimpleNavigationRegionBuilder.BakeCollision() (E:\OpenMakaiRanch\OpenMakaiRanchGame\src\World\SimpleNavigationRegionBuilder.cs:33)
+       [3] bool OpenMakaiRanch.World.SimpleNavigationRegionBuilder.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name&, Godot.NativeInterop.NativeVariantPtrArgs, Godot.NativeInterop.godot_variant&) (E:\OpenMakaiRanch\OpenMakaiRanchGame\.godot\mono\temp\obj\Debug\Godot.SourceGenerators\Godot.SourceGenerators.ScriptMethodsGenerator\OpenMakaiRanch.World.SimpleNavigationRegionBuilder_ScriptMethods.generated.cs:46)
+       [4] Godot.NativeInterop.godot_bool Godot.Bridge.CSharpInstanceBridge.Call(nint, Godot.NativeInterop.godot_string_name*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant_call_error*, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Bridge/CSharpInstanceBridge.cs:24)
+OKACHI ASSET IMPORT/CAPTURE PASS
+VISUAL CAPTURE PASS

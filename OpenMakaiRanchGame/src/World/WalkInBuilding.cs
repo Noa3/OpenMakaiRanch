@@ -15,10 +15,10 @@ public partial class WalkInBuilding : Node3D
     public Color WallColor { get; set; } = new("b7ad8c");
     public Color RoofColor { get; set; } = new("9c6753");
     public Node3D? Player { get; set; }
-    public bool IsCutaway { get; private set; }
-    public int CollisionBodyCount { get; private set; }
+    public bool IsCutaway { get; protected set; }
+    public int CollisionBodyCount { get; protected set; }
     public Vector3 EntryLocal => new(0, 0.8f, Footprint.Y / 2 + 1);
-    public Vector3 WorkLocal => new(0, 0.5f, Footprint.Y / 2 - 1.15f);
+    public virtual Vector3 WorkLocal => new(0, 0.5f, Footprint.Y / 2 - 1.15f);
     private Node3D _roof = null!;
     private readonly List<(Node3D Wall, Vector3 Normal)> _wallVisuals = new();
     private readonly List<MeshInstance3D> _plaster = new();
@@ -26,7 +26,7 @@ public partial class WalkInBuilding : Node3D
     public int VisualGrade { get; private set; } = -1;
     private Node3D? _upgrades;
 
-    public void SetFacilityLevel(int level)
+    public virtual void SetFacilityLevel(int level)
     {
         var grade = RanchBuildingPlots.VisualGrade(level);
         if (!_built || grade == VisualGrade) return;
@@ -42,7 +42,7 @@ public partial class WalkInBuilding : Node3D
 
     public override void _Ready() => Build();
 
-    public void Build()
+    public virtual void Build()
     {
         if (_built) return;
         _built = true;
@@ -120,13 +120,13 @@ public partial class WalkInBuilding : Node3D
         }
     }
 
-    public void SetBuiltColor(bool built)
+    public virtual void SetBuiltColor(bool built)
     {
         foreach (var mesh in _plaster)
             mesh.MaterialOverride = new StandardMaterial3D { AlbedoColor = built ? WallColor : new Color("86878a"), Roughness = 0.9f };
     }
 
-    public bool ContainsWorldPoint(Vector3 worldPoint)
+    public virtual bool ContainsWorldPoint(Vector3 worldPoint)
     {
         if (!IsInsideTree()) return false;
         var local = ToLocal(worldPoint);

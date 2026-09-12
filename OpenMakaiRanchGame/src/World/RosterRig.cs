@@ -53,6 +53,7 @@ public partial class RosterRig : Node3D
         }
 
     private Node3D? _followTarget;
+    private CollisionShape3D? _followBodyShape;
     private GameRoot? _game;
     private string _activeCompanionId = string.Empty;
 
@@ -61,7 +62,25 @@ public partial class RosterRig : Node3D
     public int AvatarCount => _avatars.Count;
     public string ActiveCompanionId => _activeCompanionId;
 
-    public void BindFollowTarget(Node3D? target) => _followTarget = target;
+    internal static float AlignReachedWaypointHeight(Vector3 current, Vector3 waypoint, float previousOffset, float planarTolerance)
+    {
+        // On banks, the nearest polygon can differ in height from the active waypoint.
+        // A physically grounded avatar must not wait forever directly beneath that point.
+        // Do not skip horizontal corners or compensate for a different floor/storey.
+        if (!current.IsFinite() || !waypoint.IsFinite() || !float.IsFinite(previousOffset)) return previousOffset;
+        var horizontal = new Vector2(waypoint.X - current.X, waypoint.Z - current.Z);
+        var vertical = waypoint.Y - current.Y;
+        return horizontal.Length() <= planarTolerance && Mathf.Abs(vertical) <= SimpleNavigationRegionBuilder.MaximumAgentClimb
+            ? previousOffset + vertical : previousOffset;
+    }
+
+    public void BindFollowTarget(Node3D? target)
+    {
+        _followTarget = target;
+        _followBodyShape = target is CharacterBody3D
+            ? target.GetChildren().OfType<CollisionShape3D>().FirstOrDefault(c => c.Shape is CapsuleShape3D)
+            : null;
+    }
 
     public bool TryGetAvatar(string characterId, out CharacterAvatar3D? avatar)
     {
@@ -160,7 +179,16 @@ public partial class RosterRig : Node3D
                     || NavigationServer3D.MapGetIterationId(agent.GetNavigationMap()) == 0)
                 { avatar.PlayLocomotion(0, false); continue; }
                 if (agent.TargetPosition.DistanceSquaredTo(target) > 0.0025f) agent.TargetPosition = target;
+                // Preserve the active path's correction across physics frames. Replacing it
+                // with the nearest polygon's height can select the bank below a bridge and
+                // also undo the correction before NavigationAgent consumes the waypoint.
                 var nextPath = agent.GetNextPathPosition();
+                var alignedOffset = AlignReachedWaypointHeight(current, nextPath, agent.PathHeightOffset, agent.PathDesiredDistance);
+                if (!Mathf.IsEqualApprox(alignedOffset, agent.PathHeightOffset))
+                {
+                    agent.PathHeightOffset = alignedOffset;
+                    nextPath = agent.GetNextPathPosition();
+                }
                 if (agent.IsNavigationFinished())
                                 {
                                     // Only the final, sub-step arrival may finish directly; never bypass an unreachable path.
@@ -171,8 +199,8 @@ public partial class RosterRig : Node3D
                                 }
                                 else
                                 {
-                                    if (_coastalRegion is null && nextPath.DistanceTo(current) > 8f)
-                                    { avatar.PlayLocomotion(0, false); continue; }
+                                    // A valid path may cross a large plaza in one long segment.
+                                    // MoveToward still limits displacement to the unchanged per-frame step.
                                     travelTarget = _coastalRegion is null ? new Vector3(nextPath.X, current.Y, nextPath.Z) : CoastalGround(nextPath);
                                 }
             }
@@ -294,7 +322,8 @@ public partial class RosterRig : Node3D
         var agent = new NavigationAgent3D
         {
             Name = "NavigationAgent",
-            PathDesiredDistance = 0.35f,
+            // Do not skip tight doorway corners before the avatar reaches their safe centreline.
+            PathDesiredDistance = 0.05f,
             TargetDesiredDistance = ArrivalDistance,
             Radius = 0.35f,
             Height = 1.7f,
@@ -344,6 +373,12 @@ public partial class RosterRig : Node3D
 
         var globalBasis = target.GlobalTransform.Basis;
         var follow = target.GlobalPosition - FlatForward(globalBasis) * CompanionBackOffset + FlatRight(globalBasis) * CompanionSideOffset;
+        if (_coastalRegion is null && GodotObject.IsInstanceValid(_followBodyShape)
+            && _followBodyShape?.Shape is CapsuleShape3D capsule)
+        {
+            // A player's origin is its capsule centre, not the companion's foot anchor.
+            follow.Y = (_followBodyShape.GlobalTransform * new Vector3(0, -capsule.Height * 0.5f, 0)).Y;
+        }
         return CoastalGround(follow);
     }
 

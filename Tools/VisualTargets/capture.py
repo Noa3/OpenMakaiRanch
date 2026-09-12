@@ -1,6 +1,7 @@
 """Capture the current ranch with P01 in an isolated profile; never approves artwork."""
 from __future__ import annotations
 import json
+import math
 import hashlib
 import os
 from pathlib import Path
@@ -9,6 +10,14 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
+TOWN_WALK_REQUIRED = (
+    'entering building opens no menu', 'escort entered actual town_hall room',
+    'escort entered actual planning_board room', 'escort reached market counter on foot',
+    'escort reached market bypass exit on foot',
+    'actual reception interaction opens visible existing milestones',
+    'market counter opens existing visible shop',
+    'walk speed, gold and delivery count unchanged; no transaction performed',
+)
 sys.path.insert(0, str(ROOT / 'Tools/Godot'))
 import launch
 from ui_acceptance import isolated_environment
@@ -74,10 +83,15 @@ def main():
     assembly = launch.PROJECT / '.godot/mono/temp/bin/Debug/OpenMakaiRanch.dll'
     assembly_sha = file_sha(assembly)
     (run / 'visual-target.marker').write_text('isolated-visual-target-v1\n', encoding='utf-8')
+    regional = env.get('OMR_REGIONAL_TRAVERSAL') == '1'
+    scene = 'res://scenes/dev/RegionalTraversalCapture.tscn' if regional else 'res://scenes/dev/VisualTargetCapture.tscn'
     code, text = launch.invoke([engine, '--path', launch.PROJECT, '--rendering-method', 'forward_plus',
                                '--audio-driver', 'Dummy', '--resolution', '1600x900',
-                               '--log-file', run / 'engine.log', 'res://scenes/dev/VisualTargetCapture.tscn',
-                               '--', '--visual-target-capture'], env, 120, run / 'console.log')
+                               '--log-file', run / 'engine.log', scene,
+                               '--', '--visual-target-capture'], env, 240 if regional else 120, run / 'console.log')
+    if regional:
+        from regional_traversal import verify_recording
+        return verify_recording(run, code, text, env, source, source_snapshot(ROOT), assembly_sha, file_sha(assembly))
     if code or text.splitlines().count('VISUAL CAPTURE PASS') != 1 or any(
         line.lstrip().startswith(('ERROR:', 'SCRIPT ERROR:', 'VISUAL CAPTURE FAIL')) for line in text.splitlines()
     ):
@@ -138,6 +152,82 @@ def main():
                 raise RuntimeError('Ranch asset screenshot is missing or invalid')
             images[name] = file_sha(shot)
         context['ranch_asset_review'] = {'report_sha256': file_sha(report), 'images': images}
+    if env.get('OMR_OKACHI_ASSET_REVIEW') == '1':
+        report = run / 'evidence/okachi-assets.json'
+        review = json.loads(report.read_text(encoding='utf-8'))
+        expected = {f'okachi-{state}-{view}' for state in ('base', 'expanded')
+                    for view in ('exterior', 'cutaway', 'reception')}
+        variants = review.get('variants', [])
+        if (review.get('passed') is not True or review.get('renderer') != 'forward_plus'
+                or len(set(review.get('unique_architecture', []))) != 3
+                or len(review.get('shots', [])) != 6
+                or {s['name'] for s in review.get('shots', [])} != expected
+                or len(variants) != 2 or {v['state'] for v in variants} != {'base', 'expanded'}
+                or any(v.get('front_clear_ray') is not True or v.get('four_room_clear_rays') is not True
+                       or v.get('rear_blocked_ray') is not (v['state'] == 'base') for v in variants)):
+            raise RuntimeError('Okachi asset review is incomplete or failed')
+        images = {}
+        for name in sorted(expected):
+            shot = run / 'evidence' / (name + '.png')
+            if png_size(shot) != (1600, 900):
+                raise RuntimeError('Okachi asset screenshot is missing or invalid')
+            images[name] = file_sha(shot)
+        context['okachi_asset_review'] = {'report_sha256': file_sha(report), 'images': images}
+    if env.get('OMR_MARKET_ASSET_REVIEW') == '1':
+        report = run / 'evidence/market-assets.json'
+        review = json.loads(report.read_text(encoding='utf-8'))
+        expected_assets = {'canopy.glb', 'counter.glb', 'scaffold_bay.glb', 'material_stack.glb', 'barrier.glb'}
+        variants = review.get('variants', [])
+        if (review.get('passed') is not True or review.get('renderer') != 'forward_plus'
+                or set(review.get('unique_assets', [])) != expected_assets or len(review['unique_assets']) != 5
+                or len(variants) != 3 or {v.get('state') for v in variants} != {'base', 'work', 'finished'}):
+            raise RuntimeError('Market kit/stage evidence incomplete')
+        for v in variants:
+            if (v.get('bypass_clear_volume') is not True or v.get('central_clear_volume') is not True
+                    or v.get('front_work_barrier_ray') is not (v['state'] == 'work')
+                    or v.get('visible_roof_meshes') != (17 if v['state'] == 'finished' else 0)):
+                raise RuntimeError('Market collision/roof-state evidence failed')
+        expected = {f'market-{state}-{view}' for state in ('base', 'work', 'finished') for view in ('overview', 'eye')}
+        names = [s.get('name') for s in review.get('shots', [])]
+        if len(names) != len(expected) or set(names) != expected:
+            raise RuntimeError('Market screenshot coverage incomplete')
+        images = {}
+        for name in sorted(expected):
+            shot = run / 'evidence' / (name + '.png')
+            if png_size(shot) != (1600, 900):
+                raise RuntimeError('Market screenshot dimensions changed')
+            images[name] = file_sha(shot)
+        context['market_asset_review'] = {'report_sha256': file_sha(report), 'images': images}
+    if os.environ.get('OMR_TOWN_CORE_REVIEW') == '1':
+        report = run / 'evidence/town-core-walk.json'
+        review = json.loads(report.read_text(encoding='utf-8'))
+        checks = review.get('checks', [])
+        if (review.get('passed') is not True or review.get('error') is not None
+                or not checks or any(c.get('ok') is not True for c in checks)
+                or not set(TOWN_WALK_REQUIRED).issubset({c.get('label') for c in checks})):
+            raise RuntimeError('Town walk checks are incomplete or failed')
+        trace = review.get('trace', [])
+        if len(trace) < 2:
+            raise RuntimeError('Town walk trajectory is missing')
+        for index, sample in enumerate(trace):
+            if sample.get('frame') != index + 1:
+                raise RuntimeError('Town walk trajectory frames are inconsistent')
+            for actor in ('player', 'escort'):
+                p = sample.get(actor, [])
+                if len(p) != 3 or any(not math.isfinite(v) for v in p):
+                    raise RuntimeError('Town walk trajectory has invalid coordinates')
+                if index and math.dist(trace[index-1][actor], p) > 0.65:
+                    raise RuntimeError('Town walk trajectory contains a jump')
+        names = {f'town-core-{s}' for s in ('overview', 'reception', 'market', 'milestones', 'shop')}
+        if {s.get('name') for s in review.get('shots', [])} != names or len(review['shots']) != len(names):
+            raise RuntimeError('Town walk image set incomplete')
+        images = {}
+        for name in sorted(names):
+            shot = run / 'evidence' / (name + '.png')
+            if png_size(shot) != (1600, 900):
+                raise RuntimeError('Town walk image dimensions changed')
+            images[name] = file_sha(shot)
+        context['town_core_walk'] = {'checks': len(checks), 'frames': len(trace), 'images': images, 'report_sha256': file_sha(report)}
     (run / 'evidence/W01-context.json').write_text(json.dumps(context, indent=2), encoding='utf-8')
     print(f'CAPTURE VERIFIED: {image}; Godot {version}')
     return 0

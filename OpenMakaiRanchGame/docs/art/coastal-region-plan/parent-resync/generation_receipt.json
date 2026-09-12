@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "stage": "blockout",
+  "source_sha256": "3cb6fa1be0408f148666281f54938e98b8cbe1a11600981b83a25567f3c494bf",
+  "checks": {
+    "finite_grids": true,
+    "plot_envelopes": true,
+    "downhill_water": true,
+    "seam_world": [
+      70.0,
+      4.8,
+      185.0
+    ]
+  },
+  "modules": [
+    {
+      "module": "ranch_terrain.glb",
+      "sha256": "530faf6805cf2cf1e298d9afcbf63d504c7814638bfea702e5d72885494c53c6",
+      "bytes": 2418104,
+      "meshes": 70,
+      "vertices": 39250,
+      "triangles": 72000
+    },
+    {
+      "module": "ranch_paths.glb",
+      "sha256": "c917062e7f54b3b407258fe0aee91bb4c1143755498d9a7c06ece66a2888e171",
+      "bytes": 253424,
+      "meshes": 12,
+      "vertices": 9172,
+      "triangles": 3618
+    },
+    {
+      "module": "ranch_safety.glb",
+      "sha256": "384788b528f8e92572afc3527b02e7a9c2cd69f5fcb9fdc52d8df0515a248400",
+      "bytes": 1344128,
+      "meshes": 1808,
+      "vertices": 7232,
+      "triangles": 3616
+    },
+    {
+      "module": "ranch_water.glb",
+      "sha256": "946e1b497ead64ec1bcba84b6fb25ed56f3779d6e195b17fd442ecbb63bd0d55",
+      "bytes": 61656,
+      "meshes": 1,
+      "vertices": 2232,
+      "triangles": 1116
+    },
+    {
+      "module": "town_terrain.glb",
+      "sha256": "a0375c5c45d4d401dd31feb28329e3ce1fc1eb226458efce8088e73720396e58",
+      "bytes": 1248360,
+      "meshes": 48,
+      "vertices": 25568,
+      "triangles": 46800
+    },
+    {
+      "module": "town_paths.glb",
+      "sha256": "80db5a1feb79e89a78570a5722ea3dca708e4fca67e91a94d2a5973b55473b34",
+      "bytes": 145324,
+      "meshes": 13,
+      "vertices": 5083,
+      "triangles": 2067
+    },
+    {
+      "module": "town_safety.glb",
+      "sha256": "7b5f543c6dbb6f2579c5206e414230790fb90a9547587d152e089ba561d61d7e",
+      "bytes": 851152,
+      "meshes": 1174,
+      "vertices": 4696,
+      "triangles": 2348
+    },
+    {
+      "module": "town_water.glb",
+      "sha256": "c9efd78d7445288ad360cb555496556c512957c41cf0a31c7e12eb8f820df61f",
+      "bytes": 26332,
+      "meshes": 2,
+      "vertices": 908,
+      "triangles": 454
+    },
+    {
+      "module": "ranch_valley_bridge.glb",
+      "sha256": "6a9c9a390d835666248b279cf0e1970f27ffec6f7fe1066fafd31b0f681a9149",
+      "bytes": 9172,
+      "meshes": 7,
+      "vertices": 56,
+      "triangles": 84
+    },
+    {
+      "module": "ranch_bridge.glb",
+      "sha256": "4cb03d1d3b1a2144de96a7978334a3c6359b1c984e8670aa83f31b8e0080c38f",
+      "bytes": 4108,
+      "meshes": 3,
+      "vertices": 24,
+      "triangles": 36
+    },
+    {
+      "module": "town_pier.glb",
+      "sha256": "ccf417e42e013f669466bdbcf006d5b386037c94fd4c0ace910d12a73b5c68d3",
+      "bytes": 13664,
+      "meshes": 11,
+      "vertices": 88,
+      "triangles": 132
+    }
+  ],
+  "coordinate_mapping": "Godot XYZ -> Blender X,-Z,Y; GLB Y-up",
+  "path_surface_offset": 0.018,
+  "limitations": [
+    "No player traversal or Godot import verified by generator",
+    "No art preview: parent live Godot capture required",
+    "Terrain grid extends beyond exact polygon; collision-only polygon walls constrain play",
+    "Blockout straight-segment paths, not final curved landscaping"
+  ]
+}

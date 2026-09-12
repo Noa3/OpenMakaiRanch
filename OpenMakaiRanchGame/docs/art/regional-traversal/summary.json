@@ -1,0 +1,127 @@
+{
+  "run": ".dream-loop\\capture-pyefrgv4",
+  "frames": 3870,
+  "physics_first": 72,
+  "physics_last": 3941,
+  "distance": {
+    "player": 280.41651628546936,
+    "escort": 154.75869786706366
+  },
+  "capsule_samples": 967,
+  "capsule_overlap_samples": 0,
+  "first_rail_contact": {
+    "frame": 3449,
+    "physics_frame": 3520,
+    "segment": "valley road 5",
+    "area": "ranch",
+    "player_id": 190874395649,
+    "escort_id": 354234157192,
+    "player": [
+      66.55552,
+      5.075163,
+      168.13174
+    ],
+    "escort": [
+      12.077868,
+      9.830998,
+      65.29529
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "on_floor": true,
+    "input": [
+      -0.86680925,
+      0.49863988
+    ],
+    "transitions": 0,
+    "seam_blocker": "",
+    "capsule_sampled": false,
+    "collisions": [],
+    "slides": [
+      {
+        "collider": "/root/RegionalTraversalCapture/WorldGame/RanchWorld/CoastalModules/ranch_valley_bridge/valley_rail_1/StaticBody3D",
+        "position": [
+          66.685005,
+          5.52,
+          168.6107
+        ],
+        "normal": [
+          -0.82580084,
+          0,
+          -0.56396186
+        ]
+      }
+    ],
+    "nav_target": [
+      68.23201,
+      4.2408633,
+      167.76947
+    ],
+    "nav_finished": false
+  },
+  "last_driving_frame": {
+    "frame": 3868,
+    "physics_frame": 3939,
+    "segment": "valley road 5",
+    "area": "ranch",
+    "player_id": 190874395649,
+    "escort_id": 354234157192,
+    "player": [
+      66.55552,
+      5.075163,
+      168.13174
+    ],
+    "escort": [
+      18.037973,
+      9.065804,
+      80.57122
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "on_floor": true,
+    "input": [
+      -0.8668089,
+      0.49864048
+    ],
+    "transitions": 0,
+    "seam_blocker": "",
+    "capsule_sampled": true,
+    "collisions": [],
+    "slides": [
+      {
+        "collider": "/root/RegionalTraversalCapture/WorldGame/RanchWorld/CoastalModules/ranch_valley_bridge/valley_rail_1/StaticBody3D",
+        "position": [
+          66.685036,
+          5.52,
+          168.61066
+        ],
+        "normal": [
+          -0.82580084,
+          0,
+          -0.56396186
+        ]
+      }
+    ],
+    "nav_target": [
+      68.29915,
+      4.2392535,
+      167.80809
+    ],
+    "nav_finished": false
+  },
+  "area_ids": [
+    "ranch"
+  ],
+  "player_ids": [
+    190874395649
+  ],
+  "escort_ids": [
+    354234157192
+  ]
+}

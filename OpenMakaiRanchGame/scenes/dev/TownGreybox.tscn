@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://src/World/TownWorldController.cs" id="1_controller"]
 [ext_resource type="Script" path="res://src/World/ThirdPersonPlayerController.cs" id="2_player"]
@@ -19,11 +19,14 @@
 [ext_resource type="Script" path="res://src/World/WorldSurfaceInteractionController.cs" id="17_surface"]
 [ext_resource type="Script" path="res://src/World/RosterRig.cs" id="18_roster"]
 
+[ext_resource type="PackedScene" path="res://scenes/world/OkachiCivicHouse.tscn" id="19_civic"]
+[ext_resource type="PackedScene" path="res://scenes/world/OkachiMarketBase.tscn" id="20_market"]
+
 [sub_resource type="BoxMesh" id="ground_mesh"]
-size = Vector3(40, 1, 30)
+size = Vector3(180, 1, 130)
 
 [sub_resource type="BoxShape3D" id="ground_shape"]
-size = Vector3(40, 1, 30)
+size = Vector3(180, 1, 130)
 
 [sub_resource type="BoxShape3D" id="service_shape"]
 size = Vector3(1.7, 2.0, 1.7)
@@ -37,13 +40,13 @@ script = ExtResource("1_controller")
 
 [node name="WorldBoundary" type="Node3D" parent="."]
 script = ExtResource("13_boundary")
-HalfExtents = Vector2(19.25, 14.25)
+HalfExtents = Vector2(90, 65)
 SouthGateHalfWidth = 3.0
 AreaStyle = "town"
 
 [node name="NavigationRegion" type="NavigationRegion3D" parent="."]
 script = ExtResource("8_navigation")
-Size = Vector2(36, 26)
+Size = Vector2(176, 126)
 
 [node name="DaylightRig" type="Node3D" parent="."]
 script = ExtResource("9_daylight")
@@ -63,6 +66,15 @@ mesh = SubResource("ground_mesh")
 [node name="Collision" type="CollisionShape3D" parent="Ground"]
 shape = SubResource("ground_shape")
 
+[node name="CivicHouse" parent="." instance=ExtResource("19_civic")]
+position = Vector3(12, 0, -2)
+
+[node name="Market" parent="." instance=ExtResource("20_market")]
+position = Vector3(-9, 0, 8)
+
+[node name="ShopApproach" type="Marker3D" parent="Market"]
+position = Vector3(-2, 0.7, 1)
+
 [node name="Presentation" type="Node3D" parent="."]
 script = ExtResource("7_presentation")
 
@@ -76,7 +88,7 @@ ArrivalDistance = 0.15
 [node name="Services" type="Node3D" parent="."]
 
 [node name="GeneralStore" type="Area3D" parent="Services"]
-position = Vector3(-10, 0.7, -7)
+position = Vector3(-11, 0.7, 9)
 script = ExtResource("4_service")
 ServiceId = "general_store"
 ScreenId = "shop"
@@ -87,7 +99,7 @@ Description = "Buy and sell supplies, equipment, and consumables."
 shape = SubResource("service_shape")
 
 [node name="AdventureGuild" type="Area3D" parent="Services"]
-position = Vector3(10, 0.7, -7)
+position = Vector3(12, 0.7, -18.1)
 script = ExtResource("4_service")
 ServiceId = "adventure_guild"
 ScreenId = "adventure"
@@ -98,7 +110,7 @@ Description = "Prepare parties, scout areas, hire mercenaries and run missions."
 shape = SubResource("service_shape")
 
 [node name="ResearchOffice" type="Area3D" parent="Services"]
-position = Vector3(-12, 0.7, 2)
+position = Vector3(-19.5, 0.7, -2)
 script = ExtResource("4_service")
 ServiceId = "research_office"
 ScreenId = "research"
@@ -110,7 +122,7 @@ RequiredFacilityId = "workshop"
 shape = SubResource("service_shape")
 
 [node name="Tavern" type="Area3D" parent="Services"]
-position = Vector3(12, 0.7, 2)
+position = Vector3(26, 0.7, -15.9)
 script = ExtResource("4_service")
 ServiceId = "tavern"
 ScreenId = "roster"
@@ -121,7 +133,7 @@ Description = "Review the roster and recruitment-related options."
 shape = SubResource("service_shape")
 
 [node name="Bathhouse" type="Area3D" parent="Services"]
-position = Vector3(-8, 0.7, 7)
+position = Vector3(-23, 0.7, 8.6)
 script = ExtResource("4_service")
 ServiceId = "bathhouse"
 ScreenId = "bond"
@@ -132,7 +144,7 @@ Description = "Open the existing bond and relationship management."
 shape = SubResource("service_shape")
 
 [node name="TownHall" type="Area3D" parent="Services"]
-position = Vector3(8, 0.7, 7)
+position = Vector3(8.75, 0.7, 1)
 script = ExtResource("4_service")
 ServiceId = "town_hall"
 ScreenId = "milestones"
@@ -143,7 +155,7 @@ Description = "Review milestones, records and long-term ranch progress."
 shape = SubResource("service_shape")
 
 [node name="PlanningBoard" type="Area3D" parent="Services"]
-position = Vector3(0, 0.7, -9)
+position = Vector3(15.35, 0.7, -4.3)
 script = ExtResource("4_service")
 ServiceId = "planning_board"
 ScreenId = "town"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/WorldGame.tscn" id="1_world"]
 [ext_resource type="Script" path="res://src/World/CoastalRegionController.cs" id="2_region"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_water.glb" id="ranch_water"]
 [ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_safety.glb" id="ranch_safety"]
 [ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_bridge.glb" id="ranch_bridge"]
+[ext_resource type="PackedScene" path="res://assets/3d/coastal_region/ranch_valley_bridge.glb" id="ranch_valley_bridge"]
 [ext_resource type="PackedScene" path="res://assets/3d/coastal_region/town_terrain.glb" id="town_terrain"]
 [ext_resource type="PackedScene" path="res://assets/3d/coastal_region/town_paths.glb" id="town_paths"]
 [ext_resource type="PackedScene" path="res://assets/3d/coastal_region/town_water.glb" id="town_water"]
@@ -27,6 +28,8 @@ script = ExtResource("2_region")
 [node name="ranch_safety" parent="RanchWorld/CoastalModules" instance=ExtResource("ranch_safety")]
 
 [node name="ranch_bridge" parent="RanchWorld/CoastalModules" instance=ExtResource("ranch_bridge")]
+
+[node name="ranch_valley_bridge" parent="RanchWorld/CoastalModules" instance=ExtResource("ranch_valley_bridge")]
 
 [node name="CoastalModules" type="Node3D" parent="TownWorld"]
 

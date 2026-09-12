@@ -1,0 +1,114 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/OkachiMarketCourt.tscn" id="court"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_market/counter.glb" id="counter"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_market/canopy.glb" id="canopy"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_market/scaffold_bay.glb" id="scaffold_bay"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_market/material_stack.glb" id="material_stack"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_market/barrier.glb" id="barrier"]
+
+[node name="OkachiMarketWork" type="Node3D"]
+metadata/authoring_state = "WORK; roofless frame and closed work area; no timed project"
+[node name="Court" parent="." instance=ExtResource("court")]
+
+[node name="CounterLeft" parent="." instance=ExtResource("counter")]
+position = Vector3(-2, 0, 4.6)
+
+[node name="CounterRight" parent="." instance=ExtResource("counter")]
+position = Vector3(2, 0, 4.6)
+
+[node name="Canopy" parent="." instance=ExtResource("canopy")]
+position = Vector3(0, 0, 0)
+
+[node name="Scaffold" parent="." instance=ExtResource("scaffold_bay")]
+position = Vector3(5.2, 0, -0.5)
+
+[node name="Stock" parent="." instance=ExtResource("material_stack")]
+position = Vector3(4.7, 0, 4)
+
+[node name="FrontBarrier0" parent="." instance=ExtResource("barrier")]
+position = Vector3(-2, 0, 2.6)
+
+[node name="FrontBarrier1" parent="." instance=ExtResource("barrier")]
+position = Vector3(0, 0, 2.6)
+
+[node name="FrontBarrier2" parent="." instance=ExtResource("barrier")]
+position = Vector3(2, 0, 2.6)
+
+[node name="RearBarrier0" parent="." instance=ExtResource("barrier")]
+position = Vector3(-2, 0, -2.6)
+
+[node name="RearBarrier1" parent="." instance=ExtResource("barrier")]
+position = Vector3(0, 0, -2.6)
+
+[node name="RearBarrier2" parent="." instance=ExtResource("barrier")]
+position = Vector3(2, 0, -2.6)
+
+[node name="LeftBarrier0" parent="." instance=ExtResource("barrier")]
+position = Vector3(-3.4, 0, -1.1)
+rotation = Vector3(0, 1.570796327, 0)
+
+[node name="LeftBarrier1" parent="." instance=ExtResource("barrier")]
+position = Vector3(-3.4, 0, 1.1)
+rotation = Vector3(0, 1.570796327, 0)
+
+[node name="RightBarrier0" parent="." instance=ExtResource("barrier")]
+position = Vector3(3.4, 0, -1.1)
+rotation = Vector3(0, 1.570796327, 0)
+
+[node name="RightBarrier1" parent="." instance=ExtResource("barrier")]
+position = Vector3(3.4, 0, 1.1)
+rotation = Vector3(0, 1.570796327, 0)
+
+[node name="Roof_canopy_Cap_53" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_Fascia_38" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_Fascia_39" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_Fascia_46" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_Fascia_47" parent="Canopy"]
+visible = false
+
+[node name="Roof_Canopy_Panel_1" parent="Canopy"]
+visible = false
+
+[node name="Roof_Canopy_Panel_-1" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_40" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_41" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_42" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_43" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_44" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_48" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_49" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_50" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_51" parent="Canopy"]
+visible = false
+
+[node name="Roof_canopy_StandingSeam_52" parent="Canopy"]
+visible = false
+
+[editable path="Canopy"]

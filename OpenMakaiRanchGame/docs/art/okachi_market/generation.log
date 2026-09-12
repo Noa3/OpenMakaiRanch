@@ -1,0 +1,291 @@
+E:\OpenMakaiRanch\Tools\Blender\build_okachi_market.py:25: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(name); m.diffuse_color=(*color,1); m.use_nodes=True
+INFO Draco is available, use library at D:\SteamLibrary\steamapps\common\Blender\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at D:\SteamLibrary\steamapps\common\Blender\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+14:56:58 | INFO: Starting glTF 2.0 export
+14:56:58 | INFO: Extracting primitive: Cube.031
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.032
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.033
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.034
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.035
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.036
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.022
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.023
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.026
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.029
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.003
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.008
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.013
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.018
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.004
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.009
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.014
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.019
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.005
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.010
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.015
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.001
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.006
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.011
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.016
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.024
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.025
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.027
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.028
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.030
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.002
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.007
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.012
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.017
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.020
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.021
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.051
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.037
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.038
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.044
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.045
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: EditableSlatePanel.001
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: EditableSlatePanel
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.039
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.040
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.041
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.042
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.043
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.046
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.047
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.048
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.049
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.050
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Finished glTF 2.0 export in 0.059012413024902344 s
+
+EXPORT_OK canopy 54 648
+14:56:58 | INFO: Starting glTF 2.0 export
+14:56:58 | INFO: Extracting primitive: Cube.056
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.057
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.060
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.052
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.053
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.054
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.055
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.065
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.058
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.059
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.061
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.062
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.063
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.064
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Finished glTF 2.0 export in 0.01788949966430664 s
+
+EXPORT_OK counter 14 168
+14:56:58 | INFO: Starting glTF 2.0 export
+14:56:58 | INFO: Extracting primitive: Cube.088
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.094
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.089
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.090
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.091
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.092
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.093
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.083
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.087
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.066
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.068
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.070
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.072
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.074
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.075
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.076
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.077
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.078
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.079
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.080
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.081
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.082
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.084
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.085
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.086
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.067
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.069
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.071
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.073
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Finished glTF 2.0 export in 0.029263734817504883 s
+
+EXPORT_OK scaffold_bay 29 348
+14:56:58 | INFO: Starting glTF 2.0 export
+14:56:58 | INFO: Extracting primitive: Cube.113
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.114
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.095
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.096
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.097
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.098
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.099
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.100
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.101
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.102
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.103
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.104
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.105
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.106
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.107
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.108
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.109
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.110
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.111
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.112
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Finished glTF 2.0 export in 0.022266387939453125 s
+
+EXPORT_OK material_stack 20 240
+14:56:58 | INFO: Starting glTF 2.0 export
+14:56:58 | INFO: Extracting primitive: Cube.121
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.122
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.123
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.115
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.117
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.119
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.120
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.116
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Extracting primitive: Cube.118
+14:56:58 | INFO: Primitives created: 1
+14:56:58 | INFO: Finished glTF 2.0 export in 0.012699127197265625 s
+00:02.015  blend            | Read blend: "E:\OpenMakaiRanch\OpenMakaiRanchGame\assets\3d\okachi_market\okachi_market.blend"
+Traceback (most recent call last):
+  File "E:\OpenMakaiRanch\Tools\Blender\build_okachi_market.py", line 185, in <module>
+    box('Ground',(0,-.08,0),(16,.12,13),'Lime',False)
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\OpenMakaiRanch\Tools\Blender\build_okachi_market.py", line 41, in box
+    bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(materials[mat]); return o
+                                                                              ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+ReferenceError: StructRNA of type Material has been removed
+
+EXPORT_OK barrier 9 108
+Info: Saved as "okachi_market.blend"
+
+Error: script failed, file: 'Tools/Blender/build_okachi_market.py', exiting.
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

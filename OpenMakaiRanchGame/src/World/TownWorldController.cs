@@ -20,6 +20,7 @@ public partial class TownWorldController : Node3D
     private WorldCameraRig? _cameraRig;
     private TownHudController? _hud;
     private WorldTravelPortal? _returnPortal;
+    private OkachiCivicHouse? _civicHouse;
     private TownServicePoint? _nearbyService;
     private float _nearbyServiceDistance = float.PositiveInfinity;
     private string _nearbyCompanionId = string.Empty;
@@ -49,6 +50,7 @@ public partial class TownWorldController : Node3D
         _returnPortal = GetNodeOrNull<WorldTravelPortal>("TravelToRanch");
         _returnRanchButton = GetNodeOrNull<Button>("TownHud/ReturnRanchButton");
 
+        _civicHouse = GetNodeOrNull<OkachiCivicHouse>("CivicHouse");
         _services.Clear();
         CollectServices(this);
 
@@ -216,6 +218,9 @@ public partial class TownWorldController : Node3D
 
         foreach (var service in _services)
         {
+            if (!service.IsInsideTree() || !service.IsVisibleInTree()) continue;
+            if (service.ServiceId is "town_hall" or "planning_board"
+                && (_civicHouse is null || !_civicHouse.CanApproachService(service.ServiceId, _player.GlobalPosition))) continue;
             var distance = _player.GlobalPosition.DistanceTo(service.GlobalPosition);
             if (distance < _nearbyServiceDistance)
             {
@@ -300,7 +305,15 @@ public partial class TownWorldController : Node3D
         return (false, $"{facilityName} must be built before {label} is available.");
     }
 
-    private void OnSharedStateChanged() => Refresh();
+    private void OnSharedStateChanged()
+    {
+        if (!GodotObject.IsInstanceValid(this))
+        {
+            if (GameRoot.Instance is { } game && GodotObject.IsInstanceValid(game)) game.StateChanged -= OnSharedStateChanged;
+            return;
+        }
+        Refresh();
+    }
 
     private void CollectServices(Node node)
     {

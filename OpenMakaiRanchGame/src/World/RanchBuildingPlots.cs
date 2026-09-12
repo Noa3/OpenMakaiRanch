@@ -34,7 +34,7 @@ public sealed record RanchBuildingPlot(string Id, Vector2 Center, Vector2 Footpr
 /// <summary>Metre-scale authored plots, not arbitrary mesh scaling. No simulation state is changed here.</summary>
 public static class RanchBuildingPlots
 {
-    public static readonly Rect2 WorldBounds = new(-24.5f, -19.5f, 49, 39);
+    public static readonly Rect2 WorldBounds = new(-60, -50, 120, 100);
     public static readonly Rect2 GateApproach = new(-1.6f, 7, 3.2f, 12.4f);
     public static IReadOnlyList<RanchBuildingPlot> All { get; } = OrganicWorldLayout.LoadRanchPlots();
     public static RanchBuildingPlot? Find(string id) => All.FirstOrDefault(plot => plot.Id == id);

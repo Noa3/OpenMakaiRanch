@@ -129,9 +129,9 @@ public partial class RanchPresentationBuilder : Node3D
 
         // Small admitted CC0 prop accents. They remain decorative; collision and gameplay IDs stay authored.
         TryAddExternalScene("RanchBarrelA", $"{VendorRoot}/decoration/props/barrel.gltf",
-            new Vector3(-3.0f, 0.03f, 3.6f), Vector3.One * 1.1f, 0.2f);
+            new Vector3(4.0f, 0.03f, 3.6f), Vector3.One * 1.1f, 0.2f);
         TryAddExternalScene("RanchBarrelB", $"{VendorRoot}/decoration/props/barrel.gltf",
-            new Vector3(-3.55f, 0.03f, 3.9f), Vector3.One * 0.95f, -0.25f);
+            new Vector3(4.55f, 0.03f, 3.9f), Vector3.One * 0.95f, -0.25f);
     }
 
     private void BuildEntryArch()
@@ -154,11 +154,11 @@ public partial class RanchPresentationBuilder : Node3D
     private void BuildCentralLandmark()
     {
         // Small open plaza / well proxy. It is deliberately low so camera/player sight lines remain clear.
-        AddCylinder("WellBase", new Vector3(0f, 0.32f, 3.8f), 0.78f, 0.55f, WoodColor.Lightened(0.18f));
-        AddCylinder("WellWater", new Vector3(0f, 0.61f, 3.8f), 0.60f, 0.05f, new Color("70a9c9"));
+        AddCylinder("WellBase", new Vector3(3f, 0.32f, 3.8f), 0.78f, 0.55f, WoodColor.Lightened(0.18f));
+        AddCylinder("WellWater", new Vector3(3f, 0.61f, 3.8f), 0.60f, 0.05f, new Color("70a9c9"));
 
-        AddBox("NoticeBoardPost", new Vector3(-2.25f, 0.85f, 2.9f), new Vector3(0.18f, 1.7f, 0.18f), WoodColor);
-        AddBox("NoticeBoard", new Vector3(-2.25f, 1.45f, 2.9f), new Vector3(1.7f, 1.0f, 0.18f), AccentColor.Darkened(0.12f));
+        AddBox("NoticeBoardPost", RanchLeisureController.BoardOrigin + Vector3.Up * 0.85f, new Vector3(0.18f, 1.7f, 0.18f), WoodColor);
+        AddBox("NoticeBoard", RanchLeisureController.BoardOrigin + Vector3.Up * 1.45f, new Vector3(1.7f, 1.0f, 0.18f), AccentColor.Darkened(0.12f));
     }
 
     private void BuildBoundaryNature()
@@ -189,7 +189,7 @@ public partial class RanchPresentationBuilder : Node3D
         // Created before the parent ranch collects physical stations. No additional reward authority.
         foreach (var (id, label, position) in new[]
         {
-            ("ranch_house", "Ranch house", new Vector3(6, 0.5f, 10)),
+
             ("pet_care", "Pet care", new Vector3(-6, 0.5f, -8))
         })
         {
@@ -204,6 +204,17 @@ public partial class RanchPresentationBuilder : Node3D
         foreach (var station in stations)
         {
             if (!station.RequiresWorker) continue;
+            if (station.TargetId is "ranch_house" or "kitchen" or "office")
+            {
+                if (ranch.GetNodeOrNull<RanchHome>("RanchHome") is { } home)
+                {
+                    _facilityLandmarks[station.TargetId] = home;
+                    var anchor = station.TargetId == "kitchen" ? "KitchenWork" : station.TargetId == "office" ? "OfficeWork" : "HouseWork";
+                    station.GlobalPosition = home.GetNode<Node3D>("Assets/" + anchor).GlobalPosition;
+                    if (station.GetNodeOrNull<MeshInstance3D>("Mesh") is { } block) block.Visible = false;
+                }
+                continue;
+            }
             var plot = RanchBuildingPlots.Find(station.TargetId);
             if (plot is null) continue; // New building types require an authored, validated plot.
             var building = new WalkInBuilding { Name = "Building_" + station.TargetId,

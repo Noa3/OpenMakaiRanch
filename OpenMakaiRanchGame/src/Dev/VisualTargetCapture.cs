@@ -66,6 +66,12 @@ public partial class VisualTargetCapture : Node
             game.NotifyStateChanged();
             await Frames(12);
             var ranch = world.Ranch ?? throw new InvalidOperationException("Ranch missing.");
+            if (OS.GetEnvironment("OMR_REGIONAL_TRAVERSAL") == "1")
+            {
+                await CaptureRegionalTraversal((CoastalRegionController)world);
+                return;
+            }
+            if (OS.GetEnvironment("OMR_TOWN_CORE_REVIEW") == "1") await CaptureTownCore(world);
             var rig = ranch.CameraRig ?? throw new InvalidOperationException("Camera rig missing.");
             var camera = rig.GetNode<Camera3D>("Camera");
             rig.ProcessMode = ProcessModeEnum.Disabled;
@@ -128,6 +134,8 @@ public partial class VisualTargetCapture : Node
             if (OS.GetEnvironment("OMR_VISUAL_WORLD_REVIEW") == "1") await CaptureWorldReview(world);
             if (OS.GetEnvironment("OMR_RANCH_SCALE_REVIEW") == "1") await CaptureRanchScale(world);
             if (OS.GetEnvironment("OMR_RANCH_ASSET_REVIEW") == "1") await CaptureRanchAssets(world);
+            if (OS.GetEnvironment("OMR_OKACHI_ASSET_REVIEW") == "1") await CaptureOkachiAssets(world);
+            if (OS.GetEnvironment("OMR_MARKET_ASSET_REVIEW") == "1") await CaptureMarketAssets(world);
             GD.Print("VISUAL CAPTURE PASS");
             world.QueueFree();
             await Frames(4);

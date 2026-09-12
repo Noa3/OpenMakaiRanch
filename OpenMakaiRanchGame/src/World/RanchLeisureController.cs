@@ -13,8 +13,10 @@ public partial class RanchLeisureController : Node3D, IWorldCommandDispatcher
 {
     public const string CornerId = "POINT_QUIET_CORNER";
     public const string BoardId = "POINT_COMMUNITY_BOARD";
-    public static readonly Vector3 CornerApproach = new(-6.5f, 0.6f, 9.0f);
-    public static readonly Vector3 BoardApproach = new(-2.25f, 0.6f, 3.7f);
+    public static readonly Vector3 CornerOrigin = new(-6.5f, 0, 14);
+    public static readonly Vector3 BoardOrigin = new(2.5f, 0, 6.2f);
+    public static readonly Vector3 CornerApproach = CornerOrigin + new Vector3(0, 0.6f, 1);
+    public static readonly Vector3 BoardApproach = BoardOrigin + new Vector3(0, 0.6f, 0.8f);
 
     private RanchGreyboxController? _ranch;
     private WorldGameController? _world;
@@ -35,8 +37,8 @@ public partial class RanchLeisureController : Node3D, IWorldCommandDispatcher
         // This child becomes ready before its parent ranch collects stations. No second target list.
         CornerStation = AddPoint(CornerId, "Quiet corner", CornerApproach);
         BoardStation = AddPoint(BoardId, "Community Board", BoardApproach);
-        _cornerLabel = AddSign("Quiet corner", new Vector3(-6.5f, 1.8f, 8.0f));
-        AddSign("Community Board", new Vector3(-2.25f, 2.25f, 2.9f));
+        _cornerLabel = AddSign("Quiet corner", CornerOrigin + Vector3.Up * 1.8f);
+        AddSign("Community Board", BoardOrigin + Vector3.Up * 2.25f);
         BuildCornerStandIn();
         _game = GameRoot.Instance;
         if (_game is not null && GodotObject.IsInstanceValid(_game))
@@ -123,7 +125,7 @@ public partial class RanchLeisureController : Node3D, IWorldCommandDispatcher
     {
         // Honest greybox presentation, not a new admitted production asset or navigation obstacle.
         // Both states are built once. Loads/repeated refreshes only switch visibility.
-        _broken = new Node3D { Name = "UnrestoredCorner", Position = new Vector3(-6.5f, 0f, 8f) };
+        _broken = new Node3D { Name = "UnrestoredCorner", Position = CornerOrigin };
         _bench = new Node3D { Name = "RestoredCorner", Position = _broken.Position, Visible = false };
         AddChild(_broken);
         AddChild(_bench);

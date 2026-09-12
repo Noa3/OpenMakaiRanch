@@ -1,0 +1,44 @@
+{
+  "run": ".dream-loop\\capture-un6uxw5a",
+  "passed": true,
+  "frames": 1498,
+  "checks": 3413,
+  "wall_seconds": 25.468,
+  "recorded_physics_seconds": 24.96666666666653,
+  "images": 5,
+  "routes_m": {
+    "player": 100.76709498147513,
+    "escort": 74.60001916191119
+  },
+  "max_step_m": {
+    "player": 0.10833404944083758,
+    "escort": 0.05000117391621952
+  },
+  "final_positions": {
+    "frame": 1498,
+    "elapsed": 24.96666666666653,
+    "player": [
+      -13.999972,
+      0.8009341,
+      0.09808545
+    ],
+    "escort": [
+      -14.620692,
+      0,
+      1.9971361
+    ],
+    "input": [
+      0,
+      0
+    ]
+  },
+  "key_checks": [
+    "escort entered actual town_hall room",
+    "actual reception interaction opens visible existing milestones",
+    "escort entered actual planning_board room",
+    "escort reached market counter on foot",
+    "market counter opens existing visible shop",
+    "escort reached market bypass exit on foot",
+    "walk speed, gold and delivery count unchanged; no transaction performed"
+  ]
+}

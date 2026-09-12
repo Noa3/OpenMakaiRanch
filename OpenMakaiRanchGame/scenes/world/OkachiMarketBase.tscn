@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/OkachiMarketCourt.tscn" id="1_court"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_market/counter.glb" id="2_counter"]
+
+[node name="OkachiMarketBase" type="Node3D"]
+metadata/authoring_state = "BASE; existing open counters; not a runtime project"
+[node name="Court" parent="." instance=ExtResource("1_court")]
+[node name="CounterLeft" parent="." instance=ExtResource("2_counter")]
+position = Vector3(-2, 0, 0)
+[node name="CounterRight" parent="." instance=ExtResource("2_counter")]
+position = Vector3(2, 0, 0)

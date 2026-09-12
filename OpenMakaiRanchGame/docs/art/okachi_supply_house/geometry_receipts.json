@@ -1,0 +1,1887 @@
+{
+  "units": "metres",
+  "godot_axes": "X right, Y up, front +Z; Blender (x,-z,y)",
+  "root_scaling": "none; every exported object scale = 1",
+  "room_clear_height_m": 3.15,
+  "reserved_envelope_xz": [
+    -6,
+    6,
+    -11,
+    5
+  ],
+  "rooms_xmin_xmax_zmin_zmax": {
+    "reception": [
+      -5.54,
+      -1.22,
+      -0.14,
+      4.59
+    ],
+    "meeting": [
+      1.22,
+      5.54,
+      -0.14,
+      4.59
+    ],
+    "archive": [
+      -5.54,
+      -1.22,
+      -4.78,
+      -0.36
+    ],
+    "supply_office": [
+      1.22,
+      5.54,
+      -4.78,
+      -0.36
+    ]
+  },
+  "spine_clear_width_m": 2,
+  "spine_collision_hits": [],
+  "doors": [
+    {
+      "name": "Front_Entrance",
+      "module": "base_shell",
+      "axis": "x",
+      "fixed": 4.7,
+      "center": 0,
+      "clear_width_m": 1.6,
+      "clear_height_m": 2.78,
+      "probe_min": [
+        -0.798,
+        0.005,
+        4.54
+      ],
+      "probe_max": [
+        0.798,
+        2.775,
+        4.86
+      ],
+      "blocking_bodies": []
+    },
+    {
+      "name": "Rear_Connection",
+      "module": "base_shell",
+      "axis": "x",
+      "fixed": -4.89,
+      "center": 0,
+      "clear_width_m": 1.6,
+      "clear_height_m": 2.78,
+      "probe_min": [
+        -0.798,
+        0.005,
+        -5.05
+      ],
+      "probe_max": [
+        0.798,
+        2.775,
+        -4.7299999999999995
+      ],
+      "blocking_bodies": []
+    },
+    {
+      "name": "Internal-1.11-2.7",
+      "module": "base_shell",
+      "axis": "z",
+      "fixed": -1.11,
+      "center": -2.7,
+      "clear_width_m": 1.4,
+      "clear_height_m": 2.78,
+      "probe_min": [
+        -1.27,
+        0.005,
+        -3.398
+      ],
+      "probe_max": [
+        -0.9500000000000001,
+        2.775,
+        -2.0020000000000002
+      ],
+      "blocking_bodies": []
+    },
+    {
+      "name": "Internal-1.112.2",
+      "module": "base_shell",
+      "axis": "z",
+      "fixed": -1.11,
+      "center": 2.2,
+      "clear_width_m": 1.4,
+      "clear_height_m": 2.78,
+      "probe_min": [
+        -1.27,
+        0.005,
+        1.5020000000000002
+      ],
+      "probe_max": [
+        -0.9500000000000001,
+        2.775,
+        2.898
+      ],
+      "blocking_bodies": []
+    },
+    {
+      "name": "Internal1.11-2.7",
+      "module": "base_shell",
+      "axis": "z",
+      "fixed": 1.11,
+      "center": -2.7,
+      "clear_width_m": 1.4,
+      "clear_height_m": 2.78,
+      "probe_min": [
+        0.9500000000000001,
+        0.005,
+        -3.398
+      ],
+      "probe_max": [
+        1.27,
+        2.775,
+        -2.0020000000000002
+      ],
+      "blocking_bodies": []
+    },
+    {
+      "name": "Internal1.112.2",
+      "module": "base_shell",
+      "axis": "z",
+      "fixed": 1.11,
+      "center": 2.2,
+      "clear_width_m": 1.4,
+      "clear_height_m": 2.78,
+      "probe_min": [
+        0.9500000000000001,
+        0.005,
+        1.5020000000000002
+      ],
+      "probe_max": [
+        1.27,
+        2.775,
+        2.898
+      ],
+      "blocking_bodies": []
+    },
+    {
+      "name": "Annex_Rear_Exit",
+      "module": "rear_annex",
+      "axis": "x",
+      "fixed": -10.78,
+      "center": 0,
+      "clear_width_m": 1.6,
+      "clear_height_m": 2.78,
+      "probe_min": [
+        -0.798,
+        0.005,
+        -10.94
+      ],
+      "probe_max": [
+        0.798,
+        2.775,
+        -10.62
+      ],
+      "blocking_bodies": []
+    },
+    {
+      "name": "Loading_Access",
+      "module": "rear_annex",
+      "axis": "z",
+      "fixed": 5.65,
+      "center": -7.6,
+      "clear_width_m": 1.8,
+      "clear_height_m": 2.78,
+      "probe_min": [
+        5.49,
+        0.005,
+        -8.498
+      ],
+      "probe_max": [
+        5.8100000000000005,
+        2.775,
+        -6.702
+      ],
+      "blocking_bodies": []
+    }
+  ],
+  "windows": [
+    {
+      "name": "Front_Window-3.8",
+      "module": "base_shell",
+      "axis": "x",
+      "wall_plane": 4.7,
+      "horizontal_center": -3.8,
+      "opening": [
+        1.7,
+        1.4
+      ],
+      "same_mesh_inside_outside": true
+    },
+    {
+      "name": "Front_Window3.8",
+      "module": "base_shell",
+      "axis": "x",
+      "wall_plane": 4.7,
+      "horizontal_center": 3.8,
+      "opening": [
+        1.7,
+        1.4
+      ],
+      "same_mesh_inside_outside": true
+    },
+    {
+      "name": "SideWindow-5.65-2.8",
+      "module": "base_shell",
+      "axis": "z",
+      "wall_plane": -5.65,
+      "horizontal_center": -2.8,
+      "opening": [
+        1.7,
+        1.4
+      ],
+      "same_mesh_inside_outside": true
+    },
+    {
+      "name": "SideWindow-5.652.5",
+      "module": "base_shell",
+      "axis": "z",
+      "wall_plane": -5.65,
+      "horizontal_center": 2.5,
+      "opening": [
+        1.7,
+        1.4
+      ],
+      "same_mesh_inside_outside": true
+    },
+    {
+      "name": "SideWindow5.65-2.8",
+      "module": "base_shell",
+      "axis": "z",
+      "wall_plane": 5.65,
+      "horizontal_center": -2.8,
+      "opening": [
+        1.7,
+        1.4
+      ],
+      "same_mesh_inside_outside": true
+    },
+    {
+      "name": "SideWindow5.652.5",
+      "module": "base_shell",
+      "axis": "z",
+      "wall_plane": 5.65,
+      "horizontal_center": 2.5,
+      "opening": [
+        1.7,
+        1.4
+      ],
+      "same_mesh_inside_outside": true
+    },
+    {
+      "name": "Annex_West_Window",
+      "module": "rear_annex",
+      "axis": "z",
+      "wall_plane": -5.65,
+      "horizontal_center": -9,
+      "opening": [
+        1.7,
+        1.4
+      ],
+      "same_mesh_inside_outside": true
+    }
+  ],
+  "collision_bodies": [
+    {
+      "name": "Main_Floor-col",
+      "module": "base_shell",
+      "min": [
+        -6.0,
+        -0.2,
+        -5.0
+      ],
+      "max": [
+        6.0,
+        0.0,
+        5.0
+      ]
+    },
+    {
+      "name": "Front_0_0-col",
+      "module": "base_shell",
+      "min": [
+        -5.65,
+        0.0,
+        4.59
+      ],
+      "max": [
+        -4.65,
+        3.15,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_1_0-col",
+      "module": "base_shell",
+      "min": [
+        -4.65,
+        0.0,
+        4.59
+      ],
+      "max": [
+        -2.95,
+        1.1,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_1_1-col",
+      "module": "base_shell",
+      "min": [
+        -4.65,
+        2.5,
+        4.59
+      ],
+      "max": [
+        -2.95,
+        3.1500000000000004,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_2_0-col",
+      "module": "base_shell",
+      "min": [
+        -2.95,
+        0.0,
+        4.59
+      ],
+      "max": [
+        -0.9199999999999999,
+        3.15,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_3_1-col",
+      "module": "base_shell",
+      "min": [
+        -0.92,
+        2.9,
+        4.59
+      ],
+      "max": [
+        0.92,
+        3.15,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_4_0-col",
+      "module": "base_shell",
+      "min": [
+        0.9199999999999999,
+        0.0,
+        4.59
+      ],
+      "max": [
+        2.95,
+        3.15,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_5_0-col",
+      "module": "base_shell",
+      "min": [
+        2.95,
+        0.0,
+        4.59
+      ],
+      "max": [
+        4.65,
+        1.1,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_5_1-col",
+      "module": "base_shell",
+      "min": [
+        2.95,
+        2.5,
+        4.59
+      ],
+      "max": [
+        4.65,
+        3.1500000000000004,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_6_0-col",
+      "module": "base_shell",
+      "min": [
+        4.65,
+        0.0,
+        4.59
+      ],
+      "max": [
+        5.65,
+        3.15,
+        4.8100000000000005
+      ]
+    },
+    {
+      "name": "Front_Entrance_Jamb-1-col",
+      "module": "base_shell",
+      "min": [
+        -0.9200000000000002,
+        0.0,
+        4.55
+      ],
+      "max": [
+        -0.8,
+        2.78,
+        4.8500000000000005
+      ]
+    },
+    {
+      "name": "Front_Entrance_Jamb1-col",
+      "module": "base_shell",
+      "min": [
+        0.8,
+        0.0,
+        4.55
+      ],
+      "max": [
+        0.9200000000000002,
+        2.78,
+        4.8500000000000005
+      ]
+    },
+    {
+      "name": "Front_Entrance_Header-col",
+      "module": "base_shell",
+      "min": [
+        -0.92,
+        2.78,
+        4.55
+      ],
+      "max": [
+        0.92,
+        2.9,
+        4.8500000000000005
+      ]
+    },
+    {
+      "name": "Front_Window-3.8_Glazing-col",
+      "module": "base_shell",
+      "min": [
+        -4.6499999999999995,
+        1.1,
+        4.6825
+      ],
+      "max": [
+        -2.9499999999999997,
+        2.5,
+        4.7175
+      ]
+    },
+    {
+      "name": "Front_Window3.8_Glazing-col",
+      "module": "base_shell",
+      "min": [
+        2.9499999999999997,
+        1.1,
+        4.6825
+      ],
+      "max": [
+        4.6499999999999995,
+        2.5,
+        4.7175
+      ]
+    },
+    {
+      "name": "Rear_0_0-col",
+      "module": "base_shell",
+      "min": [
+        -5.65,
+        0.0,
+        -5.0
+      ],
+      "max": [
+        -0.9199999999999999,
+        3.15,
+        -4.779999999999999
+      ]
+    },
+    {
+      "name": "Rear_1_1-col",
+      "module": "base_shell",
+      "min": [
+        -0.92,
+        2.9,
+        -5.0
+      ],
+      "max": [
+        0.92,
+        3.15,
+        -4.779999999999999
+      ]
+    },
+    {
+      "name": "Rear_2_0-col",
+      "module": "base_shell",
+      "min": [
+        0.9199999999999999,
+        0.0,
+        -5.0
+      ],
+      "max": [
+        5.65,
+        3.15,
+        -4.779999999999999
+      ]
+    },
+    {
+      "name": "Rear_Connection_Jamb-1-col",
+      "module": "base_shell",
+      "min": [
+        -0.9200000000000002,
+        0.0,
+        -5.04
+      ],
+      "max": [
+        -0.8,
+        2.78,
+        -4.739999999999999
+      ]
+    },
+    {
+      "name": "Rear_Connection_Jamb1-col",
+      "module": "base_shell",
+      "min": [
+        0.8,
+        0.0,
+        -5.04
+      ],
+      "max": [
+        0.9200000000000002,
+        2.78,
+        -4.739999999999999
+      ]
+    },
+    {
+      "name": "Rear_Connection_Header-col",
+      "module": "base_shell",
+      "min": [
+        -0.92,
+        2.78,
+        -5.04
+      ],
+      "max": [
+        0.92,
+        2.9,
+        -4.739999999999999
+      ]
+    },
+    {
+      "name": "Side-5.65_0_0-col",
+      "module": "base_shell",
+      "min": [
+        -5.760000000000001,
+        0.0,
+        -4.78
+      ],
+      "max": [
+        -5.54,
+        3.15,
+        -3.6499999999999995
+      ]
+    },
+    {
+      "name": "Side-5.65_1_0-col",
+      "module": "base_shell",
+      "min": [
+        -5.760000000000001,
+        0.0,
+        -3.65
+      ],
+      "max": [
+        -5.54,
+        1.1,
+        -1.9499999999999997
+      ]
+    },
+    {
+      "name": "Side-5.65_1_1-col",
+      "module": "base_shell",
+      "min": [
+        -5.760000000000001,
+        2.5,
+        -3.65
+      ],
+      "max": [
+        -5.54,
+        3.1500000000000004,
+        -1.9499999999999997
+      ]
+    },
+    {
+      "name": "Side-5.65_2_0-col",
+      "module": "base_shell",
+      "min": [
+        -5.760000000000001,
+        0.0,
+        -1.9499999999999997
+      ],
+      "max": [
+        -5.54,
+        3.15,
+        1.65
+      ]
+    },
+    {
+      "name": "Side-5.65_3_0-col",
+      "module": "base_shell",
+      "min": [
+        -5.760000000000001,
+        0.0,
+        1.65
+      ],
+      "max": [
+        -5.54,
+        1.1,
+        3.35
+      ]
+    },
+    {
+      "name": "Side-5.65_3_1-col",
+      "module": "base_shell",
+      "min": [
+        -5.760000000000001,
+        2.5,
+        1.65
+      ],
+      "max": [
+        -5.54,
+        3.1500000000000004,
+        3.35
+      ]
+    },
+    {
+      "name": "Side-5.65_4_0-col",
+      "module": "base_shell",
+      "min": [
+        -5.760000000000001,
+        0.0,
+        3.3500000000000005
+      ],
+      "max": [
+        -5.54,
+        3.15,
+        4.78
+      ]
+    },
+    {
+      "name": "SideWindow-5.65-2.8_Glazing-col",
+      "module": "base_shell",
+      "min": [
+        -5.6675,
+        1.1,
+        -3.65
+      ],
+      "max": [
+        -5.6325,
+        2.5,
+        -1.9499999999999997
+      ]
+    },
+    {
+      "name": "SideWindow-5.652.5_Glazing-col",
+      "module": "base_shell",
+      "min": [
+        -5.6675,
+        1.1,
+        1.65
+      ],
+      "max": [
+        -5.6325,
+        2.5,
+        3.35
+      ]
+    },
+    {
+      "name": "Side5.65_0_0-col",
+      "module": "base_shell",
+      "min": [
+        5.54,
+        0.0,
+        -4.78
+      ],
+      "max": [
+        5.760000000000001,
+        3.15,
+        -3.6499999999999995
+      ]
+    },
+    {
+      "name": "Side5.65_1_0-col",
+      "module": "base_shell",
+      "min": [
+        5.54,
+        0.0,
+        -3.65
+      ],
+      "max": [
+        5.760000000000001,
+        1.1,
+        -1.9499999999999997
+      ]
+    },
+    {
+      "name": "Side5.65_1_1-col",
+      "module": "base_shell",
+      "min": [
+        5.54,
+        2.5,
+        -3.65
+      ],
+      "max": [
+        5.760000000000001,
+        3.1500000000000004,
+        -1.9499999999999997
+      ]
+    },
+    {
+      "name": "Side5.65_2_0-col",
+      "module": "base_shell",
+      "min": [
+        5.54,
+        0.0,
+        -1.9499999999999997
+      ],
+      "max": [
+        5.760000000000001,
+        3.15,
+        1.65
+      ]
+    },
+    {
+      "name": "Side5.65_3_0-col",
+      "module": "base_shell",
+      "min": [
+        5.54,
+        0.0,
+        1.65
+      ],
+      "max": [
+        5.760000000000001,
+        1.1,
+        3.35
+      ]
+    },
+    {
+      "name": "Side5.65_3_1-col",
+      "module": "base_shell",
+      "min": [
+        5.54,
+        2.5,
+        1.65
+      ],
+      "max": [
+        5.760000000000001,
+        3.1500000000000004,
+        3.35
+      ]
+    },
+    {
+      "name": "Side5.65_4_0-col",
+      "module": "base_shell",
+      "min": [
+        5.54,
+        0.0,
+        3.3500000000000005
+      ],
+      "max": [
+        5.760000000000001,
+        3.15,
+        4.78
+      ]
+    },
+    {
+      "name": "SideWindow5.65-2.8_Glazing-col",
+      "module": "base_shell",
+      "min": [
+        5.6325,
+        1.1,
+        -3.65
+      ],
+      "max": [
+        5.6675,
+        2.5,
+        -1.9499999999999997
+      ]
+    },
+    {
+      "name": "SideWindow5.652.5_Glazing-col",
+      "module": "base_shell",
+      "min": [
+        5.6325,
+        1.1,
+        1.65
+      ],
+      "max": [
+        5.6675,
+        2.5,
+        3.35
+      ]
+    },
+    {
+      "name": "Spine-1.11_0_0-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        0.0,
+        -4.78
+      ],
+      "max": [
+        -1.0,
+        3.15,
+        -3.5200000000000005
+      ]
+    },
+    {
+      "name": "Spine-1.11_1_1-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        2.9,
+        -3.5200000000000005
+      ],
+      "max": [
+        -1.0,
+        3.15,
+        -1.8800000000000001
+      ]
+    },
+    {
+      "name": "Spine-1.11_2_0-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        0.0,
+        -1.88
+      ],
+      "max": [
+        -1.0,
+        3.15,
+        1.38
+      ]
+    },
+    {
+      "name": "Spine-1.11_3_1-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        2.9,
+        1.3800000000000001
+      ],
+      "max": [
+        -1.0,
+        3.15,
+        3.0200000000000005
+      ]
+    },
+    {
+      "name": "Spine-1.11_4_0-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        0.0,
+        3.0199999999999996
+      ],
+      "max": [
+        -1.0,
+        3.15,
+        4.59
+      ]
+    },
+    {
+      "name": "Internal-1.11-2.7_Jamb-1-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        0.0,
+        -3.52
+      ],
+      "max": [
+        -1.0,
+        2.78,
+        -3.4
+      ]
+    },
+    {
+      "name": "Internal-1.11-2.7_Jamb1-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        0.0,
+        -2.0
+      ],
+      "max": [
+        -1.0,
+        2.78,
+        -1.8800000000000001
+      ]
+    },
+    {
+      "name": "Internal-1.11-2.7_Header-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        2.78,
+        -3.52
+      ],
+      "max": [
+        -1.0,
+        2.9,
+        -1.8800000000000003
+      ]
+    },
+    {
+      "name": "Internal-1.112.2_Jamb-1-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        0.0,
+        1.3800000000000001
+      ],
+      "max": [
+        -1.0,
+        2.78,
+        1.5000000000000002
+      ]
+    },
+    {
+      "name": "Internal-1.112.2_Jamb1-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        0.0,
+        2.9
+      ],
+      "max": [
+        -1.0,
+        2.78,
+        3.02
+      ]
+    },
+    {
+      "name": "Internal-1.112.2_Header-col",
+      "module": "base_shell",
+      "min": [
+        -1.2200000000000002,
+        2.78,
+        1.3800000000000003
+      ],
+      "max": [
+        -1.0,
+        2.9,
+        3.02
+      ]
+    },
+    {
+      "name": "Room_Divider-1.11_0_0-col",
+      "module": "base_shell",
+      "min": [
+        -5.54,
+        0.0,
+        -0.36
+      ],
+      "max": [
+        -1.2199999999999998,
+        3.15,
+        -0.14
+      ]
+    },
+    {
+      "name": "Spine1.11_0_0-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        0.0,
+        -4.78
+      ],
+      "max": [
+        1.2200000000000002,
+        3.15,
+        -3.5200000000000005
+      ]
+    },
+    {
+      "name": "Spine1.11_1_1-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        2.9,
+        -3.5200000000000005
+      ],
+      "max": [
+        1.2200000000000002,
+        3.15,
+        -1.8800000000000001
+      ]
+    },
+    {
+      "name": "Spine1.11_2_0-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        0.0,
+        -1.88
+      ],
+      "max": [
+        1.2200000000000002,
+        3.15,
+        1.38
+      ]
+    },
+    {
+      "name": "Spine1.11_3_1-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        2.9,
+        1.3800000000000001
+      ],
+      "max": [
+        1.2200000000000002,
+        3.15,
+        3.0200000000000005
+      ]
+    },
+    {
+      "name": "Spine1.11_4_0-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        0.0,
+        3.0199999999999996
+      ],
+      "max": [
+        1.2200000000000002,
+        3.15,
+        4.59
+      ]
+    },
+    {
+      "name": "Internal1.11-2.7_Jamb-1-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        0.0,
+        -3.52
+      ],
+      "max": [
+        1.2200000000000002,
+        2.78,
+        -3.4
+      ]
+    },
+    {
+      "name": "Internal1.11-2.7_Jamb1-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        0.0,
+        -2.0
+      ],
+      "max": [
+        1.2200000000000002,
+        2.78,
+        -1.8800000000000001
+      ]
+    },
+    {
+      "name": "Internal1.11-2.7_Header-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        2.78,
+        -3.52
+      ],
+      "max": [
+        1.2200000000000002,
+        2.9,
+        -1.8800000000000003
+      ]
+    },
+    {
+      "name": "Internal1.112.2_Jamb-1-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        0.0,
+        1.3800000000000001
+      ],
+      "max": [
+        1.2200000000000002,
+        2.78,
+        1.5000000000000002
+      ]
+    },
+    {
+      "name": "Internal1.112.2_Jamb1-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        0.0,
+        2.9
+      ],
+      "max": [
+        1.2200000000000002,
+        2.78,
+        3.02
+      ]
+    },
+    {
+      "name": "Internal1.112.2_Header-col",
+      "module": "base_shell",
+      "min": [
+        1.0,
+        2.78,
+        1.3800000000000003
+      ],
+      "max": [
+        1.2200000000000002,
+        2.9,
+        3.02
+      ]
+    },
+    {
+      "name": "Room_Divider1.11_0_0-col",
+      "module": "base_shell",
+      "min": [
+        1.2199999999999998,
+        0.0,
+        -0.36
+      ],
+      "max": [
+        5.54,
+        3.15,
+        -0.14
+      ]
+    },
+    {
+      "name": "Annex_Floor-col",
+      "module": "rear_annex",
+      "min": [
+        -6.0,
+        -0.2,
+        -11.0
+      ],
+      "max": [
+        6.0,
+        0.0,
+        -5.0
+      ]
+    },
+    {
+      "name": "Annex_Rear_0_0-col",
+      "module": "rear_annex",
+      "min": [
+        -5.65,
+        0.0,
+        -10.889999999999999
+      ],
+      "max": [
+        -0.9199999999999999,
+        3.15,
+        -10.67
+      ]
+    },
+    {
+      "name": "Annex_Rear_1_1-col",
+      "module": "rear_annex",
+      "min": [
+        -0.92,
+        2.9,
+        -10.889999999999999
+      ],
+      "max": [
+        0.92,
+        3.15,
+        -10.67
+      ]
+    },
+    {
+      "name": "Annex_Rear_2_0-col",
+      "module": "rear_annex",
+      "min": [
+        0.9199999999999999,
+        0.0,
+        -10.889999999999999
+      ],
+      "max": [
+        5.65,
+        3.15,
+        -10.67
+      ]
+    },
+    {
+      "name": "Annex_Rear_Exit_Jamb-1-col",
+      "module": "rear_annex",
+      "min": [
+        -0.9200000000000002,
+        0.0,
+        -10.93
+      ],
+      "max": [
+        -0.8,
+        2.78,
+        -10.629999999999999
+      ]
+    },
+    {
+      "name": "Annex_Rear_Exit_Jamb1-col",
+      "module": "rear_annex",
+      "min": [
+        0.8,
+        0.0,
+        -10.93
+      ],
+      "max": [
+        0.9200000000000002,
+        2.78,
+        -10.629999999999999
+      ]
+    },
+    {
+      "name": "Annex_Rear_Exit_Header-col",
+      "module": "rear_annex",
+      "min": [
+        -0.92,
+        2.78,
+        -10.93
+      ],
+      "max": [
+        0.92,
+        2.9,
+        -10.629999999999999
+      ]
+    },
+    {
+      "name": "Annex_West_0_0-col",
+      "module": "rear_annex",
+      "min": [
+        -5.760000000000001,
+        0.0,
+        -10.89
+      ],
+      "max": [
+        -5.54,
+        3.15,
+        -9.850000000000001
+      ]
+    },
+    {
+      "name": "Annex_West_1_0-col",
+      "module": "rear_annex",
+      "min": [
+        -5.760000000000001,
+        0.0,
+        -9.85
+      ],
+      "max": [
+        -5.54,
+        1.1,
+        -8.15
+      ]
+    },
+    {
+      "name": "Annex_West_1_1-col",
+      "module": "rear_annex",
+      "min": [
+        -5.760000000000001,
+        2.5,
+        -9.85
+      ],
+      "max": [
+        -5.54,
+        3.1500000000000004,
+        -8.15
+      ]
+    },
+    {
+      "name": "Annex_West_2_0-col",
+      "module": "rear_annex",
+      "min": [
+        -5.760000000000001,
+        0.0,
+        -8.15
+      ],
+      "max": [
+        -5.54,
+        3.15,
+        -5.0
+      ]
+    },
+    {
+      "name": "Annex_West_Window_Glazing-col",
+      "module": "rear_annex",
+      "min": [
+        -5.6675,
+        1.1,
+        -9.85
+      ],
+      "max": [
+        -5.6325,
+        2.5,
+        -8.15
+      ]
+    },
+    {
+      "name": "Annex_East_0_0-col",
+      "module": "rear_annex",
+      "min": [
+        5.54,
+        0.0,
+        -10.89
+      ],
+      "max": [
+        5.760000000000001,
+        3.15,
+        -8.619999999999997
+      ]
+    },
+    {
+      "name": "Annex_East_1_1-col",
+      "module": "rear_annex",
+      "min": [
+        5.54,
+        2.9,
+        -8.62
+      ],
+      "max": [
+        5.760000000000001,
+        3.15,
+        -6.58
+      ]
+    },
+    {
+      "name": "Annex_East_2_0-col",
+      "module": "rear_annex",
+      "min": [
+        5.54,
+        0.0,
+        -6.58
+      ],
+      "max": [
+        5.760000000000001,
+        3.15,
+        -5.0
+      ]
+    },
+    {
+      "name": "Loading_Access_Jamb-1-col",
+      "module": "rear_annex",
+      "min": [
+        5.54,
+        0.0,
+        -8.62
+      ],
+      "max": [
+        5.760000000000001,
+        2.78,
+        -8.499999999999998
+      ]
+    },
+    {
+      "name": "Loading_Access_Jamb1-col",
+      "module": "rear_annex",
+      "min": [
+        5.54,
+        0.0,
+        -6.699999999999999
+      ],
+      "max": [
+        5.760000000000001,
+        2.78,
+        -6.58
+      ]
+    },
+    {
+      "name": "Loading_Access_Header-col",
+      "module": "rear_annex",
+      "min": [
+        5.54,
+        2.78,
+        -8.62
+      ],
+      "max": [
+        5.760000000000001,
+        2.9,
+        -6.58
+      ]
+    },
+    {
+      "name": "Removable_Rear_Cap-col",
+      "module": "rear_connection_cap",
+      "min": [
+        -0.8,
+        0.0,
+        -4.965
+      ],
+      "max": [
+        0.8,
+        2.78,
+        -4.8149999999999995
+      ]
+    }
+  ],
+  "exports": [
+    {
+      "file": "base_shell.glb",
+      "sha256": "58a9a4a45dac210c4258798d33fddf7c73c89aa87916a98e4d6e8fe59b37856e",
+      "bytes": 446104,
+      "meshes": 144,
+      "nodes": 150,
+      "collision_nodes": [
+        "Front_0_0-col",
+        "Front_1_0-col",
+        "Front_1_1-col",
+        "Front_2_0-col",
+        "Front_3_1-col",
+        "Front_4_0-col",
+        "Front_5_0-col",
+        "Front_5_1-col",
+        "Front_6_0-col",
+        "Front_Entrance_Header-col",
+        "Front_Entrance_Jamb1-col",
+        "Front_Entrance_Jamb-1-col",
+        "Front_Window3.8_Glazing-col",
+        "Front_Window-3.8_Glazing-col",
+        "Internal1.11-2.7_Header-col",
+        "Internal1.11-2.7_Jamb1-col",
+        "Internal1.11-2.7_Jamb-1-col",
+        "Internal1.112.2_Header-col",
+        "Internal1.112.2_Jamb1-col",
+        "Internal1.112.2_Jamb-1-col",
+        "Internal-1.11-2.7_Header-col",
+        "Internal-1.11-2.7_Jamb1-col",
+        "Internal-1.11-2.7_Jamb-1-col",
+        "Internal-1.112.2_Header-col",
+        "Internal-1.112.2_Jamb1-col",
+        "Internal-1.112.2_Jamb-1-col",
+        "Main_Floor-col",
+        "Rear_0_0-col",
+        "Rear_1_1-col",
+        "Rear_2_0-col",
+        "Rear_Connection_Header-col",
+        "Rear_Connection_Jamb1-col",
+        "Rear_Connection_Jamb-1-col",
+        "Room_Divider1.11_0_0-col",
+        "Room_Divider-1.11_0_0-col",
+        "Side5.65_0_0-col",
+        "Side5.65_1_0-col",
+        "Side5.65_1_1-col",
+        "Side5.65_2_0-col",
+        "Side5.65_3_0-col",
+        "Side5.65_3_1-col",
+        "Side5.65_4_0-col",
+        "Side-5.65_0_0-col",
+        "Side-5.65_1_0-col",
+        "Side-5.65_1_1-col",
+        "Side-5.65_2_0-col",
+        "Side-5.65_3_0-col",
+        "Side-5.65_3_1-col",
+        "Side-5.65_4_0-col",
+        "SideWindow5.65-2.8_Glazing-col",
+        "SideWindow5.652.5_Glazing-col",
+        "SideWindow-5.65-2.8_Glazing-col",
+        "SideWindow-5.652.5_Glazing-col",
+        "Spine1.11_0_0-col",
+        "Spine1.11_1_1-col",
+        "Spine1.11_2_0-col",
+        "Spine1.11_3_1-col",
+        "Spine1.11_4_0-col",
+        "Spine-1.11_0_0-col",
+        "Spine-1.11_1_1-col",
+        "Spine-1.11_2_0-col",
+        "Spine-1.11_3_1-col",
+        "Spine-1.11_4_0-col"
+      ],
+      "roof_nodes": [
+        "Roof_Main_1",
+        "Roof_Main_-1",
+        "Roof_Main_Gable4.7",
+        "Roof_Main_Gable-4.89",
+        "Roof_Main_Ridge",
+        "Roof_Main_Seam_1_0",
+        "Roof_Main_Seam_1_1",
+        "Roof_Main_Seam_1_2",
+        "Roof_Main_Seam_1_3",
+        "Roof_Main_Seam_1_4",
+        "Roof_Main_Seam_1_5",
+        "Roof_Main_Seam_1_6",
+        "Roof_Main_Seam_1_7",
+        "Roof_Main_Seam_1_8",
+        "Roof_Main_Seam_1_9",
+        "Roof_Main_Seam_1_10",
+        "Roof_Main_Seam_1_11",
+        "Roof_Main_Seam_1_12",
+        "Roof_Main_Seam_1_13",
+        "Roof_Main_Seam_1_14",
+        "Roof_Main_Seam_1_15",
+        "Roof_Main_Seam_-1_0",
+        "Roof_Main_Seam_-1_1",
+        "Roof_Main_Seam_-1_2",
+        "Roof_Main_Seam_-1_3",
+        "Roof_Main_Seam_-1_4",
+        "Roof_Main_Seam_-1_5",
+        "Roof_Main_Seam_-1_6",
+        "Roof_Main_Seam_-1_7",
+        "Roof_Main_Seam_-1_8",
+        "Roof_Main_Seam_-1_9",
+        "Roof_Main_Seam_-1_10",
+        "Roof_Main_Seam_-1_11",
+        "Roof_Main_Seam_-1_12",
+        "Roof_Main_Seam_-1_13",
+        "Roof_Main_Seam_-1_14",
+        "Roof_Main_Seam_-1_15"
+      ],
+      "sockets": [
+        "Socket_Archive",
+        "Socket_Meeting",
+        "Socket_Rear_Connection",
+        "Socket_Reception_Desk_Approach",
+        "Socket_Reception_Staff",
+        "Socket_Supply_Office"
+      ],
+      "bounds_godot_m": {
+        "min": [
+          -6.0,
+          -0.20000000298023224,
+          -5.039999961853027
+        ],
+        "max": [
+          6.0,
+          5.255000114440918,
+          5.0
+        ]
+      },
+      "node_names": [
+        "Facade_Beam",
+        "Facade_Post1.3",
+        "Facade_Post5.65",
+        "Facade_Post-1.3",
+        "Facade_Post-5.65",
+        "Front_0_0-col",
+        "Front_1_0-col",
+        "Front_1_1-col",
+        "Front_2_0-col",
+        "Front_3_1-col",
+        "Front_4_0-col",
+        "Front_5_0-col",
+        "Front_5_1-col",
+        "Front_6_0-col",
+        "Front_Entrance_Header-col",
+        "Front_Entrance_Jamb1-col",
+        "Front_Entrance_Jamb-1-col",
+        "Front_Window3.8_Frame1",
+        "Front_Window3.8_Frame-1",
+        "Front_Window3.8_Glazing-col",
+        "Front_Window3.8_Lintel",
+        "Front_Window3.8_Mullion",
+        "Front_Window3.8_Rail",
+        "Front_Window3.8_Sill",
+        "Front_Window-3.8_Frame1",
+        "Front_Window-3.8_Frame-1",
+        "Front_Window-3.8_Glazing-col",
+        "Front_Window-3.8_Lintel",
+        "Front_Window-3.8_Mullion",
+        "Front_Window-3.8_Rail",
+        "Front_Window-3.8_Sill",
+        "Internal1.11-2.7_Header-col",
+        "Internal1.11-2.7_Jamb1-col",
+        "Internal1.11-2.7_Jamb-1-col",
+        "Internal1.112.2_Header-col",
+        "Internal1.112.2_Jamb1-col",
+        "Internal1.112.2_Jamb-1-col",
+        "Internal-1.11-2.7_Header-col",
+        "Internal-1.11-2.7_Jamb1-col",
+        "Internal-1.11-2.7_Jamb-1-col",
+        "Internal-1.112.2_Header-col",
+        "Internal-1.112.2_Jamb1-col",
+        "Internal-1.112.2_Jamb-1-col",
+        "Main_Floor-col",
+        "Rear_0_0-col",
+        "Rear_1_1-col",
+        "Rear_2_0-col",
+        "Rear_Connection_Header-col",
+        "Rear_Connection_Jamb1-col",
+        "Rear_Connection_Jamb-1-col",
+        "Roof_Main_1",
+        "Roof_Main_-1",
+        "Roof_Main_Gable4.7",
+        "Roof_Main_Gable-4.89",
+        "Roof_Main_Ridge",
+        "Roof_Main_Seam_1_0",
+        "Roof_Main_Seam_1_1",
+        "Roof_Main_Seam_1_2",
+        "Roof_Main_Seam_1_3",
+        "Roof_Main_Seam_1_4",
+        "Roof_Main_Seam_1_5",
+        "Roof_Main_Seam_1_6",
+        "Roof_Main_Seam_1_7",
+        "Roof_Main_Seam_1_8",
+        "Roof_Main_Seam_1_9",
+        "Roof_Main_Seam_1_10",
+        "Roof_Main_Seam_1_11",
+        "Roof_Main_Seam_1_12",
+        "Roof_Main_Seam_1_13",
+        "Roof_Main_Seam_1_14",
+        "Roof_Main_Seam_1_15",
+        "Roof_Main_Seam_-1_0",
+        "Roof_Main_Seam_-1_1",
+        "Roof_Main_Seam_-1_2",
+        "Roof_Main_Seam_-1_3",
+        "Roof_Main_Seam_-1_4",
+        "Roof_Main_Seam_-1_5",
+        "Roof_Main_Seam_-1_6",
+        "Roof_Main_Seam_-1_7",
+        "Roof_Main_Seam_-1_8",
+        "Roof_Main_Seam_-1_9",
+        "Roof_Main_Seam_-1_10",
+        "Roof_Main_Seam_-1_11",
+        "Roof_Main_Seam_-1_12",
+        "Roof_Main_Seam_-1_13",
+        "Roof_Main_Seam_-1_14",
+        "Roof_Main_Seam_-1_15",
+        "Room_Divider1.11_0_0-col",
+        "Room_Divider-1.11_0_0-col",
+        "Side5.65_0_0-col",
+        "Side5.65_1_0-col",
+        "Side5.65_1_1-col",
+        "Side5.65_2_0-col",
+        "Side5.65_3_0-col",
+        "Side5.65_3_1-col",
+        "Side5.65_4_0-col",
+        "Side-5.65_0_0-col",
+        "Side-5.65_1_0-col",
+        "Side-5.65_1_1-col",
+        "Side-5.65_2_0-col",
+        "Side-5.65_3_0-col",
+        "Side-5.65_3_1-col",
+        "Side-5.65_4_0-col",
+        "SideWindow5.65-2.8_Frame1",
+        "SideWindow5.65-2.8_Frame-1",
+        "SideWindow5.65-2.8_Glazing-col",
+        "SideWindow5.65-2.8_Lintel",
+        "SideWindow5.65-2.8_Mullion",
+        "SideWindow5.65-2.8_Rail",
+        "SideWindow5.65-2.8_Sill",
+        "SideWindow5.652.5_Frame1",
+        "SideWindow5.652.5_Frame-1",
+        "SideWindow5.652.5_Glazing-col",
+        "SideWindow5.652.5_Lintel",
+        "SideWindow5.652.5_Mullion",
+        "SideWindow5.652.5_Rail",
+        "SideWindow5.652.5_Sill",
+        "SideWindow-5.65-2.8_Frame1",
+        "SideWindow-5.65-2.8_Frame-1",
+        "SideWindow-5.65-2.8_Glazing-col",
+        "SideWindow-5.65-2.8_Lintel",
+        "SideWindow-5.65-2.8_Mullion",
+        "SideWindow-5.65-2.8_Rail",
+        "SideWindow-5.65-2.8_Sill",
+        "SideWindow-5.652.5_Frame1",
+        "SideWindow-5.652.5_Frame-1",
+        "SideWindow-5.652.5_Glazing-col",
+        "SideWindow-5.652.5_Lintel",
+        "SideWindow-5.652.5_Mullion",
+        "SideWindow-5.652.5_Rail",
+        "SideWindow-5.652.5_Sill",
+        "Socket_Archive",
+        "Socket_Meeting",
+        "Socket_Rear_Connection",
+        "Socket_Reception_Desk_Approach",
+        "Socket_Reception_Staff",
+        "Socket_Supply_Office",
+        "Spine1.11_0_0-col",
+        "Spine1.11_1_1-col",
+        "Spine1.11_2_0-col",
+        "Spine1.11_3_1-col",
+        "Spine1.11_4_0-col",
+        "Spine-1.11_0_0-col",
+        "Spine-1.11_1_1-col",
+        "Spine-1.11_2_0-col",
+        "Spine-1.11_3_1-col",
+        "Spine-1.11_4_0-col",
+        "Supply_Blank_Signboard",
+        "Supply_Parcel_Band",
+        "Supply_Parcel_Emblem"
+      ],
+      "triangles": 1706
+    },
+    {
+      "file": "rear_annex.glb",
+      "sha256": "15890378ac07e30a01fdb9666ef476a4c62340ab94f2c5dbddf57ec5876832ab",
+      "bytes": 298948,
+      "meshes": 48,
+      "nodes": 51,
+      "collision_nodes": [
+        "Annex_East_0_0-col",
+        "Annex_East_1_1-col",
+        "Annex_East_2_0-col",
+        "Annex_Floor-col",
+        "Annex_Rear_0_0-col",
+        "Annex_Rear_1_1-col",
+        "Annex_Rear_2_0-col",
+        "Annex_Rear_Exit_Header-col",
+        "Annex_Rear_Exit_Jamb1-col",
+        "Annex_Rear_Exit_Jamb-1-col",
+        "Annex_West_0_0-col",
+        "Annex_West_1_0-col",
+        "Annex_West_1_1-col",
+        "Annex_West_2_0-col",
+        "Annex_West_Window_Glazing-col",
+        "Loading_Access_Header-col",
+        "Loading_Access_Jamb1-col",
+        "Loading_Access_Jamb-1-col"
+      ],
+      "roof_nodes": [
+        "Roof_Annex_1",
+        "Roof_Annex_-1",
+        "Roof_Annex_Rear_Gable",
+        "Roof_Annex_Ridge",
+        "Roof_Annex_Seam_1_0",
+        "Roof_Annex_Seam_1_1",
+        "Roof_Annex_Seam_1_2",
+        "Roof_Annex_Seam_1_3",
+        "Roof_Annex_Seam_1_4",
+        "Roof_Annex_Seam_1_5",
+        "Roof_Annex_Seam_1_6",
+        "Roof_Annex_Seam_1_7",
+        "Roof_Annex_Seam_1_8",
+        "Roof_Annex_Seam_-1_0",
+        "Roof_Annex_Seam_-1_1",
+        "Roof_Annex_Seam_-1_2",
+        "Roof_Annex_Seam_-1_3",
+        "Roof_Annex_Seam_-1_4",
+        "Roof_Annex_Seam_-1_5",
+        "Roof_Annex_Seam_-1_6",
+        "Roof_Annex_Seam_-1_7",
+        "Roof_Annex_Seam_-1_8"
+      ],
+      "sockets": [
+        "Socket_Annex_Connection",
+        "Socket_Annex_Storage",
+        "Socket_Loading_Access"
+      ],
+      "bounds_godot_m": {
+        "min": [
+          -6.0,
+          -0.20000000298023224,
+          -11.0
+        ],
+        "max": [
+          6.0,
+          4.704999923706055,
+          -5.0
+        ]
+      },
+      "node_names": [
+        "Annex_East_0_0-col",
+        "Annex_East_1_1-col",
+        "Annex_East_2_0-col",
+        "Annex_Floor-col",
+        "Annex_Rear_0_0-col",
+        "Annex_Rear_1_1-col",
+        "Annex_Rear_2_0-col",
+        "Annex_Rear_Exit_Header-col",
+        "Annex_Rear_Exit_Jamb1-col",
+        "Annex_Rear_Exit_Jamb-1-col",
+        "Annex_Timber5.65",
+        "Annex_Timber-5.65",
+        "Annex_West_0_0-col",
+        "Annex_West_1_0-col",
+        "Annex_West_1_1-col",
+        "Annex_West_2_0-col",
+        "Annex_West_Window_Frame1",
+        "Annex_West_Window_Frame-1",
+        "Annex_West_Window_Glazing-col",
+        "Annex_West_Window_Lintel",
+        "Annex_West_Window_Mullion",
+        "Annex_West_Window_Rail",
+        "Annex_West_Window_Sill",
+        "Loading_Access_Header-col",
+        "Loading_Access_Jamb1-col",
+        "Loading_Access_Jamb-1-col",
+        "Roof_Annex_1",
+        "Roof_Annex_-1",
+        "Roof_Annex_Rear_Gable",
+        "Roof_Annex_Ridge",
+        "Roof_Annex_Seam_1_0",
+        "Roof_Annex_Seam_1_1",
+        "Roof_Annex_Seam_1_2",
+        "Roof_Annex_Seam_1_3",
+        "Roof_Annex_Seam_1_4",
+        "Roof_Annex_Seam_1_5",
+        "Roof_Annex_Seam_1_6",
+        "Roof_Annex_Seam_1_7",
+        "Roof_Annex_Seam_1_8",
+        "Roof_Annex_Seam_-1_0",
+        "Roof_Annex_Seam_-1_1",
+        "Roof_Annex_Seam_-1_2",
+        "Roof_Annex_Seam_-1_3",
+        "Roof_Annex_Seam_-1_4",
+        "Roof_Annex_Seam_-1_5",
+        "Roof_Annex_Seam_-1_6",
+        "Roof_Annex_Seam_-1_7",
+        "Roof_Annex_Seam_-1_8",
+        "Socket_Annex_Connection",
+        "Socket_Annex_Storage",
+        "Socket_Loading_Access"
+      ],
+      "triangles": 565
+    },
+    {
+      "file": "rear_connection_cap.glb",
+      "sha256": "a8369f35ca595356f23e2ef13ba664a2f0f4381683ed7941d441547791e09a5e",
+      "bytes": 3820,
+      "meshes": 2,
+      "nodes": 2,
+      "collision_nodes": [
+        "Removable_Rear_Cap-col"
+      ],
+      "roof_nodes": [],
+      "sockets": [],
+      "bounds_godot_m": {
+        "min": [
+          -0.800000011920929,
+          0.0,
+          -5.059999942779541
+        ],
+        "max": [
+          0.800000011920929,
+          2.7799999713897705,
+          -4.815000057220459
+        ]
+      },
+      "node_names": [
+        "Cap_Crossbar",
+        "Removable_Rear_Cap-col"
+      ],
+      "triangles": 24
+    }
+  ],
+  "furniture_preview": {
+    "source": "assets\\3d\\ranch_furniture\\ranch_furniture.blend",
+    "linked_instances": 11,
+    "exported": false
+  },
+  "limitations": [
+    "No Godot import, navmesh or actor traversal run: parent owns integration.",
+    "Door frames have open apertures; no animated door leaves. Rear cap physically closes rear connection only in base state.",
+    "Furniture linked for preview only; integrate existing furniture GLBs separately.",
+    "Roof uses no collision; imported -col behavior still requires engine verification.",
+    "Sockets are authoring hints, not interactions or calibrated actor poses."
+  ]
+}

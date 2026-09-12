@@ -1,0 +1,372 @@
+{
+  "renderer": "forward_plus",
+  "passed": true,
+  "unique_architecture": [
+    "res://assets/3d/okachi_supply_house/base_shell.glb",
+    "res://assets/3d/okachi_supply_house/rear_annex.glb",
+    "res://assets/3d/okachi_supply_house/rear_connection_cap.glb"
+  ],
+  "variants": [
+    {
+      "state": "base",
+      "scene": "res://scenes/world/OkachiSupplyHouseBase.tscn",
+      "imported": [
+        {
+          "source": "res://assets/3d/okachi_supply_house/base_shell.glb",
+          "collision_shapes": 63,
+          "meshes": 144,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -6,
+            -0.2,
+            -5.040039
+          ],
+          "bounds_size": [
+            12,
+            5.455,
+            10.040039
+          ]
+        },
+        {
+          "source": "res://assets/3d/okachi_supply_house/rear_connection_cap.glb",
+          "collision_shapes": 1,
+          "meshes": 2,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -0.7999878,
+            0,
+            -5.0599976
+          ],
+          "bounds_size": [
+            1.5999756,
+            2.78,
+            0.24499512
+          ]
+        }
+      ],
+      "front_clear_ray": true,
+      "four_room_clear_rays": true,
+      "rear_blocked_ray": true,
+      "actor": {
+        "id": "noir",
+        "target_body_height": 1.62,
+        "body_height": 1.62,
+        "body_width": 0.8343506,
+        "body_depth": 0.50476074,
+        "bodily_bottom_relative_to_origin": 0,
+        "bodily_crown_relative_to_origin": 1.62,
+        "complete_visual_height": 1.62,
+        "accessory_above_crown": 0,
+        "debug_marker_above_crown": 0.15467322,
+        "root_local_scale": [
+          1,
+          1,
+          1
+        ],
+        "root_world_scale": [
+          1,
+          1,
+          1
+        ],
+        "skeleton_count": 0,
+        "animation_players": [],
+        "meshes": [
+          {
+            "name": "Body",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "Head",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "DebugMarker",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "state": "expanded",
+      "scene": "res://scenes/world/OkachiSupplyHouseExpanded.tscn",
+      "imported": [
+        {
+          "source": "res://assets/3d/okachi_supply_house/base_shell.glb",
+          "collision_shapes": 63,
+          "meshes": 144,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -6,
+            -0.2,
+            -5.040039
+          ],
+          "bounds_size": [
+            12,
+            5.455,
+            10.040039
+          ]
+        },
+        {
+          "source": "res://assets/3d/okachi_supply_house/rear_annex.glb",
+          "collision_shapes": 18,
+          "meshes": 48,
+          "world_scale": [
+            1,
+            1,
+            1
+          ],
+          "bounds_min": [
+            -6,
+            -0.2,
+            -11
+          ],
+          "bounds_size": [
+            12,
+            4.9049997,
+            6
+          ]
+        }
+      ],
+      "front_clear_ray": true,
+      "four_room_clear_rays": true,
+      "rear_blocked_ray": false,
+      "actor": {
+        "id": "noir",
+        "target_body_height": 1.62,
+        "body_height": 1.62,
+        "body_width": 0.8343506,
+        "body_depth": 0.50476074,
+        "bodily_bottom_relative_to_origin": 0,
+        "bodily_crown_relative_to_origin": 1.62,
+        "complete_visual_height": 1.62,
+        "accessory_above_crown": 0,
+        "debug_marker_above_crown": 0.15467322,
+        "root_local_scale": [
+          1,
+          1,
+          1
+        ],
+        "root_world_scale": [
+          1,
+          1,
+          1
+        ],
+        "skeleton_count": 0,
+        "animation_players": [],
+        "meshes": [
+          {
+            "name": "Body",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "Head",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "LegRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmLeft",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "ArmRight",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          },
+          {
+            "name": "DebugMarker",
+            "scale": [
+              0.81407034,
+              0.81407034,
+              0.81407034
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "shots": [
+    {
+      "name": "okachi-base-exterior",
+      "state": "base",
+      "camera_position": [
+        14,
+        12,
+        16
+      ],
+      "camera_target": [
+        0,
+        1.5,
+        -2.6
+      ],
+      "cutaway": false,
+      "Fov": 45
+    },
+    {
+      "name": "okachi-base-cutaway",
+      "state": "base",
+      "camera_position": [
+        12,
+        18,
+        10
+      ],
+      "camera_target": [
+        0,
+        0,
+        -3
+      ],
+      "cutaway": true,
+      "Fov": 45
+    },
+    {
+      "name": "okachi-base-reception",
+      "state": "base",
+      "camera_position": [
+        -1.65,
+        1.75,
+        4.05
+      ],
+      "camera_target": [
+        -3.25,
+        1,
+        1.55
+      ],
+      "cutaway": false,
+      "Fov": 55
+    },
+    {
+      "name": "okachi-expanded-exterior",
+      "state": "expanded",
+      "camera_position": [
+        14,
+        12,
+        16
+      ],
+      "camera_target": [
+        0,
+        1.5,
+        -2.6
+      ],
+      "cutaway": false,
+      "Fov": 45
+    },
+    {
+      "name": "okachi-expanded-cutaway",
+      "state": "expanded",
+      "camera_position": [
+        12,
+        18,
+        10
+      ],
+      "camera_target": [
+        0,
+        0,
+        -3
+      ],
+      "cutaway": true,
+      "Fov": 45
+    },
+    {
+      "name": "okachi-expanded-reception",
+      "state": "expanded",
+      "camera_position": [
+        -1.65,
+        1.75,
+        4.05
+      ],
+      "camera_target": [
+        -3.25,
+        1,
+        1.55
+      ],
+      "cutaway": false,
+      "Fov": 55
+    }
+  ],
+  "limits": "Asset review only. Same cameras/lighting for separate base/expanded scenes; no in-world upgrade or finance. Door center rays are not actor passage, furniture collision, navigation or occupancy proof. Roster mannequin is a standing scale reference, not clerk/service integration. No construction phase, animation, weather cycle, audio, persistent project or town placement tested."
+}

@@ -1,0 +1,2 @@
+# Keep real successful and rejected verification output.
+!*.log

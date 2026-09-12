@@ -1,0 +1,510 @@
+[gd_scene load_steps=31 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_house/main_house.glb" id="1_house"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_house/residential_wing.glb" id="2_wing"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_house/north_connector_cap.glb" id="3_cap"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/bed_standard.glb" id="4_bed"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/bed_large.glb" id="5_large_bed"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/chair.glb" id="6_chair"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/chair_large.glb" id="7_large_chair"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/bench.glb" id="8_bench"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/table.glb" id="9_table"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/desk.glb" id="10_desk"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/wardrobe.glb" id="11_wardrobe"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/kitchen_counter.glb" id="12_counter"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/pantry.glb" id="13_pantry"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/feed_trough.glb" id="14_trough"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/fence_straight_2m.glb" id="15_fence"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/fence_corner_2m.glb" id="16_corner"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/fence_gate_2m.glb" id="17_gate"]
+[ext_resource type="PackedScene" path="res://assets/3d/ranch_home_textured/ranch_furniture/fence_post.glb" id="18_post"]
+
+[ext_resource type="Script" path="res://src/World/RanchHome.cs" id="19_home"]
+[ext_resource type="Script" path="res://src/World/WorldShelterVolume.cs" id="20_shelter"]
+
+[sub_resource type="BoxShape3D" id="solid_4_bed"]
+size = Vector3(1.12, 0.62, 2.3)
+
+[sub_resource type="BoxShape3D" id="solid_5_large_bed"]
+size = Vector3(1.38, 0.69, 2.75)
+
+[sub_resource type="BoxShape3D" id="solid_6_chair"]
+size = Vector3(0.44, 0.95, 0.45)
+
+[sub_resource type="BoxShape3D" id="solid_7_large_chair"]
+size = Vector3(0.57, 1.1, 0.54)
+
+[sub_resource type="BoxShape3D" id="solid_8_bench"]
+size = Vector3(1.32, 0.8, 0.43)
+
+[sub_resource type="BoxShape3D" id="solid_9_table"]
+size = Vector3(1.72, 0.75, 0.85)
+
+[sub_resource type="BoxShape3D" id="solid_10_desk"]
+size = Vector3(1.38, 0.75, 0.72)
+
+[sub_resource type="BoxShape3D" id="solid_11_wardrobe"]
+size = Vector3(1.04, 1.92, 0.62)
+
+[sub_resource type="BoxShape3D" id="solid_12_counter"]
+size = Vector3(1.75, 0.94, 0.68)
+
+[sub_resource type="BoxShape3D" id="solid_13_pantry"]
+size = Vector3(1.04, 1.85, 0.5)
+
+[node name="RanchHome" type="Node3D"]
+script = ExtResource("19_home")
+Footprint = Vector2(20, 28)
+DoorWidth = 1.25
+DoorHeight = 2.7
+WallHeight = 2.95
+metadata/scope = "Authored ranch home; example beds do not allocate residents or grant equipment."
+
+[node name="Assets" type="Node3D" parent="."]
+position = Vector3(0, 0, 6)
+
+[node name="MainHouse" parent="Assets" instance=ExtResource("1_house")]
+
+[node name="ResidentialWing" parent="Assets" instance=ExtResource("2_wing")]
+position = Vector3(0, 0, -14)
+
+[node name="WingEndCap" parent="Assets" instance=ExtResource("3_cap")]
+position = Vector3(0, 0, -12)
+
+[node name="OfficeDesk" parent="Assets" instance=ExtResource("10_desk")]
+position = Vector3(-6.5, 0, 5.4)
+
+[node name="OfficeChair" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-6.72, 0, 6.24)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="OfficeStorage" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(-8.8, 0, 7.2)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="KitchenSink" parent="Assets" instance=ExtResource("12_counter")]
+position = Vector3(9.1, 0, 5.5)
+rotation = Vector3(0, -1.5707963, 0)
+
+[node name="KitchenPantry" parent="Assets" instance=ExtResource("13_pantry")]
+position = Vector3(4.4, 0, 7.2)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="KitchenTable" parent="Assets" instance=ExtResource("9_table")]
+position = Vector3(6.1, 0, 5.2)
+
+[node name="KitchenChair" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(6.1, 0, 6.06)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="DiningTable" parent="Assets" instance=ExtResource("9_table")]
+position = Vector3(-4.5, 0, 0)
+
+[node name="DiningChairSouthWest" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-5, 0, 0.86)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="DiningChairSouthEast" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-4, 0, 0.86)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="DiningChairNorthWest" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-5, 0, -0.86)
+
+[node name="DiningChairNorthEast" parent="Assets" instance=ExtResource("6_chair")]
+position = Vector3(-4, 0, -0.86)
+
+[node name="CommonBench" parent="Assets" instance=ExtResource("8_bench")]
+position = Vector3(5, 0, 1.8)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="CommonLargeChair" parent="Assets" instance=ExtResource("7_large_chair")]
+position = Vector3(7, 0, 1.8)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="PlayerBedExample" parent="Assets" instance=ExtResource("5_large_bed")]
+position = Vector3(-8.3, 0, -6.1)
+
+[node name="PlayerWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(-5, 0, -7.1)
+
+[node name="ResidentABedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(2.2, 0, -6.1)
+
+[node name="ResidentAWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(4.4, 0, -7.1)
+
+[node name="ResidentBBedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(6.7, 0, -6.1)
+
+[node name="ResidentBWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(8.8, 0, -7.1)
+
+[node name="WingSouthWestBedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(-4.5, 0, -11)
+
+[node name="WingSouthWestWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(-2.2, 0, -12.8)
+
+[node name="WingSouthEastBedExample" parent="Assets" instance=ExtResource("5_large_bed")]
+position = Vector3(2.3, 0, -11)
+
+[node name="WingSouthEastWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(4.8, 0, -12.8)
+
+[node name="WingNorthWestBedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(-4.5, 0, -17)
+
+[node name="WingNorthWestWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(-2.2, 0, -18.8)
+
+[node name="WingNorthEastBedExample" parent="Assets" instance=ExtResource("4_bed")]
+position = Vector3(2.3, 0, -17)
+
+[node name="WingNorthEastWardrobe" parent="Assets" instance=ExtResource("11_wardrobe")]
+position = Vector3(4.8, 0, -18.8)
+
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/OfficeDesk"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/OfficeDesk/FurnitureBody"]
+position = Vector3(0, 0.375, 0)
+shape = SubResource("solid_10_desk")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/OfficeChair"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/OfficeChair/FurnitureBody"]
+position = Vector3(0, 0.475, 0)
+shape = SubResource("solid_6_chair")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/OfficeStorage"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/OfficeStorage/FurnitureBody"]
+position = Vector3(0, 0.96, 0)
+shape = SubResource("solid_11_wardrobe")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/KitchenSink"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/KitchenSink/FurnitureBody"]
+position = Vector3(0, 0.47, 0)
+shape = SubResource("solid_12_counter")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/KitchenPantry"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/KitchenPantry/FurnitureBody"]
+position = Vector3(0, 0.925, 0)
+shape = SubResource("solid_13_pantry")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/KitchenTable"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/KitchenTable/FurnitureBody"]
+position = Vector3(0, 0.375, 0)
+shape = SubResource("solid_9_table")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/KitchenChair"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/KitchenChair/FurnitureBody"]
+position = Vector3(0, 0.475, 0)
+shape = SubResource("solid_6_chair")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/DiningTable"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/DiningTable/FurnitureBody"]
+position = Vector3(0, 0.375, 0)
+shape = SubResource("solid_9_table")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/DiningChairSouthWest"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/DiningChairSouthWest/FurnitureBody"]
+position = Vector3(0, 0.475, 0)
+shape = SubResource("solid_6_chair")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/DiningChairSouthEast"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/DiningChairSouthEast/FurnitureBody"]
+position = Vector3(0, 0.475, 0)
+shape = SubResource("solid_6_chair")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/DiningChairNorthWest"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/DiningChairNorthWest/FurnitureBody"]
+position = Vector3(0, 0.475, 0)
+shape = SubResource("solid_6_chair")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/DiningChairNorthEast"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/DiningChairNorthEast/FurnitureBody"]
+position = Vector3(0, 0.475, 0)
+shape = SubResource("solid_6_chair")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/CommonBench"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/CommonBench/FurnitureBody"]
+position = Vector3(0, 0.4, 0)
+shape = SubResource("solid_8_bench")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/CommonLargeChair"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/CommonLargeChair/FurnitureBody"]
+position = Vector3(0, 0.55, 0)
+shape = SubResource("solid_7_large_chair")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/PlayerBedExample"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/PlayerBedExample/FurnitureBody"]
+position = Vector3(0, 0.345, 0)
+shape = SubResource("solid_5_large_bed")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/PlayerWardrobe"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/PlayerWardrobe/FurnitureBody"]
+position = Vector3(0, 0.96, 0)
+shape = SubResource("solid_11_wardrobe")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/ResidentABedExample"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/ResidentABedExample/FurnitureBody"]
+position = Vector3(0, 0.31, 0)
+shape = SubResource("solid_4_bed")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/ResidentAWardrobe"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/ResidentAWardrobe/FurnitureBody"]
+position = Vector3(0, 0.96, 0)
+shape = SubResource("solid_11_wardrobe")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/ResidentBBedExample"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/ResidentBBedExample/FurnitureBody"]
+position = Vector3(0, 0.31, 0)
+shape = SubResource("solid_4_bed")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/ResidentBWardrobe"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/ResidentBWardrobe/FurnitureBody"]
+position = Vector3(0, 0.96, 0)
+shape = SubResource("solid_11_wardrobe")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/WingSouthWestBedExample"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/WingSouthWestBedExample/FurnitureBody"]
+position = Vector3(0, 0.31, 0)
+shape = SubResource("solid_4_bed")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/WingSouthWestWardrobe"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/WingSouthWestWardrobe/FurnitureBody"]
+position = Vector3(0, 0.96, 0)
+shape = SubResource("solid_11_wardrobe")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/WingSouthEastBedExample"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/WingSouthEastBedExample/FurnitureBody"]
+position = Vector3(0, 0.345, 0)
+shape = SubResource("solid_5_large_bed")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/WingSouthEastWardrobe"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/WingSouthEastWardrobe/FurnitureBody"]
+position = Vector3(0, 0.96, 0)
+shape = SubResource("solid_11_wardrobe")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/WingNorthWestBedExample"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/WingNorthWestBedExample/FurnitureBody"]
+position = Vector3(0, 0.31, 0)
+shape = SubResource("solid_4_bed")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/WingNorthWestWardrobe"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/WingNorthWestWardrobe/FurnitureBody"]
+position = Vector3(0, 0.96, 0)
+shape = SubResource("solid_11_wardrobe")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/WingNorthEastBedExample"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/WingNorthEastBedExample/FurnitureBody"]
+position = Vector3(0, 0.31, 0)
+shape = SubResource("solid_4_bed")
+
+[node name="FurnitureBody" type="StaticBody3D" parent="Assets/WingNorthEastWardrobe"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision" type="CollisionShape3D" parent="Assets/WingNorthEastWardrobe/FurnitureBody"]
+position = Vector3(0, 0.96, 0)
+shape = SubResource("solid_11_wardrobe")
+
+[node name="EntryLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(0, 2.6, 5.5)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 5
+shadow_enabled = true
+
+[node name="OfficeLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(-6.5, 2.6, 5.5)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 6
+shadow_enabled = true
+
+[node name="KitchenLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(6.5, 2.6, 5.5)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 6
+shadow_enabled = true
+
+[node name="DiningLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(-5, 2.6, 0)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 6
+shadow_enabled = true
+
+[node name="CommonLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(5, 2.6, 0)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 6
+shadow_enabled = true
+
+[node name="PlayerLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(-7, 2.6, -5.5)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 5
+shadow_enabled = true
+
+[node name="BathLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(-2.5, 2.6, -5.5)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 3
+shadow_enabled = true
+
+[node name="ResidentALamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(3.2, 2.6, -5.5)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 4
+shadow_enabled = true
+
+[node name="ResidentBLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(7.7, 2.6, -5.5)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 4
+shadow_enabled = true
+
+[node name="WingHallLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(0, 2.6, -14)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 8
+shadow_enabled = true
+
+[node name="WingSWLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(-3.5, 2.6, -11)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 4
+shadow_enabled = true
+
+[node name="WingSELamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(3.5, 2.6, -11)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 4
+shadow_enabled = true
+
+[node name="WingNWLamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(-3.5, 2.6, -17)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 4
+shadow_enabled = true
+
+[node name="WingNELamp" type="OmniLight3D" parent="Assets"]
+position = Vector3(3.5, 2.6, -17)
+light_color = Color(1, 0.91, 0.78, 1)
+light_energy = 1.3
+omni_range = 4
+shadow_enabled = true
+
+[node name="MainShelter" type="Node3D" parent="Assets"]
+position = Vector3(0, 1.45, 0)
+script = ExtResource("20_shelter")
+HalfExtents = Vector3(9.8, 1.5, 7.8)
+
+[node name="WingShelter" type="Node3D" parent="Assets"]
+position = Vector3(0, 1.45, -14)
+script = ExtResource("20_shelter")
+HalfExtents = Vector3(5.8, 1.5, 5.8)
+
+[node name="KitchenWork" type="Marker3D" parent="Assets"]
+position = Vector3(7.95, 0.5, 5.5)
+
+[node name="OfficeWork" type="Marker3D" parent="Assets"]
+position = Vector3(-5.35, 0.5, 6.35)
+
+[node name="HouseWork" type="Marker3D" parent="Assets"]
+position = Vector3(-7.15, 0.5, -6.4)
+
+[node name="BathApproach" type="Marker3D" parent="Assets"]
+position = Vector3(-2.5, 0.8, -4.5)

@@ -1,0 +1,62 @@
+{
+  "saved_blend_reopened": true,
+  "collider_vertex_bounds_verified": 82,
+  "glb_binary_verified": [
+    {
+      "file": "base_shell.glb",
+      "decoded_vertices": 3414,
+      "actual_bounds": {
+        "min": [
+          -6.0,
+          -0.20000000298023224,
+          -5.039999961853027
+        ],
+        "max": [
+          6.0,
+          5.255000114440918,
+          5.0
+        ]
+      },
+      "hash_matches": true,
+      "names_match": true
+    },
+    {
+      "file": "rear_annex.glb",
+      "decoded_vertices": 1131,
+      "actual_bounds": {
+        "min": [
+          -6.0,
+          -0.20000000298023224,
+          -11.0
+        ],
+        "max": [
+          6.0,
+          4.704999923706055,
+          -5.0
+        ]
+      },
+      "hash_matches": true,
+      "names_match": true
+    },
+    {
+      "file": "rear_connection_cap.glb",
+      "decoded_vertices": 48,
+      "actual_bounds": {
+        "min": [
+          -0.800000011920929,
+          0.0,
+          -5.059999942779541
+        ],
+        "max": [
+          0.800000011920929,
+          2.7799999713897705,
+          -4.815000057220459
+        ]
+      },
+      "hash_matches": true,
+      "names_match": true
+    }
+  ],
+  "linked_furniture_sources_exist": true,
+  "runtime_collision_tested": false
+}

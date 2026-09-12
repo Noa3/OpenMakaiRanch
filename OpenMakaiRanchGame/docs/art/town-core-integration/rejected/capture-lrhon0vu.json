@@ -1,0 +1,9993 @@
+{
+  "passed": false,
+  "error": "escort capsule avoids actual solid at (11.245083, 0, 0.7329289)",
+  "scope": "actual town only; existing TravelTo is setup, not a ranch/valley walking proof",
+  "setup": "existing rancher selected as escort; onboarding bypassed by isolated fixture; no invitation or transaction",
+  "checks": [
+    {
+      "ok": true,
+      "label": "existing scene entry accepts town"
+    },
+    {
+      "ok": true,
+      "label": "existing escort spawned"
+    },
+    {
+      "ok": true,
+      "label": "authored civic shell is in actual town"
+    },
+    {
+      "ok": true,
+      "label": "base market is in actual town"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (1.0542402, 0, 11.575904)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.866804, 0, 11.514794)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.7214305, 0, 11.378483)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.60961986, 0, 11.212896)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.51874983, 0, 11.034805)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.4411525, 0, 10.8505)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.37262988, 0, 10.662619)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.31089485, 0, 10.472393)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.25459412, 0, 10.280486)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.20264708, 0, 10.087352)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.15286748, 0, 9.893645)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "walk reached (0,6)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.11667354, 0, 9.6975)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.1367794, 0, 9.498999)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.19655786, 0, 9.308362)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.2823609, 0, 9.127825)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.38676074, 0, 8.957316)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.5054685, 0, 8.796416)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.6357485, 0, 8.644719)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.7756804, 0, 8.501865)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (0.92377776, 0, 8.367487)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (1.0788295, 0, 8.241191)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (1.2398192, 0, 8.122549)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (1.4058839, 0, 8.011117)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (1.5762879, 0, 7.906438)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (1.7504053, 0, 7.8080544)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (1.9277039, 0, 7.715523)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (2.1077316, 0, 7.628417)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (2.290106, 0, 7.546335)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (2.4745023, 0, 7.4689)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (2.660645, 0, 7.3957615)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (2.8483005, 0, 7.326595)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (3.0372708, 0, 7.261103)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (3.2273862, 0, 7.1990123)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (3.4186265, 0, 7.140477)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (3.6106644, 0, 7.08461)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (3.8034246, 0, 7.031291)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (3.9968648, 0, 6.9804935)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (4.190906, 0, 6.932042)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (4.3855286, 0, 6.8859787)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (4.580347, 0, 6.8407497)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "walk reached (12,6)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (4.773378, 0, 6.788926)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (4.9585013, 0, 6.7134204)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (5.137542, 0, 6.6243477)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (5.312479, 0, 6.5274177)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (5.4864902, 0, 6.428828)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (5.6602087, 0, 6.3297224)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "walk reached (12,4)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (5.8355083, 0, 6.2335005)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (6.0124297, 0, 6.1402326)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (6.1893497, 0, 6.046963)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (6.3662696, 0, 5.953694)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (6.5431905, 0, 5.860425)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (6.7201114, 0, 5.767156)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (6.8970313, 0, 5.673887)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (7.0739512, 0, 5.5806174)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (7.250871, 0, 5.487348)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (7.427791, 0, 5.3940787)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "walk reached (12,0,2)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (7.604711, 0, 5.3008094)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (7.781631, 0, 5.20754)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (7.958551, 0, 5.1142707)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (8.135472, 0, 5.0210013)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (8.312394, 0, 4.927732)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (8.489316, 0, 4.8344626)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "walk reached (10,0,2)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (8.666238, 0, 4.7411933)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (8.84316, 0, 4.647924)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (9.0200815, 0, 4.5546546)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "walk reached (10,1)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (9.197003, 0, 4.4613853)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (9.373925, 0, 4.368116)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (9.550847, 0, 4.274847)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (9.727768, 0, 4.1815777)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (9.904686, 0, 4.0883064)"
+    },
+    {
+      "ok": true,
+      "label": "walk reached (8,75,1)"
+    },
+    {
+      "ok": true,
+      "label": "entering building opens no menu"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (10.081605, 0, 3.9950368)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (10.258525, 0, 3.9017665)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (10.435447, 0, 3.808497)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (10.612369, 0, 3.7152276)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (10.78929, 0, 3.6219583)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (10.966212, 0, 3.528689)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.138651, 0, 3.4284031)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.29764, 0, 3.307068)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.456629, 0, 3.1857333)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.546221, 0, 3.0069232)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.595346, 0, 2.8130498)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.635943, 0, 2.6174068)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.621024, 0, 2.417964)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.606105, 0, 2.218521)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.591186, 0, 2.0190783)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.576266, 0, 1.8196354)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.561347, 0, 1.6201925)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.546429, 0, 1.4207497)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.531511, 0, 1.2213068)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.477825, 0, 1.0329118)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort capsule avoids actual solid at (11.385368, 0, 0.85556465)"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "player trajectory has no jump"
+    },
+    {
+      "ok": true,
+      "label": "escort trajectory has no jump"
+    },
+    {
+      "ok": false,
+      "label": "escort capsule avoids actual solid at (11.245083, 0, 0.7329289)"
+    }
+  ],
+  "trace": [
+    {
+      "frame": 1,
+      "elapsed": 0.016666666666666666,
+      "player": [
+        0,
+        0.8,
+        10.2
+      ],
+      "escort": [
+        1.15,
+        0,
+        11.55
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 2,
+      "elapsed": 0.03333333333333333,
+      "player": [
+        0,
+        0.8,
+        10.147286
+      ],
+      "escort": [
+        1.15,
+        0,
+        11.55
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 3,
+      "elapsed": 0.05,
+      "player": [
+        0,
+        0.8,
+        10.06751
+      ],
+      "escort": [
+        1.1037668,
+        0,
+        11.569039
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 4,
+      "elapsed": 0.06666666666666667,
+      "player": [
+        0,
+        0.8,
+        9.973838
+      ],
+      "escort": [
+        1.0542402,
+        0,
+        11.575904
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 5,
+      "elapsed": 0.08333333333333333,
+      "player": [
+        0,
+        0.8,
+        9.873032
+      ],
+      "escort": [
+        1.0043812,
+        0,
+        11.572152
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 6,
+      "elapsed": 0.09999999999999999,
+      "player": [
+        0,
+        0.8,
+        9.768563
+      ],
+      "escort": [
+        0.9559797,
+        0,
+        11.55961
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 7,
+      "elapsed": 0.11666666666666665,
+      "player": [
+        0,
+        0.8,
+        9.662214
+      ],
+      "escort": [
+        0.90998596,
+        0,
+        11.54
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 8,
+      "elapsed": 0.13333333333333333,
+      "player": [
+        0,
+        0.8,
+        9.554899
+      ],
+      "escort": [
+        0.866804,
+        0,
+        11.514794
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 9,
+      "elapsed": 0.15,
+      "player": [
+        0,
+        0.8,
+        9.447089
+      ],
+      "escort": [
+        0.8265083,
+        0,
+        11.485192
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 10,
+      "elapsed": 0.16666666666666666,
+      "player": [
+        0,
+        0.8,
+        9.339025
+      ],
+      "escort": [
+        0.7889888,
+        0,
+        11.452143
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 11,
+      "elapsed": 0.18333333333333332,
+      "player": [
+        0,
+        0.8,
+        9.230829
+      ],
+      "escort": [
+        0.754043,
+        0,
+        11.416383
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 12,
+      "elapsed": 0.19999999999999998,
+      "player": [
+        0,
+        0.8,
+        9.122566
+      ],
+      "escort": [
+        0.7214305,
+        0,
+        11.378483
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 13,
+      "elapsed": 0.21666666666666665,
+      "player": [
+        0,
+        0.8,
+        9.014269
+      ],
+      "escort": [
+        0.69090563,
+        0,
+        11.3388815
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 14,
+      "elapsed": 0.2333333333333333,
+      "player": [
+        0,
+        0.8,
+        8.905954
+      ],
+      "escort": [
+        0.66223437,
+        0,
+        11.297918
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 15,
+      "elapsed": 0.24999999999999997,
+      "player": [
+        0,
+        0.8,
+        8.79763
+      ],
+      "escort": [
+        0.6352027,
+        0,
+        11.255856
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 16,
+      "elapsed": 0.26666666666666666,
+      "player": [
+        0,
+        0.8,
+        8.6893015
+      ],
+      "escort": [
+        0.60961986,
+        0,
+        11.212896
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 17,
+      "elapsed": 0.2833333333333333,
+      "player": [
+        0,
+        0.8,
+        8.580971
+      ],
+      "escort": [
+        0.5853185,
+        0,
+        11.169199
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 18,
+      "elapsed": 0.3,
+      "player": [
+        0,
+        0.8,
+        8.472639
+      ],
+      "escort": [
+        0.56215346,
+        0,
+        11.124889
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 19,
+      "elapsed": 0.31666666666666665,
+      "player": [
+        0,
+        0.8,
+        8.364306
+      ],
+      "escort": [
+        0.53999966,
+        0,
+        11.080065
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 20,
+      "elapsed": 0.3333333333333333,
+      "player": [
+        0,
+        0.8,
+        8.255974
+      ],
+      "escort": [
+        0.51874983,
+        0,
+        11.034805
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 21,
+      "elapsed": 0.35,
+      "player": [
+        0,
+        0.8,
+        8.14764
+      ],
+      "escort": [
+        0.4983121,
+        0,
+        10.989173
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 22,
+      "elapsed": 0.36666666666666664,
+      "player": [
+        0,
+        0.8,
+        8.039307
+      ],
+      "escort": [
+        0.4786079,
+        0,
+        10.943219
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 23,
+      "elapsed": 0.3833333333333333,
+      "player": [
+        0,
+        0.8,
+        7.9309735
+      ],
+      "escort": [
+        0.45958176,
+        0,
+        10.89698
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 24,
+      "elapsed": 0.39999999999999997,
+      "player": [
+        0,
+        0.8,
+        7.8226404
+      ],
+      "escort": [
+        0.4411525,
+        0,
+        10.8505
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 25,
+      "elapsed": 0.41666666666666663,
+      "player": [
+        0,
+        0.8,
+        7.7143073
+      ],
+      "escort": [
+        0.4232825,
+        0,
+        10.8038025
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 26,
+      "elapsed": 0.4333333333333333,
+      "player": [
+        0,
+        0.8,
+        7.605974
+      ],
+      "escort": [
+        0.40592915,
+        0,
+        10.75691
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 27,
+      "elapsed": 0.44999999999999996,
+      "player": [
+        0,
+        0.8,
+        7.497641
+      ],
+      "escort": [
+        0.3890556,
+        0,
+        10.709844
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 28,
+      "elapsed": 0.4666666666666666,
+      "player": [
+        0,
+        0.8,
+        7.389308
+      ],
+      "escort": [
+        0.37262988,
+        0,
+        10.662619
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 29,
+      "elapsed": 0.4833333333333333,
+      "player": [
+        0,
+        0.8,
+        7.280975
+      ],
+      "escort": [
+        0.35662404,
+        0,
+        10.61525
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 30,
+      "elapsed": 0.49999999999999994,
+      "player": [
+        0,
+        0.8,
+        7.1726418
+      ],
+      "escort": [
+        0.34101477,
+        0,
+        10.567749
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 31,
+      "elapsed": 0.5166666666666666,
+      "player": [
+        0,
+        0.8,
+        7.0643086
+      ],
+      "escort": [
+        0.325777,
+        0,
+        10.520127
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 32,
+      "elapsed": 0.5333333333333333,
+      "player": [
+        0,
+        0.8,
+        6.9559755
+      ],
+      "escort": [
+        0.31089485,
+        0,
+        10.472393
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 33,
+      "elapsed": 0.55,
+      "player": [
+        0,
+        0.8,
+        6.8476424
+      ],
+      "escort": [
+        0.29635015,
+        0,
+        10.424555
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 34,
+      "elapsed": 0.5666666666666668,
+      "player": [
+        0,
+        0.8,
+        6.7393093
+      ],
+      "escort": [
+        0.28212753,
+        0,
+        10.37662
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 35,
+      "elapsed": 0.5833333333333335,
+      "player": [
+        0,
+        0.8,
+        6.630976
+      ],
+      "escort": [
+        0.26821306,
+        0,
+        10.328595
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 36,
+      "elapsed": 0.6000000000000002,
+      "player": [
+        0,
+        0.8,
+        6.522643
+      ],
+      "escort": [
+        0.25459412,
+        0,
+        10.280486
+      ],
+      "input": [
+        0.6726728,
+        0.73994005
+      ]
+    },
+    {
+      "frame": 37,
+      "elapsed": 0.6166666666666669,
+      "player": [
+        -1.5709744E-09,
+        0.8,
+        6.421106
+      ],
+      "escort": [
+        0.2412591,
+        0,
+        10.232297
+      ],
+      "input": [
+        0.58594626,
+        0.6445409
+      ]
+    },
+    {
+      "frame": 38,
+      "elapsed": 0.6333333333333336,
+      "player": [
+        -2.3775395E-09,
+        0.8,
+        6.331979
+      ],
+      "escort": [
+        0.2281814,
+        0,
+        10.184037
+      ],
+      "input": [
+        0.47211075,
+        0.5193218
+      ]
+    },
+    {
+      "frame": 39,
+      "elapsed": 0.6500000000000004,
+      "player": [
+        -2.7916438E-09,
+        0.8,
+        6.2570534
+      ],
+      "escort": [
+        0.21532363,
+        0,
+        10.135718
+      ],
+      "input": [
+        0.3721885,
+        0.40940735
+      ]
+    },
+    {
+      "frame": 40,
+      "elapsed": 0.6666666666666671,
+      "player": [
+        -3.004252E-09,
+        0.8,
+        6.196002
+      ],
+      "escort": [
+        0.20264708,
+        0,
+        10.087352
+      ],
+      "input": [
+        0.288188,
+        0.3170068
+      ]
+    },
+    {
+      "frame": 41,
+      "elapsed": 0.6833333333333338,
+      "player": [
+        -3.1134086E-09,
+        0.8,
+        6.147437
+      ],
+      "escort": [
+        0.19011624,
+        0,
+        10.038947
+      ],
+      "input": [
+        0.21974202,
+        0.2417162
+      ]
+    },
+    {
+      "frame": 42,
+      "elapsed": 0.7000000000000005,
+      "player": [
+        -3.1694516E-09,
+        0.8,
+        6.1225033
+      ],
+      "escort": [
+        0.17758541,
+        0,
+        9.990542
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 43,
+      "elapsed": 0.7166666666666672,
+      "player": [
+        -3.198225E-09,
+        0.8,
+        6.1097016
+      ],
+      "escort": [
+        0.16522644,
+        0,
+        9.942094
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 44,
+      "elapsed": 0.733333333333334,
+      "player": [
+        -3.2129979E-09,
+        0.8,
+        6.103129
+      ],
+      "escort": [
+        0.15286748,
+        0,
+        9.893645
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 45,
+      "elapsed": 0.7500000000000007,
+      "player": [
+        -3.2205825E-09,
+        0.8,
+        6.0997543
+      ],
+      "escort": [
+        0.1405085,
+        0,
+        9.845197
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 46,
+      "elapsed": 0.7666666666666674,
+      "player": [
+        0.05271133,
+        0.8,
+        6.097584
+      ],
+      "escort": [
+        0.12814954,
+        0,
+        9.796748
+      ],
+      "input": [
+        0.7455061,
+        -0.6664988
+      ]
+    },
+    {
+      "frame": 47,
+      "elapsed": 0.7833333333333341,
+      "player": [
+        0.13248561,
+        0.8,
+        6.096039
+      ],
+      "escort": [
+        0.12030298,
+        0,
+        9.747368
+      ],
+      "input": [
+        0.7454095,
+        -0.6666068
+      ]
+    },
+    {
+      "frame": 48,
+      "elapsed": 0.8000000000000008,
+      "player": [
+        0.22615452,
+        0.8,
+        6.094819
+      ],
+      "escort": [
+        0.11667354,
+        0,
+        9.6975
+      ],
+      "input": [
+        0.7453593,
+        -0.666663
+      ]
+    },
+    {
+      "frame": 49,
+      "elapsed": 0.8166666666666675,
+      "player": [
+        0.32695717,
+        0.8,
+        6.093768
+      ],
+      "escort": [
+        0.11689256,
+        0,
+        9.647501
+      ],
+      "input": [
+        0.74533314,
+        -0.6666922
+      ]
+    },
+    {
+      "frame": 50,
+      "elapsed": 0.8333333333333343,
+      "player": [
+        0.4314224,
+        0.8,
+        6.0928054
+      ],
+      "escort": [
+        0.12056322,
+        0,
+        9.597636
+      ],
+      "input": [
+        0.74531955,
+        -0.66670746
+      ]
+    },
+    {
+      "frame": 51,
+      "elapsed": 0.850000000000001,
+      "player": [
+        0.5377681,
+        0.8,
+        6.091888
+      ],
+      "escort": [
+        0.12730633,
+        0,
+        9.548093
+      ],
+      "input": [
+        0.7453124,
+        -0.66671544
+      ]
+    },
+    {
+      "frame": 52,
+      "elapsed": 0.8666666666666677,
+      "player": [
+        0.64507926,
+        0.8,
+        6.0909944
+      ],
+      "escort": [
+        0.1367794,
+        0,
+        9.498999
+      ],
+      "input": [
+        0.74530864,
+        -0.66671956
+      ]
+    },
+    {
+      "frame": 53,
+      "elapsed": 0.8833333333333344,
+      "player": [
+        0.7528861,
+        0.8,
+        6.090113
+      ],
+      "escort": [
+        0.14868225,
+        0,
+        9.450436
+      ],
+      "input": [
+        0.7453066,
+        -0.66672176
+      ]
+    },
+    {
+      "frame": 54,
+      "elapsed": 0.9000000000000011,
+      "player": [
+        0.86094743,
+        0.8,
+        6.0892386
+      ],
+      "escort": [
+        0.16275571,
+        0,
+        9.402457
+      ],
+      "input": [
+        0.74530566,
+        -0.66672295
+      ]
+    },
+    {
+      "frame": 55,
+      "elapsed": 0.9166666666666679,
+      "player": [
+        0.96913946,
+        0.8,
+        6.0883675
+      ],
+      "escort": [
+        0.17877662,
+        0,
+        9.355093
+      ],
+      "input": [
+        0.7453051,
+        -0.66672343
+      ]
+    },
+    {
+      "frame": 56,
+      "elapsed": 0.9333333333333346,
+      "player": [
+        1.0773985,
+        0.8,
+        6.0874977
+      ],
+      "escort": [
+        0.19655786,
+        0,
+        9.308362
+      ],
+      "input": [
+        0.7453049,
+        -0.6667238
+      ]
+    },
+    {
+      "frame": 57,
+      "elapsed": 0.9500000000000013,
+      "player": [
+        1.1856921,
+        0.8,
+        6.086629
+      ],
+      "escort": [
+        0.21593466,
+        0,
+        9.262269
+      ],
+      "input": [
+        0.74530476,
+        -0.66672397
+      ]
+    },
+    {
+      "frame": 58,
+      "elapsed": 0.966666666666668,
+      "player": [
+        1.2940032,
+        0.8,
+        6.0857606
+      ],
+      "escort": [
+        0.23677126,
+        0,
+        9.216818
+      ],
+      "input": [
+        0.7453046,
+        -0.666724
+      ]
+    },
+    {
+      "frame": 59,
+      "elapsed": 0.9833333333333347,
+      "player": [
+        1.4023235,
+        0.8,
+        6.0848927
+      ],
+      "escort": [
+        0.25894776,
+        0,
+        9.172005
+      ],
+      "input": [
+        0.7453046,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 60,
+      "elapsed": 1.0000000000000013,
+      "player": [
+        1.5106484,
+        0.8,
+        6.084025
+      ],
+      "escort": [
+        0.2823609,
+        0,
+        9.127825
+      ],
+      "input": [
+        0.7453045,
+        -0.6667241
+      ]
+    },
+    {
+      "frame": 61,
+      "elapsed": 1.016666666666668,
+      "player": [
+        1.6189756,
+        0.8,
+        6.083157
+      ],
+      "escort": [
+        0.30692145,
+        0,
+        9.084272
+      ],
+      "input": [
+        0.7453046,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 62,
+      "elapsed": 1.0333333333333345,
+      "player": [
+        1.7273042,
+        0.8,
+        6.082289
+      ],
+      "escort": [
+        0.33255157,
+        0,
+        9.041341
+      ],
+      "input": [
+        0.7453046,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 63,
+      "elapsed": 1.0500000000000012,
+      "player": [
+        1.8356334,
+        0.8,
+        6.0814214
+      ],
+      "escort": [
+        0.35918033,
+        0,
+        8.999022
+      ],
+      "input": [
+        0.7453045,
+        -0.6667241
+      ]
+    },
+    {
+      "frame": 64,
+      "elapsed": 1.0666666666666678,
+      "player": [
+        1.9439629,
+        0.8,
+        6.0805535
+      ],
+      "escort": [
+        0.38676074,
+        0,
+        8.957316
+      ],
+      "input": [
+        0.7453046,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 65,
+      "elapsed": 1.0833333333333344,
+      "player": [
+        2.0522926,
+        0.8,
+        6.0796857
+      ],
+      "escort": [
+        0.41522756,
+        0,
+        8.916211
+      ],
+      "input": [
+        0.7453046,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 66,
+      "elapsed": 1.100000000000001,
+      "player": [
+        2.1606224,
+        0.8,
+        6.078818
+      ],
+      "escort": [
+        0.44452548,
+        0,
+        8.875694
+      ],
+      "input": [
+        0.7453045,
+        -0.6667241
+      ]
+    },
+    {
+      "frame": 67,
+      "elapsed": 1.1166666666666676,
+      "player": [
+        2.2689521,
+        0.8,
+        6.07795
+      ],
+      "escort": [
+        0.4746189,
+        0,
+        8.835765
+      ],
+      "input": [
+        0.7453046,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 68,
+      "elapsed": 1.1333333333333342,
+      "player": [
+        2.377282,
+        0.8,
+        6.077082
+      ],
+      "escort": [
+        0.5054685,
+        0,
+        8.796416
+      ],
+      "input": [
+        0.7453046,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 69,
+      "elapsed": 1.1500000000000008,
+      "player": [
+        2.4856117,
+        0.8,
+        6.0762143
+      ],
+      "escort": [
+        0.53703815,
+        0,
+        8.757643
+      ],
+      "input": [
+        0.74530447,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 70,
+      "elapsed": 1.1666666666666674,
+      "player": [
+        2.5939415,
+        0.8,
+        6.0753465
+      ],
+      "escort": [
+        0.56929475,
+        0,
+        8.7194395
+      ],
+      "input": [
+        0.7453045,
+        -0.6667242
+      ]
+    },
+    {
+      "frame": 71,
+      "elapsed": 1.183333333333334,
+      "player": [
+        2.7022712,
+        0.8,
+        6.0744786
+      ],
+      "escort": [
+        0.6022077,
+        0,
+        8.6818
+      ],
+      "input": [
+        0.7453045,
+        -0.6667242
+      ]
+    },
+    {
+      "frame": 72,
+      "elapsed": 1.2000000000000006,
+      "player": [
+        2.810601,
+        0.8,
+        6.073611
+      ],
+      "escort": [
+        0.6357485,
+        0,
+        8.644719
+      ],
+      "input": [
+        0.74530447,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 73,
+      "elapsed": 1.2166666666666672,
+      "player": [
+        2.9189308,
+        0.8,
+        6.072743
+      ],
+      "escort": [
+        0.6698905,
+        0,
+        8.608191
+      ],
+      "input": [
+        0.7453045,
+        -0.6667242
+      ]
+    },
+    {
+      "frame": 74,
+      "elapsed": 1.2333333333333338,
+      "player": [
+        3.0272605,
+        0.8,
+        6.071875
+      ],
+      "escort": [
+        0.7046087,
+        0,
+        8.572209
+      ],
+      "input": [
+        0.74530447,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 75,
+      "elapsed": 1.2500000000000004,
+      "player": [
+        3.1355903,
+        0.8,
+        6.0710073
+      ],
+      "escort": [
+        0.7398794,
+        0,
+        8.53677
+      ],
+      "input": [
+        0.74530447,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 76,
+      "elapsed": 1.266666666666667,
+      "player": [
+        3.24392,
+        0.8,
+        6.0701394
+      ],
+      "escort": [
+        0.7756804,
+        0,
+        8.501865
+      ],
+      "input": [
+        0.7453045,
+        -0.6667242
+      ]
+    },
+    {
+      "frame": 77,
+      "elapsed": 1.2833333333333337,
+      "player": [
+        3.3522499,
+        0.8,
+        6.0692716
+      ],
+      "escort": [
+        0.81199044,
+        0,
+        8.467491
+      ],
+      "input": [
+        0.74530447,
+        -0.66672415
+      ]
+    },
+    {
+      "frame": 78,
+      "elapsed": 1.3000000000000003,
+      "player": [
+        3.4605796,
+        0.8,
+        6.0684037
+      ],
+      "escort": [
+        0.84878933,
+        0,
+        8.4336405
+      ],
+      "input": [
+        0.7453045,
+        -0.66672426
+      ]
+    },
+    {
+      "frame": 79,
+      "elapsed": 1.3166666666666669,
+      "player": [
+        3.5689094,
+        0.8,
+        6.067536
+      ],
+      "escort": [
+        0.8860579,
+        0,
+        8.400308
+      ],
+      "input": [
+        0.74530447,
+        -0.66672426
+      ]
+    },
+    {
+      "frame": 80,
+      "elapsed": 1.3333333333333335,
+      "player": [
+        3.6772392,
+        0.8,
+        6.066668
+      ],
+      "escort": [
+        0.92377776,
+        0,
+        8.367487
+      ],
+      "input": [
+        0.7453044,
+        -0.6667242
+      ]
+    },
+    {
+      "frame": 81,
+      "elapsed": 1.35,
+      "player": [
+        3.785569,
+        0.8,
+        6.0658
+      ],
+      "escort": [
+        0.96193135,
+        0,
+        8.335172
+      ],
+      "input": [
+        0.74530447,
+        -0.66672426
+      ]
+    },
+    {
+      "frame": 82,
+      "elapsed": 1.3666666666666667,
+      "player": [
+        3.8938987,
+        0.8,
+        6.0649323
+      ],
+      "escort": [
+        1.0005019,
+        0,
+        8.303354
+      ],
+      "input": [
+        0.74530447,
+        -0.66672426
+      ]
+    },
+    {
+      "frame": 83,
+      "elapsed": 1.3833333333333333,
+      "player": [
+        4.0022287,
+        0.8,
+        6.0640645
+      ],
+      "escort": [
+        1.039473,
+        0,
+        8.27203
+      ],
+      "input": [
+        0.7453044,
+        -0.6667242
+      ]
+    },
+    {
+      "frame": 84,
+      "elapsed": 1.4,
+      "player": [
+        4.1105585,
+        0.8,
+        6.0631967
+      ],
+      "escort": [
+        1.0788295,
+        0,
+        8.241191
+      ],
+      "input": [
+        0.74530447,
+        -0.66672426
+      ]
+    },
+    {
+      "frame": 85,
+      "elapsed": 1.4166666666666665,
+      "player": [
+        4.2188883,
+        0.8,
+        6.062329
+      ],
+      "escort": [
+        1.1185564,
+        0,
+        8.21083
+      ],
+      "input": [
+        0.74530447,
+        -0.66672426
+      ]
+    },
+    {
+      "frame": 86,
+      "elapsed": 1.4333333333333331,
+      "player": [
+        4.327218,
+        0.8,
+        6.061461
+      ],
+      "escort": [
+        1.1586393,
+        0,
+        8.180941
+      ],
+      "input": [
+        0.74530447,
+        -0.6667243
+      ]
+    },
+    {
+      "frame": 87,
+      "elapsed": 1.4499999999999997,
+      "player": [
+        4.435548,
+        0.8,
+        6.060593
+      ],
+      "escort": [
+        1.1990646,
+        0,
+        8.151516
+      ],
+      "input": [
+        0.7453044,
+        -0.6667243
+      ]
+    },
+    {
+      "frame": 88,
+      "elapsed": 1.4666666666666663,
+      "player": [
+        4.5438776,
+        0.8,
+        6.0597253
+      ],
+      "escort": [
+        1.2398192,
+        0,
+        8.122549
+      ],
+      "input": [
+        0.7453044,
+        -0.6667243
+      ]
+    },
+    {
+      "frame": 89,
+      "elapsed": 1.483333333333333,
+      "player": [
+        4.6522074,
+        0.8,
+        6.0588574
+      ],
+      "escort": [
+        1.2808903,
+        0,
+        8.094033
+      ],
+      "input": [
+        0.74530435,
+        -0.66672426
+      ]
+    },
+    {
+      "frame": 90,
+      "elapsed": 1.4999999999999996,
+      "player": [
+        4.760537,
+        0.8,
+        6.0579896
+      ],
+      "escort": [
+        1.3222659,
+        0,
+        8.065961
+      ],
+      "input": [
+        0.7453044,
+        -0.6667243
+      ]
+    },
+    {
+      "frame": 91,
+      "elapsed": 1.5166666666666662,
+      "player": [
+        4.868867,
+        0.8,
+        6.0571218
+      ],
+      "escort": [
+        1.3639342,
+        0,
+        8.038324
+      ],
+      "input": [
+        0.7453044,
+        -0.6667243
+      ]
+    },
+    {
+      "frame": 92,
+      "elapsed": 1.5333333333333328,
+      "player": [
+        4.9771967,
+        0.8,
+        6.056254
+      ],
+      "escort": [
+        1.4058839,
+        0,
+        8.011117
+      ],
+      "input": [
+        0.74530447,
+        -0.66672444
+      ]
+    },
+    {
+      "frame": 93,
+      "elapsed": 1.5499999999999994,
+      "player": [
+        5.0855265,
+        0.8,
+        6.055386
+      ],
+      "escort": [
+        1.4481043,
+        0,
+        7.984332
+      ],
+      "input": [
+        0.74530435,
+        -0.6667243
+      ]
+    },
+    {
+      "frame": 94,
+      "elapsed": 1.566666666666666,
+      "player": [
+        5.1938562,
+        0.8,
+        6.054518
+      ],
+      "escort": [
+        1.490585,
+        0,
+        7.957962
+      ],
+      "input": [
+        0.74530435,
+        -0.6667244
+      ]
+    },
+    {
+      "frame": 95,
+      "elapsed": 1.5833333333333326,
+      "player": [
+        5.302186,
+        0.8,
+        6.0536504
+      ],
+      "escort": [
+        1.533316,
+        0,
+        7.9319997
+      ],
+      "input": [
+        0.74530435,
+        -0.6667244
+      ]
+    },
+    {
+      "frame": 96,
+      "elapsed": 1.5999999999999992,
+      "player": [
+        5.410516,
+        0.8,
+        6.0527825
+      ],
+      "escort": [
+        1.5762879,
+        0,
+        7.906438
+      ],
+      "input": [
+        0.7453043,
+        -0.6667243
+      ]
+    },
+    {
+      "frame": 97,
+      "elapsed": 1.6166666666666658,
+      "player": [
+        5.5188456,
+        0.8,
+        6.0519147
+      ],
+      "escort": [
+        1.6194915,
+        0,
+        7.8812695
+      ],
+      "input": [
+        0.74530435,
+        -0.66672444
+      ]
+    },
+    {
+      "frame": 98,
+      "elapsed": 1.6333333333333324,
+      "player": [
+        5.6271753,
+        0.8,
+        6.051047
+      ],
+      "escort": [
+        1.6629177,
+        0,
+        7.8564873
+      ],
+      "input": [
+        0.74530435,
+        -0.66672444
+      ]
+    },
+    {
+      "frame": 99,
+      "elapsed": 1.649999999999999,
+      "player": [
+        5.735505,
+        0.8,
+        6.050179
+      ],
+      "escort": [
+        1.7065585,
+        0,
+        7.8320847
+      ],
+      "input": [
+        0.7453042,
+        -0.6667244
+      ]
+    },
+    {
+      "frame": 100,
+      "elapsed": 1.6666666666666656,
+      "player": [
+        5.843835,
+        0.8,
+        6.049311
+      ],
+      "escort": [
+        1.7504053,
+        0,
+        7.8080544
+      ],
+      "input": [
+        0.7453043,
+        -0.66672444
+      ]
+    },
+    {
+      "frame": 101,
+      "elapsed": 1.6833333333333322,
+      "player": [
+        5.9521646,
+        0.8,
+        6.0484433
+      ],
+      "escort": [
+        1.7944506,
+        0,
+        7.78439
+      ],
+      "input": [
+        0.7453043,
+        -0.66672444
+      ]
+    },
+    {
+      "frame": 102,
+      "elapsed": 1.6999999999999988,
+      "player": [
+        6.0604944,
+        0.8,
+        6.0475755
+      ],
+      "escort": [
+        1.838687,
+        0,
+        7.761084
+      ],
+      "input": [
+        0.7453043,
+        -0.6667245
+      ]
+    },
+    {
+      "frame": 103,
+      "elapsed": 1.7166666666666655,
+      "player": [
+        6.168824,
+        0.8,
+        6.0467076
+      ],
+      "escort": [
+        1.883107,
+        0,
+        7.7381306
+      ],
+      "input": [
+        0.74530435,
+        -0.66672456
+      ]
+    },
+    {
+      "frame": 104,
+      "elapsed": 1.733333333333332,
+      "player": [
+        6.277154,
+        0.8,
+        6.04584
+      ],
+      "escort": [
+        1.9277039,
+        0,
+        7.715523
+      ],
+      "input": [
+        0.74530417,
+        -0.66672444
+      ]
+    },
+    {
+      "frame": 105,
+      "elapsed": 1.7499999999999987,
+      "player": [
+        6.3854837,
+        0.8,
+        6.044972
+      ],
+      "escort": [
+        1.972471,
+        0,
+        7.693254
+      ],
+      "input": [
+        0.7453042,
+        -0.6667245
+      ]
+    },
+    {
+      "frame": 106,
+      "elapsed": 1.7666666666666653,
+      "player": [
+        6.4938135,
+        0.8,
+        6.044104
+      ],
+      "escort": [
+        2.017402,
+        0,
+        7.6713176
+      ],
+      "input": [
+        0.74530417,
+        -0.6667245
+      ]
+    },
+    {
+      "frame": 107,
+      "elapsed": 1.7833333333333319,
+      "player": [
+        6.6021433,
+        0.8,
+        6.0432363
+      ],
+      "escort": [
+        2.0624907,
+        0,
+        7.6497073
+      ],
+      "input": [
+        0.74530417,
+        -0.6667245
+      ]
+    },
+    {
+      "frame": 108,
+      "elapsed": 1.7999999999999985,
+      "player": [
+        6.710473,
+        0.8,
+        6.0423684
+      ],
+      "escort": [
+        2.1077316,
+        0,
+        7.628417
+      ],
+      "input": [
+        0.74530417,
+        -0.66672456
+      ]
+    },
+    {
+      "frame": 109,
+      "elapsed": 1.816666666666665,
+      "player": [
+        6.818803,
+        0.8,
+        6.0415006
+      ],
+      "escort": [
+        2.1531188,
+        0,
+        7.607441
+      ],
+      "input": [
+        0.74530417,
+        -0.6667246
+      ]
+    },
+    {
+      "frame": 110,
+      "elapsed": 1.8333333333333317,
+      "player": [
+        6.9271326,
+        0.8,
+        6.0406327
+      ],
+      "escort": [
+        2.198647,
+        0,
+        7.5867724
+      ],
+      "input": [
+        0.7453041,
+        -0.66672456
+      ]
+    },
+    {
+      "frame": 111,
+      "elapsed": 1.8499999999999983,
+      "player": [
+        7.0354624,
+        0.8,
+        6.039765
+      ],
+      "escort": [
+        2.244311,
+        0,
+        7.566406
+      ],
+      "input": [
+        0.74530405,
+        -0.66672456
+      ]
+    },
+    {
+      "frame": 112,
+      "elapsed": 1.866666666666665,
+      "player": [
+        7.143792,
+        0.8,
+        6.038897
+      ],
+      "escort": [
+        2.290106,
+        0,
+        7.546335
+      ],
+      "input": [
+        0.7453041,
+        -0.6667247
+      ]
+    },
+    {
+      "frame": 113,
+      "elapsed": 1.8833333333333315,
+      "player": [
+        7.252122,
+        0.8,
+        6.038029
+      ],
+      "escort": [
+        2.3360271,
+        0,
+        7.526555
+      ],
+      "input": [
+        0.74530417,
+        -0.66672474
+      ]
+    },
+    {
+      "frame": 114,
+      "elapsed": 1.8999999999999981,
+      "player": [
+        7.3604517,
+        0.8,
+        6.0371614
+      ],
+      "escort": [
+        2.3820698,
+        0,
+        7.5070596
+      ],
+      "input": [
+        0.7453041,
+        -0.66672474
+      ]
+    },
+    {
+      "frame": 115,
+      "elapsed": 1.9166666666666647,
+      "player": [
+        7.4687815,
+        0.8,
+        6.0362935
+      ],
+      "escort": [
+        2.4282296,
+        0,
+        7.487843
+      ],
+      "input": [
+        0.74530405,
+        -0.66672474
+      ]
+    },
+    {
+      "frame": 116,
+      "elapsed": 1.9333333333333313,
+      "player": [
+        7.5771112,
+        0.8,
+        6.0354257
+      ],
+      "escort": [
+        2.4745023,
+        0,
+        7.4689
+      ],
+      "input": [
+        0.74530405,
+        -0.66672474
+      ]
+    },
+    {
+      "frame": 117,
+      "elapsed": 1.949999999999998,
+      "player": [
+        7.685441,
+        0.8,
+        6.034558
+      ],
+      "escort": [
+        2.520884,
+        0,
+        7.450226
+      ],
+      "input": [
+        0.7453039,
+        -0.66672474
+      ]
+    },
+    {
+      "frame": 118,
+      "elapsed": 1.9666666666666646,
+      "player": [
+        7.793771,
+        0.8,
+        6.03369
+      ],
+      "escort": [
+        2.567371,
+        0,
+        7.4318147
+      ],
+      "input": [
+        0.745304,
+        -0.6667248
+      ]
+    },
+    {
+      "frame": 119,
+      "elapsed": 1.9833333333333312,
+      "player": [
+        7.9021006,
+        0.8,
+        6.032822
+      ],
+      "escort": [
+        2.613959,
+        0,
+        7.4136615
+      ],
+      "input": [
+        0.7453039,
+        -0.66672486
+      ]
+    },
+    {
+      "frame": 120,
+      "elapsed": 1.9999999999999978,
+      "player": [
+        8.01043,
+        0.8,
+        6.0319543
+      ],
+      "escort": [
+        2.660645,
+        0,
+        7.3957615
+      ],
+      "input": [
+        0.74530387,
+        -0.6667248
+      ]
+    },
+    {
+      "frame": 121,
+      "elapsed": 2.0166666666666644,
+      "player": [
+        8.11876,
+        0.8,
+        6.0310864
+      ],
+      "escort": [
+        2.7074254,
+        0,
+        7.3781095
+      ],
+      "input": [
+        0.74530387,
+        -0.6667249
+      ]
+    },
+    {
+      "frame": 122,
+      "elapsed": 2.033333333333331,
+      "player": [
+        8.22709,
+        0.8,
+        6.0302186
+      ],
+      "escort": [
+        2.7542968,
+        0,
+        7.3607006
+      ],
+      "input": [
+        0.74530387,
+        -0.6667249
+      ]
+    },
+    {
+      "frame": 123,
+      "elapsed": 2.0499999999999976,
+      "player": [
+        8.33542,
+        0.8,
+        6.0293508
+      ],
+      "escort": [
+        2.8012562,
+        0,
+        7.3435307
+      ],
+      "input": [
+        0.74530375,
+        -0.6667249
+      ]
+    },
+    {
+      "frame": 124,
+      "elapsed": 2.066666666666664,
+      "player": [
+        8.443749,
+        0.8,
+        6.028483
+      ],
+      "escort": [
+        2.8483005,
+        0,
+        7.326595
+      ],
+      "input": [
+        0.7453038,
+        -0.66672504
+      ]
+    },
+    {
+      "frame": 125,
+      "elapsed": 2.083333333333331,
+      "player": [
+        8.552079,
+        0.8,
+        6.027615
+      ],
+      "escort": [
+        2.8954268,
+        0,
+        7.3098884
+      ],
+      "input": [
+        0.7453037,
+        -0.666725
+      ]
+    },
+    {
+      "frame": 126,
+      "elapsed": 2.0999999999999974,
+      "player": [
+        8.660409,
+        0.8,
+        6.026747
+      ],
+      "escort": [
+        2.9426324,
+        0,
+        7.293407
+      ],
+      "input": [
+        0.7453037,
+        -0.6667251
+      ]
+    },
+    {
+      "frame": 127,
+      "elapsed": 2.116666666666664,
+      "player": [
+        8.768739,
+        0.8,
+        6.0258794
+      ],
+      "escort": [
+        2.9899147,
+        0,
+        7.277147
+      ],
+      "input": [
+        0.7453037,
+        -0.66672516
+      ]
+    },
+    {
+      "frame": 128,
+      "elapsed": 2.1333333333333306,
+      "player": [
+        8.8770685,
+        0.8,
+        6.0250115
+      ],
+      "escort": [
+        3.0372708,
+        0,
+        7.261103
+      ],
+      "input": [
+        0.74530363,
+        -0.6667252
+      ]
+    },
+    {
+      "frame": 129,
+      "elapsed": 2.1499999999999972,
+      "player": [
+        8.985398,
+        0.8,
+        6.0241437
+      ],
+      "escort": [
+        3.0846984,
+        0,
+        7.2452717
+      ],
+      "input": [
+        0.7453036,
+        -0.6667252
+      ]
+    },
+    {
+      "frame": 130,
+      "elapsed": 2.166666666666664,
+      "player": [
+        9.093728,
+        0.8,
+        6.023276
+      ],
+      "escort": [
+        3.132195,
+        0,
+        7.2296486
+      ],
+      "input": [
+        0.74530345,
+        -0.6667252
+      ]
+    },
+    {
+      "frame": 131,
+      "elapsed": 2.1833333333333305,
+      "player": [
+        9.202058,
+        0.8,
+        6.0224085
+      ],
+      "escort": [
+        3.1797583,
+        0,
+        7.21423
+      ],
+      "input": [
+        0.74530345,
+        -0.66672534
+      ]
+    },
+    {
+      "frame": 132,
+      "elapsed": 2.199999999999997,
+      "player": [
+        9.310388,
+        0.8,
+        6.021541
+      ],
+      "escort": [
+        3.2273862,
+        0,
+        7.1990123
+      ],
+      "input": [
+        0.7453035,
+        -0.6667253
+      ]
+    },
+    {
+      "frame": 133,
+      "elapsed": 2.2166666666666637,
+      "player": [
+        9.418717,
+        0.8,
+        6.0206733
+      ],
+      "escort": [
+        3.2751186,
+        0,
+        7.1841254
+      ],
+      "input": [
+        0.7453036,
+        -0.6667252
+      ]
+    },
+    {
+      "frame": 134,
+      "elapsed": 2.2333333333333303,
+      "player": [
+        9.527047,
+        0.8,
+        6.0198054
+      ],
+      "escort": [
+        3.3229117,
+        0,
+        7.1694345
+      ],
+      "input": [
+        0.7453035,
+        -0.6667253
+      ]
+    },
+    {
+      "frame": 135,
+      "elapsed": 2.249999999999997,
+      "player": [
+        9.635377,
+        0.8,
+        6.018938
+      ],
+      "escort": [
+        3.3707173,
+        0,
+        7.1547847
+      ],
+      "input": [
+        0.7453034,
+        -0.66672534
+      ]
+    },
+    {
+      "frame": 136,
+      "elapsed": 2.2666666666666635,
+      "player": [
+        9.743707,
+        0.8,
+        6.0180707
+      ],
+      "escort": [
+        3.4186265,
+        0,
+        7.140477
+      ],
+      "input": [
+        0.7453035,
+        -0.6667253
+      ]
+    },
+    {
+      "frame": 137,
+      "elapsed": 2.28333333333333,
+      "player": [
+        9.852036,
+        0.8,
+        6.017203
+      ],
+      "escort": [
+        3.466591,
+        0,
+        7.126355
+      ],
+      "input": [
+        0.7453035,
+        -0.66672516
+      ]
+    },
+    {
+      "frame": 138,
+      "elapsed": 2.2999999999999967,
+      "player": [
+        9.960366,
+        0.8,
+        6.016335
+      ],
+      "escort": [
+        3.5145648,
+        0,
+        7.1122656
+      ],
+      "input": [
+        0.7453035,
+        -0.6667253
+      ]
+    },
+    {
+      "frame": 139,
+      "elapsed": 2.3166666666666633,
+      "player": [
+        10.068696,
+        0.8,
+        6.0154676
+      ],
+      "escort": [
+        3.562591,
+        0,
+        7.0983562
+      ],
+      "input": [
+        0.7453035,
+        -0.66672546
+      ]
+    },
+    {
+      "frame": 140,
+      "elapsed": 2.33333333333333,
+      "player": [
+        10.177026,
+        0.8,
+        6.0146003
+      ],
+      "escort": [
+        3.6106644,
+        0,
+        7.08461
+      ],
+      "input": [
+        0.7453035,
+        -0.6667253
+      ]
+    },
+    {
+      "frame": 141,
+      "elapsed": 2.3499999999999965,
+      "player": [
+        10.285356,
+        0.8,
+        6.0137324
+      ],
+      "escort": [
+        3.6587858,
+        0,
+        7.0710335
+      ],
+      "input": [
+        0.7453036,
+        -0.66672516
+      ]
+    },
+    {
+      "frame": 142,
+      "elapsed": 2.366666666666663,
+      "player": [
+        10.393685,
+        0.8,
+        6.0128646
+      ],
+      "escort": [
+        3.706954,
+        0,
+        7.057624
+      ],
+      "input": [
+        0.7453035,
+        -0.66672534
+      ]
+    },
+    {
+      "frame": 143,
+      "elapsed": 2.3833333333333298,
+      "player": [
+        10.502015,
+        0.8,
+        6.011997
+      ],
+      "escort": [
+        3.7551675,
+        0,
+        7.0443773
+      ],
+      "input": [
+        0.74530345,
+        -0.6667254
+      ]
+    },
+    {
+      "frame": 144,
+      "elapsed": 2.3999999999999964,
+      "player": [
+        10.610345,
+        0.8,
+        6.01113
+      ],
+      "escort": [
+        3.8034246,
+        0,
+        7.031291
+      ],
+      "input": [
+        0.7453035,
+        -0.66672534
+      ]
+    },
+    {
+      "frame": 145,
+      "elapsed": 2.416666666666663,
+      "player": [
+        10.718675,
+        0.8,
+        6.010262
+      ],
+      "escort": [
+        3.8517241,
+        0,
+        7.0183625
+      ],
+      "input": [
+        0.74530363,
+        -0.66672516
+      ]
+    },
+    {
+      "frame": 146,
+      "elapsed": 2.4333333333333296,
+      "player": [
+        10.827004,
+        0.8,
+        6.009394
+      ],
+      "escort": [
+        3.900065,
+        0,
+        7.0055885
+      ],
+      "input": [
+        0.7453035,
+        -0.66672534
+      ]
+    },
+    {
+      "frame": 147,
+      "elapsed": 2.449999999999996,
+      "player": [
+        10.935334,
+        0.8,
+        6.008527
+      ],
+      "escort": [
+        3.9484456,
+        0,
+        6.9929667
+      ],
+      "input": [
+        0.74530333,
+        -0.6667254
+      ]
+    },
+    {
+      "frame": 148,
+      "elapsed": 2.466666666666663,
+      "player": [
+        11.043664,
+        0.8,
+        6.0076594
+      ],
+      "escort": [
+        3.9968648,
+        0,
+        6.9804935
+      ],
+      "input": [
+        0.7453036,
+        -0.6667254
+      ]
+    },
+    {
+      "frame": 149,
+      "elapsed": 2.4833333333333294,
+      "player": [
+        11.151994,
+        0.8,
+        6.0067916
+      ],
+      "escort": [
+        4.0453215,
+        0,
+        6.9681673
+      ],
+      "input": [
+        0.74530375,
+        -0.6667252
+      ]
+    },
+    {
+      "frame": 150,
+      "elapsed": 2.499999999999996,
+      "player": [
+        11.260324,
+        0.8,
+        6.0059237
+      ],
+      "escort": [
+        4.093815,
+        0,
+        6.955985
+      ],
+      "input": [
+        0.7453035,
+        -0.66672534
+      ]
+    },
+    {
+      "frame": 151,
+      "elapsed": 2.5166666666666626,
+      "player": [
+        11.368653,
+        0.8,
+        6.0050564
+      ],
+      "escort": [
+        4.1423435,
+        0,
+        6.943944
+      ],
+      "input": [
+        0.7453033,
+        -0.6667256
+      ]
+    },
+    {
+      "frame": 152,
+      "elapsed": 2.533333333333329,
+      "player": [
+        11.476983,
+        0.8,
+        6.004189
+      ],
+      "escort": [
+        4.190906,
+        0,
+        6.932042
+      ],
+      "input": [
+        0.74530345,
+        -0.6667253
+      ]
+    },
+    {
+      "frame": 153,
+      "elapsed": 2.549999999999996,
+      "player": [
+        11.578551,
+        0.8,
+        6.0033755
+      ],
+      "escort": [
+        4.2395196,
+        0,
+        6.92035
+      ],
+      "input": [
+        0.6496983,
+        -0.58119935
+      ]
+    },
+    {
+      "frame": 154,
+      "elapsed": 2.5666666666666624,
+      "player": [
+        11.667725,
+        0.8,
+        6.002661
+      ],
+      "escort": [
+        4.288164,
+        0,
+        6.9087873
+      ],
+      "input": [
+        0.52352893,
+        -0.4683323
+      ]
+    },
+    {
+      "frame": 155,
+      "elapsed": 2.583333333333329,
+      "player": [
+        11.7427,
+        0.8,
+        6.002061
+      ],
+      "escort": [
+        4.3368354,
+        0,
+        6.897336
+      ],
+      "input": [
+        0.41275662,
+        -0.36923906
+      ]
+    },
+    {
+      "frame": 156,
+      "elapsed": 2.5999999999999956,
+      "player": [
+        11.803799,
+        0.8,
+        6.0015717
+      ],
+      "escort": [
+        4.3855286,
+        0,
+        6.8859787
+      ],
+      "input": [
+        0.31962195,
+        -0.28592336
+      ]
+    },
+    {
+      "frame": 157,
+      "elapsed": 2.6166666666666623,
+      "player": [
+        11.852406,
+        0.8,
+        6.0011826
+      ],
+      "escort": [
+        4.434239,
+        0,
+        6.8746963
+      ],
+      "input": [
+        0.24372403,
+        -0.21802726
+      ]
+    },
+    {
+      "frame": 158,
+      "elapsed": 2.633333333333329,
+      "player": [
+        11.877361,
+        0.8,
+        6.0009828
+      ],
+      "escort": [
+        4.4829493,
+        0,
+        6.863414
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 159,
+      "elapsed": 2.6499999999999955,
+      "player": [
+        11.890174,
+        0.8,
+        6.0008802
+      ],
+      "escort": [
+        4.531648,
+        0,
+        6.852082
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 160,
+      "elapsed": 2.666666666666662,
+      "player": [
+        11.896752,
+        0.8,
+        6.000828
+      ],
+      "escort": [
+        4.580347,
+        0,
+        6.8407497
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 161,
+      "elapsed": 2.6833333333333287,
+      "player": [
+        11.900129,
+        0.8,
+        6.0008006
+      ],
+      "escort": [
+        4.629046,
+        0,
+        6.8294177
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 162,
+      "elapsed": 2.6999999999999953,
+      "player": [
+        11.904491,
+        0.8,
+        5.948139
+      ],
+      "escort": [
+        4.677745,
+        0,
+        6.818085
+      ],
+      "input": [
+        0.7087248,
+        0.705485
+      ]
+    },
+    {
+      "frame": 163,
+      "elapsed": 2.716666666666662,
+      "player": [
+        11.909312,
+        0.8,
+        5.868452
+      ],
+      "escort": [
+        4.725856,
+        0,
+        6.8044715
+      ],
+      "input": [
+        0.7080983,
+        0.7061138
+      ]
+    },
+    {
+      "frame": 164,
+      "elapsed": 2.7333333333333285,
+      "player": [
+        11.914343,
+        0.8,
+        5.774888
+      ],
+      "escort": [
+        4.773378,
+        0,
+        6.788926
+      ],
+      "input": [
+        0.7077536,
+        0.70645934
+      ]
+    },
+    {
+      "frame": 165,
+      "elapsed": 2.749999999999995,
+      "player": [
+        11.919467,
+        0.8,
+        5.6741986
+      ],
+      "escort": [
+        4.820352,
+        0,
+        6.771796
+      ],
+      "input": [
+        0.7075593,
+        0.7066541
+      ]
+    },
+    {
+      "frame": 166,
+      "elapsed": 2.7666666666666617,
+      "player": [
+        11.92463,
+        0.8,
+        5.569851
+      ],
+      "escort": [
+        4.866832,
+        0,
+        6.7533674
+      ],
+      "input": [
+        0.7074477,
+        0.70676565
+      ]
+    },
+    {
+      "frame": 167,
+      "elapsed": 2.7833333333333283,
+      "player": [
+        11.929809,
+        0.8,
+        5.4636245
+      ],
+      "escort": [
+        4.912868,
+        0,
+        6.733856
+      ],
+      "input": [
+        0.7073831,
+        0.7068303
+      ]
+    },
+    {
+      "frame": 168,
+      "elapsed": 2.799999999999995,
+      "player": [
+        11.934993,
+        0.8,
+        5.3564334
+      ],
+      "escort": [
+        4.9585013,
+        0,
+        6.7134204
+      ],
+      "input": [
+        0.7073453,
+        0.7068681
+      ]
+    },
+    {
+      "frame": 169,
+      "elapsed": 2.8166666666666615,
+      "player": [
+        11.940178,
+        0.8,
+        5.248747
+      ],
+      "escort": [
+        5.0037613,
+        0,
+        6.6921716
+      ],
+      "input": [
+        0.7073227,
+        0.7068908
+      ]
+    },
+    {
+      "frame": 170,
+      "elapsed": 2.833333333333328,
+      "player": [
+        11.945362,
+        0.8,
+        5.140806
+      ],
+      "escort": [
+        5.048669,
+        0,
+        6.670187
+      ],
+      "input": [
+        0.707309,
+        0.70690453
+      ]
+    },
+    {
+      "frame": 171,
+      "elapsed": 2.8499999999999948,
+      "player": [
+        11.950545,
+        0.8,
+        5.032735
+      ],
+      "escort": [
+        5.0932393,
+        0,
+        6.6475267
+      ],
+      "input": [
+        0.7073008,
+        0.70691264
+      ]
+    },
+    {
+      "frame": 172,
+      "elapsed": 2.8666666666666614,
+      "player": [
+        11.955728,
+        0.8,
+        4.9245963
+      ],
+      "escort": [
+        5.137542,
+        0,
+        6.6243477
+      ],
+      "input": [
+        0.7072958,
+        0.7069175
+      ]
+    },
+    {
+      "frame": 173,
+      "elapsed": 2.883333333333328,
+      "player": [
+        11.96091,
+        0.8,
+        4.8164234
+      ],
+      "escort": [
+        5.181508,
+        0,
+        6.600537
+      ],
+      "input": [
+        0.707293,
+        0.70692056
+      ]
+    },
+    {
+      "frame": 174,
+      "elapsed": 2.8999999999999946,
+      "player": [
+        11.966091,
+        0.8,
+        4.708233
+      ],
+      "escort": [
+        5.2252293,
+        0,
+        6.5762787
+      ],
+      "input": [
+        0.70729077,
+        0.7069228
+      ]
+    },
+    {
+      "frame": 175,
+      "elapsed": 2.916666666666661,
+      "player": [
+        11.971272,
+        0.8,
+        4.6000333
+      ],
+      "escort": [
+        5.268882,
+        0,
+        6.5518975
+      ],
+      "input": [
+        0.70728946,
+        0.7069239
+      ]
+    },
+    {
+      "frame": 176,
+      "elapsed": 2.933333333333328,
+      "player": [
+        11.976454,
+        0.8,
+        4.491829
+      ],
+      "escort": [
+        5.312479,
+        0,
+        6.5274177
+      ],
+      "input": [
+        0.70728844,
+        0.7069251
+      ]
+    },
+    {
+      "frame": 177,
+      "elapsed": 2.9499999999999944,
+      "player": [
+        11.981182,
+        0.8,
+        4.393065
+      ],
+      "escort": [
+        5.3560314,
+        0,
+        6.502857
+      ],
+      "input": [
+        0.5804378,
+        0.5801416
+      ]
+    },
+    {
+      "frame": 178,
+      "elapsed": 2.966666666666661,
+      "player": [
+        11.985263,
+        0.8,
+        4.307825
+      ],
+      "escort": [
+        5.3995466,
+        0,
+        6.4782314
+      ],
+      "input": [
+        0.46388033,
+        0.46364364
+      ]
+    },
+    {
+      "frame": 179,
+      "elapsed": 2.9833333333333276,
+      "player": [
+        11.988653,
+        0.8,
+        4.2370176
+      ],
+      "escort": [
+        5.4430313,
+        0,
+        6.4535522
+      ],
+      "input": [
+        0.36328357,
+        0.36309806
+      ]
+    },
+    {
+      "frame": 180,
+      "elapsed": 2.9999999999999942,
+      "player": [
+        11.99139,
+        0.8,
+        4.1798406
+      ],
+      "escort": [
+        5.4864902,
+        0,
+        6.428828
+      ],
+      "input": [
+        0.2797188,
+        0.2795769
+      ]
+    },
+    {
+      "frame": 181,
+      "elapsed": 3.016666666666661,
+      "player": [
+        11.993552,
+        0.8,
+        4.134685
+      ],
+      "escort": [
+        5.529949,
+        0,
+        6.4041033
+      ],
+      "input": [
+        0.21224093,
+        0.21213278
+      ]
+    },
+    {
+      "frame": 182,
+      "elapsed": 3.0333333333333274,
+      "player": [
+        11.994662,
+        0.8,
+        4.111501
+      ],
+      "escort": [
+        5.573369,
+        0,
+        6.3793097
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 183,
+      "elapsed": 3.049999999999994,
+      "player": [
+        11.995233,
+        0.8,
+        4.0995984
+      ],
+      "escort": [
+        5.616789,
+        0,
+        6.354516
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 184,
+      "elapsed": 3.0666666666666607,
+      "player": [
+        11.995525,
+        0.8,
+        4.0934873
+      ],
+      "escort": [
+        5.6602087,
+        0,
+        6.3297224
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 185,
+      "elapsed": 3.0833333333333273,
+      "player": [
+        11.995676,
+        0.8,
+        4.0903497
+      ],
+      "escort": [
+        5.7036285,
+        0,
+        6.304929
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 186,
+      "elapsed": 3.099999999999994,
+      "player": [
+        11.995811,
+        0.8,
+        4.0360255
+      ],
+      "escort": [
+        5.7470484,
+        0,
+        6.280135
+      ],
+      "input": [
+        0.6734948,
+        0.739192
+      ]
+    },
+    {
+      "frame": 187,
+      "elapsed": 3.1166666666666605,
+      "player": [
+        11.995938,
+        0.8,
+        3.9554214
+      ],
+      "escort": [
+        5.7912784,
+        0,
+        6.256818
+      ],
+      "input": [
+        0.67348033,
+        0.7392051
+      ]
+    },
+    {
+      "frame": 188,
+      "elapsed": 3.133333333333327,
+      "player": [
+        11.99606,
+        0.8,
+        3.8613248
+      ],
+      "escort": [
+        5.8355083,
+        0,
+        6.2335005
+      ],
+      "input": [
+        0.6734727,
+        0.7392121
+      ]
+    },
+    {
+      "frame": 189,
+      "elapsed": 3.1499999999999937,
+      "player": [
+        11.99618,
+        0.8,
+        3.7603009
+      ],
+      "escort": [
+        5.8797383,
+        0,
+        6.210183
+      ],
+      "input": [
+        0.6734686,
+        0.73921585
+      ]
+    },
+    {
+      "frame": 190,
+      "elapsed": 3.1666666666666603,
+      "player": [
+        11.996298,
+        0.8,
+        3.6557202
+      ],
+      "escort": [
+        5.923969,
+        0,
+        6.1868663
+      ],
+      "input": [
+        0.6734664,
+        0.7392178
+      ]
+    },
+    {
+      "frame": 191,
+      "elapsed": 3.183333333333327,
+      "player": [
+        11.996415,
+        0.8,
+        3.5493138
+      ],
+      "escort": [
+        5.9681993,
+        0,
+        6.1635494
+      ],
+      "input": [
+        0.67346513,
+        0.739219
+      ]
+    },
+    {
+      "frame": 192,
+      "elapsed": 3.1999999999999935,
+      "player": [
+        11.9965315,
+        0.8,
+        3.4419696
+      ],
+      "escort": [
+        6.0124297,
+        0,
+        6.1402326
+      ],
+      "input": [
+        0.67346436,
+        0.73921967
+      ]
+    },
+    {
+      "frame": 193,
+      "elapsed": 3.21666666666666,
+      "player": [
+        11.996648,
+        0.8,
+        3.334144
+      ],
+      "escort": [
+        6.0566597,
+        0,
+        6.116915
+      ],
+      "input": [
+        0.67346406,
+        0.73921996
+      ]
+    },
+    {
+      "frame": 194,
+      "elapsed": 3.2333333333333267,
+      "player": [
+        11.996764,
+        0.8,
+        3.2260716
+      ],
+      "escort": [
+        6.1008897,
+        0,
+        6.093598
+      ],
+      "input": [
+        0.6734638,
+        0.73922014
+      ]
+    },
+    {
+      "frame": 195,
+      "elapsed": 3.2499999999999933,
+      "player": [
+        11.996881,
+        0.8,
+        3.1178722
+      ],
+      "escort": [
+        6.1451197,
+        0,
+        6.0702806
+      ],
+      "input": [
+        0.6734637,
+        0.7392203
+      ]
+    },
+    {
+      "frame": 196,
+      "elapsed": 3.26666666666666,
+      "player": [
+        11.996997,
+        0.8,
+        3.0096078
+      ],
+      "escort": [
+        6.1893497,
+        0,
+        6.046963
+      ],
+      "input": [
+        0.67346346,
+        0.7392205
+      ]
+    },
+    {
+      "frame": 197,
+      "elapsed": 3.2833333333333266,
+      "player": [
+        11.997112,
+        0.8009341,
+        2.9013097
+      ],
+      "escort": [
+        6.2335796,
+        0,
+        6.023646
+      ],
+      "input": [
+        0.6734633,
+        0.7392206
+      ]
+    },
+    {
+      "frame": 198,
+      "elapsed": 3.299999999999993,
+      "player": [
+        11.997228,
+        0.8009341,
+        2.7929945
+      ],
+      "escort": [
+        6.2778096,
+        0,
+        6.0003285
+      ],
+      "input": [
+        0.67346346,
+        0.73922056
+      ]
+    },
+    {
+      "frame": 199,
+      "elapsed": 3.3166666666666598,
+      "player": [
+        11.997343,
+        0.8009341,
+        2.6846704
+      ],
+      "escort": [
+        6.3220396,
+        0,
+        5.977011
+      ],
+      "input": [
+        0.6734636,
+        0.73922044
+      ]
+    },
+    {
+      "frame": 200,
+      "elapsed": 3.3333333333333264,
+      "player": [
+        11.997458,
+        0.8009341,
+        2.5763419
+      ],
+      "escort": [
+        6.3662696,
+        0,
+        5.953694
+      ],
+      "input": [
+        0.67346364,
+        0.7392203
+      ]
+    },
+    {
+      "frame": 201,
+      "elapsed": 3.349999999999993,
+      "player": [
+        11.997574,
+        0.8009341,
+        2.4680111
+      ],
+      "escort": [
+        6.4104996,
+        0,
+        5.9303765
+      ],
+      "input": [
+        0.67346376,
+        0.7392202
+      ]
+    },
+    {
+      "frame": 202,
+      "elapsed": 3.3666666666666596,
+      "player": [
+        11.997689,
+        0.8009341,
+        2.3596792
+      ],
+      "escort": [
+        6.45473,
+        0,
+        5.907059
+      ],
+      "input": [
+        0.673464,
+        0.7392201
+      ]
+    },
+    {
+      "frame": 203,
+      "elapsed": 3.383333333333326,
+      "player": [
+        11.997806,
+        0.8009341,
+        2.2513466
+      ],
+      "escort": [
+        6.49896,
+        0,
+        5.883742
+      ],
+      "input": [
+        0.6734642,
+        0.7392199
+      ]
+    },
+    {
+      "frame": 204,
+      "elapsed": 3.399999999999993,
+      "player": [
+        11.997922,
+        0.8009341,
+        2.1430137
+      ],
+      "escort": [
+        6.5431905,
+        0,
+        5.860425
+      ],
+      "input": [
+        0.67346394,
+        0.73922
+      ]
+    },
+    {
+      "frame": 205,
+      "elapsed": 3.4166666666666594,
+      "player": [
+        11.998038,
+        0.8009341,
+        2.0346806
+      ],
+      "escort": [
+        6.5874205,
+        0,
+        5.8371077
+      ],
+      "input": [
+        0.6734638,
+        0.7392202
+      ]
+    },
+    {
+      "frame": 206,
+      "elapsed": 3.433333333333326,
+      "player": [
+        11.998154,
+        0.8009341,
+        1.9263474
+      ],
+      "escort": [
+        6.631651,
+        0,
+        5.813791
+      ],
+      "input": [
+        0.6734636,
+        0.7392204
+      ]
+    },
+    {
+      "frame": 207,
+      "elapsed": 3.4499999999999926,
+      "player": [
+        11.998269,
+        0.8009341,
+        1.8180141
+      ],
+      "escort": [
+        6.675881,
+        0,
+        5.790473
+      ],
+      "input": [
+        0.6734638,
+        0.7392202
+      ]
+    },
+    {
+      "frame": 208,
+      "elapsed": 3.4666666666666592,
+      "player": [
+        11.998385,
+        0.8009341,
+        1.7096809
+      ],
+      "escort": [
+        6.7201114,
+        0,
+        5.767156
+      ],
+      "input": [
+        0.67346394,
+        0.73922
+      ]
+    },
+    {
+      "frame": 209,
+      "elapsed": 3.483333333333326,
+      "player": [
+        11.998501,
+        0.8009341,
+        1.6013477
+      ],
+      "escort": [
+        6.7643414,
+        0,
+        5.743839
+      ],
+      "input": [
+        0.67346376,
+        0.73922014
+      ]
+    },
+    {
+      "frame": 210,
+      "elapsed": 3.4999999999999925,
+      "player": [
+        11.998617,
+        0.8009341,
+        1.4930145
+      ],
+      "escort": [
+        6.8085713,
+        0,
+        5.7205215
+      ],
+      "input": [
+        0.673464,
+        0.73922
+      ]
+    },
+    {
+      "frame": 211,
+      "elapsed": 3.516666666666659,
+      "player": [
+        11.998733,
+        0.8009341,
+        1.3846812
+      ],
+      "escort": [
+        6.8528013,
+        0,
+        5.697204
+      ],
+      "input": [
+        0.67346376,
+        0.73922026
+      ]
+    },
+    {
+      "frame": 212,
+      "elapsed": 3.5333333333333257,
+      "player": [
+        11.998849,
+        0.8009341,
+        1.276348
+      ],
+      "escort": [
+        6.8970313,
+        0,
+        5.673887
+      ],
+      "input": [
+        0.6734641,
+        0.73922
+      ]
+    },
+    {
+      "frame": 213,
+      "elapsed": 3.5499999999999923,
+      "player": [
+        11.998964,
+        0.8009341,
+        1.1680148
+      ],
+      "escort": [
+        6.9412613,
+        0,
+        5.6505694
+      ],
+      "input": [
+        0.67346376,
+        0.73922026
+      ]
+    },
+    {
+      "frame": 214,
+      "elapsed": 3.566666666666659,
+      "player": [
+        11.999081,
+        0.8009341,
+        1.0596815
+      ],
+      "escort": [
+        6.9854913,
+        0,
+        5.627252
+      ],
+      "input": [
+        0.6734641,
+        0.7392199
+      ]
+    },
+    {
+      "frame": 215,
+      "elapsed": 3.5833333333333255,
+      "player": [
+        11.999197,
+        0.8009341,
+        0.95134825
+      ],
+      "escort": [
+        7.0297213,
+        0,
+        5.603935
+      ],
+      "input": [
+        0.67346376,
+        0.73922026
+      ]
+    },
+    {
+      "frame": 216,
+      "elapsed": 3.599999999999992,
+      "player": [
+        11.999312,
+        0.8009341,
+        0.84301496
+      ],
+      "escort": [
+        7.0739512,
+        0,
+        5.5806174
+      ],
+      "input": [
+        0.6734632,
+        0.73922074
+      ]
+    },
+    {
+      "frame": 217,
+      "elapsed": 3.6166666666666587,
+      "player": [
+        11.999428,
+        0.8009341,
+        0.73468167
+      ],
+      "escort": [
+        7.118181,
+        0,
+        5.5573
+      ],
+      "input": [
+        0.6734637,
+        0.7392203
+      ]
+    },
+    {
+      "frame": 218,
+      "elapsed": 3.6333333333333253,
+      "player": [
+        11.999537,
+        0.8009341,
+        0.63208693
+      ],
+      "escort": [
+        7.162411,
+        0,
+        5.5339828
+      ],
+      "input": [
+        0.6001487,
+        0.65874577
+      ]
+    },
+    {
+      "frame": 219,
+      "elapsed": 3.649999999999992,
+      "player": [
+        11.999635,
+        0.8009341,
+        0.54145193
+      ],
+      "escort": [
+        7.206641,
+        0,
+        5.5106654
+      ],
+      "input": [
+        0.48499233,
+        0.53234553
+      ]
+    },
+    {
+      "frame": 220,
+      "elapsed": 3.6666666666666585,
+      "player": [
+        11.999717,
+        0.8009341,
+        0.46492
+      ],
+      "escort": [
+        7.250871,
+        0,
+        5.487348
+      ],
+      "input": [
+        0.3832595,
+        0.42068043
+      ]
+    },
+    {
+      "frame": 221,
+      "elapsed": 3.683333333333325,
+      "player": [
+        11.9997835,
+        0.8009341,
+        0.4023526
+      ],
+      "escort": [
+        7.295101,
+        0,
+        5.4640307
+      ],
+      "input": [
+        0.29735678,
+        0.32639065
+      ]
+    },
+    {
+      "frame": 222,
+      "elapsed": 3.6999999999999917,
+      "player": [
+        11.999837,
+        0.8009341,
+        0.35245168
+      ],
+      "escort": [
+        7.339331,
+        0,
+        5.4407134
+      ],
+      "input": [
+        0.22712877,
+        0.24930526
+      ]
+    },
+    {
+      "frame": 223,
+      "elapsed": 3.7166666666666583,
+      "player": [
+        11.999865,
+        0.8009341,
+        0.3268317
+      ],
+      "escort": [
+        7.383561,
+        0,
+        5.417396
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 224,
+      "elapsed": 3.733333333333325,
+      "player": [
+        11.999879,
+        0.8009341,
+        0.31367797
+      ],
+      "escort": [
+        7.427791,
+        0,
+        5.3940787
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 225,
+      "elapsed": 3.7499999999999916,
+      "player": [
+        11.9998865,
+        0.8009341,
+        0.3069246
+      ],
+      "escort": [
+        7.472021,
+        0,
+        5.3707614
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 226,
+      "elapsed": 3.766666666666658,
+      "player": [
+        11.99989,
+        0.8009341,
+        0.30345732
+      ],
+      "escort": [
+        7.516251,
+        0,
+        5.347444
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 227,
+      "elapsed": 3.7833333333333248,
+      "player": [
+        11.947249,
+        0.8009341,
+        0.29895386
+      ],
+      "escort": [
+        7.560481,
+        0,
+        5.3241267
+      ],
+      "input": [
+        -0.7042,
+        0.7100016
+      ]
+    },
+    {
+      "frame": 228,
+      "elapsed": 3.7999999999999914,
+      "player": [
+        11.867578,
+        0.8009341,
+        0.2939664
+      ],
+      "escort": [
+        7.604711,
+        0,
+        5.3008094
+      ],
+      "input": [
+        -0.70484716,
+        0.70935917
+      ]
+    },
+    {
+      "frame": 229,
+      "elapsed": 3.816666666666658,
+      "player": [
+        11.774026,
+        0.8009341,
+        0.28875688
+      ],
+      "escort": [
+        7.648941,
+        0,
+        5.277492
+      ],
+      "input": [
+        -0.70520276,
+        0.7090058
+      ]
+    },
+    {
+      "frame": 230,
+      "elapsed": 3.8333333333333246,
+      "player": [
+        11.673347,
+        0.8009341,
+        0.2834482
+      ],
+      "escort": [
+        7.693171,
+        0,
+        5.2541747
+      ],
+      "input": [
+        -0.70540303,
+        0.7088064
+      ]
+    },
+    {
+      "frame": 231,
+      "elapsed": 3.849999999999991,
+      "player": [
+        11.56901,
+        0.8009341,
+        0.27809712
+      ],
+      "escort": [
+        7.737401,
+        0,
+        5.2308574
+      ],
+      "input": [
+        -0.7055178,
+        0.70869225
+      ]
+    },
+    {
+      "frame": 232,
+      "elapsed": 3.866666666666658,
+      "player": [
+        11.462793,
+        0.8009341,
+        0.27272925
+      ],
+      "escort": [
+        7.781631,
+        0,
+        5.20754
+      ],
+      "input": [
+        -0.70558435,
+        0.70862585
+      ]
+    },
+    {
+      "frame": 233,
+      "elapsed": 3.8833333333333244,
+      "player": [
+        11.355612,
+        0.8009341,
+        0.26735565
+      ],
+      "escort": [
+        7.825861,
+        0,
+        5.1842227
+      ],
+      "input": [
+        -0.70562357,
+        0.70858693
+      ]
+    },
+    {
+      "frame": 234,
+      "elapsed": 3.899999999999991,
+      "player": [
+        11.247934,
+        0.8009341,
+        0.26198086
+      ],
+      "escort": [
+        7.870091,
+        0,
+        5.1609054
+      ],
+      "input": [
+        -0.7056468,
+        0.70856375
+      ]
+    },
+    {
+      "frame": 235,
+      "elapsed": 3.9166666666666576,
+      "player": [
+        11.140003,
+        0.8009341,
+        0.2566065
+      ],
+      "escort": [
+        7.914321,
+        0,
+        5.137588
+      ],
+      "input": [
+        -0.70566076,
+        0.70854986
+      ]
+    },
+    {
+      "frame": 236,
+      "elapsed": 3.9333333333333242,
+      "player": [
+        11.031941,
+        0.8009341,
+        0.25123295
+      ],
+      "escort": [
+        7.958551,
+        0,
+        5.1142707
+      ],
+      "input": [
+        -0.7056693,
+        0.70854133
+      ]
+    },
+    {
+      "frame": 237,
+      "elapsed": 3.949999999999991,
+      "player": [
+        10.923812,
+        0.8009341,
+        0.24586025
+      ],
+      "escort": [
+        8.002781,
+        0,
+        5.0909534
+      ],
+      "input": [
+        -0.7056745,
+        0.708536
+      ]
+    },
+    {
+      "frame": 238,
+      "elapsed": 3.9666666666666575,
+      "player": [
+        10.815648,
+        0.8009341,
+        0.24048822
+      ],
+      "escort": [
+        8.047011,
+        0,
+        5.067636
+      ],
+      "input": [
+        -0.7056779,
+        0.7085327
+      ]
+    },
+    {
+      "frame": 239,
+      "elapsed": 3.983333333333324,
+      "player": [
+        10.707467,
+        0.8009341,
+        0.2351167
+      ],
+      "escort": [
+        8.091242,
+        0,
+        5.0443187
+      ],
+      "input": [
+        -0.7056802,
+        0.7085305
+      ]
+    },
+    {
+      "frame": 240,
+      "elapsed": 3.9999999999999907,
+      "player": [
+        10.599277,
+        0.8009341,
+        0.22974557
+      ],
+      "escort": [
+        8.135472,
+        0,
+        5.0210013
+      ],
+      "input": [
+        -0.7056816,
+        0.70852906
+      ]
+    },
+    {
+      "frame": 241,
+      "elapsed": 4.016666666666658,
+      "player": [
+        10.491081,
+        0.8009341,
+        0.22437468
+      ],
+      "escort": [
+        8.179703,
+        0,
+        4.997684
+      ],
+      "input": [
+        -0.7056826,
+        0.70852804
+      ]
+    },
+    {
+      "frame": 242,
+      "elapsed": 4.033333333333324,
+      "player": [
+        10.392388,
+        0.8009341,
+        0.21947573
+      ],
+      "escort": [
+        8.223933,
+        0,
+        4.9743667
+      ],
+      "input": [
+        -0.5782908,
+        0.5806213
+      ]
+    },
+    {
+      "frame": 243,
+      "elapsed": 4.049999999999991,
+      "player": [
+        10.307244,
+        0.8009341,
+        0.21524948
+      ],
+      "escort": [
+        8.268164,
+        0,
+        4.9510493
+      ],
+      "input": [
+        -0.46207175,
+        0.46393305
+      ]
+    },
+    {
+      "frame": 244,
+      "elapsed": 4.0666666666666575,
+      "player": [
+        10.236537,
+        0.8009341,
+        0.2117399
+      ],
+      "escort": [
+        8.312394,
+        0,
+        4.927732
+      ],
+      "input": [
+        -0.3618074,
+        0.3632643
+      ]
+    },
+    {
+      "frame": 245,
+      "elapsed": 4.083333333333324,
+      "player": [
+        10.179454,
+        0.8009341,
+        0.2089066
+      ],
+      "escort": [
+        8.356625,
+        0,
+        4.9044147
+      ],
+      "input": [
+        -0.27854344,
+        0.27966467
+      ]
+    },
+    {
+      "frame": 246,
+      "elapsed": 4.099999999999991,
+      "player": [
+        10.13438,
+        0.8009341,
+        0.20666945
+      ],
+      "escort": [
+        8.400855,
+        0,
+        4.8810973
+      ],
+      "input": [
+        -0.2113231,
+        0.21217346
+      ]
+    },
+    {
+      "frame": 247,
+      "elapsed": 4.116666666666657,
+      "player": [
+        10.1112385,
+        0.8009341,
+        0.20552085
+      ],
+      "escort": [
+        8.445086,
+        0,
+        4.85778
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 248,
+      "elapsed": 4.133333333333324,
+      "player": [
+        10.099358,
+        0.8009341,
+        0.20493114
+      ],
+      "escort": [
+        8.489316,
+        0,
+        4.8344626
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 249,
+      "elapsed": 4.149999999999991,
+      "player": [
+        10.093258,
+        0.8009341,
+        0.20462838
+      ],
+      "escort": [
+        8.533546,
+        0,
+        4.8111453
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 250,
+      "elapsed": 4.166666666666657,
+      "player": [
+        10.090126,
+        0.8009341,
+        0.20447293
+      ],
+      "escort": [
+        8.577777,
+        0,
+        4.787828
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 251,
+      "elapsed": 4.183333333333324,
+      "player": [
+        10.082584,
+        0.8009341,
+        0.2567712
+      ],
+      "escort": [
+        8.622007,
+        0,
+        4.7645106
+      ],
+      "input": [
+        -0.75169283,
+        -0.6595135
+      ]
+    },
+    {
+      "frame": 252,
+      "elapsed": 4.19999999999999,
+      "player": [
+        10.072891,
+        0.8009341,
+        0.33601275
+      ],
+      "escort": [
+        8.666238,
+        0,
+        4.7411933
+      ],
+      "input": [
+        -0.7502743,
+        -0.66112673
+      ]
+    },
+    {
+      "frame": 253,
+      "elapsed": 4.216666666666657,
+      "player": [
+        10.062162,
+        0.8009341,
+        0.4290951
+      ],
+      "escort": [
+        8.710468,
+        0,
+        4.717876
+      ],
+      "input": [
+        -0.7493999,
+        -0.6621176
+      ]
+    },
+    {
+      "frame": 254,
+      "elapsed": 4.233333333333324,
+      "player": [
+        10.051192,
+        0.8009341,
+        0.52704215
+      ],
+      "escort": [
+        8.754699,
+        0,
+        4.6945586
+      ],
+      "input": [
+        -0.71671444,
+        -0.6343674
+      ]
+    },
+    {
+      "frame": 255,
+      "elapsed": 4.24999999999999,
+      "player": [
+        10.041062,
+        0.8009341,
+        0.61888164
+      ],
+      "escort": [
+        8.798929,
+        0,
+        4.6712413
+      ],
+      "input": [
+        -0.59337515,
+        -0.5258746
+      ]
+    },
+    {
+      "frame": 256,
+      "elapsed": 4.266666666666657,
+      "player": [
+        10.032254,
+        0.8009341,
+        0.6995169
+      ],
+      "escort": [
+        8.84316,
+        0,
+        4.647924
+      ],
+      "input": [
+        -0.47791934,
+        -0.42397198
+      ]
+    },
+    {
+      "frame": 257,
+      "elapsed": 4.2833333333333234,
+      "player": [
+        10.024899,
+        0.8009341,
+        0.7673154
+      ],
+      "escort": [
+        8.88739,
+        0,
+        4.6246066
+      ],
+      "input": [
+        -0.37665498,
+        -0.3344049
+      ]
+    },
+    {
+      "frame": 258,
+      "elapsed": 4.29999999999999,
+      "player": [
+        10.018934,
+        0.8009341,
+        0.82256687
+      ],
+      "escort": [
+        8.931621,
+        0,
+        4.6012893
+      ],
+      "input": [
+        -0.29157338,
+        -0.25904018
+      ]
+    },
+    {
+      "frame": 259,
+      "elapsed": 4.316666666666657,
+      "player": [
+        10.014209,
+        0.8009341,
+        0.8665224
+      ],
+      "escort": [
+        8.975851,
+        0,
+        4.577972
+      ],
+      "input": [
+        -0.22227442,
+        -0.19758888
+      ]
+    },
+    {
+      "frame": 260,
+      "elapsed": 4.333333333333323,
+      "player": [
+        10.011783,
+        0.8009341,
+        0.8890899
+      ],
+      "escort": [
+        9.0200815,
+        0,
+        4.5546546
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 261,
+      "elapsed": 4.34999999999999,
+      "player": [
+        10.010537,
+        0.8009341,
+        0.9006764
+      ],
+      "escort": [
+        9.064312,
+        0,
+        4.5313373
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 262,
+      "elapsed": 4.3666666666666565,
+      "player": [
+        10.009897,
+        0.8009341,
+        0.90662515
+      ],
+      "escort": [
+        9.108542,
+        0,
+        4.50802
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 263,
+      "elapsed": 4.383333333333323,
+      "player": [
+        10.009569,
+        0.8009341,
+        0.90967935
+      ],
+      "escort": [
+        9.152773,
+        0,
+        4.4847026
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 264,
+      "elapsed": 4.39999999999999,
+      "player": [
+        9.956822,
+        0.8009341,
+        0.91501766
+      ],
+      "escort": [
+        9.197003,
+        0,
+        4.4613853
+      ],
+      "input": [
+        -0.7861572,
+        0.6180266
+      ]
+    },
+    {
+      "frame": 265,
+      "elapsed": 4.416666666666656,
+      "player": [
+        9.877158,
+        0.8009341,
+        0.9214612
+      ],
+      "escort": [
+        9.241234,
+        0,
+        4.438068
+      ],
+      "input": [
+        -0.78536373,
+        0.6190346
+      ]
+    },
+    {
+      "frame": 266,
+      "elapsed": 4.433333333333323,
+      "player": [
+        9.783671,
+        0.8009341,
+        0.92843354
+      ],
+      "escort": [
+        9.285464,
+        0,
+        4.4147506
+      ],
+      "input": [
+        -0.7849079,
+        0.6196126
+      ]
+    },
+    {
+      "frame": 267,
+      "elapsed": 4.4499999999999895,
+      "player": [
+        9.683086,
+        0.8009341,
+        0.93565416
+      ],
+      "escort": [
+        9.329695,
+        0,
+        4.3914332
+      ],
+      "input": [
+        -0.7846343,
+        0.6199587
+      ]
+    },
+    {
+      "frame": 268,
+      "elapsed": 4.466666666666656,
+      "player": [
+        9.578856,
+        0.8009341,
+        0.94298786
+      ],
+      "escort": [
+        9.373925,
+        0,
+        4.368116
+      ],
+      "input": [
+        -0.78446466,
+        0.6201735
+      ]
+    },
+    {
+      "frame": 269,
+      "elapsed": 4.483333333333323,
+      "player": [
+        9.472754,
+        0.8009341,
+        0.9503704
+      ],
+      "escort": [
+        9.418156,
+        0,
+        4.3447986
+      ],
+      "input": [
+        -0.78435594,
+        0.620311
+      ]
+    },
+    {
+      "frame": 270,
+      "elapsed": 4.499999999999989,
+      "player": [
+        9.365689,
+        0.8009341,
+        0.95777184
+      ],
+      "escort": [
+        9.462386,
+        0,
+        4.321481
+      ],
+      "input": [
+        -0.78428394,
+        0.6204021
+      ]
+    },
+    {
+      "frame": 271,
+      "elapsed": 4.516666666666656,
+      "player": [
+        9.258131,
+        0.8009341,
+        0.96517885
+      ],
+      "escort": [
+        9.506617,
+        0,
+        4.298164
+      ],
+      "input": [
+        -0.78423405,
+        0.620465
+      ]
+    },
+    {
+      "frame": 272,
+      "elapsed": 4.533333333333323,
+      "player": [
+        9.158267,
+        0.8009341,
+        0.97204095
+      ],
+      "escort": [
+        9.550847,
+        0,
+        4.274847
+      ],
+      "input": [
+        -0.6656828,
+        0.5267339
+      ]
+    },
+    {
+      "frame": 273,
+      "elapsed": 4.549999999999989,
+      "player": [
+        9.071127,
+        0.8009341,
+        0.9780204
+      ],
+      "escort": [
+        9.5950775,
+        0,
+        4.2515297
+      ],
+      "input": [
+        -0.53483397,
+        0.4232368
+      ]
+    },
+    {
+      "frame": 274,
+      "elapsed": 4.566666666666656,
+      "player": [
+        8.998175,
+        0.8009341,
+        0.98302144
+      ],
+      "escort": [
+        9.639308,
+        0,
+        4.2282124
+      ],
+      "input": [
+        -0.42066622,
+        0.33291635
+      ]
+    },
+    {
+      "frame": 275,
+      "elapsed": 4.583333333333322,
+      "player": [
+        8.938916,
+        0.8009341,
+        0.9870807
+      ],
+      "escort": [
+        9.6835375,
+        0,
+        4.2048945
+      ],
+      "input": [
+        -0.32509232,
+        0.25729537
+      ]
+    },
+    {
+      "frame": 276,
+      "elapsed": 4.599999999999989,
+      "player": [
+        8.891894,
+        0.8009341,
+        0.9902998
+      ],
+      "escort": [
+        9.727768,
+        0,
+        4.1815777
+      ],
+      "input": [
+        -0.24746187,
+        0.19586545
+      ]
+    },
+    {
+      "frame": 277,
+      "elapsed": 4.616666666666656,
+      "player": [
+        8.867753,
+        0.8009341,
+        0.9919526
+      ],
+      "escort": [
+        9.771997,
+        0,
+        4.15826
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 278,
+      "elapsed": 4.633333333333322,
+      "player": [
+        8.855358,
+        0.8009341,
+        0.99280113
+      ],
+      "escort": [
+        9.816227,
+        0,
+        4.134942
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 279,
+      "elapsed": 4.649999999999989,
+      "player": [
+        8.848994,
+        0.8009341,
+        0.9932368
+      ],
+      "escort": [
+        9.860456,
+        0,
+        4.1116242
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 280,
+      "elapsed": 4.666666666666655,
+      "player": [
+        8.845727,
+        0.8009341,
+        0.9934605
+      ],
+      "escort": [
+        9.904686,
+        0,
+        4.0883064
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 281,
+      "elapsed": 4.683333333333322,
+      "player": [
+        8.844049,
+        0.8009341,
+        0.99357533
+      ],
+      "escort": [
+        9.948916,
+        0,
+        4.064989
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 282,
+      "elapsed": 4.699999999999989,
+      "player": [
+        8.843188,
+        0.8009341,
+        0.9936343
+      ],
+      "escort": [
+        9.993146,
+        0,
+        4.0416718
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 283,
+      "elapsed": 4.716666666666655,
+      "player": [
+        8.842746,
+        0.8009341,
+        0.99366456
+      ],
+      "escort": [
+        10.037375,
+        0,
+        4.0183544
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 284,
+      "elapsed": 4.733333333333322,
+      "player": [
+        8.842519,
+        0.8009341,
+        0.9936801
+      ],
+      "escort": [
+        10.081605,
+        0,
+        3.9950368
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 285,
+      "elapsed": 4.7499999999999885,
+      "player": [
+        8.842402,
+        0.8009341,
+        0.9936881
+      ],
+      "escort": [
+        10.125835,
+        0,
+        3.9717193
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 286,
+      "elapsed": 4.766666666666655,
+      "player": [
+        8.842342,
+        0.8009341,
+        0.9936922
+      ],
+      "escort": [
+        10.170065,
+        0,
+        3.9484017
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 287,
+      "elapsed": 4.783333333333322,
+      "player": [
+        8.842312,
+        0.8009341,
+        0.9936943
+      ],
+      "escort": [
+        10.214295,
+        0,
+        3.925084
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 288,
+      "elapsed": 4.799999999999988,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.258525,
+        0,
+        3.9017665
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 289,
+      "elapsed": 4.816666666666655,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.302755,
+        0,
+        3.878449
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 290,
+      "elapsed": 4.8333333333333215,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.346986,
+        0,
+        3.8551316
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 291,
+      "elapsed": 4.849999999999988,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.391216,
+        0,
+        3.8318143
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 292,
+      "elapsed": 4.866666666666655,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.435447,
+        0,
+        3.808497
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 293,
+      "elapsed": 4.883333333333321,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.479677,
+        0,
+        3.7851796
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 294,
+      "elapsed": 4.899999999999988,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.523908,
+        0,
+        3.7618623
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 295,
+      "elapsed": 4.9166666666666545,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.568138,
+        0,
+        3.738545
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 296,
+      "elapsed": 4.933333333333321,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.612369,
+        0,
+        3.7152276
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 297,
+      "elapsed": 4.949999999999988,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.656599,
+        0,
+        3.6919103
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 298,
+      "elapsed": 4.966666666666654,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.7008295,
+        0,
+        3.668593
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 299,
+      "elapsed": 4.983333333333321,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.74506,
+        0,
+        3.6452756
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 300,
+      "elapsed": 4.999999999999988,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.78929,
+        0,
+        3.6219583
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 301,
+      "elapsed": 5.016666666666654,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.833521,
+        0,
+        3.598641
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 302,
+      "elapsed": 5.033333333333321,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.877751,
+        0,
+        3.5753236
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 303,
+      "elapsed": 5.049999999999987,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.921982,
+        0,
+        3.5520062
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 304,
+      "elapsed": 5.066666666666654,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        10.966212,
+        0,
+        3.528689
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 305,
+      "elapsed": 5.083333333333321,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.010443,
+        0,
+        3.5053716
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 306,
+      "elapsed": 5.099999999999987,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.054673,
+        0,
+        3.4820542
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 307,
+      "elapsed": 5.116666666666654,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.098904,
+        0,
+        3.458737
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 308,
+      "elapsed": 5.13333333333332,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.138651,
+        0,
+        3.4284031
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 309,
+      "elapsed": 5.149999999999987,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.178398,
+        0,
+        3.3980694
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 310,
+      "elapsed": 5.166666666666654,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.218145,
+        0,
+        3.3677356
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 311,
+      "elapsed": 5.18333333333332,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.257893,
+        0,
+        3.3374019
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 312,
+      "elapsed": 5.199999999999987,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.29764,
+        0,
+        3.307068
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 313,
+      "elapsed": 5.2166666666666535,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.337387,
+        0,
+        3.2767344
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 314,
+      "elapsed": 5.23333333333332,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.377134,
+        0,
+        3.2464006
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 315,
+      "elapsed": 5.249999999999987,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.416882,
+        0,
+        3.2160668
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 316,
+      "elapsed": 5.266666666666653,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.456629,
+        0,
+        3.1857333
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 317,
+      "elapsed": 5.28333333333332,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.479027,
+        0,
+        3.1410308
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 318,
+      "elapsed": 5.2999999999999865,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.501425,
+        0,
+        3.0963283
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 319,
+      "elapsed": 5.316666666666653,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.523823,
+        0,
+        3.0516257
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 320,
+      "elapsed": 5.33333333333332,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.546221,
+        0,
+        3.0069232
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 321,
+      "elapsed": 5.349999999999986,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.558502,
+        0,
+        2.9584548
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 322,
+      "elapsed": 5.366666666666653,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.570784,
+        0,
+        2.9099865
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 323,
+      "elapsed": 5.3833333333333195,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.583065,
+        0,
+        2.8615181
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 324,
+      "elapsed": 5.399999999999986,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.595346,
+        0,
+        2.8130498
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 325,
+      "elapsed": 5.416666666666653,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.607627,
+        0,
+        2.7645814
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 326,
+      "elapsed": 5.433333333333319,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.619908,
+        0,
+        2.716113
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 327,
+      "elapsed": 5.449999999999986,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.627926,
+        0,
+        2.66676
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 328,
+      "elapsed": 5.466666666666653,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.635943,
+        0,
+        2.6174068
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 329,
+      "elapsed": 5.483333333333319,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.632214,
+        0,
+        2.5675461
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 330,
+      "elapsed": 5.499999999999986,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.628484,
+        0,
+        2.5176854
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 331,
+      "elapsed": 5.516666666666652,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.624754,
+        0,
+        2.4678247
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 332,
+      "elapsed": 5.533333333333319,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.621024,
+        0,
+        2.417964
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 333,
+      "elapsed": 5.549999999999986,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.617294,
+        0,
+        2.3681033
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 334,
+      "elapsed": 5.566666666666652,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.6135645,
+        0,
+        2.3182425
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 335,
+      "elapsed": 5.583333333333319,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.609835,
+        0,
+        2.2683818
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 336,
+      "elapsed": 5.599999999999985,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.606105,
+        0,
+        2.218521
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 337,
+      "elapsed": 5.616666666666652,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.602375,
+        0,
+        2.1686604
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 338,
+      "elapsed": 5.633333333333319,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.598645,
+        0,
+        2.1187997
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 339,
+      "elapsed": 5.649999999999985,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.594915,
+        0,
+        2.068939
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 340,
+      "elapsed": 5.666666666666652,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.591186,
+        0,
+        2.0190783
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 341,
+      "elapsed": 5.6833333333333185,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.587456,
+        0,
+        1.9692175
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 342,
+      "elapsed": 5.699999999999985,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.583726,
+        0,
+        1.9193568
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 343,
+      "elapsed": 5.716666666666652,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.579996,
+        0,
+        1.8694961
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 344,
+      "elapsed": 5.733333333333318,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.576266,
+        0,
+        1.8196354
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 345,
+      "elapsed": 5.749999999999985,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.572536,
+        0,
+        1.7697747
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 346,
+      "elapsed": 5.7666666666666515,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.568807,
+        0,
+        1.719914
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 347,
+      "elapsed": 5.783333333333318,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.565077,
+        0,
+        1.6700532
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 348,
+      "elapsed": 5.799999999999985,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.561347,
+        0,
+        1.6201925
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 349,
+      "elapsed": 5.816666666666651,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.557617,
+        0,
+        1.5703318
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 350,
+      "elapsed": 5.833333333333318,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.553887,
+        0,
+        1.5204711
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 351,
+      "elapsed": 5.8499999999999845,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.5501585,
+        0,
+        1.4706104
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 352,
+      "elapsed": 5.866666666666651,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.546429,
+        0,
+        1.4207497
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 353,
+      "elapsed": 5.883333333333318,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.5427,
+        0,
+        1.370889
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 354,
+      "elapsed": 5.899999999999984,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.538971,
+        0,
+        1.3210282
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 355,
+      "elapsed": 5.916666666666651,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.535241,
+        0,
+        1.2711675
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 356,
+      "elapsed": 5.933333333333318,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.531511,
+        0,
+        1.2213068
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 357,
+      "elapsed": 5.949999999999984,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.527782,
+        0,
+        1.1714461
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 358,
+      "elapsed": 5.966666666666651,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.524054,
+        0,
+        1.1215854
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 359,
+      "elapsed": 5.983333333333317,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.500939,
+        0,
+        1.0772486
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 360,
+      "elapsed": 5.999999999999984,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.477825,
+        0,
+        1.0329118
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 361,
+      "elapsed": 6.016666666666651,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.454711,
+        0,
+        0.98857504
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 362,
+      "elapsed": 6.033333333333317,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.431597,
+        0,
+        0.94423825
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 363,
+      "elapsed": 6.049999999999984,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.408483,
+        0,
+        0.89990145
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 364,
+      "elapsed": 6.06666666666665,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.385368,
+        0,
+        0.85556465
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 365,
+      "elapsed": 6.083333333333317,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.362254,
+        0,
+        0.8112278
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 366,
+      "elapsed": 6.099999999999984,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.33914,
+        0,
+        0.76689094
+      ],
+      "input": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 367,
+      "elapsed": 6.11666666666665,
+      "player": [
+        8.842296,
+        0.8009341,
+        0.9936954
+      ],
+      "escort": [
+        11.292111,
+        0,
+        0.74990994
+      ],
+      "input": [
+        0,
+        0
+      ]
+    }
+  ],
+  "shots": [
+    {
+      "name": "town-core-overview",
+      "png": "town-core-overview.png",
+      "camera_position": [
+        30,
+        23,
+        30
+      ],
+      "camera_target": [
+        0,
+        0,
+        -3
+      ]
+    }
+  ],
+  "pipeline": "real mobile input, unchanged movement settings, normal _PhysicsProcess/MoveAndSlide"
+}

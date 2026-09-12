@@ -51,10 +51,10 @@ public static class OrganicWorldLayout
             result.Add(plot);
         }
         var expected = area == "ranch"
-            ? new[] { "dairy_barn", "pasture", "kitchen", "workshop", "pharmacy_lab", "office", "ranch_house", "pet_care" }
-            : new[] { "general_store", "adventure_guild", "research_office", "tavern", "bathhouse", "town_hall", "planning_board" };
+            ? new[] { "dairy_barn", "pasture", "workshop", "pharmacy_lab", "ranch_house", "pet_care" }
+            : new[] { "general_store", "adventure_guild", "research_office", "tavern", "bathhouse", "town_hall" };
         if (!expected.Order().SequenceEqual(result.Select(p => p.Id).Order()))
-            throw new InvalidOperationException("World layout must preserve all existing " + area + " service identifiers");
+            throw new InvalidOperationException("World layout must preserve all existing " + area + " physical plot identifiers");
         foreach (var plot in result)
             foreach (var other in result.Where(p => p != plot))
                 if (plot.ReservedBounds.Intersects(other.ReservedBounds)

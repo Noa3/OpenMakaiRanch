@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/OkachiMarketCourt.tscn" id="1_court"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_market/counter.glb" id="2_counter"]
+[ext_resource type="PackedScene" path="res://assets/3d/okachi_market/canopy.glb" id="3_canopy"]
+
+[node name="OkachiMarketFinished" type="Node3D"]
+metadata/authoring_state = "FINISHED; covered counters; not a runtime unlock"
+[node name="Court" parent="." instance=ExtResource("1_court")]
+[node name="CounterLeft" parent="." instance=ExtResource("2_counter")]
+position = Vector3(-2, 0, 0)
+[node name="CounterRight" parent="." instance=ExtResource("2_counter")]
+position = Vector3(2, 0, 0)
+[node name="Canopy" parent="." instance=ExtResource("3_canopy")]

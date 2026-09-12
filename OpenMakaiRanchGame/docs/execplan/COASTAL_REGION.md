@@ -8,6 +8,8 @@ This is a living execution plan. The numerical blockout targets below are propos
 
 ## Paused handoff — rejected coastal candidate
 
+**Superseded priority:** the newer user request authorizes completing the connected ranch/public-market slice. `GROWING_REGION.md` is the active execution plan. The rejection below remains historical evidence until the strict bridge/route checks actually pass; it is not permission to activate an unverified region.
+
 Ranch house, residential modules, furniture and their integration now have priority. Preserve this work; do not activate the region or start another landscape export during the ranch-center slice.
 
 - Parent verified the delayed worker handoff on `astar`: 10 modular GLBs and `assets/3d/coastal_region/coastal_region.blend` exist. Module/source hashes passed the real geometry suite. `generation_receipt.json` explicitly records `accepted:false` / `rejected_blockout_candidate`.

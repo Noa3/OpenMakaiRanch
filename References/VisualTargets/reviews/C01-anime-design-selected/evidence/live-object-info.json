@@ -1,0 +1,859 @@
+{
+  "UNETLoader": {
+    "input": {
+      "required": {
+        "unet_name": [
+          [
+            "qwen_image_edit_2511_fp8mixed.safetensors"
+          ]
+        ],
+        "weight_dtype": [
+          [
+            "default",
+            "fp8_e4m3fn",
+            "fp8_e4m3fn_fast",
+            "fp8_e5m2"
+          ],
+          {
+            "advanced": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "unet_name",
+        "weight_dtype"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "MODEL"
+    ],
+    "name": "UNETLoader",
+    "display_name": "Load Diffusion Model",
+    "description": "",
+    "python_module": "nodes",
+    "category": "model/loaders",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "CLIPLoader": {
+    "input": {
+      "required": {
+        "clip_name": [
+          [
+            "ViT-L-14_openai_artists.safetensors",
+            "ViT-L-14_openai_flavors.safetensors",
+            "ViT-L-14_openai_mediums.safetensors",
+            "ViT-L-14_openai_movements.safetensors",
+            "ViT-L-14_openai_negative.safetensors",
+            "ViT-L-14_openai_trendings.safetensors",
+            "model-resnet_custom_v3.pt",
+            "models--timm--vit_large_patch14_clip_224.openai\\snapshots\\18d0535469bb561bf468d76c1d73aa35156c922b\\open_clip_model.safetensors",
+            "qwen_2.5_vl_7b_fp8_scaled.safetensors"
+          ]
+        ],
+        "type": [
+          [
+            "stable_diffusion",
+            "stable_cascade",
+            "sd3",
+            "stable_audio",
+            "mochi",
+            "ltxv",
+            "pixart",
+            "cosmos",
+            "lumina2",
+            "wan",
+            "hidream",
+            "chroma",
+            "ace",
+            "omnigen2",
+            "qwen_image",
+            "hunyuan_image",
+            "flux2",
+            "ovis",
+            "longcat_image",
+            "cogvideox",
+            "lens",
+            "pixeldit",
+            "ideogram4",
+            "boogu",
+            "krea2"
+          ]
+        ]
+      },
+      "optional": {
+        "device": [
+          [
+            "default",
+            "cpu"
+          ],
+          {
+            "advanced": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "clip_name",
+        "type"
+      ],
+      "optional": [
+        "device"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CLIP"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "CLIP"
+    ],
+    "name": "CLIPLoader",
+    "display_name": "Load CLIP",
+    "description": "Recipes:\nsd: clip-l\nstable cascade: clip-g\nsd3: t5 xxl / clip-g / clip-l\nstable audio: t5 base\nmochi: t5 xxl\ncogvideox: t5 xxl (226-token padding)\ncosmos: old t5 xxl\nlumina2: gemma 2 2B\nwan: umt5 xxl\nhidream: llama-3.1 (Recommend) or t5\nomnigen2: qwen vl 2.5 3B\nlens: gpt-oss-20b\npixeldit: gemma 2 2B elm",
+    "python_module": "nodes",
+    "category": "model/loaders",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "VAELoader": {
+    "input": {
+      "required": {
+        "vae_name": [
+          [
+            "2dn_latentlensV1.safetensors",
+            "AbyssOrangeMix-AfterDark.ckpt",
+            "AbyssOrangeMix.ckpt",
+            "Anything-Diffusion.ckpt",
+            "AnythingV5.safetensors",
+            "Deliberate.ckpt",
+            "Dreamshaper.safetensors",
+            "Grapefruit.ckpt",
+            "RealisticVision.ckpt",
+            "Sci-Fi_Diffusion.ckpt",
+            "absolutereality.safetensors",
+            "albedo_base_xl.safetensors",
+            "albedobaseXL_V31Large.safetensors",
+            "amponyxl.safetensors",
+            "analogMadness_v70.safetensors",
+            "bb95FurryMix_v14.safetensors",
+            "blendermix_v20.safetensors",
+            "cyberrealisticPony_v8.safetensors",
+            "edgeOfRealism.safetensors",
+            "flux1CompactCLIPAnd_Flux1SchnellFp8.safetensors",
+            "hassakuXLIllustrious_v22.safetensors",
+            "hentai-diffusion.ckpt",
+            "icbinp.safetensors",
+            "icbinp_xl.safetensors",
+            "juggernautXL_ragnarokBy.safetensors",
+            "model_1_5.ckpt",
+            "neverendingDream.safetensors",
+            "novaAnimeXL_ilV190.safetensors",
+            "novaAnimeXL_illustriousV10.safetensors",
+            "novaFurryPony_v60.safetensors",
+            "ntrMIXIllustriousXL_xiii.safetensors",
+            "ponyRealism_v21MainVAE.safetensors",
+            "prefectPonyXL_v3.safetensors",
+            "qwen_image_vae.safetensors",
+            "sd_xl_base_1.0.safetensors",
+            "waiANINSFWPONYXL_v80.safetensors",
+            "waiCUTE_v80.safetensors",
+            "waiNSFWIllustrious_v140.safetensors",
+            "whitePonyDiffusion4_whitepony4Classic.safetensors",
+            "taef1",
+            "taesdxl",
+            "taesd3",
+            "taesd",
+            "pixel_space"
+          ]
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "vae_name"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "VAE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "VAE"
+    ],
+    "name": "VAELoader",
+    "display_name": "Load VAE",
+    "description": "",
+    "python_module": "nodes",
+    "category": "model/loaders",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "LoraLoaderModelOnly": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL"
+        ],
+        "lora_name": [
+          [
+            "(ILXL)ReversePaizuriAnilingusanaruShimepaizuri_2103728.safetensors",
+            "(SDXLSD1.5)Simplepointedtoestilettoheelswithoutanklestrap(JianTouGaoGenXie)_92892.safetensors",
+            "(XiJieZengQiang)GWMDetail_361862.safetensors",
+            "2girls.Acrosstable._2391919.safetensors",
+            "AbsinthePunkAI-konyconi_94917.safetensors",
+            "AbsurdStomachBulgeLoRaPonyXLIllustrious_1409803.safetensors",
+            "Acara-NeopetsVirtualPets_138114.safetensors",
+            "AdamHughesStyleIllustriousFluxPDXL1.5_388697.safetensors",
+            "AddDetail-Slider_1506027.safetensors",
+            "AddMoreDetails-DetailEnhancerTweaker(XiJieDiaoZheng)LoRA_87153.safetensors",
+            "AdetailerXL_2449244.safetensors",
+            "AestheticAnimeLoRA_331598.safetensors",
+            "AestheticQualityModifiers-Masterpiece_2247497.safetensors",
+            "AgeSliderLoRAIllustriousXL_1355142.safetensors",
+            "AgeSliderLoRAPonyXLSDXL_448977.safetensors",
+            "AgeSlider_143150.safetensors",
+            "AkagiRitsuko-NeonGenesisEvangelion_1919610.safetensors",
+            "AllDisneyPrincessXLLoRAModelfromRalphBreakstheInternet_244808.safetensors",
+            "AnalDoggystyle_2487142.safetensors",
+            "ArmpitFetishFaceinArmpit(Femdom)PonyIllustrious_1436640.safetensors",
+            "ArtoriaPendragonLancerAlterarutoriapendoragon(ransa-)(FateGrandOrder)IllustriousNoobAI_1913617.safetensors",
+            "AssSizeSlider-PonyIllustrious_530596.safetensors",
+            "AsukaLangleySoryuEvangelion_2404497.safetensors",
+            "Augustartstyle(BaYueSheHuaFeng)NoobAI_1997780.safetensors",
+            "AuraPhantasyShiirosStylesAi_1478930.safetensors",
+            "BB(AnthologyoftheKiller)._1773579.safetensors",
+            "BTStrippingBra(BothBreasts)_547581.safetensors",
+            "BarretWallace-FinalFantasyVIIRebirthBaLeiTeHuaLaiShi-ZuiZhongHuanXiangVIIZhongSheng(WeiTuo)_2414342.safetensors",
+            "BettereyesfaceskinGengHaoDeYanJingLianPiFu_55905.safetensors",
+            "Bimbo_2010998.safetensors",
+            "BlackwhiplashAssstyle_2160626.safetensors",
+            "BlowjobPOVLORA_81314.safetensors",
+            "BlushyspicyStyle_1965652.safetensors",
+            "BobbyPinn-DateEverything_2106865.safetensors",
+            "BodyModifier-HugeHyperClitoris_1603198.safetensors",
+            "BodyTypeSlider-PonyIllustrious_1845953.safetensors",
+            "BodyTypeSlider-PonyIllustrious_520909.safetensors",
+            "BodyWeightSlider-PONY_1386847.safetensors",
+            "BoltedOnBimbos_1337835.safetensors",
+            "BoltedOnLips-PuffyLips-BimboLips_433621.safetensors",
+            "BreastSizeSlider-PonyIllustrious_1835318.safetensors",
+            "BreastSizeSlider-PonyIllustrious_534952.safetensors",
+            "BreastSizeSlider-SDXL_535064.safetensors",
+            "BreastSizeSliderLoRAIllustriousXL_1309969.safetensors",
+            "Brightnessslider_1620644.safetensors",
+            "Broly-DragonBallSuperIllustrious_2098054.safetensors",
+            "ButtSharpie_1313957.safetensors",
+            "Candy123_1_2430462.safetensors",
+            "CellulitesAnimaIllustriousPonyXL_2314712.safetensors",
+            "CharcoalDrawings_730779.safetensors",
+            "CircusPunkAI-konyconi_93524.safetensors",
+            "Claire(thesummoning)_2238144.safetensors",
+            "CommissionPonyXLIllustriousICantSleep-Protagonist_1525599.safetensors",
+            "CommunityLoRAextract_24062.safetensors",
+            "ConceptPerfectEyes_96353.safetensors",
+            "ControlLoRACollection_947620.safetensors",
+            "Cute_girl_mix4_16677.safetensors",
+            "D-ARTStyle(Illustrious)_2851220.safetensors",
+            "DaFengAIGunYaZhouZhongNianPangXiongDaShuGunAsianmiddle-agedfatbear_319336.safetensors",
+            "DannyandSawyer_1932637.safetensors",
+            "DearestDeer(FacebookStickers)PonySDXLSD1.5_498684.safetensors",
+            "DeonwolffurrystyleIllustrious_2063733.safetensors",
+            "DetailSliderLoRAPonyXLSDXL_712947.safetensors",
+            "DetailTweakerXL_135867.safetensors",
+            "DetailedEyes_XL_145907.safetensors",
+            "Detailsfacehairskin_275467.safetensors",
+            "Detnox-StyleLoRA_237659.safetensors",
+            "DildoPlaySDXL_1372698.safetensors",
+            "DisassemblyDrone(s)murderdrones_733593.safetensors",
+            "Doctoruniform_308349.safetensors",
+            "DonM-ClockworkSteampunkSD1.5SDXL_375228.safetensors",
+            "DragonBalldeuraegonbol_70087.safetensors",
+            "DynamicPosessliderPONYXL_487971.safetensors",
+            "ElusarcasAnimeStyleLoRAforZ-ImageTurbo_2450720.safetensors",
+            "Engorgedclitoris_1133248.safetensors",
+            "EnvyZoomSliderXL01_240274.safetensors",
+            "ExpressiveH(HentaiLoRaStyle)eroanime_382152.safetensors",
+            "FREERIMJOBSanaruShimeWuLiao_2282082.safetensors",
+            "Facehugger_747204.safetensors",
+            "FacialexpressionsSDXL_2501410.safetensors",
+            "FantasyCharacter-PAseer_61099.safetensors",
+            "FatMen_1493204.safetensors",
+            "FemaleRover-WutheringWaves-3D_1698662.safetensors",
+            "FemboyoutfitV-PonyIL_2346827.safetensors",
+            "FinalFantasyVIIRebirthStylehuainaruhuantazi-VIIriba-susutairu_1859854.safetensors",
+            "Flat2dStyleCutout_335464.safetensors",
+            "FlowerBoyStyle_1110407.safetensors",
+            "FluxPonyPerfectFullRoundBreastsSlimWaist_692326.safetensors",
+            "FluxPonyPerfectFullRoundBreastsSlimWaist_723657.safetensors",
+            "Fluxtwitteraigirl11_2443185.safetensors",
+            "FoxbtailsStyleILXL_2014584.safetensors",
+            "FoxxyClothing-GermanPoliceUniform(Nordverbund)_2415730.safetensors",
+            "FromBelowLowAngleShot_323858.safetensors",
+            "FujimiyaAmaneOtonarinoTenshi-Sama_1964985.safetensors",
+            "FujitaMariko-CardCaptorSakuraStyle_2444123.safetensors",
+            "FunToysSextoys_47575.safetensors",
+            "FurryAnthroBabsBunnyLora_1233456.safetensors",
+            "FurryficationSlider-PonyIllustrious_2046129.safetensors",
+            "GalactaCelebrate_2450979.safetensors",
+            "Gemstone_Requiem_2482544.safetensors",
+            "GiantFutanari_569126.safetensors",
+            "GiantSaggyBreastsSDXL_611522.safetensors",
+            "HandDetailFLUXXL_294259.safetensors",
+            "HandFixerConceptToolLoRAXL_945805.safetensors",
+            "HandsXLSD1.5F1DPonyIllustriouszitZIB_3012596.safetensors",
+            "HeadbetweenbreastsBreastsmother_95048.safetensors",
+            "HentaiAnimeStyle-NatMontero_805307.safetensors",
+            "Hipoly3DModelLoRA_44566.safetensors",
+            "HourglassBodyShapeSD1.5SDXLPONYFLUXolaz_1668530.safetensors",
+            "HucowMilkingZIMWan2.1FluxPonySDXL_597584.safetensors",
+            "HugeDildoGoofyAi_346107.safetensors",
+            "HyperGirls_2488956.safetensors",
+            "HyperHighAssfromfront(andside)-hyperfrontass(PonyV6Illlustrious)_1776094.safetensors",
+            "ILLUSTTifaLockhartFinalFantasy_2039991.safetensors",
+            "ILv0.1Ooyodo-KantaiCollectionDaDianJianDuikorekushiyon(8costumes)Request_2431834.safetensors",
+            "IllustriousRealismEnhancer_1253047.safetensors",
+            "IllustriousStylePack_1570070.safetensors",
+            "IllustriousXLv0.1KayFaradayAceAttorneyInvestigations_1086050.safetensors",
+            "InAwe-ShockedSurprisedExpression_2342980.safetensors",
+            "InCaseArtStyle_1205970.safetensors",
+            "IncaseStylePonyXL_432737.safetensors",
+            "IncasegothicstylemixIllustrious_1189052.safetensors",
+            "IncasestyleIllustriousFluxPDXL1.5_1115701.safetensors",
+            "InniesBettervulva_12873.safetensors",
+            "IntricateDetailsForPony(Beta)_498718.safetensors",
+            "IrisCannary-VioletEvergarden-vuaioretsutoevua-ga-den_1110910.safetensors",
+            "JAV1girl1boyheteroHardDeepThroatGenerator(HENTAIANIME)Twintailsirrumatiohandleimarahandoru_2366342.safetensors",
+            "JAVHARDIrrumatioDeepThroatGenerator2PonyXLha-doiramachioadarutobideozienere-ta-2_2137999.safetensors",
+            "JREastE235seriestraininterior_142194.safetensors",
+            "Jennie_784162.safetensors",
+            "Johns_X-RayCrossSectionLORA4mb_13666.safetensors",
+            "KagomeHigurashi-InuyashaSDXL(Pony)Illustrious_1449654.safetensors",
+            "Kagune-Chan(CapybaraShiro3Shiro3)_1395313.safetensors",
+            "KasaneTeto-LoRAIllustriousXL_1384343.safetensors",
+            "KasaneTetoHassakuXLLoRAbyswrneko_2110045.safetensors",
+            "KemuriHakuArtistStyleIllustrious_1534219.safetensors",
+            "KindMitaMiSide_2213196.safetensors",
+            "Kisaki(Blue_Archive)_19568.safetensors",
+            "KittyKat-TheBadGuys2-Illustrious_2138151.safetensors",
+            "LCMTurboMixLoRA(Only12MB8-stepsamplingEffectissuperiortousingLCMorTurboalone)_246747.safetensors",
+            "LCMTurboMixLoRA(Only12MB8-stepsamplingEffectissuperiortousingLCMorTurboalone)_247778.safetensors",
+            "LEOSAMsInstantphotoPaiLiDePolaroidLoRALoHA_102533.safetensors",
+            "LR-Allthewaythrough_11363.safetensors",
+            "Lana(suiren)-Pokemon(pokemon)_778187.safetensors",
+            "Largepenetration_2313830.safetensors",
+            "LazyEmbeddingsforALLillustriousNoobAIPonySDXLmodelsLazyPositiveLazyNegative(PositiveandNegativeplusmore)_1833157.safetensors",
+            "LeiGuangraitoninguLightningFinalFantasyXIIIClarieFarron_18962.safetensors",
+            "Lightingdarknessslider_1444863.safetensors",
+            "LightningSpecialEffectsShanDianLeiDianTeXiao_1575238.safetensors",
+            "Lilie(ri-rie)-Pokemon(pokemon)_754092.safetensors",
+            "LinKaifon(ShoujoSenkiBrainJacker)-3versions-Commission_2218313.safetensors",
+            "Link(GreenTunicVer.)_25980.safetensors",
+            "Livestocklactation_2205109.safetensors",
+            "LoRAillustriousXLLinaInversefromSlayers(CosplayCharacter)_2221977.safetensors",
+            "LongPenisFutanari_1290995.safetensors",
+            "LonghairSDXL_1012323.safetensors",
+            "LookaliveExcitedfacialexpressionemotion_422549.safetensors",
+            "LookingEmbarrassedBlushingXL_1328493.safetensors",
+            "Loudred-0294_2236648.safetensors",
+            "LuisaPLORASTYLESCOLLECTION36MBFILES_6693.safetensors",
+            "LurunavonBraunMoonlandAkunoOnnaKanbu_2342336.safetensors",
+            "MIKADO-Style_2934800.safetensors",
+            "MUSE_fullbody_v1_16014.safetensors",
+            "Madruga3D-blenderstyleIllustrious(Update1)_1842228.safetensors",
+            "MaleRover-WuteringWaves(Commission)_1286310.safetensors",
+            "Mallow(mao)(Mao)-Pokemon(pokemon)_776833.safetensors",
+            "MatingPress(SmallDom)_1271831.safetensors",
+            "MeeshStyle_2506199.safetensors",
+            "MelancholyHill-TheGaslightDistrict_1687276.safetensors",
+            "MelancholyHillTheGaslightDistrict_1684416.safetensors",
+            "MicroverseCreator_844703.safetensors",
+            "MinaAshido(MyHeroAcademia)Illustrious_2353776.safetensors",
+            "ModernPainting-SDXL1.0_638988.safetensors",
+            "MongolPunkAI-konyconi_90461.safetensors",
+            "MontgomeryGlands_1326339.safetensors",
+            "MoodyForest0.1_363711.safetensors",
+            "MoriiMeeGothicNijiLoRAStyle_1244133.safetensors",
+            "MoriiMeeGothicNijiLoRAStyle_2498503.safetensors",
+            "MultipleGirlsGroup_55644.safetensors",
+            "Musctonk_2493924.safetensors",
+            "MuscularMaleBaraMixStyles_2198544.safetensors",
+            "NISSANSkylineGT-RR34carLORA_10364.safetensors",
+            "NamespaceLewdcactusStylePonyXL_1316792.safetensors",
+            "NamespaceMixStyleIllustrious_1829589.safetensors",
+            "NewIncaseStyle(2024)NoobAIIllustriousPonyXLFlux.1D_812070.safetensors",
+            "Nexo-Xeono(Requested)_2125310.safetensors",
+            "Niji-male-style1_1152969.safetensors",
+            "Nijisemirealism_2854725.safetensors",
+            "NippleSizeSliderPonyXL_1277544.safetensors",
+            "NoBraBralessTrendXL_287900.safetensors",
+            "NonomuraRuri-Discipline_109745.safetensors",
+            "NoobAI-XLEPSv1.1MayaFeyAceAttorney_1583237.safetensors",
+            "NoobAINippleLORAforADetailerADetailerYongnoRuShouLORA_1597396.safetensors",
+            "NotArtistsStylesforPonyDiffusionV6XL_1558543.safetensors",
+            "Nyantcha(ThiccWithaQ)-ArtistStyle_90532.safetensors",
+            "OCMs.Gutter(Kingbang)_1485229.safetensors",
+            "OCMs.Gutter(Kingbang)_2413958.safetensors",
+            "One_bar_734170.safetensors",
+            "OrcFantasyDND_569405.safetensors",
+            "OsididOsididitstyleIllustrious_2210609.safetensors",
+            "POVFacesitting_43354.safetensors",
+            "PastelMixInspiredV5_15431.safetensors",
+            "Pb0y_1274115.safetensors",
+            "Pearlystarfurryafurrystyle_2553986.safetensors",
+            "PenisSizeSlider-PonyIllustrious_517898.safetensors",
+            "PenisThicknessSlider-Pony_575452.safetensors",
+            "PerfectEyesXL_128461.safetensors",
+            "PinkmechagirlFenSeJiJiaShaoNu_99174.safetensors",
+            "PixelArtXL_135931.safetensors",
+            "PonutParadiseMLP-AnatomicallyCorrectPonies-IL_1485827.safetensors",
+            "PonyDiffusionQualitySlider_449871.safetensors",
+            "PonyIllustriousRyneWaters-FFXIVFF14FinalFantasyXIV_2085022.safetensors",
+            "PonyRealismSlider_1253021.safetensors",
+            "PonyV6XLErisKonoSubaGodsBlessingonThisWonderfulWorld_493016.safetensors",
+            "PonyV6XLJillWarrickFinalFantasyXVI_892350.safetensors",
+            "Ponychub_1083800.safetensors",
+            "PopyaysEpicFantasyStylePonySDXL_522995.safetensors",
+            "PowerPuffMixLora_1456601.safetensors",
+            "Puffyhyperpussy(Female)LoRaIllustrious_2430988.safetensors",
+            "PulpawoelboStyleILPonyXL_1724887.safetensors",
+            "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+            "RINAddDetailAesthetic_2372467.safetensors",
+            "RaanaKaname(BangDream)_118427.safetensors",
+            "RawfullyStylish(dramaticlighting)_466120.safetensors",
+            "RealAmateurIllustrious_2448723.safetensors",
+            "RealHumans_262705.safetensors",
+            "RealisticAsianBeautyEnhancer_2374085.safetensors",
+            "RealisticFurryAnthroillustrious_1453964.safetensors",
+            "RealisticSkinTexturestyleXL(DetailedSkin)SD1.5Flux1DPonyIllu_712234.safetensors",
+            "RealisticfilterIL_1124771.safetensors",
+            "RealityTuner_2426043.safetensors",
+            "Reiqstyle_1937010.safetensors",
+            "RidingTheSybian_137173.safetensors",
+            "Rishe-KaminoRhapsody-Illustrious_1305962.safetensors",
+            "RobinSena(WitchHunterRobin)IllustriousXL_2498536.safetensors",
+            "RoughSexFuckedSillyILChromaShrekmanHentaiLoras_2098625.safetensors",
+            "Rover-MC(WutheringWaves)PonyXL_532826.safetensors",
+            "RukaRukakoUrushibara(QiYuanruka)-SteinsGate_112936.safetensors",
+            "RuneFactory5-Radea-Illu_2039060.safetensors",
+            "RuneFactory5-Scarlett-Illustrious_1627900.safetensors",
+            "SDXLFilmPhotographyStyle_180569.safetensors",
+            "SDXLOffsetExampleLora_151806.safetensors",
+            "SDXLareolaeslider_334561.safetensors",
+            "SaduDotharlFinalFantasyXIV_2681031.safetensors",
+            "SaggingBreasts_298272.safetensors",
+            "SaggyBoobsMadnessPony_698864.safetensors",
+            "Sanitizer-AStyleandDetailComplexitySlider_1509461.safetensors",
+            "SceneryEnhancer_1863319.safetensors",
+            "Selene(miduki)-Pokemon(pokemon)_418390.safetensors",
+            "SeoBaekHyang-seobaeghyangSSSClassSuicideHunter-SSSgeubjugeoyasaneunheonteowebtoonmanhwa-character_2105827.safetensors",
+            "ShirakamiFubuki_6619.safetensors",
+            "ShortstackGirlsLoRa-IllustriousXL_2169704.safetensors",
+            "Siren57AzurLaneCharacterLoraseire-n(azu-rure-n)_7913.safetensors",
+            "Sizedifference(largerfemale)_1044702.safetensors",
+            "Skindentationslider-PonyIllustrious_1374404.safetensors",
+            "SkinnyHelperXL_992513.safetensors",
+            "SkinnyWaist-LargePectorals-BodyShape_2442485.safetensors",
+            "SmallButHung-SizeDifferenceBodyConceptLora_2263536.safetensors",
+            "SmallMaleStandingonBreasts_1116851.safetensors",
+            "SmoothDetailerBooster(NoobAIIllustriousPony)_2196453.safetensors",
+            "SmoothDetailerBooster(NoobAIIllustriousPony)_2746768.safetensors",
+            "SplatoonStyleCharacterPackILLPony_2371552.safetensors",
+            "SpreadAss-SDXL_285434.safetensors",
+            "SpreadLegsPose_2002818.safetensors",
+            "StandingSqueezedonTrain_2345991.safetensors",
+            "StarWarsMandalorianArmourFLUXSDXLPONY_605498.safetensors",
+            "SteamPunk-OilPainting_1076692.safetensors",
+            "SteampunkREDONE-konyconi_79552.safetensors",
+            "StolasHelluvaBossLoRA(IllustriousEdition)_1336062.safetensors",
+            "StolasHelluvaBoss_177374.safetensors",
+            "StreetwearPants-Wide-legcargobaggypants_1856544.safetensors",
+            "SubtlePoses_2013343.safetensors",
+            "SuperSkinDetailerByStableYogi_1089462.safetensors",
+            "TAIMANINASAGIDirectedbyMurakamiTeruakiHentaiAnimeGeneratorDuiMoRenasagimurakamiteruakiJianDuZuoPineroanimezienere-ta-_2314246.safetensors",
+            "THEOfficialpitstyle(illustriousPony)_1776122.safetensors",
+            "TheCentaurBottomBodyType_2723773.safetensors",
+            "TheResurrectionistStyle_154732.safetensors",
+            "ThicStyle(Geekpower)_1960971.safetensors",
+            "ThickOutlineToons_905679.safetensors",
+            "TopSkirtCollectionbyStableYogi_322121.safetensors",
+            "TophBeifongAvatartheLastAirbender_56592.safetensors",
+            "TyLee-AvatarTheLastAirbender-SDXLLORA_171508.safetensors",
+            "UdotSVMS_ONstyleLoRAforPonyXLIllustrious_638386.safetensors",
+            "Umbreon_1055671.safetensors",
+            "Upskirt_Panties_Pussy_2519531.safetensors",
+            "UsagiTsukino(SailorMoon)-Retro-Character-IllustriousXL_2354936.safetensors",
+            "ValbunStyle_2307489.safetensors",
+            "Venat(FFXIV)vue-nesuWeiNieSi(FF14)_25758.safetensors",
+            "VirtualAsianFemaleCharacter13_988186.safetensors",
+            "VivianBansheeWeiWeiAn(ILPonyXL)_1940615.safetensors",
+            "Vivy(VivyFluoriteEyesSong)_28364.safetensors",
+            "VixonsIllustriousStyles-Daodtt_2167033.safetensors",
+            "VixonsIllustriousStyles-sangdelan__2357527.safetensors",
+            "WAN2.2.T2I(LowNoise)--PolyhedronNUDESBODY-FIX(female)BreastsNipples_2433380.safetensors",
+            "WebtoonstylePalace_1690398.safetensors",
+            "WhiteWolf(MarvelComics)(Illustrious)(AD)_2094143.safetensors",
+            "Wise-ZenlessZoneZero_2078652.safetensors",
+            "WolfConFStyle-IllustriousPony_1821939.safetensors",
+            "WonderfulSaggyBreastsPonyV_2314627.safetensors",
+            "WutheringWaves_ZaniGunMingChao_ZanNi_1726734.safetensors",
+            "XochiJalapeno(VictorandValentino)_2367062.safetensors",
+            "YAMATHEGODstyleLoRAforPonyXLIllustrious_1385022.safetensors",
+            "YY_98801.safetensors",
+            "Yasuo_11177.safetensors",
+            "YuukaKazamifromMoP_300090.safetensors",
+            "ZXCVStyleILPonyXL_1711338.safetensors",
+            "ZhiLangYongZhensekiroEmmahentaiLora_112299.safetensors",
+            "bimbocorestyle_1564202.safetensors",
+            "candle_insertion_18751.safetensors",
+            "chubbyfemboyXL_954533.safetensors",
+            "covering_privates_breasts_1830967.safetensors",
+            "dark(dramaticchiaroscurolighting)-sliders.ntcai.xyz(notrigger)_708019.safetensors",
+            "djzOceanicRim_31385.safetensors",
+            "doublepenetrations-doggystyle-_2301374.safetensors",
+            "epi_noiseoffset_16576.safetensors",
+            "erectclitorisunderclothes_2208849.safetensors",
+            "extremelydetailed(notrigger)-sliders.ntcai.xyz_383563.safetensors",
+            "gigantomastia_1149703.safetensors",
+            "illustriousXL8in1FullmetalAlchemistGangZhiLianJinZhuShiHiromuArakawaHuangChuanHong-ArtistStyle_2042100.safetensors",
+            "illustriousXLCLAMPCardCaptorSakuraMoQiaShaoNuYingMuZhiBenYingDaDaoShiZhiShi-ArtistStyle_1639563.safetensors",
+            "kunnicunnilingus_2143181.safetensors",
+            "kuroisunaStyleIllustrious_1822456.safetensors",
+            "laurenNSFWinfluencerLoRav1_2482926.safetensors",
+            "luxuriousharembackground_1304363.safetensors",
+            "mailmeiru(potsupurumeiru)_405595.safetensors",
+            "mhr_22428.safetensors",
+            "mikaze60StyleLora_8349.safetensors",
+            "monstervore_2113219.safetensors",
+            "realface003_573494.safetensors",
+            "rpgchara-anima-base1-v1.safetensors",
+            "skzW0rld_1729406.safetensors",
+            "thedeathcrow05styleLoRAforIllustrious_2075291.safetensors",
+            "tsukishiro_yanagi_(zenlesszonezero)_1911519.safetensors",
+            "yutianXiJieSeCaiLoRA_265115.safetensors",
+            "zerotwo02(darling_in_the_franxx)_20026.safetensors"
+          ]
+        ],
+        "strength_model": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": -100.0,
+            "max": 100.0,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "model",
+        "lora_name",
+        "strength_model"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "MODEL"
+    ],
+    "name": "LoraLoaderModelOnly",
+    "display_name": "Load LoRA",
+    "description": "This LoRAs loader is used to modify the diffusion model, altering the way in which latents are denoised such as applying styles. Multiple LoRA nodes can be linked together.",
+    "python_module": "nodes",
+    "category": "model/loaders",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "output_tooltips": [
+      "The modified diffusion model.",
+      "The modified CLIP model."
+    ],
+    "search_aliases": [
+      "lora",
+      "load lora",
+      "apply lora",
+      "lora loader",
+      "lora model"
+    ],
+    "essentials_category": "Image Generation"
+  },
+  "TextEncodeQwenImageEditPlus": {
+    "input": {
+      "required": {
+        "clip": [
+          "CLIP",
+          {}
+        ],
+        "prompt": [
+          "STRING",
+          {
+            "multiline": true,
+            "dynamicPrompts": true
+          }
+        ]
+      },
+      "optional": {
+        "vae": [
+          "VAE",
+          {}
+        ],
+        "image1": [
+          "IMAGE",
+          {}
+        ],
+        "image2": [
+          "IMAGE",
+          {}
+        ],
+        "image3": [
+          "IMAGE",
+          {}
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "clip",
+        "prompt"
+      ],
+      "optional": [
+        "vae",
+        "image1",
+        "image2",
+        "image3"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CONDITIONING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "CONDITIONING"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "TextEncodeQwenImageEditPlus",
+    "display_name": null,
+    "description": "",
+    "python_module": "comfy_extras.nodes_qwen",
+    "category": "model/conditioning/qwen image",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "KSampler": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL",
+          {
+            "tooltip": "The model used for denoising the input latent."
+          }
+        ],
+        "seed": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 18446744073709551615,
+            "control_after_generate": true,
+            "tooltip": "The random seed used for creating the noise."
+          }
+        ],
+        "steps": [
+          "INT",
+          {
+            "default": 20,
+            "min": 1,
+            "max": 10000,
+            "tooltip": "The number of steps used in the denoising process."
+          }
+        ],
+        "cfg": [
+          "FLOAT",
+          {
+            "default": 8.0,
+            "min": 0.0,
+            "max": 100.0,
+            "step": 0.1,
+            "round": 0.01,
+            "tooltip": "The Classifier-Free Guidance scale balances creativity and adherence to the prompt. Higher values result in images more closely matching the prompt however too high values will negatively impact quality."
+          }
+        ],
+        "sampler_name": [
+          [
+            "euler",
+            "euler_cfg_pp",
+            "euler_ancestral",
+            "euler_ancestral_cfg_pp",
+            "heun",
+            "heunpp2",
+            "exp_heun_2_x0",
+            "exp_heun_2_x0_sde",
+            "dpm_2",
+            "dpm_2_ancestral",
+            "lms",
+            "dpm_fast",
+            "dpm_adaptive",
+            "dpmpp_2s_ancestral",
+            "dpmpp_2s_ancestral_cfg_pp",
+            "dpmpp_sde",
+            "dpmpp_sde_gpu",
+            "dpmpp_2m",
+            "dpmpp_2m_cfg_pp",
+            "dpmpp_2m_sde",
+            "dpmpp_2m_sde_gpu",
+            "dpmpp_2m_sde_heun",
+            "dpmpp_2m_sde_heun_gpu",
+            "dpmpp_3m_sde",
+            "dpmpp_3m_sde_gpu",
+            "ddpm",
+            "lcm",
+            "ipndm",
+            "ipndm_v",
+            "deis",
+            "res_multistep",
+            "res_multistep_cfg_pp",
+            "res_multistep_ancestral",
+            "res_multistep_ancestral_cfg_pp",
+            "gradient_estimation",
+            "gradient_estimation_cfg_pp",
+            "er_sde",
+            "seeds_2",
+            "seeds_3",
+            "sa_solver",
+            "sa_solver_pece",
+            "ddim",
+            "uni_pc",
+            "uni_pc_bh2"
+          ],
+          {
+            "tooltip": "The algorithm used when sampling, this can affect the quality, speed, and style of the generated output."
+          }
+        ],
+        "scheduler": [
+          [
+            "simple",
+            "sgm_uniform",
+            "karras",
+            "exponential",
+            "ddim_uniform",
+            "beta",
+            "normal",
+            "linear_quadratic",
+            "kl_optimal"
+          ],
+          {
+            "tooltip": "The scheduler controls how noise is gradually removed to form the image."
+          }
+        ],
+        "positive": [
+          "CONDITIONING",
+          {
+            "tooltip": "The conditioning describing the attributes you want to include in the image."
+          }
+        ],
+        "negative": [
+          "CONDITIONING",
+          {
+            "tooltip": "The conditioning describing the attributes you want to exclude from the image."
+          }
+        ],
+        "latent_image": [
+          "LATENT",
+          {
+            "tooltip": "The latent image to denoise."
+          }
+        ],
+        "denoise": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.01,
+            "tooltip": "The amount of denoising applied, lower values will maintain the structure of the initial image allowing for image to image sampling."
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "model",
+        "seed",
+        "steps",
+        "cfg",
+        "sampler_name",
+        "scheduler",
+        "positive",
+        "negative",
+        "latent_image",
+        "denoise"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "LATENT"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "LATENT"
+    ],
+    "name": "KSampler",
+    "display_name": "KSampler",
+    "description": "Uses the provided model, positive and negative conditioning to denoise the latent image.",
+    "python_module": "nodes",
+    "category": "model/sampling",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "output_tooltips": [
+      "The denoised latent."
+    ],
+    "search_aliases": [
+      "sampler",
+      "sample",
+      "generate",
+      "denoise",
+      "diffuse",
+      "txt2img",
+      "img2img"
+    ]
+  }
+}

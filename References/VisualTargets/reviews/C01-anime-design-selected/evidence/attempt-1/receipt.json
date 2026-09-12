@@ -1,0 +1,31 @@
+{
+  "provider": "local ComfyUI",
+  "model": "qwen_image_edit_2511_fp8mixed.safetensors",
+  "lora": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+  "template_path": "D:\\ComfyUI\\python_embeded\\Lib\\site-packages\\comfyui_workflow_templates_json\\templates\\image_qwen_image_edit_2511.json",
+  "template_sha256": "849259b22e928b52e604d00f0618209a06b3fa09807f8d1bfbb1571819672a66",
+  "adaptations": [
+    "Single explicit sampler mode instead of lazy switches",
+    "1536x864 exact 16:9 ImageScale instead of FluxKontextImageScale",
+    "Official Comfy-Org repack: no optional third-party latent method override"
+  ],
+  "inputs": [
+    {
+      "path": "E:\\OpenMakaiRanch\\.dream-loop\\generation-C01-c7c8157aa937\\C01-lineup.png",
+      "sha256": "1fff4dfbe4f0b2d245653904a33d3ac828476d519f271c85af4e1f3c4441c0db"
+    },
+    {
+      "path": "E:\\OpenMakaiRanch\\.dream-loop\\style-revision\\anime-face-style-only.png",
+      "sha256": "e14a9901ec6e58c853690cf58ea62100d0280f488024ded59aa71ee70d6a307d"
+    }
+  ],
+  "seed": 26091241,
+  "status": "candidate_not_approved",
+  "output_sha256": "0b402e04dd301f445d08178cf4bed29a03b63e7fa99bc6c6c4678b6de5eb6eaa",
+  "dimensions": [
+    1536,
+    864
+  ],
+  "prompt_id": "8cc4ae76-1ad2-4210-853e-8ee47560005f",
+  "workflow_sha256": "fad0f0539244df32eaf23bbcd68b9c8205d5204132fdeef876c1edfdf6698c40"
+}

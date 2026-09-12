@@ -59,6 +59,7 @@ for area,g in grids['areas'].items():
     for rn,width,pts in rr:
         vs=[];fs=[]
         for segment,(a,b) in enumerate(zip(pts,pts[1:])):
+            if rn=='connection' and segment==data['region']['connection']['bridge']['segment_index']:continue
             dx,dz=b[0]-a[0],b[2]-a[2];length=math.hypot(dx,dz)
             if length<1e-8:continue
             nx,nz=-dz/length*width/2,dx/length*width/2
@@ -96,6 +97,7 @@ for area,g in grids['areas'].items():
                 aa,bb=pp[0][side],pp[1][side]
                 # Actual bridge opening in both stream bank colliders.
                 if area=='ranch' and 22.2-.4<=mid[2]<=25.8+.4:continue
+                if area=='ranch' and any(on_valley_bridge(p[0],p[2],data,data['region']['connection']['bridge']['bank_gap_margin']) for p in [aa,bb]):continue
                 barrier(f'{area}_bank_{si}_{k}_{side}-colonly',[aa[0],aa[2]],[bb[0],bb[2]],g,area+'_safety',3.2)
     mesh(area+'_stream',vs,fs,'water',area+'_water')
     if area=='town':
@@ -112,6 +114,20 @@ for area,g in grids['areas'].items():
                 barrier(f'town_shore_{si}_{k}-colonly',[aa[0]+2,aa[2]],[bb[0]+2,bb[2]],g,'town_safety',3.5)
 
 bridge=data['region']['ranch_side_route']['bridge'];x,z,w,d=bridge['deck_bounds'];y=bridge['deck_elevation']-12
+vb,va,vend,vl,vux,vuz=bridge_frame(data)
+def valley_box(name,along,side,y,length,width,height):
+    obj=box(name,0,y,0,length,height,width,'ranch_valley_bridge')
+    for v in obj.data.vertices:
+        u=v.co.x+along;s=-v.co.y+side
+        v.co.x=va[0]+vux*u-vuz*s;v.co.y=-(va[2]+vuz*u+vux*s)
+    return obj
+vy=va[1]-12
+valley_box('valley_footbridge_deck-col',vl/2,0,vy-vb['deck_thickness']/2,vl,vb['deck_width'],vb['deck_thickness'])
+for side in [-1,1]:
+    offset=side*(vb['clear_width']/2+vb['rail_thickness']/2)
+    valley_box(f'valley_rail_{side}-col',vl/2,offset,vy+vb['rail_height']/2,vl,vb['rail_thickness'],vb['rail_height'])
+    for along in [1,vl-1]:
+        valley_box(f'valley_support_{side}_{along}-col',along,offset,vy-1.15,.3,.3,2.)
 box('ranch_footbridge_deck-col',x+w/2,y-.15,z+d/2,w,.3,d,'ranch_bridge')
 for side in [z,z+d]:box('bridge_rail_'+str(side)+'-col',x+w/2,y+.65,side,w,1.3,.15,'ranch_bridge')
 pier=data['region']['coast']['pier'];x,z,w,d=pier['deck_bounds'];y=pier['deck_elevation']

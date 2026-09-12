@@ -1,0 +1,186 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2511_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "OMR-0b402e04dd301f445d08.png"
+    }
+  },
+  "5": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "4",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 1536,
+      "height": 864,
+      "crop": "disabled"
+    }
+  },
+  "6": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 3.1
+    }
+  },
+  "7": {
+    "class_type": "CFGNorm",
+    "inputs": {
+      "model": [
+        "6",
+        0
+      ],
+      "strength": 1.0
+    }
+  },
+  "8": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "lora_name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+      "strength_model": 1.0
+    }
+  },
+  "9": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "5",
+        0
+      ],
+      "prompt": "Revise image 1, preserving exactly these two clearly adult professional women, their mature body proportions, copper single braid / ash-gray low ponytail, olive ranch workwear / navy researcher coat and trousers, visible hands and work boots, neutral studio full-body framing. MANDATORY GARMENT FIX: extend the ranch worker's cream shirt sleeves completely down to BOTH wrists with buttoned cuffs, absolutely no rolled sleeves and no exposed forearms. Button both cream shirts fully to their high collars; modest practical loose opaque clothing with no neckline opening. Preserve complete long trousers and flat sturdy work boots. MANDATORY STYLE CHANGE: use image 2 solely for anime face rendering and hair material style, not its identities, outfits, body features, expressions or accessories. Make eyes distinctly clean anime almond eyes with clear outlined irises and crisp upper lash contour, simple small nose and lips, restrained neutral professional expressions. Preserve adult jawlines and adult proportions. Make hair into large sculpted chunky locks with sharp contiguous graphic shine bands, not fine strand highlights. Render like an anime cel-shaded 3D game character model: soft three-dimensional volumes, clean two/three-tone shadow shapes, thin dark contours, no painterly texture, no photographic pores or realism, no chibi. Two original adult human professionals only; no cat ears, no horns, no reference identity copying. Frontal/slight three-quarter neutral upright standing; both complete hands separated from clothing, both boots fully visible. Preserve blank gray studio background, no labels, no extra heads or figures. The shirt sleeves down to wrists and the fully closed collar are critical.",
+      "image2": [
+        "15",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "5",
+        0
+      ],
+      "prompt": "",
+      "image2": [
+        "15",
+        0
+      ]
+    }
+  },
+  "11": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "latent_image": [
+        "11",
+        0
+      ],
+      "seed": 26091242,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "13": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "13",
+        0
+      ],
+      "filename_prefix": "OMR_VisualTargets/generation-C01-anime-style-revision2-c52c9c4c324f/candidate"
+    }
+  },
+  "15": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "OMR-e14a9901ec6e58c85369.png"
+    }
+  }
+}

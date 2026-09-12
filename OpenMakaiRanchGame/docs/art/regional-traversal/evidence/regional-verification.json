@@ -1,0 +1,23 @@
+{
+  "recording_verified": true,
+  "route_passed": false,
+  "accepted": false,
+  "issues": [],
+  "frames": 3870,
+  "max_frame_displacement": {
+    "player": 0.10867137605644409,
+    "escort": 0.040237192675558815
+  },
+  "images": {
+    "regional-start": "e6857c606ff1abb2bf85a243e8e0499372d8adb996495dcf58605aa1ea19275a",
+    "regional-home": "ae00d14c81ddb47ab9ee5fa88504ddec391af225311389e1dcee8fce323ed510",
+    "regional-meadow": "c4ee8f8e310dd1e4d44bdbd7650f804465ec32e1d2f9514b120b6fab075f865d",
+    "regional-blocker": "88974158af3225ae2d9ad34b5df352bee60bb2232dbd6a3bff8d6215b3d16cce"
+  },
+  "report_sha256": "693e2789fe3f340242fc8683156afa6896a988831a12dcd3f6b94364c8f67941",
+  "trace_sha256": "d2ea7066def7326c15143f20c3681064329e6326d694bd742a6aa75b08d03422",
+  "source_sha256": "ff3a40f69d9c8f6017cff47f4bd9749f890c785f3df6d274dcc563843bd6509d",
+  "assembly_sha256": "179cda415cd1bdcb467bda911ad5402393dc7dd4f2df4d76da1e3accd81c63f3",
+  "first_blocker": "Stalled valley road 5; target=(68.53518, 4.22, 169.27055); actual=(66.55552, 5.075163, 168.13174); input=(-0.8668089, 0.49864048); gate=True; seam=",
+  "segment": "valley road 5"
+}

@@ -1,0 +1,111 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/OkachiSupplyHouseBase.tscn" id="1_base"]
+[ext_resource type="Script" path="res://src/World/OkachiCivicHouse.cs" id="2_adapter"]
+[ext_resource type="Script" path="res://src/World/WorldShelterVolume.cs" id="3_shelter"]
+
+[sub_resource type="BoxShape3D" id="desk"]
+size = Vector3(1.38, 0.75, 0.72)
+
+[sub_resource type="BoxShape3D" id="chair"]
+size = Vector3(0.44, 0.95, 0.45)
+
+[sub_resource type="BoxShape3D" id="table"]
+size = Vector3(1.72, 0.75, 0.85)
+
+[sub_resource type="BoxShape3D" id="wardrobe"]
+size = Vector3(1.04, 1.92, 0.62)
+
+[sub_resource type="BoxShape3D" id="pantry"]
+size = Vector3(1.04, 1.85, 0.5)
+
+[node name="OkachiCivicHouse" type="Node3D"]
+script = ExtResource("2_adapter")
+Footprint = Vector2(12, 10)
+
+[node name="Base" parent="." instance=ExtResource("1_base")]
+
+[node name="InteriorShelter" type="Node3D" parent="."]
+script = ExtResource("3_shelter")
+position = Vector3(0, 1.55, 0)
+HalfExtents = Vector3(5.85, 1.6, 4.85)
+
+[node name="ReceptionApproach" type="Marker3D" parent="."]
+position = Vector3(-3.25, 0.7, 3)
+
+[node name="PlanningApproach" type="Marker3D" parent="."]
+position = Vector3(3.35, 0.7, -2.3)
+
+[node name="FurnitureCollision" type="Node3D" parent="."]
+
+[node name="ReceptionDesk" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(-3.25, 0.375, 1.65)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/ReceptionDesk"]
+shape = SubResource("desk")
+
+[node name="ReceptionChair" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(-3.25, 0.475, 0.55)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/ReceptionChair"]
+shape = SubResource("chair")
+
+[node name="MeetingTable" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(3.25, 0.375, 2.15)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/MeetingTable"]
+shape = SubResource("table")
+
+[node name="MeetingSouthChair" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(3.25, 0.475, 3.35)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/MeetingSouthChair"]
+shape = SubResource("chair")
+
+[node name="MeetingNorthChair" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(3.25, 0.475, 0.95)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/MeetingNorthChair"]
+shape = SubResource("chair")
+
+[node name="ArchiveWardrobe" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(-4.5, 0.96, -3.7)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/ArchiveWardrobe"]
+shape = SubResource("wardrobe")
+
+[node name="ArchiveShelves" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(-2.3, 0.925, -3.9)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/ArchiveShelves"]
+shape = SubResource("pantry")
+
+[node name="SupplyDesk" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(3.35, 0.375, -3.5)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/SupplyDesk"]
+shape = SubResource("desk")
+
+[node name="SupplyChair" type="StaticBody3D" parent="FurnitureCollision"]
+position = Vector3(3.35, 0.475, -4.15)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape3D" parent="FurnitureCollision/SupplyChair"]
+shape = SubResource("chair")

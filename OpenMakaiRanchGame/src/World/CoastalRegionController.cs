@@ -109,7 +109,7 @@ public partial class CoastalRegionController : WorldGameController
     {
         var root = _roots[areaId];
         var local = root.ToLocal(worldPosition);
-        if (!Terrain!.Areas[areaId].TryHeight(new Vector2(local.X, local.Z), out var height))
+        if (!Terrain!.Areas[areaId].TryWalkingHeight(new Vector2(local.X, local.Z), out var height))
             throw new ArgumentOutOfRangeException(nameof(worldPosition), $"Outside {areaId} coastal heightfield");
         var ground = root.ToGlobal(new Vector3(local.X, height, local.Z));
         if (usePhysics && RegionReady && root.IsInsideTree() && root.CanProcess())

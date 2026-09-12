@@ -1,5 +1,27 @@
 {
   "version": 1,
+  "development": {
+    "status": "shared spatial target; triggers require verified existing gameplay authority",
+    "population_intent": "A small coastal town suggesting roughly 300 inhabitants, NOT 300 persistent simulated NPC records",
+    "stage_images": ["SUPPLY_SETTLEMENT", "MARKET_TOWN", "COASTAL_SETTLEMENT", "SMALL_COASTAL_TOWN"],
+    "first_slice": ["RANCH_HOME", "VALLEY_LANE", "ADMINISTRATION_SUPPLY", "MARKET_COURT"],
+    "ranch_home": {"space":"ranch local metres", "main_origin":[-10,0,-5], "envelope_center":[-10,-11], "envelope_size":[20,28], "yaw":0, "rooms":"entry office, kitchen/pantry/dining, private beds/bath; existing service IDs remain separate actions"},
+    "town_groups": [
+      {"id":"ADMINISTRATION_SUPPLY", "space":"town local metres", "main_origin":[12,0,-2], "envelope_center":[12,-5], "envelope_size":[12,16], "yaw":0, "stage":"SUPPLY_SETTLEMENT", "expansion":"6m rear annex inside reserved envelope; entrance remains at main local Z+5"},
+      {"id":"SUPPLY_YARD", "space":"town local metres", "center":[25,5], "size":[10,10], "stage":"SUPPLY_SETTLEMENT", "expansion":"covered delivery storage, paving and accessible shared work/shelter area, no duplicate stockpile"},
+      {"id":"MARKET_COURT", "space":"town local metres", "center":[-9,8], "size":[14,12], "stage":"SUPPLY_SETTLEMENT", "expansion":"same accessible court gains authored canopy/stands/seating; clear central circulation retained"},
+      {"id":"INLAND_RESIDENTIAL_COURT", "space":"town local metres", "center":[48,-17], "size":[28,24], "stage":"MARKET_TOWN", "status":"reserved, not modeled or unlocked"},
+      {"id":"QUIET_RESIDENTIAL_GARDENS", "space":"town local metres", "center":[-22,-37], "size":[28,26], "stage":"COASTAL_SETTLEMENT", "status":"reserved, not modeled or unlocked"},
+      {"id":"WORKSHOP_DELIVERY_COURT", "space":"town local metres", "center":[33,-43], "size":[26,18], "stage":"COASTAL_SETTLEMENT", "status":"reserved, not modeled or unlocked"}
+    ],
+    "permanent_open_space": [
+      {"id":"RANCH_MEADOWS", "space":"ranch local metres", "rule":"retain western bridge meadow, orchards and north/east pasture margins; do not fill every reserved hectare"},
+      {"id":"TOWN_GATE_GREEN", "space":"town local metres", "bounds":[-10,19,24,14], "rule":"keep gate-to-market approach open across all stages"},
+      {"id":"COAST_GREEN_BUFFER", "space":"town local metres", "rule":"shoreward of local X -42 stays predominantly public green/shore access; no new housing in stream/bank/shore masks"},
+      {"id":"MARKET_CIRCULATION", "space":"town local metres", "bounds":[-2.5,2,5,32], "rule":"no stall, construction barrier or seated crowd blocks this main route"}
+    ],
+    "rules": "A-D are design images, not invented unlock levels. Existing services remain usable at their current unlocks in shared/smaller premises. Structural completion uses a safe unoccupied transition. No new money/mana/contribution pool; no extra charge for already paid resources. Real ranch sleepers need unique assignments; anonymous town ambience is not a saved census."
+  },
   "export_policy": {"legacy_small_landscape_paused": true, "stage": "coastal_region_blockout", "final_art_approved": false},
   "region": {
     "id": "OKACHI_COASTAL_VALLEY",
@@ -13,7 +35,7 @@
         "origin": [0,12,0], "yaw": 0,
         "core_bounds": [-60,-50,120,100],
         "terrain_bounds": [-60,-50,150,240],
-        "walkable_boundary": [[-60,-50],[60,-50],[60,42],[30,50],[31,88],[52,127],[69,162],[78,188],[62,190],[52,169],[34,134],[14,94],[4,52],[-60,50]],
+        "walkable_boundary": [[-60,-50],[60,-50],[60,42],[30,50],[31,88],[52,127],[74,162],[78,188],[58,190],[52,169],[34,134],[14,94],[4,52],[-60,50]],
         "spawn": [0,0.8,10.5],
         "quick_portal": [0,0.7,13],
         "seam": [70,-7.2,185],
@@ -43,8 +65,18 @@
     "connection": {
       "id": "VALLEY_LANE", "owner": "ranch", "space": "regional XYZ",
       "width": 3.2,
-      "points": [[0,12,20],[12,10.5,50],[22,8.6,90],[43,6.4,130],[61,4.4,165],[70,4,185]],
-      "reason": "Follow the eastern valley terrace above the stream; bends follow the narrowing valley and avoid wet ground.",
+      "points": [[0,12,20],[12,10.5,50],[22,8.6,90],[43,6.4,130],[61,4.4,165],[71.35498656,4.22,165.14154131],[68.53517832764942,4.22,169.27054622143487],[61.76763857375903,4.22,179.18015800391726],[58.94783034,4.22,183.30916291],[70,4,185]],
+      "bridge": {
+        "id": "VALLEY_FOOTBRIDGE", "module": "ranch_valley_bridge.glb",
+        "space": "regional XYZ", "segment_index": 6,
+        "straight_approach_length": 5.0,
+        "start": [68.53517832764942,4.22,169.27054622143487],
+        "end": [61.76763857375903,4.22,179.18015800391726],
+        "deck_width": 3.8, "clear_width": 3.4, "deck_thickness": 0.3,
+        "rail_thickness": 0.2, "rail_height": 1.3,
+        "bank_gap_margin": 0.35
+      },
+      "reason": "Dry approaches use 5m straight runs along the bridge axis at both ends, keeping the full 3.2m lane clear of the unchanged rails. The 12m level bridge and carved stream remain fixed.",
       "optional_for_daily_services": true
     },
     "ranch_side_route": {
@@ -80,54 +112,343 @@
     "half_extents": [60, 50],
     "plots": [
       {"id":"dairy_barn","center":[11,-12],"footprint":[7.6,6.6],"yaw":-0.22},
-      {"id":"pasture","center":[-5.3,-13.8],"footprint":[6.2,5.6],"yaw":0.25},
-      {"id":"kitchen","center":[-18,0],"footprint":[6.2,5.6],"yaw":1.05},
+      {"id":"pasture","center":[-2,-34],"footprint":[6.2,5.6],"yaw":0},
+
       {"id":"workshop","center":[13,11.5],"footprint":[6.2,5.6],"yaw":-1.75},
       {"id":"pharmacy_lab","center":[17,0],"footprint":[6.2,5.6],"yaw":-1.10},
-      {"id":"office","center":[-5,-1],"footprint":[6.2,5.6],"yaw":-0.25},
-      {"id":"ranch_house","center":[-11,12],"footprint":[7.2,6.4],"yaw":0.70},
-      {"id":"pet_care","center":[-16,-11.8],"footprint":[4.6,4.4],"yaw":0.12}
+
+      {"id":"ranch_house","center":[-10,-11],"footprint":[20,28],"yaw":0},
+      {"id":"pet_care","center":[-13,-34],"footprint":[4.6,4.4],"yaw":0}
     ],
     "paths": [
-      {"id":"farm_lane","width":2.7,"points":[[0,20],[0,13],[1,9],[3.5,5],[5,0],[4,-5],[1,-8],[-5,-8],[-11,-6]]},
-      {"id":"home_lane","width":2.0,"points":[[1,9],[-2,11],[-4.5,14],[-7,15]]},
-      {"id":"kitchen_lane","width":1.8,"points":[[-11,-6],[-12,-3],[-11,0],[-13,3.5]]},
-      {"id":"quiet_garden","width":1.4,"points":[[-2,11],[-4.5,10],[-6.5,9]]},
-      {"id":"community","width":1.4,"points":[[3.5,5],[1,4.2],[-2.25,4.1]]}
+      {"id":"farm_lane","width":2.7,"points":[[0,20],[0,13],[1,9],[5,5],[5,0],[4,-5],[4,-25],[-2,-29],[-13,-29]]},
+      {"id":"home_lane","width":2.0,"points":[[1,9],[-2,6],[-10,6]]},
+
+      {"id":"quiet_garden","width":1.4,"points":[[1,9],[-2,11],[-4.5,15],[-6.5,15]]},
+      {"id":"community","width":1.4,"points":[[5,5],[3.5,7.5],[2.5,7.5]]}
     ],
     "approaches": {
-      "dairy_barn":[[4,-5],[7,-6]], "pasture":[[-5,-8]],
-      "kitchen":[[-13,3.5]], "workshop":[[1,9],[4,10]],
-      "pharmacy_lab":[[5,0],[8,2]], "office":[[1,4.2],[-3,4.5]],
-      "ranch_house":[[-7,15]], "pet_care":[[-11,-6],[-14,-6]]
+      "dairy_barn":[[4,-5],[7,-6]], "pasture":[[4,-25],[-2,-29]],
+      "workshop":[[1,9],[4,10]],
+      "pharmacy_lab":[[5,0],[8,2]],
+      "ranch_house":[[-10,6],[-10,4]], "pet_care":[[-2,-29],[-13,-29]]
     },
     "groves":[[-21,-16],[-11,-18],[22,-14],[22,9],[-22,14],[7,17]],
-    "clear_points":[[-6.5,8,2.2],[-2.25,2.9,2.0],[-6,1.5,1.5],[0,3.8,1.5]]
+    "clear_points":[[-6.5,14,2.2],[2.5,6.2,2.0],[2,1.5,1.5],[3,3.8,1.5]]
   },
   "town": {
-    "half_extents":[90,65],
-    "plots":[
-      {"id":"general_store","center":[-10,-7],"footprint":[5.5,4.8],"yaw":0.30},
-      {"id":"adventure_guild","center":[10,-8.5],"footprint":[6.0,5.2],"yaw":-0.16},
-      {"id":"research_office","center":[-14,0.3],"footprint":[4.8,4.4],"yaw":1.30},
-      {"id":"tavern","center":[12,3.1],"footprint":[6.0,5.2],"yaw":-1.05},
-      {"id":"bathhouse","center":[-10,9.7],"footprint":[5.2,4.6],"yaw":1.30},
-      {"id":"town_hall","center":[1.5,-9.5],"footprint":[5.6,5.0],"yaw":-0.18},
-      {"id":"planning_board","center":[-4.7,3.5],"footprint":[2.0,1.0],"yaw":0.5}
+    "half_extents": [
+      90,
+      65
     ],
-    "paths":[
-      {"id":"market_lane","width":3.3,"points":[[0,15],[0,12],[-0.8,9],[0,6],[2,2],[2,-1],[0,-3.5],[-4,-4],[-7,-3]]},
-      {"id":"guild_lane","width":2.6,"points":[[2,-1],[5,-2],[8,-3],[9.2,-3.4]]},
-      {"id":"garden_lane","width":1.8,"points":[[-0.8,9],[-3,11],[-5.5,11.8]]},
-      {"id":"scholars_lane","width":2.0,"points":[[-4,-4],[-7,-1],[-8.5,2.5]]}
+    "plots": [
+      {
+        "id": "general_store",
+        "center": [
+          -11,
+          8
+        ],
+        "footprint": [
+          1.8,
+          0.8
+        ],
+        "yaw": 0
+      },
+      {
+        "id": "adventure_guild",
+        "center": [
+          12,
+          -22
+        ],
+        "footprint": [
+          6,
+          5.2
+        ],
+        "yaw": 0
+      },
+      {
+        "id": "research_office",
+        "center": [
+          -23,
+          -2
+        ],
+        "footprint": [
+          4.8,
+          4.4
+        ],
+        "yaw": 1.5707963267948966
+      },
+      {
+        "id": "tavern",
+        "center": [
+          26,
+          -12
+        ],
+        "footprint": [
+          6,
+          5.2
+        ],
+        "yaw": 3.141592653589793
+      },
+      {
+        "id": "bathhouse",
+        "center": [
+          -23,
+          5
+        ],
+        "footprint": [
+          5.2,
+          4.6
+        ],
+        "yaw": 0
+      },
+      {
+        "id": "town_hall",
+        "center": [
+          12,
+          -5
+        ],
+        "footprint": [
+          12,
+          16
+        ],
+        "yaw": 0
+      }
+    ],
+    "paths": [
+      {
+        "id": "market_lane",
+        "width": 3.3,
+        "points": [
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            12
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            -16
+          ]
+        ]
+      },
+      {
+        "id": "market_bypass",
+        "width": 1.8,
+        "points": [
+          [
+            -14,
+            16
+          ],
+          [
+            -14,
+            14
+          ],
+          [
+            -14,
+            8
+          ],
+          [
+            -14,
+            2
+          ],
+          [
+            -14,
+            0
+          ]
+        ]
+      },
+      {
+        "id": "market_south",
+        "width": 2,
+        "points": [
+          [
+            0,
+            16
+          ],
+          [
+            -7,
+            16
+          ],
+          [
+            -14,
+            16
+          ],
+          [
+            -23,
+            16
+          ]
+        ]
+      },
+      {
+        "id": "civic_lane",
+        "width": 2.2,
+        "points": [
+          [
+            0,
+            6
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            12,
+            6
+          ],
+          [
+            18,
+            11
+          ],
+          [
+            25,
+            11
+          ]
+        ]
+      },
+      {
+        "id": "guild_lane",
+        "width": 2.6,
+        "points": [
+          [
+            0,
+            -16
+          ],
+          [
+            12,
+            -16
+          ],
+          [
+            20,
+            -18
+          ],
+          [
+            26,
+            -18
+          ]
+        ]
+      },
+      {
+        "id": "scholars_lane",
+        "width": 2,
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            -7,
+            0
+          ],
+          [
+            -14,
+            0
+          ],
+          [
+            -18,
+            -2
+          ]
+        ]
+      }
     ],
     "approaches": {
-      "general_store":[[-7,-3]], "adventure_guild":[[9.2,-3.4]],
-      "research_office":[[-8.5,2.5]], "tavern":[[2,2],[6,4]],
-      "bathhouse":[[-5.5,11.8]], "town_hall":[[0,-3.5]],
-      "planning_board":[[0,6],[-2.5,6]]
+      "general_store": [
+        [
+          -14,
+          11
+        ],
+        [
+          -11,
+          11
+        ]
+      ],
+      "adventure_guild": [
+        [
+          12,
+          -16
+        ]
+      ],
+      "research_office": [
+        [
+          -18,
+          -2
+        ]
+      ],
+      "tavern": [
+        [
+          26,
+          -18
+        ]
+      ],
+      "bathhouse": [
+        [
+          -14,
+          12
+        ],
+        [
+          -19,
+          11
+        ],
+        [
+          -23,
+          10
+        ]
+      ],
+      "town_hall": [
+        [
+          12,
+          6
+        ]
+      ]
     },
-    "groves":[[-17,-11],[17,-12],[17,11],[-16,11],[7,11]],
-    "clear_points":[[0,12,3.2],[-1,-0.8,2.5]]
+    "groves": [
+      [
+        -31,
+        -15
+      ],
+      [
+        34,
+        -22
+      ],
+      [
+        34,
+        14
+      ],
+      [
+        -31,
+        18
+      ],
+      [
+        7,
+        17
+      ]
+    ],
+    "clear_points": [
+      [
+        0,
+        12,
+        3.2
+      ],
+      [
+        12,
+        4.5,
+        2
+      ],
+      [
+        -14,
+        8,
+        1.2
+      ]
+    ]
   }
 }

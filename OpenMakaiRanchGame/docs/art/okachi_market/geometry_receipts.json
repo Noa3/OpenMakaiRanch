@@ -1,0 +1,370 @@
+{
+  "units": "metres; Godot XYZ +Z front, Blender (x,-z,y)",
+  "source_sha256": "fb3df879f337bb0defae9ce408531f5e659b78f5d1c3faff77cc9f2962e5ad78",
+  "generator_sha256": "e5a591deacc06fb72b1d69c8525fc0291ec801787a7925284adaa54f3a4f049a",
+  "source_reopened_verified": true,
+  "external_libraries": [],
+  "external_images": [],
+  "texture_attribution": "No textures used. Flat palette values adapted read-only from build_okachi_supply_house.py and build_ranch_furniture.py; fence source build_world_assets.py inspected. No generator imported or executed.",
+  "canopy_footprint_m": [
+    6,
+    4
+  ],
+  "minimum_frame_underside_m": 2.860042095184326,
+  "clear_lane_probe_min": [
+    -1,
+    0.001,
+    -2
+  ],
+  "clear_lane_probe_max": [
+    1,
+    2.8,
+    2
+  ],
+  "clear_lane_blocking_meshes": [],
+  "counter_top_height_m": 1.0,
+  "reserved_court_m": [
+    14,
+    12
+  ],
+  "court_authored": false,
+  "exports": [
+    {
+      "file": "canopy.glb",
+      "sha256": "f69e1d8e26637dedba3b65e6f7c31cae0ed49afaa221a5970d3718cbd4080ab3",
+      "bytes": 80956,
+      "mesh_count": 54,
+      "triangles": 648,
+      "collision_mesh_count": 37,
+      "collision_nodes": [
+        "canopy_CommonRafter_31-col",
+        "canopy_CommonRafter_32-col",
+        "canopy_CommonRafter_33-col",
+        "canopy_CommonRafter_34-col",
+        "canopy_CommonRafter_35-col",
+        "canopy_CommonRafter_36-col",
+        "canopy_Eave_22-col",
+        "canopy_Eave_23-col",
+        "canopy_Kingpost_26-col",
+        "canopy_Kingpost_29-col",
+        "canopy_Knee_X_3-col",
+        "canopy_Knee_X_8-col",
+        "canopy_Knee_X_13-col",
+        "canopy_Knee_X_18-col",
+        "canopy_Knee_Z_4-col",
+        "canopy_Knee_Z_9-col",
+        "canopy_Knee_Z_14-col",
+        "canopy_Knee_Z_19-col",
+        "canopy_Pad_0-col",
+        "canopy_Pad_5-col",
+        "canopy_Pad_10-col",
+        "canopy_Pad_15-col",
+        "canopy_Post_1-col",
+        "canopy_Post_6-col",
+        "canopy_Post_11-col",
+        "canopy_Post_16-col",
+        "canopy_PrincipalRafter_24-col",
+        "canopy_PrincipalRafter_25-col",
+        "canopy_PrincipalRafter_27-col",
+        "canopy_PrincipalRafter_28-col",
+        "canopy_Ridge_30-col",
+        "canopy_Shoe_2-col",
+        "canopy_Shoe_7-col",
+        "canopy_Shoe_12-col",
+        "canopy_Shoe_17-col",
+        "canopy_Tie_20-col",
+        "canopy_Tie_21-col"
+      ],
+      "roof_nodes": [
+        "Roof_canopy_Cap_53",
+        "Roof_canopy_Fascia_38",
+        "Roof_canopy_Fascia_39",
+        "Roof_canopy_Fascia_46",
+        "Roof_canopy_Fascia_47",
+        "Roof_Canopy_Panel_1",
+        "Roof_Canopy_Panel_-1",
+        "Roof_canopy_StandingSeam_40",
+        "Roof_canopy_StandingSeam_41",
+        "Roof_canopy_StandingSeam_42",
+        "Roof_canopy_StandingSeam_43",
+        "Roof_canopy_StandingSeam_44",
+        "Roof_canopy_StandingSeam_48",
+        "Roof_canopy_StandingSeam_49",
+        "Roof_canopy_StandingSeam_50",
+        "Roof_canopy_StandingSeam_51",
+        "Roof_canopy_StandingSeam_52"
+      ],
+      "sockets": [
+        "Socket_canopy_Accessory_Left",
+        "Socket_canopy_Accessory_Right",
+        "Socket_canopy_Approach",
+        "Socket_canopy_Loading"
+      ],
+      "decoded_bounds_m": {
+        "min": [
+          -3.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          3.0,
+          4.510000228881836,
+          2.0
+        ]
+      },
+      "mesh_node_transforms": "identity",
+      "evaluated_bounds_m": {
+        "min": [
+          -3.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          3.0,
+          4.510000228881836,
+          2.0
+        ]
+      }
+    },
+    {
+      "file": "counter.glb",
+      "sha256": "89c462d4c53cdc552b0a6025e30c07973217c7c7d73f7c46577e7793aa67a972",
+      "bytes": 21620,
+      "mesh_count": 14,
+      "triangles": 168,
+      "collision_mesh_count": 14,
+      "collision_nodes": [
+        "counter_Apron_4-col",
+        "counter_Apron_5-col",
+        "counter_FrontPanel_8-col",
+        "counter_Leg_0-col",
+        "counter_Leg_1-col",
+        "counter_Leg_2-col",
+        "counter_Leg_3-col",
+        "counter_LowerShelf_13-col",
+        "counter_SideRail_6-col",
+        "counter_SideRail_7-col",
+        "counter_TopPlank_9-col",
+        "counter_TopPlank_10-col",
+        "counter_TopPlank_11-col",
+        "counter_TopPlank_12-col"
+      ],
+      "roof_nodes": [],
+      "sockets": [
+        "Socket_counter_Accessory",
+        "Socket_counter_Approach",
+        "Socket_counter_Staff"
+      ],
+      "decoded_bounds_m": {
+        "min": [
+          -0.8999999761581421,
+          0.0,
+          -0.39800000190734863
+        ],
+        "max": [
+          0.8999999761581421,
+          1.0,
+          0.39800000190734863
+        ]
+      },
+      "mesh_node_transforms": "identity",
+      "evaluated_bounds_m": {
+        "min": [
+          -0.8999999761581421,
+          0.0,
+          -0.39800000190734863
+        ],
+        "max": [
+          0.8999999761581421,
+          1.0,
+          0.39800000190734863
+        ]
+      }
+    },
+    {
+      "file": "scaffold_bay.glb",
+      "sha256": "b681604f98bed4d6423d118e7fd97b5672100b88b468f0ab47b75fb3ab8352eb",
+      "bytes": 43840,
+      "mesh_count": 29,
+      "triangles": 348,
+      "collision_mesh_count": 29,
+      "collision_nodes": [
+        "scaffold_bay_BackBrace_22-col",
+        "scaffold_bay_BackToeBoard_28-col",
+        "scaffold_bay_Deck_23-col",
+        "scaffold_bay_Deck_24-col",
+        "scaffold_bay_Deck_25-col",
+        "scaffold_bay_Deck_26-col",
+        "scaffold_bay_Deck_27-col",
+        "scaffold_bay_EndBrace_17-col",
+        "scaffold_bay_EndBrace_21-col",
+        "scaffold_bay_Foot_0-col",
+        "scaffold_bay_Foot_2-col",
+        "scaffold_bay_Foot_4-col",
+        "scaffold_bay_Foot_6-col",
+        "scaffold_bay_Ledger_8-col",
+        "scaffold_bay_Ledger_9-col",
+        "scaffold_bay_Ledger_10-col",
+        "scaffold_bay_Ledger_11-col",
+        "scaffold_bay_Ledger_12-col",
+        "scaffold_bay_Ledger_13-col",
+        "scaffold_bay_Transom_14-col",
+        "scaffold_bay_Transom_15-col",
+        "scaffold_bay_Transom_16-col",
+        "scaffold_bay_Transom_18-col",
+        "scaffold_bay_Transom_19-col",
+        "scaffold_bay_Transom_20-col",
+        "scaffold_bay_Upright_1-col",
+        "scaffold_bay_Upright_3-col",
+        "scaffold_bay_Upright_5-col",
+        "scaffold_bay_Upright_7-col"
+      ],
+      "roof_nodes": [],
+      "sockets": [
+        "Socket_scaffold_bay_Loading"
+      ],
+      "decoded_bounds_m": {
+        "min": [
+          -1.2799999713897705,
+          0.0,
+          -0.6599999666213989
+        ],
+        "max": [
+          1.2799999713897705,
+          2.8899998664855957,
+          0.6599999666213989
+        ]
+      },
+      "mesh_node_transforms": "identity",
+      "evaluated_bounds_m": {
+        "min": [
+          -1.2799999713897705,
+          0.0,
+          -0.6599999666213989
+        ],
+        "max": [
+          1.2799999713897705,
+          2.8899998664855957,
+          0.6599999666213989
+        ]
+      }
+    },
+    {
+      "file": "material_stack.glb",
+      "sha256": "baaab4475ada7b71bc0c6c8799d2aa0a6adc79b560dbdff78b84d1c6263ccc6f",
+      "bytes": 30220,
+      "mesh_count": 20,
+      "triangles": 240,
+      "collision_mesh_count": 18,
+      "collision_nodes": [
+        "material_stack_Dunnage_0-col",
+        "material_stack_Dunnage_1-col",
+        "material_stack_Lumber_2-col",
+        "material_stack_Lumber_3-col",
+        "material_stack_Lumber_4-col",
+        "material_stack_Lumber_5-col",
+        "material_stack_Lumber_6-col",
+        "material_stack_Lumber_7-col",
+        "material_stack_Lumber_8-col",
+        "material_stack_Lumber_9-col",
+        "material_stack_Lumber_10-col",
+        "material_stack_Lumber_11-col",
+        "material_stack_Lumber_12-col",
+        "material_stack_Lumber_13-col",
+        "material_stack_Lumber_14-col",
+        "material_stack_Lumber_15-col",
+        "material_stack_Lumber_16-col",
+        "material_stack_Lumber_17-col"
+      ],
+      "roof_nodes": [],
+      "sockets": [
+        "Socket_material_stack_Loading"
+      ],
+      "decoded_bounds_m": {
+        "min": [
+          -1.024999976158142,
+          0.0,
+          -0.4300000071525574
+        ],
+        "max": [
+          1.024999976158142,
+          0.7549999952316284,
+          0.4300000071525574
+        ]
+      },
+      "mesh_node_transforms": "identity",
+      "evaluated_bounds_m": {
+        "min": [
+          -1.024999976158142,
+          0.0,
+          -0.4300000071525574
+        ],
+        "max": [
+          1.024999976158142,
+          0.7549999952316284,
+          0.4300000071525574
+        ]
+      }
+    },
+    {
+      "file": "barrier.glb",
+      "sha256": "42e2425cb5ec2fcfb2c77d60108930b4b2a2cd3780d1e92d8e712ecb385251ab",
+      "bytes": 14068,
+      "mesh_count": 9,
+      "triangles": 108,
+      "collision_mesh_count": 6,
+      "collision_nodes": [
+        "barrier_Foot_0-col",
+        "barrier_Foot_2-col",
+        "barrier_Rail_4-col",
+        "barrier_Rail_5-col",
+        "barrier_Upright_1-col",
+        "barrier_Upright_3-col"
+      ],
+      "roof_nodes": [],
+      "sockets": [
+        "Socket_barrier_Approach"
+      ],
+      "decoded_bounds_m": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.38999998569488525
+        ],
+        "max": [
+          1.0,
+          1.1200000047683716,
+          0.38999998569488525
+        ]
+      },
+      "mesh_node_transforms": "identity",
+      "evaluated_bounds_m": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.38999998569488525
+        ],
+        "max": [
+          1.0,
+          1.1200000047683716,
+          0.38999998569488525
+        ]
+      }
+    }
+  ],
+  "render": {
+    "file": "contact_sheet.png",
+    "engine": "Cycles",
+    "device": "CPU",
+    "samples": 20,
+    "sha256": "0fa105ef14db5875159f1f466ff37be7dbf3e22681c9b0655451a9ac6763eecb"
+  },
+  "limitations": [
+    "No Godot import or -col importer verification.",
+    "No navigation, physical traversal, use/IK, stage persistence, finance or town placement claims.",
+    "Roof has no collision; solid frame/furniture use visible -col meshes.",
+    "Scaffold is a static construction prop, not certified climbing equipment; no ladder or climbing behavior.",
+    "Contact sheet uses transient exploded catalogue placements, not a market court layout.",
+    "Saved source collections share local origins; solo desired collection for editing."
+  ]
+}

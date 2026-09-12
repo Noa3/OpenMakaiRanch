@@ -1,0 +1,99 @@
+{
+  "passed": false,
+  "accepted": false,
+  "error": "Stalled valley road 5; target=(68.53518, 4.22, 169.27055); actual=(66.55552, 5.075163, 168.13174); input=(-0.8668089, 0.49864048); gate=True; seam=",
+  "segment": "valley road 5",
+  "frames": 3870,
+  "reached": [
+    "home front approach",
+    "home front approach escort",
+    "home return lane",
+    "meadow outward 0",
+    "meadow outward 1",
+    "meadow outward 2",
+    "meadow outward 3",
+    "meadow west escort",
+    "meadow return 2",
+    "meadow return 1",
+    "meadow return 0",
+    "valley road 0",
+    "valley road 1",
+    "valley road 2",
+    "valley road 3",
+    "valley road 4"
+  ],
+  "shots": [
+    {
+      "name": "regional-start",
+      "frame": 3,
+      "area": "ranch",
+      "camera_position": [
+        -2.1945008E-05,
+        17.162508,
+        4.4378266
+      ],
+      "camera_rotation": [
+        -0.52360004,
+        -3.141589,
+        0
+      ]
+    },
+    {
+      "name": "regional-home",
+      "frame": 192,
+      "area": "ranch",
+      "camera_position": [
+        -9.935046,
+        14.809999,
+        2.0547032
+      ],
+      "camera_rotation": [
+        -0.52360004,
+        -3.141589,
+        0
+      ]
+    },
+    {
+      "name": "regional-meadow",
+      "frame": 1514,
+      "area": "ranch",
+      "camera_position": [
+        -41.913326,
+        18.162775,
+        13.960812
+      ],
+      "camera_rotation": [
+        -0.52360004,
+        -3.141589,
+        0
+      ]
+    },
+    {
+      "name": "regional-blocker",
+      "frame": 3870,
+      "area": "ranch",
+      "camera_position": [
+        66.5555,
+        9.437671,
+        162.06956
+      ],
+      "camera_rotation": [
+        -0.5235996,
+        -3.141589,
+        0
+      ]
+    }
+  ],
+  "source_commit": "1a65868b73e1af48277d8ac9ac338e3edcc5ce34",
+  "scene": "res://scenes/dev/CoastalRegionBlockout.tscn",
+  "camera": "active regional gameplay camera; per-shot global poses",
+  "renderer": "forward_plus",
+  "viewport": [
+    1600,
+    900
+  ],
+  "render_scale": 1,
+  "elapsed_seconds": 64.803,
+  "setup": "fresh isolated game; onboarding bypassed; existing rancher prepared as escort, not earned invitation; actual regional ranch spawn; no route teleport",
+  "limits": "Home exterior front approach only, no interior use. Player normal MobileMovementInput and MoveAndSlide. Follower bounded nav-path motion, not CharacterBody3D; capsule checks every fourth frame are sampled, not swept. No financial action, construction, weather matrix or ordinary gameplay activation."
+}
