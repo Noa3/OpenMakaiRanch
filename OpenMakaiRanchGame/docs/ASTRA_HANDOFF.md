@@ -1,52 +1,57 @@
 # ASTRA Handoff
 
-Checkpoint **2026-09-11**, verified code head **`4ffd97c84929ed307fa623dde709760dcec28762`**: **1,889 passing smoke assertions, 526/526 rendered checks, 55 Python tests and 64 PNGs**. All three CI workflows succeeded. **OPTIMIZATION_VALIDATION.md** records exact-head evidence, source/merge receipts, inspected images, archive hashes, the prior failed timeout and fixture limits. Documentation-only commits may follow. Preserve historical resident/design/localization validation documents as evidence for their own revisions.
+## Current direction and working snapshot — 2026-09-12
 
-## Branch and contracts
+The user asked to persist the agreed living-world direction and correct older planning. This is a **documentation-only continuation**, based on the uploaded `astar` head **`1a65868b73e1af48277d8ac9ac338e3edcc5ce34`**. No game code, asset, runtime data, scene, workflow or personal save is changed by this planning update. It is not a new build, traversal or visual acceptance result.
 
-Continue **`feature/world-stations-and-interiors-20260911`**, **PR #15**, repository Noa3/OpenMakaiRanch. Main was checked at merged PR #13 `3209f4c`; PR #14's old test-only baseline is included/repaired and should not be merged separately. Read live Git before editing; preserve concurrent changes, no force push or automatic merge.
+Read in order:
 
-Keep **C#12, SDK10.0.401, net8.0, Godot4.7.2 Mono and schema16**. Fresh games are expected; current-version saves must work and personal files must not be deleted. Original reference content remains read-only. GameRoot/services own simulation, economy and time. No adult-specific asset, source relabeling or production identity approval was added.
+1. [LIVING_WORLD_PLAN.md](LIVING_WORLD_PLAN.md): current requirements, proposed stages, architecture, unresolved decisions and evidence rules.
+2. [KANBAN.md](KANBAN.md): sole status board, stable LW-01..LW-20 tasks, dependencies, completion evidence and retained non-world work.
+3. [DECISIONS.md](DECISIONS.md): D-013..D-017 supersede conflicting old layout/population priorities without discarding the existing simulation or C# 12.
+4. [KNOWN_ISSUES.md](KNOWN_ISSUES.md), [habitation facts](art/RANCH_HABITATION_FACTS.md), [asset recovery](art/RANCH_ASSET_RECOVERY.md) and [coastal plan](execplan/COASTAL_REGION.md): concrete upload blockers and prior evidence.
 
-User wants efficient low-day play respected, not blocked with arbitrary date gates, hidden penalties or new costs. Read **OPTIMIZATION_AND_PACING.md**. More authored decisions/content and optional challenges are proposed; they are not implemented just because a progress calculator exists. User also requires translation-aware UI and later ten-target localization excluding Russian. Use LocaleCatalog, full keyed templates, canonical IDs and adaptable layouts. Current en/de/ja availability is not full translation.
+The earlier feature-branch handoff is preserved verbatim in [the historical snapshot](archive/20260912-before-living-world/ASTRA_HANDOFF.md). Its instruction to continue PR #15 is historical for that work, not a reason to ignore the user's newer local `astar` upload. Verify live Git and current user assignment before any write; preserve concurrent/dirty work, no force push or automatic merge. Historical local 'no commit/push' notes described those sessions, not a grant or denial for future sessions; follow the current explicit authorization and stage only its scope.
 
-## Latest completed work
+## What is now the durable target
 
-**Work-station planning:** Overview, Team and Equipment stay scoped to the physical workplace. The guided introduction retains direct Build/Assign. Canonical offers show one-time price, wallet, local level-scaled upkeep and whole-ranch upkeep after research. Zero-level ghost upkeep is repaired. Actual purchases compare the displayed quote; assignments compare the previous job. World context/proximity plus root session/day/phase/pause/combat/settlement/busy guards reject stale, remote and reentrant commands. Production is paid only during normal settlement. Read STATION_PLANNING.md.
+- A larger coherent ranch/valley/coastal town region with plausible water, terrain, routes, growth reserves and permanent green/shore space. Important daily paths stay compact; an open-world experience does not require one monolithic scene or a new streaming engine.
+- Functions in usable buildings/rooms/objects/contacts, not one menu-station facade per service. Kitchen and ranch office belong in the main house. Own houses and important public premises are enterable; ordinary private homes need not all be accessible.
+- Consistent metre-scale figures, fences, furniture and architecture, actual sit/lie use where supported, and explicit ranch housing/upgrade policy. Add rooms/wings rather than inflating the entire house.
+- A town that eventually suggests roughly 300 inhabitants. Important NPC continuity is required; 300 persistent citizens or full agents are expressly **not** required. Background activity derives from place, time, weather and stage.
+- Visible civic growth as the ranch supports the town: a modest civic/supply house, market and later quarters. Actual tax/mana pool, official/landlord role, thresholds and accounting remain to be audited/decided. No invented double payments, punitive costs or minimum-day gates.
+- Local Astra primarily models, textures, furnishes, animates neutral uses, integrates and visually checks real assets. General economy/trait/dialogue/system rewrites are not the art task.
+- Remove genuinely unused/replaced scenes only after dependency, dynamic-path, UID, tool/test/export and replacement checks; keep sources and historical evidence.
 
-**Transparent output:** Team now shows each resident's current-condition gross units and gold, with a breakdown tooltip. Preview and committed work share the original formula, order and rounding. Effective CombatSkill applies to Adventure, effective RanchSkill to other productive jobs as before; this is not a hidden role-skill rebalance. Fatigue>=70 can cause automatic Rest before night recovery and production, and the UI warns about it. Later care, night plans, upkeep and events make this different from a final daily balance.
+## First actions
 
-**Inventory conservation:** failed equipment replacements no longer return/duplicate the still-equipped old item. Stock/return capacity are validated first; real owned swaps still exchange exactly one item. Bonus inspection of missing equipment maps is read-only. Other inventory paths/extreme arithmetic remain separate audit work.
+Establish the actual uploaded runtime baseline (LW-01). In parallel plan final geography/growth envelopes and measure scale (LW-02/LW-04), and audit civic resource/source contracts (LW-09). Integrate the recovered house through a function-to-room mapping (LW-03/LW-05), rather than making another show prototype. Decide the household/capacity issue explicitly (LW-06). Resolve the rejected stream/path crossing and walk it with a companion (LW-08).
 
-**Completion and pacing:** the existing WinConditionService exposes read-only catalog-based counts, excluding unknown/duplicate substitutes. No new date gate or thresholds. Synthetic service tests meet goals on day2, record the next morning and continue three more days without reset, repeat event or automatic NG+. The separate seven-day seeded economy fixture pays construction/meals and stays solvent, but normal days lose8G after meals; it is not an optimal or indefinitely profitable strategy and not a whole-game playthrough.
+The first complete delivery is **main house -> useful ranch rooms -> connection -> civic/supply house -> modest market courtyard**, with **one** visible before/construction/after civic improvement and real use. Local art can prepare variants while economic decisions remain open, but a test trigger is not ordinary-play financial integration. Complete that slice before mass-producing later quarters.
 
-**Important exclusion:** a blocked central station-file write meant the proposed new ambitions page and revised victory routing were NOT integrated. Central WorldStationPanel.cs remains unchanged from baseline. No alternate path installed the blocked change. The existing house/report route may overwrite victory presentation; return from a locked screen still needs location-preserving review. Service-level continuation tests do not certify the existing physical Continue Ranching control.
+## Upload facts and blockers
 
-**Translation:** 31 station keys followed the resident slice, then four forecast keys bring matching English/German UI catalogs to **344**. Kitchen project wording no longer promises a production multiplier absent from current rules. Japanese/new-language fallback and older untranslated story/result messages remain. No new locales were enabled.
+The new 20 x 16 m house and 12 x 12 m wing are still a furnished authoring prototype, not the ordinary ranch. `organic_layout.json` retains a 7.2 x 6.4 m house footprint plus separate kitchen/office plots. Replan complete footprints and approaches; do not squeeze the asset into the old plot. Fifteen furniture GLBs and sources exist, but the recorded furniture collider count is zero and articulated furniture use is not wired. One neutral stand-in was measured at its 1.62 m target; that is not an all-body clearance test.
 
-## Earlier work retained
+The habitation audit found uncapped ranch recruitment, no actual bed/room/seat allocation and a player/roster-`anon` identity overlap. Seven sample beds are not a capacity policy. The town atmosphere requirement must not accidentally create 300 ranch residents or a new household simulation for generic passersby.
 
-Resident Overview/Care/Practice/Company/Work pages, separate gift list and addressed-NPC waiting remain. Free chat is read-only; encouragement/meals/ordinary gifts/recovery/mentoring reuse existing services. Practical ranch/craft/combat/magic lessons have the original two-session ranch budget and one focus per resident/day through the new route. Invalid/capped training is rejected before effects. World/root command guards and bounded per-resident last-day receipts survive save/load and normal day rollover. RESIDENT_INTERACTIONS.md and its validation record exact limits; raw legacy APIs are not universally protected by the new interface.
+The coastal candidate remains rejected: reported path ground deviation 0.1394483787870735 exceeds 0.12, with a stream/valley-lane crossing unresolved. Its files and opt-in controller are not a walked or production-accepted region. Keep the threshold and rejection evidence. The prior document's geometry contracts remain available through the coastal plan.
 
-Places has four optional starting projects, not a finished campaign. Existing voluntary shared nights, rest/bath separation and bounded saved receipts remain; no pregnancy/family state was added and production identity gates remain. NSFW_CONTENT_HANDOFF.md is a neutral authoring/location handoff, not explicit scene scripts.
+## Verification provenance — do not reuse old counts
 
-Eight metre-scale building plots protect roofs, doors and the gate; visual grades0-3 keep shell/collision size stable. Imported/fallback tree bounds respect reservations. These are not all-route/free-placement or annex certifications. Held-input preservation, physical doorway movement, starting-fund tutorial construction, local planning and opening/bedroom-return repairs remain tested.
+The prior handoff reports **1,889 smoke assertions, 526/526 rendered checks, 55 Python tests and 64 PNGs** for **`4ffd97c84929ed307fa623dde709760dcec28762`**, with exact workflows and receipts in OPTIMIZATION_VALIDATION.md. That is an earlier code checkpoint, not an executed test of the later asset-upload head `1a65868`. This documentation update ran no Godot/.NET/gameplay/asset acceptance tests and does not change historical result status.
 
-The title owns a separate bounded diorama viewport/camera. Actual native language-picker input preserves window/settings/state, and language-only persistence avoids reapplying graphics/audio/input. Prior combat, day ledger/growth/planning/reentrancy, purchase and save journeys remain connected. Read prior validation files without recycling their counts as new evidence.
+Asset recovery separately records a local Forward+ prototype capture, 15-model kit verification and VisualTargets tests, with their narrower limitations. The rejected coastal geometry test and previously recorded UI failures are not erased by those results. Establish and report an actual combined baseline before saying the upload is green.
 
-## Current verification
+## Contracts and unrelated work retained
 
-Head4ffd97c: Build #660 **34649261398**, Godot #652 **34649261392**, UI #90 **34649261422**: all success. Tested merge **`7436f2222b1d8142b4b59399fe398062bbc8384c`** is recorded in the source receipt. **1,889 SMOKE OK / zero FAIL / one PASS**, **526/526 UI checks / zero UI runtime errors /64 captures**, **55 Python tests**. The full local Python retry took22.048 seconds; no local Godot/.NET run is claimed. Current source bytes and downloaded artifact hashes were checked; German forecast/equipment/purchase images were inspected.
+Keep **C# 12, pinned SDK 10.0.401, net8.0, Godot 4.7.2 Mono and current schema 16**. Fresh games are expected; current-version save/load and personal-file protection remain mandatory. Any necessary new persistent housing/development fields need a small reviewed addition in the existing architecture, not another save system or a broad migration project. Original source is read-only; existing identity/design/eligibility gates remain unchanged.
 
-The prior station UI run at0356785 really failed at its240-second process timeout, not an unknown result or a pass. The same existing workflow now allows a bounded360-second rendered process, still15minutes overall. It retains all assertions/error rejection and restores the intended test viewport after LoadSlot. No new workflow or write-capable helper was added this turn.
+GameRoot/services retain economic, calendar and progression authority. Preserve the verified scope of previous day ledger/reentrancy repairs, independent bath/rest bonuses, efficient play, local quote/receipt guards, resident interactions, merchant stock and equipment conservation. Existing source/code audit constraints and localization through LocaleCatalog/keyed templates remain. No new language is enabled here.
 
-Five invalid-save smoke errors are intentional. Import retains EditorSettings and software rendering its VSync diagnostics; existing build warnings remain. Do not call this warning-free or universal lifecycle certification. UI proximity/resources/strong stats and early completion are synthetic. The economic seven-day fixture uses real starting resources/transactions but skips the world/tutorial and does not optimize the full action space.
+Keep ENDING-001 (physical victory/Continue Ranching and same-location return), broader settlement/inventory/data audits, useful equipment progression, creation/localization/accessibility, original-engine parity and tooling diagnostics in the retained backlog. This world plan does not claim them solved or authorize bypassing a previously blocked write by another path. The complete prior issue details are preserved in the historical snapshot.
 
-## Next priorities
-
-Review reliable completion-screen presentation and same-ranch continuation; compare casual, efficient and specialist multi-day policies before changing rates. Design useful marginal benefits for equipment levels rather than escalating upkeep for checklist-only progression. Add a concrete restoration chapter/resident payoff and optional mastery experiences, not forced waiting. Continue stepwise localized creation, less dense Team/help text, dedicated service/results, resident recovery/equipment/stories and NPC/camera routes. Organic town/river, final assets/building stages, all scripts/plurals/RTL, actual exports/devices, Forward+ performance and original-engine parity remain open.
-
-## Safe commands
+## Safe execution and evidence
 
 ```bash
 python Tools/Godot/validate_locales.py
@@ -57,4 +62,4 @@ python Tools/Godot/ui_acceptance.py --rendered --timeout 360
 python Tools/Godot/launch.py --mode runtime --isolated
 ```
 
-Only isolated test profiles: disposable slots99/3 must never target personal saves. Archives are evidence/review subsets, not standalone game exports. Live Git and exact-head receipts supersede older numerical KANBAN/WORK_LOG summaries.
+These are existing documented commands to run when executing the tasks, **not commands claimed executed for this documentation commit**. Discover configured local executables; do not assume another machine's path. Disposable test slots99/3 must never target personal saves. Log exact commit/source, real walking versus staged positions, renderer/hardware, limits and evidence paths. Update KANBAN status, the handoff next action and current issues together. Successful automated tests do not confer human artistic approval.

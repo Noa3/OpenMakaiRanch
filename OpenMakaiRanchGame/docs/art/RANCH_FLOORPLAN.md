@@ -1,85 +1,40 @@
-# Ranch Floor Plan — Draft 1
+# Ranch floor plan — inhabitable center and expandable housing
 
-Status: **DRAFT / FOR_WORLD-001**. Source-grounded on `DataRegistry` facilities (11) and living buildings (5). Not an approved visual direction; see `VISUAL_BIBLE.md`. Serves as the layout contract for the `RanchGreybox.tscn` scene in WORLD-001.
+Updated 2026-09-12. **Current design direction, not a completed production floor plan.** Follow [LIVING_WORLD_PLAN.md](../LIVING_WORLD_PLAN.md), D-013/D-014/D-015 and LW-02..LW-07 in [KANBAN.md](../KANBAN.md). The original Draft 1 remains in Git at `1a65868b73e1af48277d8ac9ac338e3edcc5ce34`.
 
-## Source data (from `DataRegistry.cs`, not invented)
+## Superseded assumptions
 
-| Facility ID      | DisplayName    | BuildCost | Upkeep | Output           | Bonus | Capacity |
-|------------------|----------------|-----------|--------|------------------|-------|----------|
-| office           | Office         | 0         | 0      | —                | —     | 1        |
-| private_room     | Private Room   | 0         | 0      | —                | —     | 1        |
-| barn             | Barn           | 0         | 0      | —                | —     | 3        |
-| guest_room       | Guest Rooms    | 120       | 8      | comfort          | 1     | 2        |
-| dormitory        | Dormitory      | 0         | 0      | —                | —     | 4        |
-| pasture          | Pasture        | 180       | 20     | farm_goods       | 3     | —        |
-| kitchen          | Kitchen        | 140       | 12     | meals            | 1     | —        |
-| workshop         | Workshop       | 170       | 16     | supplies         | 1     | —        |
-| well             | Well           | 160       | 10     | farm_goods       | 2     | —        |
-| storage          | Storage Shed   | 130       | 6      | supplies         | 1     | —        |
-| dairy_barn       | Dairy Barn     | 250       | 25     | farm_goods       | 5     | —        |
-| pharmacy_lab     | Pharmacy Lab   | 300       | 20     | supplies         | 3     | —        |
+The first-greybox central hub/production ring, one separate facility plot per function, mandatory universal 4 m paths/6 m setbacks and deferred-interiors scope are not the final housing contract. Old seed/UI capacity and price tables are historical data, not proof of the normal JSON catalog, resident capacity or present upgrade rules. Re-read [RANCH_HABITATION_FACTS.md](RANCH_HABITATION_FACTS.md) before relying on them.
 
-Living buildings (5): office, private_room, barn, guest_room, dormitory.
-Production facilities (7): pasture, kitchen, workshop, well, storage, dairy_barn, pharmacy_lab.
+## Current physical program
 
-## Layout principles
+| Space | Arrangement and use |
+| --- | --- |
+| Entrance / ranch office | Work planning and existing administrative functions near the front door, without crossing private bedrooms. |
+| Shared kitchen / pantry / dining | Kitchen functions inside the main house; courtyard access and sensible supply/storage route. |
+| Common room / veranda | Comfortable shared use with existing interactions; nearby outdoor rest corner rather than disconnected seating. |
+| Player bedroom / bath | Quiet private area, short night/bath route and consistent introduction/return location. |
+| Resident bedrooms / wing | Suitable stable sleeping places and optional shared rooms; space for real extensions, not scaled-up beds/doors. |
+| Barn / workshop / distinct work areas | Separate structures only when size/use/animal or industrial function warrants it; coherent yards and access. |
 
-1. **One entry point** (south gate) — camera never penetrates geometry behind the player spawn.
-2. **Central hub** — office + private_room at center; all routes pass within 30 m of it.
-3. **Production ring** — 7 production facilities arranged in a loose arc around the hub, each with an approach pad (interaction range for smart objects, WORLD-002).
-4. **Dormitory cluster** — guest_room + dormitory + barn on the east wing, away from the pasture noise.
-5. **Pasture** — largest open area, north edge; fenced perimeter, one gate.
-6. **Well** — on the route between hub and pasture (natural waypoint, not a dead end).
-7. **Camera clearance** — every route ≥ 4 m wide; no building closer than 6 m to any route centerline; one elevated spot (office roof or storage shed roof) for an overhead debug view.
-8. **Event space** — one open clearing (12 m × 12 m) between the hub and the well for EVENT-001 staging (dialogue + bond event).
-9. **Work stations** — each production facility has exactly one interaction point (the smart object in WORLD-002). No station is a dead end; all reachable from the hub in ≤ 2 turns.
+The ordinary day remains convenient. No daily re-confirmation of unchanged jobs at multiple furnishings. Guidance outside targets the house entrance before the interior destination. A useful overview can remain accessible without every object opening all management screens.
 
-## Top-down sketch (north up)
+## Existing asset versus required site
 
-```
-        PASTURE (fenced, gate south)
-        |
-   [well]
-        |
-[workshop]  HUB  [dairy_barn]
-   |        (office +      |
-[storage]  private_room)  [pharmacy_lab]
-   |         |
-[kitchen]  EVENT SPACE (12x12 clearing)
-   |
-[dormitory cluster: guest_room + dormitory + barn]
-   |
-        SOUTH GATE (entry, camera behind)
-```
+[RANCH_ASSET_RECOVERY.md](RANCH_ASSET_RECOVERY.md) records a 20 x 16 m main house, 12 x 12 m wing, source door/ceiling dimensions and a furnished authoring scene. The current JSON plot is 7.2 x 6.4 m and retains separate kitchen/office lots. Replan the entire footprint, roof, neighbor clearance and approach; do not distort the asset into the old reserved rectangle.
 
-## Camera and movement constraints (for WORLD-001)
+The source dimensions are measurements of that candidate, not final approved floor-space requirements. Check against actual imported supported characters and camera. Keep inside/outside volumes consistent and all relevant gameplay IDs/unlocks intact. Reuse existing WalkInBuilding/interaction architecture where appropriate rather than introducing a second authority.
 
-- Spawn: south gate, facing north (toward hub).
-- Camera: third-person follow, collision-aware (wall penetration must not occur).
-- Input: keyboard WASD/arrows + mouse look; gamepad left stick + right stick.
-- While management UI is open, world input is released and mouse capture is released; closing UI restores input deliberately.
-- Diagonal movement must not exceed axis movement speed (input normalization).
-- Walls: collision on all building perimeters and pasture fence.
+## Habitation and furniture gates
 
-## Smart-object targets (WORLD-002, one per facility)
+The recorded seven prototype beds are examples only. The source audit found uncapped recruitment, missing allocations and a player/roster-`anon` identity overlap. LW-06 must resolve that contract before advertising total capacity. Do not add an arbitrary recruitment cap, rent or invisible housing because the asset has finite bedrooms.
 
-Each production facility exposes one `WorldInteractable` with:
-- stable target ID = facility ID
-- label = DisplayName
-- approach point = pad center
-- action = dispatch through `GameRoot.TryAssignJob` command boundary (no second reward path)
-- availability reason = built (FacilityLevel > 0) or locked
+Model appropriate bed/chair/bench/table/counter sizes with collision, approach, pose and safe exit spaces. Assign real ranch beds by stable identity; reserve shared seats transiently. Handle multiple users, cancellation, scene replacement, load and expansion. Use genuine neutral sit/lie poses/transitions on supported rigs; current socket/support points and whole-body rotation do not prove a working articulated animation.
 
-## Acceptance criteria (ART-001)
+Show added capacity/equipment as new rooms, wings or nearby houses. Retain orientation landmarks, main door and player essentials across stages where possible. A locked kitchen/wing can show incomplete equipment, but cannot silently unlock production. Existing numerical levels are not automatically authored room-capacity stages.
 
-- [x] Top-down plan with entrances, routes, work stations, interior, camera clearance and event space.
-- [x] All 11 source facilities represented.
-- [x] No invented facilities.
-- [ ] User selects visual direction (daytime/evening/interior concept candidates).
-- [ ] Greybox built against this plan (WORLD-001).
+## Acceptance record required
 
-## Deferred
+Start with the actual normal-game site, not only `RanchHomePrototype.tscn`. Walk courtyard -> entrance -> kitchen -> office -> bedrooms/bath -> courtyard, repeat relevant routes with a companion and check furniture use with representative sizes. Test tutorial/skip, evening bath, chosen night action, upgrades, job continuity and current save/load. Record source/export/scene paths, exact revision, before/after cameras, capacities and unresolved rig/body cases.
 
-- Interior layouts (one interior entrance per building, not full interior for the first greybox).
-- Lighting plan (derives from `CalendarState.Phase`, EVENT-001).
-- Character placement per facility (AI-001, derived from `ScheduleService` assignments).
+Use LW-02..LW-07/LW-20 for status; no completed checkboxes are asserted here. Keep ordinary town ambience separate: the city impression does not require ranch-style bed assignment for every implied townsperson.

@@ -1,180 +1,60 @@
-# Okachi Town — 3D World Flow
+# Okachi Town — inhabitable, developing coastal settlement
 
-Status: implemented greybox / validation pending.
+Updated 2026-09-12. This document refines the accepted direction; it does not claim that the town-growth implementation exists. Read [LIVING_WORLD_PLAN.md](../LIVING_WORLD_PLAN.md), [the task board](../KANBAN.md) and [current handoff](../ASTRA_HANDOFF.md). The previous greybox diagram and routing descriptions remain in Git at `1a65868b73e1af48277d8ac9ac338e3edcc5ce34` as historical implementation context.
 
-## Goal
+## Purpose and architecture
 
-Okachi Town is a second playable 3D location inside the same `WorldGame` and `GameRoot`.
-The town does not own duplicate shop, research, adventure, roster, bond, milestone, facility or
-economy logic. Spatial buildings route into the existing management screens/services.
+The user wants a believable place with useful buildings/rooms, merchants and a breathing background population. The town can visibly develop as the ranch supports it, ultimately suggesting roughly 300 inhabitants. These people do not all need individual existence, saved records or rendering. Important contacts retain continuity; background life is bounded presentation.
 
-## Travel rules
+Town services still use GameRoot and existing shop/research/adventure/roster/bond/milestone/economy authorities. A spatial ID is not a mandate for a separate facade or a whole-screen universal menu. Shared premises are allowed. Do not add another treasury, time source or hidden reward simulation.
 
-Current rule:
-- Ranch south gate -> Okachi Town;
-- Town south gate / Return to Ranch -> Ranch;
-- no added gold cost;
-- no added time cost;
-- current area is persisted as `SaveState.WorldAreaId`;
-- old/unknown save area safely falls back to `ranch`.
+## Travel and regional fit
 
-A travel cost should only be added later if the original/remake design explicitly adopts one, and
-then it must be implemented once in shared simulation rather than in portal scripts.
+Preserve current south-gate labels, convenient free existing travel, saved area and return ownership unless a separately approved gameplay change says otherwise. Free portal travel is not evidence of walking along the new valley route.
 
-## Town services
+[COASTAL_REGION.md](../execplan/COASTAL_REGION.md) describes candidate common coordinates, terrain/water and seams. The rejected candidate remains opt-in. A larger final town may require revised bounds; current 180 x 130 m regional bounds and tiny service footprints are blockout inputs, not an approved 300-inhabitant layout. Maintain shared orientation/height logic and realistic dry passages when revising them.
 
-| 3D location | Existing screen | Existing authority |
-|---|---|---|
-| General Store | `shop` | ShopService / Economy / Inventory |
-| Adventure Guild | `adventure` | Adventure/Discovery/Mercenary/combat systems |
-| Research Office | `research` | ResearchService; requires ranch Workshop, matching existing Town Hub |
-| Tavern | `roster` | existing roster/recruitment presentation |
-| Bathhouse | `bond` | existing bond systems |
-| Town Hall | `milestones` | MilestoneService / progress |
-| Construction & Planning | `town` | existing Town Hub + Facility Planning |
+Plan a compact market/service core, quieter housing courts, appropriate work/supply access and a modest waterfront. Preserve green space, shore access and expansion reserves across all stages. Houses may align with roads and courts; arbitrary rotation is not 'organic' design.
 
-The existing 2D Town Hub remains useful as detailed management. The 3D city is a spatial navigation
-layer, not a replacement for dense management UI.
+## Service-to-place mapping to implement
 
-## Player flow
+These are proposed spatial homes for existing functions, not a guarantee that every new renderer, room or trade option already exists. Audit current routing/unlocks before replacement.
 
-1. Player walks from the ranch to the south/town gate.
-2. Context prompt shows `F — Travel to Okachi Town`.
-3. `WorldGameController` switches the active area without replacing `GameRoot`.
-4. Town player/camera/input become active; ranch rendering/process is disabled.
-5. First visit shows a short contextual tutorial; F1 always opens town help.
-6. Player walks to a service building.
-7. `F` routes the authored service ID to its existing UI screen.
-8. Management UI owns input while the service screen is open.
-9. Return-to-World closes the overlay and restores Town input.
-10. South gate or Return-to-Ranch travels physically back to the ranch.
-11. Save/load retains the current area.
+| Function / retained concept | Intended physical place |
+| --- | --- |
+| General Store / existing shop authority | Sales floor, stockroom, merchant contact, potentially dwelling above/behind. |
+| Adventure Guild | Public room/counter and relevant briefing/service context. |
+| Research Office | Appropriate work/study rooms; preserve the existing workshop prerequisite where still applicable. Not the same thing as the ranch office. |
+| Tavern | Gastraum/common room, kitchen, operator and relevant social/recruitment uses. |
+| Bathhouse | Real public bathing/support spaces with existing nonduplicated actions and gates. |
+| Town Hall / civic contact | Initially modest administrative/supply house; account desk, planning context and adjacent supply yard. Exact official/landlord identity depends on lore audit. |
+| Planning / construction | Readable civic contact/board and actual before/construction/after premises, not an empty new progression menu. |
 
-## World layout
+Entering a building does not automatically open an overlay. Interact with a relevant NPC or object; show the contextual actions and preserve convenient information elsewhere. Own and important public buildings are enterable. Private homes can remain closed unless a use/story calls for entry; avoid identical bait doors and empty buildings as advertised rewards.
 
-Current greybox:
+## Proposed growth structure
 
-```text
-                       NORTH
+1. Modest supply settlement: core functions in small/shared premises, simple market, dwellings and landing.
+2. Market settlement: covered stalls, improved supply yard, housing court and local access improvements.
+3. Growing coastal settlement: work yards, expanded public/tavern spaces, homes and shore route.
+4. Small coastal town: multiple coherent neighborhoods, developed civic premises and an appropriately modest waterfront.
 
-          Bathhouse             Town Hall
-               \                 /
-                \   central     /
- Research Office -- fountain -- Tavern
-                /      |         \
-               /       |          \
-      General Store  Planning   Adventure Guild
-                       |
-                    main road
-                       |
-                  SOUTH GATE
-                 back to ranch
-```
+These stages are provisional visual production targets. They are not original-game canon, fixed populations or prices. Retain all already available necessities in earlier smaller premises; do not remove existing services to fabricate progression. Reserve permanent landscape/breathing room as well as future buildable plots.
 
-The layout deliberately prioritizes:
-- central landmark visibility;
-- short walking distances;
-- distinct left/right service silhouettes;
-- no maze navigation for frequently used management functions;
-- room for later ambient citizens/props without narrowing player paths.
+LW-09 audits original/current taxes, gold, mana/energy, points and facility progression. Only after the actual pool, obligation, ledger, trigger and useful outcome are decided should LW-12 enable a payment/development binding. Avoid double deductions, repeated credit from reloads, free 'donations' of sold goods, new compulsory trips and penalty/cost escalation. Efficient contributions can accelerate growth; no arbitrary minimum-day gate or loss of finished buildings after missing optional support.
 
-## Navigation
+Show a meaningful before/work/after change: material delivery, bounded workers/construction, then a usable public place. Town labor participates; the player does not manage every nail or citizen. Keep essential routes usable and perform geometry/collision/nav changes only at a safe transition. Retain stable merchant inventory/story/development state through scene changes and saves.
 
-Ranch roster NPCs now carry `NavigationAgent3D` and update path-following in
-`_PhysicsProcess()`, matching Godot's intended agent workflow.
+## Ambient life
 
-Both Ranch and Town own a simple open `NavigationRegion3D` today. Current procedural buildings are
-collision-free, so this region is sufficient for the greybox. When final building/fence collision is
-authored:
-1. replace the simple region with an editor-baked NavigationMesh;
-2. keep `RosterRig` / NavigationAgent3D unchanged;
-3. shrink walkable polygons for actual agent radius;
-4. add bounded stuck recovery rather than teleporting immediately;
-5. keep distant NPC work logical/simulation-driven.
+Use a bounded pool appropriate to zone, time, weather and development. Daytime shopping/work/rest, evening social places/window lights, quieter nights and rain shelter should agree with actual visible premises and audio. Generic passersby need no complete household simulation. Do not populate the ranch roster with the implied town population.
 
-## Town onboarding
+Keep important contacts and active conversations stable. Avoid visible popping, synchronized loops, obstructed doors and overlapping occupied seats. Reduce distant background work rather than making 300 agents a prerequisite. The user does not manage town beds or meals. New character designs, identities and economic automation are not side effects of ambience.
 
-Town HUD provides:
-- location/day/phase;
-- gold/mana;
-- contextual service prompt;
-- service descriptions as tooltips;
-- next-action guidance;
-- Return to Ranch;
-- first-visit card;
-- F1 Help.
+## Local asset and acceptance scope
 
-Ranch tutorial also contains a dedicated physical-town-travel step.
+Local Astra models the civic/supply house, useful market courtyard, a restrained dwelling/workshop family and reusable construction-stage parts. Preserve editable sources and source/license records. Reuse the existing art direction and recovered resources. Final engine pictures, not just Blender renders, judge fit. General service/finance architecture remains targeted integration work.
 
-## Current placeholder art
+First finish one connected civic/market segment and one useful visible upgrade, then expand quarters. Actually walk ranch -> town -> relevant interior -> shore -> return with collision/camera/companion checks. Verify service entry, unlock reasons, return ownership, saved area, merchant state and load/replay-safe development. Check stages at day/evening/night/rain, real Forward+ low/high and relevant localization. Teleports, a calculated nav path or an older suite count are not town acceptance.
 
-`TownPresentationBuilder` creates collision-free:
-- main road and cross road;
-- central plaza/fountain;
-- service-building proxies;
-- roofs/doors/signs;
-- town gate;
-- lamps;
-- trees.
-
-These are deliberately replaceable and do not contain gameplay IDs.
-
-## CC0 replacement candidates
-
-Preferred candidates currently recorded in `docs/assets/CC0_ASSET_CANDIDATES.md`:
-- Kenney Fantasy Town Kit — CC0;
-- Quaternius Medieval Village Pack — CC0;
-- Quaternius Ultimate Stylized Nature — CC0;
-- Kenney Nature Kit — CC0.
-
-Exact archives/files still need local admission with source/license/package/hash records before
-binary assets are committed.
-
-## Recommended next town slices
-
-### TOWN-002 — environment production pass
-- admit exact CC0 town/nature packages;
-- replace one service building at a time;
-- preserve service transforms/IDs;
-- author collision independently from decorative meshes;
-- bake navigation after collision is stable;
-- validate all service prompts from gameplay camera.
-
-### TOWN-003 — ambient life
-- add a small pool of non-essential ambient adult town residents;
-- deterministic daytime waypoint schedules;
-- NavigationAgent3D walking;
-- no hidden economy/rewards;
-- avoid crowding service entrances;
-- reduce/disable ambient agents when distant.
-
-### TOWN-004 — service staging
-- entering a service may optionally use a short doorway/camera staging transition;
-- no forced long loading animation;
-- UI still remains the actual functional service;
-- restore exact town position/camera when closing.
-
-### TOWN-005 — interiors, only where worthwhile
-Do not make an explorable interior for every management screen by default.
-
-Good candidates for later interiors:
-- General Store;
-- Tavern;
-- Adventure Guild.
-
-Research, Milestones and Facility Planning can remain fast UI overlays unless an interior adds
-meaningful gameplay.
-
-## Acceptance criteria
-
-- New Game still begins with 2D Main Menu and mixed character creation.
-- Ranch -> Town -> Ranch works without changing day/gold.
-- Town area survives save/load.
-- General Store spatial entry opens the existing shop.
-- Research Office is locked until Workshop is built.
-- Town service close restores Town movement.
-- M in Town opens the Town Hub.
-- F1 Help works independently in Ranch and Town.
-- no duplicated Shop/Economy/Research/Adventure/Bond reward authority.
-- inactive world area has no active player processing/camera.
-- final asset admission retains provable license/source records.
+Implementation status belongs to LW-02/LW-08..LW-20 on the board. Old rules allowing civic premises to remain only facades, assuming collision-free buildings or requiring unchanged service transforms are not binding for the new world. Stable gameplay IDs, commands and verified existing behavior remain binding.
