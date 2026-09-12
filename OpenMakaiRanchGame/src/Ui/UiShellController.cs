@@ -312,7 +312,7 @@ public partial class UiShellController : Control
 		UpdateTopBar();
 		UpdateNavigationState();
 
-		switch (screenId)
+		if (!TryRenderGameplayPanel(screenId)) switch (screenId)
 		{
 			case "title": RenderTitle(); break;
 			case "ranch": if (IsDedicatedService) RenderFacilityPlanning(); else RenderRanch(); break;
@@ -813,7 +813,8 @@ public partial class UiShellController : Control
 
 	private void OnGameComplete()
 	{
-		ShowScreen("victory");
+		if (WorldHost() is { } host) host.PresentGameCompletion();
+		else { ClearServiceContext(); ShowScreen("victory"); }
 	}
 
 	private void UpdateTopBar()

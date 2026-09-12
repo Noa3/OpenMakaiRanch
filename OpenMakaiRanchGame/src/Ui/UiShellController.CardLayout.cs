@@ -12,6 +12,7 @@ public partial class UiShellController
         // gives every direct Control child the same rectangle. Normalize once, during
         // composition, before focus restoration/container layout. Do not touch authored
         // overlays, character previews or other screens that may intentionally overlap.
+        AddDedicatedNavigation();
         if (_currentScreen == "adventure") AddAdventureReadinessCard();
         if (_currentScreen is "adventure" or "combat" or "shop" or "schedule" or "research" or "milestones")
             StackSequentialCards(_content);

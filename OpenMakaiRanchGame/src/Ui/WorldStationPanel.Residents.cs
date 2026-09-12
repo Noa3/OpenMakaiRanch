@@ -10,6 +10,7 @@ public partial class WorldStationPanel
 {
     private string _residentPage = "overview";
     private string _residentFeedback = "";
+    public string ResidentPage => _residentPage;
 
     private void RenderResident()
     {
@@ -23,6 +24,8 @@ public partial class WorldStationPanel
             Destination(new WorldDestination("ranch", "ranch_house", "Ranch house"));
             return;
         }
+        if (_residentPage is "development" or "development_history" or "protection")
+        { RenderResidentDevelopment(character); return; }
         _content.AddChild(Text(T("world.resident.stats", "Energy {0} • Fatigue {1} • Morale {2} • Bond {3}", character.Energy, character.Fatigue, character.Morale, character.Bond)));
         _content.AddChild(Text(T("world.resident.budget", "Your daily stamina: {0}/{1}. Looking around and ordinary conversation are free.",
             _game.State.Player.Stamina, _game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus)));
@@ -82,13 +85,14 @@ public partial class WorldStationPanel
                 Action("ResidentPracticePage", T("world.resident.sections.practice", "Learn and practice"), () => ShowResidentPage("practice"));
                 Action("ResidentCompanyPage", T("world.resident.sections.company", "Spend time together"), () => ShowResidentPage("company"));
                 Action("ResidentWorkPage", T("world.resident.sections.work", "Today's work plan"), () => ShowResidentPage("work"));
+                Action("ResidentDevelopmentPage", T("panel.development.open", "Development and condition"), () => ShowResidentPage("development"));
                 break;
         }
     }
 
     private string ShowResidentPage(string page)
     {
-        _residentPage = page; _residentFeedback = ""; _scroll.ScrollVertical = 0; Render();
+        _residentPage = page; _residentFeedback = ""; _close.GrabFocus(); _scroll.ScrollVertical = 0; Render();
         return "";
     }
 

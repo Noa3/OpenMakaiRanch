@@ -111,6 +111,7 @@ public partial class WorldGameController
     public bool OpenDedicatedService(string screen)
     {
         if (_shell is null || !UiShellController.IsKnownService(screen)) return false;
+        if (screen == "report" && CompletionOwnsPresentation) return true;
         if (IsStationPanelOpen) _stationPanel!.Close();
         _shell.SetServiceContext(screen);
         if (OpenManagementScreen(screen)) return true;
