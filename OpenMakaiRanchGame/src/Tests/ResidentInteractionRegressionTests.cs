@@ -126,7 +126,8 @@ public static class ResidentInteractionRegressionTests
         new DayCycleService(loaded).AdvanceToNextDay();
         Check(loadedService.Inspect(resident.Id, ResidentAction.CraftPractice).Available && loaded.Calendar.TrainedToday == 0
             && loadedService.Inspect(resident.Id, ResidentAction.Meal).Available, "the canonical next-day reset makes actions available without growing a per-day history");
-        var count = loaded.Flags.CharIntFlags.Sum(pair => pair.Value.Count);
-        Check(count <= 7, "daily bookkeeping stays bounded to fixed slots per affected resident");
+        var count = loaded.Flags.CharIntFlags.Sum(pair => pair.Value.Count(entry =>
+            entry.Key >= ResidentInteractionService.EncourageDay && entry.Key <= ResidentInteractionService.PracticeDay));
+        Check(count <= 7, "the original daily-care receipt count remains bounded independently of development history");
     }
 }

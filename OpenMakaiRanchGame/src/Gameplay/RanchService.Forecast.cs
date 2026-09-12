@@ -19,6 +19,7 @@ public sealed record JobOutputPreview
     public int HerbalBonus { get; init; }
     public int HospitalityBonus { get; init; }
     public int CraftBonus { get; init; }
+    public int FacilityBonus { get; init; }
     public bool IsRest { get; init; }
     public bool IsCollapsed { get; init; }
     public int SpecialistBonus => DairyBonus + CulinaryBonus + HerbalBonus + HospitalityBonus + CraftBonus;
@@ -126,9 +127,15 @@ public sealed partial class RanchService
             gold += bonus * 3;
         }
 
+        // Add stock after the old skill/research calculation. Wages are intentionally unchanged.
+        // Tired workers also lose part of the equipment benefit; collapsed/resting work returned above.
+        var requestedBonus = (int)(InspectWorkBenefit(job).ExtraUnits * (double)fatiguePenalty);
+        var facilityBonus = (int)Math.Min(Math.Max(0L, (long)int.MaxValue - amount), requestedBonus);
+        amount += facilityBonus;
+
         return new JobOutputPreview
         {
-            Amount = amount, Gold = gold, SkillContribution = skillBonus / 2,
+            Amount = amount, Gold = gold, FacilityBonus = facilityBonus, SkillContribution = skillBonus / 2,
             PlanningBonus = researchBonus, TalentMultiplier = talentMult, FatigueMultiplier = fatiguePenalty,
             FatigueLost = fatigueLost, DairyBonus = dairyBonus, CulinaryBonus = culinaryBonus,
             HerbalBonus = herbalBonus, HospitalityBonus = hospitalityBonus, CraftBonus = craftBonus

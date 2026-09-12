@@ -41,6 +41,12 @@ public sealed class ResidentInteractionService
         ResidentAction.CombatPractice => "combat", ResidentAction.MagicPractice => "magic", _ => null
     };
 
+    public static ResidentAction? PracticeAction(string? focus) => focus switch
+    {
+        "ranch" => ResidentAction.RanchPractice, "craft" => ResidentAction.CraftPractice,
+        "combat" => ResidentAction.CombatPractice, "magic" => ResidentAction.MagicPractice, _ => null
+    };
+
     public int Cost(ResidentAction action) => action switch
     {
         ResidentAction.Chat => 0,
@@ -60,7 +66,7 @@ public sealed class ResidentInteractionService
         if (character is null || id == "anon") return No(T("world.resident.reason.target", "Choose another resident who is still on the ranch."));
         if (!_state.Story.FirstDayCompleted || _state.Calendar.Day < 2)
             return No(T("world.resident.reason.intro", "Finish the guided introduction first."));
-        if (character.Hp <= 0 || character.Mature.IsCollapsed || character.Mature.FallState == FallState.Collapse)
+        if (CharacterProtectionService.NeedsRecovery(character))
             return No(T("world.resident.reason.unwell", "This resident needs recovery. Give them time off before asking for an activity."));
         if (action == ResidentAction.Chat) return new(true, 0, "");
         var flag = ReceiptFlag(action);
@@ -90,7 +96,9 @@ public sealed class ResidentInteractionService
             return No(T("world.resident.reason.stock", "That gift is not in your inventory. Nothing has been spent."));
         if (action == ResidentAction.Recovery && character.Energy >= EnergyLimit(character) && character.Fatigue <= 0)
             return No(T("world.resident.reason.rested", "Already rested. No recovery is needed."));
-        return new(true, cost, "");
+        // Existing buttons already display this read-only reason as a tooltip when available.
+        var track = new CharacterDevelopmentService(_state, _data, _flags).InspectPracticeTrack(id, focus);
+        return new(true, cost, CharacterDevelopmentFeedback.Explain(track));
     }
 
     public ResidentActionResult Execute(string? id, ResidentAction action, string? itemId = null)
@@ -102,6 +110,8 @@ public sealed class ResidentInteractionService
         var focus = PracticeFocus(action);
         var beforeSkill = SkillValue(character, focus);
         var beforeEnergy = character.Energy;
+        var development = new CharacterDevelopmentService(_state, _data, _flags);
+        var observation = focus is not null ? development.Capture(character.Id, DevelopmentCause.Practice) : null;
         if (focus is not null)
         {
             if (!_training.Train(character.Id, focus))
@@ -133,6 +143,11 @@ public sealed class ResidentInteractionService
                 ResidentAction.Recovery => T("world.resident.result.recovery", "A recovery break: energy +25, fatigue -10 and morale +3, up to their limits. Daily work is not paid or reassigned."),
                 _ => T("world.resident.result.mentor", "You share practical advice. Bond and morale improve; fatigue increases slightly. Today's work is unchanged.")
             };
+        foreach (var change in development.Complete(observation))
+            if (change.Field is DevelopmentField.MaxHp or DevelopmentField.MaxMana)
+                message += " " + CharacterDevelopmentService.Describe(character.DisplayNameOverride, change);
+        var guidance = CharacterDevelopmentFeedback.Explain(development.InspectPracticeTrack(id, focus));
+        if (guidance.Length > 0) message += " " + guidance;
         return new(true, true, message);
     }
 
@@ -152,6 +167,10 @@ public sealed class ResidentInteractionService
             return T("world.resident.chat.tired", "“I could use a quiet break before taking on anything else.” A recovery break or a day off may help.");
         if (character.Morale < 40)
             return T("world.resident.chat.low", "“Today feels difficult. Thank you for checking in.” You can offer encouragement without changing their work plan.");
+        // Actual recorded growth supplies the reflection; chatting never creates a reward or memory.
+        var reflection = CharacterDevelopmentFeedback.Reflect(
+            new CharacterDevelopmentService(_state, _data, _flags).Inspect(character.Id));
+        if (reflection.Length > 0) return reflection;
         var assignment = _state.Schedule.AssignedJobs.GetValueOrDefault(character.Id, "rest");
         if (assignment == "rest")
             return T("world.resident.chat.rest", "“I'm taking it easy today. We could chat or practice something later.” There is no need to fill every free moment.");

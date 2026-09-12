@@ -59,6 +59,10 @@ public sealed partial class RanchService
         var forecast = PreviewJobOutput(character, job);
         var amount = forecast.Amount;
         var gold = forecast.Gold;
+        if (forecast.FacilityBonus > 0)
+            report.Lines.Add(OpenMakaiRanch.Locale.LocaleCatalog.T("gameplay.tier.output",
+                "Improved equipment: {0} additional {1}; ordinary wages are unchanged.",
+                forecast.FacilityBonus, OpenMakaiRanch.Locale.LocaleCatalog.ResourceName(job.ResourceId)));
         if (forecast.FatigueLost > 0)
             report.Lines.Add($"{character.DisplayNameOverride}'s fatigue reduced output by {forecast.FatigueLost} {job.ResourceId}.");
         if (_state.Research.UnlockedSkillIds.Contains("dairy_science") && job.Category == JobCategory.Dairy)
@@ -79,7 +83,7 @@ public sealed partial class RanchService
         }
 
         _state.Ranch.Stockpile.TryGetValue(job.ResourceId, out var currentAmount);
-        _state.Ranch.Stockpile[job.ResourceId] = currentAmount + amount;
+        _state.Ranch.Stockpile[job.ResourceId] = (int)Math.Clamp((long)currentAmount + amount, 0, int.MaxValue);
         var displayName = !string.IsNullOrWhiteSpace(character.DisplayNameOverride) ? character.DisplayNameOverride : character.Id;
         report.Lines.Add($"{displayName} completed {job.DisplayName}, adding {amount} {job.ResourceId}.");
         return gold;

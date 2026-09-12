@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OpenMakaiRanch.Core.Models;
 using OpenMakaiRanch.Data;
 
@@ -38,10 +40,16 @@ public sealed class DailySettlementService
         _talents = talents;
     }
 
+    public SettledWorkFacts? LastWorkFacts { get; private set; }
+
     public DailyReport SettleDay()
     {
         var report = new DailyReport { Day = _state.Calendar.Day };
         var income = 0;
+        LastWorkFacts = null;
+        var output = new Dictionary<string, long>(StringComparer.Ordinal);
+        var working = 0;
+        var assigned = _state.Roster.Characters.Count(c => _schedule.GetAssignment(c.Id) != "rest");
         var ledger = new DailyGoldLedger(_economy.Gold);
         // Clear once per day, not between night training and ordinary growth.
         foreach (var character in _state.Roster.Characters) character.HasGrownToday = false;
@@ -53,7 +61,14 @@ public sealed class DailySettlementService
         {
             var jobId = _schedule.GetAssignment(character.Id);
             var job = _data.Jobs.TryGetValue(jobId, out var foundJob) ? foundJob : _data.Job("rest");
+            var beforeStock = _state.Ranch.Stockpile.GetValueOrDefault(job.ResourceId);
             income += _ranch.ApplyJobOutput(character, job, report);
+            if (!string.IsNullOrEmpty(job.ResourceId) && character.Mature.FallState != FallState.Collapse)
+            {
+                working++;
+                var delivered = Math.Max(0L, (long)_state.Ranch.Stockpile.GetValueOrDefault(job.ResourceId) - beforeStock);
+                output[job.ResourceId] = output.GetValueOrDefault(job.ResourceId) + delivered;
+            }
             var fatigueResistance = _talents.FatigueResistance(character.Id);
             var fatigueDelta = job.FatigueDelta >= 0
                 ? Math.Max(0, job.FatigueDelta - fatigueResistance)
@@ -78,6 +93,14 @@ public sealed class DailySettlementService
             }
         }
 
+        var resting = _state.Roster.Characters.Count(c => _schedule.GetAssignment(c.Id) == "rest");
+        var autoRested = Math.Max(0, assigned - (_state.Roster.Characters.Count - resting));
+        var teamWell = _state.Roster.Characters.Count > 0 && _state.Roster.Characters.All(c =>
+            c.Hp > 0 && c.Energy > 0 && c.Fatigue < 70 && c.Morale >= 50
+            && !c.Mature.IsCollapsed && c.Mature.FallState != FallState.Collapse);
+        var mealValue = _data.Items.TryGetValue("meal_box", out var meal) ? Math.Max(0, meal.Price) : 0;
+        LastWorkFacts = new(report.Day, _state.Roster.Characters.Count, working, resting, autoRested,
+            _resources.LastLunch, teamWell, income, expenses, (long)_resources.LastLunch.MealBoxes * mealValue, new ReadOnlyDictionary<string, long>(output));
         _economy.ApplySettlement(income, expenses);
         ledger.RecordWorkAndUpkeep(income, expenses, _economy.Gold);
         report.Income = income;

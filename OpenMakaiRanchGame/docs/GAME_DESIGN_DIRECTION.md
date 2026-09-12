@@ -12,6 +12,19 @@ Build a ranch worth coming home to: a working household, a personal place, and v
 
 Daily loop: notice one opportunity -> choose a destination -> make a meaningful local decision -> retain time for exploration or company -> choose an evening -> see tomorrow's consequence. Walking, checking the journal and choosing an objective remain free. Keep routine recovery accessible without requiring romance, and do not make a person's affection a mandatory production multiplier.
 
+## Core pillar: character development
+
+The owner's 2026-09-12 direction makes persistent character change a core goal, not an optional
+cosmetic reward for ranch optimization. The household supports characters whose skills,
+condition, capacities and appearance can develop through actual play. Preserve each resident's
+identity and distinguish those systems; a mood value is not an automatic rewrite of their body.
+Use the loop cause -> persistent change -> threshold/consequence -> visible feedback.
+
+CHARACTER_DEVELOPMENT.md documents the implemented non-explicit practice/workday slice and
+renderer-facing state. ORIGINAL_CHARACTER_AUDIT.md distinguishes original EP/MP protection and
+strength rules from new remake tuning. Detailed body recipes, authored stories, the complete
+original resistance matrix and actual model transformations are not completed by these APIs.
+
 ## Implemented in this continuation
 
 `RanchProjectService` reads current progress without modifying it. `WorldStationPanel.Projects` exposes four optional projects from Places: restoring the quiet corner, upgrading the kitchen to level two, completing three existing deliveries, and a first successful expedition. Each explains its purpose and one next destination. Existing facilities, receipts and milestones supply progress; there are no duplicate payments, quest timers, per-frame completion awards, or new victory requirements.
