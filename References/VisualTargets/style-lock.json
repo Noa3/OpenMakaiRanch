@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "id": "green-ranch-soft-anime-v1",
+  "authority": "user-approved direction; new individual designs still need review",
+  "base_commit": "71fb3a170b6f4baaf1cc8a1a45cdbd1dceab935f",
+  "world": "Normal green starter area. Grass, familiar broadleaf trees, gentle hills, a normal downstream river, blue sky, sun and ordinary weather.",
+  "fantasy": "Restrained mana details; warm opaque mana-stone lamps; familiar moon plus small optional fictional Earth-like companion at night.",
+  "characters": "Original clearly adult soft-anime 3D designs, clean silhouettes, expressive eyes, restrained skin highlights, shaped hair clumps, cloth roughness. Fully clothed neutral references.",
+  "negative": [
+    "volcanic or basalt-dominated ranch",
+    "alien glowing trees",
+    "floating islands",
+    "reversed waterfalls",
+    "demonic or gothic roofs",
+    "permanent purple sky",
+    "excess bloom",
+    "portrait blur during gameplay",
+    "toy-like primitives as final assets",
+    "photographic skin pores",
+    "copied artist character identities"
+  ],
+  "ui": "2D main menu, mixed 2D/3D creation, world-first contextual station panels, one Options destination, clear text and focus; no global remote-management hub.",
+  "progression": "Achievement/facility-based fixture states, not fixed days or new balance rules. Visual grade 0-3 retains fixed footprints and entrance routes.",
+  "layout_reference": "OpenMakaiRanchGame/src/World/RanchBuildingPlots.cs",
+  "plots": [
+    {"id":"dairy_barn","center_xz":[14,-13],"footprint_xz":[7.6,6.6]},
+    {"id":"pasture","center_xz":[-17,-12],"footprint_xz":[6.2,5.6]},
+    {"id":"kitchen","center_xz":[-17,8],"footprint_xz":[6.2,5.6]},
+    {"id":"workshop","center_xz":[17,9],"footprint_xz":[6.2,5.6]},
+    {"id":"pharmacy_lab","center_xz":[18,-1],"footprint_xz":[6.2,5.6]},
+    {"id":"office","center_xz":[0,-4],"footprint_xz":[6.2,5.6]},
+    {"id":"ranch_house","center_xz":[6,14],"footprint_xz":[7.2,6.4]},
+    {"id":"pet_care","center_xz":[-6,-14],"footprint_xz":[4.6,4.4]}
+  ],
+  "palette": {"panel":"#152b2a","surface":"#213e39","text":"#f5f2e9","muted":"#c5d3cb","accent":"#efd19b","selected":"#31564b","danger":"#f2b8a5"},
+  "pixel_proposals": {"canvas":[1600,900],"body":24,"control_height":56,"safe_margin":48,"text_scaling_required":[1.0,1.5,2.0]},
+  "character_variation": "Separate body/species/presentation from temperament. Eight mixable axes; no demographic or species stereotypes. Preserve the player’s direct control."
+}
