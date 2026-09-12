@@ -49,6 +49,7 @@ public partial class WorldStationPanel
             if (_game.Data.Jobs.TryGetValue(station.CommandTargetId, out var guidedJob)) RenderStationTeam(station, guidedJob);
             return;
         }
+        if (_stationPage == "provisions") { RenderProvisions(); return; }
         if (_stationPage == "upgrade") { AddStationUpgrade(station); return; }
         if (!_game.Data.Jobs.TryGetValue(station.CommandTargetId, out var job))
         { _content.AddChild(Text(T("world.work.locked", "This job is not available yet."))); return; }
@@ -79,6 +80,8 @@ public partial class WorldStationPanel
         var alerts = WorldAlertEvaluator.Evaluate(_game).Where(a => WorldDestinationCatalog.ForAlert(a).TargetId == station.TargetId).ToArray();
         foreach (var alert in alerts)
             _content.AddChild(Text(T("world.alert.detail", "{0}: {1}", alert.Severity == WorldAlertSeverity.Info ? T("world.info", "Info") : T("world.attention", "Attention"), alert.Detail)));
+        if (_id is "office" or "kitchen")
+            Action("StationProvisions", T("panel.provisions.open", "Food and tomorrow's supplies"), () => ShowStationPage("provisions"));
         if (_id == "office")
         {
             Service("inventory", T("world.service.storage", "Storage"));
@@ -122,6 +125,7 @@ public partial class WorldStationPanel
             estimate.MouseFilter = MouseFilterEnum.Pass; // Permit the optional breakdown tooltip without consuming scroll input.
             estimate.TooltipText = T("world.station.forecast.breakdown", "Base {0}; skill contribution {1}; planning {2}; talent factor {3:P0}; fatigue factor {4:P0}; specialist research adds {5} units. Evaluated in settlement order with the same rounding.",
                 job.ResourceAmount, forecast.SkillContribution, forecast.PlanningBonus, forecast.TalentMultiplier, forecast.FatigueMultiplier, forecast.SpecialistBonus);
+            estimate.TooltipText += " " + T("panel.equipment.included", "Equipment contributes {0} units, already included in the total.", forecast.FacilityBonus);
             _content.AddChild(estimate);
             if (character.Mature.FallState == FallState.Collapse)
                 _content.AddChild(Text(T("world.station.team.collapsed", "This resident is collapsed and cannot produce work. Consider rest and care.")));
@@ -159,7 +163,14 @@ public partial class WorldStationPanel
         // The price and recurring bill precede the decision; longer explanations follow it.
         _content.AddChild(Text(T("world.station.upgrade.expenses", "Pet care and any unstaffed-dairy penalty are separate daily costs.")));
         _content.AddChild(Text(T("world.facility.envelope", "Equipment upgrades use the reserved footprint. Higher levels do not enlarge the building or block its entrance.")));
-        _content.AddChild(Text(T("world.station.upgrade.output", "An equipment level is not a multiplier on daily job output. Workers and research still determine production; existing automation and project rules remain in effect.")));
+        if (_game.Data.Jobs.TryGetValue(station.CommandTargetId, out var job))
+        {
+            var current = _game.Ranch.InspectWorkBenefit(job);
+            var next = _game.Ranch.InspectWorkBenefitAtLevel(job, offer.NextLevel);
+            _content.AddChild(Text(T("panel.equipment.benefit", "Staffed output bonus per resident: {0} → {1} {2}. Normal wages do not increase; fatigue can reduce this bonus.",
+                current.ExtraUnits, next.ExtraUnits, ResourceName(job.ResourceId))));
+        }
+        _content.AddChild(Text(T("panel.equipment.limit", "Productive equipment bonuses stop growing after level {0}. Support buildings need their own uses; higher levels do not imply a larger shell.", RanchService.MaximumProductiveFacilityLevel)));
     }
 
     private string ShowStationPage(string page)

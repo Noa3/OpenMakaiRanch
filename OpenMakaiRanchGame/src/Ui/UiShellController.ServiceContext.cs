@@ -9,11 +9,32 @@ public partial class UiShellController
     private string? _serviceRoot;
     public bool IsDedicatedService => _serviceRoot is not null;
     private ulong _serviceGeneration;
+    private int _serviceDay;
+    private OpenMakaiRanch.Core.Models.DayPhase _servicePhase;
+    private string? _serviceArea;
+    private Vector2 _servicePosition;
     public void SetServiceContext(string screen)
     {
         _serviceRoot = screen;
         _serviceGeneration = _game.StateGeneration;
+        _serviceDay = _game.State.Calendar.Day;
+        _servicePhase = _game.State.Calendar.Phase;
+        _serviceArea = WorldHost()?.ActiveAreaId;
+        if (WorldHost()?.ActivePlayer is { } player)
+            _servicePosition = new Vector2(player.GlobalPosition.X, player.GlobalPosition.Z);
+        _reportDetails = false; _researchCompleted = false; _localReportDay = null;
     }
+    private bool CanExecuteDedicatedCommand()
+    {
+        if (_serviceRoot is null || _serviceGeneration != _game.StateGeneration
+            || _serviceDay != _game.State.Calendar.Day || _servicePhase != _game.State.Calendar.Phase) return false;
+        var world = WorldHost();
+        if (world is null) return true;
+        if (world.ActiveAreaId != _serviceArea || world.IsGuidedOpening || world.FlowLocksUi
+            || world.Transition?.IsTransitioning == true || world.ActivePlayer is not { } player) return false;
+        return new Vector2(player.GlobalPosition.X, player.GlobalPosition.Z).DistanceTo(_servicePosition) <= 0.5f;
+    }
+
     public void ClearServiceContext()
     {
         _serviceRoot = null;
@@ -52,7 +73,7 @@ public partial class UiShellController
         or "bond" or "pets" or "saveload" or "options" or "settings" or "training" or "visit"
         or "milk" or "mental" or "character_detail" or "clothing_list" or "clothing_change"
         or "clothing_strip" or "room_assign" or "ability" or "pharmacy_list" or "pharmacy_craft"
-        or "magic_basic" or "magic_forbidden" or "magic_tentacle";
+        or "magic_basic" or "magic_forbidden" or "magic_tentacle" or "victory";
 
     private void RenderStationStorage()
     {

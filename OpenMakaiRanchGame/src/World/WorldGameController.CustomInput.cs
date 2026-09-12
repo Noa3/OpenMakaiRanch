@@ -24,7 +24,8 @@ public partial class WorldGameController
         }
         if (IsManagementVisible)
         {
-            CloseManagement();
+            if (IsStationPanelOpen) _stationPanel!.GoBack();
+            else if (_shell?.TryBackDedicatedService() != true) CloseManagement();
             GetViewport().SetInputAsHandled();
             return;
         }

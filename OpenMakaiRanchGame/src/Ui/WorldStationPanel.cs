@@ -20,6 +20,7 @@ public partial class WorldStationPanel : Control
     private Label _title = null!;
     private Label _status = null!;
     private Button _close = null!;
+    private Button _back = null!;
     private string _kind = string.Empty;
     private string _id = string.Empty;
     private ulong _generation;
@@ -56,7 +57,13 @@ public partial class WorldStationPanel : Control
         _content.AddThemeConstantOverride("separation", 10); _scroll.AddChild(_content);
         _status = Text(""); _status.MaxLinesVisible = 2; layout.AddChild(_status);
         _close = new Button { Name = "StationClose", Text = T("world.back", "Back to the world"), CustomMinimumSize = new Vector2(0, 40) };
-        _close.Pressed += Close; layout.AddChild(_close);
+        var footer = new HFlowContainer { Name = "StationFooter", SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        footer.AddThemeConstantOverride("h_separation", 8);
+        layout.AddChild(footer);
+        _back = new Button { Name = "StationBack", CustomMinimumSize = new Vector2(110, 40) };
+        _back.Pressed += () => { if (!_busy) GoBack(); };
+        footer.AddChild(_back);
+        _close.Pressed += Close; footer.AddChild(_close);
         Visible = false;
     }
 
@@ -135,8 +142,14 @@ public partial class WorldStationPanel : Control
         var revision = ++_revision;
         if (_renderedLocale != CurrentLocale) { _status.Text = ""; _status.TooltipText = ""; _residentFeedback = ""; _stationFeedback = ""; _renderedLocale = CurrentLocale; }
         _close.Text = T("world.back", "Back to the world");
+        _close.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+        _back.Text = T("panel.back", "Back");
+        _back.Visible = HasParentPage;
+        _title.MaxLinesVisible = 2;
         foreach (var node in _content.GetChildren()) { _content.RemoveChild(node); node.QueueFree(); }
         BuildContent();
+        _title.TooltipText = _title.Text;
+        _status.Visible = !string.IsNullOrWhiteSpace(_status.Text);
         var tree = GetTree();
         void Restore()
         {
@@ -173,6 +186,8 @@ public partial class WorldStationPanel : Control
 
     private void RenderHouse()
     {
+        if (_stationPage == "provisions") { RenderProvisions(); return; }
+        Action("HouseProvisions", T("panel.provisions.open", "Food and tomorrow's supplies"), () => ShowStationPage("provisions"));
         _content.AddChild(Text(T("world.house.summary", "Day {0} • {1} • Stamina {2}/{3}", _day, EnumDisplayName(_phase), _game.State.Player.Stamina, _game.State.Player.MaxStamina + _game.State.Player.DailyStaminaBonus)));
         _content.AddChild(Text(T("world.house.help", "Night choices are revisable until you sleep. A prepared hot bath grants its extra energy tomorrow, separately from tonight's plan.")));
         if (_phase is DayPhase.Evening or DayPhase.Night)
@@ -211,8 +226,10 @@ public partial class WorldStationPanel : Control
     private void RenderGuide()
     {
         if (_id == "projects") { RenderProjects(); return; }
+        if (_id == "achievements") { RenderAchievements(); return; }
         _title.Text = T("world.guide.title", "Places");
         Action("OpenProjects", T("project.journal.open", "Ranch projects — what could I do next?"), () => { Open("guide", "projects"); return ""; });
+        Action("OpenAchievements", T("panel.achievements.open", "Progress and optional challenges"), () => { Open("guide", "achievements"); return ""; });
         _content.AddChild(Text(T("world.guide.help", "Choose one destination to mark. Follow its arrow, then interact there. This guide never assigns work, spends resources or teleports you.")));
         foreach (var station in _world.Ranch!.Stations.Where(s => s.RequiresWorker || s.TargetId is "ranch_house" or "pet_care"))
             Destination(new WorldDestination("ranch", station.TargetId, station.Label));
